@@ -98,6 +98,9 @@ Ikuti langkah-langkah ini agar proyek bisa berjalan di komputermu.
     ```bash
     git checkout [nama-branch-kelompokmu]
     # Contoh: git checkout Kelompok_1
+    # Contoh: git checkout Kelompok_2
+    # Contoh: git checkout Kelompok_3
+    # Contoh: git checkout Kelompok_4
     ```
 
 3.  **Coding & Commit:** Lakukan pekerjaanmu di branch kelompok. Buat commit secara berkala dengan pesan yang jelas.
