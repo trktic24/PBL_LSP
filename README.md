@@ -50,6 +50,7 @@ Ikuti langkah-langkah ini agar proyek bisa berjalan di komputermu.
     -   Buat database baru di phpMyAdmin (misal: `pbl_lsp`).
     -   Sesuaikan konfigurasi database di file `.env`:
         ```
+        DB_CONNECTION=mysql
         DB_DATABASE=pbl_lsp
         DB_USERNAME=root
         DB_PASSWORD=
