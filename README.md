@@ -117,13 +117,47 @@ Ikuti langkah-langkah ini agar proyek bisa berjalan di komputermu.
 -   Semua perubahan **WAJIB** melalui Pull Request.
 -   Selalu `git pull origin dev` sebelum memulai pekerjaan baru.
 
----
+## 📂 Struktur Folder Utama
+
+Berikut panduan struktur folder yang sering digunakan selama pengembangan proyek:
+
+```
+.
+├── 📂 app/                  # FOLDER UTAMA: Inti & logika aplikasi
+│   ├── 📂 Http/
+│   │   ├── 📂 Controllers/   # ↳ Logika untuk setiap halaman
+│   │   └── 📂 Middleware/    # ↳ Filter keamanan (e.g., login check)
+│   └── 📂 Models/            # ↳ Penghubung ke tabel database
+│
+├── 📂 database/              # FOLDER UTAMA: Semua tentang database
+│   └── 📂 migrations/        # ↳ Desain / "cetak biru" tabel database
+│
+├── 📂 public/                # ↳ Aset yang bisa diakses publik (gambar, css jadi)
+│
+├── 📂 resources/             # FOLDER UTAMA: Bahan mentah untuk frontend
+│   ├── 📂 css/               # ↳ Kode sumber Tailwind CSS
+│   ├── 📂 js/                # ↳ Kode sumber JavaScript / Alpine.js
+│   └── 📂 views/             # ↳ File tampilan UI (.blade.php)
+│
+├── 📂 routes/                # FOLDER UTAMA: Peta URL aplikasi
+│   └── 📜 web.php            # ↳ Daftar semua URL halaman web
+│
+├── 📜 .env                   # ↳ Konfigurasi database & environment (RAHASIA)
+├── 📜 composer.json          # ↳ Daftar package PHP (backend)
+└── 📜 package.json           # ↳ Daftar package JS (frontend)
+```
+
+## 🤝 Panduan Kontribusi
+
+-   Selalu pastikan kode udah jalan lokal sebelum push
+-   Gunakan bahasa commit yang konsisten (Feat:, Fix:, Refactor:)
+-   Jangan ubah file `.env`, `.gitignore`, atau `composer.json` tanpa izin leader
 
 ## 👨‍💻 Pembagian Tim
 
-| Branch       | Penanggung Jawab       | Anggota                               |
-| ------------ | ---------------------- | ------------------------------------- |
-| `Kelompok_1` | Ghufron Ainun          | Abyan, Dimaz, Annisa, Riztika, Ifa    |
-| `Kelompok_2` | Paulus Ale             | Cezar, Bagas, Baim, Devi, Nabila      |
-| `Kelompok_3` | Rajaba Hamim Maududi   | Zalfa, Diah, Fariz, Izza, Oksa        |
-| `Kelompok_4` | Zulfikri Arya Putra I. | Roihan, Terra, Dimas Adhie, Sri, Rafa |
+| Branch       | Penanggung Jawab | Anggota                               |
+| ------------ | ---------------- | ------------------------------------- |
+| `Kelompok_1` | Ghufron Ainun    | Abyan, Dimaz, Annisa, Riztika, Ifa    |
+| `Kelompok_2` | Paulus Ale       | Cezar, Bagas, Baim, Devi, Nabila      |
+| `Kelompok_3` | Rajaba Hamim     | Zalfa, Diah, Fariz, Izza, Oksa        |
+| `Kelompok_4` | Zulfikri Arya    | Roihan, Terra, Dimas Adhie, Sri, Rafa |
