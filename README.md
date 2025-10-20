@@ -26,6 +26,9 @@ Ikuti langkah-langkah ini agar proyek bisa berjalan di komputermu.
 
 1.  **Clone Repository**
 
+    -   Buka folder xampp/htdocs/
+    -   Buka terminal
+
     ```bash
     git clone https://github.com/trktic24/PBL_LSP.git
     cd PBL_LSP
