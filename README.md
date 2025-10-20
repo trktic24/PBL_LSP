@@ -12,7 +12,7 @@ Proyek ini bertujuan untuk merancang dan membangun Sistem Informasi Lembaga Sert
 
 ## 🛠️ Teknologi yang Digunakan
 
--   **Backend:** Laravel 11
+-   **Backend:** Laravel 12
 -   **Frontend:** Blade, Tailwind CSS, Alpine.js
 -   **Database:** MySQL / MariaDB
 -   **Server Lokal:** XAMPP / Laragon
