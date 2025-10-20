@@ -1,12 +1,12 @@
-# Proyek Pengembangan Aplikasi LSP (Nama Proyekmu)
+# Proyek Pengembangan Aplikasi LSP POLINES
 
-Selamat datang di repository proyek Pengembangan Perangkat Lunak untuk Uji Kompetensi LSP. Dokumen ini berisi semua informasi penting yang dibutuhkan oleh tim untuk memulai dan berkontribusi pada proyek.
+Selamat datang di repository proyek Pengembangan Perangkat Lunak untuk LSP Polines. Dokumen ini berisi semua informasi penting yang dibutuhkan oleh tim untuk memulai dan berkontribusi pada proyek.
 
 ---
 
 ## 🚀 Deskripsi Proyek
 
-Aplikasi ini bertujuan untuk [Jelaskan secara singkat tujuan aplikasi ini, misal: "membuat sistem penyewaan buku online untuk uji kompetensi LSP"]. Fitur utamanya meliputi autentikasi user, manajemen buku, dan proses peminjaman.
+Proyek ini bertujuan untuk merancang dan membangun Sistem Informasi Lembaga Sertifikasi Profesi (LSP) Politeknik Negeri Semarang. Sistem ini dirancang untuk mendigitalisasi dan mengoptimalkan seluruh alur kerja proses sertifikasi kompetensi, mulai dari pendaftaran peserta hingga penerbitan sertifikat.
 
 ---
 
@@ -27,7 +27,7 @@ Ikuti langkah-langkah ini agar proyek bisa berjalan di komputermu.
 1.  **Clone Repository**
 
     ```bash
-    git clone [https://github.com/trktic24/PBL_LSP.git](https://github.com/trktic24/PBL_LSP.git)
+    git clone https://github.com/trktic24/PBL_LSP.git
     cd PBL_LSP
     ```
 
