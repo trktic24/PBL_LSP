@@ -11,16 +11,33 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Tabel ini akan berjalan SETELAH create_roles_table
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            // Sesuai ERD (id_user)
+            $table->id(); 
+            
+            // Sesuai ERD (id_role)
+            $table->foreignId('role_id')->constrained('roles');
+
+            // Sesuai ERD (Username)
+            $table->string('username')->unique();
+            
+            // Sesuai ERD (email)
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            
+            // Sesuai ERD (password)
             $table->string('password');
+
+            // Sesuai ERD (google_id)
+            $table->string('google_id')->nullable();
+
+            // Kolom default Laravel
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // Tabel-tabel ini sebelumnya ada di file migrasi default
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
