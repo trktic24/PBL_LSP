@@ -67,7 +67,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <a href="#" class="text-lg font-semibold text-gray-900">Formulir Pendaftaran Sertifikasi</a>
+                            <a href="\data_sertifikasi" class="text-lg font-semibold text-gray-900">Formulir Pendaftaran Sertifikasi</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
                             <button class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600">

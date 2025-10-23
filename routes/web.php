@@ -11,6 +11,10 @@ Route::get('/tracker', function () {
     return view('tracker');
 });
 
+Route::get('/data_sertifikasi', function () {
+    return view('data_sertifikasi');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
