@@ -10,6 +10,15 @@ Route::get('/', function () {
     return view('login_admin');
 })->name('login');
 
+Route::get('/dashboard', function () {
+    return view('dashboard_admin');
+})->name('dashboard');
+
+Route::get('/notifications', function () {
+    return view('notifications_admin');
+})->name('notifications');
+
+
 // proses login pakai kolom "name"
 Route::post('/login', function (Request $request) {
     // validasi input

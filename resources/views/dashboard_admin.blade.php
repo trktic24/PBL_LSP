@@ -8,6 +8,9 @@
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Font Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
@@ -15,6 +18,9 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
         /* Hilangkan efek scrollbar biru */
         ::-webkit-scrollbar {
             width: 8px;
@@ -40,7 +46,7 @@
             </div>
 
             <!-- MENU TENGAH -->
-            <div class="flex items-center space-x-10 text-base md:text-lg font-semibold relative h-full">
+            <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
                 <!-- Dashboard aktif -->
                 <a href="#" class="relative text-blue-600 h-full flex items-center">
                     Dashboard
@@ -68,15 +74,21 @@
 
             <!-- PROFIL & NOTIF -->
             <div class="flex items-center space-x-6">
-                <button class="relative text-gray-600 hover:text-blue-600 transition">
-                    <i class="fas fa-bell text-2xl"></i>
-                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
-                </button>
+                <!-- Ikon Notifikasi -->
+                <a href="{{ route('notifications') }}" 
+                    class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
+                    hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+                    <i class="fas fa-bell text-xl text-gray-600"></i>
+                    <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+                </a>
 
-                <div class="flex items-center space-x-3">
-                    <span class="text-gray-800 font-semibold text-base">Roihan Enrico</span>
-                    <div class="h-10 w-10 bg-gray-200 rounded-full border-2 border-gray-300 overflow-hidden flex items-center justify-center">
-                        <i class="fas fa-user-circle text-3xl text-gray-500"></i>
+
+                <!-- Profil Pengguna -->
+                <div class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
+                    hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+                    <span class="text-gray-800 font-semibold text-base mr-2">Roihan Enrico</span>
+                    <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
+                        <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
                     </div>
                 </div>
             </div>
