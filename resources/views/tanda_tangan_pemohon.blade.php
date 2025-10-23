@@ -1,136 +1,383 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tanda Tangan Pemohon</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.6/dist/signature_pad.umd.min.js"></script>
-</head>
-<body class="bg-gray-200">
-
-<div class="flex min-h-screen">
-
-  <!-- Sidebar kiri (sesuai gambar) -->
-  <aside class="w-72 bg-gradient-to-b from-[#77B8FF] to-[#A4D3FF] flex flex-col items-center text-center py-6 px-5 relative">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skema Sertifikat - Tanda Tangan Pemohon</title>
     
-    <!-- Tombol kembali -->
-    <a href="/tracker" class="flex items-center text-sm font-medium text-gray-700 hover:text-black mb-8">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mr-2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-      </svg>
-      Kembali
-    </a>
+    <style>
+        /* General Styling & Reset */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+        }
 
-    <!-- Foto profil skema -->
-    <img src="https://i.ibb.co/mDk6bHt/code-bg.jpg" alt="Profile" class="rounded-full w-28 h-28 mt-10 border-4 border-white shadow-lg object-cover">
+        .container-fluid {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            background-color: white;
+            min-height: 100vh;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-    <!-- Nama skema -->
-    <h2 class="text-lg font-bold text-gray-900 mt-4">Junior Web<br>Developer</h2>
+        /* ----------------------- */
+        /* Sidebar Styling (Left Column) */
+        /* ----------------------- */
+        .sidebar {
+            width: 35%; 
+            background-color: #e0f7fa; /* Light blue background */
+            padding: 30px 25px;
+            color: #333;
+        }
 
-    <!-- Deskripsi -->
-    <p class="text-xs text-gray-700 italic mt-2 leading-snug">
-      Lorem ipsum dolor sit amet<br>You're the best person I ever met
-    </p>
+        .back-link {
+            color: #555;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 30px;
+        }
 
-    <!-- Info peserta -->
-    <div class="mt-10 text-center w-full">
-      <p class="text-xs font-semibold text-gray-700 mb-2">OLEH PESERTA:</p>
-      <div class="flex flex-col items-center mb-5">
-        <img src="https://i.ibb.co/CH0hpWm/user-avatar.png" alt="Peserta" class="w-10 h-10 rounded-full border border-gray-400 mb-2">
-        <p class="text-sm font-semibold text-gray-900">Tatang Sidartang</p>
-      </div>
+        .section-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #000;
+        }
 
-      <p class="text-xs font-semibold text-gray-700 mb-1">DIMULAI PADA:</p>
-      <p class="text-sm font-bold text-gray-900">2025-09-29 06:18:25</p>
+        .profile-card {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .image-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            /* Blue/purple background gradient to mimic the image style */
+            background: linear-gradient(45deg, #1e3c72 0%, #2a5298 50%, #6a1b9a 100%);
+            box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.4);
+        }
+
+        .profile-card h3 {
+            margin: 5px 0;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .skema-id {
+            color: #555;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 0.85em;
+            color: #333;
+            padding: 0 10px;
+        }
+
+        .requirements {
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .requirements h4 {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+        .requirements ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .requirements li {
+            padding: 5px 0 5px 25px;
+            position: relative;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .requirements li::before {
+            content: '✓'; 
+            position: absolute;
+            left: 0;
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+        /* ----------------------- */
+        /* Main Content Styling (Right Column) */
+        /* ----------------------- */
+        .main-content {
+            width: 65%; 
+            padding: 40px 60px;
+        }
+
+        /* Progress Bar Styling */
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .step {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #ccc;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            z-index: 1;
+        }
+
+        .step.active {
+            background-color: #ffc107; /* Yellow color */
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+        }
+
+        .line {
+            height: 4px;
+            width: 100px; 
+            background-color: #ccc;
+        }
+
+        .line.active {
+            background-color: #ffc107;
+        }
+
+        .main-header {
+            font-size: 2.5em;
+            font-weight: 900;
+            margin: 0;
+            color: #333;
+        }
+
+        /* Data and Declaration Styling */
+        .data-declaration {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .data-declaration p:first-child {
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .data-row {
+            display: flex;
+            margin: 10px 0;
+        }
+
+        .data-row label {
+            width: 180px; 
+            font-weight: normal;
+        }
+
+        .auto-filled-value {
+            flex-grow: 1;
+            font-weight: 500; 
+        }
+
+        .declaration-text {
+            margin-top: 30px;
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        /* Signature Area Styling */
+        .signature-area {
+            position: relative;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .signature-input {
+            width: 100%;
+            height: 180px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            resize: none;
+            background-color: #fff;
+            padding: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .signature-prompt {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* Button Styling */
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+
+        /* Positioning the "Hapus" button in the center */
+        .signature-actions {
+            display: flex;
+            justify-content: center; /* Centering the button horizontally */
+            margin-top: 5px;
+        }
+
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: #555;
+            /* Adjust padding/margin if needed to match image gap */
+        }
+
+        .btn-secondary:hover {
+            background-color: #ccc;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 50px; 
+        }
+
+        .btn-previous {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+
+        .btn-previous:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-next {
+            background-color: #007bff; 
+            color: white;
+        }
+
+        .btn-next:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="sidebar">
+            <a href="#" class="back-link">← Kembali</a>
+            <h2 class="section-title">Skema Sertifikat</h2>
+            
+            <div class="profile-card">
+                <div class="image-placeholder"></div>
+                <h3>Junior Web Developer</h3>
+                <p class="skema-id">SKM12XXXXXXX</p>
+                <p class="description">Lorem ipsum dolor sit amet, you're the best person I've ever met</p>
+            </div>
+
+            <div class="requirements">
+                <h4>Persyaratan Utama</h4>
+                <ul>
+                    <li>Data Sertifikasi</li>
+                    <li>Rincian Data Pemohon Sertifikasi</li>
+                    <li>Bukti Kelengkapan Pemohon</li>
+                    <li>Bukti Pembayaran</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            
+            <div class="progress-bar-container">
+                <div class="step active">1</div>
+                <div class="line active"></div>
+                <div class="step active">2</div>
+                <div class="line active"></div>
+                <div class="step active">3</div>
+            </div>
+
+            <h1 class="main-header">Tanda Tangan Pemohon</h1>
+            
+            <div class="data-declaration">
+                <p>Saya yang bertanda tangan di bawah ini</p>
+                <div class="data-row">
+                    <label>Nama</label>
+                    <span class="auto-filled-value" id="nama-pemohon">: </span>
+                </div>
+                <div class="data-row">
+                    <label>Jabatan</label>
+                    <span class="auto-filled-value" id="jabatan-pemohon">: </span>
+                </div>
+                <div class="data-row">
+                    <label>Perusahaan</label>
+                    <span class="auto-filled-value" id="perusahaan-pemohon">: </span>
+                </div>
+                <div class="data-row">
+                    <label>Alamat Perusahaan</label>
+                    <span class="auto-filled-value" id="alamat-perusahaan-pemohon">: </span>
+                </div>
+
+                <p class="declaration-text">
+                    Dengan ini saya menyatakan mengisi data dengan sebenarnya untuk dapat digunakan sebagai bukti pemenuhan syarat Sertifikasi Lorem Ipsum Dolor Sit Amet.
+                </p>
+            </div>
+
+            <div class="signature-area">
+                <textarea id="signature-pad" class="signature-input" readonly></textarea>
+                <p class="signature-prompt">*Tanda Tangan di sini</p>
+                
+                <div class="signature-actions">
+                    <button type="button" class="btn btn-secondary">Hapus</button>
+                </div>
+                
+            </div>
+
+            <div class="navigation-buttons">
+                <button type="button" class="btn btn-previous">Sebelumnya</button>
+                <button type="submit" class="btn btn-next">Selanjutnya</button>
+            </div>
+
+        </div>
     </div>
-  </aside>
 
-  <!-- Konten utama -->
-  <main class="flex-1 bg-white rounded-l-3xl p-10 shadow-lg">
-    <div class="flex justify-between items-center mb-8">
-      <div></div>
-      <img src="https://bnsp.go.id/assets/img/logo-bnsp.png" alt="BNSP Logo" class="w-28">
-    </div>
+    <script>
+        // -----------------------
+        // JavaScript for Auto-Filling Data
+        // -----------------------
+        document.addEventListener('DOMContentLoaded', function() {
+            // *** SIMULASI DATA OTOMATIS: Ganti data ini dengan data yang sebenarnya dari backend Anda ***
+            const userData = {
+                nama: "Rizky Firmansyah",
+                jabatan: "Junior Web Developer",
+                perusahaan: "PT Digital Kreasi",
+                alamat: "Jl. Teknologi No. 45, Bandung"
+            };
 
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Tanda Tangan Pemohon</h1>
-
-    <p class="text-gray-700 mb-4">Saya yang bertanda tangan di bawah ini:</p>
-
-    <form class="space-y-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-gray-700 font-medium">Nama</label>
-          <input type="text" placeholder="Ketik nama..." class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 text-gray-600 placeholder-gray-400 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none">
-        </div>
-        <div>
-          <label class="block text-gray-700 font-medium">Jabatan</label>
-          <input type="text" placeholder="Ketik jabatan..." class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 text-gray-600 placeholder-gray-400 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none">
-        </div>
-        <div>
-          <label class="block text-gray-700 font-medium">Perusahaan</label>
-          <input type="text" placeholder="Ketik nama perusahaan..." class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 text-gray-600 placeholder-gray-400 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none">
-        </div>
-        <div>
-          <label class="block text-gray-700 font-medium">Alamat Perusahaan</label>
-          <input type="text" placeholder="Ketik alamat perusahaan..." class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 text-gray-600 placeholder-gray-400 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none">
-        </div>
-      </div>
-
-      <p class="text-gray-700 text-sm leading-relaxed mt-6">
-        Dengan ini saya menyatakan mengisi data dengan sebenarnya untuk dapat digunakan sebagai bukti pemenuhan syarat Sertifikasi Lorem Ipsum Dolor Sit Amet.
-      </p>
-
-      <!-- Area tanda tangan -->
-      <div class="mt-6">
-        <label class="block text-gray-700 font-medium mb-2">Tanda Tangan Pemohon:</label>
-        <div class="border-2 border-gray-300 rounded-md relative bg-gray-50">
-          <canvas id="signature-pad" class="w-full h-48"></canvas>
-          <p class="absolute bottom-2 left-3 text-sm text-red-500 italic">*Tanda Tangan di sini</p>
-        </div>
-
-        <div class="flex justify-center mt-4 gap-6">
-          <button type="button" id="clear" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-5 py-2 rounded-md font-semibold transition">
-            Hapus
-          </button>
-        </div>
-      </div>
-
-      <!-- Tombol navigasi -->
-      <div class="flex justify-between mt-10">
-        <a href="/bukti_pemohon" type="button" class="border-2 border-blue-400 text-blue-500 font-semibold px-8 py-2 rounded-full hover:bg-blue-50 transition">
-          Sebelumnya
-        </a>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-2 rounded-full transition">
-          Selesai
-        </button>
-      </div>
-    </form>
-  </main>
-</div>
-
-<script>
-  // Inisialisasi Signature Pad
-  const canvas = document.getElementById('signature-pad');
-  const signaturePad = new SignaturePad(canvas, {
-    backgroundColor: 'rgb(255,255,255)'
-  });
-
-  // Menyesuaikan ukuran canvas agar proporsional
-  function resizeCanvas() {
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    canvas.getContext('2d').scale(ratio, ratio);
-    signaturePad.clear();
-  }
-
-  window.addEventListener("resize", resizeCanvas);
-  resizeCanvas();
-
-  // Tombol hapus tanda tangan
-  document.getElementById('clear').addEventListener('click', () => signaturePad.clear());
-</script>
+            // Mengisi data ke elemen HTML
+            document.getElementById('nama-pemohon').textContent = ': ' + userData.nama;
+            document.getElementById('jabatan-pemohon').textContent = ': ' + userData.jabatan;
+            document.getElementById('perusahaan-pemohon').textContent = ': ' + userData.perusahaan;
+            document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + userData.alamat;
+        });
+    </script>
 
 </body>
 </html>
