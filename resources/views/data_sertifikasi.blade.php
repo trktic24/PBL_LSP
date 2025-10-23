@@ -155,9 +155,9 @@
                 </div>
 
                 <div class="flex justify-end items-center">
-                    <button class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
+                    <a href="/bukti_pemohon" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
                         Selanjutnya
-                    </button>
+                    </a>
                 </div>
 
             </div>

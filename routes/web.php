@@ -15,6 +15,18 @@ Route::get('/data_sertifikasi', function () {
     return view('data_sertifikasi');
 });
 
+Route::get('/tanda_tangan_pemohon', function () {
+    return view('tanda_tangan_pemohon');
+});
+
+Route::get('/upload_bukti_pembayaran', function () {
+    return view('upload_bukti_pembayaran');
+});
+
+Route::get('/bukti_pemohon', function () {
+    return view('bukti_pemohon');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

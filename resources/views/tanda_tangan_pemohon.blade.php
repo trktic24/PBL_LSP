@@ -15,12 +15,12 @@
   <aside class="w-72 bg-gradient-to-b from-[#77B8FF] to-[#A4D3FF] flex flex-col items-center text-center py-6 px-5 relative">
     
     <!-- Tombol kembali -->
-    <button onclick="window.history.back()" class="absolute top-4 left-4 text-sm text-gray-700 flex items-center hover:text-black">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    <a href="/tracker" class="flex items-center text-sm font-medium text-gray-700 hover:text-black mb-8">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mr-2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
       </svg>
       Kembali
-    </button>
+    </a>
 
     <!-- Foto profil skema -->
     <img src="https://i.ibb.co/mDk6bHt/code-bg.jpg" alt="Profile" class="rounded-full w-28 h-28 mt-10 border-4 border-white shadow-lg object-cover">
@@ -98,9 +98,9 @@
 
       <!-- Tombol navigasi -->
       <div class="flex justify-between mt-10">
-        <button type="button" class="border-2 border-blue-400 text-blue-500 font-semibold px-8 py-2 rounded-full hover:bg-blue-50 transition">
+        <a href="/bukti_pemohon" type="button" class="border-2 border-blue-400 text-blue-500 font-semibold px-8 py-2 rounded-full hover:bg-blue-50 transition">
           Sebelumnya
-        </button>
+        </a>
         <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-2 rounded-full transition">
           Selesai
         </button>
