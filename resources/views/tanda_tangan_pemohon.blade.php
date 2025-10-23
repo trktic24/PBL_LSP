@@ -10,12 +10,12 @@
     <style>
         /* Definisi Warna */
         :root {
-            --text-dark: #333333; /* Warna teks umum */
-            --icon-dark: #555555; /* Warna ikon Kembali */
-            --icon-blue: #007bff; /* Warna ikon centang biru */ /* DITAMBAHKAN */
-            --sidebar-bg: #e0f7fa; /* Warna latar belakang sidebar */
-            --progress-yellow: #ffc107; /* Warna progress bar */
-            --blue-button: #007bff; /* Warna tombol utama */
+            --text-dark: #333333; 
+            --icon-dark: #555555; 
+            --icon-blue: #007bff; /* Warna ikon centang biru */
+            --sidebar-bg: #e0f7fa; 
+            --progress-yellow: #ffc107; 
+            --blue-button: #007bff; 
         }
 
         /* General Styling & Reset */
@@ -25,26 +25,27 @@
             padding: 0;
             background-color: #f0f2f5;
             display: flex;
-            justify-content: center;
+            /* Hapus justify-content: center; agar konten bisa menempel ke kiri/kanan */
         }
 
         .container-fluid {
             display: flex;
-            width: 100%;
-            max-width: 1200px;
+            width: 100%; /* PENTING: Mengisi seluruh lebar viewport */
+            /* Hapus max-width: 1200px; untuk memungkinkan tampilan full screen */
             background-color: white;
             min-height: 100vh;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            /* Hapus box-shadow untuk tampilan full screen yang lebih rapi */
         }
 
         /* ----------------------- */
         /* Sidebar Styling (Left Column) */
         /* ----------------------- */
         .sidebar {
-            width: 35%; 
+            width: 350px; /* Diubah menjadi lebar tetap untuk menjaga proporsi saat full screen */
             background-color: var(--sidebar-bg); 
             padding: 30px 25px;
             color: var(--text-dark);
+            flex-shrink: 0; /* Pastikan sidebar tidak mengecil */
         }
 
         /* Gaya Tombol Kembali (Tetap Warna Gelap) */
@@ -53,7 +54,7 @@
             align-items: center;
             text-decoration: none;
             font-weight: bold;
-            color: var(--icon-dark); /* Tetap warna gelap */
+            color: var(--icon-dark); 
             margin-bottom: 30px;
             font-size: 1.1em;
         }
@@ -62,7 +63,7 @@
             display: inline-block;
             width: 0.8em;
             height: 0.8em;
-            border: solid var(--icon-dark); /* Tetap warna gelap */
+            border: solid var(--icon-dark); 
             border-width: 0 0 2px 2px; 
             transform: rotate(45deg);
             margin-right: 8px;
@@ -131,7 +132,7 @@
             color: #555;
         }
 
-        /* Gaya Ikon Centang Baru (Kembali ke Warna Biru) */
+        /* Gaya Ikon Centang (Warna Biru) */
         .requirements li::before {
             content: ''; 
             position: absolute;
@@ -141,14 +142,14 @@
             width: 18px; 
             height: 18px; 
             border-radius: 50%; 
-            background-color: var(--icon-blue); /* Diubah kembali ke biru */
+            background-color: var(--icon-blue); 
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .requirements li::after {
-            content: '✓'; /* Tanda centang putih */
+            content: '✓'; 
             position: absolute;
             left: 0;
             top: 50%;
@@ -167,7 +168,7 @@
         /* Main Content Styling (Right Column) */
         /* ----------------------- */
         .main-content {
-            width: 65%; 
+            flex-grow: 1; /* PENTING: Mengisi sisa ruang yang tersedia */
             padding: 40px 60px;
         }
 
@@ -255,7 +256,6 @@
             margin-top: 20px;
         }
 
-        /* Canvas untuk Tanda Tangan */
         .signature-input {
             width: 100%;
             height: 180px;
@@ -276,7 +276,6 @@
             margin-bottom: 20px;
         }
 
-        /* Button Styling */
         .btn {
             padding: 10px 25px;
             border: none;
@@ -286,7 +285,6 @@
             transition: background-color 0.3s, opacity 0.3s;
         }
 
-        /* Positioning the "Hapus" button in the center */
         .signature-actions {
             display: flex;
             justify-content: center; 
@@ -421,7 +419,7 @@
             const canvas = document.getElementById('signature-canvas');
             const signaturePad = new SignaturePad(canvas, {
                 backgroundColor: 'rgb(255, 255, 255)', 
-                penColor: 'rgb(0, 0, 0)' // Pastikan warna pena hitam
+                penColor: 'rgb(0, 0, 0)' 
             });
 
             // Fungsi untuk menyesuaikan ukuran canvas agar responsif
@@ -445,14 +443,12 @@
 
             // ----------------------------------------------------
             // 2. Pengambilan Data Otomatis (Simulasi LocalStorage)
-            // Bidang ini akan kosong jika data belum disimpan dari halaman sebelumnya
             // ----------------------------------------------------
             const namaPemohon = document.getElementById('nama-pemohon');
             const jabatanPemohon = document.getElementById('jabatan-pemohon');
             const perusahaanPemohon = document.getElementById('perusahaan-pemohon');
             const alamatPerusahaanPemohon = document.getElementById('alamat-perusahaan-pemohon');
 
-            // Cek LocalStorage untuk data dari halaman profil sebelumnya
             const userDataFromPreviousPage = JSON.parse(localStorage.getItem('userData')) || {};
 
             // Mengisi data (jika ada) - Defaultnya kosong
@@ -474,11 +470,9 @@
                     return;
                 }
 
-                // Ambil data tanda tangan untuk dikirim ke server (format Data URL)
                 const signatureDataURL = signaturePad.toDataURL(); 
                 console.log("Data Tanda Tangan (Data URL):", signatureDataURL.substring(0, 50) + "...");
                 
-                // Lanjutkan ke halaman berikutnya atau submit form
                 alert("Validasi sukses! Data tanda tangan siap dikirim.");
             });
         });
