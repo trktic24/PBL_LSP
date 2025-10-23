@@ -258,4 +258,76 @@
                             <a href="#" class="flex items-center text-sm font-medium text-red-600 hover:text-red-800">
                                 0 berkas
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 ml-1">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="flex items-center space-x-5">
+                            <div class="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center p-2 text-center">
+                                <span class="text-xs text-gray-500 break-all">sertifikasi.pdf</span>
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" placeholder="Tambahkan Keterangan" class="w-full border-gray-300 rounded-md shadow-sm text-sm mb-3 focus:border-blue-500 focus:ring-blue-500">
+                                <div class="flex space-x-3">
+                                    <input type="file" id="file-upload-5" class="hidden">
+                                    <label for="file-upload-5" class="cursor-pointer px-5 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600">
+                                        Upload
+                                    </label>
+                                    <button type="button" class="px-5 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Surat Keterangan Kerja</h3>
+                                <p class="text-sm text-gray-500">Surat Keterangan Kerja minimal 2 tahun</p>
+                            </div>
+                            <a href="#" class="flex items-center text-sm font-medium text-red-600 hover:text-red-800">
+                                0 berkas
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 ml-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="flex items-center space-x-5">
+                            <div class="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center p-2 text-center">
+                                <span class="text-xs text-gray-500 break-all">buktiskt.pdf</span>
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" placeholder="Tambahkan Keterangan" class="w-full border-gray-300 rounded-md shadow-sm text-sm mb-3 focus:border-blue-500 focus:ring-blue-500">
+                                <div class="flex space-x-3">
+                                    <input type="file" id="file-upload-6" class="hidden">
+                                    <label for="file-upload-6" class="cursor-pointer px-5 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600">
+                                        Upload
+                                    </label>
+                                    <button type="button" class="px-5 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="flex justify-between items-center mt-10">
+                    <button class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300">
+                        Sebelumnya
+                    </button>
+                    <button class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
+                        Selanjutnya
+                    </button>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+</body>
+</html>
