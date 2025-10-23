@@ -14,7 +14,7 @@ return new class extends Migration
         // Tabel ini akan berjalan SETELAH create_roles_table
         Schema::create('users', function (Blueprint $table) {
             // Sesuai ERD (id_user)
-            $table->id(); 
+            $table->id('id_user'); 
             
             // Sesuai ERD (id_role)
             $table->foreignId('role_id')->constrained('roles');

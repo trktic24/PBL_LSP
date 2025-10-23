@@ -19,7 +19,7 @@ return new class extends Migration
             // Ini adalah cara modern Laravel untuk membuat foreign key (unsignedBigInteger + constraint)
             // Pastikan Anda sudah memiliki tabel 'skema' dan 'users'
             $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreignId('id_user')->constrained('users')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
 
             // Atribut lainnya
             $table->string('nomor_regis', 50)->nullable()->unique();
