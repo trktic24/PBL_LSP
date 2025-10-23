@@ -5,7 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skema Sertifikat - Tanda Tangan Pemohon</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
     <style>
+        /* Definisi Warna */
+        :root {
+            --text-dark: #333333; /* Warna teks umum */
+            --icon-dark: #555555; /* Warna ikon Kembali */
+            --icon-blue: #007bff; /* Warna ikon centang biru */ /* DITAMBAHKAN */
+            --sidebar-bg: #e0f7fa; /* Warna latar belakang sidebar */
+            --progress-yellow: #ffc107; /* Warna progress bar */
+            --blue-button: #007bff; /* Warna tombol utama */
+        }
+
         /* General Styling & Reset */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -30,17 +42,31 @@
         /* ----------------------- */
         .sidebar {
             width: 35%; 
-            background-color: #e0f7fa; /* Light blue background */
+            background-color: var(--sidebar-bg); 
             padding: 30px 25px;
-            color: #333;
+            color: var(--text-dark);
         }
 
-        .back-link {
-            color: #555;
+        /* Gaya Tombol Kembali (Tetap Warna Gelap) */
+        .back-link-custom {
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            font-size: 0.9em;
-            display: block;
+            font-weight: bold;
+            color: var(--icon-dark); /* Tetap warna gelap */
             margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .back-arrow {
+            display: inline-block;
+            width: 0.8em;
+            height: 0.8em;
+            border: solid var(--icon-dark); /* Tetap warna gelap */
+            border-width: 0 0 2px 2px; 
+            transform: rotate(45deg);
+            margin-right: 8px;
+            margin-top: -2px;
         }
 
         .section-title {
@@ -60,7 +86,6 @@
             height: 100px;
             border-radius: 50%;
             margin: 0 auto 10px;
-            /* Blue/purple background gradient to mimic the image style */
             background: linear-gradient(45deg, #1e3c72 0%, #2a5298 50%, #6a1b9a 100%);
             box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.4);
         }
@@ -100,17 +125,41 @@
         }
 
         .requirements li {
-            padding: 5px 0 5px 25px;
+            padding: 5px 0 5px 30px; 
             position: relative;
             font-size: 0.9em;
             color: #555;
         }
 
+        /* Gaya Ikon Centang Baru (Kembali ke Warna Biru) */
         .requirements li::before {
-            content: '✓'; 
+            content: ''; 
             position: absolute;
             left: 0;
-            color: #007bff;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px; 
+            height: 18px; 
+            border-radius: 50%; 
+            background-color: var(--icon-blue); /* Diubah kembali ke biru */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .requirements li::after {
+            content: '✓'; /* Tanda centang putih */
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: white;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-weight: bold;
         }
         
@@ -145,7 +194,7 @@
         }
 
         .step.active {
-            background-color: #ffc107; /* Yellow color */
+            background-color: var(--progress-yellow); 
             box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
         }
 
@@ -156,14 +205,14 @@
         }
 
         .line.active {
-            background-color: #ffc107;
+            background-color: var(--progress-yellow);
         }
 
         .main-header {
             font-size: 2.5em;
             font-weight: 900;
             margin: 0;
-            color: #333;
+            color: var(--text-dark);
         }
 
         /* Data and Declaration Styling */
@@ -206,17 +255,18 @@
             margin-top: 20px;
         }
 
+        /* Canvas untuk Tanda Tangan */
         .signature-input {
             width: 100%;
             height: 180px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-            resize: none;
             background-color: #fff;
             padding: 10px;
             box-sizing: border-box;
             cursor: pointer;
+            touch-action: none; 
         }
 
         .signature-prompt {
@@ -239,14 +289,13 @@
         /* Positioning the "Hapus" button in the center */
         .signature-actions {
             display: flex;
-            justify-content: center; /* Centering the button horizontally */
+            justify-content: center; 
             margin-top: 5px;
         }
 
         .btn-secondary {
             background-color: #e0e0e0;
             color: #555;
-            /* Adjust padding/margin if needed to match image gap */
         }
 
         .btn-secondary:hover {
@@ -270,7 +319,7 @@
         }
 
         .btn-next {
-            background-color: #007bff; 
+            background-color: var(--blue-button); 
             color: white;
         }
 
@@ -283,7 +332,11 @@
 
     <div class="container-fluid">
         <div class="sidebar">
-            <a href="#" class="back-link">← Kembali</a>
+            
+            <a href="#" class="back-link-custom">
+                <span class="back-arrow"></span> Kembali
+            </a>
+            
             <h2 class="section-title">Skema Sertifikat</h2>
             
             <div class="profile-card">
@@ -296,8 +349,9 @@
             <div class="requirements">
                 <h4>Persyaratan Utama</h4>
                 <ul>
-                    <li>Data Sertifikasi</li>
+                    
                     <li>Rincian Data Pemohon Sertifikasi</li>
+                    <li>Data Diri</li>
                     <li>Bukti Kelengkapan Pemohon</li>
                     <li>Bukti Pembayaran</li>
                 </ul>
@@ -341,11 +395,12 @@
             </div>
 
             <div class="signature-area">
-                <textarea id="signature-pad" class="signature-input" readonly></textarea>
+                
+                <canvas id="signature-canvas" class="signature-input"></canvas>
                 <p class="signature-prompt">*Tanda Tangan di sini</p>
                 
                 <div class="signature-actions">
-                    <button type="button" class="btn btn-secondary">Hapus</button>
+                    <button type="button" class="btn btn-secondary" id="clear-signature">Hapus</button>
                 </div>
                 
             </div>
@@ -359,23 +414,73 @@
     </div>
 
     <script>
-        // -----------------------
-        // JavaScript for Auto-Filling Data
-        // -----------------------
         document.addEventListener('DOMContentLoaded', function() {
-            // *** SIMULASI DATA OTOMATIS: Ganti data ini dengan data yang sebenarnya dari backend Anda ***
-            const userData = {
-                nama: "Rizky Firmansyah",
-                jabatan: "Junior Web Developer",
-                perusahaan: "PT Digital Kreasi",
-                alamat: "Jl. Teknologi No. 45, Bandung"
-            };
+            // ----------------------------------------------------
+            // 1. Inisialisasi Signature Pad (Tanda Tangan)
+            // ----------------------------------------------------
+            const canvas = document.getElementById('signature-canvas');
+            const signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)', 
+                penColor: 'rgb(0, 0, 0)' // Pastikan warna pena hitam
+            });
 
-            // Mengisi data ke elemen HTML
-            document.getElementById('nama-pemohon').textContent = ': ' + userData.nama;
-            document.getElementById('jabatan-pemohon').textContent = ': ' + userData.jabatan;
-            document.getElementById('perusahaan-pemohon').textContent = ': ' + userData.perusahaan;
-            document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + userData.alamat;
+            // Fungsi untuk menyesuaikan ukuran canvas agar responsif
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+                signaturePad.clear(); 
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas(); 
+
+            // Tombol "Hapus" tanda tangan
+            const clearButton = document.getElementById('clear-signature');
+            clearButton.addEventListener('click', function() {
+                signaturePad.clear();
+            });
+
+
+            // ----------------------------------------------------
+            // 2. Pengambilan Data Otomatis (Simulasi LocalStorage)
+            // Bidang ini akan kosong jika data belum disimpan dari halaman sebelumnya
+            // ----------------------------------------------------
+            const namaPemohon = document.getElementById('nama-pemohon');
+            const jabatanPemohon = document.getElementById('jabatan-pemohon');
+            const perusahaanPemohon = document.getElementById('perusahaan-pemohon');
+            const alamatPerusahaanPemohon = document.getElementById('alamat-perusahaan-pemohon');
+
+            // Cek LocalStorage untuk data dari halaman profil sebelumnya
+            const userDataFromPreviousPage = JSON.parse(localStorage.getItem('userData')) || {};
+
+            // Mengisi data (jika ada) - Defaultnya kosong
+            namaPemohon.textContent = ': ' + (userDataFromPreviousPage.nama || '');
+            jabatanPemohon.textContent = ': ' + (userDataFromPreviousPage.jabatan || '');
+            perusahaanPemohon.textContent = ': ' + (userDataFromPreviousPage.perusahaan || '');
+            alamatPerusahaanPemohon.textContent = ': ' + (userDataFromPreviousPage.alamat || '');
+
+
+            // ----------------------------------------------------
+            // 3. Logika Navigasi (Selanjutnya)
+            // ----------------------------------------------------
+            const nextButton = document.querySelector('.btn-next');
+            nextButton.addEventListener('click', function(event) {
+                event.preventDefault(); 
+
+                if (signaturePad.isEmpty()) {
+                    alert("Mohon berikan tanda tangan Anda terlebih dahulu sebelum melanjutkan.");
+                    return;
+                }
+
+                // Ambil data tanda tangan untuk dikirim ke server (format Data URL)
+                const signatureDataURL = signaturePad.toDataURL(); 
+                console.log("Data Tanda Tangan (Data URL):", signatureDataURL.substring(0, 50) + "...");
+                
+                // Lanjutkan ke halaman berikutnya atau submit form
+                alert("Validasi sukses! Data tanda tangan siap dikirim.");
+            });
         });
     </script>
 
