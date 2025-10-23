@@ -7,6 +7,10 @@ Route::get('/', function () {
     return view('halaman_ambil_skema');
 });
 
+Route::get('/tracker', function () {
+    return view('tracker');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

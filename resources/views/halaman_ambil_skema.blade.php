@@ -139,7 +139,7 @@
         </div>
 
         <div class="mt-8 text-center">
-          <a href="#" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <a href="/tracker" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
             Ambil Skema
           </a>
         </div>
