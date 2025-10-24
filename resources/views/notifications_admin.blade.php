@@ -76,13 +76,14 @@
             </a>
 
             <!-- Profil Pengguna -->
-            <div class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-                        hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-                <span class="text-gray-800 font-semibold text-base mr-2">Roihan Enrico</span>
+            <a href="{{ route('profile_admin') }}" 
+                class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
+                hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+                <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
                 <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
                     <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
                 </div>
-            </div>
+            </a>
         </div>
     </nav>
 

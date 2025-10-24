@@ -48,7 +48,7 @@
             <!-- MENU TENGAH -->
             <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
                 <!-- Dashboard aktif -->
-                <a href="#" class="relative text-blue-600 h-full flex items-center">
+                <a href="dashboard" class="relative text-blue-600 h-full flex items-center">
                     Dashboard
                     <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
                 </a>
@@ -81,22 +81,21 @@
                     <i class="fas fa-bell text-xl text-gray-600"></i>
                     <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
                 </a>
-
-
                 <!-- Profil Pengguna -->
-                <div class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-                    hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-                    <span class="text-gray-800 font-semibold text-base mr-2">Roihan Enrico</span>
+                <a href="{{ route('profile_admin') }}" 
+                class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
+                hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+                    <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
                     <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
                         <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
                     </div>
-                </div>
+                </a>
             </div>
         </nav>
 
         <!-- KONTEN UTAMA -->
         <main class="p-6">
-            <p class="text-sm text-gray-500 mb-1">Hi, Roihan’s</p>
+            <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
             <h2 class="text-3xl font-bold text-gray-900 mb-6">Dashboard</h2>
 
             <!-- SEARCH & FILTER -->
@@ -128,7 +127,7 @@
                     </div>
                     <!-- TEKS KANAN -->
                     <div class="relative flex-1 h-full flex items-center justify-center">
-                        <p class="absolute top-4 text-sm text-gray-500">Asesmen yang sedang berlangsung</p>
+                        <p class="absolute top-4 text-sm text-gray-500">Asesmen Berlangsung</p>
                         <p class="text-5xl font-bold text-gray-900">33</p>
                     </div>
                 </div>
@@ -139,7 +138,7 @@
                         <i class="far fa-calendar-check text-8xl text-green-500"></i>
                     </div>
                     <div class="relative flex-1 h-full flex items-center justify-center">
-                        <p class="absolute top-4 text-sm text-gray-500">Asesmen yang selesai</p>
+                        <p class="absolute top-4 text-sm text-gray-500">Asesmen Selesai</p>
                         <p class="text-5xl font-bold text-gray-900">3</p>
                     </div>
                 </div>

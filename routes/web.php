@@ -5,19 +5,25 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+// halaman login utama
 Route::get('/', function () {
-    // halaman login utama
     return view('login_admin');
 })->name('login');
 
+// Dashboard
 Route::get('/dashboard', function () {
     return view('dashboard_admin');
 })->name('dashboard');
 
+// Notifikasi
 Route::get('/notifications', function () {
     return view('notifications_admin');
 })->name('notifications');
 
+// Profil Admin
+Route::get('/profile_admin', function () {
+    return view('profile_admin'); 
+})->name('profile_admin');
 
 // proses login pakai kolom "name"
 Route::post('/login', function (Request $request) {
