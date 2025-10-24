@@ -20,7 +20,6 @@
             background: linear-gradient(135deg, #e6ebf1, #dce4f7);
         }
 
-        /* 🌟 HEADER PUTIH */
         header {
             width: 100%;
             height: 80px;

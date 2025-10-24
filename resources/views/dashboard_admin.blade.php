@@ -23,7 +23,7 @@
         }
         /* Hilangkan efek scrollbar biru */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 0;
         }
         ::-webkit-scrollbar-thumb {
             background-color: transparent;
