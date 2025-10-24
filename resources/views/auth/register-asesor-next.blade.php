@@ -37,8 +37,8 @@
                                 <div class="w-full h-[3px] mx-4 rounded-lg bg-blue-600"></div>
                             </div>
                             <div class="mt-2 mr-4">
-                                <h6 class="text-sm font-semibold text-blue-600">Personal Info</h6>
-                                <p class="text-xs text-gray-500">Completed</p>
+                                <h6 class="text-sm font-semibold text-blue-600">Informasi Akun</h6>
+                                <p class="text-xs text-gray-500">Selesai</p>
                             </div>
                         </div>
                         <div class="w-full">
@@ -49,8 +49,8 @@
                                 <div class="w-full h-[3px] mx-4 rounded-lg bg-blue-600"></div>
                             </div>
                             <div class="mt-2 mr-4">
-                                <h6 class="text-sm font-semibold text-blue-600">Education</h6>
-                                <p class="text-xs text-gray-500">Completed</p>
+                                <h6 class="text-sm font-semibold text-blue-600">Informasi Pribadi</h6>
+                                <p class="text-xs text-gray-500">Selesai</p>
                             </div>
                         </div>
                         <div>
@@ -60,12 +60,13 @@
                                 </div>
                             </div>
                             <div class="mt-2">
-                                <h6 class="text-sm font-semibold text-blue-600">Review</h6>
-                                <p class="text-xs text-gray-500">Pending</p>
+                                <h6 class="text-sm font-semibold text-blue-600">Kelengkapan Dokumen</h6>
+                                <p class="text-xs text-gray-500">Sedang Diisi</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
 
                 <form id="register-form" method="POST" action="{{ route('register') }}" class="space-y-8">
                     @csrf
@@ -78,11 +79,11 @@
 
                         <div class="mt-6 space-y-4">
 
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
                                 <label for="ktp_file" class="text-base font-medium text-gray-900">
                                     KTP <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
                                     <input type="file" name="ktp_file" id="ktp_file" class="hidden">
                                     <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
@@ -90,98 +91,106 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
-                                <label for="ktp_file" class="text-base font-medium text-gray-900">
+
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                                <label for="foto_file" class="text-base font-medium text-gray-900">
                                     Foto <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
-                                    <input type="file" name="ktp_file" id="ktp_file" class="hidden">
-                                    <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
+                                    <input type="file" name="foto_file" id="foto_file" class="hidden">
+                                    <label for="foto_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
                                         Pilih File
                                     </label>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
-                                <label for="ktp_file" class="text-base font-medium text-gray-900">
+
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                                <label for="npwp_file" class="text-base font-medium text-gray-900">
                                     NPWP <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
-                                    <input type="file" name="ktp_file" id="ktp_file" class="hidden">
-                                    <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
+                                    <input type="file" name="npwp_file" id="npwp_file" class="hidden">
+                                    <label for="npwp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
                                         Pilih File
                                     </label>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
-                                <label for="ktp_file" class="text-base font-medium text-gray-900">
+
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                                <label for="rekening_file" class="text-base font-medium text-gray-900">
                                     Rekening <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
-                                    <input type="file" name="ktp_file" id="ktp_file" class="hidden">
-                                    <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
+                                    <input type="file" name="rekening_file" id="rekening_file" class="hidden">
+                                    <label for="rekening_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
                                         Pilih File
                                     </label>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
-                                <label for="ktp_file" class="text-base font-medium text-gray-900">
+
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                                <label for="cv_file" class="text-base font-medium text-gray-900">
                                     Curriculum Vitae(CV) <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
-                                    <input type="file" name="ktp_file" id="ktp_file" class="hidden">
-                                    <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
+                                    <input type="file" name="cv_file" id="cv_file" class="hidden">
+                                    <label for="cv_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
                                         Pilih File
                                     </label>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
-                                <label for="ktp_file" class="text-base font-medium text-gray-900">
+
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                                <label for="ijazah_file" class="text-base font-medium text-gray-900">
                                     Ijazah Pendidikan <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
-                                    <input type="file" name="ktp_file" id="ktp_file" class="hidden">
-                                    <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
+                                    <input type="file" name="ijazah_file" id="ijazah_file" class="hidden">
+                                    <label for="ijazah_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
                                         Pilih File
                                     </label>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
-                                <label for="ktp_file" class="text-base font-medium text-gray-900">
+
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                                <label for="sertifikat_asesor_file" class="text-base font-medium text-gray-900">
                                     Sertifikat Asesor Kompetensi <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
-                                    <input type="file" name="ktp_file" id="ktp_file" class="hidden">
-                                    <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
+                                    <input type="file" name="sertifikat_asesor_file" id="sertifikat_asesor_file" class="hidden">
+                                    <label for="sertifikat_asesor_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
                                         Pilih File
                                     </label>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
-                                <label for="ktp_file" class="text-base font-medium text-gray-900">
+
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                                <label for="sertifikat_kompetensi_file" class="text-base font-medium text-gray-900">
                                     Sertifikat Kompetensi <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
-                                    <input type="file" name="ktp_file" id="ktp_file" class="hidden">
-                                    <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
+                                    <input type="file" name="sertifikat_kompetensi_file" id="sertifikat_kompetensi_file" class="hidden">
+                                    <label for="sertifikat_kompetensi_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
                                         Pilih File
                                     </label>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center p-4 border border-b-gray-300 rounded-lg">
-                                <label for="ktp_file" class="text-base font-medium text-gray-900">
+
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                                <label for="ttd_file" class="text-base font-medium text-gray-900">
                                     Scan Tanda Tangan <span class="text-red-500">*</span>
                                 </label>
-                                <div class="flex items-center gap-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                     <span class="text-sm text-gray-500">Tidak ada berkas yang diupload</span>
-                                    <input type="file" name="ktp_file" id="ktp_file" class="hidden">
-                                    <label for="ktp_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
+                                    <input type="file" name="ttd_file" id="ttd_file" class="hidden">
+                                    <label for="ttd_file" class="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm transition-colors border border-gray-500">
                                         Pilih File
                                     </label>
                                 </div>
@@ -198,9 +207,9 @@
                     </a>
 
                     <x-login-button-biru type="submit" form="register-form" class="px-10 py-3">
-                        Selanjutnya
+                        Kirim Pendaftaran
                     </x-login-button-biru>
                 </div>
 
             </div> </div> </div>
-</x-registe>
+</x-register-layout>

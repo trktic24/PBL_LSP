@@ -1,7 +1,7 @@
 <x-register-layout>
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div class="bg-gray-100 w-full flex items-center justify-center py-5">
 
         <div class="w-full max-w-4xl bg-white rounded-3xl border border-gray-300 shadow-md flex flex-col"
              x-data="{ role: 'asesi' }">
@@ -112,7 +112,7 @@
                 <!-- Tombol Aksi -->
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
                     <!-- Tombol Login -->
-                    <x-login-button-biru type="submit" form="login-form" class="w-full sm:w-1/2">
+                    <x-login-button-biru type="submit" form="register-form" class="w-full sm:w-1/2">
                         Daftar Sekarang
                     </x-login-button-biru>
 
@@ -129,4 +129,12 @@
                 </div>
 
             </div> </div> </div>
+            <script>
+        const checkbox = document.getElementById('show_password_checkbox');
+        const passwordInputs = [document.getElementById('password'), document.getElementById('password_confirmation')];
+        checkbox.addEventListener('change', () => {
+            passwordInputs.forEach(input => input.type = checkbox.checked ? 'text' : 'password');
+        });
+
+    </script>
 </x-register-layout>
