@@ -27,6 +27,38 @@ Route::get('/bukti_pemohon', function () {
     return view('bukti_pemohon');
 });
 
+Route::get('/praasesmen1', function () {
+    return view('praasesmen1');
+});
+
+Route::get('/praasesmen2', function () {
+    return view('praasesmen2');
+});
+
+Route::get('/praasesmen3', function () {
+    return view('praasesmen3');
+});
+
+Route::get('/praasesmen4', function () {
+    return view('praasesmen4');
+});
+
+Route::get('/praasesmen5', function () {
+    return view('praasesmen5');
+});
+
+Route::get('/praasesmen6', function () {
+    return view('praasesmen6');
+});
+
+Route::get('/praasesmen7', function () {
+    return view('praasesmen7');
+});
+
+Route::get('/praasesmen8', function () {
+    return view('praasesmen8');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
