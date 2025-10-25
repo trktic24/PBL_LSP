@@ -1,47 +1,105 @@
-<x-guest-layout>
+<x-register-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    <div class="bg-gray-100 w-full flex items-center justify-center py-5">
+        <div class="w-full max-w-4xl bg-white rounded-3xl p-10 md:p-12 border border-gray-300 shadow-md">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+                <!-- Left: Form -->
+                <div class="flex flex-col justify-center">
+                    <!-- Logo -->
+                    <div>
+                        <a href="/">
+                            <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="Logo LSP Polines" class="h-20 w-auto">
+                        </a>
+                    </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+                    <!-- Title -->
+                    <div class="mt-6 mb-8">
+                        <h1 class="text-2xl font-semibold text-gray-900 mb-1">Masuk ke Akun Anda</h1>
+                        <p class="text-sm text-gray-500">
+                            Belum punya akun?
+                            <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-700 font-medium">
+                                Daftar
+                            </a>
+                        </p>
+                    </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
+                    <!-- FORM LOGIN -->
+                    <form id="login-form" method="POST" action="{{ route('login') }}" class="space-y-6">
+                        @csrf
+
+                        <!-- Email -->
+                        <x-login-form-input
+                            id="email"
+                            name="email"
+                            type="email"
+                            label="Email"
+                            :error="$errors->first('email')"
+                            :value="old('email')"
+                            required
+                            autofocus
+                        />
+
+                        <!-- Password -->
+                        <x-login-form-input
+                            id="password"
                             name="password"
-                            required autocomplete="current-password" />
+                            type="password"
+                            label="Password"
+                            :error="$errors->first('password')"
+                            required
+                            autocomplete="current-password"
+                        />
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                        <!-- Show Password Checkbox -->
+                        <div class="flex items-center mt-2">
+                            <input id="show_password_checkbox" type="checkbox"
+                                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="show_password_checkbox" class="ml-2 text-sm text-gray-600">
+                                Tampilkan Password
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right: Illustration -->
+                <div class="hidden md:flex items-center justify-center">
+                    <img src="{{ asset('images/ilustrasi-login.svg') }}" alt="Ilustrasi Login"
+                         class="max-w-[300px] mx-auto">
+                </div>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+                <!-- Tombol Login -->
+                <x-login-button-biru type="submit" form="login-form" class="w-full sm:w-1/2">
+                    Masuk ke Akun
+                </x-login-button-biru>
+
+                <div class="flex items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="px-3 text-sm text-gray-400 font-medium">OR</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <!-- Tombol Google -->
+                <x-login-button-google class="w-full sm:w-1/2">
+                    Continue with Google
+                </x-login-button-google>
+            </div>
+
         </div>
+    </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+    <!-- Script buat toggle show password -->
+    <script>
+        const checkbox = document.getElementById('show_password_checkbox');
+        const passwordInput = document.getElementById('password');
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+        checkbox.addEventListener('change', () => {
+            passwordInput.type = checkbox.checked ? 'text' : 'password';
+        });
+    </script>
+</x-register-layout>
