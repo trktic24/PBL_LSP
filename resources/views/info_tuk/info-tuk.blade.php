@@ -24,7 +24,7 @@
                         <td>Jl. Prof. Soedarto, SH. <br> Tembalang, Semarang, Jawa Tengah.</td>
                         <td>(024) 7473417 ext.256</td>
                         <td>
-                            <x-button-detail url="#" />
+                            <x-detail-tuk-button url="#" />
                         </td>
                     </tr>
 
@@ -34,7 +34,7 @@
                         <td>Jl. Prof. Soedarto, SH. <br> Tembalang, Semarang, Jawa Tengah.</td>
                         <td>25 Oktober 2025</td>
                         <td>
-                            <x-button-detail url="#" />
+                            <x-detail-tuk-button url="#" />
                         </td>
                     </tr>
 
@@ -44,7 +44,7 @@
                         <td>Jl. Prof. Soedarto, SH. <br> Tembalang, Semarang, Jawa Tengah.</td>
                         <td>(024) 7473417 ext.256</td>
                         <td>
-                            <x-button-detail url="#" />
+                            <x-detail-tuk-button url="#" />
                         </td>
                     </tr>
                 </tbody>

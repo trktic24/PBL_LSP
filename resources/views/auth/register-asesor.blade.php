@@ -33,14 +33,14 @@
                     <div class="flex items-start max-w-screen-lg mx-auto">
                         <div class="w-full">
                             <div class="flex items-center w-full">
-                                <div class="w-7 h-7 shrink-0 mx-[-1px] bg-blue-600 flex items-center justify-center rounded-full">
+                                <div class="w-7 h-7 shrink-0 mx-[-1px] bg-green-600 flex items-center justify-center rounded-full">
                                     <span class="text-sm text-white font-semibold">1</span>
                                 </div>
                                 <div class="w-full h-[3px] mx-4 rounded-lg bg-blue-600"></div>
                             </div>
                             <div class="mt-2 mr-4">
-                                <h6 class="text-sm font-semibold text-blue-600">Informasi Akun</h6>
-                                <p class="text-xs text-gray-500">Selesai</p>
+                                <h6 class="text-sm font-semibold text-green-600">Informasi Akun</h6>
+                                <p class="text-xs text-green-500">Selesai</p>
                             </div>
                         </div>
                         <div class="w-full">
@@ -52,7 +52,7 @@
                             </div>
                             <div class="mt-2 mr-4">
                                 <h6 class="text-sm font-semibold text-blue-600">Informasi Pribadi</h6>
-                                <p class="text-xs text-gray-500">Selesai</p>
+                                <p class="text-xs text-gray-500">Sedang diisi</p>
                             </div>
                         </div>
                         <div>
@@ -63,7 +63,7 @@
                             </div>
                             <div class="mt-2">
                                 <h6 class="text-sm font-semibold text-blue-600">Kelengkapan Dokumen</h6>
-                                <p class="text-xs text-gray-500">Pending</p>
+                                <p class="text-xs text-gray-500">Belum diisi</p>
                             </div>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
 
 
                             <x-login-form-input id="jenis_kelamin" name="jenis_kelamin" label="Jenis Kelamin" :error="$errors->first('jenis_kelamin')" required />
-                            <x-login-form-input id="pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" />
+                            <x-login-form-input id="pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required/>
                         </div>
                     </div>
 
@@ -140,7 +140,7 @@
                             <div class="md:col-span-2">
                                 <x-login-form-input id="alamat_rumah" name="alamat_rumah" label="Alamat Rumah" :error="$errors->first('alamat_rumah')" required />
                             </div>
-                            <x-login-form-input id="kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" />
+                            <x-login-form-input id="kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required/>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
@@ -148,7 +148,7 @@
                             <x-login-form-input id="provinsi" name="provinsi" label="Provinsi" :error="$errors->first('provinsi')" required />
                             <x-login-form-input id="no_hp" name="no_hp" label="Nomor HP" :error="$errors->first('no_hp')" required />
                             <x-login-form-input id="email" name="email" type="email" label="E-mail" :error="$errors->first('email')" required />
-                            <x-login-form-input id="npwp" name="npwp" label="NPWP" :error="$errors->first('npwp')" />
+                            <x-login-form-input id="npwp" name="npwp" label="NPWP" :error="$errors->first('npwp')" required />
                         </div>
                     </div>
 
