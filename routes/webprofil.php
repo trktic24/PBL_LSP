@@ -32,3 +32,8 @@ Route::get('/mitra', function () {
 Route::get('/', function () {
     return view('page_profil.visimisi');
 });
+
+// Rute untuk info tuk
+Route::get('/info-tuk', function () {
+    return view('info_tuk.info-tuk');
+});
