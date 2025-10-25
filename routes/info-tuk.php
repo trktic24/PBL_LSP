@@ -1,5 +1,6 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/info-tuk', function () {
-    return view('info_tuk'); // Sesuaikan path jika Anda menyimpannya di subfolder
+    // Memanggil folder 'info_tuk' lalu file 'info-tuk.blade.php'
+    return view('info_tuk.info-tuk');
 });
