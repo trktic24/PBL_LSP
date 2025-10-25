@@ -3,7 +3,7 @@
 
     <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
 
-        <div class="w-full max-w-4xl bg-white rounded-3xl border border-gray-300 shadow-md flex flex-col">
+        <div class="w-full md:mx-auto max-w-5xl bg-white rounded-3xl border border-gray-300 shadow-md flex flex-col">
 
             <div class="flex w-full">
                 <a href="{{ route('register') }}" class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl
@@ -79,7 +79,7 @@
 
                         <div class="mt-6 space-y-4">
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="ktp_file" class="text-base font-medium text-gray-900">
                                     KTP <span class="text-red-500">*</span>
                                 </label>
@@ -92,7 +92,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="foto_file" class="text-base font-medium text-gray-900">
                                     Foto <span class="text-red-500">*</span>
                                 </label>
@@ -105,7 +105,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="npwp_file" class="text-base font-medium text-gray-900">
                                     NPWP <span class="text-red-500">*</span>
                                 </label>
@@ -118,7 +118,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="rekening_file" class="text-base font-medium text-gray-900">
                                     Rekening <span class="text-red-500">*</span>
                                 </label>
@@ -131,7 +131,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="cv_file" class="text-base font-medium text-gray-900">
                                     Curriculum Vitae(CV) <span class="text-red-500">*</span>
                                 </label>
@@ -144,7 +144,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="ijazah_file" class="text-base font-medium text-gray-900">
                                     Ijazah Pendidikan <span class="text-red-500">*</span>
                                 </label>
@@ -157,7 +157,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="sertifikat_asesor_file" class="text-base font-medium text-gray-900">
                                     Sertifikat Asesor Kompetensi <span class="text-red-500">*</span>
                                 </label>
@@ -170,7 +170,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="sertifikat_kompetensi_file" class="text-base font-medium text-gray-900">
                                     Sertifikat Kompetensi <span class="text-red-500">*</span>
                                 </label>
@@ -183,7 +183,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-300 rounded-lg gap-3 hover:shadow-md hover:border-blue-400 transition">
                                 <label for="ttd_file" class="text-base font-medium text-gray-900">
                                     Scan Tanda Tangan <span class="text-red-500">*</span>
                                 </label>
