@@ -1,8 +1,4 @@
-@extends('layouts.main')
-
-@section('title', 'Home | LSP POLINES')
-
-@section('content')
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <div class="bg-base-100">
 
     {{-- Navbar --}}
@@ -107,4 +103,3 @@
         </div>
     </footer>
 </div>
-@endsection
