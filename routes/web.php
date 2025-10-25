@@ -4,7 +4,59 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('halaman_ambil_skema');
+});
+
+Route::get('/tracker', function () {
+    return view('tracker');
+});
+
+Route::get('/data_sertifikasi', function () {
+    return view('data_sertifikasi');
+});
+
+Route::get('/tanda_tangan_pemohon', function () {
+    return view('tanda_tangan_pemohon');
+});
+
+Route::get('/upload_bukti_pembayaran', function () {
+    return view('upload_bukti_pembayaran');
+});
+
+Route::get('/bukti_pemohon', function () {
+    return view('bukti_pemohon');
+});
+
+Route::get('/praasesmen1', function () {
+    return view('praasesmen1');
+});
+
+Route::get('/praasesmen2', function () {
+    return view('praasesmen2');
+});
+
+Route::get('/praasesmen3', function () {
+    return view('praasesmen3');
+});
+
+Route::get('/praasesmen4', function () {
+    return view('praasesmen4');
+});
+
+Route::get('/praasesmen5', function () {
+    return view('praasesmen5');
+});
+
+Route::get('/praasesmen6', function () {
+    return view('praasesmen6');
+});
+
+Route::get('/praasesmen7', function () {
+    return view('praasesmen7');
+});
+
+Route::get('/praasesmen8', function () {
+    return view('praasesmen8');
 });
 
 Route::get('/dashboard', function () {
