@@ -30,7 +30,7 @@ Route::get('/mitra', function () {
 
 // Anda bisa jadikan /visimisi sebagai halaman default jika mau
 Route::get('/', function () {
-    return view('page_profil.visimisi');
+    return view('home');
 });
 
 // Rute untuk info tuk
