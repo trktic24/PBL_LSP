@@ -25,6 +25,11 @@ Route::get('/profile_admin', function () {
     return view('profile_admin'); 
 })->name('profile_admin');
 
+// Master Skema
+Route::get('/master_skema', function () {
+    return view('master_skema'); 
+})->name('master_skema');
+
 // proses login pakai kolom "name"
 Route::post('/login', function (Request $request) {
     // validasi input
