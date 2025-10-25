@@ -68,12 +68,19 @@
         <!-- PROFIL & NOTIF -->
         <div class="flex items-center space-x-6">
             <!-- Ikon Notifikasi -->
-            <a href="{{ route('notifications') }}" 
-               class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
-                      hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-                <i class="fas fa-bell text-xl text-blue-600"></i>
-                <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
-            </a>
+                    <a href="{{ route('notifications') }}" 
+                        class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
+                        hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+                        <i class="fas fa-bell text-xl text-gray-600"></i>
+
+                <!-- Animasi Notifikasi Merah Berdenyut -->
+                        <span class="absolute top-2 right-2">
+                            <span class="relative flex size-3">
+                                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex size-3 rounded-full bg-red-500"></span>
+                            </span>
+                        </span>
+                    </a>
 
             <!-- Profil Pengguna -->
             <a href="{{ route('profile_admin') }}" 
