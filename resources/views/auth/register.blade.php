@@ -3,7 +3,7 @@
 
     <div class="bg-gray-100 w-full flex items-center justify-center py-5">
 
-        <div class="w-full max-w-4xl bg-white rounded-3xl border border-gray-300 shadow-md flex flex-col"
+        <div class="w-full max-w-3xl md:max-w-4xl lg:max-w-5xl bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col"
              x-data="{ role: 'asesi' }">
 
             <div class="flex w-full">
@@ -12,7 +12,7 @@
                             'bg-white text-blue-600 border-b-[3px] border-blue-600': role === 'asesi',
                             'bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200': role !== 'asesi'
                         }"
-                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl focus:outline-none transition-colors duration-150">
+                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl focus:outline-none hover:bg-white hover:text-blue-700 transition-colors duration-150">
                     Asesi
                 </button>
                 <button type="button" @click="role = 'asesor'"
@@ -20,7 +20,7 @@
                             'bg-white text-blue-600 border-b-[3px] border-blue-600': role === 'asesor',
                             'bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200': role !== 'asesor'
                         }"
-                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tr-3xl focus:outline-none transition-colors duration-150">
+                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tr-3xl focus:outline-none hover:bg-white hover:text-blue-700 transition-colors duration-150">
                     Asesor
                 </button>
             </div>
@@ -77,7 +77,7 @@
                 </div> <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
 
                     <div class="flex flex-col justify-center">
-                        <form id="register-form" method="POST" action="{{ route('register') }}" class="space-y-6">
+                        <form id="register-form" method="POST" action="{{ route('register') }}" class="space-y-4">
                             @csrf
                             <input type="hidden" name="role" x-model="role">
                             <x-login-form-input

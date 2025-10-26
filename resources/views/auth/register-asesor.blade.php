@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <div class="p-10 md:p-12">
+            <div class="p-10 md:p-12 w-full">
 
                 <div>
                     <a href="/">
