@@ -1,61 +1,54 @@
-@extends('layouts.detail-tuk-master')
+@extends('layouts.app-alur-sertifikasi')
 
 @section('title', 'Alur Proses Sertifikasi')
 
 @section('content')
-<div class="container mx-auto px-4 py-12">
-    <h1 class="text-3xl font-semibold text-center mb-16 text-gray-800">Alur Proses Sertifikasi</h1>
+<section class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <h2 class="text-2xl md:text-3xl font-semibold text-center text-gray-900 mb-12">
+            Alur Proses Sertifikasi
+        </h2>
 
-    <div class="relative max-w-4xl mx-auto">
-        
-        {{-- Garis Vertikal: Absolute di posisi kiri (28px dari tepi) --}}
-        {{-- Garis inilah yang menciptakan kolom kiri kosong --}}
-        <div class="absolute inset-0">
-            <div class="w-1 bg-gray-300 h-full absolute left-[28px] transform -translate-x-1/2"></div>
-        </div>
+        <!-- Timeline Container -->
+        <div class="relative border-l-2 border-gray-200 ml-5">
+            <!-- Step 1 -->
+            <div class="mb-10 ml-8 relative">
+                <div class="absolute -left-5 top-1 w-5 h-5 rounded-full bg-blue-500 border-4 border-white shadow-md"></div>
+                <div class="bg-yellow-50 shadow-md rounded-xl p-5">
+                    <h3 class="font-semibold text-gray-900">Pendaftaran & Verifikasi Dokumen</h3>
+                    <p class="text-gray-600 text-sm">Lorem ipsum dolor sit amet</p>
+                </div>
+            </div>
 
-        {{-- Item Alur 1: Pendaftaran & Verifikasi --}}
-        {{-- Gunakan pl-16 pada item untuk memastikan ruang kosong di kiri --}}
-        <div class="mb-10 w-full relative pl-16"> 
-            
-            {{-- Lingkaran Poin Alur: Posisi absolut tepat di atas garis --}}
-            <div class="absolute left-[28px] top-0 mt-2 z-10 w-6 h-6 rounded-full bg-blue-600 border-4 border-white shadow-md transform -translate-x-1/2"></div>
+            <!-- Step 2 -->
+            <div class="mb-10 ml-8 relative">
+                <div class="absolute -left-5 top-1 w-5 h-5 rounded-full bg-gray-300 border-4 border-white shadow-md"></div>
+                <div class="bg-gray-200 shadow-md rounded-xl p-5">
+                    <h3 class="font-semibold text-gray-900">Pembayaran</h3>
+                    <p class="text-gray-600 text-sm">Lorem ipsum dolor sit amet</p>
+                </div>
+            </div>
 
-            {{-- Kartu Detail --}}
-            {{-- Konten mengambil sisa lebar (ml-0 karena sudah ada pl-16) --}}
-            <div class="p-6 w-full bg-yellow-50 rounded-xl shadow-md border-l-4 border-yellow-300 transition duration-300 transform hover:scale-[1.01]">
-                <h3 class="text-xl font-semibold mb-2 text-gray-900">Pendaftaran & Verifikasi Dokumen</h3>
-                <p class="text-gray-600">lorem ipsum dolor sit amet</p>
+            <!-- Step 3 -->
+            <div class="mb-10 ml-8 relative">
+                <div class="absolute -left-5 top-1 w-5 h-5 rounded-full bg-gray-300 border-4 border-white shadow-md"></div>
+                <div class="bg-gray-200 shadow-md rounded-xl p-5">
+                    <h3 class="font-semibold text-gray-900">Pelaksanaan Asesmen Kompetensi</h3>
+                    <p class="text-gray-600 text-sm">Lorem ipsum dolor sit amet</p>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="ml-8 relative">
+                <div class="absolute -left-5 top-1 w-5 h-5 rounded-full bg-gray-300 border-4 border-white shadow-md"></div>
+                <div class="bg-gray-200 shadow-md rounded-xl p-5">
+                    <h3 class="font-semibold text-gray-900">Penerbitan Sertifikat</h3>
+                    <p class="text-gray-600 text-sm">Lorem ipsum dolor sit amet</p>
+                </div>
             </div>
         </div>
-
-        {{-- Item Alur 2: Pembayaran --}}
-        <div class="mb-10 w-full relative pl-16">
-            <div class="absolute left-[28px] top-0 mt-2 z-10 w-6 h-6 rounded-full bg-gray-400 border-4 border-white shadow-md transform -translate-x-1/2"></div>
-            <div class="p-6 w-full bg-gray-200 rounded-xl shadow-md border-l-4 border-gray-300 transition duration-300 transform hover:scale-[1.01]">
-                <h3 class="text-xl font-semibold mb-2 text-gray-800">Pembayaran</h3>
-                <p class="text-gray-600">lorem ipsum dolor sit amet</p>
-            </div>
-        </div>
-
-        {{-- Item Alur 3: Pelaksanaan Asesmen --}}
-        <div class="mb-10 w-full relative pl-16">
-            <div class="absolute left-[28px] top-0 mt-2 z-10 w-6 h-6 rounded-full bg-gray-400 border-4 border-white shadow-md transform -translate-x-1/2"></div>
-            <div class="p-6 w-full bg-gray-200 rounded-xl shadow-md border-l-4 border-gray-300 transition duration-300 transform hover:scale-[1.01]">
-                <h3 class="text-xl font-semibold mb-2 text-gray-800">Pelaksanaan Asesmen Kompetensi</h3>
-                <p class="text-gray-600">lorem ipsum dolor sit amet</p>
-            </div>
-        </div>
-
-        {{-- Item Alur 4: Penerbitan Sertifikat --}}
-        <div class="mb-10 w-full relative pl-16">
-            <div class="absolute left-[28px] top-0 mt-2 z-10 w-6 h-6 rounded-full bg-blue-600 border-4 border-white shadow-md transform -translate-x-1/2"></div>
-            <div class="p-6 w-full bg-white rounded-xl shadow-lg border-2 border-blue-600 transition duration-300 transform hover:scale-[1.01]">
-                <h3 class="text-xl font-semibold mb-2 text-gray-900">Penerbitan Sertifikat</h3>
-                <p class="text-gray-600">lorem ipsum dolor sit amet</p>
-            </div>
-        </div>
-
     </div>
-</div>
+
+
+</section>
 @endsection
