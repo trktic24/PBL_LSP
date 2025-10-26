@@ -61,3 +61,8 @@ Route::get('/mitra', function () {
 Route::get('/', function () {
     return view('home');
 });
+
+// Rute untuk jadwal
+Route::get('/jadwal', function () {
+    return view('landing_page.jadwal');
+});
