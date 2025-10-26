@@ -49,27 +49,6 @@
         </div>
     </div>
 
-    <!-- Blue Section -->
-    <div class="bg-gradient-to-b from-blue-500 to-blue-700 text-white py-16 text-center mt-20">
-        <p class="uppercase tracking-widest text-sm mb-2">Sertifikasi Profesi untuk Karier Anda</p>
-        <h2 class="text-2xl md:text-3xl font-semibold mb-4">
-            Tingkatkan Kompetensi Profesional Anda
-        </h2>
-        <p class="max-w-2xl mx-auto text-sm md:text-base mb-8">
-            LSP Polines berkomitmen menghasilkan tenaga kerja kompeten yang siap bersaing dan diakui secara nasional maupun internasional.
-        </p>
-        <a href="#" class="inline-block bg-white text-blue-600 font-medium px-6 py-3 rounded-full shadow-md hover:bg-blue-100 transition">
-            Hubungi Kami
-        </a>
 
-        <div class="mt-10 text-xs opacity-80">
-            <p>Jl. Prof. Soedarto, SH, Tembalang, Semarang, Jawa Tengah.</p>
-            <p class="mt-1">(024) 7473417 ext.256 | lsp@polines.ac.id</p>
-        </div>
-
-        <div class="mt-10 text-sm opacity-70">
-            © 2025 LSP POLINES. All rights reserved.
-        </div>
-    </div>
 </section>
 @endsection
