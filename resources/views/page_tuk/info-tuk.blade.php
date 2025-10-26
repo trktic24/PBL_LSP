@@ -4,14 +4,13 @@
 
 {{-- 
     SECTION STYLES: 
-    Ini adalah penambahan kunci untuk menyembunyikan Navbar dan Footer global, serta 
-    mengoreksi padding atas dari tag <main> yang ada di layouts.app-profil.blade.php.
-    Anda harus memastikan layouts.app-profil.blade.php memiliki @yield('styles') di bagian <head>.
+    Ini adalah kunci untuk menghilangkan header/navbar dan footer.
+    Asumsi: layouts.app-profil.blade.php memiliki @yield('styles') di bagian <head>.
 --}}
 @section('styles')
 <style>
-    /* 1. Menyembunyikan Navbar (asumsi komponen dirender sebagai tag <nav> atau memiliki class/ID yang jelas) */
-    /* Karena kode Anda menggunakan <x-navbar.navbar-fix />, kita coba sembunyikan tag <nav> */
+    /* 1. Menyembunyikan Navbar. Asumsi <x-navbar.navbar-fix /> dirender sebagai tag <nav>. */
+    /* Jika navbar Anda dirender dengan class/ID tertentu, ganti 'nav' dengan selector yang sesuai. */
     nav {
         display: none !important;
     }
@@ -22,8 +21,11 @@
         padding-top: 0 !important;
     }
 
-    /* 3. Jika ada global footer di master layout (setelah main), tambahkan selector di sini untuk menyembunyikannya */
-    /* Contoh: footer.global-footer { display: none !important; } */
+    /* 3. Menyembunyikan Global Footer (Jika ada di layouts.app-profil.blade.php) */
+    /* Jika footer Anda memiliki class 'global-footer', gunakan selector tersebut. Jika tidak ada, baris ini bisa diabaikan. */
+    .global-footer, footer { 
+        display: none !important; 
+    }
 </style>
 @endsection
 
@@ -115,6 +117,7 @@
 
 {{-- ****************************************************** --}}
 {{-- BAGIAN CALL-TO-ACTION (Section Biru) --}}
+{{-- Bagian ini harus tetap ada karena merupakan bagian dari konten utama halaman --}}
 {{-- ****************************************************** --}}
 <div class="bg-blue-800 text-white py-20 mt-12">
     <div class="container mx-auto px-4 text-center">
