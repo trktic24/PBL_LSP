@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Route;
 | Prioritaskan rute spesifik Anda di sini.
 |
 */
+// Rute untuk Detail Skema
+Route::get('/detail_skema', function () {
+    return view('detail_skema');
+});
 
 // Rute untuk alur sertifikasi
 Route::get('/alur-sertifikasi', function () {

@@ -55,41 +55,7 @@
         @yield('content')
     </main>
 
-    {{-- FOOTER --}}
-    <footer class="bg-blue-900 text-white mt-20">
-        <div class="max-w-6xl mx-auto text-center py-12 px-4">
-            <h2 class="text-sm uppercase tracking-widest opacity-80 mb-2">Sertifikasi Profesi untuk Karier Anda</h2>
-            <h1 class="text-2xl md:text-3xl font-semibold mb-3">Tingkatkan Kompetensi Profesional Anda</h1>
-            <p class="max-w-2xl mx-auto text-sm md:text-base opacity-90">
-                LSP Polines berkomitmen menghasilkan tenaga kerja kompeten yang siap bersaing dan diakui secara nasional maupun internasional.
-            </p>
-
-            <a href="#" class="inline-block bg-white text-blue-700 font-semibold mt-6 px-6 py-3 rounded-full shadow hover:bg-blue-50 transition">
-                Hubungi Kami
-            </a>
-        </div>
-
-        <div class="border-t border-white/20 py-8">
-            <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center px-6 gap-6">
-                <div class="text-center md:text-left">
-                    <p>Jl. Prof. Soedarto, SH, Tembalang, Semarang, Jawa Tengah.</p>
-                    <p class="mt-1">(024) 7473417 ext.256 | lsp@polines.ac.id</p>
-                    <div class="flex items-center justify-center md:justify-start mt-4">
-                        <img src="{{ asset('logo_lsp_polines.png') }}" alt="Logo" class="h-8 mr-2 filter invert brightness-0">
-                        <span class="font-bold">LSP POLINES</span>
-                    </div>
-                </div>
-                <div class="text-center md:text-right text-sm opacity-80">
-                    <p>© 2025 LSP POLINES. All rights reserved.</p>
-                    <div class="mt-2 flex justify-center md:justify-end space-x-3">
-                        <a href="#" class="hover:text-blue-300">in</a>
-                        <a href="#" class="hover:text-blue-300">f</a>
-                        <a href="#" class="hover:text-blue-300">o</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    
 
 </body>
 </html>
