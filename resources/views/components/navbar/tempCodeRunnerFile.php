@@ -1,17 +1,40 @@
 <?php
-<header class="flex [box-shadow:rgba(0,0,0,0.1)_-4px_9px_25px_-6px] py-4 px-4 sm:px-10 bg-white min-h-[75px] tracking-wide relative z-50">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  
+  .menu-link {
+    color: #1e293b; 
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .menu-link:hover {
+    color: #1d4ed8;
+    border-bottom: 2px solid #2563eb;
+  }
+
+  .menu-link.active {
+    color: #1d4ed8;
+    border-bottom: 2px solid #2563eb;
+  }
+</style>
+
+<header class="fixed top-0 left-0 w-full flex [box-shadow:rgba(0,0,0,0.1)_-4px_9px_25px_-6px] 
+  py-4 px-4 sm:px-10 bg-white min-h-[75px] tracking-wide z-50">
   <div class="flex flex-wrap items-center gap-4 w-full">
 
-    <!-- 🟦 Logo -->
     <a href="#">
-      <img src="https://readymadeui.com/readymadeui.svg" alt="logo" class="w-36" />
+      <img src="images\Logo LSP No BG.png" alt="logo" class="w-36" />
     </a>
 
-    <!-- 🟦 Menu Utama -->
     <div id="collapseMenu"
       class="lg:ml-12 max-lg:hidden lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-40 max-lg:before:inset-0 max-lg:before:z-50">
       
-      <!-- Tombol Tutup Menu (Mobile) -->
       <button id="toggleClose"
         class="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-black" viewBox="0 0 320.591 320.591">
@@ -22,24 +45,20 @@
         </svg>
       </button>
 
-      <!-- 🟩 Daftar Menu -->
       <ul class="lg:flex lg:gap-x-4 max-lg:space-y-3 max-lg:fixed max-lg:bg-white 
         max-lg:w-2/3 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-4 
         max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
 
-        <!-- Logo versi mobile -->
         <li class="max-lg:border-b max-lg:border-gray-300 max-lg:pb-4 px-3 lg:hidden">
           <a href="#">
-            <img src="https://readymadeui.com/readymadeui.svg" alt="logo" class="w-36" />
+            <img src="images\Logo LSP No BG.png" alt="logo" class="w-36" />
           </a>
         </li>
 
-        <!-- Menu utama -->
-        <li><a href="#" class="menu-link active text-blue-700 border-b-2 border-blue-600 block font-medium text-base px-3 py-2">Home</a></li>
-        <li><a href="#" class="menu-link text-slate-900 block font-medium text-base px-3 py-2 hover:text-blue-700">Jadwal Asesmen</a></li>
-        <li><a href="#" class="menu-link text-slate-900 block font-medium text-base px-3 py-2 hover:text-blue-700">Sertifikasi</a></li>
+        <li><a href="#" class="menu-link active block font-medium text-base px-3 py-2">Home</a></li>
+        <li><a href="#" class="menu-link block font-medium text-base px-3 py-2">Jadwal Asesmen</a></li>
+        <li><a href="#" class="menu-link block font-medium text-base px-3 py-2">Sertifikasi</a></li>
 
-        <!-- 🔽 Dropdown Info -->
         <li class="relative group px-3 py-2">
           <button class="flex items-center text-slate-900 font-medium text-base hover:text-blue-700 focus:outline-none">
             Info
@@ -57,7 +76,6 @@
           </ul>
         </li>
 
-        <!-- 🔽 Dropdown Profil -->
         <li class="relative group px-3 py-2">
           <button class="flex items-center text-slate-900 font-medium text-base hover:text-blue-700 focus:outline-none">
             Profil
@@ -77,13 +95,11 @@
       </ul>
     </div>
 
-    <!-- 🟦 Tombol kanan -->
     <div class="flex ml-auto items-center">
       <button class="px-4 py-2 text-[15px] rounded-md font-medium text-white bg-blue-600 hover:bg-blue-700 cursor-pointer">
         Masuk
       </button>
 
-      <!-- Tombol buka menu (mobile) -->
       <div id="toggleOpen" class="flex ml-4 lg:hidden">
         <button class="cursor-pointer">
           <svg class="w-7 h-7" fill="#000" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -97,13 +113,16 @@
   </div>
 </header>
 
-<!-- 🟩 JS -->
+
+<div class="h-[80px]"></div>
+
+
 <script>
   const toggleOpen = document.getElementById("toggleOpen");
   const toggleClose = document.getElementById("toggleClose");
   const collapseMenu = document.getElementById("collapseMenu");
 
-  // Toggle menu (mobile)
+
   toggleOpen.addEventListener("click", () => {
     collapseMenu.classList.remove("max-lg:hidden");
   });
@@ -111,12 +130,11 @@
     collapseMenu.classList.add("max-lg:hidden");
   });
 
-  // 🟦 Aktifkan efek menu aktif
   const menuLinks = document.querySelectorAll(".menu-link");
   menuLinks.forEach(link => {
     link.addEventListener("click", () => {
-      menuLinks.forEach(l => l.classList.remove("text-blue-700", "border-b-2", "border-blue-600"));
-      link.classList.add("text-blue-700", "border-b-2", "border-blue-600");
+      menuLinks.forEach(l => l.classList.remove("active"));
+      link.classList.add("active");
     });
   });
 </script>
