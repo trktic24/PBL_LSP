@@ -1,4 +1,4 @@
-@extends('layouts.app-info-tuk')
+@extends('layouts.app-alur-sertifikasi')
 
 @section('title', 'Alur Proses Sertifikasi')
 
