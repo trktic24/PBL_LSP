@@ -45,7 +45,6 @@ return new class extends Migration
 
             // (str: path) -> Diubah ke string
             $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
-            $table->string('portofolio')->nullable()->comment('Path ke file portofolio');
 
             // Standar timestamp
             $table->timestamps();
