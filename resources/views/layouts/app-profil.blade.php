@@ -9,13 +9,9 @@
 </head>
 
 <body class="antialiased bg-white">
-
-    {{-- Tidak ada navbar di semua halaman --}}
-
+    {{-- Navbar dihapus agar tidak muncul di semua halaman --}}
     <main class="bg-gray-50 min-h-screen">
         @yield('content')
     </main>
-
 </body>
-
 </html>
