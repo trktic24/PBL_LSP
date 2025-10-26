@@ -1,37 +1,141 @@
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<div class="bg-base-100">
-
-    {{-- Navbar --}}
-    <div class="navbar bg-white shadow-sm px-8">
-        <div class="flex-1">
-            <a href="/" class="font-bold text-xl text-blue-700">
-                <span class="text-yellow-500">LSP</span> POLINES
-            </a>
-        </div>
-        <div class="flex-none hidden md:flex gap-6 text-gray-700 font-medium">
-            <a href="/" class="text-blue-700 font-semibold border-b-2 border-blue-700">Home</a>
-            <a href="#">Skema</a>
-            <a href="#">Jadwal Asesmen</a>
-            <a href="#">Sertifikasi</a>
-            <a href="#">Info</a>
-            <a href="#">Profil</a>
-            <a href="#" class="btn btn-sm btn-outline btn-primary ml-4">Masuk</a>
-        </div>
-    </div>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+<div class="bg-base-100 min-h-screen">
 
     {{-- Hero Section --}}
-    <section class="relative bg-blue-50">
-        <img src="{{ asset('img/gedung-polines.jpg') }}" alt="Gedung Polines" class="w-full h-[450px] object-cover rounded-b-3xl">
-        <div class="absolute top-1/3 left-16 text-white drop-shadow-md">
-            <h1 class="text-4xl font-bold mb-2">LSP POLINES</h1>
-            <p class="text-lg mb-6">Lorem ipsum dolor sit amet, you're the best person I've ever met! ✨</p>
+    <section class="relative h-[450px] rounded-t-4xl overflow-hidden mt-20">
+        <img src="{{ asset('images/Gedung Polines.jpg') }}" 
+            alt="Gedung Polines" 
+            class="w-full h-full object-cover">
+
+        <!-- Gradasi putih di bawah -->
+         <div class="absolute bottom-0 left-0 w-full h-80 bg-gradient-to-t from-white/90 via-white/70 to-transparent"></div>
+         
+         <!-- Gradasi biru ke transparan -->
+         <div class="absolute inset-0 bg-gradient-to-r from-blue-500/80 via-blue-300/40 to-transparent"></div> 
+        
+         <!-- Teks diatas gradasi -->
+         <div class="absolute top-1/3 left-16 text-black drop-shadow-md max-w-xl">
+            <h1 class="text-4xl font-bold font-serif mb-2">LSP POLINES</h1>
+            <p class="text-lg font-serif mb-6 leading-relaxed">Lorem ipsum dolor sit amet, you're the best person I've ever met!</p>
             <div class="flex gap-3">
-                <a href="#" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300">Daftar</a>
-                <a href="#" class="btn btn-outline text-white border-white hover:bg-white hover:text-blue-700">Eksplor Skema</a>
+                <a href="#" class="btn bg-yellow-400 text-black font-semibold font-serif border-none hover:bg-yellow-300">Daftar</a>
+                <a href="#" class="btn btn-outline text-black font-serif border-white hover:bg-white hover:text-blue-700">Eksplore Skema</a>
             </div>
         </div>
     </section>
 
+    <style>
+        #scrollContainer::-webkit-scrollbar {
+            display: none;
+        }
+        #scrollContainer {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+
+    {{-- Filter Kategori --}}
+    <section class="py-10 text-center">
+        <div id="scrollContainer" class="overflow-x-auto whitespace-nowrap px-6 cursor-grab active:cursor-grabbing select-none">
+            <div class="inline-flex gap-4">
+                <button class="btn btn-sm bg-yellow-400 text-black border-none">Semua</button>
+                <button class="btn btn-sm btn-outline">Software</button>
+                <button class="btn btn-sm btn-outline">IoT</button>
+                <button class="btn btn-sm btn-outline">Skema 3</button>
+                <button class="btn btn-sm btn-outline">Skema 3</button>
+                <button class="btn btn-sm btn-outline">Skema 3</button>
+                <button class="btn btn-sm btn-outline">Skema 3</button>
+                <button class="btn btn-sm btn-outline">Skema 3</button>
+                <button class="btn btn-sm btn-outline">Skema 3</button>
+                <button class="btn btn-sm btn-outline">Skema 3</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const scrollContainer = document.getElementById("scrollContainer");
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        scrollContainer.addEventListener("mousedown", (e) => {
+            isDown = true;
+            scrollContainer.classList.add("active");
+            startX = e.pageX - scrollContainer.offsetLeft;
+            scrollLeft = scrollContainer.scrollLeft;
+        });
+
+        scrollContainer.addEventListener("mouseleave", () => {
+            isDown = false;
+        });
+
+        scrollContainer.addEventListener("mouseup", () => {
+            isDown = false;
+        });
+
+        scrollContainer.addEventListener("mousemove", (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - scrollContainer.offsetLeft;
+            const walk = (x - startX) * 2; // kecepatan geser
+            scrollContainer.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+
+    {{-- Carousel Skema Sertifikasi --}}
+    <section class="px-10 mb-16">
+        <div id="indicators-carousel" class="relative w-full rounded-3xl overflow-hidden" data-carousel="slide">
+            <div class="relative h-80 md:h-[450px] overflow-hidden rounded-3xl">
+                <div class="hidden duration-700 ease-in-out" data-carousel-item="active">
+                    <img src="{{ asset('images/skema1.jpg') }}" class="absolute w-full h-full object-cover" alt="Skema 1">
+                </div>
+                <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                    <img src="{{ asset('images/skema2.jpg') }}" class="absolute w-full h-full object-cover" alt="Skema 2">
+                </div>
+                <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                    <img src="{{ asset('images/skema3.jpg') }}" class="absolute w-full h-full object-cover" alt="Skema 3">
+                </div>
+            </div>
+
+            <!-- Tombol navigasi -->
+            <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer" data-carousel-prev>
+                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/40 hover:bg-white/70">
+                    <svg class="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 6 10" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 1 1 5l4 4"/>
+                    </svg>
+                </span>
+            </button>
+            <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer" data-carousel-next>
+                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/40 hover:bg-white/70">
+                    <svg class="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 6 10" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m1 9 4-4-4-4"/>
+                    </svg>
+                </span>
+            </button>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function (){
+            const carousel = document.querySelector('[data-carousel="slide"]');
+            const items = carousel.querySelectorAll('[data-carousel-item]');
+            let index = 0;
+            const total = items.length;
+            const interval = 4000;
+
+        function showNext() {
+            items[index].classList.add('hidden');
+            index = (index + 1) % total;
+            items[index].classList.remove('hidden');
+        }
+
+        setInterval(showNext, interval);
+        });
+    </script>
+
+
+    <!-- 
     {{-- Filter Kategori --}}
     <section class="py-10 text-center">
         <div class="flex justify-center gap-4 flex-wrap">
@@ -62,6 +166,7 @@
         </div>
         @endfor
     </section>
+-->
 
     {{-- Jadwal Sertifikasi --}}
     <section class="bg-gray-50 py-12 px-10 text-center">
