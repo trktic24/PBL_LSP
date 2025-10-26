@@ -33,12 +33,17 @@ Route::get('/', function () {
     return view('home');
 });
 
-// Rute untuk info tuk
+// Rute untuk info TUK
 Route::get('/info-tuk', function () {
     return view('page_tuk.info-tuk');
 });
 
+// Rute untuk detail TUK
 Route::get('/detail-tuk', function () {
     return view('page_tuk.detail-tuk');
 });
 
+// Rute untuk alur sertifikasi
+Route::get('/alur-sertifikasi', function () {
+    return view('page_info.alur-sertifikasi');
+});
