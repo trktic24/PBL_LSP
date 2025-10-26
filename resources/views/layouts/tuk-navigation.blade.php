@@ -1,57 +1,40 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    {{-- Ambil nilai dari @section('title') di view anak --}}
-    <title>@yield('title', 'LSP Polines')</title>
-    
-    {{-- Font Google Poppins --}}
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    {{-- Font Awesome (untuk ikon) --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    {{-- Tautkan ke CSS Kustom di folder PUBLIC --}}
-    <link rel="stylesheet" href="{{ asset('style.css') }}">
-
-    {{-- Script untuk Dropdown (Menggunakan DOMContentLoaded untuk inisialisasi) --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdowns = document.querySelectorAll('.dropdown');
+<header class="header">
+    <div class="logo">
+        {{-- Pastikan gambar logo ada di public/img/ --}}
+        <img src="{{ asset('img/logo-lsp-polines.png') }}" alt="Logo LSP Polines">
+    </div>
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="#" class="nav-link">Home</a></li>
+            <li><a href="{{ url('/alur-sertifikasi') }}" class="nav-link">Jadwal Asesmen</a></li>
+            <li><a href="#" class="nav-link">Sertifikasi</a></li>
             
-            dropdowns.forEach(dropdown => {
-                const content = dropdown.querySelector('.dropdown-content');
-
-                dropdown.addEventListener('mouseenter', () => {
-                    content.style.opacity = '1';
-                    content.style.visibility = 'visible';
-                    content.style.transform = 'translateY(0)';
-                    content.style.pointerEvents = 'auto';
-                });
-
-                dropdown.addEventListener('mouseleave', () => {
-                    content.removeAttribute('style');
-                });
-            });
-        });
-    </script>
-
-</head>
-<body>
-
-    {{-- HEADER/NAVBAR: Sudah diubah ke nama file baru --}}
-    @include('layouts.tuk-navigation') 
-
-    {{-- KONTEN UTAMA --}}
-    <main class="main-content">
-        <div class="container">
-            @yield('content') 
-        </div>
-    </main>
-
-    {{-- CTA DAN FOOTER --}}
-    @include('layouts.footer')
-
-</body>
-</html>
+            <li class="dropdown">
+                <a href="#" class="nav-link">Info <span class="arrow-down"></span></a>
+                <ul class="dropdown-content">
+                    {{-- Ganti dengan rute alur sertifikasi --}}
+                    <li><a href="{{ url('/alur-sertifikasi') }}" class="dropdown-link">Alur Proses</a></li> 
+                    <li><a href="#" class="dropdown-link">Daftar Asesor</a></li>
+                    <li><a href="{{ url('/info-tuk') }}" class="dropdown-link">TUK</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link">Profil <span class="arrow-down"></span></a>
+                <ul class="dropdown-content">
+                    <li><a href="{{ url('/visimisi') }}" class="dropdown-link">Visi & Misi</a></li>
+                    <li><a href="{{ url('/struktur') }}" class="dropdown-link">Struktur</a></li>
+                    <li><a href="{{ url('/mitra') }}" class="dropdown-link">Mitra</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    
+    {{-- Mengatasi Error 'Attempt to read property "name" on null' --}}
+    @guest
+        <a href="{{ route('login') }}" class="btn btn-masuk">Masuk</a>
+    @endguest
+    @auth
+        {{-- Tampilkan nama pengguna jika sudah login, jika ada --}}
+        <a href="{{ url('/profile') }}" class="btn btn-masuk">{{ Auth::user()->name }}</a>
+    @endauth
+</header>
