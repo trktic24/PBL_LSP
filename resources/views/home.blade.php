@@ -3,25 +3,21 @@
 <div class="bg-base-100 min-h-screen">
 
     {{-- Hero Section --}}
-    <section class="relative h-[900px] rounded-t-4xl overflow-hidden mt-20">
+    <section class="relative h-[1000px] rounded-t-4xl overflow-hidden mt-20">
         <img src="{{ asset('images/Gedung Polines.jpg') }}" 
             alt="Gedung Polines" 
             class="w-full h-full object-cover">
 
-        <!-- Gradasi putih di bawah -->
-         <div class="absolute bottom-0 left-0 w-full h-80 bg-gradient-to-t from-white/90 via-white/70 to-transparent"></div>
-         
-         <!-- Gradasi biru ke transparan -->
-         <div class="absolute inset-0 bg-gradient-to-r from-blue-500/80 via-blue-300/40 to-transparent"></div> 
-        
-         <!-- Teks diatas gradasi -->
-         <div class="absolute top-1/3 left-16 text-black drop-shadow-md max-w-xl">
-            <h1 class="text-4xl font-bold font-serif mb-2">LSP POLINES</h1>
-            <p class="text-lg font-serif mb-6 leading-relaxed">Lorem ipsum dolor sit amet, you're the best person I've ever met!</p>
-            <div class="flex gap-3">
-                <a href="#" class="btn bg-yellow-400 text-black font-semibold font-serif border-none hover:bg-yellow-300">Daftar</a>
-                <a href="#" class="btn btn-outline text-black font-serif border-white hover:bg-white hover:text-blue-700">Eksplore Skema</a>
-            </div>
+        <!-- Gradasi biru ke transparan (lebih pekat di kiri) -->
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/95 via-blue-500/60 to-transparent"></div> 
+    
+        <!-- Gradasi putih di bawah (lebih halus dan tidak terlalu putih) -->
+        <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/95 via-white/50 to-transparent"></div>
+    
+        <!-- Teks diatas gradasi -->
+        <div class="absolute top-1/3 left-16 text-black drop-shadow-lg max-w-xl">
+            <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
+            <p class="text-xl mb-6 leading-relaxed">Lorem ipsum dolor sit amet, you're the best person I've ever met!</p>
         </div>
     </section>
 
@@ -36,27 +32,13 @@
     </style>
 
     {{-- Filter Kategori --}}
-    <section class="py-10 text-center font-serif">
+    <section class="py-10 text-center">
         <div id="scrollContainer" class="overflow-x-auto whitespace-nowrap px-6 cursor-grab active:cursor-grabbing select-none">
+            <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
             <div class="inline-flex gap-4">
-                <button class="btn btn-sm bg-yellow-400 text-black border-none">Semua</button>
-                <button class="btn btn-sm btn-outline">Software</button>
-                <button class="btn btn-sm btn-outline">IoT</button>
-                <button class="btn btn-sm btn-outline">Skema 3</button>
-                <button class="btn btn-sm btn-outline">Skema 4</button>
-                <button class="btn btn-sm btn-outline">Skema 5</button>
-                <button class="btn btn-sm btn-outline">Skema 6</button>
-                <button class="btn btn-sm btn-outline">Skema 7</button>
-                <button class="btn btn-sm btn-outline">Skema 8</button>
-                <button class="btn btn-sm btn-outline">Skema 9</button>
-                <button class="btn btn-sm btn-outline">Skema 10</button>
-                <button class="btn btn-sm btn-outline">Skema 11</button>
-                <button class="btn btn-sm btn-outline">Skema 12</button>
-                <button class="btn btn-sm btn-outline">Skema 13</button>
-                <button class="btn btn-sm btn-outline">Skema 14</button>
-                <button class="btn btn-sm btn-outline">Skema 15</button>
-                <button class="btn btn-sm btn-outline">Skema 16</button>
-                <button class="btn btn-sm btn-outline">Skema 17</button>
+                <button class="btn btn-sm font-bold bg-yellow-400 text-black border-none rounded-full px-6">Semua</button>
+                <button class="btn btn-sm font-bold bg-yellow-100 text-gray-700 border-none rounded-full px-6 hover:bg-yellow-200">Software</button>
+                <button class="btn btn-sm font-bold bg-yellow-100 text-gray-700 border-none rounded-full px-6 hover:bg-yellow-200">IoT</button>
             </div>
         </div>
     </section>
@@ -92,14 +74,14 @@
     </script>
 
     {{-- Carousel Grid Skema --}}
-    <section class="px-10 mb-16 font-serif">
+    <section class="px-10 mb-16">
         @php 
             $slide1Images = [
                 'skema1.jpg',
                 'skema2.jpg',
                 'skema3.jpg',
                 'skema4.jpg',
-                'skema 5.jpg',
+                'skema5.jpg',
                 'skema6.jpg',
                 ];
 
@@ -116,45 +98,38 @@
         <div id="gridCarousel" class="relative overflow-hidden rounded-3xl">
             <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
                 {{-- Slide 1 --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0 p-6">
                     @foreach ($slide1Images as $index => $file)
-                        <div class="card bg-white shadow-md hover:shadow-lg transition">
-                            <figure>
-                                <img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 1 }}" class="h-48 w-full object-cover rounded-lg">
-                            </figure>
-                            <div class="card-body">
-                                <h2 class="card-title">Skema {{ $index + 1 }} A</h2>
-                                <p>Rp. x.xxx.xxx</p>
+                        <div class="transition hover:scale-105">
+                            <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
+                                <img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 1 }}" class="h-48 w-full object-cover">
+                            </div>
+                            <div class="px-2">
+                                <h2 class="text-lg font-bold text-gray-800">Skema {{ $index + 1 }} A</h2>
+                                <p class="text-gray-600">Rp. x.xxx.xxx</p>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
                 {{-- Slide 2  --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0 p-6">
                     @foreach ($slide2Images as $index => $file)
-                        <div class="card bg-white shadow-md hover:shadow-lg transition">
-                            <figure>
-                                <img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 7 }}" class="h-48 w-full object-cover rounded-lg">
-                            </figure>
-                            <div class="card-body">
-                                <h2 class="card-title">Skema {{ $index + 7 }} B</h2>
-                                <p>Rp. x.xxx.xxx</p>
+                        <div class="transition hover:scale-105">
+                            <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
+                                <img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 7 }}" class="h-48 w-full object-cover">
+                            </div>
+                            <div class="px-2">
+                                <h2 class="text-lg font-bold text-gray-800">Skema {{ $index + 7 }} B</h2>
+                                <p class="text-gray-600">Rp. x.xxx.xxx</p>
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
-
-            <!-- Tombol navigasi manual -->
-            <button id="prevBtn" class="absolute top-1/2 left-2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow-md">
-                ‹
-            </button>
-            <button id="nextBtn" class="absolute top-1/2 right-2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow-md">
-                ›
-            </button>
         </div>
-    </section>
+    </div>
+</section>
 
     <script>
         const gridSlides = document.getElementById('gridSlides');
@@ -166,16 +141,6 @@
             gridSlides.style.transform = `translateX(-${index * 100}%)`;
         }
 
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex + 1) % totalSlides;
-            showSlide(currentIndex);
-        });
-
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-            showSlide(currentIndex);
-        });
-
         // Auto slide setiap 5 detik
         setInterval(() => {
             currentIndex = (currentIndex + 1) % totalSlides;
@@ -185,31 +150,30 @@
 
     {{-- Jadwal Sertifikasi --}}
     <section class="bg-gray-50 py-12 px-10 text-center">
-        <h2 class="text-2xl font-bold font-serif mb-6">Jadwal yang Akan Datang</h2>
-        <div class="flex flex-wrap justify-center gap-6">
-            <div class="card bg-white shadow-md rounded-lg">
-                <div class="card-body flex flex-col p-6">
-                    <p class="text-sm mb-1 font-serif font-bold text-left">Sertifikasi:</p>
-                    <p class="text-sm mb-1 font-serif text-left">Network Engineering</p>
-                    <p class="text-sm mb-1 font-serif font-bold text-left">TUK:</p>
-                    <p class="text-sm mb-1 font-serif text-left">Politeknik Negeri Semarang</p>
-                    <p class="text-sm mb-1 font-serif font-bold text-left">Tanggal:</p>
-                    <p class="text-sm mb-4 font-serif text-left">15 Desember 2025</p>
-                    <a href="#" class="btn bg-yellow-400 text-black font-semibold font-serif border-none hover:bg-yellow-300 px-6 py-2 rounded">Detail</a>
+        <h2 class="text-3xl font-bold mb-8">Jadwal yang Akan Datang</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+            <div class="card bg-white shadow-lg rounded-2xl">
+                <div class="card-body flex flex-col p-8">
+                    <p class="text-base mb-1 font-bold text-left">Sertifikasi:</p>
+                    <p class="text-base mb-3 text-left">Network Engineering</p>
+                    <p class="text-base mb-1 font-bold text-left">TUK:</p>
+                    <p class="text-base mb-3 text-left">Politeknik Negeri Semarang</p>
+                    <p class="text-base mb-1 font-bold text-left">Tanggal:</p>
+                    <p class="text-base mb-6 text-left">15 Desember 2025</p>
+                    <a href="#" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">Detail</a>
                 </div>
             </div>
 
-            <div class="card bg-white shadow-md rounded-lg">
-                <div class="card-body flex left flex-col p-6">
-                    <p class="text-sm mb-1 font-serif font-bold text-left">Sertifikasi:</p>
-                    <p class="text-sm mb-1 font-serif text-left">Network Engineering</p>
-                    <p class="text-sm mb-1 font-serif font-bold text-left">TUK:</p>
-                    <p class="text-sm mb-1 font-serif text-left">Politeknik Negeri Semarang</p>
-                    <p class="text-sm mb-1 font-serif font-bold text-left">Tanggal:</p>
-                    <p class="text-sm mb-4 font-serif text-left">15 Desember 2025</p>
-                    <a href="#" class="btn bg-yellow-400 text-black font-semibold font-serif border-none hover:bg-yellow-300 px-6 py-2 rounded">Detail</a>
+            <div class="card bg-white shadow-lg rounded-2xl">
+                <div class="card-body flex flex-col p-8">
+                    <p class="text-base mb-1 font-bold text-left">Sertifikasi:</p>
+                    <p class="text-base mb-3 text-left">Network Engineering</p>
+                    <p class="text-base mb-1 font-bold text-left">TUK:</p>
+                    <p class="text-base mb-3 text-left">Politeknik Negeri Semarang</p>
+                    <p class="text-base mb-1 font-bold text-left">Tanggal:</p>
+                    <p class="text-base mb-6 text-left">15 Desember 2025</p>
+                    <a href="#" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">Detail</a>
                 </div>
             </div>
         </div>
     </section>
-</div>
