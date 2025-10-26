@@ -23,7 +23,8 @@
   }
 </style>
 
-<header class="fixed top-0 left-0 w-full flex [box-shadow:rgba(0,0,0,0.1)_-4px_9px_25px_-6px] 
+<!-- 🟦 Navbar -->
+<header class="fixed top-0 left-0 w-full flex [box-shadow:rgba(0,0,0,0.1)_-4px_9px_25px_-6px]
   py-4 px-4 sm:px-10 bg-white min-h-[75px] tracking-wide z-50">
   <div class="flex flex-wrap items-center gap-4 w-full">
 
@@ -33,7 +34,8 @@
 
     <div id="collapseMenu"
       class="lg:ml-12 max-lg:hidden lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-40 max-lg:before:inset-0 max-lg:before:z-50">
-      
+
+      <!-- Tombol Tutup Menu (Mobile) -->
       <button id="toggleClose"
         class="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-black" viewBox="0 0 320.591 320.591">
@@ -44,8 +46,9 @@
         </svg>
       </button>
 
-      <ul class="lg:flex lg:gap-x-4 max-lg:space-y-3 max-lg:fixed max-lg:bg-white 
-        max-lg:w-2/3 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-4 
+      <!-- 🟩 Daftar Menu -->
+      <ul class="lg:flex lg:gap-x-4 max-lg:space-y-3 max-lg:fixed max-lg:bg-white
+        max-lg:w-2/3 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-4
         max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
 
         <li class="max-lg:border-b max-lg:border-gray-300 max-lg:pb-4 px-3 lg:hidden">
