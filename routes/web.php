@@ -59,8 +59,8 @@ Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
-Route::get('/jawaban_lisan', function () {
-    return view('jawaban_lisan');
+Route::get('/pertanyaan_lisan', function () {
+    return view('pertanyaan_lisan');
 });
 
 Route::get('/dashboard', function () {
