@@ -9,7 +9,7 @@
 </head>
 
 <body class="antialiased bg-white">
-    <x-navbar-fix />
+    <x-navbar.navbar-fixx />
     <main class="pt-20 bg-gray-50 min-h-screen">
         @yield('content')
     </main>

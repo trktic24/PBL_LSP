@@ -1,16 +1,16 @@
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<div class="bg-base-100 min-h-screen">
+@extends('layouts.app-profil')
+@section('content')
 
     {{-- Hero Section dengan Gambar Cybersecurity --}}
     <section class="container mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
-            <img src="{{ asset('images/detail_skema.jpg') }}" 
-                alt="Cybersecurity" 
+            <img src="{{ asset('images/detail_skema.jpg') }}"
+                alt="Cybersecurity"
                 class="w-full h-full object-cover">
-        
+
             <!-- Overlay gradient -->
             <div class="absolute inset-0 bg-gradient-to-r from-blue-500/90 via-blue-400/40 to-transparent"></div>
-        
+
             <!-- Text Content -->
             <div class="absolute inset-0 flex flex-col justify-center px-12 text-white">
                 <h1 class="text-6xl font-bold mb-4">CYBERSECURITY</h1>
@@ -22,7 +22,7 @@
     {{-- Jadwal Pelaksanaan --}}
         <section class="container mx-auto px-8 py-10">
             <h2 class="text-3xl font-bold mb-6">Jadwal Pelaksanaan</h2>
-    
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
                 {{-- Card 1 --}}
                 <div class="bg-white rounded-2xl shadow-[6px_6px_20px_rgba(0,0,0,0.25)] p-8 border-2 border-blue-500">
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     {{-- [PERBAIKAN 1]: Tambahkan div flex justify-center di sekitar tombol Detail --}}
-                    <div class="flex justify-center"> 
+                    <div class="flex justify-center">
                         <button class="w-auto px-8 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 rounded-lg transition">
                             Detail
                         </button>
@@ -104,15 +104,15 @@
     {{-- Unit Kompetensi --}}
     <section class="container mx-auto px-8 py-10">
         <h2 class="text-3xl font-bold mb-6">Unit Kompetensi</h2>
-    
+
         <div class="space-y-4">
             {{-- Unit 1 --}}
-            <div class="bg-white rounded-2xl p-6 
-                border-2 border-blue-500 
-                shadow-xl"> 
+            <div class="bg-white rounded-2xl p-6
+                border-2 border-blue-500
+                shadow-xl">
                 {{-- Perubahan: border-l-4 diubah menjadi border-2 di semua sisi --}}
                 {{-- Perubahan: shadow-md diubah menjadi shadow-xl agar lebih terlihat --}}
-            
+
                 <h3 class="text-lg font-bold text-blue-600 mb-3">Kode Unit : 123456789</h3>
                 <ul class="list-disc list-inside space-y-1 text-gray-700">
                     <li>Mengidentifikasi Konsep Keamanan Jaringan</li>
@@ -121,8 +121,8 @@
             </div>
 
             {{-- Unit 2 --}}
-            <div class="bg-white rounded-2xl p-6 
-                border-2 border-blue-500 
+            <div class="bg-white rounded-2xl p-6
+                border-2 border-blue-500
                 shadow-xl">
                 {{-- Perubahan yang sama diterapkan di sini --}}
 
@@ -138,7 +138,7 @@
     {{-- SKKNI --}}
     <section class="container mx-auto px-8 py-10">
         <h2 class="text-2xl font-bold mb-6">SKKNI (Standar Kompetensi Kerja Nasional Indonesia)</h2>
-    
+
         <div class="space-y-4">
             {{-- SKKNI Item 1 --}}
             <div class="bg-blue-50 rounded-2xl shadow-md p-4 flex items-center justify-between">
@@ -177,4 +177,4 @@
             Ambil Skema
         </button>
     </section>
-</div>
+@endsection
