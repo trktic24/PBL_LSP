@@ -19,42 +19,78 @@
 
         <!-- Timeline Container -->
         <div class="relative ml-8">
-            <!-- Garis utama -->
-            <div class="absolute left-3 top-0 h-full w-[3px] bg-gray-400"></div>
+            <!-- Garis utama (vertikal penuh, sejajar tengah lingkaran) -->
+            <div style="
+                position: absolute;
+                left: 1rem; /* posisikan tepat di tengah lingkaran */
+                top: 0;
+                bottom: 0;
+                width: 3px;
+                background-color: #9ca3af; /* bg-gray-400 */
+                z-index: 0;
+            "></div>
 
             <!-- Step 1 -->
-            <div class="mb-10 relative pl-12">
-                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-blue-500 border-[4px] border-white shadow"></div>
-                <div class="bg-yellow-50 shadow-md rounded-xl p-5 ml-2 transition duration-300 hover:bg-yellow-100 border border-gray-200">
+            <div class="mb-10 relative pl-12 group">
+                <!-- Lingkaran -->
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 
+                            w-8 h-8 rounded-full bg-gray-400 border-[4px] border-white shadow 
+                            z-10 transition duration-300 group-hover:bg-blue-500"></div>
+                <!-- Card -->
+                <div class="bg-white border border-gray-200 shadow-md rounded-xl 
+                            p-5 ml-2 transition duration-300 hover:bg-yellow-100 relative z-20">
                     <h3 class="font-semibold text-gray-900">Pendaftaran & Verifikasi Dokumen</h3>
-                    <p class="text-gray-600 text-sm">Peserta melakukan pendaftaran dan mengunggah dokumen pendukung untuk verifikasi awal.</p>
+                    <p class="text-gray-600 text-sm">
+                        Peserta melakukan pendaftaran dan mengunggah dokumen pendukung untuk verifikasi awal.
+                    </p>
                 </div>
             </div>
 
             <!-- Step 2 -->
-            <div class="mb-10 relative pl-12">
-                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-gray-400 border-[4px] border-white shadow"></div>
-                <div class="bg-white border border-gray-200 shadow-md rounded-xl p-5 ml-2 transition duration-300 hover:bg-yellow-100">
+            <div class="mb-10 relative pl-12 group">
+                <!-- Lingkaran -->
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 
+                            w-8 h-8 rounded-full bg-gray-400 border-[4px] border-white shadow 
+                            z-10 transition duration-300 group-hover:bg-blue-500"></div>
+                <!-- Card -->
+                <div class="bg-white border border-gray-200 shadow-md rounded-xl 
+                            p-5 ml-2 transition duration-300 hover:bg-yellow-100 relative z-20">
                     <h3 class="font-semibold text-gray-900">Pembayaran</h3>
-                    <p class="text-gray-600 text-sm">Peserta melakukan pembayaran biaya sertifikasi setelah dokumen dinyatakan valid.</p>
+                    <p class="text-gray-600 text-sm">
+                        Peserta melakukan pembayaran biaya sertifikasi setelah dokumen dinyatakan valid.
+                    </p>
                 </div>
             </div>
 
             <!-- Step 3 -->
-            <div class="mb-10 relative pl-12">
-                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-gray-400 border-[4px] border-white shadow"></div>
-                <div class="bg-white border border-gray-200 shadow-md rounded-xl p-5 ml-2 transition duration-300 hover:bg-yellow-100">
+            <div class="mb-10 relative pl-12 group">
+                <!-- Lingkaran -->
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 
+                            w-8 h-8 rounded-full bg-gray-400 border-[4px] border-white shadow 
+                            z-10 transition duration-300 group-hover:bg-blue-500"></div>
+                <!-- Card -->
+                <div class="bg-white border border-gray-200 shadow-md rounded-xl 
+                            p-5 ml-2 transition duration-300 hover:bg-yellow-100 relative z-20">
                     <h3 class="font-semibold text-gray-900">Pelaksanaan Asesmen Kompetensi</h3>
-                    <p class="text-gray-600 text-sm">Asesmen dilakukan oleh asesor sesuai dengan skema sertifikasi yang dipilih.</p>
+                    <p class="text-gray-600 text-sm">
+                        Asesmen dilakukan oleh asesor sesuai dengan skema sertifikasi yang dipilih.
+                    </p>
                 </div>
             </div>
 
             <!-- Step 4 -->
-            <div class="relative pl-12">
-                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-gray-400 border-[4px] border-white shadow"></div>
-                <div class="bg-white border border-gray-200 shadow-md rounded-xl p-5 ml-2 transition duration-300 hover:bg-yellow-100">
+            <div class="relative pl-12 group">
+                <!-- Lingkaran -->
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 
+                            w-8 h-8 rounded-full bg-gray-400 border-[4px] border-white shadow 
+                            z-10 transition duration-300 group-hover:bg-blue-500"></div>
+                <!-- Card -->
+                <div class="bg-white border border-gray-200 shadow-md rounded-xl 
+                            p-5 ml-2 transition duration-300 hover:bg-yellow-100 relative z-20">
                     <h3 class="font-semibold text-gray-900">Penerbitan Sertifikat</h3>
-                    <p class="text-gray-600 text-sm">Sertifikat kompetensi diterbitkan bagi peserta yang dinyatakan kompeten.</p>
+                    <p class="text-gray-600 text-sm">
+                        Sertifikat kompetensi diterbitkan bagi peserta yang dinyatakan kompeten.
+                    </p>
                 </div>
             </div>
         </div>
