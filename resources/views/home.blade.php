@@ -3,7 +3,7 @@
 <div class="bg-base-100 min-h-screen">
 
     {{-- Hero Section --}}
-    <section class="relative h-[450px] rounded-t-4xl overflow-hidden mt-20">
+    <section class="relative h-[900px] rounded-t-4xl overflow-hidden mt-20">
         <img src="{{ asset('images/Gedung Polines.jpg') }}" 
             alt="Gedung Polines" 
             class="w-full h-full object-cover">
@@ -36,19 +36,27 @@
     </style>
 
     {{-- Filter Kategori --}}
-    <section class="py-10 text-center">
+    <section class="py-10 text-center font-serif">
         <div id="scrollContainer" class="overflow-x-auto whitespace-nowrap px-6 cursor-grab active:cursor-grabbing select-none">
             <div class="inline-flex gap-4">
                 <button class="btn btn-sm bg-yellow-400 text-black border-none">Semua</button>
                 <button class="btn btn-sm btn-outline">Software</button>
                 <button class="btn btn-sm btn-outline">IoT</button>
                 <button class="btn btn-sm btn-outline">Skema 3</button>
-                <button class="btn btn-sm btn-outline">Skema 3</button>
-                <button class="btn btn-sm btn-outline">Skema 3</button>
-                <button class="btn btn-sm btn-outline">Skema 3</button>
-                <button class="btn btn-sm btn-outline">Skema 3</button>
-                <button class="btn btn-sm btn-outline">Skema 3</button>
-                <button class="btn btn-sm btn-outline">Skema 3</button>
+                <button class="btn btn-sm btn-outline">Skema 4</button>
+                <button class="btn btn-sm btn-outline">Skema 5</button>
+                <button class="btn btn-sm btn-outline">Skema 6</button>
+                <button class="btn btn-sm btn-outline">Skema 7</button>
+                <button class="btn btn-sm btn-outline">Skema 8</button>
+                <button class="btn btn-sm btn-outline">Skema 9</button>
+                <button class="btn btn-sm btn-outline">Skema 10</button>
+                <button class="btn btn-sm btn-outline">Skema 11</button>
+                <button class="btn btn-sm btn-outline">Skema 12</button>
+                <button class="btn btn-sm btn-outline">Skema 13</button>
+                <button class="btn btn-sm btn-outline">Skema 14</button>
+                <button class="btn btn-sm btn-outline">Skema 15</button>
+                <button class="btn btn-sm btn-outline">Skema 16</button>
+                <button class="btn btn-sm btn-outline">Skema 17</button>
             </div>
         </div>
     </section>
@@ -83,128 +91,125 @@
         });
     </script>
 
-    {{-- Carousel Skema Sertifikasi --}}
-    <section class="px-10 mb-16">
-        <div id="indicators-carousel" class="relative w-full rounded-3xl overflow-hidden" data-carousel="slide">
-            <div class="relative h-80 md:h-[450px] overflow-hidden rounded-3xl">
-                <div class="hidden duration-700 ease-in-out" data-carousel-item="active">
-                    <img src="{{ asset('images/skema1.jpg') }}" class="absolute w-full h-full object-cover" alt="Skema 1">
+    {{-- Carousel Grid Skema --}}
+    <section class="px-10 mb-16 font-serif">
+        @php 
+            $slide1Images = [
+                'skema1.jpg',
+                'skema2.jpg',
+                'skema3.jpg',
+                'skema4.jpg',
+                'skema 5.jpg',
+                'skema6.jpg',
+                ];
+
+            $slide2Images = [
+                'skema7.jpg',
+                'skema8.jpg',
+                'skema9.jpg',
+                'skema10.jpg',
+                'skema11.jpg',
+                'skema12.jpg',
+                ];
+        @endphp
+
+        <div id="gridCarousel" class="relative overflow-hidden rounded-3xl">
+            <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
+                {{-- Slide 1 --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0">
+                    @foreach ($slide1Images as $index => $file)
+                        <div class="card bg-white shadow-md hover:shadow-lg transition">
+                            <figure>
+                                <img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 1 }}" class="h-48 w-full object-cover rounded-lg">
+                            </figure>
+                            <div class="card-body">
+                                <h2 class="card-title">Skema {{ $index + 1 }} A</h2>
+                                <p>Rp. x.xxx.xxx</p>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-                <div class="hidden duration-700 ease-in-out" data-carousel-item>
-                    <img src="{{ asset('images/skema2.jpg') }}" class="absolute w-full h-full object-cover" alt="Skema 2">
-                </div>
-                <div class="hidden duration-700 ease-in-out" data-carousel-item>
-                    <img src="{{ asset('images/skema3.jpg') }}" class="absolute w-full h-full object-cover" alt="Skema 3">
+
+                {{-- Slide 2  --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0">
+                    @foreach ($slide2Images as $index => $file)
+                        <div class="card bg-white shadow-md hover:shadow-lg transition">
+                            <figure>
+                                <img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 7 }}" class="h-48 w-full object-cover rounded-lg">
+                            </figure>
+                            <div class="card-body">
+                                <h2 class="card-title">Skema {{ $index + 7 }} B</h2>
+                                <p>Rp. x.xxx.xxx</p>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
-            <!-- Tombol navigasi -->
-            <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer" data-carousel-prev>
-                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/40 hover:bg-white/70">
-                    <svg class="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 6 10" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 1 1 5l4 4"/>
-                    </svg>
-                </span>
+            <!-- Tombol navigasi manual -->
+            <button id="prevBtn" class="absolute top-1/2 left-2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow-md">
+                ‹
             </button>
-            <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer" data-carousel-next>
-                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/40 hover:bg-white/70">
-                    <svg class="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 6 10" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m1 9 4-4-4-4"/>
-                    </svg>
-                </span>
+            <button id="nextBtn" class="absolute top-1/2 right-2 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow-md">
+                ›
             </button>
         </div>
     </section>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function (){
-            const carousel = document.querySelector('[data-carousel="slide"]');
-            const items = carousel.querySelectorAll('[data-carousel-item]');
-            let index = 0;
-            const total = items.length;
-            const interval = 4000;
+        const gridSlides = document.getElementById('gridSlides');
+        const slides = document.querySelectorAll('#gridSlides > div');
+        const totalSlides = slides.length;
+        let currentIndex = 0;
 
-        function showNext() {
-            items[index].classList.add('hidden');
-            index = (index + 1) % total;
-            items[index].classList.remove('hidden');
+        function showSlide(index) {
+            gridSlides.style.transform = `translateX(-${index * 100}%)`;
         }
 
-        setInterval(showNext, interval);
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            showSlide(currentIndex);
         });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            showSlide(currentIndex);
+        });
+
+        // Auto slide setiap 5 detik
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            showSlide(currentIndex);
+        }, 5000);
     </script>
-
-
-    <!-- 
-    {{-- Filter Kategori --}}
-    <section class="py-10 text-center">
-        <div class="flex justify-center gap-4 flex-wrap">
-            <button class="btn btn-sm bg-yellow-400 text-black border-none">Semua</button>
-            <button class="btn btn-sm btn-outline">Software</button>
-            <button class="btn btn-sm btn-outline">IoT</button>
-            <button class="btn btn-sm btn-outline">Skema 3</button>
-            <button class="btn btn-sm btn-outline">Skema 4</button>
-            <button class="btn btn-sm btn-outline">Skema 5</button>
-            <button class="btn btn-sm btn-outline">Skema 6</button>
-        </div>
-    </section>
-
-    {{-- Kartu Skema Sertifikasi --}}
-    <section class="px-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-        @for ($i = 1; $i <= 6; $i++)
-        <div class="card bg-white shadow-md hover:shadow-lg transition">
-            <figure>
-                <img src="{{ asset('img/skema' . $i . '.jpg') }}" alt="Skema {{ $i }}" class="h-48 w-full object-cover">
-            </figure>
-            <div class="card-body">
-                <h2 class="card-title">Skema Software {{ $i }}</h2>
-                <p>Rp. x.xxx.xxx</p>
-                <div class="card-actions justify-end">
-                    <a href="#" class="btn btn-sm btn-outline btn-primary">Lihat Detail</a>
-                </div>
-            </div>
-        </div>
-        @endfor
-    </section>
--->
 
     {{-- Jadwal Sertifikasi --}}
     <section class="bg-gray-50 py-12 px-10 text-center">
-        <h2 class="text-2xl font-bold mb-6">Jadwal yang Akan Datang</h2>
-        <div class="flex flex-wrap justify-center gap-8">
-            <div class="card bg-white shadow-md w-72">
-                <div class="card-body">
-                    <h3 class="font-semibold text-lg">Sertifikasi: Cyber Security</h3>
-                    <p>TUK: Politeknik Negeri Semarang</p>
-                    <p>Tanggal: 15 Desember 2025</p>
-                    <a href="#" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 mt-3">Detail</a>
+        <h2 class="text-2xl font-bold font-serif mb-6">Jadwal yang Akan Datang</h2>
+        <div class="flex flex-wrap justify-center gap-6">
+            <div class="card bg-white shadow-md rounded-lg">
+                <div class="card-body flex flex-col p-6">
+                    <p class="text-sm mb-1 font-serif font-bold text-left">Sertifikasi:</p>
+                    <p class="text-sm mb-1 font-serif text-left">Network Engineering</p>
+                    <p class="text-sm mb-1 font-serif font-bold text-left">TUK:</p>
+                    <p class="text-sm mb-1 font-serif text-left">Politeknik Negeri Semarang</p>
+                    <p class="text-sm mb-1 font-serif font-bold text-left">Tanggal:</p>
+                    <p class="text-sm mb-4 font-serif text-left">15 Desember 2025</p>
+                    <a href="#" class="btn bg-yellow-400 text-black font-semibold font-serif border-none hover:bg-yellow-300 px-6 py-2 rounded">Detail</a>
                 </div>
             </div>
-            <div class="card bg-white shadow-md w-72">
-                <div class="card-body">
-                    <h3 class="font-semibold text-lg">Sertifikasi: Network Engineering</h3>
-                    <p>TUK: Politeknik Negeri Semarang</p>
-                    <p>Tanggal: 15 Desember 2025</p>
-                    <a href="#" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 mt-3">Detail</a>
+
+            <div class="card bg-white shadow-md rounded-lg">
+                <div class="card-body flex left flex-col p-6">
+                    <p class="text-sm mb-1 font-serif font-bold text-left">Sertifikasi:</p>
+                    <p class="text-sm mb-1 font-serif text-left">Network Engineering</p>
+                    <p class="text-sm mb-1 font-serif font-bold text-left">TUK:</p>
+                    <p class="text-sm mb-1 font-serif text-left">Politeknik Negeri Semarang</p>
+                    <p class="text-sm mb-1 font-serif font-bold text-left">Tanggal:</p>
+                    <p class="text-sm mb-4 font-serif text-left">15 Desember 2025</p>
+                    <a href="#" class="btn bg-yellow-400 text-black font-semibold font-serif border-none hover:bg-yellow-300 px-6 py-2 rounded">Detail</a>
                 </div>
             </div>
         </div>
     </section>
-
-    {{-- Footer --}}
-    <footer class="bg-blue-700 text-white py-10 mt-10">
-        <div class="text-center">
-            <h3 class="text-xl font-semibold mb-2">Tingkatkan Kompetensi Profesional Anda</h3>
-            <p class="max-w-xl mx-auto mb-4">
-                LSP Polines berkomitmen meningkatkan tenaga kerja kompeten siap bersaing di dunia industri secara nasional maupun internasional.
-            </p>
-            <a href="#" class="btn bg-white text-blue-700 font-semibold border-none hover:bg-blue-100 mb-8">Hubungi Kami</a>
-
-            <div class="text-sm text-gray-200 space-y-1">
-                <p>Jl. Prof. Soedarto, SH, Tembalang, Semarang, Jawa Tengah</p>
-                <p>Email: lsp@polines.ac.id | Telp: (024) 7465407 ext. 125</p>
-                <p>© 2025 LSP POLINES - All rights reserved</p>
-            </div>
-        </div>
-    </footer>
 </div>

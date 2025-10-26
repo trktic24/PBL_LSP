@@ -3,7 +3,7 @@
 
     <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
 
-        <div class="w-full md:mx-auto max-w-5xl bg-white rounded-3xl border border-gray-300 shadow-md flex flex-col">
+        <div class="w-full md:mx-auto max-w-5xl bg-white rounded-3xl border border-gray-200 shadow-md flex flex-col">
 
             <div class="flex w-full">
                 <a href="{{ route('register') }}" class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl
@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <div class="p-10 md:p-12">
+            <div class="p-10 md:p-12 max-w-4xl mx-auto w-full">
 
                 <div>
                     <a href="/">
