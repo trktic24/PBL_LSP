@@ -9,12 +9,13 @@
 </head>
 
 <body class="antialiased bg-white">
-    {{-- Gunakan komponen dari folder components/navbar --}}
-    <x-navbar.navbar-fix />
 
-    <main class="pt-20 bg-gray-50 min-h-screen">
+    {{-- Tidak ada navbar di semua halaman --}}
+
+    <main class="bg-gray-50 min-h-screen">
         @yield('content')
     </main>
+
 </body>
 
 </html>
