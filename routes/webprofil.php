@@ -35,5 +35,10 @@ Route::get('/', function () {
 
 // Rute untuk info tuk
 Route::get('/info-tuk', function () {
-    return view('info_tuk.info-tuk');
+    return view('page_tuk.info-tuk');
 });
+
+Route::get('/detail-tuk', function () {
+    return view('page_tuk.detail-tuk');
+});
+
