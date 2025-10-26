@@ -1,32 +1,5 @@
-<!-- 🟦 Import Font Poppins -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-<style>
-  body {
-    font-family: 'Poppins', sans-serif;
-  }
-
-  /* Warna default abu tua, hover biru, dan aktif biru */
-  .menu-link {
-    color: #1e293b; /* slate-900 */
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s ease;
-  }
-
-  .menu-link:hover {
-    color: #1d4ed8; /* biru */
-    border-bottom: 2px solid #2563eb;
-  }
-
-  .menu-link.active {
-    color: #1d4ed8; /* biru */
-    border-bottom: 2px solid #2563eb;
-  }
-</style>
-
-<!-- 🟦 Navbar -->
-<header class="fixed top-0 left-0 w-full flex [box-shadow:rgba(0,0,0,0.1)_-4px_9px_25px_-6px] 
-  py-4 px-4 sm:px-10 bg-white min-h-[75px] tracking-wide z-50">
+<?php
+<header class="flex [box-shadow:rgba(0,0,0,0.1)_-4px_9px_25px_-6px] py-4 px-4 sm:px-10 bg-white min-h-[75px] tracking-wide relative z-50">
   <div class="flex flex-wrap items-center gap-4 w-full">
 
     <!-- 🟦 Logo -->
@@ -62,9 +35,9 @@
         </li>
 
         <!-- Menu utama -->
-        <li><a href="#" class="menu-link active block font-medium text-base px-3 py-2">Home</a></li>
-        <li><a href="#" class="menu-link block font-medium text-base px-3 py-2">Jadwal Asesmen</a></li>
-        <li><a href="#" class="menu-link block font-medium text-base px-3 py-2">Sertifikasi</a></li>
+        <li><a href="#" class="menu-link active text-blue-700 border-b-2 border-blue-600 block font-medium text-base px-3 py-2">Home</a></li>
+        <li><a href="#" class="menu-link text-slate-900 block font-medium text-base px-3 py-2 hover:text-blue-700">Jadwal Asesmen</a></li>
+        <li><a href="#" class="menu-link text-slate-900 block font-medium text-base px-3 py-2 hover:text-blue-700">Sertifikasi</a></li>
 
         <!-- 🔽 Dropdown Info -->
         <li class="relative group px-3 py-2">
@@ -124,9 +97,6 @@
   </div>
 </header>
 
-<!-- 🟩 Spacer -->
-<div class="h-[80px]"></div>
-
 <!-- 🟩 JS -->
 <script>
   const toggleOpen = document.getElementById("toggleOpen");
@@ -141,12 +111,12 @@
     collapseMenu.classList.add("max-lg:hidden");
   });
 
-  // 🟦 Efek menu aktif
+  // 🟦 Aktifkan efek menu aktif
   const menuLinks = document.querySelectorAll(".menu-link");
   menuLinks.forEach(link => {
     link.addEventListener("click", () => {
-      menuLinks.forEach(l => l.classList.remove("active"));
-      link.classList.add("active");
+      menuLinks.forEach(l => l.classList.remove("text-blue-700", "border-b-2", "border-blue-600"));
+      link.classList.add("text-blue-700", "border-b-2", "border-blue-600");
     });
   });
 </script>
