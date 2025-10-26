@@ -1,4 +1,3 @@
-<!-- 🟦 Import Font Poppins -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
@@ -6,20 +5,20 @@
     font-family: 'Poppins', sans-serif;
   }
 
-  /* Warna default abu tua, hover biru, dan aktif biru */
+  
   .menu-link {
-    color: #1e293b; /* slate-900 */
+    color: #1e293b; 
     border-bottom: 2px solid transparent;
     transition: all 0.2s ease;
   }
 
   .menu-link:hover {
-    color: #1d4ed8; /* biru */
+    color: #1d4ed8;
     border-bottom: 2px solid #2563eb;
   }
 
   .menu-link.active {
-    color: #1d4ed8; /* biru */
+    color: #1d4ed8;
     border-bottom: 2px solid #2563eb;
   }
 </style>
@@ -29,12 +28,10 @@
   py-4 px-4 sm:px-10 bg-white min-h-[75px] tracking-wide z-50">
   <div class="flex flex-wrap items-center gap-4 w-full">
 
-    <!-- 🟦 Logo -->
     <a href="#">
-      <img src="https://readymadeui.com/readymadeui.svg" alt="logo" class="w-36" />
+      <img src="images\Logo LSP No BG.png" alt="logo" class="w-36" />
     </a>
 
-    <!-- 🟦 Menu Utama -->
     <div id="collapseMenu"
       class="lg:ml-12 max-lg:hidden lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-40 max-lg:before:inset-0 max-lg:before:z-50">
 
@@ -54,19 +51,16 @@
         max-lg:w-2/3 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-4
         max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
 
-        <!-- Logo versi mobile -->
         <li class="max-lg:border-b max-lg:border-gray-300 max-lg:pb-4 px-3 lg:hidden">
           <a href="#">
-            <img src="https://readymadeui.com/readymadeui.svg" alt="logo" class="w-36" />
+            <img src="images\Logo LSP No BG.png" alt="logo" class="w-36" />
           </a>
         </li>
 
-        <!-- Menu utama -->
         <li><a href="#" class="menu-link active block font-medium text-base px-3 py-2">Home</a></li>
         <li><a href="#" class="menu-link block font-medium text-base px-3 py-2">Jadwal Asesmen</a></li>
         <li><a href="#" class="menu-link block font-medium text-base px-3 py-2">Sertifikasi</a></li>
 
-        <!-- 🔽 Dropdown Info -->
         <li class="relative group px-3 py-2">
           <button class="flex items-center text-slate-900 font-medium text-base hover:text-blue-700 focus:outline-none">
             Info
@@ -84,7 +78,6 @@
           </ul>
         </li>
 
-        <!-- 🔽 Dropdown Profil -->
         <li class="relative group px-3 py-2">
           <button class="flex items-center text-slate-900 font-medium text-base hover:text-blue-700 focus:outline-none">
             Profil
@@ -104,13 +97,11 @@
       </ul>
     </div>
 
-    <!-- 🟦 Tombol kanan -->
     <div class="flex ml-auto items-center">
       <button class="px-4 py-2 text-[15px] rounded-md font-medium text-white bg-blue-600 hover:bg-blue-700 cursor-pointer">
         Masuk
       </button>
 
-      <!-- Tombol buka menu (mobile) -->
       <div id="toggleOpen" class="flex ml-4 lg:hidden">
         <button class="cursor-pointer">
           <svg class="w-7 h-7" fill="#000" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -124,16 +115,16 @@
   </div>
 </header>
 
-<!-- 🟩 Spacer -->
+
 <div class="h-[80px]"></div>
 
-<!-- 🟩 JS -->
+
 <script>
   const toggleOpen = document.getElementById("toggleOpen");
   const toggleClose = document.getElementById("toggleClose");
   const collapseMenu = document.getElementById("collapseMenu");
 
-  // Toggle menu (mobile)
+
   toggleOpen.addEventListener("click", () => {
     collapseMenu.classList.remove("max-lg:hidden");
   });
@@ -141,7 +132,6 @@
     collapseMenu.classList.add("max-lg:hidden");
   });
 
-  // 🟦 Efek menu aktif
   const menuLinks = document.querySelectorAll(".menu-link");
   menuLinks.forEach(link => {
     link.addEventListener("click", () => {
