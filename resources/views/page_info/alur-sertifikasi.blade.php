@@ -1,4 +1,4 @@
-@extends('layouts.app-info-tuk')
+@extends('layouts.detail-tuk-master')
 
 @section('title', 'Alur Proses Sertifikasi')
 
