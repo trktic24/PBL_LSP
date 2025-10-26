@@ -4,16 +4,35 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Web Profil Routes
+| Custom Routes (Info TUK dan Alur) - DITEMPATKAN PALING ATAS
 |--------------------------------------------------------------------------
 |
-| Di sinilah Anda dapat mendaftarkan rute untuk bagian profil.
+| Prioritaskan rute spesifik Anda di sini.
 |
 */
 
+// Rute untuk alur sertifikasi
+Route::get('/alur-sertifikasi', function () {
+    return view('page_info.alur-sertifikasi');
+});
+
+// Rute untuk info TUK (Daftar)
+Route::get('/info-tuk', function () {
+    return view('page_tuk.info-tuk');
+});
+
+// Rute untuk detail TUK
+Route::get('/detail-tuk', function () {
+    return view('page_tuk.detail-tuk');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Web Profil Routes - Ditempatkan di tengah
+|--------------------------------------------------------------------------
+*/
+
 // Rute untuk Visi & Misi
-// 'page_profil.visimisi' menunjuk ke folder:
-// /resources/views/page_profil/visimisi.blade.php
 Route::get('/visimisi', function () {
     return view('page_profil.visimisi');
 });
@@ -28,22 +47,13 @@ Route::get('/mitra', function () {
     return view('page_profil.mitra');
 });
 
-// Anda bisa jadikan /visimisi sebagai halaman default jika mau
+/*
+|--------------------------------------------------------------------------
+| Halaman Utama (Default) - DITEMPATKAN PALING BAWAH
+|--------------------------------------------------------------------------
+*/
+
+// Rute halaman default (/)
 Route::get('/', function () {
     return view('home');
-});
-
-// Rute untuk info TUK
-Route::get('/info-tuk', function () {
-    return view('page_tuk.info-tuk');
-});
-
-// Rute untuk detail TUK
-Route::get('/detail-tuk', function () {
-    return view('page_tuk.detail-tuk');
-});
-
-// Rute untuk alur sertifikasi
-Route::get('/alur-sertifikasi', function () {
-    return view('page_info.alur-sertifikasi');
 });
