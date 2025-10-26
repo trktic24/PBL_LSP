@@ -22,7 +22,7 @@
                         </p>
                     </div>
 
-                    <form id="login-form" method="POST" action="{{ route('login') }}" class="space-y-6">
+                    <form id="login-form" method="POST" action="{{ route('login') }}" class="space-y-4">
                         @csrf
 
                         <x-login-form-input
