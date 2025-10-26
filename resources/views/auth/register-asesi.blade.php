@@ -3,7 +3,7 @@
 
     <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
 
-        <div class="w-full max-w-4xl bg-white rounded-3xl border border-gray-300 shadow-md flex flex-col">
+        <div class="w-full md:mx-auto max-w-5xl bg-white rounded-3xl border border-gray-300 shadow-md flex flex-col">
 
             <div class="flex w-full">
                 <div class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl
@@ -109,7 +109,7 @@
                 <div class="flex items-center justify-between mt-10">
                     <a href="{{ route('register') }}"
                        class="flex items-center gap-2 py-3 px-6 bg-gray-400 text-white text-sm font-semibold rounded-full shadow-md hover:bg-gray-500 transition-colors">
-                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                         Kembali
                     </a>
 
