@@ -44,13 +44,22 @@
                                 required
                                 autocomplete="current-password"
                             />
-                            <div class="flex items-center mt-2">
-                                <input id="show_password_checkbox" type="checkbox"
+                            <div class="flex justify-between mt-2">
+                                <div>
+                                    <input id="show_password_checkbox" type="checkbox"
                                        @click="show = !show"
                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                 <label for="show_password_checkbox" class="ml-2 text-sm text-gray-600">
                                     Tampilkan Password
                                 </label>
+                                </div>
+                                <div>
+                                    <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                                            Lupa Password?
+                                        </a>
+
+                                </div>
+
                             </div>
                         </div>
 
