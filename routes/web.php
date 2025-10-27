@@ -3,7 +3,6 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-<<<<<<< HEAD
 Route::get('/navbar', function () {
     return view('navbar-fix.blade.php');
 });
@@ -11,7 +10,6 @@ Route::get('/navbar', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-=======
 Route::get('/home', function () {
     return view('frontend/home');
 })->name('home');
@@ -24,7 +22,6 @@ Route::get('/laporan', function () {
 Route::get('/profil', function () {
     return view('frontend/profil');
 })->name('profil');
->>>>>>> dev
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
