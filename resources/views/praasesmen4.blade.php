@@ -12,7 +12,7 @@
         
         <aside class="w-80 flex-shrink-0 p-8" style="background: linear-gradient(180deg, #FDFDE0 0%, #F0F8FF 100%);">
             
-            <a href="#" class="flex items-center text-sm font-medium text-gray-700 hover:text-black mb-8">
+            <a href="/tracker" class="flex items-center text-sm font-medium text-gray-700 hover:text-black mb-8">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mr-2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                 </svg>
@@ -136,12 +136,12 @@
 
 
                 <div class="flex justify-between items-center mt-12">
-                    <button class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
+                    <a href="/praasesmen3" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
                         Sebelumnya
-                    </button>
-                    <button class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
+                    </a>
+                    <a href="/praasesmen5" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
                         Selanjutnya
-                    </button>
+                    </a>
                 </div>
 
             </div>

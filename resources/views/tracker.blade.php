@@ -87,7 +87,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900">Pra-Asesmen</h3>
+                            <a href="/praasesmen1" class="text-lg font-semibold text-gray-900">Pra-Asesmen</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
                             <button class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600">
