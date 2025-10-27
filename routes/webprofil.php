@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\TukController; // <-- BARIS INI DIHAPUS
+// use App\Http\Controllers\TukController; // Baris ini sudah dihapus
 
 /*
 |--------------------------------------------------------------------------
@@ -18,17 +18,17 @@ Route::get('/alur-sertifikasi', function () {
     return view('page_info.alur-sertifikasi');
 })->name('info.alur'); // Nama untuk dropdown Info
 
-// Rute untuk info TUK (Daftar) - DIKEMBALIKAN KE CLOSURE STATIS
+// Rute untuk info TUK (Daftar) - CLOSURE STATIS
 Route::get('/info-tuk', function () {
-    return view('page_tuk.info-tuk');
+    return view('page_tuk.info-tuk');
 })->name('info.tuk'); 
 
-// Rute untuk detail TUK (Nama opsional) - DIKEMBALIKAN KE CLOSURE STATIS
-// Catatan: Parameter {slug} dihapus agar tidak terjadi error di closure
-Route::get('/info-tuk/detail/{slug}', function () {
-    // Karena tidak ada Controller/Model, View ini akan gagal menampilkan data dinamis.
-    // Sementara, kita kembalikan ke view statis saja.
-    return view('page_tuk.detail-tuk');
+// Rute untuk detail TUK - DIPERBAIKI agar menerima parameter $slug
+Route::get('/info-tuk/detail/{slug}', function ($slug) { 
+    // Parameter $slug HARUS diterima di sini agar route tidak error
+    
+    // Karena tidak ada Controller/Model, View ini akan menampilkan data statis.
+    return view('page_tuk.detail-tuk');
 })->name('info.tuk.detail');
 
 
