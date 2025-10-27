@@ -71,8 +71,13 @@ Route::get('/sertifikasi', function () {
 // Rute untuk Daftar Asesor (buat placeholder dulu)
 Route::get('/daftar-asesor', function () {
     // return view('page_info.daftar-asesor'); // Ganti ke view yang bener nanti
-    return "Halaman Daftar Asesor"; // Placeholder
+    return view('page_info.daftar-asesor');; // Placeholder
 })->name('info.daftar-asesor'); // Nama untuk dropdown Info
+
+//
+Route::get('/detail_jadwal', function () {
+    return view('detail_jadwal');
+});
 
 // Jangan lupa include routes/auth.php kalo belum
 // require __DIR__.'/auth.php'; // Pastikan route 'login' ada di sini
