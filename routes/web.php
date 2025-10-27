@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+# use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/navbar', function () {
@@ -24,9 +25,9 @@ Route::get('/profil', function () {
 })->name('profil');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/home', [HomeController::class, 'edit'])->name('home.edit');
+    Route::patch('/home', [HomeController::class, 'update'])->name('home.update');
+    Route::delete('/home', [HomeController::class, 'destroy'])->name('home.destroy');
 });
 
 require __DIR__.'/auth.php';

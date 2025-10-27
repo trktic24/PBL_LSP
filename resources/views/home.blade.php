@@ -17,6 +17,7 @@
             <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
             <p class="text-xl mb-6 leading-relaxed">Lorem ipsum dolor sit amet, you're the best person I've ever met!</p>
         </div>
+
     </section>
 
     <style>
