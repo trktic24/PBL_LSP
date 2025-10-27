@@ -17,13 +17,13 @@
 
     <!-- Table Section -->
     <div class="max-w-5xl mx-auto px-1 sm:px-90 lg:px-8 py-8 text-center">
-        <div class="bg-yellow-50 rounded-[3rem] shadow-md overflow-hidden border border-gray-200 whitespace-nowrap">
+        <div class="bg-yellow-50 rounded-t-[3rem] shadow-md overflow-x-auto border border-gray-200 whitespace-nowrap">
             <!-- Table Header -->
             <div class="grid grid-cols-5 bg-yellow-50 border-b-2 border-gray-900">
                 <div class="px-10 py-4 text-sm font-bold text-gray-900 text-center">Skema Sertifikasi</div>
-                <div class="px-12 py-4 text-sm font-bold text-gray-900 text-center">Pendaftaran</div>
+                <div class="px-7 py-4 text-sm font-bold text-gray-900 text-center">Pendaftaran</div>
                 <div class="px-14 py-4 text-sm font-bold text-gray-900 text-center">Tanggal Asesmen</div>
-                <div class="px-16 py-4 text-sm font-bold text-gray-900 text-center">TUK</div>
+                <div class="px-20 py-4 text-sm font-bold text-gray-900 text-center">TUK</div>
                 <div class="px-2 py-4 text-sm font-bold text-gray-900 text-center">Status</div>
             </div>
 
@@ -43,10 +43,10 @@
 
             @foreach($jadwalList as $index => $jadwal)
                 <div class="grid grid-cols-5 border-b border-gray-200 bg-yellow-50">
-                    <div class="px-10 py-4 text-sm text-gray-900">{{ $jadwal['skema'] }}</div>
-                    <div class="px-10 py-4 text-sm text-gray-900">{{ $jadwal['pendaftaran'] }}</div>
-                    <div class="px-14 py-4 text-sm text-gray-900">{{ $jadwal['tanggal'] }}</div>
-                    <div class="px-16 py-4 text-sm text-gray-900">{{ $jadwal['tuk'] }}</div>
+                    <div class="px-10 py-4 text-sm text-gray-900 text-left">{{ $jadwal['skema'] }}</div>
+                    <div class="px-7 py-4 text-sm text-gray-900 text-center">{{ $jadwal['pendaftaran'] }}</div>
+                    <div class="px-14 py-4 text-sm text-gray-900 text-center">{{ $jadwal['tanggal'] }}</div>
+                    <div class="px-20 py-4 text-sm text-gray-900 text-center">{{ $jadwal['tuk'] }}</div>
                     <div class="px-2 py-4">
                         <span class="inline-block px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap {{ $jadwal['statusColor'] }} {{ $jadwal['statusBg'] }}">{{ $jadwal['status'] }}</span>
                     </div>
