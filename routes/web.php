@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-<<<<<<< HEAD
+
 Route::get('/', function () {
     return view('halaman_ambil_skema');
 });
@@ -67,7 +67,7 @@ Route::get('/pertanyaan_lisan', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-=======
+
 Route::get('/home', function () {
     return view('frontend/home');
 })->name('home');
@@ -80,7 +80,6 @@ Route::get('/laporan', function () {
 Route::get('/profil', function () {
     return view('frontend/profil');
 })->name('profil');
->>>>>>> 263c889212d05c1a3e470b4d971fad31752b12e0
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
