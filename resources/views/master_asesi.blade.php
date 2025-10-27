@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Master Skema | LSP Polines</title>
+  <title>Master Asesi | LSP Polines</title>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -14,11 +14,13 @@
   <!-- Alpine.js -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-  <!-- Font: Poppins -->
+  <!-- Font Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    body { font-family: 'Poppins', sans-serif; }
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
     ::-webkit-scrollbar { width: 0; }
     ::-webkit-scrollbar-thumb { background-color: transparent; }
     ::-webkit-scrollbar-track { background-color: transparent; }
@@ -27,7 +29,6 @@
 
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
-    
     <!-- NAVBAR -->
     <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
       <!-- LOGO -->
@@ -39,6 +40,7 @@
 
       <!-- MENU TENGAH -->
       <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
+        <!-- Dashboard -->
         <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">
           Dashboard
         </a>
@@ -53,10 +55,15 @@
 
           <div x-show="open" @click.away="open = false"
                class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
-               x-transition>
+               x-transition:enter="transition ease-out duration-150"
+               x-transition:enter-start="opacity-0 translate-y-1"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               x-transition:leave="transition ease-in duration-100"
+               x-transition:leave-start="opacity-100 translate-y-0"
+               x-transition:leave-end="opacity-0 translate-y-1">
             <a href="{{ route('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
             <a href="{{ route('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
-            <a href="{{ route('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
+            <a href="{{ route('master_asesi') }}" class="block px-4 py-2 text-blue-600 bg-blue-50 font-semibold">Asesi</a>
           </div>
         </div>
 
@@ -69,7 +76,7 @@
         <!-- Notifikasi -->
         <a href="{{ route('notifications') }}" 
            class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
-                  hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+                  hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <i class="fas fa-bell text-xl text-gray-600"></i>
           <span class="absolute top-2 right-2">
             <span class="relative flex size-3">
@@ -82,7 +89,7 @@
         <!-- Profil -->
         <a href="{{ route('profile_admin') }}" 
            class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-           hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+           hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
           <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
             <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
@@ -92,88 +99,82 @@
     </nav>
 
     <!-- MAIN CONTENT (FULL WIDTH) -->
-    <main class="flex-1 p-8 w-full">
+    <main class="flex-1 px-12 py-8 w-full">
       <!-- HEADER -->
       <div class="mb-6">
         <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
-        <h2 class="text-3xl font-bold text-gray-900">Daftar Skema</h2>
+        <h2 class="text-3xl font-bold text-gray-900">Daftar Asesi</h2>
       </div>
 
       <!-- SEARCH & ACTION BAR -->
-      <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
         <!-- Search -->
-        <div class="relative w-full sm:w-1/2 md:w-1/3">
-          <input type="text" placeholder="Search"
+        <div class="relative w-full md:w-1/3">
+          <input type="text" placeholder="Cari Asesi..."
                  class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
           <i class="fas fa-search absolute left-3 top-4 text-gray-400"></i>
         </div>
 
         <!-- Buttons -->
         <div class="flex space-x-3">
-          <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 flex items-center">
+          <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300">
             <i class="fas fa-filter mr-2"></i> Filter
           </button>
-          <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center">
-            <i class="fas fa-plus mr-2"></i> Add Skema
+          <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">
+            <i class="fas fa-plus mr-2"></i> Tambah Asesi
           </button>
         </div>
       </div>
 
-      <!-- CONTENT TABLE -->
-      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 w-full overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-          <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+      <!-- TABEL DATA -->
+      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 overflow-x-auto">
+        <table class="min-w-full text-sm text-left">
+          <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
             <tr>
-              <th class="px-6 py-3 text-left">ID</th>
-              <th class="px-6 py-3 text-left">Kode Unit Skema</th>
-              <th class="px-6 py-3 text-left">Nama Skema</th>
-              <th class="px-6 py-3 text-left">Jenis Sertifikasi</th>
-              <th class="px-6 py-3 text-left">Jumlah Unit</th>
-              <th class="px-6 py-3 text-left">Status</th>
-              <th class="px-6 py-3 text-mid">Aksi</th>
+              <th class="px-6 py-3">ID</th>
+              <th class="px-6 py-3">Nama Asesi</th>
+              <th class="px-6 py-3">Email</th>
+              <th class="px-6 py-3">No. Telepon</th>
+              <th class="px-6 py-3">Skema Sertifikasi</th>
+              <th class="px-6 py-3">Aksi</th>
             </tr>
           </thead>
-
-          <tbody class="divide-y divide-gray-100">
+          <tbody class="divide-y divide-gray-200">
             <tr>
               <td class="px-6 py-4">1</td>
-              <td class="px-6 py-4">2609051226</td>
-              <td class="px-6 py-4 font-medium">Cybersecurity</td>
-              <td class="px-6 py-4">KKNI Level 5</td>
-              <td class="px-6 py-4">8 Unit</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Aktif</span>
-              </td>
-              <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-pen"></i> <span>Edit</span>
+              <td class="px-6 py-4 font-medium">Rafa Saputra</td>
+              <td class="px-6 py-4">rafa@polines.ac.id</td>
+              <td class="px-6 py-4">0812-3456-7890</td>
+              <td class="px-6 py-4">Teknologi Rekayasa Komputer</td>
+              <td class="px-6 py-4 space-x-2">
+                <button class="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg">
+                  <i class="fas fa-pen-to-square"></i> Edit
                 </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-trash"></i> <span>Delete</span>
+                <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg">
+                  <i class="fas fa-trash"></i> Delete
                 </button>
               </td>
             </tr>
-
             <tr>
               <td class="px-6 py-4">2</td>
-              <td class="px-6 py-4">2609051227</td>
-              <td class="px-6 py-4 font-medium">Data Analyst</td>
-              <td class="px-6 py-4">KKNI Level 6</td>
-              <td class="px-6 py-4">10 Unit</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
-              </td>
-              <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-pen"></i> <span>Edit</span>
+              <td class="px-6 py-4 font-medium">Roihan Enrico</td>
+              <td class="px-6 py-4">roihan@polines.ac.id</td>
+              <td class="px-6 py-4">0813-2222-7777</td>
+              <td class="px-6 py-4">Sistem Informasi</td>
+              <td class="px-6 py-4 space-x-2">
+                <button class="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg">
+                  <i class="fas fa-pen-to-square"></i> Edit
                 </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-trash"></i> <span>Delete</span>
+                <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg">
+                  <i class="fas fa-trash"></i> Delete
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <!-- Jika belum ada data -->
+        <!-- <p class="text-gray-600 text-sm text-center py-6">Belum ada data asesi yang ditampilkan.</p> -->
       </div>
     </main>
   </div>

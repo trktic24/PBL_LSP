@@ -30,6 +30,16 @@ Route::get('/master_skema', function () {
     return view('master_skema'); 
 })->name('master_skema');
 
+// Master Asesi
+Route::get('/master_asesi', function () {
+    return view('master_asesi'); 
+})->name('master_asesi');
+
+// Master Asesor
+Route::get('/master_asesor', function () {
+    return view('master_asesor'); 
+})->name('master_asesor');
+
 // TUK SEWAKTU
 Route::get('/tuk_sewaktu', function () {
     return view('tuk_sewaktu'); 
