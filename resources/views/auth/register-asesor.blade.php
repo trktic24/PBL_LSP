@@ -2,38 +2,39 @@
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-
         <div class="w-full md:mx-auto max-w-5xl bg-white rounded-3xl border border-gray-300 shadow-md flex flex-col">
 
+            {{-- Tab Switch --}}
             <div class="flex w-full">
-                <a href="{{ route('register') }}" class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl
-                            bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200
-                            transition-colors duration-150">
+                <a href="{{ route('register') }}"
+                   class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl
+                          bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200 transition-colors">
                     Asesi
                 </a>
                 <div class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tr-3xl
-                             bg-white text-blue-600 border-b-[3px] border-blue-600">
+                            bg-white text-blue-600 border-b-[3px] border-blue-600">
                     Asesor
                 </div>
             </div>
 
+            {{-- Content --}}
             <div class="p-10 md:p-12 w-full">
-
                 <div>
                     <a href="/">
                         <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="Logo LSP Polines" class="h-20 w-auto">
                     </a>
                 </div>
 
-
-
-                <div class="mb-8"> <h1 class="text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesor</h1>
+                <div class="mb-8">
+                    <h1 class="text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesor</h1>
                 </div>
+
+                {{-- Stepper --}}
                 <div class="mt-6 mb-8">
                     <div class="flex items-start max-w-screen-lg mx-auto">
                         <div class="w-full">
                             <div class="flex items-center w-full">
-                                <div class="w-7 h-7 shrink-0 mx-[-1px] bg-green-600 flex items-center justify-center rounded-full">
+                                <div class="w-7 h-7 bg-green-600 flex items-center justify-center rounded-full">
                                     <span class="text-sm text-white font-semibold">1</span>
                                 </div>
                                 <div class="w-full h-[3px] mx-4 rounded-lg bg-blue-600"></div>
@@ -45,7 +46,7 @@
                         </div>
                         <div class="w-full">
                             <div class="flex items-center w-full">
-                                <div class="w-7 h-7 shrink-0 mx-[-1px] bg-blue-600 flex items-center justify-center rounded-full">
+                                <div class="w-7 h-7 bg-blue-600 flex items-center justify-center rounded-full">
                                     <span class="text-sm text-white font-semibold">2</span>
                                 </div>
                                 <div class="w-full h-[3px] mx-4 rounded-lg bg-blue-600"></div>
@@ -57,7 +58,7 @@
                         </div>
                         <div>
                             <div class="flex items-center">
-                                <div class="w-7 h-7 shrink-0 mx-[-1px] bg-gray-300 flex items-center justify-center rounded-full">
+                                <div class="w-7 h-7 bg-gray-300 flex items-center justify-center rounded-full">
                                     <span class="text-sm text-white font-semibold">3</span>
                                 </div>
                             </div>
@@ -69,78 +70,88 @@
                     </div>
                 </div>
 
+                {{-- Form --}}
                 <form id="register-form" method="POST" action="{{ route('register') }}" class="space-y-8">
                     @csrf
-
                     <input type="hidden" name="role" value="asesor">
 
+                    {{-- Data Pribadi --}}
                     <div class="space-y-5">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Data Pribadi</h2>
-                            <hr class="mt-2">
-                        </div>
+                        <h2 class="text-lg font-semibold text-gray-800">Data Pribadi</h2>
+                        <hr class="mt-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                             <x-login-form-input id="nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required />
-
                             <x-login-form-input id="no_registrasi_asesor" name="no_registrasi_asesor" label="No Registrasi Asesor" :error="$errors->first('no_registrasi_asesor')" required />
-
                             <x-login-form-input id="nik" name="nik" label="NIK" :error="$errors->first('nik')" required />
                         </div>
                     </div>
 
+                    {{-- Informasi Pribadi --}}
                     <div class="space-y-5">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Informasi Pribadi</h2>
-                            <hr class="mt-2">
-                        </div>
+                        <h2 class="text-lg font-semibold text-gray-800">Informasi Pribadi</h2>
+                        <hr class="mt-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                            <x-login-form-input id="tempat_lahir" name="tempat_lahir" label="Tempat Tanggal Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
+                            <x-login-form-input id="tempat_lahir" name="tempat_lahir" label="Tempat Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
 
-                            <div>
-                            <label class="invisible block text-xs font-medium text-gray-800">.</label>
-                            <div class="flex items-center gap-3 mt-1">
-                                <input type="number" name="tgl_lahir" placeholder="Tanggal"
-                                class="block w-1/3 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm" min="1" max="31">
+                            <div x-data="{
+                                tanggal: '',
+                                formatTanggal(tgl) {
+                                    if (!tgl) return '';
+                                    const [day, month, year] = tgl.split('-');
+                                    return `${year}-${month}-${day}`;
+                                }
+                            }">
+                                <label for="tanggal_lahir" class="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir</label>
+                                <div class="relative max-w-sm">
 
-                                <select name="bln_lahir"
-                                class="block w-1/3 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm">
-                                <option value="">Bulan</option>
-                                <option value="1">Januari</option>
-                                <option value="2">Februari</option>
-                                <option value="3">Maret</option>
-                                <option value="4">April</option>
-                                <option value="5">Mei</option>
-                                <option value="6">Juni</option>
-                                <option value="7">Juli</option>
-                                <option value="8">Agustus</option>
-                                <option value="9">September</option>
-                                <option value="10">Oktober</option>
-                                <option value="11">November</option>
-                                <option value="12">Desember</option>
-                                </select>
+                                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path
+                                                d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                                        </svg>
+                                    </div>
 
-                                <input type="number" name="thn_lahir" placeholder="Tahun"
-                                class="block w-1/3 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm" min="1900" max="2025">
+                                    <input id="tanggal_lahir"
+                                        name="tanggal_lahir"
+                                        x-model="tanggal"
+                                        datepicker
+                                        datepicker-autohide
+                                        datepicker-buttons
+                                        datepicker-format="dd-mm-yyyy"
+                                        type="text"
+                                        class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg
+                                            placeholder-gray-400
+                                            focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                                        placeholder="Pilih tanggal">
+                                </div>
+
+                                <input type="hidden" name="tanggal_lahir_db" :value="formatTanggal(tanggal)">
                             </div>
-                            </div>
 
 
-                            <x-login-form-input id="jenis_kelamin" name="jenis_kelamin" label="Jenis Kelamin" :error="$errors->first('jenis_kelamin')" required />
-                            <x-login-form-input id="pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required/>
+                            <x-login-form-dropdown
+                                id="jenis_kelamin"
+                                name="jenis_kelamin"
+                                label="Jenis Kelamin"
+                                placeholder="Pilih jenis kelamin"
+                                :error="$errors->first('jenis_kelamin')"
+                                :options="['Laki-laki', 'Perempuan']"
+                                required
+                            />
+                            <x-login-form-input id="pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />
                         </div>
                     </div>
 
+                    {{-- Alamat & Kontak --}}
                     <div class="space-y-5">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
-                            <hr class="mt-2">
-                        </div>
-
+                        <h2 class="text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
+                        <hr class="mt-2">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-5">
                             <div class="md:col-span-2">
                                 <x-login-form-input id="alamat_rumah" name="alamat_rumah" label="Alamat Rumah" :error="$errors->first('alamat_rumah')" required />
                             </div>
-                            <x-login-form-input id="kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required/>
+                            <x-login-form-input id="kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required />
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
@@ -152,21 +163,22 @@
                         </div>
                     </div>
 
+                    {{-- Informasi Bank --}}
                     <div class="space-y-5">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Informasi Bank</h2>
-                            <hr class="mt-2">
-                        </div>
+                        <h2 class="text-lg font-semibold text-gray-800">Informasi Bank</h2>
+                        <hr class="mt-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                             <x-login-form-input id="nama_bank" name="nama_bank" label="Nama Bank" :error="$errors->first('nama_bank')" required />
                             <x-login-form-input id="nomor_rekening" name="nomor_rekening" label="Nomor Rekening" :error="$errors->first('nomor_rekening')" required />
                         </div>
                     </div>
                 </form>
+
+                {{-- Button Navigation --}}
                 <div class="flex items-center justify-between mt-10">
                     <a href="{{ route('register') }}"
-                       class="flex items-center gap-2 py-3 px-6 bg-gray-400 text-white text-sm font-semibold rounded-full shadow-md hover:bg-gray-500 transition-colors">
-                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                       class="flex items-center gap-2 py-3 px-6 bg-gray-400 text-white text-sm font-semibold rounded-full shadow-md hover:bg-gray-500 transition">
+                        <i class="fa-solid fa-arrow-left"></i>
                         Kembali
                     </a>
 
@@ -174,6 +186,7 @@
                         Selanjutnya
                     </x-login-button-biru>
                 </div>
-
-            </div> </div> </div>
+            </div>
+        </div>
+    </div>
 </x-register-layout>
