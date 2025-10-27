@@ -30,6 +30,16 @@ Route::get('/master_skema', function () {
     return view('master_skema'); 
 })->name('master_skema');
 
+// TUK SEWAKTU
+Route::get('/tuk_sewaktu', function () {
+    return view('tuk_sewaktu'); 
+})->name('tuk_sewaktu');
+
+// Schedule
+Route::get('/schedule_admin', function () {
+    return view('schedule_admin'); 
+})->name('schedule_admin');
+
 // proses login pakai kolom "name"
 Route::post('/login', function (Request $request) {
     // validasi input

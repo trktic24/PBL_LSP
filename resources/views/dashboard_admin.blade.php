@@ -68,8 +68,8 @@
                     </div>
                 </div>
 
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">TUK</a>
+                <a href="{{ route('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
+                <a href="{{ route('tuk_sewaktu') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">TUK</a>
             </div>
 
             <!-- PROFIL & NOTIF -->
