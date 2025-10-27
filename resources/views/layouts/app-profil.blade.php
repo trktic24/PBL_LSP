@@ -14,8 +14,7 @@
 
 <body class="antialiased bg-white">
 
-    {{-- Main Content --}}
-    {{-- UBAH: Hapus class pt-20. Navbar sudah dihapus, padding tidak diperlukan. --}}
+    <x-navbar.navbar-fixx/>
     <main class="bg-gray-50 min-h-screen">
         @yield('content')
     </main>
@@ -24,6 +23,6 @@
          JIKA ADA FOOTER GLOBAL, HARUS DITAMBAHKAN DI SINI MENGGUNAKAN @yield. --}}
     {{-- Contoh jika Anda ingin memiliki footer global yang bisa dihilangkan: --}}
     {{-- @yield('global-footer') --}}
-
+    <x-footer.footer/>
 </body>
 </html>
