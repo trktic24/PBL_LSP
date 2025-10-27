@@ -34,7 +34,6 @@
   {{-- Bagian alamat dan kontak --}}
   <div class="w-full px-6 sm:px-12">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-sm text-white/90 gap-14 max-w-6xl mx-auto">
-      
       {{-- Kolom kiri (Alamat) --}}
       <div class="text-center md:text-left leading-relaxed">
         <p>Jl. Prof. Soedarto, SH,<br>Tembalang, Semarang, Jawa Tengah</p>
@@ -47,36 +46,41 @@
     </div>
   </div>
 
-  {{-- Garis pemisah bawah --}}
-  <div class="w-full px-6 sm:px-12 mt-4">
-    <div class="border-t border-white/30 pt-6 relative flex items-center justify-center text-sm text-white/80 max-w-6xl mx-auto">
-      
-      {{-- Logo kiri bawah --}}
-      <div class="absolute left-0 flex items-center gap-2 mt-3">
+  {{-- Garis pemisah --}}
+  <div class="w-full px-6 sm:px-12 mt-8">
+    <div class="border-t border-white/30 pt-3 max-w-6xl mx-auto"></div>
+
+    {{-- Footer bawah: logo kiri, copyright tengah, sosial kanan --}}
+    <div class="relative max-w-6xl mx-auto mt-3 flex items-center justify-between gap-3">
+
+      {{-- Logo kiri --}}
+      <div class="flex items-center gap-2">
         <img src="{{ asset('images/Polines Onli.png') }}" alt="Logo LSP POLINES" class="w-10">
       </div>
 
-      {{-- Icon sosial kanan bawah (circle border putih) --}}
-      <div class="absolute right-0 bottom-0 flex gap-2 mt-3">
-        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
-          <i class="fa-brands fa-linkedin-in fa-xs text-white"></i>
-        </a>
-        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
-          <i class="fa-brands fa-facebook-f fa-xs text-white"></i>
-        </a>
-        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
-          <i class="fa-brands fa-instagram fa-xs text-white"></i>
-        </a>
-        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
-          <i class="fa-brands fa-youtube fa-xs text-white"></i>
-        </a>
-      </div>
-
-      {{-- Teks tengah bawah --}}
-      <p class="text-xs text-white/70 text-center mt-3">
+      {{-- Copyright tengah --}}
+      <p class="absolute left-1/2 transform -translate-x-1/2 text-xs text-white/70">
         © 2025 LSP POLINES. All rights reserved.
       </p>
+
+      {{-- Icon sosial kanan --}}
+      <div class="flex gap-2">
+        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
+          <i class="fab fa-linkedin-in text-white text-sm"></i>
+        </a>
+        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
+          <i class="fab fa-facebook-f text-white text-sm"></i>
+        </a>
+        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
+          <i class="fab fa-instagram text-white text-sm"></i>
+        </a>
+        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
+          <i class="fab fa-youtube text-white text-sm"></i>
+        </a>
+      </div>
 
     </div>
   </div>
 </footer>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
