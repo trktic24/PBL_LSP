@@ -1,19 +1,17 @@
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
-<div class="bg-base-100 min-h-screen">
+@extends('layouts.app-profil')
+@section('content')
 
-    {{-- Hero Section --}}
-    <section class="relative h-[1000px] rounded-t-4xl overflow-hidden mt-20">
-        <img src="{{ asset('images/Gedung Polines.jpg') }}" 
-            alt="Gedung Polines" 
+    <section class="relative h-[1000px] rounded-t-4xl overflow-hidden">
+        <img src="{{ asset('images/Gedung Polines.jpg') }}"
+            alt="Gedung Polines"
             class="w-full h-full object-cover">
 
         <!-- Gradasi biru ke transparan (lebih pekat di kiri) -->
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/95 via-blue-500/60 to-transparent"></div> 
-    
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/95 via-blue-500/60 to-transparent"></div>
+
         <!-- Gradasi putih di bawah (lebih halus dan tidak terlalu putih) -->
         <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/95 via-white/50 to-transparent"></div>
-    
+
         <!-- Teks diatas gradasi -->
         <div class="absolute top-1/3 left-16 text-black drop-shadow-lg max-w-xl">
             <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
@@ -75,7 +73,7 @@
 
     {{-- Carousel Grid Skema --}}
     <section class="px-10 mb-16">
-        @php 
+        @php
             $slide1Images = [
                 'skema1.jpg',
                 'skema2.jpg',
@@ -177,3 +175,4 @@
             </div>
         </div>
     </section>
+@endsection

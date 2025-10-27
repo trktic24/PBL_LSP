@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/navbar', function () {
-    return view('navbar.blade.php');
+    return view('navbar-fix.blade.php');
 });
 
 Route::get('/dashboard', function () {

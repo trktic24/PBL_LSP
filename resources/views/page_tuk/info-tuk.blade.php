@@ -1,95 +1,89 @@
-@extends('layouts.detail-tuk-master')
+@extends('layouts.app-profil')
 
 @section('title', 'Tempat Uji Kompetensi')
 
 @section('content')
-<div class="container mx-auto px-4 py-12">
-    
+{{-- Sembunyikan navbar hanya di halaman ini --}}
+<style>
+    body.info-tuk-page nav {
+        display: none !important;
+    }
+</style>
+
+<div class="min-h-screen bg-[#fffdf5] py-16 px-6 lg:px-8">
     {{-- Judul --}}
-    <h1 class="text-3xl font-semibold text-center mb-10 text-gray-800">Tempat Uji Kompetensi</h1>
+    <div class="max-w-4xl mx-auto text-center mb-10">
+        <h1 class="text-3xl font-semibold text-gray-800">Tempat Uji Kompetensi</h1>
+        <div class="mt-2 w-24 h-1 bg-yellow-400 mx-auto rounded-full"></div>
+    </div>
 
-    {{-- Pembungkus Tabel (Card) --}}
-    {{-- Shadow besar, rounded, border top tebal biru, background putih --}}
-    <div class="bg-white rounded-lg shadow-xl overflow-hidden border-t-8 border-blue-600">
-        <div class="overflow-x-auto">
-            
-            <table id="tuk-table" class="min-w-full divide-y divide-gray-200">
-                
-                {{-- Table Header --}}
-                <thead class="bg-blue-50 border-b-2 border-blue-200">
-                    <tr>
-                        {{-- Kolom Tempat --}}
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">
-                            Tempat
-                        </th>
-                        {{-- Kolom Alamat --}}
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">
-                            Alamat
-                        </th>
-                        {{-- Kolom Kontak --}}
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">
-                            Kontak
-                        </th>
-                        {{-- Kolom Detail --}}
-                        <th class="px-6 py-4 text-center text-sm font-semibold text-blue-800 uppercase tracking-wider">
+    {{-- Kartu Tabel --}}
+    <div class="max-w-6xl mx-auto bg-[#fffef7] rounded-3xl shadow-md overflow-hidden border border-gray-200">
+        <table class="min-w-full text-left text-gray-700">
+            {{-- Header --}}
+            <thead class="bg-[#fffbea] border-b-2 border-black">
+                <tr>
+                    <th class="px-6 py-4 text-sm font-semibold text-gray-800 rounded-tl-3xl">Tempat</th>
+                    <th class="px-6 py-4 text-sm font-semibold text-gray-800">Alamat</th>
+                    <th class="px-6 py-4 text-sm font-semibold text-gray-800">Kontak</th>
+                    <th class="px-6 py-4 text-sm font-semibold text-center rounded-tr-3xl">Detail</th>
+                </tr>
+            </thead>
+
+            {{-- Body --}}
+            <tbody class="bg-[#fffbea] divide-y divide-gray-200">
+                <tr class="hover:bg-[#fff4d6] transition">
+                    <td class="px-6 py-4 text-gray-900">
+                        Politeknik Negeri Semarang <br>
+                        <span class="text-sm text-gray-600">Gedung Kuliah Terpadu</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        Jl. Prof. Soedarto, SH.<br>Tembalang, Semarang, Jawa Tengah
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">(024) 7473417 ext.256</td>
+                    <td class="px-6 py-4 text-center">
+                        <a href="{{ url('/info-tuk/detail/polines-gkt') }}"
+                           class="bg-yellow-400 hover:bg-yellow-500 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-sm">
                             Detail
-                        </th>
-                    </tr>
-                </thead>
+                        </a>
+                    </td>
+                </tr>
 
-                {{-- Table Body --}}
-                <tbody class="divide-y divide-gray-100">
-                    
-                    {{-- Baris 1: Politeknik Negeri Semarang Gedung Kuliah Terpadu --}}
-                    <tr class="hover:bg-gray-50 transition duration-100">
-                        <td class="px-6 py-4 text-base text-gray-800">
-                            Politeknik Negeri Semarang <br> Gedung Kuliah Terpadu
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            Jl. Prof. Soedarto, SH. <br> Tembalang, Semarang, Jawa Tengah.
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
-                            (024) 7473417 ext.256
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <x-detail-tuk-button url="{{ url('/info-tuk/detail/polines-gkt') }}" />
-                        </td>
-                    </tr>
+                <tr class="hover:bg-[#fff4d6] transition">
+                    <td class="px-6 py-4 text-gray-900">
+                        Politeknik Negeri Semarang <br>
+                        <span class="text-sm text-gray-600">MST LT3</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        Jl. Prof. Soedarto, SH.<br>Tembalang, Semarang, Jawa Tengah
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">25 Oktober 2025</td>
+                    <td class="px-6 py-4 text-center">
+                        <a href="{{ url('/info-tuk/detail/polines-mst-lt3') }}"
+                           class="bg-yellow-400 hover:bg-yellow-500 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-sm">
+                            Detail
+                        </a>
+                    </td>
+                </tr>
 
-                    {{-- Baris 2: Politeknik Negeri Semarang MST LT3 --}}
-                    <tr class="hover:bg-gray-50 transition duration-100">
-                        <td class="px-6 py-4 text-base text-gray-800">
-                            Politeknik Negeri Semarang <br> MST LT3
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            Jl. Prof. Soedarto, SH. <br> Tembalang, Semarang, Jawa Tengah.
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
-                            25 Oktober 2025
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <x-detail-tuk-button url="{{ url('/info-tuk/detail/polines-mst-lt3') }}" />
-                        </td>
-                    </tr>
-
-                    {{-- Baris 3: Politeknik Negeri Semarang Gedung Sekolah Satu --}}
-                    <tr class="hover:bg-gray-50 transition duration-100">
-                        <td class="px-6 py-4 text-base text-gray-800">
-                            Politeknik Negeri Semarang <br> Gedung Sekolah Satu
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            Jl. Prof. Soedarto, SH. <br> Tembalang, Semarang, Jawa Tengah.
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
-                            (024) 7473417 ext.256
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <x-detail-tuk-button url="{{ url('/info-tuk/detail/polines-gedung-satu') }}" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <tr class="hover:bg-[#fff4d6] transition">
+                    <td class="px-6 py-4 text-gray-900">
+                        Politeknik Negeri Semarang <br>
+                        <span class="text-sm text-gray-600">Gedung Sekolah Satu</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        Jl. Prof. Soedarto, SH.<br>Tembalang, Semarang, Jawa Tengah
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">(024) 7473417 ext.256</td>
+                    <td class="px-6 py-4 text-center rounded-b-3xl">
+                        <a href="{{ url('/info-tuk/detail/polines-gedung-satu') }}"
+                           class="bg-yellow-400 hover:bg-yellow-500 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-sm">
+                            Detail
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 @endsection
