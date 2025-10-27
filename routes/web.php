@@ -63,6 +63,10 @@ Route::get('/pertanyaan_lisan', function () {
     return view('pertanyaan_lisan');
 });
 
+Route::get('/umpan_balik', function () {
+    return view('umpan_balik');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
     
