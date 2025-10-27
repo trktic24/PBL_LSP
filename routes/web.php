@@ -1,33 +1,39 @@
 <?php
 
-# use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
+// --------------------
+// Halaman Umum
+// --------------------
 Route::get('/navbar', function () {
-    return view('navbar-fix.blade.php');
+    return view('navbar-fix'); // cukup nama filenya, tanpa .blade.php
 });
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/home', function () {
-    return view('frontend/home');
-})->name('home');
+
 Route::get('/jadwal', function () {
-    return view('frontend/jadwal');
+    return view('jadwal');
 })->name('jadwal');
+
 Route::get('/laporan', function () {
-    return view('frontend/laporan');
+    return view('laporan');
 })->name('laporan');
+
 Route::get('/profil', function () {
-    return view('frontend/profil');
+    return view('profil');
 })->name('profil');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/home', [HomeController::class, 'edit'])->name('home.edit');
-    Route::patch('/home', [HomeController::class, 'update'])->name('home.update');
-    Route::delete('/home', [HomeController::class, 'destroy'])->name('home.destroy');
-});
+// --------------------
+// Halaman Home & Detail Skema
+// --------------------
+
+// Halaman utama (menampilkan semua skema)
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+// Halaman detail skema (klik dari Home)
+Route::get('/skema/{id}', [HomeController::class, 'show'])->name('detail_skema');
 
 require __DIR__.'/auth.php';
