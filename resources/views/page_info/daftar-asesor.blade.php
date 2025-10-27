@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Asesor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Header Section -->
+@extends('layouts.app-profil')
+@section('content')
     <div class="bg-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Daftar Asesor</h1>
@@ -20,10 +12,10 @@
         <!-- Search Box -->
         <div class="flex justify-end mb-4">
             <div class="relative">
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     id="searchInput"
-                    placeholder="Search" 
+                    placeholder="Search"
                     class="w-64 pl-10 pr-4 py-2 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
                     onkeyup="filterTable()"
                 >
@@ -80,7 +72,7 @@
             const input = document.getElementById('searchInput');
             const filter = input.value.toLowerCase();
             const rows = document.querySelectorAll('.table-row');
-            
+
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
                 if (text.includes(filter)) {
@@ -91,5 +83,4 @@
             });
         }
     </script>
-</body>
-</html>
+@endsection
