@@ -59,8 +59,13 @@ Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
+<<<<<<< HEAD
 Route::get('/dokumen_belum_memenuhi', function () {
     return view('dokumen_belum_memenuhi');
+=======
+Route::get('/pertanyaan_lisan', function () {
+    return view('pertanyaan_lisan');
+>>>>>>> 151132ec451a61468709f21d013f32fcf4291b2c
 });
 
 Route::get('/dashboard', function () {
