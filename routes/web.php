@@ -59,6 +59,10 @@ Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
+Route::get('/pertanyaan_lisan', function () {
+    return view('pertanyaan_lisan');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
