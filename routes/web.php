@@ -55,6 +55,10 @@ Route::get('/praasesmen7', function () {
     return view('praasesmen7');
 });
 
+Route::get('/tunggu_pembayaran', function () {
+    return view('tunggu_pembayaran');
+});
+
 Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
