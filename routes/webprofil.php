@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TukController; // <-- TAMBAHKAN INI
 
 /*
 |--------------------------------------------------------------------------
@@ -18,14 +19,14 @@ Route::get('/alur-sertifikasi', function () {
 })->name('info.alur'); // Nama untuk dropdown Info
 
 // Rute untuk info TUK (Daftar)
-Route::get('/info-tuk', function () {
-    return view('page_tuk.info-tuk');
-})->name('info.tuk'); // Nama untuk dropdown Info
+// !!! PERUBAHAN DI SINI: GANTI DARI CLOSURE KE CONTROLLER
+Route::get('/info-tuk', [TukController::class, 'showInfo'])->name('info.tuk'); 
 
 // Rute untuk detail TUK (Nama opsional)
-Route::get('/detail-tuk', function () {
-    return view('page_tuk.detail-tuk');
-})->name('info.tuk.detail'); // Contoh nama
+// !!! PERUBAHAN DI SINI: GANTI DARI CLOSURE KE CONTROLLER DAN TAMBAH PARAMETER {slug}
+// Pastikan nama route ini sama dengan yang Anda gunakan di <a href="{{ route('info.tuk.detail', ... ) }}">
+Route::get('/info-tuk/detail/{slug}', [TukController::class, 'showDetail'])->name('info.tuk.detail'); 
+
 
 /*
 |--------------------------------------------------------------------------
@@ -70,8 +71,7 @@ Route::get('/sertifikasi', function () {
 
 // Rute untuk Daftar Asesor (buat placeholder dulu)
 Route::get('/daftar-asesor', function () {
-    // return view('page_info.daftar-asesor'); // Ganti ke view yang bener nanti
-    return view('page_info.daftar-asesor');; // Placeholder
+    return view('page_info.daftar-asesor');
 })->name('info.daftar-asesor'); // Nama untuk dropdown Info
 
 //
