@@ -50,6 +50,21 @@ Route::get('/schedule_admin', function () {
     return view('schedule_admin'); 
 })->name('schedule_admin');
 
+// User Profile Settings
+Route::get('/user_profile_settings', function () {
+    return view('user_profile_settings'); 
+})->name('user_profile_settings');
+
+// User Profile Form
+Route::get('/user_profile_form', function () {
+    return view('user_profile_form'); 
+})->name('user_profile_form');
+
+// User Profile Bukti
+Route::get('/user_profile_bukti', function () {
+    return view('user_profile_bukti'); 
+})->name('user_profile_bukti');
+
 // proses login pakai kolom "name"
 Route::post('/login', function (Request $request) {
     // validasi input
