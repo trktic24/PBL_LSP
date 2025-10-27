@@ -25,9 +25,9 @@ Route::get('/profil', function () {
 })->name('profil');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/home', [HomeController::class, 'edit'])->name('profile.edit');
-    Route::patch('/home', [HomeController::class, 'update'])->name('profile.update');
-    Route::delete('/home', [HomeController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/home', [HomeController::class, 'edit'])->name('home.edit');
+    Route::patch('/home', [HomeController::class, 'update'])->name('home.update');
+    Route::delete('/home', [HomeController::class, 'destroy'])->name('home.destroy');
 });
 
 require __DIR__.'/auth.php';
