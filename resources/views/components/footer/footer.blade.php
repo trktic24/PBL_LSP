@@ -148,9 +148,9 @@
       showModal: false,
       socialLinks: [
         { name: 'linkedin-in', link: 'https://linkedin.com' },
-        { name: 'facebook-f', link: 'https://www.facebook.com/PolinesOfficial' },
-        { name: 'instagram', link: 'https://www.instagram.com/polinesofficial' },
-        { name: 'youtube', link: 'https://www.youtube.com/@polinesofficial' },
+        { name: 'facebook-f', link: 'https://facebook.com' },
+        { name: 'instagram', link: 'https://instagram.com' },
+        { name: 'youtube', link: 'https://youtube.com' },
       ]
     }
   }
