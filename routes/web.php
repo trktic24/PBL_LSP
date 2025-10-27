@@ -59,6 +59,10 @@ Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
+Route::get('/dokumen_belum_memenuhi', function () {
+    return view('dokumen_belum_memenuhi');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
