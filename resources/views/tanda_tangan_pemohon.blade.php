@@ -3,478 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skema Sertifikat - Tanda Tangan Pemohon</title>
+    <title>Tanda Tangan Pemohon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-
     <style>
-        /* Definisi Warna */
-        :root {
-            --text-dark: #333333; 
-            --icon-dark: #555555; 
-            --icon-blue: #007bff; /* Warna ikon centang biru */
-            --sidebar-bg: #e0f7fa; 
-            --progress-yellow: #ffc107; 
-            --blue-button: #007bff; 
+        /* CSS Kustom Minimal untuk Tampilan Sisi Kiri (Sidebar) */
+        .sidebar-bg {
+            background: linear-gradient(180deg, #F0F8FF 0%, #E0F7FA 100%);
         }
 
-        /* General Styling & Reset */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-            display: flex;
-            /* Hapus justify-content: center; agar konten bisa menempel ke kiri/kanan */
-        }
-
-        .container-fluid {
-            display: flex;
-            width: 100%; /* PENTING: Mengisi seluruh lebar viewport */
-            /* Hapus max-width: 1200px; untuk memungkinkan tampilan full screen */
-            background-color: white;
-            min-height: 100vh;
-            /* Hapus box-shadow untuk tampilan full screen yang lebih rapi */
-        }
-
-        /* ----------------------- */
-        /* Sidebar Styling (Left Column) */
-        /* ----------------------- */
-        .sidebar {
-            width: 350px; /* Diubah menjadi lebar tetap untuk menjaga proporsi saat full screen */
-            background-color: var(--sidebar-bg); 
-            padding: 30px 25px;
-            color: var(--text-dark);
-            flex-shrink: 0; /* Pastikan sidebar tidak mengecil */
-        }
-
-        /* Gaya Tombol Kembali (Tetap Warna Gelap) */
-        .back-link-custom {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            font-weight: bold;
-            color: var(--icon-dark); 
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-
-        .back-arrow {
-            display: inline-block;
-            width: 0.8em;
-            height: 0.8em;
-            border: solid var(--icon-dark); 
-            border-width: 0 0 2px 2px; 
-            transform: rotate(45deg);
-            margin-right: 8px;
-            margin-top: -2px;
-        }
-
-        .section-title {
-            font-size: 1.5em;
-            font-weight: 600;
-            margin-bottom: 25px;
-            color: #000;
-        }
-
-        .profile-card {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .image-placeholder {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            background: linear-gradient(45deg, #1e3c72 0%, #2a5298 50%, #6a1b9a 100%);
-            box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.4);
-        }
-
-        .profile-card h3 {
-            margin: 5px 0;
-            font-size: 1.4em;
-            font-weight: bold;
-        }
-
-        .skema-id {
-            color: #555;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-
-        .description {
-            font-size: 0.85em;
-            color: #333;
-            padding: 0 10px;
-        }
-
-        .requirements {
-            margin-top: 30px;
-            padding-top: 20px;
-        }
-
-        .requirements h4 {
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #000;
-        }
-
-        .requirements ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .requirements li {
-            padding: 5px 0 5px 30px; 
+        /* Styling ikon centang (Warna biru) */
+        .checkmark-list li {
             position: relative;
-            font-size: 0.9em;
-            color: #555;
+            padding-left: 1.5rem; 
         }
 
-        /* Gaya Ikon Centang (Warna Biru) */
-        .requirements li::before {
-            content: ''; 
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 18px; 
-            height: 18px; 
-            border-radius: 50%; 
-            background-color: var(--icon-blue); 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .checkmark-list svg {
+            color: #3b82f6; /* text-blue-600 */
         }
 
-        .requirements li::after {
-            content: '✓'; 
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 12px;
-            color: white;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-        }
-        
-        /* ----------------------- */
-        /* Main Content Styling (Right Column) */
-        /* ----------------------- */
-        .main-content {
-            flex-grow: 1; /* PENTING: Mengisi sisa ruang yang tersedia */
-            padding: 40px 60px;
-        }
-
-        /* Progress Bar Styling */
-        .progress-bar-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 40px;
-        }
-
-        .step {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: #ccc;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.1em;
-            z-index: 1;
-        }
-
-        .step.active {
-            background-color: var(--progress-yellow); 
-            box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
-        }
-
-        .line {
-            height: 4px;
-            width: 100px; 
-            background-color: #ccc;
-        }
-
-        .line.active {
-            background-color: var(--progress-yellow);
-        }
-
-        .main-header {
-            font-size: 2.5em;
-            font-weight: 900;
-            margin: 0;
-            color: var(--text-dark);
-        }
-
-        /* Data and Declaration Styling */
-        .data-declaration {
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
-
-        .data-declaration p:first-child {
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-
-        .data-row {
-            display: flex;
-            margin: 10px 0;
-        }
-
-        .data-row label {
-            width: 180px; 
-            font-weight: normal;
-        }
-
-        .auto-filled-value {
-            flex-grow: 1;
-            font-weight: 500; 
-        }
-
-        .declaration-text {
-            margin-top: 30px;
-            font-size: 0.95em;
-            line-height: 1.5;
-            color: #555;
-        }
-
-        /* Signature Area Styling */
-        .signature-area {
-            position: relative;
-            text-align: left;
-            margin-top: 20px;
-        }
-
-        .signature-input {
+        /* Area Upload/Preview */
+        .upload-box {
             width: 100%;
             height: 180px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            padding: 10px;
-            box-sizing: border-box;
-            cursor: pointer;
-            touch-action: none; 
-        }
-
-        .signature-prompt {
-            color: red;
-            font-size: 0.9em;
-            margin-top: 5px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            padding: 10px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s, opacity 0.3s;
-        }
-
-        .signature-actions {
+            border-radius: 0.25rem;
+            background-color: #f9f9f9;
             display: flex;
-            justify-content: center; 
-            margin-top: 5px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
         }
 
-        .btn-secondary {
-            background-color: #e0e0e0;
-            color: #555;
+        #signature-preview {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
-        .btn-secondary:hover {
-            background-color: #ccc;
+        #upload-label {
+            position: absolute;
+            color: #888;
+            font-style: italic;
+            font-size: 1.1em;
+            pointer-events: none; 
         }
 
-        .navigation-buttons {
+        /* Posisi Tombol Aksi */
+        .signature-actions-container {
             display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 50px; 
+            justify-content: flex-end; 
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
 
-        .btn-previous {
-            background-color: #f0f0f0;
-            color: #555;
-        }
-
-        .btn-previous:hover {
-            background-color: #e0e0e0;
-        }
-
-        .btn-next {
-            background-color: var(--blue-button); 
-            color: white;
-        }
-
-        .btn-next:hover {
-            background-color: #0056b3;
+        /* Gaya Tombol yang Dinonaktifkan */
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-100">
 
-    <div class="container-fluid">
-        <div class="sidebar">
+    <div class="flex min-h-screen">
+        
+        <aside class="w-80 flex-shrink-0 p-8 sidebar-bg">
             
-            <a href="#" class="back-link-custom">
-                <span class="back-arrow"></span> Kembali
+            <a href="/tracker" class="flex items-center text-sm font-medium text-gray-700 hover:text-black mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mr-2 text-gray-700">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+                Kembali
             </a>
-            
-            <h2 class="section-title">Skema Sertifikat</h2>
-            
-            <div class="profile-card">
-                <div class="image-placeholder"></div>
-                <h3>Junior Web Developer</h3>
-                <p class="skema-id">SKM12XXXXXXX</p>
-                <p class="description">Lorem ipsum dolor sit amet, you're the best person I've ever met</p>
-            </div>
 
-            <div class="requirements">
-                <h4>Persyaratan Utama</h4>
-                <ul>
-                    
-                    <li>Rincian Data Pemohon Sertifikasi</li>
-                    <li>Data Diri</li>
-                    <li>Bukti Kelengkapan Pemohon</li>
-                    <li>Bukti Pembayaran</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="main-content">
-            
-            <div class="progress-bar-container">
-                <div class="step active">1</div>
-                <div class="line active"></div>
-                <div class="step active">2</div>
-                <div class="line active"></div>
-                <div class="step active">3</div>
-            </div>
-
-            <h1 class="main-header">Tanda Tangan Pemohon</h1>
-            
-            <div class="data-declaration">
-                <p>Saya yang bertanda tangan di bawah ini</p>
-                <div class="data-row">
-                    <label>Nama</label>
-                    <span class="auto-filled-value" id="nama-pemohon">: </span>
+            <div class="text-center mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Skema Sertifikat</h2>
+                
+                <div class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-white shadow-lg object-cover bg-blue-800 flex items-center justify-center">
                 </div>
-                <div class="data-row">
-                    <label>Jabatan</label>
-                    <span class="auto-filled-value" id="jabatan-pemohon">: </span>
-                </div>
-                <div class="data-row">
-                    <label>Perusahaan</label>
-                    <span class="auto-filled-value" id="perusahaan-pemohon">: </span>
-                </div>
-                <div class="data-row">
-                    <label>Alamat Perusahaan</label>
-                    <span class="auto-filled-value" id="alamat-perusahaan-pemohon">: </span>
-                </div>
-
-                <p class="declaration-text">
-                    Dengan ini saya menyatakan mengisi data dengan sebenarnya untuk dapat digunakan sebagai bukti pemenuhan syarat Sertifikasi Lorem Ipsum Dolor Sit Amet.
+                
+                <h1 class="text-xl font-semibold text-gray-900">Junior Web Developer</h1>
+                <p class="text-sm text-gray-500 mb-4">SKM12XXXXXX</p>
+                
+                <p class="text-xs text-gray-600 italic px-2">
+                    "Lorem ipsum dolor sit amet, you're the best person I've ever met"
                 </p>
             </div>
 
-            <div class="signature-area">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Persyaratan Utama</h3>
+                <ul class="space-y-3 checkmark-list">
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Rincian Data Pemohon Sertifikasi</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Data Diri</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Bukti Kelengkapan Pemohon</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-gray-700">Bukti Pembayaran</span>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-12 bg-white overflow-y-auto">
+            <div class="max-w-4xl mx-auto">
                 
-                <canvas id="signature-canvas" class="signature-input"></canvas>
-                <p class="signature-prompt">*Tanda Tangan di sini</p>
+                <div class="flex items-center justify-center mb-12">
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">1</div>
+                    </div>
+                    <div class="w-24 h-0.5 bg-yellow-400 mx-4"></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">2</div>
+                    </div>
+                    <div class="w-24 h-0.5 bg-yellow-400 mx-4"></div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">3</div>
+                    </div>
+                </div>
+
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">Tanda Tangan Pemohon</h1>
                 
-                <div class="signature-actions">
-                    <button type="button" class="btn btn-secondary" id="clear-signature">Hapus</button>
+                <div class="data-declaration mb-8">
+                    <p class="mb-4 text-gray-900 font-medium">Saya yang bertanda tangan di bawah ini</p>
+                    <div class="data-row flex mb-2">
+                        <label class="font-normal w-40 text-gray-700">Nama</label>
+                        <span class="auto-filled-value" id="nama-pemohon">: </span>
+                    </div>
+                    <div class="data-row flex mb-2">
+                        <label class="font-normal w-40 text-gray-700">Jabatan</label>
+                        <span class="auto-filled-value" id="jabatan-pemohon">: </span>
+                    </div>
+                    <div class="data-row flex mb-2">
+                        <label class="font-normal w-40 text-gray-700">Perusahaan</label>
+                        <span class="auto-filled-value" id="perusahaan-pemohon">: </span>
+                    </div>
+                    <div class="data-row flex mb-2">
+                        <label class="font-normal w-40 text-gray-700">Alamat Perusahaan</label>
+                        <span class="auto-filled-value" id="alamat-perusahaan-pemohon">: </span>
+                    </div>
+
+                    <p class="text-gray-600 mt-6 text-sm">
+                        Dengan ini saya menyatakan mengisi data dengan sebenarnya untuk dapat digunakan sebagai bukti pemenuhan syarat Sertifikasi Lorem Ipsum Dolor Sit Amet.
+                    </p>
                 </div>
                 
-            </div>
+                
+                <div class="signature-area mt-8">
+                    
+                    <div id="signature-preview-container" class="upload-box mb-1">
+                        <input type="file" id="signature-file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                        
+                        <img id="signature-preview" src="#" alt="Preview Tanda Tangan" class="hidden w-full h-full p-2 object-contain">
+                        <span id="upload-label" class="text-gray-500 italic text-lg pointer-events-none">
+                            Klik untuk mengunggah gambar tanda tangan
+                        </span>
+                    </div>
+                    
+                    <p class="text-red-600 text-sm">*Tanda Tangan di sini</p>
+                    
+                    <div class="signature-actions-container">
+                        
+                        <button type="button" id="save-signature-btn" class="px-5 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 btn-disabled">
+                            Simpan
+                        </button>
+                        
+                        <button type="button" id="clear-upload" class="px-5 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300 btn-disabled">
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center mt-10">
+                    <a href="/bukti_kelengkapan_pemohon" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">
+                        Sebelumnya
+                    </a>
+                    <button type="button" id="next-button" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 btn-disabled">
+                        Selanjutnya
+                    </button>
+                </div>
 
-            <div class="navigation-buttons">
-                <button type="button" class="btn btn-previous">Sebelumnya</button>
-                <button type="submit" class="btn btn-next">Selanjutnya</button>
             </div>
+        </main>
 
-        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ----------------------------------------------------
-            // 1. Inisialisasi Signature Pad (Tanda Tangan)
-            // ----------------------------------------------------
-            const canvas = document.getElementById('signature-canvas');
-            const signaturePad = new SignaturePad(canvas, {
-                backgroundColor: 'rgb(255, 255, 255)', 
-                penColor: 'rgb(0, 0, 0)' 
-            });
+            
+            // --- Elemen DOM ---
+            const fileInput = document.getElementById('signature-file');
+            const previewImage = document.getElementById('signature-preview');
+            const uploadLabel = document.getElementById('upload-label');
+            const clearButton = document.getElementById('clear-upload');
+            const saveButton = document.getElementById('save-signature-btn');
+            const nextButton = document.getElementById('next-button');
+            
+            // --- VARIABEL STATUS & SIMULASI BACKEND ---
+            const STORAGE_KEY = 'userSavedSignature';
+            let tempFile = null; 
 
-            // Fungsi untuk menyesuaikan ukuran canvas agar responsif
-            function resizeCanvas() {
-                const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                canvas.width = canvas.offsetWidth * ratio;
-                canvas.height = canvas.offsetHeight * ratio;
-                canvas.getContext("2d").scale(ratio, ratio);
-                signaturePad.clear(); 
+            // ----------------------------------------------------
+            // 1. FUNGSI UTAMA STATUS & TAMPILAN
+            // ----------------------------------------------------
+
+            function toggleButtonState(button, enable, activeColorClass, defaultColorClass = 'bg-gray-200 text-gray-800') {
+                if (enable) {
+                    button.classList.remove('btn-disabled', defaultColorClass, 'bg-gray-400');
+                    button.classList.add(activeColorClass);
+                } else {
+                    button.classList.add('btn-disabled');
+                    button.classList.remove(activeColorClass, defaultColorClass);
+                    button.classList.add('bg-gray-200', 'text-gray-800');
+                }
             }
 
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas(); 
+            function updateUI() {
+                const savedDataUrl = localStorage.getItem(STORAGE_KEY);
+                
+                // 1. Update Preview Area
+                if (savedDataUrl) {
+                    previewImage.src = savedDataUrl;
+                    previewImage.classList.remove('hidden');
+                    uploadLabel.classList.add('hidden');
+                } else if (tempFile) {
+                    previewImage.src = URL.createObjectURL(tempFile);
+                    previewImage.classList.remove('hidden');
+                    uploadLabel.classList.add('hidden');
+                } else {
+                    previewImage.classList.add('hidden');
+                    uploadLabel.classList.remove('hidden');
+                }
+                
+                // 2. Kontrol Tombol Aksi
+                if (tempFile && !savedDataUrl) {
+                    // Ada preview baru, siap disimpan
+                    toggleButtonState(saveButton, true, 'bg-blue-500 text-white');
+                    toggleButtonState(clearButton, true, 'bg-red-500 text-white'); // Hapus preview sementara
+                } else if (savedDataUrl) {
+                    // Sudah tersimpan
+                    toggleButtonState(saveButton, false, 'bg-blue-500 text-white'); // Simpan non-aktif
+                    toggleButtonState(clearButton, true, 'bg-red-500 text-white'); // Hapus aktif (Hapus permanen)
+                } else {
+                    // Kosong
+                    toggleButtonState(saveButton, false, 'bg-blue-500 text-white');
+                    toggleButtonState(clearButton, false, 'bg-red-500 text-white');
+                }
 
-            // Tombol "Hapus" tanda tangan
-            const clearButton = document.getElementById('clear-signature');
-            clearButton.addEventListener('click', function() {
-                signaturePad.clear();
+                // 3. Kontrol Tombol Selanjutnya
+                const nextBtnEnable = !!savedDataUrl;
+                toggleButtonState(nextButton, nextBtnEnable, 'bg-blue-600 text-white');
+            }
+
+            // ----------------------------------------------------
+            // 2. Event Listeners
+            // ----------------------------------------------------
+
+            // Saat file baru dipilih/diubah
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) { 
+                        alert("Ukuran file terlalu besar! Maksimal 2MB.");
+                        fileInput.value = ''; 
+                        return;
+                    }
+                    tempFile = file;
+                } else if (!localStorage.getItem(STORAGE_KEY)) {
+                    // Jika input dicancel DAN tidak ada yang tersimpan, reset tempFile
+                    tempFile = null;
+                }
+                updateUI();
             });
 
+            // Tombol "Simpan"
+            saveButton.addEventListener('click', function() {
+                if (tempFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        localStorage.setItem(STORAGE_KEY, e.target.result);
+                        tempFile = null; 
+                        alert("Tanda tangan berhasil disimpan!");
+                        updateUI();
+                    };
+                    reader.readAsDataURL(tempFile);
+                }
+            });
+
+            // Tombol "Hapus"
+            clearButton.addEventListener('click', function() {
+                const isSaved = localStorage.getItem(STORAGE_KEY);
+
+                if (isSaved) {
+                    if (confirm("Apakah Anda yakin ingin menghapus tanda tangan yang sudah tersimpan?")) {
+                        localStorage.removeItem(STORAGE_KEY);
+                        tempFile = null;
+                        fileInput.value = ''; 
+                        alert("Tanda tangan telah dihapus.");
+                    }
+                } else if (tempFile) {
+                    // Hapus preview sementara
+                    tempFile = null;
+                    fileInput.value = ''; 
+                }
+                updateUI();
+            });
+
+            // Logika Navigasi "Selanjutnya"
+            nextButton.addEventListener('click', function(event) {
+                event.preventDefault(); 
+
+                if (!localStorage.getItem(STORAGE_KEY)) {
+                    alert("Mohon unggah dan simpan gambar tanda tangan Anda terlebih dahulu sebelum melanjutkan.");
+                    return;
+                }
+
+                console.log("Tanda tangan valid. Melanjutkan ke halaman berikutnya.");
+                window.location.href = "/bukti_pembayaran"; 
+            });
 
             // ----------------------------------------------------
-            // 2. Pengambilan Data Otomatis (Simulasi LocalStorage)
+            // 3. Inisialisasi Data Otomatis & Tampilan Awal
             // ----------------------------------------------------
+            
+            // Inisialisasi Data Otomatis (Nama, Jabatan, dll.)
             const namaPemohon = document.getElementById('nama-pemohon');
             const jabatanPemohon = document.getElementById('jabatan-pemohon');
             const perusahaanPemohon = document.getElementById('perusahaan-pemohon');
             const alamatPerusahaanPemohon = document.getElementById('alamat-perusahaan-pemohon');
-
             const userDataFromPreviousPage = JSON.parse(localStorage.getItem('userData')) || {};
 
-            // Mengisi data (jika ada) - Defaultnya kosong
             namaPemohon.textContent = ': ' + (userDataFromPreviousPage.nama || '');
             jabatanPemohon.textContent = ': ' + (userDataFromPreviousPage.jabatan || '');
             perusahaanPemohon.textContent = ': ' + (userDataFromPreviousPage.perusahaan || '');
             alamatPerusahaanPemohon.textContent = ': ' + (userDataFromPreviousPage.alamat || '');
 
-
-            // ----------------------------------------------------
-            // 3. Logika Navigasi (Selanjutnya)
-            // ----------------------------------------------------
-            const nextButton = document.querySelector('.btn-next');
-            nextButton.addEventListener('click', function(event) {
-                event.preventDefault(); 
-
-                if (signaturePad.isEmpty()) {
-                    alert("Mohon berikan tanda tangan Anda terlebih dahulu sebelum melanjutkan.");
-                    return;
-                }
-
-                const signatureDataURL = signaturePad.toDataURL(); 
-                console.log("Data Tanda Tangan (Data URL):", signatureDataURL.substring(0, 50) + "...");
-                
-                alert("Validasi sukses! Data tanda tangan siap dikirim.");
-            });
+            // Muat tampilan awal setelah semua siap
+            updateUI();
         });
     </script>
 
