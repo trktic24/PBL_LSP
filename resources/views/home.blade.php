@@ -7,7 +7,7 @@
             class="w-full h-full object-cover">
 
         <!-- Gradasi biru ke transparan (lebih pekat di kiri) -->
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/95 via-blue-500/60 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
 
         <!-- Gradasi putih di bawah (lebih halus dan tidak terlalu putih) -->
         <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/95 via-white/50 to-transparent"></div>
