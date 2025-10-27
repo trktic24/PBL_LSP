@@ -1,5 +1,8 @@
-<footer class="w-full text-white py-16 font-[Poppins] text-center"
-        style="background: linear-gradient(to top,  #1F3A58 0%, #0081FE 100%);">
+<footer 
+  x-data="footerData()" 
+  class="w-full text-white py-16 font-[Poppins] text-center"
+  style="background: linear-gradient(to top,  #1F3A58 0%, #0081FE 100%);"
+>
   {{-- Bagian teks utama --}}
   <div class="text-center px-6 sm:px-12">
     <div class="space-y-4 sm:space-y-5 max-w-3xl mx-auto">
@@ -28,7 +31,7 @@
     </div>
 
     {{-- Jarak besar antara tombol dan alamat --}}
-    <div style="margin-top: 6.25rem;"></div>
+    <div class="mt-24"></div>
   </div>
 
   {{-- Bagian alamat dan kontak --}}
@@ -50,7 +53,7 @@
   <div class="w-full px-6 sm:px-12 mt-8">
     <div class="border-t border-white/30 pt-3 max-w-6xl mx-auto"></div>
 
-    {{-- Footer bawah: logo kiri, copyright tengah, sosial kanan --}}
+    {{-- Footer bawah --}}
     <div class="relative max-w-6xl mx-auto mt-3 flex items-center justify-between gap-3">
 
       {{-- Logo kiri --}}
@@ -60,27 +63,42 @@
 
       {{-- Copyright tengah --}}
       <p class="absolute left-1/2 transform -translate-x-1/2 text-xs text-white/70">
-        © 2025 LSP POLINES. All rights reserved.
+        © <span x-text="year"></span> LSP POLINES. All rights reserved.
       </p>
 
       {{-- Icon sosial kanan --}}
       <div class="flex gap-2">
-        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
-          <i class="fab fa-linkedin-in text-white text-sm"></i>
-        </a>
-        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
-          <i class="fab fa-facebook-f text-white text-sm"></i>
-        </a>
-        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
-          <i class="fab fa-instagram text-white text-sm"></i>
-        </a>
-        <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition">
-          <i class="fab fa-youtube text-white text-sm"></i>
-        </a>
+        <template x-for="icon in socialLinks" :key="icon.name">
+          <a 
+            :href="icon.link" 
+            target="_blank"
+            class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition"
+          >
+            <i :class="`fab fa-${icon.name} text-white text-sm`"></i>
+          </a>
+        </template>
       </div>
 
     </div>
   </div>
 </footer>
 
+{{-- FontAwesome --}}
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+{{-- Alpine.js --}}
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+<script>
+  function footerData() {
+    return {
+      year: new Date().getFullYear(),
+      socialLinks: [
+        { name: 'linkedin-in', link: 'https://linkedin.com' },
+        { name: 'facebook-f', link: 'https://facebook.com' },
+        { name: 'instagram', link: 'https://instagram.com' },
+        { name: 'youtube', link: 'https://youtube.com' },
+      ]
+    }
+  }
+</script>
