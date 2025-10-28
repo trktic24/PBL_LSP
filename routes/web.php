@@ -15,6 +15,13 @@ Route::get('/laporan', function () {
 Route::get('/profil', function () {
     return view('frontend/profil');
 })->name('profil');
+Route::get('/daftar_asesi', function () {
+return view('frontend/daftar_asesi');
+})->name('daftar_asesi');
+Route::get('/tracker', function () {
+    return view('frontend/tracker');
+})->name('tracker');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
