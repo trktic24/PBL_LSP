@@ -31,10 +31,11 @@ return new class extends Migration
             $table->date('tanggal_lahir');
             $table->boolean('jenis_kelamin')->comment('1 untuk Laki-laki, 0 untuk Perempuan');
             $table->string('kebangsaan', 100);
+            $table->string('pekerjaan');
 
             // Alamat dan Kontak
             $table->text('alamat_rumah');
-            $table->string('kode_pos', 10)->nullable();
+            $table->string('kode_pos', 10);
             $table->string('kabupaten_kota');
             $table->string('provinsi');
             $table->string('nomor_hp', 14);

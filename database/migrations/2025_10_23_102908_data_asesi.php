@@ -34,14 +34,10 @@ return new class extends Migration
             $table->string('kode_pos', 10)->nullable(); // (int) -> Diubah ke string
             $table->string('kabupaten_kota');
             $table->string('provinsi');
-            $table->string('nomor_hp', 20);
+            $table->string('nomor_hp', 16);
             $table->text('email');
 
-            // Data Pekerjaan Sekarang
-            $table->string('nama_perusahaan');
-            $table->text('alamat_perusahaan');
-            $table->string('jabatan');
-            $table->string('kode_pos_perusahaan', 10)->nullable(); // (int) -> Diubah ke string
+            
 
             // (str: path) -> Diubah ke string
             $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
