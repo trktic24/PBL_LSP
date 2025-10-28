@@ -19,31 +19,25 @@ return new class extends Migration
             // Ini akan membuat foreign key ke kolom 'id' di tabel 'users'
             $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
 
-            // Atribut lainnya
+            // Data Pribadi Asesi
             $table->string('nama_lengkap');
-
-            // (int) -> Diubah ke string
-            $table->string('nik', 16)->nullable()->unique();
-
-            // (bool) -> Diterapkan sebagai boolean
-            $table->boolean('jenis_kelamin')->nullable()->comment('misal: 1 Laki-laki, 0 Perempuan');
-
-            $table->string('tempat_lahir', 100)->nullable();
-            $table->date('tanggal_lahir')->nullable();
+            $table->string('nik', 16)->unique(); // (int) -> Diubah ke string
+            $table->string('tempat_lahir', 100);
+            $table->date('tanggal_lahir');
+            $table->boolean('jenis_kelamin')->comment('misal: 1 Laki-laki, 0 Perempuan'); // (bool) -> Diterapkan sebagai boolean
             $table->string('kebangsaan', 100)->nullable();
+            $table->string('pendidikan');
+            $table->string('pekerjaan');
 
-            // (str) -> Diubah ke text
-            $table->text('alamat_rumah')->nullable();
-
-            // (int) -> Diubah ke string
-            $table->string('kode_pos', 10)->nullable();
+            // Alamat dan Kontak
+            $table->text('alamat_rumah'); // (str) -> Diubah ke text
+            $table->string('kode_pos', 10)->nullable(); // (int) -> Diubah ke string
             $table->string('kabupaten_kota');
             $table->string('provinsi');
-            $table->string('nomor_hp', 20)->nullable();
+            $table->string('nomor_hp', 16);
             $table->text('email');
 
-            $table->string('pendidikan')->nullable();
-            $table->string('pekerjaan')->nullable();
+
 
             // (str: path) -> Diubah ke string
             $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
