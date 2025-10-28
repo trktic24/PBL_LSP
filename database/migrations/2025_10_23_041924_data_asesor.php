@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('asesor', function (Blueprint $table) {
             // Sesuai permintaan: id_asesor (primary) (bigint)
-            $table->id('id_asesor'); 
-            
+            $table->id('id_asesor');
+
             // Sesuai permintaan: id_skema (Foreign) (bigint) & id_user (Foreign) (bigint)
             // Ini adalah cara modern Laravel untuk membuat foreign key (unsignedBigInteger + constraint)
             // Pastikan Anda sudah memiliki tabel 'skema' dan 'users'
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('tempat_lahir', 100)->nullable();
             $table->date('tanggal_lahir')->nullable();
             $table->boolean('jenis_kelamin')->nullable()->comment('1 untuk Laki-laki, 0 untuk Perempuan');
+            $table->string('kebangsaan', 100);
             $table->text('alamat_rumah')->nullable();
             $table->text('tempat_tinggal')->nullable();
             $table->string('nomor_hp', 20)->nullable();
@@ -47,7 +48,7 @@ return new class extends Migration
             $table->string('sertifikasi_kompetensi')->nullable()->comment('Path ke file sertifikasi');
 
             // Standar timestamp seperti di tabel users
-            $table->timestamps(); 
+            $table->timestamps();
         });
     }
 

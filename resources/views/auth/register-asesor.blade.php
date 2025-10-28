@@ -81,7 +81,7 @@
                         <hr class="mt-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                             <x-login-form-input id="nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required />
-                            <x-login-form-input id="no_registrasi_asesor" name="no_registrasi_asesor" label="No Registrasi Asesor" :error="$errors->first('no_registrasi_asesor')" required />
+                            <x-login-form-input id="nomor_regis" name="nomor_regis" label="No Registrasi Asesor" :error="$errors->first('nomor_regis')" required />
                             <x-login-form-input id="nik" name="nik" label="NIK" :error="$errors->first('nik')" required />
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                                 label="Jenis Kelamin"
                                 placeholder="Pilih jenis kelamin"
                                 :error="$errors->first('jenis_kelamin')"
-                                :options="['Laki-laki', 'Perempuan']"
+                                :options="[['value' => 1, 'label' => 'Laki-laki'], ['value' => 0, 'label' => 'Perempuan']]"
                                 required
                             />
                             <x-login-form-input id="pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />

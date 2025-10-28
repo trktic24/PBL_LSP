@@ -21,25 +21,27 @@ return new class extends Migration
 
             // Atribut lainnya
             $table->string('nama_lengkap');
-            
+
             // (int) -> Diubah ke string
             $table->string('nik', 16)->nullable()->unique();
-            
+
             // (bool) -> Diterapkan sebagai boolean
             $table->boolean('jenis_kelamin')->nullable()->comment('misal: 1 Laki-laki, 0 Perempuan');
-            
+
             $table->string('tempat_lahir', 100)->nullable();
             $table->date('tanggal_lahir')->nullable();
             $table->string('kebangsaan', 100)->nullable();
-            
+
             // (str) -> Diubah ke text
             $table->text('alamat_rumah')->nullable();
-            
+
             // (int) -> Diubah ke string
             $table->string('kode_pos', 10)->nullable();
-            $table->string('nomor_telepon_rumah', 20)->nullable();
+            $table->string('kabupaten_kota');
+            $table->string('provinsi');
             $table->string('nomor_hp', 20)->nullable();
-            
+            $table->text('email');
+
             $table->string('pendidikan')->nullable();
             $table->string('pekerjaan')->nullable();
 

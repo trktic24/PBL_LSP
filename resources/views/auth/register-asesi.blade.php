@@ -46,7 +46,7 @@
 
                             <x-login-form-input id="nik" name="nik" label="NIK" :error="$errors->first('nik')" required />
 
-                            <x-login-form-input id="tempat_lahir" name="tempat_lahir" label="Tempat Tanggal Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
+                            <x-login-form-input id="tempat_lahir" name="tempat_lahir" label="Tempat Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
 
                             <div x-data="{
                                 tanggal: '',
@@ -81,7 +81,7 @@
                                         placeholder="Pilih tanggal">
                                 </div>
 
-                                <input type="hidden" name="tanggal_lahir_db" :value="formatTanggal(tanggal)">
+                                <input type="hidden" name="tanggal_lahir" :value="formatTanggal(tanggal)">
                             </div>
 
                             <x-login-form-dropdown
@@ -90,14 +90,14 @@
                                 label="Jenis Kelamin"
                                 placeholder="Pilih jenis kelamin"
                                 :error="$errors->first('jenis_kelamin')"
-                                :options="['Laki-laki', 'Perempuan']"
+                                :options="[['value' => 1, 'label' => 'Laki-laki'], ['value' => 0, 'label' => 'Perempuan']]"
                                 required
                             />
 
 
                             <x-login-form-input id="kebangsaan" name="kebangsaan" label="Kebangsaan" :error="$errors->first('kebangsaan')" />
 
-                            <x-login-form-input id="kualifikasi" name="kualifikasi" label="Kualifikasi Pendidikan" :error="$errors->first('kualifikasi')" required />
+                            <x-login-form-input id="pendidikan" name="pendidikan" label="Pendidikan" :error="$errors->first('pendidikan')" required />
 
                             <x-login-form-input id="pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />
                         </div>
@@ -117,10 +117,12 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                            <x-login-form-input id="kabupaten" name="kabupaten" label="Kabupaten / Kota" :error="$errors->first('kabupaten')" required />
-                            <x-login-form-input id="provinsi" name="provinsi" label="Provinsi" :error="$errors->first('provinsi')" required />
-                            <x-login-form-input id="no_hp" name="no_hp" label="Nomor HP" :error="$errors->first('no_hp')" required />
+                            <x-login-form-input id="nomor_hp" name="nomor_hp" label="Nomor HP" :error="$errors->first('nomor_hp')" required />
                             <x-login-form-input id="email" name="email" type="email" label="E-mail" :error="$errors->first('email')" required />
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                            <x-login-form-input id="kabupaten_kota" name="kabupaten_kota" label="Kabupaten/Kota" :error="$errors->first('kabupaten_kota')" required />
+                            <x-login-form-input id="email" name="provinsi" type="provinsi" label="Provinsi" :error="$errors->first('provinsi')" required />
                         </div>
                     </div>
 
@@ -130,9 +132,11 @@
                             <hr class="mt-2">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                            <x-login-form-input id="nama_lembaga" name="nama_lembaga" label="Nama Lembaga" :error="$errors->first('nama_lembaga')" required />
-                            <x-login-form-input id="alamat_kantor_1" name="alamat_kantor_1" label="Alamat Kantor" :error="$errors->first('alamat_kantor_1')" required />
+                            <x-login-form-input id="nama_institusi_perusahaan" name="nama_institusi_perusahaan" label="Nama Institusi Pekerjaan" :error="$errors->first('nama_institusi_perusahaan')" required />
+                            <x-login-form-input id="alamat_kantor" name="alamat_kantor" label="Alamat Institusi" :error="$errors->first('alamat_kantor')" required />
                             <x-login-form-input id="jabatan" name="jabatan" label="Jabatan" :error="$errors->first('jabatan')" required />
+                            <x-login-form-input id="kode_pos_kantor" name="kode_pos_ins" label="Kode Pos Insitusi" :error="$errors->first('kode_pos_kantor')"/>
+                            <x-login-form-input id="no_telepon_kantor" name="no_telepon_kantor" label="No Telepon Institusi" :error="$errors->first('no_telepon_kantor')" />
                         </div>
                     </div>
                 </form>
