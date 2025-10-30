@@ -35,7 +35,6 @@ return new class extends Migration
             $table->string('kabupaten_kota');
             $table->string('provinsi');
             $table->string('nomor_hp', 16);
-            $table->text('email');
 
             // (str: path) -> Diubah ke string
             $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
