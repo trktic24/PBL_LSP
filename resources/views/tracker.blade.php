@@ -78,7 +78,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900">Verifikasi TUK</h3>
+                            <a href="/verifikasi_tuk" class="text-lg font-semibold text-gray-900">Verifikasi TUK</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
                             <button class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600">
@@ -98,7 +98,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900">Persetujuan Asesmen dan Kerahasiaan</h3>
+                            <a href="/fr_ak01" class="text-lg font-semibold text-gray-900">Persetujuan Asesmen dan Kerahasiaan</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
                             <button class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600">

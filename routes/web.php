@@ -83,6 +83,14 @@ Route::get('/umpan_balik', function () {
     return view('umpan_balik');
 });
 
+Route::get('/fr_ak01', function () {
+    return view('fr_ak01');
+});
+
+Route::get('/verifikasi_tuk', function () {
+    return view('verifikasi_tuk');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
     
