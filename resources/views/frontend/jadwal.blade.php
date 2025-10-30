@@ -25,7 +25,6 @@
                 <nav class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 text-gray-700 font-medium">
                     <a href="{{ route('home') }}" class="hover:text-blue-600">Home</a>
                     <a href="{{ route('jadwal') }}" class="text-blue-600 font-semibold underline">Jadwal</a>
-                    <a href="{{ route('laporan') }}" class="hover:text-blue-600">Laporan</a>
                     <a href="{{ route('profil') }}" class="hover:text-blue-600">Profil</a>
                 </nav>
             </div>
@@ -87,7 +86,7 @@
                     <td class="py-3 px-4 text-center">09.00 - 11.00</td>
                     <td class="py-3 px-4 text-center">Lab 1</td>
                     <td class="py-3 px-4 text-center space-x-2">
-                        <a href="#" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-sm font-medium transition">
+                        <a href="{{ route('daftar_asesi') }}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-sm font-medium transition">
                             Lihat
                         </a>
                     </td>

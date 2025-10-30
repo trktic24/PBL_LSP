@@ -22,7 +22,6 @@
                 <nav class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 text-gray-700 font-medium">
                     <a href="{{ route('home') }}" class="hover:text-blue-600">Home</a>
                     <a href="{{ route('jadwal') }}" class="hover:text-blue-600">Jadwal</a>
-                    <a href="{{ route('laporan') }}" class="hover:text-blue-600">Laporan</a>
                     <a href="{{ route('profil') }}" class="text-blue-600 font-semibold underline">Profil</a>
                 </nav>
             </div>
@@ -58,6 +57,9 @@
             <div class="flex-1">
                 <h2 class="text-lg font-semibold mb-3 text-left">Informasi Pribadi</h2>
                 <div class="space-y-3">
+                    <input type="text" id="ttl" placeholder="Tempat Tanggal Lahir"
+                        class="profile-input w-full max-w-[450px] border border-blue-500 rounded-md px-3 py-2" 
+                        readonly>
                     <input type="text" id="ttl" placeholder="Tempat Tanggal Lahir"
                         class="profile-input w-full border border-blue-500 rounded-md px-3 py-2"
                         readonly>

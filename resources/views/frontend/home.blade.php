@@ -41,8 +41,7 @@
 
                 <nav class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 text-gray-700 font-medium">
                     <a href="{{ route('home') }}" class="text-blue-600 font-semibold underline">Home</a>
-                    <a href="{{ route('jadwal') }}" class="hover:text-blue-600">Jadwal Asesmen</a>
-                    <a href="{{ route('laporan') }}" class="hover:text-blue-600">Laporan</a>
+                    <a href="{{ route('jadwal') }}" class="hover:text-blue-600">Jadwal</a>
                     <a href="{{ route('profil') }}" class="hover:text-blue-600">Profil</a>
                 </nav>
             </div>

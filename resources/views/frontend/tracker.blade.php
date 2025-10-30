@@ -11,7 +11,7 @@
     <div class="flex min-h-screen">
         
         <aside class="w-96 bg-blue-500 text-white p-8 flex flex-col flex-shrink-0">
-            <a href="#" class="flex items-center space-x-2 text-sm font-medium opacity-80 hover:opacity-100 mb-10">
+            <a href="{{ route('home') }}" class="flex items-center space-x-2 text-sm font-medium opacity-80 hover:opacity-100 mb-10">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>

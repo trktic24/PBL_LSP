@@ -9,7 +9,7 @@
 <body class="bg-slate-100">
 
     <div> <aside class="w-64 bg-[linear-gradient(135deg,#4F46E5,#0EA5E9)] text-white p-6 flex flex-col fixed h-screen top-0 left-0 overflow-y-auto">
-            <a href="#" class="inline-flex items-center gap-2 text-sm text-black-300 hover:text-white mb-8">
+            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-sm text-black-300 hover:text-white mb-8">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -90,7 +90,11 @@
                                 <td class="p-4 text-sm text-gray-700">1</td>
                                 <td class="p-4 text-sm text-gray-900 font-medium">Tatang Sitartang</td>
 
-                                <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
+                                <td class="text-yellow-600 font-medium">
+                                    <a href="{{ route('tracker') }}" class="p-4 text-sm text-yellow-600 font-medium">
+                                        Dalam Proses
+                                    </a>
+                                </td>
                                 <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
                                 <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
 
