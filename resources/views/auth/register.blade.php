@@ -12,7 +12,7 @@
           ============================================================
         --}}
         <div class="w-full max-w-3xl md:max-w-4xl lg:max-w-5xl bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col"
-             x-data="{ role: $persist('asesi'), currentStep: $persist(1) }">
+             x-data="{ role: 'asesi', currentStep: 1 }">
 
             {{--
               ============================================================
@@ -54,7 +54,7 @@
 
                     <div class="mb-8">
                         <div class="mb-6">
-                            <a href="/home">
+                            <a href="/">
                                 <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="Logo LSP Polines" class="h-20 w-auto">
                             </a>
                         </div>
@@ -183,40 +183,38 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
                             <div class="flex flex-col justify-center">
                                 <div class="space-y-4">
-                                    <div x-data="{email: $persist('{{ old('email') }}')}">
-                                        <x-login-form-input
-                                        id="email" name="email" type="email" label="Email"
-                                            x-model="email" {{-- TAMBAHAN --}}
-                                        :error="$errors->first('email')" required autofocus
-                                    />
-                                    </div>
-                                    <div x-data="{ show: false, pass: $persist(''), conf: $persist('') }">
-                                        <div class="flex flex-col md:flex-row gap-4">
-                                            <x-login-form-input
-                                                id="password" name="password" type="password"
-                                                x-bind:type="show ? 'text' : 'password'" label="Password"
-                                                x-model="pass"
-                                                :error="$errors->first('password')" required autocomplete="new-password"
-                                            />
-                                            <x-login-form-input
-                                                id="password_confirmation" name="password_confirmation" type="password"
-                                                x-bind:type="show ? 'text' : 'password'" label="Konfirmasi Password"
-                                                x-model="conf"
-                                                :error="$errors->first('password_confirmation')" required autocomplete="new-password"
-                                            />
-                                        </div>
-                                        <p x-show="conf.length > 0 && pass !== conf"
-                                            class="text-sm text-red-600 mt-2"
-                                            style="display: none;">
-                                            Konfirmasi Password tidak cocok.
-                                        </p>
-                                        <div class="flex items-center mt-2">
-                                            <input id="show_password_checkbox" type="checkbox"
-                                                   @click="show = !show"
-                                                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                            <label for="show_password_checkbox" class="ml-2 text-sm text-gray-600">
-                                                Tampilkan Password
-                                            </label>
+
+                                    <x-login-form-input
+                                        id="email" name="email" type="email" label="Email"
+                                        :error="$errors->first('email')" required autofocus
+                                    />
+                                    <div x-data="{ show: false, pass :'', conf:'' }">
+                                        <div class="flex flex-col md:flex-row gap-4">
+                                            <x-login-form-input
+                                                id="password" name="password" type="password"
+                                                x-bind:type="show ? 'text' : 'password'" label="Password"
+                                                x-model="pass"
+                                                :error="$errors->first('password')" required autocomplete="new-password"
+                                            />
+                                            <x-login-form-input
+                                                id="password_confirmation" name="password_confirmation" type="password"
+                                                x-bind:type="show ? 'text' : 'password'" label="Konfirmasi Password"
+                                                x-model="conf"
+                                                :error="$errors->first('password_confirmation')" required autocomplete="new-password"
+                                            />
+                                        </div>
+                                        <p x-show="conf.length > 0 && pass !== conf"
+                                            class="text-sm text-red-600 mt-2"
+                                            style="display: none;">
+                                            Konfirmasi Password tidak cocok.
+                                        </p>
+                                        <div class="flex items-center mt-2">
+                                            <input id="show_password_checkbox" type="checkbox"
+                                                   @click="show = !show"
+                                                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                            <label for="show_password_checkbox" class="ml-2 text-sm text-gray-600">
+                                                Tampilkan Password
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
@@ -266,7 +264,7 @@
                                         <p x-show="nik.length>0 && nik.length !== 16"
                                             class="text-sm text-red-600 mt-1"
                                             style="display:none;">
-                                            NIK harus 16 digit. (Sekarang: <span x-text="nik.length"></span> digit)
+                                            NIK harus 16 digit
                                         </p>
                                     </div>
 

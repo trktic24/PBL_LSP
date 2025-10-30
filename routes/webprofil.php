@@ -21,12 +21,12 @@ Route::get('/alur-sertifikasi', function () {
 // Rute untuk info TUK (Daftar) - CLOSURE STATIS
 Route::get('/info-tuk', function () {
     return view('landing_page.page_tuk.info-tuk');
-})->name('info.tuk'); 
+})->name('info.tuk');
 
 // Rute untuk detail TUK - DIPERBAIKI agar menerima parameter $slug
-Route::get('/detail-tuk/{slug}', function ($slug) { 
+Route::get('/detail-tuk/{slug}', function ($slug) {
     // Parameter $slug HARUS diterima di sini agar route tidak error
-    
+
     // Karena tidak ada Controller/Model, View ini akan menampilkan data statis.
     return view('landing_page.page_tuk.detail-tuk');
 })->name('info.tuk.detail');
