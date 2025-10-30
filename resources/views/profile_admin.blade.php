@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />  
 
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -50,7 +50,7 @@
             <div x-data="{ open: false }" class="relative h-full flex items-center">
                 <button @click="open = !open" class="flex items-center text-gray-600 hover:text-blue-600 transition">
                     <span>Master</span>
-                    <i class="fas fa-caret-down ml-2.5 text-sm"></i>
+                    <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
                 </button>
                 <div x-show="open" @click.away="open = false"
                      class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
@@ -68,23 +68,22 @@
         <!-- PROFIL & NOTIF -->
         <div class="flex items-center space-x-6">
             <!-- Ikon Notifikasi -->
-                <a href="{{ route('notifications') }}" 
-                    class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
-                    hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-                    <i class="fas fa-bell text-xl text-gray-600"></i>
-
-            <!-- Animasi Notifikasi Merah Berdenyut -->
-                    <span class="absolute top-2 right-2">
-                        <span class="relative flex size-3">
-                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                            <span class="relative inline-flex size-3 rounded-full bg-red-500"></span>
-                        </span>
+            <a href="{{ route('notifications') }}" 
+               class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
+               hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+                <i class="fas fa-bell text-xl text-gray-600 relative top-[1px]"></i>
+                <span class="absolute top-[9px] right-[9px]">
+                    <span class="relative flex w-2 h-2">
+                        <span class="absolute inline-flex w-full h-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex w-2 h-2 rounded-full bg-red-500"></span>
                     </span>
-                </a>
+                </span>
+            </a>
+
             <!-- Profil Pengguna -->
             <a href="{{ route('profile_admin') }}" 
-                class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-                hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+               class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
+               hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
                 <span class="text-blue-600 font-semibold text-base mr-2">Admin LSP</span>
                 <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
                     <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
@@ -95,22 +94,20 @@
 
     <!-- MAIN CONTENT -->
     <main class="p-8" x-data="{ editMode: false }">
-
-        <!-- Header di luar kotak -->
-        <div class="flex items-center justify-between mb-6 max-w-3xl mx-auto">
-            <a href="{{ route('dashboard') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
-                <i class="fas fa-arrow-left mr-2"></i> Back
-            </a>
-            <h2 class="text-3xl font-semibold text-gray-800 text-center flex-1">Account Settings</h2>
-            <div class="w-[80px]"></div>
-        </div>
-
         <!-- Kotak utama -->
         <div class="bg-white rounded-3xl shadow-xl border border-gray-200 p-10 max-w-3xl mx-auto">
 
+            <!-- HEADER (sekarang di dalam kotak putih) -->
+            <div class="flex items-center justify-between mb-10">
+                <a href="{{ route('dashboard') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                </a>
+                <h2 class="text-3xl font-semibold text-gray-800 text-center flex-1">Account Settings</h2>
+                <div class="w-[80px]"></div>
+            </div>
+
             <!-- FOTO PROFIL -->
             <div class="relative flex justify-center mb-10">
-                <!-- FOTO PROFIL -->
                 <div class="relative">
                     <img src="{{ asset('images/profile.jpg') }}" alt="Avatar" 
                         class="w-48 h-48 rounded-full object-cover shadow-md border-4 border-white">
@@ -120,13 +117,13 @@
                     </label>
                     <input id="avatar-upload" type="file" class="hidden">
                 </div>
-                <!-- DELETE BUTTON: pojok kanan bawah -->
+
+                <!-- Tombol Delete Avatar -->
                 <button class="absolute bottom-2 right-0 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow-sm flex items-center space-x-1.5 transition">
                     <i class="fas fa-trash-alt text-xs"></i>
                     <span>Delete Avatar</span>
                 </button>
             </div>
-
 
             <!-- FORM PROFIL -->
             <form class="space-y-6">
@@ -146,8 +143,7 @@
                            :readonly="!editMode"
                            :class="editMode 
                                 ? 'flex-1 border border-blue-400 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none' 
-                                : 'flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed'"
-                    >
+                                : 'flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed'">
                 </div>
                 @endforeach
 
@@ -166,8 +162,8 @@
                         x-text="editMode ? 'Save Changes' : 'Edit Profile'"
                         :class="editMode 
                             ? 'bg-blue-500 text-white px-6 py-2 rounded-md font-medium shadow-md hover:bg-blue-600 transition' 
-                            : 'border border-gray-300 text-gray-700 px-6 py-2 rounded-md font-medium hover:bg-blue-500 hover:text-white hover:border-blue-500 transition duration-200 shadow-sm'"
-                    ></button>
+                            : 'border border-gray-300 text-gray-700 px-6 py-2 rounded-md font-medium hover:bg-blue-500 hover:text-white hover:border-blue-500 transition duration-200 shadow-sm'">
+                    </button>
                 </div>
             </form>
         </div>

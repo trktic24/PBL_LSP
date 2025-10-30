@@ -49,7 +49,7 @@
         <div x-data="{ open: false }" class="relative h-full flex items-center">
           <button @click="open = !open" class="flex items-center text-blue-600 transition h-full relative">
             <span>Master</span>
-            <i class="fas fa-caret-down ml-2.5 text-sm"></i>
+            <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
             <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
           </button>
 
@@ -79,10 +79,10 @@
                   hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <i class="fas fa-bell text-xl text-gray-600"></i>
           <span class="absolute top-2 right-2">
-            <span class="relative flex size-3">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-              <span class="relative inline-flex size-3 rounded-full bg-red-500"></span>
-            </span>
+              <span class="relative flex w-2 h-2">
+                  <span class="absolute inline-flex w-full h-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex w-2 h-2 rounded-full bg-red-500"></span>
+              </span>
           </span>
         </a>
 
@@ -99,7 +99,7 @@
     </nav>
 
     <!-- MAIN CONTENT (FULL WIDTH) -->
-    <main class="flex-1 px-12 py-8 w-full">
+    <main class="p-6">
       <!-- HEADER -->
       <div class="mb-6">
         <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
@@ -146,14 +146,24 @@
               <td class="px-6 py-4">rafa@polines.ac.id</td>
               <td class="px-6 py-4">0812-3456-7890</td>
               <td class="px-6 py-4">Teknologi Rekayasa Komputer</td>
-              <td class="px-6 py-4 space-x-2">
-                <button class="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg">
-                  <i class="fas fa-pen-to-square"></i> Edit
+              <td class="px-6 py-4 flex space-x-2">
+                <!-- Tombol Edit -->
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-pen"></i> <span>Edit</span>
                 </button>
-                <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg">
-                  <i class="fas fa-trash"></i> Delete
+
+                <!-- Tombol Delete -->
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
+
+                <!-- Tombol View Profile (baru) -->
+                <a href="{{ route('asesi_profile_form') }}"
+                  class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-eye"></i> <span>View</span>
+                </a>
               </td>
+
             </tr>
             <tr>
               <td class="px-6 py-4">2</td>
@@ -161,13 +171,22 @@
               <td class="px-6 py-4">roihan@polines.ac.id</td>
               <td class="px-6 py-4">0813-2222-7777</td>
               <td class="px-6 py-4">Sistem Informasi</td>
-              <td class="px-6 py-4 space-x-2">
-                <button class="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg">
-                  <i class="fas fa-pen-to-square"></i> Edit
+              <td class="px-6 py-4 flex space-x-2">
+                <!-- Tombol Edit -->
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-pen"></i> <span>Edit</span>
                 </button>
-                <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg">
-                  <i class="fas fa-trash"></i> Delete
+
+                <!-- Tombol Delete -->
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
+
+                <!-- Tombol View Profile (baru) -->
+                <a href="{{ route('asesi_profile_form') }}"
+                  class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-eye"></i> <span>View</span>
+                </a>
               </td>
             </tr>
           </tbody>

@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -57,7 +57,7 @@
                 <div x-data="{ open: false }" class="relative h-full flex items-center">
                     <button @click="open = !open" class="flex items-center text-gray-600 hover:text-blue-600 transition">
                         <span>Master</span>
-                        <i class="fas fa-caret-down ml-2.5 text-sm"></i> <!-- jarak diperlebar -->
+                        <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
                     </button>
                     <div x-show="open" @click.away="open = false"
                         class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
@@ -74,20 +74,18 @@
 
             <!-- PROFIL & NOTIF -->
             <div class="flex items-center space-x-6">
-                <!-- Ikon Notifikasi -->
-                    <a href="{{ route('notifications') }}" 
-                        class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
-                        hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-                        <i class="fas fa-bell text-xl text-gray-600"></i>
-
-                <!-- Animasi Notifikasi Merah Berdenyut -->
-                        <span class="absolute top-2 right-2">
-                            <span class="relative flex size-3">
-                                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                                <span class="relative inline-flex size-3 rounded-full bg-red-500"></span>
-                            </span>
-                        </span>
-                    </a>
+                <!-- Notifikasi -->
+                <a href="{{ route('notifications') }}" 
+                class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
+                        hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+                <i class="fas fa-bell text-xl text-gray-600"></i>
+                <span class="absolute top-2 right-2">
+                    <span class="relative flex w-2 h-2">
+                        <span class="absolute inline-flex w-full h-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex w-2 h-2 rounded-full bg-red-500"></span>
+                    </span>
+                </span>
+                </a>
 
                 <!-- Profil Pengguna -->
                 <a href="{{ route('profile_admin') }}" 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TUK Sewaktu | LSP Polines</title>
+  <title>TUK Tempat Kerja | LSP Polines</title>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -28,7 +28,7 @@
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
 
-    <!-- NAVBAR -->
+    <!-- NAVBAR (tidak diubah) -->
     <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
       <div class="flex items-center space-x-4">
         <a href="{{ route('dashboard') }}">
@@ -57,14 +57,13 @@
         <a href="{{ route('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
 
         <!-- TUK aktif -->
-        <a href="{{ route('tuk_sewaktu') }}" class="text-blue-600 h-full flex items-center relative">
+        <a href="{{ route('tuk_tempatkerja') }}" class="text-blue-600 h-full flex items-center relative">
           TUK
           <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
         </a>
       </div>
 
       <div class="flex items-center space-x-6">
-        <!-- Notifikasi -->
         <a href="{{ route('notifications') }}" 
            class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md 
                   hover:shadow-inner transition-all">
@@ -77,10 +76,9 @@
           </span>
         </a>
 
-        <!-- Profil -->
         <a href="{{ route('profile_admin') }}" 
-           class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-md 
-           hover:shadow-inner transition-all">
+           class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
+           hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
           <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
             <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
@@ -91,16 +89,14 @@
 
     <!-- MAIN CONTENT -->
     <main class="p-6">
-      <!-- HEADER -->
       <div class="mb-6">
         <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
         <h2 class="text-3xl font-bold text-gray-900">Tempat Uji Kompetensi (TUK)</h2>
       </div>
 
-      <!-- SEARCH + TAB + BUTTON -->
-      <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
-        <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto flex-1">
-          <!-- Search -->
+      <!-- SEARCH BAR + TAB SWITCH + ACTION BUTTONS -->
+      <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <div class="flex items-center w-full lg:w-auto gap-4 flex-1">
           <div class="relative w-full max-w-sm">
             <input type="text" placeholder="Search"
                    class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -109,18 +105,19 @@
 
           <!-- Tab Switch -->
           <div class="flex space-x-2 p-1 bg-white border border-gray-200 rounded-xl shadow-sm">
+            <a href="{{ route('tuk_sewaktu') }}" 
+                class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm transition-all">
+                Sewaktu
+            </a>
             <button class="px-4 py-2 text-gray-800 font-semibold rounded-xl text-sm transition-all"
                     style="background: linear-gradient(to right, #b4e1ff, #d7f89c); box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
-              Sewaktu
-            </button>
-            <a href="{{ route('tuk_tempatkerja') }}" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm transition-all">
               Tempat Kerja
-            </a>
+            </button>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex items-center space-x-3" x-data="{ open: false }">
+        <div class="flex space-x-3 items-center" x-data="{ open: false }">
           <div class="relative">
             <button @click="open = !open"
                     class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 flex items-center">
@@ -137,56 +134,56 @@
             </div>
           </div>
 
-          <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition">
+          <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">
             <i class="fas fa-plus mr-2"></i> Add TUK
           </button>
         </div>
       </div>
 
-      <!-- TABLE -->
+      <!-- CONTENT TABLE -->
       <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 w-full overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 text-sm">
           <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
             <tr>
-              <th class="px-6 py-3 text-left font-semibold">ID</th>
-              <th class="px-6 py-3 text-left font-semibold">Nama TUK</th>
-              <th class="px-6 py-3 text-left font-semibold">Kota/Kab</th>
-              <th class="px-6 py-3 text-left font-semibold">Kapasitas</th>
-              <th class="px-6 py-3 text-left font-semibold">Ruang Tersedia</th>
-              <th class="px-6 py-3 text-left font-semibold">Status</th>
-              <th class="px-6 py-3 text-left font-semibold">Aksi</th>
+              <th class="px-6 py-3 text-left">ID</th>
+              <th class="px-6 py-3 text-left">Nama TUK</th>
+              <th class="px-6 py-3 text-left">Kota/Kab</th>
+              <th class="px-6 py-3 text-left">Kapasitas</th>
+              <th class="px-6 py-3 text-left">Ruang Tersedia</th>
+              <th class="px-6 py-3 text-left">Status</th>
+              <th class="px-6 py-3 text-left">Aksi</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr class="hover:bg-gray-50 transition">
+            <tr>
               <td class="px-6 py-4">1</td>
-              <td class="px-6 py-4 font-medium">Politeknik Negeri Semarang</td>
+              <td class="px-6 py-4 font-medium">PT PLN (Persero) Semarang</td>
               <td class="px-6 py-4">Semarang</td>
-              <td class="px-6 py-4">50</td>
-              <td class="px-6 py-4">4 Ruangan</td>
+              <td class="px-6 py-4">40</td>
+              <td class="px-6 py-4">3 Ruangan</td>
               <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Aktif</span></td>
               <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
                   <i class="fas fa-pen"></i> <span>Edit</span>
                 </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
                   <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
               </td>
             </tr>
 
-            <tr class="hover:bg-gray-50 transition">
+            <tr>
               <td class="px-6 py-4">2</td>
-              <td class="px-6 py-4 font-medium">SMK Negeri 1 Kendal</td>
+              <td class="px-6 py-4 font-medium">PT Telkom Indonesia</td>
               <td class="px-6 py-4">Kendal</td>
-              <td class="px-6 py-4">30</td>
+              <td class="px-6 py-4">25</td>
               <td class="px-6 py-4">2 Ruangan</td>
               <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-700 rounded-full">Pending</span></td>
               <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
                   <i class="fas fa-pen"></i> <span>Edit</span>
                 </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
                   <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
               </td>

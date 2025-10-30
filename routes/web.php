@@ -45,25 +45,30 @@ Route::get('/tuk_sewaktu', function () {
     return view('tuk_sewaktu'); 
 })->name('tuk_sewaktu');
 
+// TUK Tempat Kerja
+Route::get('/tuk_tempatkerja', function () {
+    return view('tuk_tempatkerja'); 
+})->name('tuk_tempatkerja');
+
 // Schedule
 Route::get('/schedule_admin', function () {
     return view('schedule_admin'); 
 })->name('schedule_admin');
 
-// User Profile Settings
-Route::get('/user_profile_settings', function () {
-    return view('user_profile_settings'); 
-})->name('user_profile_settings');
+// asesi Profile Settings
+Route::get('/asesi_profile_settings', function () {
+    return view('asesi_profile_settings'); 
+})->name('asesi_profile_settings');
 
-// User Profile Form
-Route::get('/user_profile_form', function () {
-    return view('user_profile_form'); 
-})->name('user_profile_form');
+// asesi Profile Form
+Route::get('/asesi_profile_form', function () {
+    return view('asesi_profile_form'); 
+})->name('asesi_profile_form');
 
-// User Profile Bukti
-Route::get('/user_profile_bukti', function () {
-    return view('user_profile_bukti'); 
-})->name('user_profile_bukti');
+// asesi Profile Bukti
+Route::get('/asesi_profile_bukti', function () {
+    return view('asesi_profile_bukti'); 
+})->name('asesi_profile_bukti');
 
 // proses login pakai kolom "name"
 Route::post('/login', function (Request $request) {

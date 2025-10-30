@@ -47,14 +47,14 @@
         <div x-data="{ open: false }" class="relative h-full flex items-center">
           <button @click="open = !open" class="flex items-center text-blue-600 transition h-full relative">
             <span>Master</span>
-            <i class="fas fa-caret-down ml-2.5 text-sm"></i>
+            <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
             <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
           </button>
 
           <div x-show="open" @click.away="open = false"
                class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
                x-transition>
-            <a href="{{ route('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
+            <a href="{{ route('master_skema') }}" class="block px-4 py-2 text-blue-600 bg-blue-50 hover:text-blue-600">Skema</a>
             <a href="{{ route('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
             <a href="{{ route('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
           </div>
@@ -72,10 +72,10 @@
                   hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <i class="fas fa-bell text-xl text-gray-600"></i>
           <span class="absolute top-2 right-2">
-            <span class="relative flex size-3">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-              <span class="relative inline-flex size-3 rounded-full bg-red-500"></span>
-            </span>
+              <span class="relative flex w-2 h-2">
+                  <span class="absolute inline-flex w-full h-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex w-2 h-2 rounded-full bg-red-500"></span>
+              </span>
           </span>
         </a>
 
@@ -92,7 +92,7 @@
     </nav>
 
     <!-- MAIN CONTENT (FULL WIDTH) -->
-    <main class="flex-1 p-8 w-full">
+    <main class="p-6">
       <!-- HEADER -->
       <div class="mb-6">
         <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>

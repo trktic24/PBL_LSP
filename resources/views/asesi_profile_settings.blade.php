@@ -37,7 +37,7 @@
                 <div x-data="{ open: false }" class="relative h-full flex items-center">
                     <button @click="open = !open" class="flex items-center text-gray-600 hover:text-blue-600 transition">
                         <span>Master</span>
-                        <i class="fas fa-caret-down ml-2.5 text-sm"></i>
+                        <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
                     </button>
                     <div x-show="open" @click.away="open = false"
                         class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
@@ -97,16 +97,16 @@
                 </div>
 
                 <div class="space-y-2">
-                    <a href="user_profile_settings" class="flex items-center p-3 text-sm font-semibold rounded-xl bg-blue-600 text-white shadow">
+                    <a href="{{ route('asesi_profile_settings') }}" class="flex items-center p-3 text-sm font-semibold rounded-xl bg-blue-600 text-white shadow">
                         <i class="fas fa-user-circle mr-3 text-lg"></i> Profile Settings
                     </a>
-                    <a href="user_profile_form" class="flex items-center p-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-100 transition">
+                    <a href="{{ route('asesi_profile_form') }}" class="flex items-center p-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-100 transition">
                         <i class="far fa-clipboard mr-3 text-lg"></i> Form
                     </a>
                     <a href="#" class="flex items-center p-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-100 transition">
                         <i class="fas fa-history mr-3 text-lg"></i> Riwayat Aktivitas
                     </a>
-                    <a href="user_profile_bukti" class="flex items-center p-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-100 transition">
+                    <a href="{{ route('asesi_profile_settings') }}" class="flex items-center p-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-100 transition">
                         <i class="fas fa-check-square mr-3 text-lg"></i> Bukti Kelengkapan
                     </a>
                 </div>
