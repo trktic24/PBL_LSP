@@ -26,7 +26,11 @@ class Asesi extends Model
         'pekerjaan',
         'alamat_rumah',
         'kode_pos',
+        'kabupaten_kota',
+        'provinsi',
         'nomor_hp',
+        'email',
+        'tanda_tangan',
     ];
 
     protected $casts = [

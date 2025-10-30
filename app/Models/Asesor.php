@@ -25,8 +25,11 @@ class Asesor extends Model
         'tempat_lahir',
         'tanggal_lahir', // Simpan YYYY-MM-DD
         'jenis_kelamin', // Simpan 0/1
+        'kebangsaan',
         'alamat_rumah',
-        'tempat_tinggal', // Dari 'kabupaten' & 'provinsi'?
+        'kode_pos', // <-- Ditambahkan
+        'kabupaten_kota', // <-- Ditambahkan (menggantikan tempat_tinggal)
+        'provinsi',
         'nomor_hp',
         'NPWP',
         'nama_bank',
@@ -41,7 +44,7 @@ class Asesor extends Model
         'ijazah',
         'sertifikat_asesor',
         'sertifikasi_kompetensi',
-        // 'tanda_tangan', // Sesuaikan nama kolom jika beda
+        'tanda_tangan'
     ];
 
     // Casting

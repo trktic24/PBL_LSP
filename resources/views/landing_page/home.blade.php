@@ -1,4 +1,5 @@
 @extends('layouts.app-profil')
+
 @section('content')
 
     <section class="relative h-[1000px] rounded-t-4xl overflow-hidden">
@@ -17,13 +18,6 @@
             <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
             <p class="text-xl mb-6 leading-relaxed">Lorem ipsum dolor sit amet, you're the best person I've ever met!</p>
         </div>
-<<<<<<< HEAD
-        <div>
-            <x-tombol.detail/>
-        </div>
-=======
-
->>>>>>> b9f4f460b0692c4f26a710e4447a0390cbec905f
     </section>
 
     <style>

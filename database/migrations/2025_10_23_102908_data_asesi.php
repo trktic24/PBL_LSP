@@ -12,39 +12,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('asesi', function (Blueprint $table) {
-            // Sesuai ERD: id_asesi (PK)
-            $table->id('id_asesi');
+    $table->id('id_asesi');
 
-            // Sesuai ERD: id_user (FK)
-            // Ini akan membuat foreign key ke kolom 'id' di tabel 'users'
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
+    $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
 
-            // Data Pribadi Asesi
-            $table->string('nama_lengkap');
-            $table->string('nik', 16)->unique(); // (int) -> Diubah ke string
-            $table->string('tempat_lahir', 100);
-            $table->date('tanggal_lahir');
-            $table->boolean('jenis_kelamin')->comment('misal: 1 Laki-laki, 0 Perempuan'); // (bool) -> Diterapkan sebagai boolean
-            $table->string('kebangsaan', 100)->nullable();
-            $table->string('pendidikan');
-            $table->string('pekerjaan');
+    $table->string('nama_lengkap')->nullable();
+    $table->string('nik', 16)->nullable()->unique();
+    $table->string('tempat_lahir', 100)->nullable();
+    $table->date('tanggal_lahir')->nullable();
+    $table->boolean('jenis_kelamin')->nullable()->comment('1 Laki-laki, 0 Perempuan');
+    $table->string('kebangsaan', 100)->nullable();
+    $table->string('pendidikan')->nullable();
+    $table->string('pekerjaan')->nullable();
 
-            // Alamat dan Kontak
-            $table->text('alamat_rumah'); // (str) -> Diubah ke text
-            $table->string('kode_pos', 10)->nullable(); // (int) -> Diubah ke string
-            $table->string('kabupaten_kota');
-            $table->string('provinsi');
-            $table->string('nomor_hp', 16);
-            $table->text('email');
+    $table->text('alamat_rumah')->nullable();
+    $table->string('kode_pos', 10)->nullable();
+    $table->string('kabupaten_kota')->nullable();
+    $table->string('provinsi')->nullable();
+    $table->string('nomor_hp', 16)->nullable();
 
+    $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
 
-
-            // (str: path) -> Diubah ke string
-            $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
-
-            // Standar timestamp
-            $table->timestamps();
-        });
+    $table->timestamps();
+});
     }
 
     /**

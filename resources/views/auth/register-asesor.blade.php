@@ -139,6 +139,7 @@
                                 :options="[['value' => 1, 'label' => 'Laki-laki'], ['value' => 0, 'label' => 'Perempuan']]"
                                 required
                             />
+                            <x-login-form-input id="kebangsaan" name="kebangsaan" label="Kebangsaan" :error="$errors->first('kebangsaan')"/>
                             <x-login-form-input id="pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />
                         </div>
                     </div>
@@ -155,9 +156,9 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                            <x-login-form-input id="kabupaten" name="kabupaten" label="Kabupaten / Kota" :error="$errors->first('kabupaten')" required />
+                            <x-login-form-input id="kabupaten_kota" name="kabupaten_kota" label="Kabupaten / Kota" :error="$errors->first('kabupaten_kota')" required />
                             <x-login-form-input id="provinsi" name="provinsi" label="Provinsi" :error="$errors->first('provinsi')" required />
-                            <x-login-form-input id="no_hp" name="no_hp" label="Nomor HP" :error="$errors->first('no_hp')" required />
+                            <x-login-form-input id="nomor_hp" name="nomor_hp" label="Nomor HP" :error="$errors->first('nomor_hp')" required />
                             <x-login-form-input id="email" name="email" type="email" label="E-mail" :error="$errors->first('email')" required />
                             <x-login-form-input id="npwp" name="npwp" label="NPWP" :error="$errors->first('npwp')" required />
                         </div>
@@ -169,7 +170,7 @@
                         <hr class="mt-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                             <x-login-form-input id="nama_bank" name="nama_bank" label="Nama Bank" :error="$errors->first('nama_bank')" required />
-                            <x-login-form-input id="nomor_rekening" name="nomor_rekening" label="Nomor Rekening" :error="$errors->first('nomor_rekening')" required />
+                            <x-login-form-input id="norek" name="norek" label="Nomor Rekening" :error="$errors->first('norek')" required />
                         </div>
                     </div>
                 </form>
