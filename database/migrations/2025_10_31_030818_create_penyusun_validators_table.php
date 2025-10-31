@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('penyusun_validators', function (Blueprint $table) {
-            $table->id();
+            $table->id("id_penyusun_validator");
             $table->timestamps();
         });
     }

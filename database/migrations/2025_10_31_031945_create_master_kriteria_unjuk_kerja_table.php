@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('master_kriteria_unjuk_kerja', function (Blueprint $table) {
-            $table->id();
+            $table->id("id_kriteria");
             $table->timestamps();
         });
     }
