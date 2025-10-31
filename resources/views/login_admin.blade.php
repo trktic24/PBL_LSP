@@ -1,207 +1,87 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Admin LSP Polines</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Admin LSP Polines</title>
 
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100%;
-            background: linear-gradient(135deg, #e6ebf1, #dce4f7);
-        }
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        header {
-            width: 100%;
-            height: 80px;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 10;
-        }
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-        header img {
-            height: 70px;
-        }
-
-        /* 🔹 BAGIAN KONTEN UTAMA (di bawah header) */
-        .content {
-            flex: 1;
-            display: flex;
-            margin-top: 80px; /* supaya tidak tertutup header */
-            height: calc(100vh - 80px);
-        }
-
-        /* Kolom kiri: form login */
-        .left {
-            width: 50%;
-            padding: 200px;
-            background: linear-gradient(to bottom right, #f5f8ff, #eaf0ff);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .left h2 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 10px;
-        }
-
-        .left p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 35px;
-        }
-
-        label {
-            font-weight: 600;
-            color: #333;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        input {
-            width: 500px;
-            max-width: 100%; /* agar tetap responsif */
-            padding: 12px 16px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            margin-bottom: 22px;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            border-color: #4a6cf7;
-            box-shadow: 0 0 6px rgba(74,108,247,0.3);
-        }
-
-        .forgot {
-            font-size: 13px;
-            color: #555;
-            margin-bottom: 30px;
-        }
-
-        .forgot a {
-            color: #4a6cf7;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        button {
-            width: 500px;
-            max-width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            color: #222;
-            background: linear-gradient(to right, #b4e1ff, #d7f89c);
-            box-shadow:
-                inset 2px 2px 5px rgba(255, 255, 255, 0.6),  /* inner highlight atas kiri */
-                inset -3px -3px 6px rgba(0, 0, 0, 0.15),   /* inner shadow bawah kanan */
-                0 4px 10px rgba(0, 0, 0, 0.1);            /* outer soft shadow */
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: linear-gradient(to right, #a6d5ff, #c9f588);
-        }
-
-        .footer-text {
-            text-align: right;
-            font-size: 13px;
-            color: #444;
-            margin-top: 25px;
-        }
-
-        .footer-text span {
-            font-weight: 700;
-        }
-
-        /* Kolom kanan: foto gedung */
-        .right {
-            width: 50%;
-            background-image: url('{{ asset("images/gedung_gkt.jpg") }}');
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* Responsif */
-        @media (max-width: 900px) {
-            .content {
-                flex-direction: column;
-            }
-
-            .left, .right {
-                width: 100%;
-                height: 50%;
-            }
-
-            .left {
-                padding: 60px 30px;
-            }
-
-            header img {
-                height: 50px;
-            }
-        }
-    </style>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+  </style>
 </head>
-<body>
-    <!-- HEADER PUTIH -->
-    <header>
-        <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines">
-    </header>
+<body class="flex flex-col min-h-screen bg-gradient-to-br from-[#e6ebf1] to-[#dce4f7]">
 
-    <!-- KONTEN UTAMA -->
-    <div class="content">
-        <div class="left">
-            <h2>Kamu Admin LSP Polines?</h2>
-            <p>Enter your username and password to access your account.</p>
+  <!-- HEADER -->
+  <header class="fixed top-0 left-0 w-full bg-white shadow-md z-10 flex justify-center items-center h-20">
+    <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16">
+  </header>
 
-            <form action="{{ url('/login') }}" method="POST">
-                @csrf
-                <label>Username</label>
-                <input type="text" name="username" placeholder="Username" required>
+  <!-- MAIN CONTENT -->
+  <main class="flex flex-1 mt-20">
+    
+    <!-- LEFT: Login Form -->
+    <div class="w-1/2 flex justify-center items-center bg-gradient-to-br from-[#f5f8ff] to-[#eaf0ff] px-10">
+      <div class="w-full max-w-md">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Kamu Admin LSP Polines?</h2>
+        <p class="text-sm text-gray-500 mb-8 text-center">Masukkan username dan password untuk mengakses akunmu.</p>
 
-                <label>Password</label>
-                <input type="password" name="password" placeholder="Password" required>
+        <form action="{{ url('/login') }}" method="POST" class="space-y-6">
+          @csrf
 
-                <div class="forgot">
-                    Forgot Your <a href="#">Password?</a>
-                </div>
+          <!-- Username -->
+          <div>
+            <label for="username" class="block text-gray-700 font-semibold mb-2">Username</label>
+            <input id="username" type="text" name="username" placeholder="Username"
+                   class="w-full border border-gray-300 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
 
-                <button type="submit">LOGIN</button>
-            </form>
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-gray-700 font-semibold mb-2">Password</label>
+            <input id="password" type="password" name="password" placeholder="Password"
+                   class="w-full border border-gray-300 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
 
-            @if(session('error'))
-                 <p style="color:red; margin-top: 10px;">{{ session('error') }}</p>
-            @endif
+          <!-- Forgot -->
+          <div class="text-sm text-gray-600 text-right">
+            <a href="#" class="text-blue-600 font-semibold hover:underline">Forgot your password?</a>
+          </div>
 
-            <div class="footer-text">
-                Jadi kamu <span>Super Admin LSP Polines?</span>
-            </div>
-        </div>
+          <!-- Button -->
+          <button type="submit"
+                  class="w-full py-3 font-bold text-gray-800 rounded-xl transition
+                         bg-gradient-to-r from-[#b4e1ff] to-[#d7f89c]
+                         shadow-[inset_2px_2px_5px_rgba(255,255,255,0.6),inset_-3px_-3px_6px_rgba(0,0,0,0.15),0_4px_10px_rgba(0,0,0,0.1)]
+                         hover:from-[#a6d5ff] hover:to-[#c9f588]">
+            LOGIN
+          </button>
 
-        <div class="right"></div>
+          @if(session('error'))
+            <p class="text-red-500 text-sm text-center mt-2">{{ session('error') }}</p>
+          @endif
+        </form>
+      </div>
     </div>
+
+    <!-- RIGHT: Image -->
+    <div class="w-1/2 bg-cover bg-center"
+         style="background-image: url('{{ asset('images/gedung_gkt.jpg') }}');">
+    </div>
+  </main>
+
+  <!-- RESPONSIVE STACK -->
+  <style>
+    @media (max-width: 1024px) {
+      main { flex-direction: column; }
+      main > div { width: 100%; height: 50vh; }
+    }
+  </style>
+
 </body>
 </html>
