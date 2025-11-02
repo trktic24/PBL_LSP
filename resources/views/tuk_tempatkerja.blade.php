@@ -134,9 +134,10 @@
             </div>
           </div>
 
-          <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">
+          <a href="{{ route('add_tuk') }}"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center">
             <i class="fas fa-plus mr-2"></i> Add TUK
-          </button>
+          </a>  
         </div>
       </div>
 

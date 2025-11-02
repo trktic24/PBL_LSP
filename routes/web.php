@@ -40,10 +40,15 @@ Route::get('/master_asesor', function () {
     return view('master_asesor'); 
 })->name('master_asesor');
 
-// TUK SEWAKTU
+// TUK sewaktu
 Route::get('/tuk_sewaktu', function () {
     return view('tuk_sewaktu'); 
 })->name('tuk_sewaktu');
+
+// Add TUK
+Route::get('/add_tuk', function () {
+    return view('add_tuk'); 
+})->name('add_tuk');
 
 // TUK Tempat Kerja
 Route::get('/tuk_tempatkerja', function () {
