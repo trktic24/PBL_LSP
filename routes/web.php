@@ -3,9 +3,31 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+<<<<<<< HEAD
 Route::get('/', function () {
     return view('halaman_ambil_skema');
 });
+=======
+Route::get('/home', function () {
+    return view('frontend/home');
+})->name('home');
+Route::get('/jadwal', function () {
+    return view('frontend/jadwal');
+})->name('jadwal');
+Route::get('/laporan', function () {
+    return view('frontend/laporan');
+})->name('laporan');
+Route::get('/profil', function () {
+    return view('frontend/profil');
+})->name('profil');
+Route::get('/daftar_asesi', function () {
+return view('frontend/daftar_asesi');
+})->name('daftar_asesi');
+Route::get('/tracker', function () {
+    return view('frontend/tracker');
+})->name('tracker');
+
+>>>>>>> 0e9987dd08e6a24e243de09620a24cb467627eaf
 
 Route::get('/tracker', function () {
     return view('tracker');

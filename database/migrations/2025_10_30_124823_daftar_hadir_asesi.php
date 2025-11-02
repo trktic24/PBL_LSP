@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            // Sesuai ERD (id_role)
-            $table->id('id_role'); 
-            
-            // Sesuai ERD (nama_role)
-            $table->string('nama_role')->unique();            
+        Schema::create('daftar_hadir_asesi', function (Blueprint $table) {
+            $table->id('id_daftar_hadir_asesi');
+
+            $table->foreignId('id_jadwal')->constrained('jadwal', 'id_jadwal')->onUpdate('cascade')->onDelete('restrict');
+            $table->string('tanda_tangan_asesi')->comment('Path ke file tanda tangan asesi');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('daftar_hadir_asesi');
     }
 };
