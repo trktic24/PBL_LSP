@@ -71,7 +71,7 @@ class TukController extends Controller
             case 1:
                 $data_tuk = [
                     'id' => 1,
-                    'nama_lengkap' => "TUK Teknik Elektro", 
+                    'nama_lengkap' => "Politeknik Negeri Semarang", 
                     'alamat_detail' => 'Bengkel Listrik Elektro, Jl. Prof. Soedarto',
                     'telepon' => '(024) 7473417 ext.301',
                     'koordinat_maps' => '#', 
@@ -80,7 +80,7 @@ class TukController extends Controller
             case 2:
                 $data_tuk = [
                     'id' => 2,
-                    'nama_lengkap' => "TUK Teknik Mesin", 
+                    'nama_lengkap' => "Politeknik Negeri Semarang", 
                     'alamat_detail' => 'Bengkel Perawatan & Produksi, Jl. Prof. Soedarto',
                     'telepon' => '(024) 7473417 ext.402',
                     'koordinat_maps' => '#', 
@@ -89,7 +89,7 @@ class TukController extends Controller
             case 3:
                 $data_tuk = [
                     'id' => 3,
-                    'nama_lengkap' => "TUK Teknik Sipil", 
+                    'nama_lengkap' => "Politeknik Negeri Semarang", 
                     'alamat_detail' => 'Laboratorium Terpadu Teknik Sipil',
                     'telepon' => '(024) 7473417 ext.503',
                     'koordinat_maps' => '#', 
@@ -98,7 +98,7 @@ class TukController extends Controller
             case 4:
                 $data_tuk = [
                     'id' => 4,
-                    'nama_lengkap' => "TUK Administrasi Bisnis", 
+                    'nama_lengkap' => "Politeknik Negeri Semarang", 
                     'alamat_detail' => 'Gedung Administrasi Bisnis, Jl. Prof. Soedarto',
                     'telepon' => '(024) 7473417 ext.604',
                     'koordinat_maps' => '#', 
@@ -107,7 +107,7 @@ class TukController extends Controller
             case 5:
                 $data_tuk = [
                     'id' => 5,
-                    'nama_lengkap' => "TUK Akuntansi", 
+                    'nama_lengkap' => "Politeknik Negeri Semarang", 
                     'alamat_detail' => 'Laboratorium Akuntansi & Keuangan, Jl. Prof. Soedarto',
                     'telepon' => '(024) 7473417 ext.705',
                     'koordinat_maps' => '#', 
