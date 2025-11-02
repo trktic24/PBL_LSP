@@ -19,79 +19,6 @@
             background-color: #ffffff; /* Fallback background */
         }
 
-        /* Sidebar (dari Gambar) */
-        .sidebar {
-            width: 280px;
-            background-color: #3F96F6; /* Warna navy gelap dari gambar */
-            color: #ffffff;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            border-top-right-radius: 16px;
-            border-bottom-right-radius: 16px;
-        }
-
-        .sidebar-header {
-            font-size: 0.875rem;
-            color: #000000;
-            margin-bottom: 24px;
-        }
-
-        .sidebar-header a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .profile {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .profile .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 16px auto;
-            background-color: #4b5563; /* Placeholder avatar */
-            /* Ganti dengan <img> jika ada URL gambar */
-            /* background-image: url('path-to-avatar.png'); */
-            /* background-size: cover; */
-        }
-
-        .profile h2 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .profile p {
-            font-size: 0.875rem;
-            color: #000000;
-        }
-
-        .participant-info {
-            border-top: 1px solid #000000;
-            padding-top: 24px;
-        }
-
-        .participant-info .info-item {
-            margin-bottom: 16px;
-        }
-
-        .participant-info label {
-            font-size: 0.75rem;
-            color: #000000;
-            display: block;
-            margin-bottom: 4px;
-            font-weight: bold;
-        }
-
-        .participant-info p {
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
         /* Main Content (dari Gambar) */
         .main-content {
             flex: 1;
@@ -125,6 +52,7 @@
 
         .form-body {
             max-width: 900px;
+            margin: 0 auto;
         }
 
         /* Styling untuk Konten FR.IA.10 */
@@ -345,27 +273,7 @@
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <a href="#">&lt; kembali</a>
-        </div>
-        <div class="profile">
-            <div class="avatar"></div>
-            <h2>Junior Web Developer</h2>
-            <p>Nama LSP (diambil dari gambar)</p>
-            <p>Youre the best version (diambil dari gambar)</p>
-        </div>
-        <div class="participant-info">
-            <div class="info-item">
-                <label>OLEH PESERTA</label>
-                <p>Tatang Sidartang</p>
-            </div>
-            <div class="info-item">
-                <label>DIMULAI PADA</label>
-                <p>2023-08-29 06:19:25</p>
-            </div>
-        </div>
-    </aside>
+    @include('layouts.app-sidebar')
 
     <main class="main-content">
         
@@ -376,7 +284,14 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Logo_BNSP.svg/2560px-Logo_BNSP.svg.png" alt="Logo BNSP">
         </header>
 
-        <form class="form-body">
+        @if (session('success'))
+            <div style="padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px;">
+                 {{ session('success') }}
+            </div>
+        @endif
+
+        <form class="form-body" method="POST" action="{{ route('fr-ia-10.store') }}">
+        @csrf
             
             <div class="metadata-grid">
                 <label>Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
@@ -394,10 +309,10 @@
                 </div>
 
                 <label>Nama Asesor</label>
-                <div>: <input type="text" value="Ajeng Febria Hidayati (Contoh)"></div>
+                <div>: <input type="text" value="Ajeng Febria Hidayati (Contoh)" name="asesor"></div>
                 
                 <label>Nama Asesi</label>
-                <div>: <input type="text" value="Tatang Sidartang (Contoh)"></div>
+                <div>: <input type="text" value="Tatang Sidartang (Contoh)" name="asesi"></div>
                 
                 <label>Tanggal</label>
                 <div>: <input type="date" value="<?php echo date('Y-m-d'); ?>"></div>
@@ -446,33 +361,33 @@
                     <tbody>
                         <tr>
                             <td>"Apakah asesi bekerja dengan mempertimbangkan Kesehatan, Keamanan dan Keselamatan Kerja?"</td>
-                            <td><input type="checkbox" name="q1" value="ya"></td>
-                            <td><input type="checkbox" name="q1" value="tidak"></td>
+                            <td><input type="radio" name="q1" value="ya"></td>
+                            <td><input type="radio" name="q1" value="tidak"></td>
                         </tr>
                         <tr>
                             <td>Apakah asesi berinteraksi dengan harmonis didalam kelompoknya?</td>
-                            <td><input type="checkbox" name="q2" value="ya"></td>
-                            <td><input type="checkbox" name="q2" value="tidak"></td>
+                            <td><input type="radio" name="q2" value="ya"></td>
+                            <td><input type="radio" name="q2" value="tidak"></td>
                         </tr>
                         <tr>
                             <td>Apakah asesi dapat mengelola tugas-tugas secara bersamaan?</td>
-                            <td><input type="checkbox" name="q3" value="ya"></td>
-                            <td><input type="checkbox" name="q3" value="tidak"></td>
+                            <td><input type="radio" name="q3" value="ya"></td>
+                            <td><input type="radio" name="q3" value="tidak"></td>
                         </tr>
                         <tr>
                             <td>Apakah asesi dapat dengan cepat beradaptasi dengan peralatan dan lingkungan yang baru?</td>
-                            <td><input type="checkbox" name="q4" value="ya"></td>
-                            <td><input type="checkbox" name="q4" value="tidak"></td>
+                            <td><input type="radio" name="q4" value="ya"></td>
+                            <td><input type="radio" name="q4" value="tidak"></td>
                         </tr>
                         <tr>
                             <td>Apakah asesi dapat merespon dengan cepat masalah-masalah yang ada di tempat kerjanya?</td>
-                            <td><input type="checkbox" name="q5" value="ya"></td>
-                            <td><input type="checkbox" name="q5" value="tidak"></td>
+                            <td><input type="radio" name="q5" value="ya"></td>
+                            <td><input type="radio" name="q5" value="tidak"></td>
                         </tr>
                         <tr>
                             <td>Apakah Anda bersedia dihubungi jika verifikasi lebih lanjut dari pernyataan ini diperlukan?</td>
-                            <td><input type="checkbox" name="q6" value="ya"></td>
-                            <td><input type="checkbox" name="q6" value="tidak"></td>
+                            <td><input type="radio" name="q6" value="ya"></td>
+                            <td><input type="radio" name="q6" value="tidak"></td>
                         </tr>
                     </tbody>
                 </table>

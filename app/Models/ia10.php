@@ -10,7 +10,7 @@ class ia10 extends Model
     use HasFactory;
 
     // Tentukan nama tabel jika tidak jamak
-    protected $table = 'verifikasi_pihak_ketiga';
+    protected $table = 'IA_10';
 
     // Izinkan semua field ini diisi
     protected $guarded = [];
