@@ -40,8 +40,10 @@
                 <p>{{ $data_tuk['telepon'] }}</p>
             </div>
             
-            {{-- Tombol Google Maps (Link juga seharusnya dinamis, tapi kita pakai placeholder dulu) --}}
-            <a href="#" class="mt-6 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 flex items-center space-x-2 transition duration-150 w-max">
+            {{-- Tombol Google Maps (SUDAH DIPERBAIKI) --}}
+            <a href="https://www.google.com/maps/place/Politeknik+Negeri+Semarang" 
+               target="_blank" {{-- Tambahkan target="_blank" agar membuka di tab baru --}}
+               class="mt-6 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 flex items-center space-x-2 transition duration-150 w-max">
                 <i class="fas fa-map-marked-alt"></i>
                 <span>Buka di Google Maps</span>
             </a>

@@ -17,36 +17,36 @@ class TukController extends Controller
             [
                 'id' => 1, 
                 'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Jurusan Teknik Elektro', 
-                'alamat' => 'Gedung Teknik Elektro Lt. 3, Jl. Soedarto',
+                'sub_nama' => 'Bengkel Listrik Elektro', 
+                'alamat' => 'Jl. Prof Soedarto',
                 'kontak' => '(024) 7473417 ext.301' 
             ],
             [
                 'id' => 2, 
                 'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Jurusan Teknik Mesin', 
-                'alamat' => 'Workshop Utama Teknik Mesin, Kampus I',
+                'sub_nama' => 'Bengkel Perawatan & Produksi', 
+                'alamat' => 'Jl. Prof. Soedarto',
                 'kontak' => '(024) 7473417 ext.402'
             ],
             [
                 'id' => 3, 
                 'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Jurusan Teknik Sipil', 
-                'alamat' => 'Laboratorium Terpadu Teknik Sipil',
+                'sub_nama' => 'Laboratorium Terpadu Teknik Sipil', 
+                'alamat' => 'Jl. Prof. Soedarto',
                 'kontak' => '(024) 7473417 ext.503'
             ],
             [
                 'id' => 4, 
                 'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Jurusan Administrasi Bisnis', 
-                'alamat' => 'Gedung Administrasi Bisnis, Lt. 2',
+                'sub_nama' => 'Gedung Administrasi Bisnis', 
+                'alamat' => 'Jl. Prof. Soedarto',
                 'kontak' => '(024) 7473417 ext.604'
             ],
             [
                 'id' => 5, 
                 'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Jurusan Akuntansi', 
-                'alamat' => 'Laboratorium Akuntansi & Keuangan',
+                'sub_nama' => 'Laboratorium Akuntansi & Keuangan', 
+                'alamat' => 'Jl. Prof. Soedarto',
                 'kontak' => '(024) 7473417 ext.705'
             ],
         ];
@@ -72,7 +72,7 @@ class TukController extends Controller
                 $data_tuk = [
                     'id' => 1,
                     'nama_lengkap' => "TUK Teknik Elektro", 
-                    'alamat_detail' => 'Gedung Teknik Elektro Lt. 3, Jl. Prof. Soedarto',
+                    'alamat_detail' => 'Bengkel Listrik Elektro, Jl. Prof. Soedarto',
                     'telepon' => '(024) 7473417 ext.301',
                     'koordinat_maps' => '#', 
                 ];
@@ -81,7 +81,7 @@ class TukController extends Controller
                 $data_tuk = [
                     'id' => 2,
                     'nama_lengkap' => "TUK Teknik Mesin", 
-                    'alamat_detail' => 'Workshop Utama Teknik Mesin, Kampus I',
+                    'alamat_detail' => 'Bengkel Perawatan & Produksi, Jl. Prof. Soedarto',
                     'telepon' => '(024) 7473417 ext.402',
                     'koordinat_maps' => '#', 
                 ];
@@ -99,7 +99,7 @@ class TukController extends Controller
                 $data_tuk = [
                     'id' => 4,
                     'nama_lengkap' => "TUK Administrasi Bisnis", 
-                    'alamat_detail' => 'Gedung Administrasi Bisnis, Lt. 2',
+                    'alamat_detail' => 'Gedung Administrasi Bisnis, Jl. Prof. Soedarto',
                     'telepon' => '(024) 7473417 ext.604',
                     'koordinat_maps' => '#', 
                 ];
@@ -108,7 +108,7 @@ class TukController extends Controller
                 $data_tuk = [
                     'id' => 5,
                     'nama_lengkap' => "TUK Akuntansi", 
-                    'alamat_detail' => 'Laboratorium Akuntansi & Keuangan',
+                    'alamat_detail' => 'Laboratorium Akuntansi & Keuangan, Jl. Prof. Soedarto',
                     'telepon' => '(024) 7473417 ext.705',
                     'koordinat_maps' => '#', 
                 ];
