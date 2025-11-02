@@ -30,6 +30,10 @@ Route::get('/master_skema', function () {
     return view('master_skema'); 
 })->name('master_skema');
 
+Route::get('/add_skema', function () {
+    return view('add_skema');
+})->name('add_skema');
+
 // Master Asesi
 Route::get('/master_asesi', function () {
     return view('master_asesi'); 
