@@ -8,49 +8,64 @@ class TukController extends Controller
 {
     /**
      * Menampilkan daftar Tempat Uji Kompetensi (TUK).
-     * Ini adalah method yang akan dihubungkan ke rute /info-tuk
-     * dan harusnya mengirimkan semua data TUK ke view.
+     * Untuk rute /info-tuk
      */
     public function index()
     {
         // --- SIMULASI DATA DAFTAR TUK ---
-        // Normalnya: $tuks = Tuk::all(); 
+        // PENTING: Menambahkan 'sub_nama' dan 'kontak' agar sesuai dengan info-tuk.blade.php
         $tuks = [
-            ['id' => 1, 'nama' => 'Politeknik Negeri Semarang', 'alamat' => 'Jl. Prof. Soedarto'],
-            ['id' => 2, 'nama' => 'LSP Polines - Gedung ST', 'alamat' => 'Jl. Prof. Soedarto, Semarang'],
-            ['id' => 3, 'nama' => 'Politeknik Negeri Semarang - Gedung Jokalet Satu', 'alamat' => 'Tembalang, Semarang'],
+            [
+                'id' => 1, 
+                'nama' => 'Politeknik Negeri Semarang', 
+                'sub_nama' => 'Gedung Kuliah Terpadu', // DITAMBAHKAN
+                'alamat' => 'Jl. Prof. Soedarto',
+                'kontak' => '(024) 7473417 ext.256' // DITAMBAHKAN
+            ],
+            [
+                'id' => 2, 
+                'nama' => 'LSP Polines', 
+                'sub_nama' => 'MST LT3', // DITAMBAHKAN (Sesuaikan dengan video Anda)
+                'alamat' => 'Jl. Prof. Soedarto, Semarang',
+                'kontak' => '25 Oktober 2025' // DITAMBAHKAN
+            ],
+            [
+                'id' => 3, 
+                'nama' => 'Politeknik Negeri Semarang', 
+                'sub_nama' => 'Gedung Sekolah Satu', // DITAMBAHKAN
+                'alamat' => 'Tembalang, Semarang',
+                'kontak' => '(024) 7473417 ext.256' // DITAMBAHKAN
+            ],
         ];
         // ---------------------------------
         
         return view('landing_page.page_tuk.info-tuk', [
-            'tuks' => $tuks // Mengirim data daftar TUK
+            'tuks' => $tuks 
         ]);
     }
 
 
     /**
      * Menampilkan detail spesifik dari satu TUK berdasarkan ID.
-     * Ini adalah method yang akan dihubungkan ke rute /detail-tuk/{id}
-     *
-     * @param  int  $id ID TUK yang dipilih dari daftar
+     * Untuk rute /detail-tuk/{id}
      */
     public function showDetail($id)
     {
-        // 1. Logika Pengambilan Data Berdasarkan ID
-        // Normalnya: $data_tuk = Tuk::findOrFail($id);
-        
+
+
         // --- SIMULASI PENGAMBILAN DATA TUK BERDASARKAN ID ---
-        // Karena belum terhubung ke database, kita simulasikan data.
+        // PENTING: Menyesuaikan 'key' dengan detail-tuk.blade.php yang sudah diperbaiki sebelumnya
+        
         $data_tuk = [
             'id' => $id,
-            'nama' => "Detail TUK ID #{$id}", 
-            'alamat' => "Alamat lengkap TUK dengan ID {$id}.",
-            'kontak' => '082185585493',
-            'detail_nama' => 'Politeknik Negeri Semarang' // Nama yang lebih detail
+            'nama_lengkap' => "Politeknik Negeri Semarang", // 'key' yang digunakan di detail-tuk.blade.php
+            'alamat_detail' => 'Jalan Prof. Soedarto No. 1, Semarang', // 'key' yang digunakan di detail-tuk.blade.php
+            'telepon' => '082185585493', // 'key' yang digunakan di detail-tuk.blade.php
+            'koordinat_maps' => '#', 
         ];
         // ----------------------------------------------------
         
-        // 2. Meneruskan Data ke View
+        
         return view('landing_page.page_tuk.detail-tuk', [
             'data_tuk' => $data_tuk,
         ]);
