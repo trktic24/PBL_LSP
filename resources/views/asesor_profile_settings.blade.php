@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Asesi Profile Settings | LSP Polines</title> 
+  <title>Asesor Profile Settings | LSP Polines</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -106,51 +106,52 @@
 
       <div class="w-[90%] bg-white/40 backdrop-blur-md rounded-2xl p-4 
                   shadow-[0_0_15px_rgba(0,0,0,0.15)] mb-6">
+        
         <div class="flex flex-col space-y-4 mt-3 mb-3">
+            <a href="{{ route('asesor_profile_settings') }}" 
+                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
+                        bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
+                        hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
+                        {{ request()->routeIs('asesor_profile_settings') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
+            </a>
 
-          <a href="{{ route('asesi_profile_settings') }}" 
-             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
-                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->routeIs('asesi_profile_settings') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
-            <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
-          </a>
+            <a href="{{ route('asesor_profile_tinjauan') }}" 
+                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
+                        bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
+                        hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
+                        {{ request()->routeIs('asesor_profile_tinjauan') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                <i class="fas fa-clipboard-list text-l mr-3"></i> Tinjauan Asesmen
+            </a>
 
-          <a href="{{ route('asesi_profile_form') }}" 
-             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
-                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->routeIs('asesi_profile_form') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
-            <i class="fas fa-clipboard text-l mr-3"></i> Form
-          </a>
+            <a href="{{ route('asesor_profile_tracker') }}" 
+                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
+                        bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
+                        hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
+                        {{ request()->routeIs('asesor_profile_tracker') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
+            </a>
 
-          <a href="#" 
-             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
-                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    text-gray-800 hover:text-blue-600">
-            <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
-          </a>
-
-          <a href="{{ route('asesi_profile_bukti') }}" 
-             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
-                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->routeIs('asesi_profile_bukti') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
-            <i class="fas fa-check text-l mr-3"></i> Bukti Kelengkapan
-          </a>
-
+            <a href="{{ route('asesor_profile_bukti') }}" 
+                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
+                        bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
+                        hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
+                        {{ request()->routeIs('asesor_profile_bukti') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                <i class="fas fa-check text-l mr-3"></i> Bukti Kelengkapan
+            </a>
         </div>
       </div>
-
-      <div class="w-[90%] grid grid-cols-2 gap-x-5">
-        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesi</button>
-        <button class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesor</button>
+      
+      <div class="w-[90%] grid grid-cols-2 gap-x-5"> 
+        <button class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesi</button>
+        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesor</button>
       </div>
+
     </aside>
 
     <main class="ml-[22%] h-[calc(100vh-70px)] overflow-y-auto p-8 bg-gray-50 flex-1">
       <div class="bg-white rounded-2xl shadow-xl p-10">
+        
         <div class="flex flex-col items-center text-center mb-10">
           <h1 class="text-3xl font-bold text-gray-800 mb-3">Profile Settings</h1>
           <div class="mt-10 w-auto h-60 rounded-full overflow-hidden border-4 border-gray-300 shadow-md">
@@ -160,7 +161,7 @@
           <p class="text-gray-500 text-sm">Data Scientist</p>
         </div>
 
-        <h3 class="text-xl font-bold text-center text-gray-900 mb-8">Rincian Data Pemohon Sertifikasi</h3>
+        <h3 class="text-xl font-bold text-center text-gray-900 mb-8">Rincian Data Asesor</h3>
 
         <section class="space-y-4 mb-8">
           <h4 class="text-lg font-semibold text-gray-800">Informasi Pribadi</h4>

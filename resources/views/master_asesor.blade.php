@@ -142,13 +142,22 @@
               <td class="px-6 py-4">rafa@polines.ac.id</td>
               <td class="px-6 py-4">0812-3456-7890</td>
               <td class="px-6 py-4">Teknologi Informasi</td>
-              <td class="px-6 py-4 space-x-2">
-                <button class="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg">
-                  <i class="fas fa-pen-to-square"></i> Edit
+              <td class="px-6 py-4 flex space-x-2">
+                <!-- Tombol Edit -->
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-pen"></i> <span>Edit</span>
                 </button>
-                <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg">
-                  <i class="fas fa-trash"></i> Delete
+
+                <!-- Tombol Delete -->
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
+
+                <!-- Tombol View Profile (baru) -->
+                <a href="{{ route('asesor_profile_settings') }}"
+                  class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-eye"></i> <span>View</span>
+                </a>
               </td>
             </tr>
             <tr>
@@ -157,13 +166,22 @@
               <td class="px-6 py-4">roihan@polines.ac.id</td>
               <td class="px-6 py-4">0813-1111-2222</td>
               <td class="px-6 py-4">Jaringan Komputer</td>
-              <td class="px-6 py-4 space-x-2">
-                <button class="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg">
-                  <i class="fas fa-pen-to-square"></i> Edit
+              <td class="px-6 py-4 flex space-x-2">
+                <!-- Tombol Edit -->
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-pen"></i> <span>Edit</span>
                 </button>
-                <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg">
-                  <i class="fas fa-trash"></i> Delete
+
+                <!-- Tombol Delete -->
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
+
+                <!-- Tombol View Profile (baru) -->
+                <a href="{{ route('asesor_profile_settings') }}"
+                  class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
+                  <i class="fas fa-eye"></i> <span>View</span>
+                </a>
               </td>
             </tr>
           </tbody>

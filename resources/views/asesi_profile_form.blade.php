@@ -5,13 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Asesi Form | LSP Polines</title>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-  <!-- Alpine.js -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
   <style>
@@ -23,7 +19,6 @@
 <body class="bg-gray-50 text-gray-800">
 <div class="min-h-screen overflow-y-auto">
 
-  <!-- ================= NAVBAR ================= -->
   <nav class="fixed top-0 left-0 w-full flex items-center justify-between px-10 
               bg-white/90 backdrop-blur-md shadow-md border-b border-gray-200 h-[80px] z-50">
     <div class="flex items-center space-x-4">
@@ -96,13 +91,11 @@
     </div>
   </nav>
 
-  <!-- =================== MAIN CONTENT =================== -->
   <main class="flex min-h-[calc(100vh-80px)] pt-[80px]">
     
-    <!-- SIDEBAR -->
     <aside class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-[22%] 
-                bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
-                shadow-inner border-r border-gray-200 flex flex-col items-center pt-8">
+                 bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
+                 shadow-inner border-r border-gray-200 flex flex-col items-center pt-8">
       <h2 class="text-lg font-bold text-gray-900 mb-3">Biodata</h2>
 
       <div class="w-36 h-36 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] mb-4">
@@ -114,45 +107,51 @@
 
       <div class="w-[90%] bg-white/40 backdrop-blur-md rounded-2xl p-4 shadow-[0_0_15px_rgba(0,0,0,0.15)] mb-6">
         <div class="flex flex-col space-y-4 mt-3 mb-3">
-          <a href="{{ route('asesi_profile_settings') }}" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-            {{ request()->routeIs('asesi_profile_settings') 
-              ? 'bg-blue-50 text-blue-600 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),_inset_-2px_-2px_4px_rgba(255,255,255,0.9),_0_0_10px_rgba(0,0,0,0.15)]' 
-              : 'bg-white text-gray-800 shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] hover:bg-[#e0ecff] hover:text-blue-600' }}">
+          
+          <a href="{{ route('asesi_profile_settings') }}" 
+             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
+                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
+                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
+                    {{ request()->routeIs('asesi_profile_settings') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
             <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
           </a>
 
-          <a href="{{ route('asesi_profile_form') }}" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-            {{ request()->routeIs('asesi_profile_form') 
-              ? 'bg-blue-50 text-blue-600 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),_inset_-2px_-2px_4px_rgba(255,255,255,0.9),_0_0_10px_rgba(0,0,0,0.15)]' 
-              : 'bg-white text-gray-800 shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] hover:bg-[#d5e6ff] hover:text-blue-600' }}">
+          <a href="{{ route('asesi_profile_form') }}" 
+             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
+                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
+                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
+                    {{ request()->routeIs('asesi_profile_form') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
             <i class="fas fa-clipboard text-l mr-3"></i> Form
           </a>
 
-          <a href="#" class="flex items-center px-4 py-3 rounded-xl font-medium bg-white text-gray-800 transition-all duration-300 shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] hover:bg-[#d5e6ff] hover:text-blue-600">
+          <a href="#" 
+             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
+                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
+                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
+                    text-gray-800 hover:text-blue-600'">
             <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
           </a>
 
-          <a href="{{ route('asesi_profile_bukti') }}" class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-            {{ request()->routeIs('asesi_profile_bukti') 
-              ? 'bg-blue-50 text-blue-600 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1),_inset_-2px_-2px_4px_rgba(255,255,255,0.9),_0_0_10px_rgba(0,0,0,0.15)]' 
-              : 'bg-white text-gray-800 shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] hover:bg-[#d5e6ff] hover:text-blue-600' }}">
+          <a href="{{ route('asesi_profile_bukti') }}" 
+             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
+                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
+                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
+                    {{ request()->routeIs('asesi_profile_bukti') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
             <i class="fas fa-check text-l mr-3"></i> Bukti Kelengkapan
           </a>
         </div>
       </div>
 
-      <div class="flex space-x-4">
-        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-11 py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesi</button>
-        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-11 py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesor</button>
+      <div class="w-[90%] grid grid-cols-2 gap-x-5">
+        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesi</button>
+        <button class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesor</button>
       </div>
     </aside>
 
-    <!-- CONTENT -->
-    <section class="ml-[22%] flex-1 p-10">
-      <div x-data="{ open: false, active: null }" class="bg-white rounded-2xl shadow-xl p-10 mt-[-10px]">
+    <section class="ml-[22%] flex-1 p-8">
+      <div x-data="{ open: false, active: null }" class="bg-white rounded-2xl shadow-xl p-10">
         <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">Formulir Pendaftaran Sertifikasi</h2>
 
-        <!-- Grid Tombol Form -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
           <template x-for="form in ['FR.APL.01','FR.APL.02','FR.MAPA.01','FR.AK.01','FR.AK.02','FR.AK.03','FR.AK.04','FR.AK.05', 'FR.AK.06','FR.IA.01']" :key="form">
             <button @click="active = form"
@@ -164,7 +163,6 @@
           </template>
         </div>
 
-        <!-- Expanded List -->
         <div x-show="open" x-transition class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
           <template x-for="form in ['FR.IA.02','FR.IA.03','FR.IA.04','FR.IA.05','FR.IA.06','FR.IA.07','FR.IA.08','FR.IA.09','FR.IA.10','FR.IA.11']" :key="form">
             <button @click="active = form"
@@ -175,7 +173,6 @@
             </button>
           </template>
 
-          <!-- View Less Button under expanded list -->
           <div class="col-span-full text-center mt-6">
             <button @click="open = false" class="text-blue-600 font-semibold text-sm hover:underline transition-all">
               View Less <i class="fas fa-chevron-up"></i>
@@ -183,14 +180,12 @@
           </div>
         </div>
 
-        <!-- View More Button (Only if closed) -->
         <div class="mt-8 text-center" x-show="!open">
           <button @click="open = true" class="text-blue-600 font-semibold text-sm hover:underline transition-all">
             View More <i class="fas fa-chevron-down"></i>
           </button>
         </div>
 
-        <!-- Submit -->
         <div class="mt-10 text-center">
           <button type="button"
                   class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg shadow-md font-semibold transition-all">

@@ -55,6 +55,11 @@ Route::get('/schedule_admin', function () {
     return view('schedule_admin'); 
 })->name('schedule_admin');
 
+// Master_Schedule
+Route::get('/master_schedule', function () {
+    return view('master_schedule'); 
+})->name('master_schedule');
+
 // asesi Profile Settings
 Route::get('/asesi_profile_settings', function () {
     return view('asesi_profile_settings'); 
@@ -69,6 +74,31 @@ Route::get('/asesi_profile_form', function () {
 Route::get('/asesi_profile_bukti', function () {
     return view('asesi_profile_bukti'); 
 })->name('asesi_profile_bukti');
+
+// Asesi Profile Tracker
+Route::get('/asesi_profile_tracker', function () {
+    return view('asesi_profile_tracker'); 
+})->name('asesi_profile_tracker');
+
+// Asesor Profile Bukti
+Route::get('/asesor_profile_bukti', function () {
+    return view('asesor_profile_bukti'); 
+})->name('asesor_profile_bukti');
+
+// Asesor Profile Settings
+Route::get('/asesor_profile_settings', function () {
+    return view('asesor_profile_settings'); 
+})->name('asesor_profile_settings');
+
+// Asesor Profile Tinjauan
+Route::get('/asesor_profile_tinjauan', function () {
+    return view('asesor_profile_tinjauan'); 
+})->name('asesor_profile_tinjauan');
+
+// Asesor Profile Tracker
+Route::get('/asesor_profile_tracker', function () {
+    return view('asesor_profile_tracker'); 
+})->name('asesor_profile_tracker');
 
 // proses login pakai kolom "name"
 Route::post('/login', function (Request $request) {
