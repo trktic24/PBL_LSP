@@ -23,11 +23,9 @@ Route::get('/info-tuk', function () {
     return view('landing_page.page_tuk.info-tuk');
 })->name('info.tuk'); 
 
-// Rute untuk detail TUK - DIPERBAIKI agar menerima parameter $slug
-Route::get('/detail-tuk/{slug}', function ($slug) { 
-    // Parameter $slug HARUS diterima di sini agar route tidak error
-    
-    // Karena tidak ada Controller/Model, View ini akan menampilkan data statis.
+// Rute untuk detail TUK - SUDAH DIPERBAIKI MENJADI RUTE STATIS
+Route::get('/detail-tuk', function () { 
+    // Sekarang rute ini bisa diakses langsung di http://127.0.0.1:8000/detail-tuk
     return view('landing_page.page_tuk.detail-tuk');
 })->name('info.tuk.detail');
 
