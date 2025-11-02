@@ -1,54 +1,15 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Asesor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 font-sans">
-
-    <!-- HEADER -->
-    <header class="bg-white shadow-md">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            
-            <!-- Logo dan Navigasi -->
-            <div class="flex items-center space-x-6">
-                <div class="w-10 h-10 flex items-center justify-center">
-                    <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" width="100">
-                </div>
-
-                <!-- Navigasi -->
-                <nav class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 text-gray-700 font-medium">
-                    <a href="{{ route('home') }}" class="hover:text-blue-600">Home</a>
-                    <a href="{{ route('jadwal') }}" class="hover:text-blue-600">Jadwal</a>
-                    <a href="{{ route('profil') }}" class="text-blue-600 font-semibold underline">Profil</a>
-                </nav>
-            </div>
-
-            <!-- Profil User -->
-            <div class="relative">
-                <div class="flex items-center space-x-3 cursor-pointer" id="userMenuButton">
-                    <span class="text-gray-800 font-semibold">{{ Auth::user()->name ?? 'User' }}</span>
-                    <a href="{{ route('profil') }}">
-                        <img src="{{ Auth::user()->photo_url ?? asset('images/default-profile.png') }}" 
-                             alt="Foto Profil" 
-                             class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover">
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
+@extends('layouts.app-profil')
+@section('content')
 
 <!-- KONTEN PROFIL -->
 <main class="max-w-6xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-md relative pb-20">
     <div class="flex gap-8">
 
         <!-- KOLOM KIRI: FOTO PROFIL + INFORMASI PRIBADI -->
-        <div class="flex flex-col items-center space-y-24 w-[350px]">
+        <div class="flex flex-col items-center space-y-24 w-[40%] min-w-[400px] max-w-[550px]">
             <!-- FOTO PROFIL -->
-            <div class="w-32 h-32 rounded-full border-4 border-gray-300 flex items-center justify-center overflow-hidden">
-                <img src="{{ Auth::user()->photo_url ?? asset('images/default-profile.png') }}" 
+            <div class="w-32 h-32 rounded-full border-4 border-blue-500 flex items-center justify-center overflow-hidden">
+                <img src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}" 
                      alt="Foto Profil" 
                      class="object-cover w-full h-full">
             </div>
@@ -57,9 +18,6 @@
             <div class="flex-1">
                 <h2 class="text-lg font-semibold mb-3 text-left">Informasi Pribadi</h2>
                 <div class="space-y-3">
-                    <input type="text" id="ttl" placeholder="Tempat Tanggal Lahir"
-                        class="profile-input w-full max-w-[450px] border border-blue-500 rounded-md px-3 py-2" 
-                        readonly>
                     <input type="text" id="ttl" placeholder="Tempat Tanggal Lahir"
                         class="profile-input w-full border border-blue-500 rounded-md px-3 py-2"
                         readonly>
@@ -172,5 +130,4 @@
         });
     </script>
 
-</body>
-</html>
+@endsection
