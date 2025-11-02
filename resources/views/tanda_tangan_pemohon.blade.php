@@ -27,8 +27,8 @@
     <div class="flex min-h-screen">
         
          <!-- Sidebar Kiri -->
-        <x-sidebar2></x-sidebar2>
-
+        <x-sidebar></x-sidebar>
+        
         <main class="flex-1 p-12 bg-white overflow-y-auto">
             <div class="max-w-3xl mx-auto">
                 
