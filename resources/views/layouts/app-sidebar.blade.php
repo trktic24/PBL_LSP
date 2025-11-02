@@ -8,13 +8,13 @@
 </head>
 
 </head>
-<body class="bg-gray-50 flex">
+<body class="bg-gray-50 flex min-h-screen">
 
   {{-- Sidebar --}}
   <x-sidebar.sidebar />
 
   {{-- Konten utama --}}
-  <main class="flex-1 p-8">
+  <main class="flex-1 p-8 ml-80">
     @yield('content')
   </main>
 
