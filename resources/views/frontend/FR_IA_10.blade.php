@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FR.IA.10 - Verifikasi Pihak Ketiga</title>
-    <style>
+
+    @extends('layouts.app-sidebar')
+
+    @push('css')
+        <style>
         /* CSS Reset */
         * {
             margin: 0;
@@ -52,7 +50,6 @@
 
         .form-body {
             max-width: 900px;
-            margin: 0 auto;
         }
 
         /* Styling untuk Konten FR.IA.10 */
@@ -270,13 +267,12 @@
         }
 
     </style>
-</head>
-<body>
+    @endpush
 
-    @include('layouts.app-sidebar')
-
-    <main class="main-content">
-        
+    {{-- @include('layouts.app-sidebar') --}}
+   
+    @section('content')
+         <main class="main-content">
         <header class="form-header">
             <div class="title-block">
                 <h1>FR.IA.10. VPK - VERIFIKASI PIHAK KETIGA</h1>
@@ -457,6 +453,4 @@
         </form>
 
     </main>
-
-</body>
-</html>
+    @endsection

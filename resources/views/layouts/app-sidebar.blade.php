@@ -5,6 +5,7 @@
   <title>@yield('FR_IA_07')</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <script src="https://cdn.tailwindcss.com"></script>
+  @stack('css')
 </head>
 
 </head>
@@ -18,5 +19,6 @@
     @yield('content')
   </main>
 
+  @stack('js')
 </body>
 </html>
