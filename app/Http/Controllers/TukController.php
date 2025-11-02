@@ -12,29 +12,42 @@ class TukController extends Controller
      */
     public function index()
     {
-        // --- SIMULASI DATA DAFTAR TUK ---
-        // PENTING: Menambahkan 'sub_nama' dan 'kontak' agar sesuai dengan info-tuk.blade.php
+        // --- DATA SIMULASI DAFTAR TUK (5 Jurusan) ---
         $tuks = [
             [
                 'id' => 1, 
                 'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Gedung Kuliah Terpadu', // DITAMBAHKAN
-                'alamat' => 'Jl. Prof. Soedarto',
-                'kontak' => '(024) 7473417 ext.256' // DITAMBAHKAN
+                'sub_nama' => 'Jurusan Teknik Elektro', 
+                'alamat' => 'Gedung Teknik Elektro Lt. 3, Jl. Soedarto',
+                'kontak' => '(024) 7473417 ext.301' 
             ],
             [
                 'id' => 2, 
-                'nama' => 'LSP Polines', 
-                'sub_nama' => 'MST LT3', // DITAMBAHKAN (Sesuaikan dengan video Anda)
-                'alamat' => 'Jl. Prof. Soedarto, Semarang',
-                'kontak' => '25 Oktober 2025' // DITAMBAHKAN
+                'nama' => 'Politeknik Negeri Semarang', 
+                'sub_nama' => 'Jurusan Teknik Mesin', 
+                'alamat' => 'Workshop Utama Teknik Mesin, Kampus I',
+                'kontak' => '(024) 7473417 ext.402'
             ],
             [
                 'id' => 3, 
                 'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Gedung Sekolah Satu', // DITAMBAHKAN
-                'alamat' => 'Tembalang, Semarang',
-                'kontak' => '(024) 7473417 ext.256' // DITAMBAHKAN
+                'sub_nama' => 'Jurusan Teknik Sipil', 
+                'alamat' => 'Laboratorium Terpadu Teknik Sipil',
+                'kontak' => '(024) 7473417 ext.503'
+            ],
+            [
+                'id' => 4, 
+                'nama' => 'Politeknik Negeri Semarang', 
+                'sub_nama' => 'Jurusan Administrasi Bisnis', 
+                'alamat' => 'Gedung Administrasi Bisnis, Lt. 2',
+                'kontak' => '(024) 7473417 ext.604'
+            ],
+            [
+                'id' => 5, 
+                'nama' => 'Politeknik Negeri Semarang', 
+                'sub_nama' => 'Jurusan Akuntansi', 
+                'alamat' => 'Laboratorium Akuntansi & Keuangan',
+                'kontak' => '(024) 7473417 ext.705'
             ],
         ];
         // ---------------------------------
@@ -47,24 +60,63 @@ class TukController extends Controller
 
     /**
      * Menampilkan detail spesifik dari satu TUK berdasarkan ID.
-     * Untuk rute /detail-tuk/{id}
+     * Catatan: Data detail di sini juga perlu diperbarui untuk ID 4 dan 5!
      */
     public function showDetail($id)
     {
-
-
-        // --- SIMULASI PENGAMBILAN DATA TUK BERDASARKAN ID ---
-        // PENTING: Menyesuaikan 'key' dengan detail-tuk.blade.php yang sudah diperbaiki sebelumnya
+        // Untuk DEMO, kita buat data detail TUK berdasarkan ID yang diminta
+        $data_tuk = [];
         
-        $data_tuk = [
-            'id' => $id,
-            'nama_lengkap' => "Politeknik Negeri Semarang", // 'key' yang digunakan di detail-tuk.blade.php
-            'alamat_detail' => 'Jalan Prof. Soedarto No. 1, Semarang', // 'key' yang digunakan di detail-tuk.blade.php
-            'telepon' => '082185585493', // 'key' yang digunakan di detail-tuk.blade.php
-            'koordinat_maps' => '#', 
-        ];
-        // ----------------------------------------------------
-        
+        switch ($id) {
+            case 1:
+                $data_tuk = [
+                    'id' => 1,
+                    'nama_lengkap' => "TUK Teknik Elektro", 
+                    'alamat_detail' => 'Gedung Teknik Elektro Lt. 3, Jl. Prof. Soedarto',
+                    'telepon' => '(024) 7473417 ext.301',
+                    'koordinat_maps' => '#', 
+                ];
+                break;
+            case 2:
+                $data_tuk = [
+                    'id' => 2,
+                    'nama_lengkap' => "TUK Teknik Mesin", 
+                    'alamat_detail' => 'Workshop Utama Teknik Mesin, Kampus I',
+                    'telepon' => '(024) 7473417 ext.402',
+                    'koordinat_maps' => '#', 
+                ];
+                break;
+            case 3:
+                $data_tuk = [
+                    'id' => 3,
+                    'nama_lengkap' => "TUK Teknik Sipil", 
+                    'alamat_detail' => 'Laboratorium Terpadu Teknik Sipil',
+                    'telepon' => '(024) 7473417 ext.503',
+                    'koordinat_maps' => '#', 
+                ];
+                break;
+            case 4:
+                $data_tuk = [
+                    'id' => 4,
+                    'nama_lengkap' => "TUK Administrasi Bisnis", 
+                    'alamat_detail' => 'Gedung Administrasi Bisnis, Lt. 2',
+                    'telepon' => '(024) 7473417 ext.604',
+                    'koordinat_maps' => '#', 
+                ];
+                break;
+            case 5:
+                $data_tuk = [
+                    'id' => 5,
+                    'nama_lengkap' => "TUK Akuntansi", 
+                    'alamat_detail' => 'Laboratorium Akuntansi & Keuangan',
+                    'telepon' => '(024) 7473417 ext.705',
+                    'koordinat_maps' => '#', 
+                ];
+                break;
+            default:
+                // Jika ID tidak ditemukan (misalnya: ID 99)
+                abort(404);
+        }
         
         return view('landing_page.page_tuk.detail-tuk', [
             'data_tuk' => $data_tuk,
