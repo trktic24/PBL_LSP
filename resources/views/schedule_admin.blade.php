@@ -123,7 +123,7 @@
                 <i class="fas fa-plus text-lg"></i>
               </button>
             </div>
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-2 gap-4">
               <div class="flex items-center space-x-2 bg-white px-2 py-2 rounded-full shadow-[2px_2px_6px_rgba(0,0,0,0.15),_-2px_-2px_6px_rgba(255,255,255,0.9)]">
                 <span class="w-5 h-5 rounded-full bg-blue-600"></span>
                 <span class="font-semibold text-gray-800 text-xs">Confirm</span>
