@@ -26,6 +26,7 @@
 
     <div class="flex min-h-screen">
         
+         <!-- Sidebar Kiri -->
         <x-sidebar></x-sidebar>
         
         <main class="flex-1 p-12 bg-white overflow-y-auto">
@@ -95,13 +96,12 @@
                     </div>
 
                     <div class="flex justify-between items-center mt-12">
-                        <button type="button" class="btn-previous px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
-                            Sebelumnya
-                        </button>
-                        
-                        <button type="submit" class="btn-next px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
-                            Selanjutnya
-                        </button>
+                        <a href="/bukti_pemohon" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
+                             Sebelumnya
+                        </a>
+                        <a href="/tunggu_upload_dokumen" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
+                             Selanjutnya
+                        </a>
                     </div>
                 </form>
 
