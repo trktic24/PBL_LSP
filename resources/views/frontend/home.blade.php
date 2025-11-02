@@ -3,8 +3,8 @@
 
 <div class="container mx-auto px-6 mt-20 mb-12">
         <div class="flex items-center space-x-5 mb-10">
-            <img src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}" 
-                alt="Foto Profil" 
+            <img src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}"
+                alt="Foto Profil"
                 class="w-20 h-20 rounded-full object-cover border-4 border-blue-500">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Selamat Datang Ajeng!</h1>
@@ -17,7 +17,7 @@
         <div class="mb-10">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Ringkasan</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                
+
                 <div class="bg-blue-600 rounded-xl shadow-lg p-6 text-white flex items-center justify-between">
                     <div class="flex flex-col">
                         <span class="text-5xl font-bold">5</span>
@@ -80,7 +80,7 @@
                     <span class="w-4/12 text-sm font-semibold text-gray-700">Tanggal</span>
                     <span class="w-2/12 text-sm font-semibold text-gray-700">Aksi</span>
                 </div>
-                
+
                 <div class="divide-y divide-gray-200">
                     <div class="flex px-6 py-4 items-center">
                         <span class="w-1/12 text-sm text-gray-800">1</span>
@@ -124,7 +124,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="text-right mt-4">
                 <a href="#" class="text-sm text-blue-600 hover:underline font-medium">Lihat Selengkapnya</a>
             </div>
