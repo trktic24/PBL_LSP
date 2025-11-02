@@ -18,35 +18,36 @@
 <div class="container mx-auto px-4 py-12">
     
     {{-- Judul Halaman --}}
-    <h1 class="text-3xl font-semibold text-center mb-10 text-gray-800">Tempat Uji Kompetensi</h1>
+    <h1 class="text-3xl font-semibold text-center mb-10 text-gray-800">Detail Tempat Uji Kompetensi</h1>
 
     {{-- KARTU UTAMA: DETAIL TUK CARD --}}
-    {{-- MENGHILANGKAN: border-t-8 border-blue-600 --}}
     <div class="bg-white rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row">
         
         {{-- BAGIAN KIRI: CARD INFO --}}
         <div class="p-8 lg:p-12 md:w-1/2 space-y-4">
-            {{-- Nama Tempat --}}
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">Politeknik Negeri Semarang</h2>
+            {{-- Nama Tempat DINAMIS --}}
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">{{ $data_tuk['nama_lengkap'] }}</h2>
             
-            {{-- Detail Alamat --}}
+            {{-- Detail Alamat DINAMIS --}}
             <div class="flex items-center space-x-3 text-lg text-gray-700">
-                <i class="fas fa-map-marker-alt w-5 h-5 text-gray-900"></i> {{-- UBAH: text-blue-600 -> text-gray-900 --}}
-                <p>Jalan prof Soedarto</p>
+                <i class="fas fa-map-marker-alt w-5 h-5 text-gray-900"></i>
+                <p>{{ $data_tuk['alamat_detail'] }}</p>
             </div>
             
-            {{-- Detail Telepon --}}
+            {{-- Detail Telepon DINAMIS --}}
             <div class="flex items-center space-x-3 text-lg text-gray-700">
-                <i class="fas fa-phone-alt w-5 h-5 text-gray-900"></i> {{-- UBAH: text-blue-600 -> text-gray-900 --}}
-                <p>082185859493</p>
+                <i class="fas fa-phone-alt w-5 h-5 text-gray-900"></i>
+                <p>{{ $data_tuk['telepon'] }}</p>
             </div>
             
-            {{-- Tombol Google Maps --}}
-            {{-- Ikon di tombol tetap putih karena tombolnya biru, jadi tidak diubah --}}
+            {{-- Tombol Google Maps (Link juga seharusnya dinamis, tapi kita pakai placeholder dulu) --}}
             <a href="#" class="mt-6 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 flex items-center space-x-2 transition duration-150 w-max">
                 <i class="fas fa-map-marked-alt"></i>
                 <span>Buka di Google Maps</span>
             </a>
+            
+            {{-- Tambahkan untuk konfirmasi ID (opsional) --}}
+            <p class="text-xs text-gray-400 pt-4">TUK ID: {{ $data_tuk['id'] }}</p>
         </div>
         
         {{-- BAGIAN KANAN: IMAGE PLACEHOLDER --}}
