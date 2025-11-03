@@ -31,9 +31,14 @@ Route::get('/profil', function () {
 // --------------------
 
 // Halaman utama (menampilkan semua skema)
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// DIEDIT: Mengarah ke method 'home' (bukan 'index')
+Route::get('/home', [HomeController::class, 'home'])->name('home');
 
 // Halaman detail skema (klik dari Home)
 Route::get('/skema/{id}', [HomeController::class, 'show'])->name('detail_skema');
+
+// DITAMBAHKAN: Route baru untuk menangani tombol Detail
+Route::get('/jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('jadwal.detail');
+
 
 require __DIR__.'/auth.php';
