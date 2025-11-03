@@ -18,77 +18,7 @@
 
 <body class="text-gray-800">
 
-  <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
-    <div class="flex items-center space-x-4">
-      <a href="{{ url('dashboard') }}">
-        <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
-      </a>
-    </div>
-
-    <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
-      <a href="{{ url('dashboard') }}"
-         class="relative h-full flex items-center text-gray-600 hover:text-blue-600 transition {{ request()->is('dashboard') ? 'text-blue-600' : '' }}">
-        Dashboard
-        @if (request()->is('dashboard'))
-        <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
-        @endif
-      </a>
-
-      <div x-data="{ open: false }" class="relative h-full flex items-center">
-        <button @click="open = !open" class="flex items-center text-gray-600 hover:text-blue-600 transition">
-          <span>Master</span>
-          <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
-        </button>
-        <div x-show="open" @click.away="open = false"
-             class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
-             x-transition>
-          <a href="{{ url('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
-          <a href="{{ url('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
-          <a href="{{ url('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
-        </div>
-      </div>
-
-      <a href="{{ url('schedule_admin') }}"
-         class="relative h-full flex items-center text-gray-600 hover:text-blue-600 transition {{ request()->is('schedule_admin') ? 'text-blue-600' : '' }}">
-        Schedule
-        @if (request()->is('schedule_admin'))
-        <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
-        @endif
-      </a>
-
-      <a href="{{ url('tuk_sewaktu') }}"
-         class="relative h-full flex items-center text-gray-600 hover:text-blue-600 transition {{ request()->is('tuk*') ? 'text-blue-600' : '' }}">
-        TUK
-        @if (request()->is('tuk*'))
-        <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
-        @endif
-      </a>
-    </div>
-
-    <div class="flex items-center space-x-6">
-      <a href="{{ url('notifications') }}" 
-         class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
-                hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-        <i class="fas fa-bell text-xl text-gray-600 relative top-[1px]"></i>
-        <span class="absolute top-[9px] right-[9px]">
-          <span class="relative flex w-2 h-2">
-            <span class="absolute inline-flex w-full h-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative inline-flex w-2 h-2 rounded-full bg-red-500"></span>
-          </span>
-        </span>
-      </a>
-
-      <a href="{{ url('profile_admin') }}" 
-         class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-                hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-        <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
-        <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
-          <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
-        </div>
-      </a>
-    </div>
-  </nav>
-
+  <x-navbar />
   <div class="flex pt-0">
     
     <aside class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-[22%] 
@@ -102,41 +32,41 @@
       </div>
 
       <h3 class="text-lg font-semibold text-gray-900">Roihan Enrico</h3>
-      <p class="text-gray-500 text-sm mb-8">Data Scientist</p>
+      <p class="text-gray-500 text-sm mb-8">Asesor</p>
 
       <div class="w-[90%] bg-white/40 backdrop-blur-md rounded-2xl p-4 
                   shadow-[0_0_15px_rgba(0,0,0,0.15)] mb-6">
         
         <div class="flex flex-col space-y-4 mt-3 mb-3">
-            <a href="{{ url('asesor_profile_settings') }}" 
+            <a href="{{ route('asesor_profile_settings') }}" 
                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->is('asesor_profile_settings') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ request()->routeIs('asesor_profile_settings') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
             </a>
 
-            <a href="{{ url('asesor_profile_tinjauan') }}" 
+            <a href="{{ route('asesor_profile_tinjauan') }}" 
                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->is('asesor_profile_tinjauan') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ request()->routeIs('asesor_profile_tinjauan') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-clipboard-list text-l mr-3"></i> Tinjauan Asesmen
             </a>
 
-            <a href="{{ url('asesor_profile_tracker') }}" 
+            <a href="{{ route('asesor_profile_tracker') }}" 
                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->is('asesor_profile_tracker') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ request()->routeIs('asesor_profile_tracker') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
             </a>
 
-            <a href="{{ url('asesor_profile_bukti') }}" 
+            <a href="{{ route('asesor_profile_bukti') }}" 
                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->is('asesor_profile_bukti') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ request()->routeIs('asesor_profile_bukti') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-check text-l mr-3"></i> Bukti Kelengkapan
             </a>
         </div>
@@ -149,7 +79,7 @@
 
     </aside>
 
-    <main class="ml-[22%] h-[calc(100vh-70px)] overflow-y-auto p-8 bg-gray-50 flex-1">
+    <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">
       <div class="bg-white rounded-2xl shadow-xl p-10">
         <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">Bukti Kelengkapan</h2>
 
@@ -204,14 +134,15 @@
           @endforeach
 
         </div>
+        
         <div class="mt-10 bg-white rounded-2xl shadow-xl p-8 relative border border-gray-200">
           
           <div class="absolute top-6 right-6 flex space-x-2">
-            <button class="bg-yellow-400 hover:bg-yellow-500 text-white font-medium px-3 py-1 rounded-full text-sm flex items-center shadow">
-              <i class="fas fa-edit mr-1.5"></i> Edit
+            <button class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-semibold px-4 py-1.5 rounded-full text-xs flex items-center shadow-sm">
+              <i class="fas fa-edit mr-1.5 text-xs"></i> Edit
             </button>
-            <button class="bg-red-500 hover:bg-red-600 text-white font-medium px-3 py-1 rounded-full text-sm flex items-center shadow">
-              <i class="fas fa-trash mr-1.5"></i> Delete
+            <button class="bg-red-100 hover:bg-red-200 text-red-600 font-semibold px-4 py-1.5 rounded-full text-xs flex items-center shadow-sm">
+              <i class="fas fa-trash mr-1.5 text-xs"></i> Delete
             </button>
           </div>
 
@@ -231,10 +162,10 @@
             sebagai bukti pemenuhan syarat Sertifikasi Lorem Ipsum Dolor Sit Amet.
           </p>
 
-          <div class="mt-6 border border-gray-300 rounded-lg w-full max-w-md h-40 flex items-center justify-center relative">
+          <div class="mt-6 border border-gray-300 rounded-lg w-full max-w-md h-40 flex items-center justify-center relative mx-auto bg-white">
             <img src="{{ asset('images/ttd_sample.png') }}" alt="Tanda Tangan" class="object-contain h-24">
           </div>
-          <p class="text-xs text-red-500 mt-2">*Tanda tangan di sini</p>
+          <p class="text-xs text-red-500 mt-2 text-center">*Tanda Tangan di sini</p>
 
           <div class="mt-8">
             <span class="bg-green-500 text-white font-bold px-6 py-2 rounded-lg shadow-md text-sm">
@@ -242,7 +173,8 @@
             </span>
           </div>
         </div>
-        </div>
+        
+      </div>
     </main>
   </div>
 </body>

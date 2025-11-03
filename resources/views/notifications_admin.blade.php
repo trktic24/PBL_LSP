@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notifications | LSP Polines</title>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-  <!-- Alpine.js -->
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-  <!-- Font: Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
@@ -30,72 +26,9 @@
 <body class="bg-gray-100 text-gray-800">
 <div class="h-screen overflow-y-auto">
 
-  <!-- NAVBAR (seragam dengan Dashboard dan Master lainnya) -->
-  <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
-    <!-- LOGO -->
-    <div class="flex items-center space-x-4">
-      <a href="{{ url('dashboard') }}">
-        <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
-      </a>
-    </div>
-
-    <!-- MENU TENGAH -->
-    <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
-      <a href="{{ url('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">
-        Dashboard
-      </a>
-
-      <!-- Dropdown Master -->
-      <div x-data="{ open: false }" class="relative h-full flex items-center">
-        <button @click="open = !open" class="flex items-center text-gray-600 hover:text-blue-600 transition">
-          <span>Master</span>
-          <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
-        </button>
-
-        <div x-show="open" @click.away="open = false"
-             class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
-             x-transition>
-          <a href="{{ url('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
-          <a href="{{ url('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
-          <a href="{{ url('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
-        </div>
-      </div>
-
-      <a href="{{ url('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
-      <a href="{{ url('tuk_sewaktu') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">TUK</a>
-    </div>
-
-    <!-- PROFIL & NOTIF -->
-    <div class="flex items-center space-x-6">
-      <!-- Notifikasi -->
-      <a href="{{ url('notifications') }}" 
-         class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
-         hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-        <i class="fas fa-bell text-xl text-blue-600"></i>
-        <span class="absolute top-2 right-2">
-            <span class="relative flex w-2 h-2">    
-                <span class="absolute inline-flex w-full h-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex w-2 h-2 rounded-full bg-red-500"></span>
-            </span>
-        </span>
-      </a>
-
-      <!-- Profil -->
-      <a href="{{ url('profile_admin') }}" 
-         class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-         hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-        <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
-        <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
-          <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
-        </div>
-      </a>
-    </div>
-  </nav>
-
-  <!-- MAIN CONTENT -->
+  <x-navbar />
   <main class="p-8">
     <div class="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 max-w-6xl mx-auto">
-      <!-- HEADER -->
       <div class="flex items-center justify-between mb-8">
         <a href="{{ url('dashboard') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
           <i class="fas fa-arrow-left mr-2"></i> Back
@@ -104,7 +37,6 @@
         <div class="w-[80px]"></div>
       </div>
 
-      <!-- FILTER -->
       <div class="flex items-center justify-between mb-6">
         <div class="flex space-x-3">
           <button class="px-5 py-2 text-sm font-medium rounded-lg text-white bg-blue-600 shadow-md hover:bg-blue-700 transition duration-150">
@@ -120,7 +52,6 @@
         </button>
       </div>
 
-      <!-- LIST NOTIFICATIONS -->
       <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 mt-2"> 
         @php
           $notifications = [
@@ -139,7 +70,6 @@
         @foreach ($notifications as $notification)
         <div class="p-5 bg-white rounded-xl shadow-md border border-gray-200 transition duration-300 hover:shadow-lg cursor-pointer hover:-translate-y-0.5 ease-in-out">
           <div class="flex items-center justify-between">
-            <!-- Kiri -->
             <div class="flex space-x-4 w-full">
               <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-lg shadow-inner text-blue-500 text-xl">
                 <i class="far fa-bell"></i>
@@ -150,7 +80,6 @@
               </div>
             </div>
 
-            <!-- Kanan -->
             <div class="relative flex flex-col items-end justify-center min-w-[100px]">
               <p class="text-sm text-gray-500 text-center">{{ $notification['time'] }}</p>
               @if (!$notification['is_read'])

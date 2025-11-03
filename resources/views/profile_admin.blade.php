@@ -41,7 +41,9 @@
     <!-- NAVBAR -->
     <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
         <div class="flex items-center space-x-4">
+            <a href="{{ url('dashboard') }}">
             <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
+            </a>
         </div>
 
         <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">

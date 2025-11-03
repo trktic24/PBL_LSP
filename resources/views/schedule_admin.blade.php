@@ -23,67 +23,7 @@
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
 
-    <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
-      
-      <div class="flex items-center space-x-4">
-        <a href="{{ url('dashboard') }}">
-          <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
-        </a>
-      </div>
-
-      <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
-        <a href="{{ url('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">
-          Dashboard
-        </a>
-
-        <div x-data="{ open: false }" class="relative h-full flex items-center">
-          <button @click="open = !open" class="flex items-center text-gray-600 hover:text-blue-600 transition h-full relative">
-            <span>Master</span>
-            <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
-          </button>
-
-          <div x-show="open" @click.away="open = false"
-              class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
-              x-transition>
-            <a href="{{ url('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
-            <a href="{{ url('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
-            <a href="{{ url('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
-          </div>
-        </div>
-
-        <a href="{{ url('schedule_admin') }}" class="text-blue-600 h-full flex items-center relative">
-          Schedule
-          <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
-        </a>
-
-        <a href="{{ url('tuk_sewaktu') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">
-          TUK
-        </a>
-      </div>
-
-      <div class="flex items-center space-x-6">
-        <a href="{{ url('notifications') }}" 
-          class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
-                  hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-          <i class="fas fa-bell text-xl text-gray-600"></i>
-          <span class="absolute top-2 right-2">
-              <span class="relative flex w-2 h-2">
-                  <span class="absolute inline-flex w-full h-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                  <span class="relative inline-flex w-2 h-2 rounded-full bg-red-500"></span>
-              </span>
-          </span>
-        </a>
-
-        <a href="{{ url('profile_admin') }}" 
-          class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-          hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
-          <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
-          <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
-            <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
-          </div>
-        </a>
-      </div>
-    </nav>
+    <x-navbar />
     <main class="p-6" x-data="calendarApp()">
       
       <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
@@ -105,12 +45,12 @@
             <div class="grid grid-cols-7 gap-1 text-center text-sm">
               <template x-for="(day, index) in miniDays" :key="index">
                 <div x-text="day.date"
-                    class="w-10 h-10 flex items-center justify-center rounded-full"
-                    :class="{
+                     class="w-10 h-10 flex items-center justify-center rounded-full"
+                     :class="{
                         'bg-white border-2 border-blue-600 text-blue-600 font-semibold': day.isToday && day.isCurrentMonth,
                         'text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer': !day.isToday && day.isCurrentMonth,
                         'text-gray-300': !day.isCurrentMonth
-                    }">
+                     }">
                 </div>
               </template>
             </div>
@@ -195,7 +135,7 @@
           <div class="relative w-full md:w-1/3">
             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             <input type="text" placeholder="Search..."
-                  class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all">
+                   class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all">
           </div>
 
           <div class="flex items-center space-x-3 ml-auto" x-data="{ open: false }">
@@ -250,8 +190,8 @@
                 <td class="px-6 py-4">1</td>
                 <td class="px-6 py-4 leading-5">Roihan Enrico<br>Rafa Saputra<br>Zulfikar Pujangga</td>
                 <td class="px-6 py-4">
-                  <a href="{{ url('master_schedule') }}"
-                    class="inline-flex items-center justify-center gap-1 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg shadow transition-all">
+                  <a href="{{ route('master_schedule') }}"
+                     class="inline-flex items-center justify-center gap-1 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg shadow transition-all">
                     <i class="fas fa-arrow-up-right-from-square text-base"></i>
                     <span>Detail</span>
                   </a>
