@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -45,8 +46,41 @@
                     <a href="{{ route('laporan') }}" class="hover:text-blue-600">Laporan</a>
                     <a href="{{ route('profil') }}" class="hover:text-blue-600">Profil</a>
                 </nav>
-            </div>
+=======
+@extends('layouts.app-profil')
+@section('content')
 
+    <section class="relative h-[1000px] rounded-t-4xl overflow-hidden">
+        <img src="{{ asset('images/Gedung Polines.jpg') }}"
+            alt="Gedung Polines"
+            class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/95 via-white/50 to-transparent"></div>
+        <div class="absolute top-1/3 left-16 text-black drop-shadow-lg max-w-xl">
+            <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
+            <p class="text-xl mb-6 leading-relaxed">Lorem ipsum dolor sit amet, you're the best person I've ever met!</p>
+        </div>
+    </section>
+
+    <style>
+        #scrollContainer::-webkit-scrollbar { display: none; }
+        #scrollContainer { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+
+    {{-- Filter Kategori --}}
+    <section class="py-10 text-center">
+        <div id="scrollContainer" class="overflow-x-auto whitespace-nowrap px-6 cursor-grab active:cursor-grabbing select-none">
+            <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
+            <div class="inline-flex gap-4">
+                <button class="btn btn-sm font-bold bg-yellow-400 text-black border-none rounded-full px-6">Semua</button>
+                <button class="btn btn-sm font-bold bg-yellow-100 text-gray-700 border-none rounded-full px-6 hover:bg-yellow-200">Software</button>
+                <button class="btn btn-sm font-bold bg-yellow-100 text-gray-700 border-none rounded-full px-6 hover:bg-yellow-200">IoT</button>
+>>>>>>> 3ef7adc3e335d9d6c4534613859955b9a89479bc
+            </div>
+        </div>
+    </section>
+
+<<<<<<< HEAD
             <div class="relative">
                 <div class="flex items-center space-x-3 cursor-pointer" id="userMenuButton">
                     <span class="text-gray-800 font-semibold">{{ Auth::user()->name ?? 'User' }}</span>
@@ -69,11 +103,53 @@
                             Log Out
                         </button>
                     </form>
+=======
+    <script>
+        const scrollContainer = document.getElementById("scrollContainer");
+        let isDown = false, startX, scrollLeft;
+        scrollContainer.addEventListener("mousedown", (e) => {
+            isDown = true; scrollContainer.classList.add("active");
+            startX = e.pageX - scrollContainer.offsetLeft; scrollLeft = scrollContainer.scrollLeft;
+        });
+        scrollContainer.addEventListener("mouseleave", () => { isDown = false; });
+        scrollContainer.addEventListener("mouseup", () => { isDown = false; });
+        scrollContainer.addEventListener("mousemove", (e) => {
+            if (!isDown) return; e.preventDefault();
+            const x = e.pageX - scrollContainer.offsetLeft; const walk = (x - startX) * 2;
+            scrollContainer.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+
+    {{-- Carousel Grid Skema (Masih Statis) --}}
+    <section class="px-10 mb-16">
+        @php
+            $slide1Images = ['skema1.jpg','skema2.jpg','skema3.jpg','skema4.jpg','skema5.jpg','skema6.jpg',];
+            $slide2Images = ['skema7.jpg','skema8.jpg','skema9.jpg','skema10.jpg','skema11.jpg','skema12.jpg',];
+        @endphp
+        <div id="gridCarousel" class="relative overflow-hidden rounded-3xl">
+            <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0 p-6">
+                    @foreach ($slide1Images as $index => $file)
+                        <div class="transition hover:scale-105">
+                            <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3"><img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 1 }}" class="h-48 w-full object-cover"></div>
+                            <div class="px-2"><h2 class="text-lg font-bold text-gray-800">Skema {{ $index + 1 }} A</h2><p class="text-gray-600">Rp. x.xxx.xxx</p></div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0 p-6">
+                    @foreach ($slide2Images as $index => $file)
+                        <div class="transition hover:scale-105">
+                            <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3"><img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 7 }}" class="h-48 w-full object-cover"></div>
+                            <div class="px-2"><h2 class="text-lg font-bold text-gray-800">Skema {{ $index + 7 }} B</h2><p class="text-gray-600">Rp. x.xxx.xxx</p></div>
+                        </div>
+                    @endforeach
+>>>>>>> 3ef7adc3e335d9d6c4534613859955b9a89479bc
                 </div>
             </div>
         </div>
-    </header>
+    </section>
 
+<<<<<<< HEAD
     <main class="max-w-7xl mx-auto mt-8 px-6 pb-12">
         
         <div class="flex items-center space-x-5 mb-10">
@@ -207,3 +283,48 @@
     </main>
 </body>
 </html>
+=======
+    <script>
+        const gridSlides = document.getElementById('gridSlides'); const slides = document.querySelectorAll('#gridSlides > div');
+        const totalSlides = slides.length; let currentIndex = 0;
+        function showSlide(index) { gridSlides.style.transform = `translateX(-${index * 100}%)`; }
+        setInterval(() => { currentIndex = (currentIndex + 1) % totalSlides; showSlide(currentIndex); }, 5000);
+    </script>
+
+    {{-- ====================================================== --}}
+    {{-- BAGIAN "Jadwal yang Akan Datang" (SUDAH DIPERBAIKI) --}}
+    {{-- ====================================================== --}}
+    <section class="bg-gray-50 py-12 px-10 text-center">
+        <h2 class="text-3xl font-bold mb-8">Jadwal yang Akan Datang</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+            
+            {{-- Perulangan ini akan berjalan JIKA data dummy Anda ada --}}
+            @foreach($jadwals as $jadwal)
+                <div class="card bg-white shadow-lg rounded-2xl">
+                    <div class="card-body flex flex-col p-8">
+                        <p class="text-base mb-1 font-bold text-left">Sertifikasi:</p>
+                        <p class="text-base mb-3 text-left">{{ $jadwal->nama_skema }}</p>
+                        
+                        <p class="text-base mb-1 font-bold text-left">TUK:</p>
+                        <p class="text-base mb-3 text-left">{{ $jadwal->tuk }}</p>
+                        
+                        <p class="text-base mb-1 font-bold text-left">Tanggal:</p>
+                        <p class="text-base mb-6 text-left">{{ $jadwal->tanggal->format('d F Y') }}</p>
+                        
+                        {{-- Ini adalah link yang benar --}}
+                        <a href="{{ route('jadwal.detail', ['id' => $jadwal->id]) }}" 
+                           class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">
+                           Detail
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+
+            @if($jadwals->isEmpty())
+                <p class="text-gray-600 col-span-1 md:col-span-2">Belum ada jadwal yang akan datang saat ini. (Silakan jalankan `php artisan migrate:fresh --seed`)</p>
+            @endif
+
+        </div>
+    </section>
+@endsection
+>>>>>>> 3ef7adc3e335d9d6c4534613859955b9a89479bc

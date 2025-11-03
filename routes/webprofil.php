@@ -1,35 +1,30 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\TukController; // Baris ini sudah dihapus
+// Import Controller yang akan digunakan
+use App\Http\Controllers\TukController; 
+
 
 /*
 |--------------------------------------------------------------------------
 | Custom Routes (Info TUK dan Alur)
 |--------------------------------------------------------------------------
 */
-// Rute untuk Detail Skema (Nama opsional kalo nggak ada link langsung)
+// Rute untuk Detail Skema (TETAP CLOSURE)
 Route::get('/detail_skema', function () {
     return view('landing_page.detail.detail_skema');
-})->name('skema.detail'); // Contoh nama
+})->name('skema.detail');
 
-// Rute untuk alur sertifikasi
+// Rute untuk alur sertifikasi (TETAP CLOSURE)
 Route::get('/alur-sertifikasi', function () {
     return view('landing_page.page_info.alur-sertifikasi');
-})->name('info.alur'); // Nama untuk dropdown Info
+})->name('info.alur');
 
-// Rute untuk info TUK (Daftar) - CLOSURE STATIS
-Route::get('/info-tuk', function () {
-    return view('landing_page.page_tuk.info-tuk');
-})->name('info.tuk'); 
+// Rute untuk info TUK (Daftar) - MENGGUNAKAN TukController@index
+Route::get('/info-tuk', [TukController::class, 'index'])->name('info.tuk'); 
 
-// Rute untuk detail TUK - DIPERBAIKI agar menerima parameter $slug
-Route::get('/detail-tuk/{slug}', function ($slug) { 
-    // Parameter $slug HARUS diterima di sini agar route tidak error
-    
-    // Karena tidak ada Controller/Model, View ini akan menampilkan data statis.
-    return view('landing_page.page_tuk.detail-tuk');
-})->name('info.tuk.detail');
+// Rute untuk detail TUK - MENGGUNAKAN TukController@showDetail DENGAN PARAMETER DINAMIS {id}
+Route::get('/detail-tuk/{id}', [TukController::class, 'showDetail'])->name('info.tuk.detail');
 
 
 /*
@@ -37,50 +32,49 @@ Route::get('/detail-tuk/{slug}', function ($slug) {
 | Web Profil Routes
 |--------------------------------------------------------------------------
 */
-// Rute untuk Visi & Misi
+// Rute untuk Visi & Misi (TETAP CLOSURE)
 Route::get('/visimisi', function () {
     return view('landing_page.page_profil.visimisi');
-})->name('profil.visimisi'); // Nama untuk dropdown Profil
+})->name('profil.visimisi');
 
-// Rute untuk Struktur
+// Rute untuk Struktur (TETAP CLOSURE)
 Route::get('/struktur', function () {
     return view('landing_page.page_profil.struktur');
-})->name('profil.struktur'); // Nama untuk dropdown Profil
+})->name('profil.struktur');
 
-// Rute untuk Mitra
+// Rute untuk Mitra (TETAP CLOSURE)
 Route::get('/mitra', function () {
     return view('landing_page.page_profil.mitra');
-})->name('profil.mitra'); // Nama untuk dropdown Profil
+})->name('profil.mitra');
 
 /*
 |--------------------------------------------------------------------------
 | Halaman Utama & Menu Utama
 |--------------------------------------------------------------------------
 */
-// Rute halaman default (/)
+// Rute halaman default (/) (TETAP CLOSURE)
 Route::get('/', function () {
     return view('landing_page.home');
-})->name('home'); // Nama untuk menu Home
+})->name('home');
 
-// Rute untuk jadwal
+// Rute untuk jadwal (TETAP CLOSURE)
 Route::get('/jadwal', function () {
     return view('landing_page.jadwal');
-})->name('jadwal'); // Nama untuk menu Jadwal Asesmen
+})->name('jadwal');
 
-// Rute untuk Sertifikasi (buat placeholder dulu)
+// Rute untuk Sertifikasi (TETAP CLOSURE)
 Route::get('/sertifikasi', function () {
     return "Halaman Sertifikasi"; // Placeholder
-})->name('sertifikasi'); // Nama untuk menu Sertifikasi
+})->name('sertifikasi');
 
-// Rute untuk Daftar Asesor (buat placeholder dulu)
+// Rute untuk Daftar Asesor (TETAP CLOSURE)
 Route::get('/daftar-asesor', function () {
     return view('landing_page.page_info.daftar-asesor');
-})->name('info.daftar-asesor'); // Nama untuk dropdown Info
+})->name('info.daftar-asesor');
 
-//
+// (TETAP CLOSURE)
 Route::get('/detail_jadwal', function () {
     return view('landing_page.detail.detail_jadwal');
 });
 
-// Jangan lupa include routes/auth.php kalo belum
-// require __DIR__.'/auth.php'; // Pastikan route 'login' ada di sini
+// require __DIR__.'/auth.php';
