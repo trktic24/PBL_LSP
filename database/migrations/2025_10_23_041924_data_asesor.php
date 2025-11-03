@@ -45,6 +45,7 @@ return new class extends Migration
         $table->string('sertifikat_asesor')->nullable();
         $table->string('sertifikasi_kompetensi')->nullable();
         $table->string('tanda_tangan')->nullable();
+        $table->boolean('is_verified')->default(false);
 
         $table->timestamps();
     });

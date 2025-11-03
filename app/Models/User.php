@@ -17,6 +17,7 @@ class User extends Authenticatable
      * Kolom yang boleh diisi secara massal.
      * Disesuaikan dengan ERD Anda.
      */
+    protected $table ='users';
     protected $primaryKey = 'id_user';
 
     /**

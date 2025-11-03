@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-
+use Illuminate\Http\Request;
 // --------------------
 // Halaman Umum
 // --------------------
@@ -23,7 +23,7 @@ Route::get('/laporan', function () {
 })->name('laporan');
 
 Route::get('/profil', function () {
-    return view('profil');
+    return view('frontend.profil');
 })->name('profil');
 
 // --------------------
@@ -31,9 +31,13 @@ Route::get('/profil', function () {
 // --------------------
 
 // Halaman utama (menampilkan semua skema)
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-// Halaman detail skema (klik dari Home)
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/skema/{id}', [HomeController::class, 'show'])->name('detail_skema');
 
+Route::get('/keep-alive', function () {
+    return response()->json(['status' => 'session_refreshed']);
+});
+
+
+require __DIR__.'/webprofil.php';
 require __DIR__.'/auth.php';

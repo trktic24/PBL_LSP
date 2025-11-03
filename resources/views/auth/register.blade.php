@@ -3,16 +3,50 @@
 
     <div class="bg-gray-100 w-full flex items-center justify-center py-5 min-h-screen">
 
+        @php
+    // Tentukan role awal berdasarkan input lama (jika ada), atau default 'asesi'
+    $initialRole = old('role', 'asesi');
+
+    // Tentukan step awal
+    $initialStep = 1;
+
+    // Jika ada error validasi...
+    if ($errors->any()) {
+        // Cek error spesifik asesor step 3 (file uploads)
+        if ($errors->has('ktp_file') || $errors->has('cv_file') || $errors->has('ttd_file')) {
+            $initialStep = 3;
+
+        // Cek error spesifik step 2 (asesi atau asesor).
+        // Kita pakai field yg unik untuk step 2, misal 'nik' atau 'nama_lengkap'
+        } elseif ($errors->has('nik') || $errors->has('nama_lengkap') || $errors->has('no_registrasi_asesor')) {
+            $initialStep = 2;
+
+        // Cek error spesifik step 1 (email atau password)
+        } elseif ($errors->has('email') || $errors->has('password')) {
+            $initialStep = 1;
+
+        // Jika errornya ada tapi bukan di field yg kita cek,
+        // dan rolenya bukan 'asesi', kemungkinan error di step 2 asesor
+        } elseif (old('role') == 'asesor') {
+            $initialStep = 2;
+        // Jika rolenya 'asesi' dan errornya bukan di step 1, pasti di step 2
+        } elseif (old('role') == 'asesi' && !$errors->has('email') && !$errors->has('password')) {
+            $initialStep = 2;
+        }
+    }
+@endphp
         {{--
           ============================================================
           MASTER WRAPPER
           'otak' utamanya ada di sini.
           - role: 'asesi' atau 'asesor'
           - currentStep: 1, 2, atau 3
-          ============================================================
         --}}
         <div class="w-full max-w-3xl md:max-w-4xl lg:max-w-5xl bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col"
-             x-data="{ role: 'asesi', currentStep: 1 }">
+    x-data="registerForm"
+    x-init="init()">
+
+
 
             {{--
               ============================================================
@@ -45,11 +79,27 @@
               Satu <form> membungkus SEMUA step.
               ============================================================
             --}}
-            <form id="register-form" method="POST" action="{{ route('register') }}" enctype="multipart/form-data" novalidate>
+            <form id="register-form" method="POST" action="{{ route('register.store') }}" enctype="multipart/form-data" novalidate>
                 @csrf
                 {{-- Input 'role' ini nilainya dinamis, diambil dari state 'role' Alpine.js --}}
                 <input type="hidden" name="role" x-model="role">
+                @if ($errors->any())
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4" role="alert">
+        <p class="font-bold">Ada Error Validasi:</p>
+        <ul class="list-disc list-inside">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
+@if (session('error'))
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-4" role="alert">
+        <p class="font-bold">Terjadi Kesalahan di Server:</p>
+        <p>{{ session('error') }}</p>
+    </div>
+@endif
                 <div class="p-10 md:p-12">
 
                     <div class="mb-8">
@@ -228,7 +278,7 @@
 
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
                             {{-- Tombol 'Next' --}}
-                            <x-login-button-biru type="button" @click="currentStep = 2" class="w-full sm:w-1/2">
+                            <x-login-button-biru type="button" @click.prevent="currentStep = 2"  class="w-full sm:w-1/2">
                                 Selanjutnya
                             </x-login-button-biru>
 
@@ -237,7 +287,7 @@
                                 <span class="px-3 text-sm text-gray-400 font-medium">OR</span>
                                 <div class="flex-grow border-t border-gray-200"></div>
                             </div>
-                            <x-login-button-google class="w-full sm:w-1/2">
+                            <x-login-button-google href="{{ route('google.login', ['role' => $role ?? 'asesi']) }}" class="w-full sm:w-1/2">
                                 Continue with Google
                             </x-login-button-google>
                         </div>
@@ -271,7 +321,7 @@
                                     <x-login-form-input id="asesi_tempat_lahir" name="tempat_lahir" label="Tempat Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
                                     <div x-data="{ tanggal: '{{ old('tanggal_lahir') }}' }"> {{-- Scope x-data untuk datepicker --}}
                                         <label for="asesi_tanggal_lahir" class="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir</label>
-                                        <div class="relative max-w-sm">
+                                        <div class="relative w-full">
                                             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                                                 <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"> <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" /> </svg>
                                             </div>
@@ -334,7 +384,7 @@
 
                         {{-- Navigasi Step 2 Asesi --}}
                         <div class="flex items-center justify-between mt-10">
-                            <button type="button" @click="currentStep = 1"
+                            <button type="button" @click.prevent="currentStep = 1"
                                    class="flex items-center gap-2 py-3 px-6 bg-gray-400 text-white text-sm font-semibold rounded-full shadow-md hover:bg-gray-500 transition-colors">
                                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                                 Kembali
@@ -374,7 +424,7 @@
                                     <x-login-form-input id="asesor_tempat_lahir" name="tempat_lahir" label="Tempat Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
                                     <div x-data="{ tanggal: '{{ old('tanggal_lahir') }}' }"> {{-- Scope x-data untuk datepicker --}}
                                         <label for="asesor_tanggal_lahir" class="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir</label>
-                                        <div class="relative max-w-sm">
+                                        <div class="relative w-full">
                                              <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                                                 <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20"> <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" /> </svg>
                                             </div>
@@ -442,13 +492,13 @@
 
                         {{-- Navigasi Step 2 Asesor --}}
                         <div class="flex items-center justify-between mt-10">
-                            <button type="button" @click="currentStep = 1"
+                            <button type="button" @click.prevent="currentStep = 1"
                                    class="flex items-center gap-2 py-3 px-6 bg-gray-400 text-white text-sm font-semibold rounded-full shadow-md hover:bg-gray-500 transition">
                                 <i class="fa-solid fa-arrow-left"></i>
                                 Kembali
                             </button>
                             {{-- Tombol 'Next' ke Step 3 --}}
-                            <x-login-button-biru type="button" @click="currentStep = 3" class="px-10 py-3">
+                            <x-login-button-biru type="button" @click.prevent="currentStep = 3" class="px-10 py-3">
                                 Selanjutnya
                             </x-login-button-biru>
                         </div>
@@ -483,7 +533,7 @@
 
                         {{-- Navigasi Step 3 Asesor --}}
                         <div class="flex items-center justify-between mt-10">
-                             <button type="button" @click="currentStep = 2"
+                             <button type="button" @click.prevent="currentStep = 2"
                                    class="flex items-center gap-2 py-3 px-6 bg-gray-400 text-white text-sm font-semibold rounded-full shadow-md hover:bg-gray-500 transition-colors">
                                 <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                                 Kembali
@@ -499,4 +549,71 @@
             </form> {{-- Akhir dari <form> tunggal --}}
         </div> {{-- Akhir dari div[x-data] --}}
     </div>
+
+    <script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('registerForm', () => ({
+        role: '{{ request('role') ?? $initialRole }}',
+        currentStep: {{ request('step') ?? $initialStep }},
+        nik: '{{ old('nik', '') }}',
+
+        // FUNGSI UNTUK MENJAGA SESSION TETAP HIDUP
+        keepAlive() {
+            // Ping server setiap 5 menit (300000 ms)
+            setInterval(() => {
+                // Kita fetch ke route yang nanti kita bikin
+                fetch('/keep-alive', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'session_refreshed') {
+                        console.log('Session refreshed');
+                    }
+                })
+                .catch(error => console.error('Keep-alive ping failed:', error));
+            }, 300000);
+        },
+
+        init() {
+            // 🚀 PANGGIL FUNGSI KEEP-ALIVE DI SINI
+            // Ini akan jalan pas halaman pertama kali dibuka
+            this.keepAlive();
+
+            // 🔁 Load data dari localStorage
+            const saved = localStorage.getItem('register_form');
+            if (saved) {
+                const savedData = JSON.parse(saved);
+
+                Object.entries(savedData).forEach(([key, value]) => {
+                    // Kita nggak akan pernah nimpa _token
+                    if (key !== '_token') {
+                        let el = document.querySelector(`[name="${key}"]`);
+                        if (el) el.value = value;
+                    }
+                });
+            }
+
+            // 💾 Auto-save setiap kali input berubah
+            document.querySelectorAll('input, select, textarea').forEach(el => {
+                el.addEventListener('input', () => {
+                    const data = Object.fromEntries(new FormData(document.querySelector('form')));
+
+                    // Hapus token sebelum nyimpen
+                    delete data._token;
+
+                    localStorage.setItem('register_form', JSON.stringify(data));
+                });
+            });
+        },
+
+        clearStorage() {
+            localStorage.removeItem('register_form');
+        }
+    }));
+});
+</script>
 </x-register-layout>

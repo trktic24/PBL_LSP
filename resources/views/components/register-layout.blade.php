@@ -22,7 +22,7 @@
 <body class="font-sans text-gray-900 antialiased bg-gray-100">
 
     <div class="absolute top-6 left-8">
-        <a href="{{ url('/home') }}"
+        <a href="{{ url('/') }}"
         class="flex items-center text-gray-500 hover:text-gray-700 font-medium text-sm transition-all">
             <i class="fa-solid fa-arrow-left mr-2"></i>
             Kembali
@@ -36,4 +36,10 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
 </body>
+
+<script>
+setInterval(() => {
+  fetch('/sanctum/csrf-cookie').catch(() => {});
+}, 25 * 60 * 1000); // refresh token tiap 25 menit
+</script>
 </html>

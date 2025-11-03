@@ -30,8 +30,7 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        dd($request->all());
-
+        // dd('MASUK NIH');
         $roleName = $request->input('role'); // 'asesi' atau 'asesor'
         $role = Role::where('nama_role', $roleName)->firstOrFail();
 
@@ -44,22 +43,22 @@ class RegisteredUserController extends Controller
 
         if ($roleName === 'asesi') {
             $asesiRules = [
-                'nama_lengkap' => ['required', 'string', 'max:255'],
-                'nik' => ['required', 'string', 'size:16', 'unique:asesi,nik'],
-                'tempat_lahir' => ['required', 'string', 'max:100'],
-                'tanggal_lahir' => ['required', 'string', 'date_format:d-m-Y'],
-                'jenis_kelamin' => ['required', 'string', 'in:Laki-laki,Perempuan'],
-                'kebangsaan' => ['required', 'string', 'max:100'],
-                'kualifikasi' => ['required', 'string', 'max:255'], // -> pendidikan
-                'pekerjaan' => ['required', 'string', 'max:255'],
-                'alamat_rumah' => ['required', 'string'],
-                'kode_pos' => ['required', 'string', 'max:10'],
-                'kabupaten' => ['required', 'string', 'max:255'], // -> kabupaten_kota
-                'provinsi' => ['required', 'string', 'max:255'],
-                'no_hp' => ['required', 'string', 'max:16'], // -> nomor_hp
-                'nama_institusi' => ['required', 'string', 'max:255'], // -> nama_institusi_perusahaan
-                'alamat_institusi' => ['required', 'string'], // -> alamat_kantor
-                'jabatan' => ['required', 'string', 'max:255'],
+                'nama_lengkap' => ['nullable', 'string', 'max:255'],
+                'nik' => ['nullable', 'string', 'size:16', 'unique:asesi,nik'],
+                'tempat_lahir' => ['nullable', 'string', 'max:100'],
+                'tanggal_lahir' => ['nullable', 'string', 'date_format:d-m-Y'],
+                'jenis_kelamin' => ['nullable', 'string', 'in:Laki-laki,Perempuan'],
+                'kebangsaan' => ['nullable', 'string', 'max:100'],
+                'kualifikasi' => ['nullable', 'string', 'max:255'], // -> pendidikan
+                'pekerjaan' => ['nullable', 'string', 'max:255'],
+                'alamat_rumah' => ['nullable', 'string'],
+                'kode_pos' => ['nullable', 'string', 'max:10'],
+                'kabupaten' => ['nullable', 'string', 'max:255'], // -> kabupaten_kota
+                'provinsi' => ['nullable', 'string', 'max:255'],
+                'no_hp' => ['nullable', 'string', 'max:16'], // -> nomor_hp
+                'nama_institusi' => ['nullable', 'string', 'max:255'], // -> nama_institusi_perusahaan
+                'alamat_institusi' => ['nullable', 'string'], // -> alamat_kantor
+                'jabatan' => ['nullable', 'string', 'max:255'],
                 'kode_pos_institusi' => ['nullable', 'string', 'max:15'],
                 'no_telepon_institusi' => ['nullable', 'string', 'max:16'],
             ];
@@ -68,34 +67,34 @@ class RegisteredUserController extends Controller
 
         if ($roleName === 'asesor') {
             $asesorRules = [
-                'nama_lengkap' => ['required', 'string', 'max:255'],
-                'no_registrasi_asesor' => ['required', 'string', 'max:50', 'unique:asesor,nomor_regis'],
-                'nik' => ['required', 'string', 'size:16', 'unique:asesor,nik'],
-                'tempat_lahir' => ['required', 'string', 'max:100'],
-                'tanggal_lahir' => ['required', 'string', 'date_format:d-m-Y'],
-                'jenis_kelamin' => ['required', 'string', 'in:Laki-laki,Perempuan'],
-                'pekerjaan' => ['required', 'string', 'max:255'],
-                'asesor_kebangsaan' => ['required', 'string', 'max:100'],
-                'alamat_rumah' => ['required', 'string'],
-                'kode_pos' => ['required', 'string', 'max:10'],
-                'kabupaten' => ['required', 'string', 'max:255'],
-                'provinsi' => ['required', 'string', 'max:255'],
-                'no_hp' => ['required', 'string', 'max:14'],
-                'npwp' => ['required', 'string', 'max:25'],
-                'skema' => ['required', 'string', 'exists:skema,kode_skema'],
-                'nama_bank' => ['required', 'string', 'max:100'],
-                'nomor_rekening' => ['required', 'string', 'max:20'],
+                'nama_lengkap' => ['nullable', 'string', 'max:255'],
+                'no_registrasi_asesor' => ['nullable', 'string', 'max:50', 'unique:asesor,nomor_regis'],
+                'nik' => ['nullable', 'string', 'size:16', 'unique:asesor,nik'],
+                'tempat_lahir' => ['nullable', 'string', 'max:100'],
+                'tanggal_lahir' => ['nullable', 'string', 'date_format:d-m-Y'],
+                'jenis_kelamin' => ['nullable', 'string', 'in:Laki-laki,Perempuan'],
+                'pekerjaan' => ['nullable', 'string', 'max:255'],
+                'asesor_kebangsaan' => ['nullable', 'string', 'max:100'],
+                'alamat_rumah' => ['nullable', 'string'],
+                'kode_pos' => ['nullable', 'string', 'max:10'],
+                'kabupaten' => ['nullable', 'string', 'max:255'],
+                'provinsi' => ['nullable', 'string', 'max:255'],
+                'no_hp' => ['nullable', 'string', 'max:14'],
+                'npwp' => ['nullable', 'string', 'max:25'],
+                'skema' => ['nullable', 'string', 'exists:skema,id_skema'],
+                'nama_bank' => ['nullable', 'string', 'max:100'],
+                'nomor_rekening' => ['nullable', 'string', 'max:20'],
 
                 // FILES
-                'ktp_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'foto_file' => ['required', File::types(['jpg', 'png'])->max(5 * 1024)],
-                'npwp_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'rekening_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'cv_file' => ['required', File::types(['pdf'])->max(5 * 1024)],
-                'ijazah_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'sertifikat_asesor_file' => ['required', File::types(['pdf'])->max(5 * 1024)],
-                'sertifikat_kompetensi_file' => ['required', File::types(['pdf'])->max(5 * 1024)],
-                'ttd_file' => ['required', File::types(['png'])->max(5 * 1024)],
+                'ktp_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'foto_file' => ['nullable', File::types(['jpg', 'png'])->max(5 * 1024)],
+                'npwp_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'rekening_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'cv_file' => ['nullable', File::types(['pdf'])->max(5 * 1024)],
+                'ijazah_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'sertifikat_asesor_file' => ['nullable', File::types(['pdf'])->max(5 * 1024)],
+                'sertifikat_kompetensi_file' => ['nullable', File::types(['pdf'])->max(5 * 1024)],
+                'ttd_file' => ['nullable', File::types(['png'])->max(5 * 1024)],
             ];
             $rules = array_merge($rules, $asesorRules);
         }
@@ -112,7 +111,9 @@ class RegisteredUserController extends Controller
                 'role_id' => $role->id,
             ]);
 
-            $tanggalLahir = Carbon::createFromFormat('d-m-Y', $validated['tanggal_lahir'])->format('Y-m-d');
+            $tanggalLahir = !empty($validated['tanggal_lahir'])
+            ? Carbon::createFromFormat('d-m-Y', $validated['tanggal_lahir'])->format('Y-m-d')
+            : null;
             $jk = $validated['jenis_kelamin'] === 'Laki-laki' ? 1 : 0;
 
             // === ASESI ===
@@ -136,9 +137,9 @@ class RegisteredUserController extends Controller
 
                 DataPekerjaanAsesi::create([
                     'id_asesi' => $asesi->id_asesi,
-                    'nama_institusi_perusahaan' => $validated['nama_institusi'],
+                    'nama_institusi_pekerjaan' => $validated['nama_institusi'],
                     'jabatan' => $validated['jabatan'],
-                    'alamat_kantor' => $validated['alamat_institusi'],
+                    'alamat_institusi' => $validated['alamat_institusi'],
                     'kode_pos_institusi' => $validated['kode_pos_institusi'] ?? null,
                     'no_telepon_institusi' => $validated['no_telepon_institusi'] ?? null,
                 ]);
@@ -168,7 +169,7 @@ class RegisteredUserController extends Controller
                     }
                 }
                 // Sebelum Asesor::create()
-                $skema = \App\Models\Skema::where('kode_skema', $validated['skema'])->first(); // Ganti 'kode_skema' sesuai langkah 1
+                $skema = \App\Models\Skema::where('id_skema', $validated['skema'])->first();
                 Asesor::create([
                     'id_user' => $user->id_user,
                     'id_skema' => $skema ? $skema->id_skema : null,
@@ -203,6 +204,13 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
-        return redirect(RouteServiceProvider::HOME);
+        if ($roleName === 'asesi') {
+    return redirect()->route('asesi.dashboard');
+    } elseif ($roleName === 'asesor') {
+        return redirect()->route('asesor.dashboard');
+    }
+
+    // Fallback jika ada role lain (misal admin)
+    return redirect()->route('dashboard');
     }
 }
