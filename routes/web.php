@@ -27,9 +27,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Halaman detail skema (klik dari Home)
 Route::get('/skema/{id}', [HomeController::class, 'show'])->name('detail_skema');
 
-// DITAMBAHKAN: Route baru untuk menangani tombol Detail
+// DITAMBAHKAN: Route untuk menangani detail jadwal
 Route::get('/jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('jadwal.detail');
-
 
 /*
 |--------------------------------------------------------------------------
