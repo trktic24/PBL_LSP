@@ -32,14 +32,14 @@
     <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
       <!-- LOGO -->
       <div class="flex items-center space-x-4">
-        <a href="{{ route('dashboard') }}">
+        <a href="{{ url('dashboard') }}">
           <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
         </a>
       </div>
 
       <!-- MENU TENGAH -->
       <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
-        <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">
+        <a href="{{ url('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">
           Dashboard
         </a>
 
@@ -54,20 +54,20 @@
           <div x-show="open" @click.away="open = false"
                class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
                x-transition>
-            <a href="{{ route('master_skema') }}" class="block px-4 py-2 text-blue-600 bg-blue-50 hover:text-blue-600">Skema</a>
-            <a href="{{ route('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
-            <a href="{{ route('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
+            <a href="{{ url('master_skema') }}" class="block px-4 py-2 text-blue-600 bg-blue-50 hover:text-blue-600">Skema</a>
+            <a href="{{ url('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
+            <a href="{{ url('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
           </div>
         </div>
 
-        <a href="{{ route('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
-        <a href="{{ route('tuk_sewaktu') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">TUK</a>
+        <a href="{{ url('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
+        <a href="{{ url('tuk_sewaktu') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">TUK</a>
       </div>
 
       <!-- PROFIL & NOTIF -->
       <div class="flex items-center space-x-6">
         <!-- Notifikasi -->
-        <a href="{{ route('notifications') }}" 
+        <a href="{{ url('notifications') }}" 
            class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
                   hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <i class="fas fa-bell text-xl text-gray-600"></i>
@@ -80,7 +80,7 @@
         </a>
 
         <!-- Profil -->
-        <a href="{{ route('profile_admin') }}" 
+        <a href="{{ url('profile_admin') }}" 
            class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
            hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
@@ -113,7 +113,7 @@
           <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 flex items-center">
             <i class="fas fa-filter mr-2"></i> Filter
           </button>
-          <a href="{{ route('add_skema') }}" 
+          <a href="{{ url('add_skema') }}" 
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center transition">
             <i class="fas fa-plus mr-2"></i> Add Skema
           </a>

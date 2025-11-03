@@ -31,13 +31,13 @@
     <!-- NAVBAR (tidak diubah) -->
     <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
       <div class="flex items-center space-x-4">
-        <a href="{{ route('dashboard') }}">
+        <a href="{{ url('dashboard') }}">
           <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
         </a>
       </div>
 
       <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
-        <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Dashboard</a>
+        <a href="{{ url('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Dashboard</a>
 
         <div x-data="{ open: false }" class="relative h-full flex items-center">
           <button @click="open = !open" class="flex items-center text-gray-600 hover:text-blue-600 transition h-full relative">
@@ -48,23 +48,23 @@
           <div x-show="open" @click.away="open = false"
                class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
                x-transition>
-            <a href="{{ route('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
-            <a href="{{ route('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
-            <a href="{{ route('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
+            <a href="{{ url('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
+            <a href="{{ url('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
+            <a href="{{ url('master_asesi') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesi</a>
           </div>
         </div>
 
-        <a href="{{ route('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
+        <a href="{{ url('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
 
         <!-- TUK aktif -->
-        <a href="{{ route('tuk_tempatkerja') }}" class="text-blue-600 h-full flex items-center relative">
+        <a href="{{ url('tuk_tempatkerja') }}" class="text-blue-600 h-full flex items-center relative">
           TUK
           <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
         </a>
       </div>
 
       <div class="flex items-center space-x-6">
-        <a href="{{ route('notifications') }}" 
+        <a href="{{ url('notifications') }}" 
            class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md 
                   hover:shadow-inner transition-all">
           <i class="fas fa-bell text-xl text-gray-600 relative top-[1px]"></i>
@@ -76,7 +76,7 @@
           </span>
         </a>
 
-        <a href="{{ route('profile_admin') }}" 
+        <a href="{{ url('profile_admin') }}" 
            class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
            hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
@@ -105,7 +105,7 @@
 
           <!-- Tab Switch -->
           <div class="flex space-x-2 p-1 bg-white border border-gray-200 rounded-xl shadow-sm">
-            <a href="{{ route('tuk_sewaktu') }}" 
+            <a href="{{ url('tuk_sewaktu') }}" 
                 class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm transition-all">
                 Sewaktu
             </a>
@@ -134,7 +134,7 @@
             </div>
           </div>
 
-          <a href="{{ route('add_tuk') }}"
+          <a href="{{ url('add_tuk') }}"
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center">
             <i class="fas fa-plus mr-2"></i> Add TUK
           </a>  

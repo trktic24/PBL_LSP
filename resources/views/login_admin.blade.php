@@ -39,6 +39,10 @@
             <label for="username" class="block text-gray-700 font-semibold mb-2">Username</label>
             <input id="username" type="text" name="username" placeholder="Username"
                    class="w-full border border-gray-300 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            
+           @error('username')
+              <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
           </div>
 
           <!-- Password -->
@@ -46,6 +50,10 @@
             <label for="password" class="block text-gray-700 font-semibold mb-2">Password</label>
             <input id="password" type="password" name="password" placeholder="Password"
                    class="w-full border border-gray-300 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            
+            @error('password')
+              <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
           </div>
 
           <!-- Forgot -->

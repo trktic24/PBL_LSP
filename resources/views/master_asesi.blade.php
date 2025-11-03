@@ -33,7 +33,7 @@
     <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
       <!-- LOGO -->
       <div class="flex items-center space-x-4">
-        <a href="{{ route('dashboard') }}">
+        <a href="{{ url('dashboard') }}">
           <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
         </a>
       </div>
@@ -41,7 +41,7 @@
       <!-- MENU TENGAH -->
       <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
         <!-- Dashboard -->
-        <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">
+        <a href="{{ url('dashboard') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">
           Dashboard
         </a>
 
@@ -61,20 +61,20 @@
                x-transition:leave="transition ease-in duration-100"
                x-transition:leave-start="opacity-100 translate-y-0"
                x-transition:leave-end="opacity-0 translate-y-1">
-            <a href="{{ route('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
-            <a href="{{ route('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
-            <a href="{{ route('master_asesi') }}" class="block px-4 py-2 text-blue-600 bg-blue-50 font-semibold">Asesi</a>
+            <a href="{{ url('master_skema') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Skema</a>
+            <a href="{{ url('master_asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Asesor</a>
+            <a href="{{ url('master_asesi') }}" class="block px-4 py-2 text-blue-600 bg-blue-50 font-semibold">Asesi</a>
           </div>
         </div>
 
-        <a href="{{ route('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
-        <a href="{{ route('tuk_sewaktu') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">TUK</a>
+        <a href="{{ url('schedule_admin') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">Schedule</a>
+        <a href="{{ url('tuk_sewaktu') }}" class="text-gray-600 hover:text-blue-600 transition h-full flex items-center">TUK</a>
       </div>
 
       <!-- PROFIL & NOTIF -->
       <div class="flex items-center space-x-6">
         <!-- Notifikasi -->
-        <a href="{{ route('notifications') }}" 
+        <a href="{{ url('notifications') }}" 
            class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
                   hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <i class="fas fa-bell text-xl text-gray-600"></i>
@@ -87,7 +87,7 @@
         </a>
 
         <!-- Profil -->
-        <a href="{{ route('profile_admin') }}" 
+        <a href="{{ url('profile_admin') }}" 
            class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
            hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
           <span class="text-gray-800 font-semibold text-base mr-2">Admin LSP</span>
@@ -158,7 +158,7 @@
                 </button>
 
                 <!-- Tombol View Profile (baru) -->
-                <a href="{{ route('asesi_profile_settings') }}"
+                <a href="{{ url('asesi_profile_settings') }}"
                   class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
                   <i class="fas fa-eye"></i> <span>View</span>
                 </a>
@@ -183,7 +183,7 @@
                 </button>
 
                 <!-- Tombol View Profile (baru) -->
-                <a href="{{ route('asesi_profile_settings') }}"
+                <a href="{{ url('asesi_profile_settings') }}"
                   class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
                   <i class="fas fa-eye"></i> <span>View</span>
                 </a>
