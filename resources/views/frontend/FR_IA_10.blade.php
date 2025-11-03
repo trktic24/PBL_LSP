@@ -1,321 +1,89 @@
 @extends('layouts.app-sidebar')
-
-    @push('css')
-        <style>
-        /* CSS Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            display: flex;
-            min-height: 100vh;
-            background-color: #ffffff; /* Fallback background */
-        }
-
-        /* Main Content (dari Gambar) */
-        .main-content {
-            flex: 1;
-            padding: 32px 48px;
-            background-color: #fdfaf6; /* Warna krem dari gambar */
-            overflow-y: auto;
-        }
-
-        .form-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 24px;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 16px;
-        }
-
-        .form-header img {
-            height: 40px; /* Logo BNSP dari gambar */
-        }
-
-        .form-header .title-block {
-            text-align: right;
-        }
-
-        .form-header h1 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #11182c;
-        }
-
-        .form-body {
-            max-width: 900px;
-        }
-
-        /* Styling untuk Konten FR.IA.10 */
-        .metadata-grid {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 8px 16px;
-            margin-bottom: 24px;
-        }
-
-        .metadata-grid label {
-            font-weight: 600;
-            color: #11182c;
-        }
-         
-        .metadata-grid span, .metadata-grid div {
-            display: flex;
-            align-items: center;
-        }
-
-        .metadata-grid input[type="text"] {
-            border: none;
-            border-bottom: 1px solid #ccc;
-            padding: 4px 0;
-            font-size: 0.9rem;
-            width: 100%;
-        }
-
-        .metadata-grid input[type="text"]:focus {
-            outline: none;
-            border-bottom-color: #3b82f6;
-        }
-
-        .metadata-grid .radio-group input {
-            margin-left: 10px;
-            margin-right: 4px;
-        }
-
-        .guide-box {
-            background-color: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            padding: 16px;
-            border-radius: 8px;
-            margin: 24px 0;
-            font-size: 0.875rem;
-        }
-
-        .guide-box h3 {
-            font-weight: bold;
-            color: #11182c;
-            margin-bottom: 8px;
-        }
+{{-- BLOK @push('css') DIHAPUS KARENA KITA MENGGUNAKAN TAILWIND UTILITY CLASSES --}}
+    
+@section('content')
+    <main class="main-content">
         
-        .guide-box ul {
-            list-style-position: inside;
-        }
-        
-        .guide-box li {
-            margin-bottom: 4px;
-            color: #374151;
-        }
-
-        .form-section {
-            margin-bottom: 24px;
-        }
-        
-        .form-section h2 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #11182c;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 8px;
-            margin-bottom: 16px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.875rem;
-            color: #11182c;
-        }
-
-        .form-group input[type="text"],
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.875rem;
-        }
-        
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        .form-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 24px;
-        }
-
-        .form-table th,
-        .form-table td {
-            border: 1px solid #d1d5db;
-            padding: 10px 12px;
-            text-align: left;
-            font-size: 0.875rem;
-        }
-
-        .form-table th {
-            background-color: #000000;
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .form-table td:nth-child(2),
-        .form-table td:nth-child(3) {
-            text-align: center;
-            width: 60px;
-        }
-        
-        .form-table input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-        }
-
-        .signature-section {
-            margin-top: 32px;
-            display: flex;
-            justify-content: flex-end; /* Hanya asesor di kanan */
-        }
-
-        .signature-box {
-            text-align: center;
-            width: 280px;
-        }
-
-        .signature-box label {
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: #11182c;
-        }
-
-        .signature-pad {
-            height: 120px;
-            margin: 16px 0 8px 0;
-            /* Placeholder untuk tanda tangan, mirip gambar */
-            /* background-image: url('path-to-signature.png'); */
-            /* background-repeat: no-repeat; */
-            /* background-position: center; */
-            /* background-size: contain; */
-            border-bottom: 2px solid #11182c;
-        }
-
-        .signature-box input[type="text"] {
-            border: none;
-            border-bottom: 1px solid #9ca3af;
-            text-align: center;
-            font-size: 0.875rem;
-            padding: 4px;
-            width: 200px;
-        }
-        
-        .signature-box .date-input {
-            margin-top: 8px;
-            font-size: 0.875rem;
-        }
-        .signature-box .date-input input {
-            width: 120px;
-            border: none;
-            border-bottom: 1px solid #9ca3af;
-            font-size: 0.875rem;
-        }
-
-        .form-footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 48px;
-        }
-
-        .btn {
-            padding: 10px 24px;
-            border: 1px solid;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 0.875rem;
-        }
-
-        .btn-secondary {
-            background-color: #ffffff;
-            color: #3b82f6; /* Biru dari gambar */
-            border-color: #3b82f6;
-        }
-
-        .btn-primary {
-            background-color: #3b82f6; /* Biru dari gambar */
-            color: #ffffff;
-            border-color: #3b82f6;
-        }
-        
-        .footer-notes {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 32px;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 16px;
-        }
-
-    </style>
-    @endpush
-
-    {{-- @include('layouts.app-sidebar') --}}
-   
-    @section('content')
-         <main class="main-content">
+        {{-- HEADER: Mengikuti struktur IA.07 (Logo dulu, lalu Judul) --}}
         <header class="form-header">
-            <div class="title-block">
-                <h1>FR.IA.10. VPK - VERIFIKASI PIHAK KETIGA</h1>
+            <img src="{{ asset('images/logo_bnsp.png') }}" alt="Logo BNSP" class="h-12 w-auto">
+            <div class="text-center mt-4 md:mt-0 flex-grow">
+                {{-- Judul disesuaikan dengan IA.10, styling dari IA.07 --}}
+                <h1 class="text-2xl md:text-2xl font-bold text-gray-900">FR.IA.10. VPK - VERIFIKASI PIHAK KETIGA</h1>
             </div>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Logo_BNSP.svg/2560px-Logo_BNSP.svg.png" alt="Logo BNSP">
         </header>
 
         @if (session('success'))
-            <div style="padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px;">
-                 {{ session('success') }}
+            {{-- Menambahkan styling Tailwind pada notifikasi sukses --}}
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+                {{ session('success') }}
             </div>
         @endif
 
-        <form class="form-body" method="POST" action="{{ route('fr-ia-10.store') }}">
+        {{-- FORM BODY: Mengikuti styling IA.07 --}}
+        <form class="form-body mt-10" method="POST" action="{{ route('fr-ia-10.store') }}">
         @csrf
             
-            <div class="metadata-grid">
-                <label>Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
-                <div>: <input type="text" value="Junior Web Developer (Contoh)"></div>
+            {{-- METADATA: Menggunakan grid layout dari IA.07 --}}
+            <div class="form-row grid grid-cols-[250px_1fr] gap-x-6 gap-y-4 items-center mb-8">
                 
-                <label>Nomor</label>
-                <div>: <input type="text" value="SSK.XX.XXXX (Contoh)"></div>
-
-                <label>TUK</label>
-                <div class="radio-group">
-                    : 
-                    <input type="radio" id="tuk_sewaktu" name="tuk_type"><label for="tuk_sewaktu">Sewaktu</label>
-                    <input type="radio" id="tuk_tempatkerja" name="tuk_type" checked><label for="tuk_tempatkerja">Tempat Kerja</label>
-                    <input type="radio" id="tuk_mandiri" name="tuk_type"><label for="tuk_mandiri">Mandiri</label>
+                <label class="text-sm font-medium text-gray-700">Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
+                <div class="flex items-center">
+                    <span>:</span>
+                    <input type="text" value="Junior Web Developer (Contoh)" 
+                           class="form-input w-full ml-2" readonly>
                 </div>
 
-                <label>Nama Asesor</label>
-                <div>: <input type="text" value="Ajeng Febria Hidayati (Contoh)" name="asesor"></div>
+                <label class="text-sm font-medium text-gray-700">Nomor</label>
+                <div class="flex items-center">
+                    <span>:</span>
+                    <input type="text" value="SSK.XX.XXXX (Contoh)" 
+                           class="form-input w-full ml-2" readonly>
+                </div>
+
+                <label class="text-sm font-medium text-gray-700">TUK</label>
+                <div class="radio-group flex items-center space-x-4">
+                    <span>:</span>
+                    <div class="flex items-center space-x-2 ml-2">
+                        <input type="radio" id="tuk_sewaktu" name="tuk_type" class="form-radio h-4 w-4 text-blue-600">
+                        <label for="tuk_sewaktu" class="text-sm text-gray-700">Sewaktu</label>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="radio" id="tuk_tempatkerja" name="tuk_type" checked class="form-radio h-4 w-4 text-blue-600">
+                        <label for="tuk_tempatkerja" class="text-sm text-gray-700">Tempat Kerja</label>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="radio" id="tuk_mandiri" name="tuk_type" class="form-radio h-4 w-4 text-blue-600">
+                        <label for="tuk_mandiri" class="text-sm text-gray-700">Mandiri</label>
+                    </div>
+                </div>
+
+                <label class="text-sm font-medium text-gray-700">Nama Asesor</label>
+                <div class="flex items-center">
+                    <span>:</span>
+                    <input type="text" value="Ajeng Febria Hidayati (Contoh)" name="asesor"
+                           class="form-input w-full ml-2" readonly>
+                </div>
                 
-                <label>Nama Asesi</label>
-                <div>: <input type="text" value="Tatang Sidartang (Contoh)" name="asesi"></div>
-                
-                <label>Tanggal</label>
-                <div>: <input type="date" value="<?php echo date('Y-m-d'); ?>"></div>
+                <label class="text-sm font-medium text-gray-700">Nama Asesi</label>
+                <div class="flex items-center">
+                    <span>:</span>
+                    <input type="text" value="Tatang Sidartang (Contoh)" name="asesi"
+                           class="form-input w-full ml-2" readonly>
+                </div>
+
+                <label class="text-sm font-medium text-gray-700">Tanggal</label>
+                <div class="flex items-center">
+                    <span>:</span>
+                    <input type="date" value="<?php echo date('Y-m-d'); ?>" 
+                           class="form-input w-full ml-2">
+                </div>
             </div>
 
-            <div class="guide-box">
-                <h3>PANDUAN BAGI ASESOR</h3>
-                <ul>
+            {{-- GUIDE BOX: Menggunakan styling IA.07 --}}
+            <div class="guide-box bg-gray-100 border-gray-100 p-6 rounded-md shadow-sm my-8">
+                <h3 class="text-lg font-bold text-black mb-3">PANDUAN BAGI ASESOR</h3>
+                <ul class="list-disc list-inside space-y-2 text-black">
                     <li>Tentukan pihak ketiga yang akan dimintai verifikasi.</li>
                     <li>Ajukan pertanyaan kepada pihak ketiga.</li>
                     <li>Berikan penilaian kepada asesi berdasarkan verifikasi pihak ketiga.</li>
@@ -323,126 +91,126 @@
                 </ul>
             </div>
             
-            <div class="form-section">
-                <h2>Data Pihak Ketiga</h2>
-                <div class="form-group">
-                    <label for="supervisor_name">Nama Pengawas/penyelia/atasan/orang lain di perusahaan :</label>
-                    <input type="text" id="supervisor_name" name="supervisor_name">
+            {{-- FORM SECTION: Styling H2 dan Form Group ditambahkan --}}
+            <div class="form-section my-8">
+                <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Data Pihak Ketiga</h2>
+                
+                <div class="form-group mb-4">
+                    <label for="supervisor_name" class="block text-sm font-medium text-gray-700 mb-1">Nama Pengawas/penyelia/atasan/orang lain di perusahaan :</label>
+                    <input type="text" id="supervisor_name" name="supervisor_name" class="form-input w-full border-gray-300 rounded-md shadow-sm">
                 </div>
-                <div class="form-group">
-                    <label for="workplace">Tempat kerja :</label>
-                    <input type="text" id="workplace" name="workplace">
+                <div class="form-group mb-4">
+                    <label for="workplace" class="block text-sm font-medium text-gray-700 mb-1">Tempat kerja :</label>
+                    <input type="text" id="workplace" name="workplace" class="form-input w-full border-gray-300 rounded-md shadow-sm">
                 </div>
-                <div class="form-group">
-                    <label for="address">Alamat :</label>
-                    <input type="text" id="address" name="address">
+                <div class="form-group mb-4">
+                    <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Alamat :</label>
+                    <input type="text" id="address" name="address" class="form-input w-full border-gray-300 rounded-md shadow-sm">
                 </div>
-                <div class="form-group">
-                    <label for="phone">Telepon :</label>
-                    <input type="text" id="phone" name="phone">
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2>Daftar Pertanyaan</h2>
-                <table class="form-table">
-                    <thead>
-                        <tr>
-                            <th>Pertanyaan</th>
-                            <th>Ya</th>
-                            <th>Tdk</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>"Apakah asesi bekerja dengan mempertimbangkan Kesehatan, Keamanan dan Keselamatan Kerja?"</td>
-                            <td><input type="radio" name="q1" value="ya"></td>
-                            <td><input type="radio" name="q1" value="tidak"></td>
-                        </tr>
-                        <tr>
-                            <td>Apakah asesi berinteraksi dengan harmonis didalam kelompoknya?</td>
-                            <td><input type="radio" name="q2" value="ya"></td>
-                            <td><input type="radio" name="q2" value="tidak"></td>
-                        </tr>
-                        <tr>
-                            <td>Apakah asesi dapat mengelola tugas-tugas secara bersamaan?</td>
-                            <td><input type="radio" name="q3" value="ya"></td>
-                            <td><input type="radio" name="q3" value="tidak"></td>
-                        </tr>
-                        <tr>
-                            <td>Apakah asesi dapat dengan cepat beradaptasi dengan peralatan dan lingkungan yang baru?</td>
-                            <td><input type="radio" name="q4" value="ya"></td>
-                            <td><input type="radio" name="q4" value="tidak"></td>
-                        </tr>
-                        <tr>
-                            <td>Apakah asesi dapat merespon dengan cepat masalah-masalah yang ada di tempat kerjanya?</td>
-                            <td><input type="radio" name="q5" value="ya"></td>
-                            <td><input type="radio" name="q5" value="tidak"></td>
-                        </tr>
-                        <tr>
-                            <td>Apakah Anda bersedia dihubungi jika verifikasi lebih lanjut dari pernyataan ini diperlukan?</td>
-                            <td><input type="radio" name="q6" value="ya"></td>
-                            <td><input type="radio" name="q6" value="tidak"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="form-section">
-                <h2>Detail Verifikasi</h2>
-                <div class="form-group">
-                    <label for="relation">Apa hubungan Anda dengan asesi?</label>
-                    <textarea id="relation" name="relation"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="duration">Berapa lama Anda bekerja dengan asesi?</label>
-                    <textarea id="duration" name="duration"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="proximity">Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?</label>
-                    <textarea id="proximity" name="proximity"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="experience">Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai? (termasuk asesmen atau kualifikasi pelatihan)</label>
-                    <textarea id="experience" name="experience"></textarea>
+                <div class="form-group mb-4">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telepon :</label>
+                    <input type="text" id="phone" name="phone" class="form-input w-full border-gray-300 rounded-md shadow-sm">
                 </div>
             </div>
 
-            <div class="form-section">
-                <h2>Kesimpulan</h2>
-                <div class="form-group">
-                    <label for="consistency">"Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar yang diminta oleh unit kompetensi secara konsisten?"</label>
-                    <textarea id="consistency" name="consistency"></textarea>
+            {{-- TABEL PERTANYAAN: Menggunakan styling tabel IA.07 --}}
+            <div class="form-section my-8">
+                <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Daftar Pertanyaan</h2>
+                <div class="border border-gray-900 shadow-md">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-black text-white">
+                                <th class="border border-gray-900 p-2 font-semibold">Pertanyaan</th>
+                                <th class="border border-gray-900 p-2 font-semibold w-20">Ya</th>
+                                <th class="border border-gray-900 p-2 font-semibold w-20">Tdk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-900 p-2 text-sm">"Apakah asesi bekerja dengan mempertimbangkan Kesehatan, Keamanan dan Keselamatan Kerja?"</td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q1" value="ya" class="form-radio h-4 w-4 text-blue-600"></td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q1" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-900 p-2 text-sm">Apakah asesi berinteraksi dengan harmonis didalam kelompoknya?</td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q2" value="ya" class="form-radio h-4 w-4 text-blue-600"></td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q2" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-900 p-2 text-sm">Apakah asesi dapat mengelola tugas-tugas secara bersamaan?</td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q3" value="ya" class="form-radio h-4 w-4 text-blue-600"></td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q3" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-900 p-2 text-sm">Apakah asesi dapat dengan cepat beradaptasi dengan peralatan dan lingkungan yang baru?</td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q4" value="ya" class="form-radio h-4 w-4 text-blue-600"></td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q4" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-900 p-2 text-sm">Apakah asesi dapat merespon dengan cepat masalah-masalah yang ada di tempat kerjanya?</td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q5" value="ya" class="form-radio h-4 w-4 text-blue-600"></td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q5" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-900 p-2 text-sm">Apakah Anda bersedia dihubungi jika verifikasi lebih lanjut dari pernyataan ini diperlukan?</td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q6" value="ya" class="form-radio h-4 w-4 text-blue-600"></td>
+                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q6" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="form-group">
-                    <label for="training_needs">Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:</label>
-                    <textarea id="training_needs" name="training_needs"></textarea>
+            </div>
+
+            {{-- FORM SECTION: Styling H2 dan Form Group ditambahkan --}}
+            <div class="form-section my-8">
+                <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Detail Verifikasi</h2>
+                <div class="form-group mb-4">
+                    <label for="relation" class="block text-sm font-medium text-gray-700 mb-1">Apa hubungan Anda dengan asesi?</label>
+                    <textarea id="relation" name="relation" class="form-textarea w-full border-gray-300 rounded-md shadow-sm" rows="3"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="other_comments">Ada komentar lain:</label>
-                    <textarea id="other_comments" name="other_comments"></textarea>
+                <div class="form-group mb-4">
+                    <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Berapa lama Anda bekerja dengan asesi?</label>
+                    <textarea id="duration" name="duration" class="form-textarea w-full border-gray-300 rounded-md shadow-sm" rows="3"></textarea>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="proximity" class="block text-sm font-medium text-gray-700 mb-1">Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?</label>
+                    <textarea id="proximity" name="proximity" class="form-textarea w-full border-gray-300 rounded-md shadow-sm" rows="3"></textarea>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai? (termasuk asesmen atau kualifikasi pelatihan)</label>
+
+                    <textarea id="experience" name="experience" class="form-textarea w-full border-gray-300 rounded-md shadow-sm" rows="3"></textarea>
+                </div>
+            </div>
+
+            {{-- FORM SECTION: Styling H2 dan Form Group ditambahkan --}}
+            <div class="form-section my-8">
+                <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Kesimpulan</h2>
+                <div class="form-group mb-4">
+                    <label for="consistency" class="block text-sm font-medium text-gray-700 mb-1">"Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar yang diminta oleh unit kompetensi secara konsisten?"</label>
+                    <textarea id="consistency" name="consistency" class="form-textarea w-full border-gray-300 rounded-md shadow-sm" rows="3"></textarea>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="training_needs" class="block text-sm font-medium text-gray-700 mb-1">Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:</label>
+                    <textarea id="training_needs" name="training_needs" class="form-textarea w-full border-gray-300 rounded-md shadow-sm" rows="3"></textarea>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="other_comments" class="block text-sm font-medium text-gray-700 mb-1">Ada komentar lain:</label>
+                    <textarea id="other_comments" name="other_comments" class="form-textarea w-full border-gray-300 rounded-md shadow-sm" rows="3"></textarea>
                 </div>
             </div>
             
-            <div class="signature-section">
-                <div class="signature-box">
-                    <label>Tanda tangan Asesor:</label>
-                    <div class="signature-pad">
-                        </div>
-                    <input type="text" value="Ajeng Febria Hidayati (Contoh)" readonly>
-                    <div class="date-input">
-                        <label>Tanggal: </label>
-                        <input type="text" value="<?php echo date('d - m - Y'); ?>">
-                    </div>
-                </div>
-            </div>
+            {{-- TANDA TANGAN: Tetap menggunakan include dari IA.10 --}}
+            @include('components.kolom_ttd.asesiasesor')
 
-            <div class="form-footer">
-                <button type="button" class="btn btn-secondary">Sebelumnya</button>
-                <button type="submit" class="btn btn-primary">Kirim</button>
+            {{-- FOOTER BUTTONS: Diberi styling Tailwind --}}
+            <div class="form-footer flex justify-between mt-10">
+                <button type="button" class="btn py-2 px-5 border border-blue-600 text-blue-600 rounded-md font-semibold hover:bg-blue-50">Sebelumnya</button>
+                <button type="submit" class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Kirim</button>
             </div>
             
-            <div class="footer-notes">
+            {{-- FOOTER NOTES: Diberi styling Tailwind --}}
+            <div class="footer-notes mt-10 pt-4 border-t border-gray-200 text-xs text-gray-600 space-y-1">
                 <p>*Coret yang tidak perlu</p>
                 <p>Informasi Rahasia</p>
                 <br>
@@ -452,4 +220,4 @@
         </form>
 
     </main>
-    @endsection
+@endsection
