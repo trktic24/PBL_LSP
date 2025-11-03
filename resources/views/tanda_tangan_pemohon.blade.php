@@ -66,42 +66,16 @@
                     </p>
                 </div>
 
-                <form id="signature-upload-form">
-                    <div class="mt-6">
-                        
-                        <div id="signature-preview-container" class="drag-drop-area w-full h-48 border border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-gray-50 mb-4 transition-all duration-300">
-                            <img id="signature-preview" class="max-h-full max-w-full object-contain hidden" alt="Tanda Tangan Preview">
-                            <span id="upload-placeholder" class="text-gray-500 text-sm">Upload File Tanda Tangan Anda di sini (PNG/JPG)</span>
-                        </div>
-                        
-                        <div class="flex items-center space-x-4 mb-4">
-                            <div class="file-input-wrapper">
-                                <label for="signature-file-input" class="cursor-pointer px-4 py-2 bg-blue-100 text-blue-700 font-medium rounded-lg hover:bg-blue-200 transition-colors">
-                                    Choose File
-                                </label>
-                                <input type="file" id="signature-file-input" accept="image/png, image/jpeg"/>
-                            </div>
-                            </div>
-
-                        <input type="hidden" name="signature_data_base64" id="signature-data-base64">
-                        
-                        <div class="flex justify-end items-center mt-4 space-x-3">
-                            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors" id="clear-signature">
-                                Hapus
-                            </button>
-                            <button type="button" class="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 shadow-md transition-colors disabled:bg-blue-300" id="save-signature" disabled>
-                                Simpan
-                            </button>
-                        </div>
-                    </div>
+                <form id="signature-upload-form" method="POST" action="{{ route('simpan.tandatangan') }}">
+                    @csrf  <input type="hidden" name="signature_data_base64" id="signature-data-base64"> 
 
                     <div class="flex justify-between items-center mt-12">
-                        <a href="/bukti_pemohon" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
-                             Sebelumnya
+                        <a href="{{ url('/bukti_pemohon') }}" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
+                            Sebelumnya
                         </a>
-                        <a href="/tunggu_upload_dokumen" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
-                             Selanjutnya
-                        </a>
+                        <button type="submit" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors" id="submit-selanjutnya">
+                            Selanjutnya
+                        </button>
                     </div>
                 </form>
 
