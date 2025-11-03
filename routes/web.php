@@ -28,6 +28,12 @@ Route::get('/FR-IA-10', function () {
 Route::get('/fr-ia-06-c', function () {
     return view('frontend/fr_IA_06_c');
 })->name('fr_IA_06_c');
+Route::get('/fr-ia-06-a', function () {
+    return view('frontend/fr_IA_06_a');
+})->name('fr_IA_06_a');
+Route::get('/fr-ia-06-b', function () {
+    return view('frontend/fr_IA_06_b');
+})->name('fr_IA_06_b');
 Route::get('/fr-ia-07', function () {
     return view('frontend/FR_IA_07');
 })->name('FR_IA_07');
