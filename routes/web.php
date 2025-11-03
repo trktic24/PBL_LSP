@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\LoginController; // <-- Panggil Controller kita
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\SkemaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +106,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/add_asesor3', function () {
         return view('add_asesor3'); 
     })->name('add_asesor3');
+
+    // Rute untuk MENYIMPAN data form
+    Route::post('/add_skema', [SkemaController::class, 'store'])->name('add_skema.store');
 
     //Rute untuk menyimpan data belum ada, untuk saat ini dibuat rute dummy jika bellum ada controller
     Route::post('/store-asesor', function () {
