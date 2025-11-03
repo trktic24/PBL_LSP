@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FormIa10Controller;
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -24,15 +25,20 @@ Route::get('/tracker', function () {
 Route::get('/FR-IA-10', function () {
     return view('frontend/FR_IA_10');
 })->name('FR-IA-10');
-Route::get('/fr-ia-06-jawaban-essai', function () {
+Route::get('/fr-ia-06-c', function () {
     return view('frontend/fr_IA_06_c');
-})->name('fr_IA_06_C');
+})->name('fr_IA_06_c');
+Route::get('/fr-ia-07', function () {
+    return view('frontend/FR_IA_07');
+})->name('FR_IA_07');
 
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/fr-ia-10', [FormIa10Controller::class, 'create'])->name('fr-ia-10.create');
+    Route::post('/fr-ia-10', [FormIa10Controller::class, 'store'])->name('fr-ia-10.store');
 });
 
 require __DIR__.'/auth.php';
