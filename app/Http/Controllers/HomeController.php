@@ -7,8 +7,7 @@ use Illuminate\View\View;
 use App\Models\Jadwal; // <-- TAMBAHAN 1: Impor Model Jadwal
 
 class HomeController extends Controller
-<<<<<<< HEAD
-{ 
+
     /**
      * Halaman utama (menampilkan semua skema)
      */
@@ -47,7 +46,10 @@ class HomeController extends Controller
         return view('frontend/home', [
             'jadwals' => $jadwals // Kirim data ke view
         ]);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3ef7adc3e335d9d6c4534613859955b9a89479bc
     }
 
 
@@ -98,4 +100,8 @@ class HomeController extends Controller
             'jadwal' => $jadwal
 ]);
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3ef7adc3e335d9d6c4534613859955b9a89479bc
