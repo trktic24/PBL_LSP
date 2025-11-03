@@ -64,8 +64,6 @@
                     class="profile-input w-full border border-blue-500 rounded-md px-3 py-2" readonly>
                 <input type="text" id="no_induk" placeholder="No Registrasi Asesor"
                     class="profile-input w-full border border-blue-500 rounded-md px-3 py-2" readonly>
-                <input type="text" id="kompetensi" placeholder="Kompetensi"
-                    class="profile-input w-full border border-blue-500 rounded-md px-3 py-2" readonly>
             </div>
         </div>
     </div>

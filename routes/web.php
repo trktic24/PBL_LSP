@@ -50,7 +50,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/fr-ia-10', [FormIa10Controller::class, 'create'])->name('fr-ia-10.create');
+    Route::get('/fr-ia-10', [FormIa10Controller::class, 'create'])
+    ->middleware('auth') // 
+    ->name('fr-ia-10.create');
     Route::post('/fr-ia-10', [FormIa10Controller::class, 'store'])->name('fr-ia-10.store');
+    Route::post('/fr-ia-10', [FormIa10Controller::class, 'store'])
+    ->middleware('auth') // <-- TAMBAHKAN INI JUGA
+    ->name('fr-ia-10.store');
+    Route::get('/dashboard', function () {return view('dashboard'); })->middleware(['auth'])->name('dashboard');
 });
 
 require __DIR__.'/auth.php';
