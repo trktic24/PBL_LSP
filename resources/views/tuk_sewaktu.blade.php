@@ -42,7 +42,7 @@
         <div x-data="{ open: false }" class="relative h-full flex items-center">
           <button @click="open = !open" class="flex items-center text-gray-600 hover:text-blue-600 transition h-full relative">
             <span>Master</span>
-            <i class="fas fa-caret-down ml-2.5 text-sm"></i>
+            <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
           </button>
 
           <div x-show="open" @click.away="open = false"

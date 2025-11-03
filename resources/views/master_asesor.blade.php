@@ -116,7 +116,7 @@
           <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300">
             <i class="fas fa-filter mr-2"></i> Filter
           </button>
-          <a href="{{ route('add_asesor') }}" 
+          <a href="#" 
              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center">
               <i class="fas fa-plus mr-2"></i> Add Asesor
           </a>

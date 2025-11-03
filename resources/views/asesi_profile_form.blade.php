@@ -20,7 +20,7 @@
 <div class="min-h-screen overflow-y-auto">
 
   <nav class="fixed top-0 left-0 w-full flex items-center justify-between px-10 
-              bg-white/90 backdrop-blur-md shadow-md border-b border-gray-200 h-[80px] z-50">
+              bg-white shadow-md border-b border-gray-200 h-[80px] z-50">
     <div class="flex items-center space-x-4">
       <a href="{{ route('dashboard') }}">
         <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
@@ -186,12 +186,31 @@
           </button>
         </div>
 
-        <div class="mt-10 text-center">
-          <button type="button"
-                  class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg shadow-md font-semibold transition-all">
-            Buka Form Terpilih
-          </button>
-        </div>
+        <div class="mt-10 border-t pt-10">
+        
+          <div x-show="active === null" class="text-center text-gray-500 py-10">
+            <i class="fas fa-hand-pointer text-4xl mb-4"></i>
+            <p class="text-lg">Silakan pilih salah satu formulir di atas.</p>
+            <p class="text-sm">Konten form yang Anda pilih akan muncul di sini.</p>
+          </div>
+
+          <div x-show="active === 'FR.APL.01'" x-transition>
+            <h3 class="text-2xl font-semibold mb-4">Formulir FR.APL.01</h3>
+            <p>...Letakkan konten form FR.APL.01 Anda di sini...</p>
+            </div>
+        
+          <div x-show="active === 'FR.APL.02'" x-transition>
+            <h3 class="text-2xl font-semibold mb-4">Formulir FR.APL.02</h3>
+            <p>...Letakkan konten form FR.APL.02 Anda di sini...</p>
+          </div>
+
+          <div x-show="active === 'FR.MAPA.01'" x-transition>
+            <h3 class="text-2xl font-semibold mb-4">Formulir FR.MAPA.01</h3>
+            <p>...Letakkan konten form FR.MAPA.01 Anda di sini...</p>
+          </div>
+
+          </div>
+        
       </div>
     </section>
   </main>
