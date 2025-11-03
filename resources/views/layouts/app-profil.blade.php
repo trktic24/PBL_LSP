@@ -12,12 +12,13 @@
     @yield('styles')
 </head>
 
-<body class="antialiased bg-white">
+<body class="antialiased bg-white flex flex-col min-h-screen">
 
-    <x-navbar.navbar/>
-    <main class="bg-white min-h-screen">
-        @yield('content')
-    </main>
+    <x-navbar.navbar/>
+    
+        <div class="bg-white flex-1 flex">
+        @yield('content')
+    </div>
 
     {{-- KARENA ANDA SUDAH MENGHILANGKAN FOOTER SECARA KONTINU,
          JIKA ADA FOOTER GLOBAL, HARUS DITAMBAHKAN DI SINI MENGGUNAKAN @yield. --}}
