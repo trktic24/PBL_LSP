@@ -260,17 +260,17 @@
 
 
                 <h3 class="font-bold mt-6">PENYUSUN DAN VALIDATOR</h3>
-                <div class="border border-gray-900 shadow-md w-full max-w-4xl mx-auto">
-                <table class="w-full border-collapse">
-                    <tbody>
+                <x-table>
                     <!-- ttd asesi asesor -->
-                    <tr class="h-20">
-                        <td class="border border-gray-900 p-2 font-bold text-center w-[80px] bg-black text-white">STATUS</td>
-                        <td class="border border-gray-900 p-2 font-bold text-center w-[30px] bg-black text-white">NO</td>
-                        <td class="border border-gray-900 p-2 font-bold text-center w-[200px] bg-black text-white">NAMA</td>                        
-                        <td class="border border-gray-900 p-2 font-bold text-center w-[100px] bg-black text-white">NOMOR MET</td>
-                        <td class="border border-gray-900 p-2 font-bold text-center w-[80px] bg-black text-white">TANDA TANGAN DAN TANGGAL</td>                                                
-                    </tr>
+                    <x-slot name="thead">
+                        <tr>
+                            <td class="border border-gray-900 p-2 font-bold text-center w-[80px] bg-black text-white">STATUS</td>
+                            <td class="border border-gray-900 p-2 font-bold text-center w-[30px] bg-black text-white">NO</td>
+                            <td class="border border-gray-900 p-2 font-bold text-center w-[200px] bg-black text-white">NAMA</td>                        
+                            <td class="border border-gray-900 p-2 font-bold text-center w-[100px] bg-black text-white">NOMOR MET</td>
+                            <td class="border border-gray-900 p-2 font-bold text-center w-[80px] bg-black text-white">TANDA TANGAN DAN TANGGAL</td>                                                
+                        </tr>
+                    </x-slot>
 
                     <!-- penyusun -->
                     <tr class="bg-gray-100 font-semibold">
@@ -289,10 +289,7 @@
                         <td class="border border-gray-900 p-2"></td>
                         <td class="border border-gray-900 p-2 "></td>                        
                     </tr>
-
-                    </tbody>
-                </table>
-                </div>                
+                </x-table>             
 
 
 
