@@ -3,8 +3,8 @@
 {{-- 🟦 Import font Poppins --}}
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<header 
-  x-data="{ openMenu: false, openDropdown: null }" 
+<header
+  x-data="{ openMenu: false, openDropdown: null }"
   class="fixed top-0 left-0 w-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-6 sm:px-12 z-50 font-[Poppins]"
 >
   <div class="flex items-center justify-between w-full max-w-7xl mx-auto">
@@ -15,13 +15,13 @@
     </a>
 
     {{-- 🟦 Menu utama --}}
-    <nav 
+    <nav
       :class="{ 'max-lg:hidden': !openMenu }"
       class="lg:block max-lg:fixed max-lg:bg-white max-lg:w-2/3 max-lg:min-w-[300px]
              max-lg:top-0 max-lg:left-0 max-lg:h-full max-lg:shadow-md max-lg:p-4 max-lg:overflow-auto z-40 mx-auto transition-all"
     >
       {{-- Tombol close (mobile) --}}
-      <button 
+      <button
         @click="openMenu = false"
         class="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer"
       >
@@ -58,8 +58,8 @@
 
         {{-- 🔽 Dropdown Info --}}
         <li class="relative px-2 py-2" x-data>
-          <button 
-            @click.stop="openDropdown = openDropdown === 'info' ? null : 'info'" 
+          <button
+            @click.stop="openDropdown = openDropdown === 'info' ? null : 'info'"
             class="inline-flex items-center gap-1 text-slate-900 font-medium text-[15px] hover:text-blue-700 focus:outline-none"
           >
             <span>Info</span>
@@ -68,21 +68,21 @@
             </svg>
           </button>
 
-          <ul 
+          <ul
             x-show="openDropdown === 'info'"
             @click.outside="openDropdown = null"
             x-transition
             class="absolute bg-white shadow-md rounded-md mt-2 w-44 border border-gray-100 z-50"
           >
             <li><a href="{{ url('/alur-sertifikasi') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Alur Proses</a></li>
-            <li><a href="{{ url('/info-tuk') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Daftar Asesor</a></li>
-            <li><a href="{{ url('/detail-tuk') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">TUK</a></li>
+            <li><a href="{{ url('/daftar-asesor') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Daftar Asesor</a></li>
+            <li><a href="{{ url('/info-tuk') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">TUK</a></li>
           </ul>
         </li>
 
         {{-- 🔽 Dropdown Profil --}}
         <li class="relative px-2 py-2" x-data>
-          <button 
+          <button
             @click.stop="openDropdown = openDropdown === 'profil' ? null : 'profil'"
             class="inline-flex items-center gap-1 text-slate-900 font-medium text-[15px] hover:text-blue-700 focus:outline-none"
           >
@@ -92,7 +92,7 @@
             </svg>
           </button>
 
-          <ul 
+          <ul
             x-show="openDropdown === 'profil'"
             @click.outside="openDropdown = null"
             x-transition

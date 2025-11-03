@@ -59,30 +59,27 @@ scrollContainer.addEventListener("mousemove", e => {
 
 {{-- Carousel Grid Skema --}}
 <section class="px-10 mb-16">
-    <?php echo test;?>
     @php
         $skemas = $skemas ?? [];
-        $slide1 = array_slice($skemas, 0, 6);
-        $slide2 = array_slice($skemas, 6, 6);
+        $slide1 = array_slice($skemas, 0, 6);   // elemen 0..5
+        $slide2 = array_slice($skemas, 6, 6);   // elemen 6..11
     @endphp
 
     <div id="gridCarousel" class="relative overflow-hidden rounded-3xl w-full">
         <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
             {{-- Slide 1 --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full p-6">
-                <?php
-                echo $skemas;
-                ?>
-
-                @foreach($skemas as $index => $file)
+                @foreach ($slide1 as $i => $file)
                 <div class="transition hover:scale-105">
-                    <a href="{{ route('detail_skema', ['id' => $index + 1]) }}">
+                    <a href="{{ route('detail_skema', ['id' => $i + 1]) }}">
                         <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                            {{index->nama}}
+                            <img src="{{ asset('images/' . $file['gambar']) }}"
+                                 alt="{{ $file['nama'] }}"
+                                 class="h-48 w-full object-cover">
                         </div>
                     </a>
                     <div class="px-2">
-                        <h2 class="text-lg font-bold text-gray-800">Skema {{ $index + 1 }} A</h2>
+                        <h2 class="text-lg font-bold text-gray-800">{{ $file['nama'] }}</h2>
                         <p class="text-gray-600">Rp. x.xxx.xxx</p>
                     </div>
                 </div>
@@ -91,15 +88,19 @@ scrollContainer.addEventListener("mousemove", e => {
 
             {{-- Slide 2 --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full p-6">
-                @foreach($skemas as $index => $file)
+                @foreach ($slide2 as $j => $file)
                 <div class="transition hover:scale-105">
-                    <a href="{{ route('detail_skema', ['id' => $index + 7]) }}">
+                    {{-- id route: index slide2 mulai dari 7 (6 + 1) --}}
+                    <a href="{{ route('detail_skema', ['id' => $j + 7]) }}">
                         <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                            <img src="{{ asset('images/' . $file['gambar']) }}" alt="{{ $file['nama'] }}" class="h-48 w-full object-cover">
+                            <img src="{{ asset('images/' . $file['gambar']) }}"
+                                 alt="{{ $file['nama'] }}"
+                                 class="h-48 w-full object-cover">
                         </div>
                     </a>
                     <div class="px-2">
-                        <h2 class="text-lg font-bold text-gray-800">Skema {{ $index + 7 }} B</h2>
+                        {{-- tampilkan nama sebenarnya, bukan "Skema X B" --}}
+                        <h2 class="text-lg font-bold text-gray-800">{{ $file['nama'] }}</h2>
                         <p class="text-gray-600">Rp. x.xxx.xxx</p>
                     </div>
                 </div>
@@ -108,6 +109,7 @@ scrollContainer.addEventListener("mousemove", e => {
         </div>
     </div>
 </section>
+
 
 <script>
 const gridSlides = document.getElementById('gridSlides');

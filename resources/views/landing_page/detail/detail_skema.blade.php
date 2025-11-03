@@ -173,7 +173,7 @@
 
     {{-- Ambil Skema Button --}}
     <section class="container mx-auto px-8 py-10 text-center">
-        <button class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-12 rounded-lg text-lg transition shadow-lg hover:shadow-xl">
+        <button href="{{ route('login') }}" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-12 rounded-lg text-lg transition shadow-lg hover:shadow-xl">
             Ambil Skema
         </button>
     </section>
