@@ -23,9 +23,9 @@ class Skema extends Model
     /**
      * Relasi: 1 Skema punya BANYAK KelompokPekerjaan
      */
-    // public function kelompokPekerjaans(): HasMany
-    // {
-    //     // Model tujuan, Foreign Key, Local Key (PK di tabel ini)
-    //     return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
-    // }
+    public function kelompokPekerjaans(): HasMany
+    {
+        // Model tujuan, Foreign Key, Local Key (PK di tabel ini)
+        return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
+    }
 }
