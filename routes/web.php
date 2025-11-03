@@ -20,6 +20,14 @@ Route::get('/tanda_tangan_pemohon', function () {
     return view('tanda_tangan_pemohon');
 });
 
+Route::get('/belum_lulus', function () {
+    return view('belum_lulus');
+});
+
+Route::get('/bukti_pemohon', function () {
+    return view('bukti_pemohon');
+});
+
 Route::get('/upload_bukti_pembayaran', function () {
     return view('upload_bukti_pembayaran');
 });
@@ -56,12 +64,32 @@ Route::get('/praasesmen7', function () {
     return view('praasesmen7');
 });
 
+Route::get('/tunggu_pembayaran', function () {
+    return view('tunggu_pembayaran');
+});
+
 Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
+Route::get('/banding', function () {
+    return view('banding');
+});
+
 Route::get('/pertanyaan_lisan', function () {
     return view('pertanyaan_lisan');
+});
+
+Route::get('/umpan_balik', function () {
+    return view('umpan_balik');
+});
+
+Route::get('/fr_ak01', function () {
+    return view('fr_ak01');
+});
+
+Route::get('/verifikasi_tuk', function () {
+    return view('verifikasi_tuk');
 });
 
 Route::get('/dashboard', function () {

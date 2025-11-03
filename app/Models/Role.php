@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,19 +11,15 @@ class Role extends Model
 {
     use HasFactory;
 
-    /**
-     * Kolom yang boleh diisi
-     */
-    protected $fillable = [
-        'nama_role',
-    ];
+    // Kasih tau nama tabel & PK-nya
+    protected $table = 'roles';
+    protected $primaryKey = 'id_role';
+    protected $guarded = [];
 
-    /**
-     * Relasi one-to-many: Satu Role memiliki banyak User
-     */
-    public function users(): HasMany
+    // Relasi: 1 Role dipake banyak User
+    public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'role_id', 'id_role');
     }
 }
 
