@@ -171,6 +171,16 @@ Route::middleware('auth')->group(function () {
         return view('master_schedule'); 
     })->name('master_schedule');
 
+    // Add Schedule
+    Route::get('/add_schedule', function () {
+        return view('add_schedule'); 
+    })->name('add_schedule');
+
+    // Edit Schedule
+    Route::get('/edit_schedule', function () {
+        return view('edit_schedule'); 
+    })->name('edit_schedule');
+
     // asesi Profile Settings
     Route::get('/asesi_profile_settings', function () {
         return view('asesi_profile_settings'); 
