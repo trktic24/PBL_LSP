@@ -21,9 +21,10 @@ return new class extends Migration
             $table->foreignId('id_asesor')->constrained('asesor', 'id_asesor')->onUpdate('cascade')->onDelete('restrict');
 
             // Isi kolom
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
-            $table->date('tanggal_pelaksanaan');
+            $table->integer('sesi')->comment('daftar Sesi');
+            $table->dateTime('tanggal_mulai')->comment('tanggal Mulai pendaftaran');
+            $table->dateTime('tanggal_selesai')->comment('tanggal Selesai pendaftaran');
+            $table->dateTime('tanggal_pelaksanaan')->comment('tanggal pelaksanaan');
             $table->string('Status_jadwal')->comment('Status bisa berupa: Terjadwal, Selesai, Dibatalkan');
             $table->timestamps();
         });
