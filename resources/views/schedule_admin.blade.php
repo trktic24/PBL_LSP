@@ -160,9 +160,10 @@
                 </a>
               </div>
             </div>
-            <button class="px-4 py-2 bg-blue-600 hover:bg-blue-800 text-white rounded-lg text-sm font-medium flex items-center shadow-md">
+            <a href="{{ url('add_schedule') }}"
+             class="px-4 py-2 bg-blue-600 hover:bg-blue-800 text-white rounded-lg text-sm font-medium flex items-center shadow-md">
               <i class="fas fa-calendar-plus mr-2 text-base"></i> Add Schedule
-            </button>
+            </a>  
           </div>
         </div>
 

@@ -42,9 +42,9 @@
             <i class="fas fa-filter mr-2"></i> Filter
           </button>
 
-          <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center shadow-md">
+          <a href="{{ url('add_schedule') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center shadow-md">
             <i class="fas fa-plus mr-2"></i> Add Schedule
-          </button>
+          </a>
         </div>
       </div>
 
