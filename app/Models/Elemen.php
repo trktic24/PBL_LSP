@@ -35,9 +35,9 @@ class Elemen extends Model
      * Relasi one-to-many:
      * Satu Elemen PUNYA BANYAK KriteriaUnjukKerja
      */
-//     public function kriteriaUnjukKerjas(): HasMany
-//     {
-//         // Model tujuan, Foreign Key, Primary Key di tabel ini
-//         return $this->hasMany(KriteriaUnjukKerja::class, 'id_elemen', 'id_elemen');
-//     }
+    public function kriteriaUnjukKerja(): HasMany
+    {
+        // Model tujuan, Foreign Key, Primary Key di tabel ini
+        return $this->hasMany(KriteriaUnjukKerja::class, 'id_elemen', 'id_elemen');
+    }
     }
