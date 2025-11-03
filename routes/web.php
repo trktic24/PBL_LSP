@@ -25,9 +25,9 @@ Route::get('/tracker', function () {
 Route::get('/FR-IA-10', function () {
     return view('frontend/FR_IA_10');
 })->name('FR-IA-10');
-Route::get('/fr-ia-06', function () {
-    return view('frontend/fr_IA_06');
-})->name('fr_IA_06');
+Route::get('/fr-ia-06-c', function () {
+    return view('frontend/fr_IA_06_c');
+})->name('fr_IA_06_c');
 Route::get('/fr-ia-07', function () {
     return view('frontend/FR_IA_07');
 })->name('FR_IA_07');
