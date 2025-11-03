@@ -94,6 +94,58 @@ Route::middleware('auth')->group(function () {
         return view('master_asesor'); 
     })->name('master_asesor');
 
+    Route::get('/add_asesor1', function () {
+        return view('add_asesor1'); 
+    })->name('add_asesor1');
+
+    Route::get('/add_asesor2', function () {
+        return view('add_asesor2'); 
+    })->name('add_asesor2');
+
+    Route::get('/add_asesor3', function () {
+        return view('add_asesor3'); 
+    })->name('add_asesor3');
+
+    //Rute untuk menyimpan data belum ada, untuk saat ini dibuat rute dummy jika bellum ada controller
+    Route::post('/store-asesor', function () {
+        return redirect()->route('master_asesor')->with('success', 'Asesor berhasil ditambahkan!');
+    })->name('asesor.store');
+
+    // Halaman Edit Asesor Step 1 (Informasi Akun)
+    // Perhatikan {id} untuk mengambil data asesor
+    Route::get('/edit-asesor-step-1/{id}', function ($id) {
+        // Di sini Anda perlu Controller untuk mengambil data Asesor
+        // $asesor = Asesor::findOrFail($id);
+        // return view('edit_asesor1', ['asesor' => $asesor]);
+        
+        // Untuk sementara jika belum ada Controller:
+        return view('edit_asesor1', ['asesor' => (object)['id' => $id, 'user' => (object)['name' => 'Nama Tes', 'email' => 'email@tes.com']]]); // Hapus ini nanti
+    })->name('edit_asesor1');
+
+    // Halaman Edit Asesor Step 2 (Data Pribadi)
+    Route::get('/edit-asesor-step-2/{id}', function ($id) {
+        // $asesor = Asesor::findOrFail($id);
+        // return view('edit_asesor2', ['asesor' => $asesor]);
+        
+        // Untuk sementara:
+        return view('edit_asesor2', ['asesor' => (object)['id' => $id]]); // Hapus ini nanti
+    })->name('edit_asesor2');
+
+    // Halaman Edit Asesor Step 3 (Kelengkapan Dokumen)
+    Route::get('/edit-asesor-step-3/{id}', function ($id) {
+        // $asesor = Asesor::findOrFail($id);
+        // return view('edit_asesor3', ['asesor' => $asesor]);
+        
+        // Untuk sementara:
+        return view('edit_asesor3', ['asesor' => (object)['id' => $id]]); // Hapus ini nanti
+    })->name('edit_asesor3');
+
+    // Rute untuk MENYIMPAN PERUBAHAN (dari tombol "Simpan" di step 3)
+    Route::patch('/update-asesor/{id}', function ($id) {
+        // Logika untuk validasi dan update data ke database
+        return redirect()->route('master_asesor')->with('success', 'Data Asesor berhasil diperbarui!');
+    })->name('asesor.update');
+
     // TUK sewaktu
     Route::get('/tuk_sewaktu', function () {
         return view('tuk_sewaktu'); 

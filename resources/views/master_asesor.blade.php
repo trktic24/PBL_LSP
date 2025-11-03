@@ -40,7 +40,7 @@
           <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300">
             <i class="fas fa-filter mr-2"></i> Filter
           </button>
-          <a href="#" 
+          <a href="{{ route('add_asesor1') }}" 
              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center">
             <i class="fas fa-plus mr-2"></i> Add Asesor
           </a>
@@ -67,9 +67,10 @@
               <td class="px-6 py-4">0812-3456-7890</td>
               <td class="px-6 py-4">Teknologi Informasi</td>
               <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-pen"></i> <span>Edit</span>
-                </button>
+                <a href="{{ route('edit_asesor1', 1) }}"
+                    class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                    <i class="fas fa-pen"></i> <span>Edit</span>
+                </a>
 
                 <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
                   <i class="fas fa-trash"></i> <span>Delete</span>
@@ -88,9 +89,10 @@
               <td class="px-6 py-4">0813-1111-2222</td>
               <td class="px-6 py-4">Jaringan Komputer</td>
               <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-pen"></i> <span>Edit</span>
-                </button>
+                <a href="{{ route('edit_asesor1', 2) }}"
+                    class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                    <i class="fas fa-pen"></i> <span>Edit</span>
+                </a>
 
                 <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
                   <i class="fas fa-trash"></i> <span>Delete</span>

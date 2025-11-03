@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Asesor - Informasi Akun | LSP Polines</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    ::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+  <div class="min-h-screen flex flex-col">
+
+    <x-navbar />
+    
+    <main class="flex-1 flex flex-col items-center pt-10 pb-12 px-4">
+
+      <div class="w-full max-w-4xl mb-4">
+         <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+            <i class="fas fa-arrow-left mr-2"></i> Back
+         </a>
+      </div>
+
+      <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
+        
+        <h1 class="text-3xl font-bold text-gray-900 text-center mb-6">EDIT ASESOR</h1>
+        
+        <!-- NOTE: Bagian ini adalah step wizard (indikator langkah 1-3).Mungkin akan ada perubahan urutan atau tampilan di update berikutnya.-->
+
+        <div class="flex items-center justify-between max-w-2xl mx-auto mb-10">
+          <div class="flex flex-col items-center text-center w-1/3">
+            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">1</div>
+            <p class="mt-2 text-sm font-medium text-blue-600">Informasi Akun</p>
+          </div>
+          
+          <div class="flex-1 h-0.5 bg-gray-300 mx-4"></div> <div class="flex flex-col items-center text-center w-1/3">
+            <div class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-lg">2</div>
+            <p class="mt-2 text-sm font-medium text-gray-500">Data Pribadi</p>
+          </div>
+          
+          <div class="flex-1 h-0.5 bg-gray-300 mx-4"></div> <div class="flex flex-col items-center text-center w-1/3">
+            <div class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-lg">3</div>
+            <p class="mt-2 text-sm font-medium text-gray-500">Kelengkapan Dokumen</p>
+          </div>
+        </div>
+
+        <form action="#" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
+          @csrf
+          <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Informasi Akun</h2>
+          
+          <div>
+            <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
+            <input type="text" id="nama" name="nama"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   placeholder="Masukkan Nama"
+                   value="{{ old('nama', $asesor->user->name ?? $asesor->nama_asesor) }}" required>
+          </div>
+          
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Alamat Email</label>
+            <input type="email" id="email" name="email"
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   placeholder="Masukkan Alamat Email"
+                   value="{{ old('email', $asesor->user->email ?? $asesor->email) }}" required>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</Blabel>
+              <input :type="showPassword ? 'text' : 'password'" id="password" name="password"
+                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                     placeholder="Kosongkan jika tidak berubah">
+            </div>
+            <div>
+              <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
+              <input :type="showPassword ? 'text' : 'password'" id="password_confirmation" name="password_confirmation"
+                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                     placeholder="Konfirmasi password baru">
+            </div>
+          </div>
+          
+          <p class="text-xs text-gray-500">Gunakan 8 karakter atau lebih dengan kombinasi huruf, angka, dan simbol.</p>
+
+          <div class="flex items-center">
+            <input type="checkbox" id="show_password" x-model="showPassword" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <label for="show_password" class="ml-2 block text-sm text-gray-900">Tampilkan Password</label>
+          </div>
+
+          <div class="pt-4">
+            <a href="{{ route('edit_asesor2', $asesor->id) }}"
+                       class="w-full flex justify-center py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition text-center">
+              Selanjutnya
+            </a>
+          </div>
+        </form>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>
