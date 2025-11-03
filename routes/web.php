@@ -20,6 +20,10 @@ Route::get('/tanda_tangan_pemohon', function () {
     return view('tanda_tangan_pemohon');
 });
 
+Route::get('/tunggu_upload_dokumen', function () {
+    return view('tunggu_upload_dokumen');
+});
+
 Route::get('/belum_lulus', function () {
     return view('belum_lulus');
 });
