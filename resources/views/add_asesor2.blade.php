@@ -42,24 +42,22 @@
         
         <!-- NOTE: Bagian ini adalah step wizard (indikator langkah 1-3).Mungkin akan ada perubahan urutan atau tampilan di update berikutnya.-->
 
-        <div class="flex items-center justify-between max-w-2xl mx-auto mb-10">
-          <div class="flex flex-col items-center text-center w-1/3">
-            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
-              <i class="fas fa-check"></i>
-            </div>
-            <p class="mt-2 text-sm font-medium text-blue-600">Informasi Akun</p>
+      <div class="flex items-start w-full max-w-3xl mx-auto mb-12">
+          <div class="flex flex-col items-center text-center w-32">
+              <div class="rounded-full h-5 w-5 flex items-center justify-center bg-green-500 text-white text-xs font-medium">1</div>
+              <p class="mt-2 text-xs font-medium text-green-500">Informasi Akun</p>
           </div>
-          
-          <div class="flex-1 h-0.5 bg-blue-600 mx-4"></div> <div class="flex flex-col items-center text-center w-1/3">
-            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">2</div>
-            <p class="mt-2 text-sm font-medium text-blue-600">Data Pribadi</p>
+          <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
+          <div class="flex flex-col items-center text-center w-32">
+              <div class="rounded-full h-5 w-5 flex items-center justify-center bg-blue-600 text-white text-xs font-medium">2</div>
+              <p class="mt-2 text-xs font-medium text-blue-600">Data Pribadi</p>
           </div>
-          
-          <div class="flex-1 h-0.5 bg-gray-300 mx-4"></div> <div class="flex flex-col items-center text-center w-1/3">
-            <div class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-lg">3</div>
-            <p class="mt-2 text-sm font-medium text-gray-500">Kelengkapan Dokumen</p>
+          <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
+          <div class="flex flex-col items-center text-center w-32">
+              <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">3</div>
+              <p class="mt-2 text-xs font-medium text-gray-500">Kelengkapan Dokumen</p>
           </div>
-        </div>
+      </div>
 
         <form action="#" method="POST" class="space-y-6">
           @csrf

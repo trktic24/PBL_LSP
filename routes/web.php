@@ -90,6 +90,28 @@ Route::middleware('auth')->group(function () {
         return view('master_asesi'); 
     })->name('master_asesi');
 
+    Route::get('/add-asesi-step-1', function () {
+        return view('add_asesi1'); 
+    })->name('add_asesi1');
+
+    Route::get('/add-asesi-step-2', function () {
+        return view('add_asesi2'); 
+    })->name('add_asesi2');
+
+    Route::get('/add-asesi-step-3', function () {
+        return view('add_asesi3'); 
+    })->name('add_asesi3');
+
+    Route::get('/add-asesi-step-4', function () {
+        return view('add_asesi4'); 
+    })->name('add_asesi4');
+
+    // Rute untuk memproses data
+    Route::post('/store-asesi', function () {
+        // Logika untuk menyimpan data asesi
+        return redirect()->route('master_asesi')->with('success', 'Asesi berhasil ditambahkan!');
+    })->name('asesi.store');
+
     // Master Asesor
     Route::get('/master_asesor', function () {
         return view('master_asesor'); 

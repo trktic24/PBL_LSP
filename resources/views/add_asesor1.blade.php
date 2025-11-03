@@ -25,34 +25,32 @@
     <x-navbar />
     
     <main class="flex-1 flex flex-col items-center pt-10 pb-12 px-4">
-
-      <div class="w-full max-w-4xl mb-4">
-         <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
-            <i class="fas fa-arrow-left mr-2"></i> Back
-         </a>
-      </div>
-
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
-        
+
+        <div class="w-full max-w-4xl mb-4">
+          <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+              <i class="fas fa-arrow-left mr-2"></i> Back
+          </a>
+        </div>
         <h1 class="text-3xl font-bold text-gray-900 text-center mb-6">ADD ASESOR</h1>
 
         <!-- NOTE: Bagian ini adalah step wizard (indikator langkah 1-3).Mungkin akan ada perubahan urutan atau tampilan di update berikutnya.-->
 
-        <div class="flex items-center justify-between max-w-2xl mx-auto mb-10">
-          <div class="flex flex-col items-center text-center w-1/3">
-            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">1</div>
-            <p class="mt-2 text-sm font-medium text-blue-600">Informasi Akun</p>
-          </div>
-          
-          <div class="flex-1 h-0.5 bg-gray-300 mx-4"></div> <div class="flex flex-col items-center text-center w-1/3">
-            <div class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-lg">2</div>
-            <p class="mt-2 text-sm font-medium text-gray-500">Data Pribadi</p>
-          </div>
-          
-          <div class="flex-1 h-0.5 bg-gray-300 mx-4"></div> <div class="flex flex-col items-center text-center w-1/3">
-            <div class="w-10 h-10 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-lg">3</div>
-            <p class="mt-2 text-sm font-medium text-gray-500">Kelengkapan Dokumen</p>
-          </div>
+        <div class="flex items-start w-full max-w-3xl mx-auto mb-12">
+            <div class="flex flex-col items-center text-center w-32">
+                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-blue-600 text-white text-xs font-medium">1</div>
+                <p class="mt-2 text-xs font-medium text-blue-600">Informasi Akun</p>
+            </div>
+            <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
+            <div class="flex flex-col items-center text-center w-32">
+                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">2</div>
+                <p class="mt-2 text-xs font-medium text-gray-500">Data Pribadi</p>
+            </div>
+            <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
+            <div class="flex flex-col items-center text-center w-32">
+                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">3</div>
+                <p class="mt-2 text-xs font-medium text-gray-500">Kelengkapan Dokumen</p>
+            </div>
         </div>
 
         <form action="#" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
