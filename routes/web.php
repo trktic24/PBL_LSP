@@ -31,6 +31,13 @@ Route::get('/fr-ia-06-c', function () {
 Route::get('/fr-ia-07', function () {
     return view('frontend/FR_IA_07');
 })->name('FR_IA_07');
+Route::get('/fr-ia-06-kunci-jawab', function () {
+    return view('frontend/fr_IA_06_b');
+})->name('fr_IA_06_b');
+Route::get('/fr-ia-06-daftar-pertanyaan', function () {
+    return view('frontend/fr_IA_06_a');
+})->name('fr_IA_06_a');
+
 
 
 Route::middleware('auth')->group(function () {
