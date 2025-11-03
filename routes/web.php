@@ -43,6 +43,9 @@ Route::get('/fr-ia-05-a', function () {
 Route::get('/fr-ia-05-b', function () {
     return view('frontend/FR_IA_05_B');
 })->name('FR_IA_05_B');
+Route::get('/fr-ia-02', function () {
+    return view('frontend/FR_IA_02');
+})->name('FR_IA_02');
 
 
 Route::middleware('auth')->group(function () {
