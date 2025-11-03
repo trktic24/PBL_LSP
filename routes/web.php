@@ -3,11 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-<<<<<<< HEAD
 Route::get('/', function () {
     return view('halaman_ambil_skema');
 });
-=======
+
 Route::get('/home', function () {
     return view('frontend/home');
 })->name('home');
@@ -27,7 +26,7 @@ Route::get('/tracker', function () {
     return view('frontend/tracker');
 })->name('tracker');
 
->>>>>>> 0e9987dd08e6a24e243de09620a24cb467627eaf
+
 
 Route::get('/tracker', function () {
     return view('tracker');
