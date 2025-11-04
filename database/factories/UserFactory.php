@@ -24,11 +24,14 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            // 'name' DIHAPUS
+
+            'username' => fake()->unique()->userName(), // DITAMBAHKAN
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role_id' => 3, // Default role 'asesi'
         ];
     }
 
@@ -39,6 +42,17 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * State khusus untuk membuat Asesor (role_id = 2)
+     * (Ini akan dipanggil oleh AsesorFactory)
+     */
+    public function asesor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role_id' => 2,
         ]);
     }
 }
