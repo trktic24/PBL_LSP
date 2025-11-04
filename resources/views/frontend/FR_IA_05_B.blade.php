@@ -3,14 +3,47 @@
 @section('content')
     <main class="main-content">
         
-        {{-- HEADER: Menggunakan logo dan judul yang distyling --}}
-        <header class="form-header">
-            <img src="{{ asset('images/logo_bnsp.png') }}" alt="Logo BNSP" class="h-12 w-auto">
-            <div class="text-center mt-4 md:mt-0 flex-grow">
-                {{-- Ukuran font disesuaikan agar pas --}}
-                <h1 class="text-xl md:text-xl font-bold text-gray-900">FR.IA.05.B. LEMBAR KUNCI JAWABAN PERTANYAAN TERTULIS PILIHAN GANDA</h1>
+       <x-header_form.header_form title="FR.IA.05.B. LEMBAR KUNCI JAWABAN PERTANYAAN TERTULIS PILIHAN GANDA" />
+        <br>
+
+        <div class="form-row grid grid-cols-1 md:grid-cols-[250px_1fr] md:gap-x-6 gap-y-1.5 items-start md:items-center">
+            
+            <label class="text-sm font-bold text-black">Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
+            <div class="flex items-center">
+                <span>:</span>
+                {{-- Ganti $skema dengan variabel Anda, contoh: $data->skema->judul --}}
+                <p class="ml-2 font-medium text-gray-600">{{ $skema ?? 'Data Skema' }}</p>
             </div>
-        </header>
+
+            <label class="text-sm font-bold text-black">Nomor</label>
+            <div class="flex items-center">
+                <span>:</span>
+                {{-- Ganti $nomorSkema dengan variabel Anda, contoh: $data->skema->nomor --}}
+                <p class="ml-2 font-medium text-gray-600">{{ $nomorSkema ?? 'Data Nomor Skema' }}</p>
+            </div>
+
+            <label class="text-sm font-bold text-black">TUK</label>
+            <div class="radio-group flex flex-col items-start space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4">
+                <span>:</span>
+                <div class="flex items-center space-x-2 ml-0 md:ml-2">
+                    {{-- Ganti $tuk dengan variabel Anda, contoh: $data->tuk --}}
+                    <input type="radio" id="tuk_sewaktu" name="tuk_type" class="form-radio h-4 w-4 text-gray-400" 
+                        @checked(isset($tuk) && $tuk == 'Sewaktu')>
+                    <label for="tuk_sewaktu" class="text-sm text-gray-700">Sewaktu</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="tuk_tempatkerja" name="tuk_type" class="form-radio h-4 w-4 text-gray-400"
+                        @checked(isset($tuk) && $tuk == 'Tempat Kerja')>
+                    <label for="tuk_tempatkerja" class="text-sm text-gray-700">Tempat Kerja</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="tuk_mandiri" name="tuk_type" class="form-radio h-4 w-4 text-gray-400"
+                        @checked(isset($tuk) && $tuk == 'Mandiri')>
+                    <label for="tuk_mandiri" class="text-sm text-gray-700">Mandiri</label>
+                </div>
+            </div>
+        </div>
+
 
         @if (session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
@@ -21,40 +54,6 @@
         <form class="form-body mt-10" method="POST" action="">
             @csrf 
             
-            {{-- METADATA: Menggunakan grid layout yang konsisten --}}
-            <div class="form-row grid grid-cols-[250px_1fr] gap-x-6 gap-y-4 items-center mb-8">
-                
-                <label class="text-sm font-medium text-gray-700">Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
-                <div class="flex items-center">
-                    <span>:</span>
-                    <input type="text" name="judul" placeholder="Judul Skema..." 
-                           class="form-input w-full ml-2">
-                </div>
-                
-                <label class="text-sm font-medium text-gray-700">Nomor</label>
-                <div class="flex items-center">
-                    <span>:</span>
-                    <input type="text" name="nomor" placeholder="Nomor Skema..." 
-                           class="form-input w-full ml-2">
-                </div>
-
-                <label class="text-sm font-medium text-gray-700">TUK</label>
-                <div class="radio-group flex items-center space-x-4">
-                    <span>:</span>
-                    <div class="flex items-center space-x-2 ml-2">
-                        <input type="radio" id="tuk_sewaktu" name="tuk_type" value="sewaktu" class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_sewaktu" class="text-sm text-gray-700">Sewaktu</label>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="tuk_tempatkerja" name="tuk_type" value="tempat_kerja" checked class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_tempatkerja" class="text-sm text-gray-700">Tempat Kerja</label>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="tuk_mandiri" name="tuk_type" value="mandiri" class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_mandiri" class="text-sm text-gray-700">Mandiri</label>
-                    </div>
-                </div>
-            </div>
 
             {{-- TABEL UNIT KOMPETENSI --}}
             <div class="form-section my-8">

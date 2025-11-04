@@ -2,14 +2,18 @@
 
 @section('content')
     <main class="main-content">
-        
-        {{-- HEADER: Mengikuti struktur IA.07 (Logo dulu, lalu Judul) --}}
-        <header class="form-header">
-            <img src="{{ asset('images/logo_bnsp.png') }}" alt="Logo BNSP" class="h-12 w-auto">
-            <div class="text-center mt-4 md:mt-0 flex-grow">
-                <h1 class="text-2xl md:text-2xl font-bold text-gray-900">FR.IA.05A. DPT - PERTANYAAN TERTULIS PILIHAN GANDA</h1>
-            </div>
-        </header>
+       <x-header_form.header_form title="FR.IA.05A. DPT - PERTANYAAN TERTULIS PILIHAN GANDA" />
+
+        <form class="form-body mt-6">               
+            <x-identitas_skema_form.identitas_skema_form
+                skema="Junior Web Developer"
+                nomorSkema="SKK.XXXXX.XXXX"
+                tuk="Tempat Kerja" 
+                namaAsesor="Ajeng Febria Hidayati"
+                namaAsesi="Tatang Sidartang"
+                tanggal="3 November 2025" 
+            />
+
 
         @if (session('success'))
             {{-- Menambahkan styling Tailwind pada notifikasi sukses --}}
@@ -17,72 +21,6 @@
                 {{ session('success') }}
             </div>
         @endif
-
-        {{-- FORM BODY: Mengikuti styling IA.07 --}}
-        <form class="form-body mt-10" method="POST" action="">
-            @csrf 
-            
-            {{-- METADATA: Menggunakan grid layout dari IA.07 --}}
-            <div class="form-row grid grid-cols-[250px_1fr] gap-x-6 gap-y-4 items-center mb-8">
-                
-                <label class="text-sm font-medium text-gray-700">Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
-                <div class="flex items-center">
-                    <span>:</span>
-                    <input type="text" name="judul" placeholder="Judul Skema..." 
-                           class="form-input w-full ml-2">
-                </div>
-                
-                <label class="text-sm font-medium text-gray-700">Nomor</label>
-                <div class="flex items-center">
-                    <span>:</span>
-                    <input type="text" name="nomor" placeholder="Nomor Skema..." 
-                           class="form-input w-full ml-2">
-                </div>
-
-                <label class="text-sm font-medium text-gray-700">TUK</label>
-                <div class="radio-group flex items-center space-x-4">
-                    <span>:</span>
-                    <div class="flex items-center space-x-2 ml-2">
-                        <input type="radio" id="tuk_sewaktu" name="tuk_type" value="sewaktu" class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_sewaktu" class="text-sm text-gray-700">Sewaktu</label>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="tuk_tempatkerja" name="tuk_type" value="tempat_kerja" checked class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_tempatkerja" class="text-sm text-gray-700">Tempat Kerja</label>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="tuk_mandiri" name="tuk_type" value="mandiri" class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_mandiri" class="text-sm text-gray-700">Mandiri</label>
-                    </div>
-                </div>
-
-                <label class="text-sm font-medium text-gray-700">Nama Asesor</label>
-                <div class="flex items-center">
-                    <span>:</span>
-                    <input type="text" name="asesor" placeholder="Nama Asesor..." 
-                           class="form-input w-full ml-2">
-                </div>
-                
-                <label class="text-sm font-medium text-gray-700">Nama Asesi</label>
-                <div class="flex items-center">
-                    <span>:</span>
-                    <input type="text" name="asesi" placeholder="Nama Asesi..." 
-                           class="form-input w-full ml-2">
-                </div>
-                
-                <label class="text-sm font-medium text-gray-700">Tanggal</label>
-                <div class="flex items-center">
-                    <span>:</span>
-                    <input type="date" name="tanggal" value="<?php echo date('Y-m-d'); ?>" 
-                           class="form-input w-full ml-2">
-                </div>
-
-                <label class="text-sm font-medium text-gray-700">Waktu</label>
-                <div class="flex items-center">
-                    <span>:</span>
-                    <input type="time" name="waktu" class="form-input w-full ml-2">
-                </div>
-            </div>
 
             <div class="form-section my-8">
                 <h3 class="mb-4 font-semibold text-lg text-gray-800">Jawab semua pertanyaan berikut:</h3>
