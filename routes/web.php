@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TandaTanganController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -98,9 +99,7 @@ Route::get('/verifikasi_tuk', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-    
 })->middleware(['auth', 'verified'])->name('dashboard');
-
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -115,6 +114,9 @@ Route::get('/profil', function () {
     return view('frontend/profil');
 })->name('profil');
 
+Route::post('/simpan/tandatangan', [TandaTanganController::class, 'simpanTandaTangan'])
+    ->name('simpan.tandatangan'); // <--- INI KUNCI UTAMA
+    
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
