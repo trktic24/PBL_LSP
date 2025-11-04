@@ -7,9 +7,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-slate-100">
-
-    <div> <aside class="w-64 bg-[linear-gradient(135deg,#4F46E5,#0EA5E9)] text-white p-6 flex flex-col fixed h-screen top-0 left-0 overflow-y-auto">
-            <a href="#" class="inline-flex items-center gap-2 text-sm text-black-300 hover:text-white mb-8">
+    <div>
+        <aside class="w-64 bg-[linear-gradient(135deg,#4F46E5,#0EA5E9)] text-white p-6 flex flex-col fixed h-screen top-0 left-0 overflow-y-auto">
+            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-sm text-black-300 hover:text-white mb-8">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -47,9 +47,7 @@
         </aside>
 
         <main class="ml-64 flex-1 flex flex-col min-h-screen">
-
             <div class="flex-1 p-8">
-
                 <div class="bg-white p-6 rounded-lg shadow-md mb-8">
                     <div class="grid grid-cols-[150px,1fr] gap-x-6 gap-y-2 text-sm">
                         <div class="font-semibold text-gray-700">Skema Sertifikasi (KKNI/Okupasi/Klaster)</div>
@@ -85,25 +83,24 @@
                         </thead>
 
                         <tbody class="divide-y divide-gray-200">
-
                             <tr class="hover:bg-gray-50">
                                 <td class="p-4 text-sm text-gray-700">1</td>
                                 <td class="p-4 text-sm text-gray-900 font-medium">Tatang Sitartang</td>
-
+                                <td class="text-yellow-600 font-medium">
+                                    <a href="{{ route('tracker') }}" class="p-4 text-sm text-yellow-600 font-medium">
+                                        Dalam Proses
+                                    </a>
+                                </td>
                                 <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
                                 <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
-                                <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
-
                                 <td class="p-4">
                                     <input type="checkbox" class="h-5 w-5 rounded text-blue-600 mx-auto block">
                                 </td>
-
                                 <td class="p-4">
                                     <button class="bg-blue-600 text-white px-3 py-2 rounded-md text-xs font-medium hover:bg-blue-700">
                                         Lakukan Penyesuaian
                                     </button>
                                 </td>
-
                                 <td class="p-4 align-top" rowspan="4">
                                     <div class="flex flex-col gap-2">
                                         <button class="bg-blue-800 text-white px-3 py-2 rounded-md text-xs font-medium hover:bg-blue-900 w-32">
@@ -125,63 +122,55 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="p-4 text-sm text-gray-700">2</td>
                                 <td class="p-4 text-sm text-gray-900 font-medium">Jojon Sudarman</td>
-
                                 <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
                                 <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
                                 <td class="p-4 text-sm text-yellow-600 font-medium">Dalam Proses</td>
-
                                 <td class="p-4">
                                     <input type="checkbox" class="h-5 w-5 rounded text-blue-600 mx-auto block">
                                 </td>
-
                                 <td class="p-4">
                                     <button class="bg-blue-600 text-white px-3 py-2 rounded-md text-xs font-medium hover:bg-blue-700">
                                         Lakukan Penyesuaian
                                     </button>
                                 </td>
-                                </tr>
+                            </tr>
 
                             <tr class="hover:bg-gray-50">
                                 <td class="p-4 text-sm text-gray-700">3</td>
                                 <td class="p-4 text-sm text-gray-900 font-medium">Abdul Sidarta M.</td>
-
                                 <td class="p-4 text-sm text-green-600 font-medium">Sudah Diverifikasi</td>
                                 <td class="p-4 text-sm text-green-600 font-medium">Sudah Diverifikasi</td>
                                 <td class="p-4 text-sm text-green-600 font-medium">Sudah Diverifikasi</td>
-
                                 <td class="p-4">
                                     <input type="checkbox" class="h-5 w-5 rounded text-blue-600 mx-auto block" checked>
                                 </td>
-
                                 <td class="p-4">
                                     <button class="bg-blue-600 text-white px-3 py-2 rounded-md text-xs font-medium hover:bg-blue-700">
                                         Lakukan Penyesuaian
                                     </button>
                                 </td>
-                                </tr>
+                            </tr>
 
                             <tr class="hover:bg-gray-50">
                                 <td class="p-4 text-sm text-gray-700">4</td>
                                 <td class="p-4 text-sm text-gray-900 font-medium">Mustika Pujastuti</td>
-
                                 <td class="p-4 text-sm text-red-600 font-medium">Belum Diverifikasi</td>
                                 <td class="p-4 text-sm text-red-600 font-medium">Belum Diverifikasi</td>
                                 <td class="p-4 text-sm text-red-600 font-medium">Belum Diverifikasi</td>
-
                                 <td class="p-4">
                                     <input type="checkbox" class="h-5 w-5 rounded text-blue-600 mx-auto block">
                                 </td>
-
                                 <td class="p-4">
                                     <button class="bg-blue-600 text-white px-3 py-2 rounded-md text-xs font-medium hover:bg-blue-700">
                                         Lakukan Penyesuaian
                                     </button>
                                 </td>
-                                </tr>
-
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-
-            </div> </main> </div> </body>
+            </div>
+        </main>
+    </div>
+</body>
 </html>

@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bukti_dasar', function (Blueprint $table) {
-            $table->id('id_bukti_dasar');
+        Schema::create('respon_standar_industri', function(Blueprint $table) {
+            $table->id('id_respon_standar_industri_mapa01');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-            
-            // isi model DB
-            $table->enum('status_kelengkapan', ['memenuhi', 'tidak_memenuhi', 'tidak_ada']);
-            $table->string('bukti_dasar')->comment('Sertakan dokumen');
-            $table->timestamps();
-        });
+            $table->foreignId('id_standar_industri_mapa01')->constrained('standar_industri_mapa01', 'id_standar_industri_mapa01')->onUpdate('cascade')->onDelete('cascade');
+            $table->
+        })
     }
 
     /**
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bukti_dasar');
+        //
     }
 };
