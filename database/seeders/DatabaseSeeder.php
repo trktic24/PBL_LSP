@@ -3,7 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Asesor; 
+use App\Models\Asesor;
+use App\Models\Asesi;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,6 +23,7 @@ class DatabaseSeeder extends Seeder
         // Ini akan otomatis memanggil AsesorFactory,
         // yang juga akan otomatis memanggil UserFactory (untuk role_id 2)
         // dan SkemaFactory.
-        Asesor::factory(10)->create(); 
+        Asesor::factory(10)->create();
+        Asesi::factory(10)->create();
     }
 }

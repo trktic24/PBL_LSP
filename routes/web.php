@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\AsesorController; 
+use App\Http\Controllers\AsesiController; // Di-import dengan benar
 
 /*
 |--------------------------------------------------------------------------
@@ -83,9 +84,10 @@ Route::middleware('auth')->group(function () {
     })->name('asesor.update');
     
     // 6. Master - Asesi
-    Route::get('/master_asesi', function () {
-        return view('master.asesi.master_asesi');
-    })->name('master_asesi');
+    // HANYA ADA SATU RUTE MASTER_ASESI: Mengarah ke Controller
+    Route::get('/master_asesi', [AsesiController::class, 'index'])->name('master_asesi');
+    
+    // Rute-rute tambah Asesi (Step 1-4)
     Route::get('/add-asesi-step-1', function () {
         return view('master.asesi.add_asesi1');
     })->name('add_asesi1');
@@ -101,6 +103,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/store-asesi', function () {
         return redirect()->route('master_asesi')->with('success', 'Asesi berhasil ditambahkan!');
     })->name('asesi.store');
+    
 
     // 7. Master - Schedule
     Route::get('/schedule_admin', function () {

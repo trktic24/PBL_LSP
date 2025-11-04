@@ -64,12 +64,13 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
+            @forelse ($asesis as $asesi)
             <tr>
-              <td class="px-6 py-4">1</td>
-              <td class="px-6 py-4 font-medium">Rafa Saputra</td>
-              <td class="px-6 py-4">rafa@polines.ac.id</td>
-              <td class="px-6 py-4">0812-3456-7890</td>
-              <td class="px-6 py-4">Teknologi Rekayasa Komputer</td>
+              <td class="px-6 py-4">{{ $asesi['id'] }}</td>
+              <td class="px-6 py-4 font-medium">{{ $asesi['nama_lengkap'] }}</td>
+              <td class="px-6 py-4">{{ $asesi['email'] }}</td>
+              <td class="px-6 py-4">{{ $asesi['nomor_hp'] }}</td>
+              <td class="px-6 py-4">{{ $asesi['skema_sertifikasi'] }}</td>
               <td class="px-6 py-4 flex space-x-2">
                 <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
                   <i class="fas fa-pen"></i> <span>Edit</span>
@@ -86,27 +87,13 @@
               </td>
 
             </tr>
+            @empty
             <tr>
-              <td class="px-6 py-4">2</td>
-              <td class="px-6 py-4 font-medium">Roihan Enrico</td>
-              <td class="px-6 py-4">roihan@polines.ac.id</td>
-              <td class="px-6 py-4">0813-2222-7777</td>
-              <td class="px-6 py-4">Sistem Informasi</td>
-              <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-pen"></i> <span>Edit</span>
-                </button>
-
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-trash"></i> <span>Delete</span>
-                </button>
-
-                <a href="{{ route('asesi_profile_settings') }}"
-                   class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-eye"></i> <span>View</span>
-                </a>
-              </td>
+                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                    Tidak ada data Asesi yang ditemukan.
+                </td>
             </tr>
+            @endforelse
           </tbody>
         </table>
 
