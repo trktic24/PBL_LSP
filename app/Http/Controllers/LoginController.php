@@ -3,17 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // <-- PENTING
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
     /**
      * Menampilkan halaman form login.
-     * (File: resources/views/login_admin.blade.php)
+     * (File: resources/views/login/login_admin.blade.php)
      */
     public function showLoginForm()
     {
-        return view('login_admin'); 
+        // Diperbarui untuk menunjuk ke folder 'login'
+        return view('login.login_admin'); 
     }
 
     /**
@@ -33,8 +34,8 @@ class LoginController extends Controller
             // 3. Jika berhasil, amankan sesi
             $request->session()->regenerate();
 
-            // 4. Arahkan ke /dashboard
-            return redirect()->intended('/dashboard');
+            // 4. Arahkan ke rute 'dashboard'
+            return redirect()->intended(route('dashboard'));
         }
 
         // 5. Jika gagal, kembali ke halaman login dengan pesan error
