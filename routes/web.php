@@ -70,18 +70,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/store-asesor', [AsesorController::class, 'store'])->name('asesor.store');
     
     // Rute Edit
-    Route::get('/edit-asesor-step-1/{id}', function ($id) {
-        return view('master.asesor.edit_asesor1', ['asesor' => (object)['id' => $id, 'user' => (object)['name' => 'Nama Tes', 'email' => 'email@tes.com']]]);
-    })->name('edit_asesor1');
-    Route::get('/edit-asesor-step-2/{id}', function ($id) {
-        return view('master.asesor.edit_asesor2', ['asesor' => (object)['id' => $id]]);
-    })->name('edit_asesor2');
-    Route::get('/edit-asesor-step-3/{id}', function ($id) {
-        return view('master.asesor.edit_asesor3', ['asesor' => (object)['id' => $id]]);
-    })->name('edit_asesor3');
-    Route::patch('/update-asesor/{id}', function ($id) {
-        return redirect()->route('master_asesor')->with('success', 'Data Asesor berhasil diperbarui!');
-    })->name('asesor.update');
+    Route::get('/edit-asesor-step-1/{id_asesor}', [AsesorController::class, 'editStep1'])
+         ->name('edit_asesor1');
+    Route::patch('/update-asesor-step-1/{id_asesor}', [AsesorController::class, 'updateStep1'])
+         ->name('asesor.update.step1');
+
+    // Halaman Edit Step 2 (Data Pribadi)
+    Route::get('/edit-asesor-step-2/{id_asesor}', [AsesorController::class, 'editStep2'])
+         ->name('edit_asesor2');
+    Route::patch('/update-asesor-step-2/{id_asesor}', [AsesorController::class, 'updateStep2'])
+         ->name('asesor.update.step2');
+
+    // Halaman Edit Step 3 (Kelengkapan Dokumen)
+    Route::get('/edit-asesor-step-3/{id_asesor}', [AsesorController::class, 'editStep3'])
+         ->name('edit_asesor3');
+    Route::patch('/update-asesor-step-3/{id_asesor}', [AsesorController::class, 'updateStep3'])
+         ->name('asesor.update.step3');
     
     // 6. Master - Asesi
     // HANYA ADA SATU RUTE MASTER_ASESI: Mengarah ke Controller
