@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 // 1. Pastiin nama class-nya 'KriteriaUnjukKerja' (pake UNJUK)
-class KriteriaUntukKerja extends Model
+class KriteriaUnjukKerja extends Model
 {
     use HasFactory;
 

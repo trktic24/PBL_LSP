@@ -3,14 +3,14 @@
 namespace Database\Factories;
 
 // 1. BENERIN NAMANYA: KriteriaUnjukKerja
-use App\Models\KriteriaUntukKerja;
+use App\Models\KriteriaUnjukKerja;
 use App\Models\Elemen;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\KriteriaUntukKerja>
  */
-class KriteriaUntukKerjaFactory extends Factory
+class KriteriaUnjukKerjaFactory extends Factory
 {
     /**
      * Data realistis. Kita jadiin 'static' biar nggak dibuat ulang terus.
@@ -34,7 +34,7 @@ class KriteriaUntukKerjaFactory extends Factory
     /**
      * 2. BENERIN NAMANYA: KriteriaUnjukKerja
      */
-    protected $model = KriteriaUntukKerja::class;
+    protected $model = KriteriaUnjukKerja::class;
 
     /**
      * Define the model's default state.
