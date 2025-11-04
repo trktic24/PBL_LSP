@@ -100,7 +100,7 @@ class BandingAsesmenController extends Controller
             return redirect()->route('dashboard')->with('success', 'Pengajuan Banding berhasil disimpan.');
 
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::rollBack(); 
             Log::error('Error saving Banding: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal menyimpan pengajuan Banding. Silakan coba lagi.');
         }
