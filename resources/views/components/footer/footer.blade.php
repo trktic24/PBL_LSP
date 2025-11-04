@@ -1,5 +1,5 @@
-<footer 
-  x-data="footerData()" 
+<footer
+  x-data="footerData()"
   class="w-full text-white py-16 font-[Poppins] text-center"
   style="background: linear-gradient(to top, #1F3A58 0%, #0081FE 100%);"
 >
@@ -22,10 +22,10 @@
 
     {{-- Tombol --}}
     <div class="mt-8 sm:mt-10">
-      <button 
+      <button
         @click="showModal = true"
-        class="inline-block bg-blue-500 text-white font-semibold px-10 py-3 rounded-full rounded-tr-none 
-               border border-white shadow-md hover:shadow-lg transition-all duration-300 
+        class="inline-block bg-blue-500 text-white font-semibold px-10 py-3 rounded-full rounded-tr-none
+               border border-white shadow-md hover:shadow-lg transition-all duration-300
                hover:bg-white hover:text-blue-600 hover:border-blue-600">
         Hubungi Kami
       </button>
@@ -69,8 +69,8 @@
       {{-- Icon sosial kanan --}}
       <div class="flex gap-2">
         <template x-for="icon in socialLinks" :key="icon.name">
-          <a 
-            :href="icon.link" 
+          <a
+            :href="icon.link"
             target="_blank"
             class="w-8 h-8 flex items-center justify-center rounded-full border border-white hover:bg-white/20 transition"
           >
@@ -82,14 +82,14 @@
   </div>
 
   {{-- MODAL Hubungi Kami --}}
-  <div 
+  <div
     x-show="showModal"
     x-transition.opacity
     x-cloak
     @click.self="showModal = false"
     class="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm"
   >
-    <div 
+    <div
       x-transition.scale.origin.center
       class="relative bg-white rounded-2xl shadow-lg w-full max-w-xs mx-auto overflow-hidden font-[Poppins]"
     >
@@ -98,12 +98,12 @@
         <h3 class="text-sm font-semibold text-gray-900 tracking-wide">
           Hubungi Kami
         </h3>
-        <button 
+        <button
           @click="showModal = false"
           class="text-gray-400 hover:bg-gray-200 hover:text-gray-800 rounded-lg text-xs h-7 w-7 flex justify-center items-center transition"
         >
           <svg class="w-2.5 h-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
           </svg>
         </button>
@@ -113,7 +113,7 @@
       <div class="p-5 space-y-3">
         {{-- WhatsApp --}}
         <a href="https://wa.me/6281234567890" target="_blank"
-           class="flex items-center justify-between w-full border border-gray-200 rounded-lg px-4 py-3 
+           class="flex items-center justify-between w-full border border-gray-200 rounded-lg px-4 py-3
                   transition-all duration-300 hover:shadow-md hover:border-blue-500/70 hover:ring-1 hover:ring-blue-400/40">
           <div class="flex items-center gap-3">
             <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" class="w-5 h-5">
@@ -123,7 +123,7 @@
 
         {{-- Gmail --}}
         <a href="mailto:lsp@polines.ac.id"
-           class="flex items-center justify-between w-full border border-gray-200 rounded-lg px-4 py-3 
+           class="flex items-center justify-between w-full border border-gray-200 rounded-lg px-4 py-3
                   transition-all duration-300 hover:shadow-md hover:border-blue-500/70 hover:ring-1 hover:ring-blue-400/40">
           <div class="flex items-center gap-3">
             <img src="https://cdn-icons-png.flaticon.com/512/5968/5968534.png" alt="Gmail" class="w-5 h-5">

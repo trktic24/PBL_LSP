@@ -1,47 +1,5 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracking Asesmen</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-stone-100">
-
-    <div class="flex min-h-screen">
-        
-        <aside class="w-96 bg-blue-500 text-white p-8 flex flex-col flex-shrink-0">
-            <a href="#" class="flex items-center space-x-2 text-sm font-medium opacity-80 hover:opacity-100 mb-10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <span>Kembali</span>
-            </a>
-
-            <div class="flex flex-col items-center text-center">
-                <div class="w-32 h-32 rounded-full bg-cover bg-center mb-4" style="background-image: url('https://images.unsplash.com/photo-155006387-0351868c474b?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80');">
-                </div>
-                <h2 class="text-2xl font-bold">Junior Web Developer</h2>
-                <p class="text-sm mt-2 opacity-80 leading-relaxed">
-                    Lorem ipsum dolor sit amet<br>You're the best person I ever met
-                </p>
-            </div>
-
-            <div class="flex-grow"></div>
-
-            <div>
-                <h4 class="text-xs font-semibold uppercase tracking-wider opacity-60 mb-3">OLEH PESERTA:</h4>
-                <div class="flex items-center space-x-3">
-                    <img src="https://i.pravatar.cc/100?u=tatang" alt="Tatang Sidartang" class="w-12 h-12 rounded-full object-cover border-2 border-white/50">
-                    <div>
-                        <p class="font-semibold">Tatang Sidartang</p>
-                    </div>
-                </div>
-
-                <h4 class="text-xs font-semibold uppercase tracking-wider opacity-60 mt-6 mb-2">DIMULAI PADA:</h4>
-                <p class="text-sm font-medium">2025-09-29 06:18:25</p>
-            </div>
-        </aside>
+@extends('layouts.app-sidebar')
+@section('content')
 
         <main class="flex-1 p-10 overflow-y-auto">
 
@@ -385,7 +343,4 @@
             </section>
 
         </main>
-    </div>
-
-</body>
-</html>
+@endsection

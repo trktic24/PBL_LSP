@@ -1,4 +1,5 @@
 @extends('layouts.app-profil')
+
 @section('content')
 
 {{-- ======================= HERO ======================= --}}
@@ -44,17 +45,17 @@
 <script>
 const scrollContainer = document.getElementById("scrollContainer");
 let isDown = false, startX, scrollLeft;
-scrollContainer.addEventListener("mousedown", e => { 
-    isDown = true; startX = e.pageX - scrollContainer.offsetLeft; 
-    scrollLeft = scrollContainer.scrollLeft; 
+scrollContainer.addEventListener("mousedown", e => {
+    isDown = true; startX = e.pageX - scrollContainer.offsetLeft;
+    scrollLeft = scrollContainer.scrollLeft;
 });
 scrollContainer.addEventListener("mouseleave", () => isDown = false);
 scrollContainer.addEventListener("mouseup", () => isDown = false);
-scrollContainer.addEventListener("mousemove", e => { 
-    if(!isDown) return; e.preventDefault(); 
-    const x = e.pageX - scrollContainer.offsetLeft; 
-    const walk = (x - startX) * 2; 
-    scrollContainer.scrollLeft = scrollLeft - walk; 
+scrollContainer.addEventListener("mousemove", e => {
+    if(!isDown) return; e.preventDefault();
+    const x = e.pageX - scrollContainer.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollContainer.scrollLeft = scrollLeft - walk;
 });
 </script>
 

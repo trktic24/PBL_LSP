@@ -79,9 +79,9 @@
 
                         <div class="mt-6 space-y-4">
 
-                            <x-file-input id="ktp_file" name="ktp_file" label="KTP" required/>
+                            <x-file-input id="ktp" name="ktp" label="KTP" required/>
 
-                            <x-file-input id="foto_file" name="foto_file" label="Foto" required />
+                            <x-file-input id="pas_foto" name="pas_foto" label="Foto" required />
 
                             <x-file-input id="npwp_file" name="npwp_file" label="NPWP" required />
 

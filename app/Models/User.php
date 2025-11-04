@@ -4,9 +4,10 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -16,16 +17,25 @@ class User extends Authenticatable
      * Kolom yang boleh diisi secara massal.
      * Disesuaikan dengan ERD Anda.
      */
+    protected $table ='users';
+    protected $primaryKey = 'id_user';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'username',
+        'role_id', // Tambahkan role_id
         'email',
         'password',
-        'role_id',
-        'google_id',
+        'google_id', // Tambahkan google_id
     ];
 
     /**
-     * Kolom yang harus disembunyikan.
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -33,19 +43,46 @@ class User extends Authenticatable
     ];
 
     /**
-     * Tipe cast.
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 
-    /**
-     * Relasi one-to-one (inverse): Satu User dimiliki oleh satu Role
-     */
+    // Relasi: Satu User punya satu Role
     public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'role_id'); // 'role_id' adalah foreign key di tabel users
+    }
+
+    // Relasi: Satu User punya satu data Asesi (jika dia asesi)
+    public function asesi(): HasOne
+    {
+        return $this->hasOne(Asesi::class, 'id_user', 'id_user'); // FK, Owner Key
+    }
+
+    // Relasi: Satu User punya satu data Asesor (jika dia asesor)
+    public function asesor(): HasOne
+    {
+        return $this->hasOne(Asesor::class, 'id_user', 'id_user'); // FK, Owner Key
+    }
+
+    // Relasi: Satu User punya satu data Admin (jika dia admin)
+    public function admin(): HasOne
+    {
+        return $this->hasOne(Admin::class, 'id_user', 'id_user'); // FK, Owner Key
+    }
+
+    // Helper cek role (opsional tapi berguna)
+    public function hasRole(string $roleName): bool
+    {
+        return $this->role()->where('nama_role', $roleName)->exists();
     }
 }
 

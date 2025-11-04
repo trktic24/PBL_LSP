@@ -6,6 +6,7 @@
     'value' => null,
     'error' => null,
     'required' => false,
+    'readonly' => false,
 ])
 
 <div class="w-full">
@@ -24,6 +25,7 @@
     type="{{ $type }}"
     value="{{ old($name, $value) }}"
     {{ $required ? 'required' : '' }}
+    {{ $readonly ? 'readonly' : '' }}
     {{ $attributes->merge([
         'class' => 'mt-1 block w-full rounded-xl border bg-gray-20 ' .
            ($error ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200') .

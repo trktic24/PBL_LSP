@@ -12,26 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('data_pekerjaan_asesi', function (Blueprint $table) {
-            // Sesuai ERD: id_pekerjaan (PK)
-            $table->id('id_pekerjaan');
+        $table->id('id_pekerjaan');
 
-            // Sesuai ERD: id_asesi (FK)
-            // Asumsi: Ini merujuk ke PK 'id_asesi' di tabel 'asesi'
-            // Jika tabel asesi Anda belum ada, Anda harus membuatnya terlebih dahulu.
-            $table->foreignId('id_asesi')->constrained(
-                table: 'asesi', column: 'id_asesi'
-            )->onUpdate('cascade')->onDelete('restrict');
+        $table->foreignId('id_asesi')->nullable()->constrained('asesi', 'id_asesi')->onUpdate('cascade')->onDelete('restrict');
 
-            // Data Pekerjaan Sekarang
-            $table->string('nama_institusi_pekerjaan');
-            $table->text('alamat_institusi');
-            $table->string('jabatan');
-            $table->string('kode_pos_institusi', 10)->nullable(); // (int) -> Diubah ke string
-            $table->string('no_telepon_institusi', 16);
-            
-            // Standar timestamp
-            $table->timestamps();
-        });
+        $table->string('nama_institusi_pekerjaan')->nullable();
+        $table->text('alamat_institusi')->nullable();
+        $table->string('jabatan')->nullable();
+        $table->string('kode_pos_institusi', 10)->nullable();
+        $table->string('no_telepon_institusi', 16)->nullable();
+
+        $table->timestamps();
+    });
+
     }
 
     /**
