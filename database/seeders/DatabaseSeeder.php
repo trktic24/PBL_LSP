@@ -27,5 +27,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\KriteriaUnjukKerja::factory(20)->create();
         \App\Models\ResponApl2Ia01::factory(20)->create();
         \App\Models\JenisTuk::factory(20)->create();
+        \App\Models\Tuk::factory(20)->create();
     }
 }
