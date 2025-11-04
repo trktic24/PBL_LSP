@@ -186,5 +186,4 @@ Route::get('/keep-alive', function () {
 });
 
 
-require __DIR__.'/webprofil.php';
 require __DIR__.'/auth.php';
