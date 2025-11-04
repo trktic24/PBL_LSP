@@ -40,11 +40,11 @@
         <main class="flex-1 flex justify-center items-start pt-10 pb-12 px-4 sm:px-6 lg:px-8">
             <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-6 sm:p-10">
 
-                <div class="flex items-center justify-between mb-8 sm:mb-10">
-                    <a href="#" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium transition-colors">
+                <div class="grid grid-cols-3 items-center mb-8 sm:mb-10">
+                    <a href="{{ route('master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium justify-self-start">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center flex-1 -ml-12 sm:-ml-20">ADD SCHEDULE</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center flex-1 -ml-12 sm:-ml-20">EDIT SCHEDULE</h1>
                     <div class="w-16"></div>
                 </div>
 
