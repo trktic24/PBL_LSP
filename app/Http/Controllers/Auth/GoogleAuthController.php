@@ -42,7 +42,7 @@ class GoogleAuthController extends Controller
             } elseif ($roleName === 'admin') {
                 return redirect()->route('admin.dashboard');
             } else {
-                return redirect()->route('home');
+                return redirect()->route('dashboard');
             }
         }
 
