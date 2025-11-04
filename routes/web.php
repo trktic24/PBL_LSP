@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SkemaController;
 
 Route::get('/', function () {
     return view('halaman_ambil_skema');
@@ -115,6 +116,10 @@ Route::get('/fr_ak01', function () {
 Route::get('/verifikasi_tuk', function () {
     return view('verifikasi_tuk');
 });
+
+Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
+
+Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
