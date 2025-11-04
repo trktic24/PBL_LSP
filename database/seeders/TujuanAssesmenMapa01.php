@@ -15,11 +15,11 @@ class TujuanAssesmenMapa01 extends Seeder
     public function run(): void
     {
         Schema::disableForeignKeyConstraints();
-        DB::table('master_tujuan_sertifikasi')->truncate();
+        DB::table('master_tujuan_assesmen_mapa01')->truncate();
         Schema::enableForeignKeyConstraints();
 
         // Ini data 'manual' lu
-        DB::table('master_tujuan_sertifikasi')->insert([
+        DB::table('master_tujuan_assesmen_mapa01')->insert([
             ['nama_tujuan' => 'Sertifikasi', 'created_at' => now(), 'updated_at' => now()],
             ['nama_tujuan' => 'Pengakuan Kompetensi Terkini (PKT)', 'created_at' => now(), 'updated_at' => now()],
             ['nama_tujuan' => 'Rekognisi Pembelajaran Lampau (RPL)', 'created_at' => now(), 'updated_at' => now()],

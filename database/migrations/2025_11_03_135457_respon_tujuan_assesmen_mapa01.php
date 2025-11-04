@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Nyambung ke pilihan apa yang dicentang
             $table->foreignId('id_tujuan')
-                  ->constrained('master_tujuan_sertifikasi', 'id_tujuan')
+                  ->constrained('master_tujuan_assesmen_mapa01', 'id_tujuan')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
             
