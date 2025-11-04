@@ -48,6 +48,7 @@ Route::get('/fr-ia-02', function () {
 })->name('FR_IA_02');
 
 
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
