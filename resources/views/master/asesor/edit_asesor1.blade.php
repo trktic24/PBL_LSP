@@ -4,15 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Asesor - Informasi Akun | LSP Polines</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
   <style>
     body { font-family: 'Poppins', sans-serif; }
     ::-webkit-scrollbar { width: 0; }
@@ -21,11 +16,9 @@
 
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
-
     <x-navbar />
     
     <main class="flex-1 flex flex-col items-center pt-10 pb-12 px-4">
-
       <div class="w-full max-w-4xl mb-4">
          <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
             <i class="fas fa-arrow-left mr-2"></i> Back
@@ -36,35 +29,33 @@
         
         <h1 class="text-3xl font-bold text-gray-900 text-center mb-6">EDIT ASESOR</h1>
         
-        <!-- NOTE: Bagian ini adalah step wizard (indikator langkah 1-3).Mungkin akan ada perubahan urutan atau tampilan di update berikutnya.-->
+        <div class="flex items-start w-full max-w-3xl mx-auto mb-12">
+            <div class="flex flex-col items-center text-center w-32">
+                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-blue-600 text-white text-xs font-medium">1</div>
+                <p class="mt-2 text-xs font-medium text-blue-600">Informasi Akun</p>
+            </div>
+            <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
+            <div class="flex flex-col items-center text-center w-32">
+                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">2</div>
+                <p class="mt-2 text-xs font-medium text-gray-500">Data Pribadi</p>
+            </div>
+            <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
+            <div class="flex flex-col items-center text-center w-32">
+                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">3</div>
+                <p class="mt-2 text-xs font-medium text-gray-500">Kelengkapan Dokumen</p>
+            </div>
+        </div>
 
-      <div class="flex items-start w-full max-w-3xl mx-auto mb-12">
-          <div class="flex flex-col items-center text-center w-32">
-              <div class="rounded-full h-5 w-5 flex items-center justify-center bg-blue-600 text-white text-xs font-medium">1</div>
-              <p class="mt-2 text-xs font-medium text-blue-600">Informasi Akun</p>
-          </div>
-          <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
-          <div class="flex flex-col items-center text-center w-32">
-              <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">2</div>
-              <p class="mt-2 text-xs font-medium text-gray-500">Data Pribadi</p>
-          </div>
-          <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
-          <div class="flex flex-col items-center text-center w-32">
-              <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">3</div>
-              <p class="mt-2 text-xs font-medium text-gray-500">Kelengkapan Dokumen</p>
-          </div>
-      </div>
-
-        <form action="#" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
+        <form action="{{ route('asesor.update.step1', $asesor->id_asesor) }}" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
           @csrf
-          <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Informasi Akun</h2>
+          @method('PATCH') <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Informasi Akun</h2>
           
           <div>
             <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
             <input type="text" id="nama" name="nama"
                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Masukkan Nama"
-                   value="{{ old('nama', $asesor->user->name ?? $asesor->nama_asesor) }}" required>
+                   value="{{ old('nama', $asesor->user->name ?? $asesor->nama_lengkap) }}" required>
           </div>
           
           <div>
@@ -72,12 +63,12 @@
             <input type="email" id="email" name="email"
                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Masukkan Alamat Email"
-                   value="{{ old('email', $asesor->user->email ?? $asesor->email) }}" required>
+                   value="{{ old('email', $asesor->user->email ?? '') }}" required>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</Blabel>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
               <input :type="showPassword ? 'text' : 'password'" id="password" name="password"
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                      placeholder="Kosongkan jika tidak berubah">
@@ -98,10 +89,10 @@
           </div>
 
           <div class="pt-4">
-            <a href="{{ route('edit_asesor2', $asesor->id) }}"
-                       class="w-full flex justify-center py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition text-center">
+            <button type="submit"
+                    class="w-full flex justify-center py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition text-center">
               Selanjutnya
-            </a>
+            </button>
           </div>
         </form>
 
