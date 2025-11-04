@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
 
     // 2. Notification
     Route::get('/notifications', function () {
-        return view('notification.notifications_admin');
+        return view('notifications.notifications_admin');
     })->name('notifications');
 
     // 3. Profile Admin
