@@ -73,23 +73,23 @@ class RegisteredUserController extends Controller
         if ($roleName === 'asesi') {
             $asesiRules = [
                 'nama_lengkap' => ['required', 'string', 'max:255'],
-                'nik' => ['nullable', 'string', 'size:16', 'unique:asesi,nik'],
-                'tempat_lahir' => ['nullable', 'string', 'max:100'],
-                'tanggal_lahir' => ['nullable', 'string', 'date_format:d-m-Y'],
-                'jenis_kelamin' => ['nullable', 'string', 'in:Laki-laki,Perempuan'],
-                'kebangsaan' => ['nullable', 'string', 'max:100'],
-                'kualifikasi' => ['nullable', 'string', 'max:255'], // -> pendidikan
-                'pekerjaan' => ['nullable', 'string', 'max:255'],
-                'alamat_rumah' => ['nullable', 'string'],
-                'kode_pos' => ['nullable', 'string', 'max:10'],
-                'kabupaten' => ['nullable', 'string', 'max:255'], // -> kabupaten_kota
-                'provinsi' => ['nullable', 'string', 'max:255'],
-                'no_hp' => ['nullable', 'string', 'max:16'], // -> nomor_hp
-                'nama_institusi' => ['nullable', 'string', 'max:255'], // -> nama_institusi_perusahaan
-                'alamat_institusi' => ['nullable', 'string'], // -> alamat_kantor
-                'jabatan' => ['nullable', 'string', 'max:255'],
-                'kode_pos_institusi' => ['nullable', 'string', 'max:15'],
-                'no_telepon_institusi' => ['nullable', 'string', 'max:16'], // Ini opsional
+                'nik' => ['required', 'string', 'size:16', 'unique:asesi,nik'],
+                'tempat_lahir' => ['required', 'string', 'max:100'],
+                'tanggal_lahir' => ['required', 'string', 'date_format:d-m-Y'],
+                'jenis_kelamin' => ['required', 'string', 'in:Laki-laki,Perempuan'],
+                'kebangsaan' => ['required', 'string', 'max:100'],
+                'kualifikasi' => ['required', 'string', 'max:255'], // -> pendidikan
+                'pekerjaan' => ['required', 'string', 'max:255'],
+                'alamat_rumah' => ['required', 'string'],
+                'kode_pos' => ['required', 'string', 'max:10'],
+                'kabupaten' => ['required', 'string', 'max:255'], // -> kabupaten_kota
+                'provinsi' => ['required', 'string', 'max:255'],
+                'no_hp' => ['required', 'string', 'max:16'], // -> nomor_hp
+                'nama_institusi' => ['required', 'string', 'max:255'], // -> nama_institusi_perusahaan
+                'alamat_institusi' => ['required', 'string'], // -> alamat_kantor
+                'jabatan' => ['required', 'string', 'max:255'],
+                'kode_pos_institusi' => ['required', 'string', 'max:15'],
+                'no_telepon_institusi' => ['required', 'string', 'max:16'], // Ini opsional
             ];
             $rules = array_merge($rules, $asesiRules);
         }
@@ -98,33 +98,33 @@ class RegisteredUserController extends Controller
         if ($roleName === 'asesor') {
             $asesorRules = [
                 'nama_lengkap' => ['required', 'string', 'max:255'],
-                'no_registrasi_asesor' => ['nullable', 'string', 'max:50', 'unique:asesor,nomor_regis'],
-                'nik' => ['nullable', 'string', 'size:16', 'unique:asesor,nik'],
-                'tempat_lahir' => ['nullable', 'string', 'max:100'],
-                'tanggal_lahir' => ['nullable', 'string', 'date_format:d-m-Y'],
-                'jenis_kelamin' => ['nullable', 'string', 'in:Laki-laki,Perempuan'],
-                'pekerjaan' => ['nullable', 'string', 'max:255'],
-                'asesor_kebangsaan' => ['nullable', 'string', 'max:100'],
-                'alamat_rumah' => ['nullable', 'string'],
-                'kode_pos' => ['nullable', 'string', 'max:10'],
-                'kabupaten' => ['nullable', 'string', 'max:255'],
-                'provinsi' => ['nullable', 'string', 'max:255'],
-                'no_hp' => ['nullable', 'string', 'max:14'],
-                'npwp' => ['nullable', 'string', 'max:25'],
+                'no_registrasi_asesor' => ['required', 'string', 'max:50', 'unique:asesor,nomor_regis'],
+                'nik' => ['required', 'string', 'size:16', 'unique:asesor,nik'],
+                'tempat_lahir' => ['required', 'string', 'max:100'],
+                'tanggal_lahir' => ['required', 'string', 'date_format:d-m-Y'],
+                'jenis_kelamin' => ['required', 'string', 'in:Laki-laki,Perempuan'],
+                'pekerjaan' => ['required', 'string', 'max:255'],
+                'asesor_kebangsaan' => ['required', 'string', 'max:100'],
+                'alamat_rumah' => ['required', 'string'],
+                'kode_pos' => ['required', 'string', 'max:10'],
+                'kabupaten' => ['required', 'string', 'max:255'],
+                'provinsi' => ['required', 'string', 'max:255'],
+                'no_hp' => ['required', 'string', 'max:14'],
+                'npwp' => ['required', 'string', 'max:25'],
                 'skema' => ['nullable', 'string'],
-                'nama_bank' => ['nullable', 'string', 'max:100'],
-                'nomor_rekening' => ['nullable', 'string', 'max:20'],
+                'nama_bank' => ['required', 'string', 'max:100'],
+                'nomor_rekening' => ['required', 'string', 'max:20'],
 
-                // FILES (bisa 'nullable' atau 'nullable' tergantung logika form, 'nullable' oke)
-                'ktp_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'foto_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'npwp_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'rekening_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'cv_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'ijazah_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'sertifikat_asesor_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'sertifikat_kompetensi_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'ttd_file' => ['nullable', File::types(['png'])->max(5 * 1024)],
+                // FILES (bisa 'required' atau 'nullable' tergantung logika form, 'nullable' oke)
+                'ktp_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'foto_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'npwp_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'rekening_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'cv_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'ijazah_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'sertifikat_asesor_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'sertifikat_kompetensi_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'ttd_file' => ['required', File::types(['png'])->max(5 * 1024)],
             ];
             $rules = array_merge($rules, $asesorRules);
         }

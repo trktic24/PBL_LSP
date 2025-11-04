@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        @apply font-sans text-gray-900 antialiased bg-gray-50;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-poppins font-semibold text-gray-900;
+    }
+
+    label,
+    button,
+    .step-label,
+    .nav-link,
+    .tab-title,
+    [role="button"],
+    input[type="submit"],
+    input[type="button"] {
+        @apply font-poppins font-medium text-gray-800;
+    }
+
+    p,
+    small,
+    span,
+    input::placeholder,
+    textarea::placeholder {
+        @apply font-sans text-gray-600;
+    }
+
+    a {
+        @apply font-sans text-blue-600 hover:text-blue-700 transition-colors;
+    }
+
+    input,
+    textarea,
+    select {
+        @apply font-sans text-gray-800 placeholder:text-gray-400;
+    }
+}
