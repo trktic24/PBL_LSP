@@ -1,5 +1,4 @@
 <x-register-layout>
-    <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <div class="bg-gray-100 w-full flex items-center justify-center py-5">
         <div class="w-full max-w-4xl bg-white rounded-3xl p-10 md:p-12 border border-gray-300 shadow-md">
@@ -11,6 +10,8 @@
                             <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="Logo LSP Polines" class="h-20 w-auto">
                         </a>
                     </div>
+
+                    <x-auth-session-status class="mb-4" :status="session('status')" />
 
                     <div class="mt-6 mb-8">
                         <h1 class="text-2xl font-semibold text-gray-900 mb-1">Masuk ke Akun Anda</h1>

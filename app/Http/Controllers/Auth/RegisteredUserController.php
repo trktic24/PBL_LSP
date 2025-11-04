@@ -111,19 +111,19 @@ class RegisteredUserController extends Controller
                 'provinsi' => ['nullable', 'string', 'max:255'],
                 'no_hp' => ['nullable', 'string', 'max:14'],
                 'npwp' => ['nullable', 'string', 'max:25'],
-                'skema' => ['nullable', 'string', 'exists:skema,id_skema'], // 'nullable'
+                'skema' => ['nullable', 'string'],
                 'nama_bank' => ['nullable', 'string', 'max:100'],
                 'nomor_rekening' => ['nullable', 'string', 'max:20'],
 
                 // FILES (bisa 'nullable' atau 'nullable' tergantung logika form, 'nullable' oke)
                 'ktp_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'foto_file' => ['nullable', File::types(['jpg', 'png'])->max(5 * 1024)],
+                'foto_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
                 'npwp_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
                 'rekening_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'cv_file' => ['nullable', File::types(['pdf'])->max(5 * 1024)],
+                'cv_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
                 'ijazah_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
-                'sertifikat_asesor_file' => ['nullable', File::types(['pdf'])->max(5 * 1024)],
-                'sertifikat_kompetensi_file' => ['nullable', File::types(['pdf'])->max(5 * 1024)],
+                'sertifikat_asesor_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'sertifikat_kompetensi_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
                 'ttd_file' => ['nullable', File::types(['png'])->max(5 * 1024)],
             ];
             $rules = array_merge($rules, $asesorRules);
@@ -206,11 +206,11 @@ class RegisteredUserController extends Controller
                     }
                 }
 
-                $skema = Skema::where('id_skema', $validated['skema'])->first();
+                // $skema = Skema::where('id_skema', $validated['skema'])->first();
 
                 Asesor::create([
                     'id_user' => $user->id_user,
-                    'id_skema' => $skema ? $skema->id_skema : null,
+                    'id_skema' => null,
                     'nama_lengkap' => $validated['nama_lengkap'],
                     'nomor_regis' => $validated['no_registrasi_asesor'],
                     'nik' => $validated['nik'],

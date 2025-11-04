@@ -1,3 +1,5 @@
+@props(['backUrl' => url('/')])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -22,7 +24,7 @@
 <body class="font-sans text-gray-900 antialiased bg-gray-100">
 
     <div class="absolute top-6 left-8">
-        <a href="{{ url('/') }}"
+        <a href="{{ $backUrl }}"
         class="flex items-center text-gray-500 hover:text-gray-700 font-medium text-sm transition-all">
             <i class="fa-solid fa-arrow-left mr-2"></i>
             Kembali
