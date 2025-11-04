@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SoalSeederIA06::class,
             TujuanAssesmenMapa01::class,
+            MasterPoinSiapaAsesmenSeeder::class,
+            PoinHubunganStandarSeeder::class,
         ]);
     }
 }
