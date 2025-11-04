@@ -60,20 +60,29 @@ class HomeController extends Controller
      */
     public function index(): View
     {
+        // Kategori dummy untuk filter di carousel
+        $kategori = [
+            ['id' => 1, 'nama' => 'Semua'],
+            ['id' => 2, 'nama' => 'Software'],
+            ['id' => 3, 'nama' => 'Hardware'],
+            ['id' => 4, 'nama' => 'Jaringan'],
+            ['id' => 5, 'nama' => 'AI & Network'],
+        ];
+
         // 1. Data Skema (Tidak berubah)
         $skemas = [
-            ['nama' => 'Junior Web Developer', 'gambar' => 'skema1.jpg'],
-            ['nama' => 'Network Administrator', 'gambar' => 'skema2.jpg'],
-            ['nama' => 'Database Engineer', 'gambar' => 'skema3.jpg'],
-            ['nama' => 'UI/UX Designer', 'gambar' => 'skema4.jpg'],
-            ['nama' => 'Cyber Security', 'gambar' => 'skema5.jpg'],
-            ['nama' => 'Mobile Developer', 'gambar' => 'skema6.jpg'],
-            ['nama' => 'Data Analyst', 'gambar' => 'skema7.jpg'],
-            ['nama' => 'Game Developer', 'gambar' => 'skema8.jpg'],
-            ['nama' => 'IoT Specialist', 'gambar' => 'skema9.jpg'],
-            ['nama' => 'Cloud Engineer', 'gambar' => 'skema10.jpg'],
-            ['nama' => 'AI Engineer', 'gambar' => 'skema11.jpg'],
-            ['nama' => 'Fullstack Developer', 'gambar' => 'skema12.jpg']
+            ['id' => 1, 'nama' => 'Junior Web Developer', 'gambar' => 'skema1.jpg', 'kategori' => 'Software'],
+            ['id' => 2, 'nama' => 'Network Administrator', 'gambar' => 'skema4.jpg', 'kategori' => 'Jaringan'],
+            ['id' => 3, 'nama' => 'Database Engineer', 'gambar' => 'skema3.jpg', 'kategori' => 'Software'],
+            ['id' => 4, 'nama' => 'UI/UX Designer', 'gambar' => 'skema2.jpg', 'kategori' => 'Software'],
+            ['id' => 5, 'nama' => 'Cyber Security', 'gambar' => 'skema5.jpg', 'kategori' => 'Hardware'],
+            ['id' => 6, 'nama' => 'Mobile Developer', 'gambar' => 'skema6.jpg', 'kategori' => 'Software'],
+            ['id' => 7, 'nama' => 'Data Analyst', 'gambar' => 'skema7.jpg','kategori' => 'AI & Network'],
+            ['id' => 8, 'nama' => 'Game Developer', 'gambar' => 'skema8.jpg', 'kategori' => 'Software'],
+            ['id' => 9, 'nama' => 'IoT Specialist', 'gambar' => 'skema9.jpg', 'kategori' => 'Hardware'],
+            ['id' => 10, 'nama' => 'Cloud Engineer', 'gambar' => 'skema10.jpg', 'kategori' => 'AI & Network'],
+            ['id' => 11, 'nama' => 'AI Engineer', 'gambar' => 'skema11.jpg', 'kategori' => 'AI & Network'],
+            ['id' => 12, 'nama' => 'Fullstack Developer', 'gambar' => 'skema12.jpg', 'kategori' => 'Software']
         ];
 
         // 2. Ambil data DUMMY Jadwal, filter, dan ambil 2
@@ -95,12 +104,28 @@ class HomeController extends Controller
      */
     public function show($id): View
     {
-        $skema = [
-            'id' => $id,
-            'nama' => "Skema Sertifikasi {$id}",
-            'deskripsi' => "Deskripsi lengkap untuk skema sertifikasi nomor {$id}.",
-            'gambar' => "skema{$id}.jpg",
+        $skemas = [
+        ['id' => 1, 'nama' => 'Junior Web Developer', 'gambar' => 'skema1.jpg', 'deskripsi' => 'Ujian mencakup HTML, CSS, JS, dan PHP dasar.'],
+        ['id' => 2, 'nama' => 'Network Administrator', 'gambar' => 'skema4.jpg', 'deskripsi' => 'Menguji kemampuan mengatur jaringan komputer dan server.'],
+        ['id' => 3, 'nama' => 'Database Engineer', 'gambar' => 'skema3.jpg', 'deskripsi' => 'Menguji desain dan implementasi basis data relasional.'],
+        ['id' => 4, 'nama' => 'UI/UX Designer', 'gambar' => 'skema2.jpg', 'deskripsi' => 'Ujian mencakup riset pengguna dan pembuatan prototipe desain.'],
+        ['id' => 5, 'nama' => 'Cyber Security', 'gambar' => 'skema5.jpg', 'deskripsi' => 'Ujian tentang keamanan jaringan, analisis ancaman, dan mitigasi.'],
+        ['id' => 6, 'nama' => 'Mobile Developer', 'gambar' => 'skema6.jpg', 'deskripsi' => 'Menguji kemampuan membangun aplikasi mobile Android/iOS.'],
+        ['id' => 7, 'nama' => 'Data Analyst', 'gambar' => 'skema7.jpg', 'deskripsi' => 'Menguji kemampuan analisis data dan visualisasi menggunakan tools populer.'],
+        ['id' => 8, 'nama' => 'Game Developer', 'gambar' => 'skema8.jpg', 'deskripsi' => 'Menguji kemampuan membuat game dengan engine seperti Unity.'],
+        ['id' => 9, 'nama' => 'IoT Specialist', 'gambar' => 'skema9.jpg', 'deskripsi' => 'Menguji pemrograman dan integrasi sensor IoT.'],
+        ['id' => 10, 'nama' => 'Cloud Engineer', 'gambar' => 'skema10.jpg', 'deskripsi' => 'Menguji kemampuan membangun dan mengelola layanan cloud.'],
+        ['id' => 11, 'nama' => 'AI Engineer', 'gambar' => 'skema11.jpg', 'deskripsi' => 'Menguji kemampuan machine learning dan penerapannya.'],
+        ['id' => 12, 'nama' => 'Fullstack Developer', 'gambar' => 'skema12.jpg', 'deskripsi' => 'Ujian menggabungkan frontend, backend, dan integrasi database.'],
         ];
+
+         // Cari skema berdasarkan ID
+        $skema = collect($skemas)->firstWhere('id', (int)$id);
+
+        // Jika tidak ditemukan, tampilkan 404
+        if (!$skema) {
+            abort(404, 'Skema tidak ditemukan');
+        }
 
         return view('landing_page.detail.detail_skema', compact('skema'));
     }

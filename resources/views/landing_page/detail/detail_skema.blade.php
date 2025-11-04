@@ -4,17 +4,17 @@
     {{-- Hero Section dengan Gambar Cybersecurity --}}
     <section class="container mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
-            <img src="{{ asset('images/detail_skema.jpg') }}"
-                alt="Cybersecurity"
-                class="w-full h-full object-cover">
+            <img src="{{ asset('images/' . $skema['gambar']) }}" 
+            alt="{{ $skema['nama'] }}"
+            class="w-full h-full object-cover">
 
             <!-- Overlay gradient -->
             <div class="absolute inset-0 bg-gradient-to-r from-blue-500/90 via-blue-400/40 to-transparent"></div>
 
             <!-- Text Content -->
             <div class="absolute inset-0 flex flex-col justify-center px-12 text-white">
-                <h1 class="text-6xl font-bold mb-4">CYBERSECURITY</h1>
-                <p class="text-lg max-w-md">Lorem ipsum dolor sit amet, you're the best person I've ever met</p>
+                <h1 class="text-6xl font-bold mb-4">{{ strtoupper($skema['nama']) }}</h1>
+                <p class="text-lg max-w-md">{{ $skema['deskripsi'] }}</p>
             </div>
         </div>
     </section>
@@ -173,8 +173,9 @@
 
     {{-- Ambil Skema Button --}}
     <section class="container mx-auto px-8 py-10 text-center">
-        <button href="{{ route('login') }}" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-12 rounded-lg text-lg transition shadow-lg hover:shadow-xl">
+        <a href="{{ route('login') }}" 
+            class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-12 rounded-lg text-lg transition shadow-lg hover:shadow-xl">
             Ambil Skema
-        </button>
+        </a>
     </section>
 @endsection
