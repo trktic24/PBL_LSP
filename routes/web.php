@@ -15,38 +15,6 @@ Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-
-/*
-|--------------------------------------------------------------------------
-| Rute Frontend (Publik)
-| Folder: frontend
-|--------------------------------------------------------------------------
-*/
-Route::get('/home', function () {
-    return view('frontend.home');
-})->name('home');
-
-Route::get('/jadwal', function () {
-    return view('frontend.jadwal');
-})->name('jadwal');
-
-Route::get('/laporan', function () {
-    return view('frontend.laporan');
-})->name('laporan');
-
-Route::get('/profil', function () {
-    return view('frontend.profil');
-})->name('profil');
-
-Route::get('/daftar_asesi', function () {
-    return view('frontend.daftar_asesi');
-})->name('daftar_asesi');
-
-Route::get('/tracker', function () {
-    return view('frontend.tracker');
-})->name('tracker');
-
-
 /*
 |--------------------------------------------------------------------------
 | Rute Panel Admin (Semua di sini WAJIB LOGIN)
