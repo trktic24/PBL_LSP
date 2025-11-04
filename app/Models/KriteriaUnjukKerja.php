@@ -7,19 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// 1. Pastiin nama class-nya 'KriteriaUnjukKerja' (pake UNJUK)
 class KriteriaUnjukKerja extends Model
 {
     use HasFactory;
 
-    // 2. INI SOLUSINYA:
-    // Kasih tau Laravel nama tabel yg bener (SESUAI MIGRASI)
+    //kasih nama tabel yang sesuai dengan migrate
     protected $table = 'master_kriteria_unjuk_kerja';
 
-    // 3. WAJIB: Kasih tau nama Primary Key-nya
+    //namakan PK
     protected $primaryKey = 'id_kriteria';
 
-    // 4. WAJIB: Biar Factory bisa ngisi
+    //buat diisi sama factory
     protected $guarded = [];
 
     /**
