@@ -409,7 +409,7 @@
                             {{-- Tombol Submit Final untuk Asesi --}}
                             @if(session()->has('google_register_data'))
                             <input type="hidden" name="role_id"
-                            value="{{ \App\Models\Role::where('nama_role', session('google_register_data.role'))->first()->id ?? '' }}">
+                            value="{{ \App\Models\Role::where('nama_role', session('google_register_data.role'))->first()->id_role ?? '' }}">
                             @endif
 
 

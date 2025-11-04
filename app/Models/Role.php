@@ -13,6 +13,7 @@ class Role extends Model
     /**
      * Kolom yang boleh diisi
      */
+    protected $primaryKey = 'id_role';
     protected $fillable = [
         'nama_role',
     ];

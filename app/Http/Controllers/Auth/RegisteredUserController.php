@@ -142,9 +142,9 @@ class RegisteredUserController extends Controller
                                 : Hash::make($validated['password']), // Password dari form
                 'google_id' => $validated['google_id'] ?? null,
 
-                // V V V INI ADALAH FIX UTAMA V V V
-                'role_id' => $role->id, // Simpan 'role_id' (angka), BUKAN 'role' (string)
-                // ^ ^ ^ INI ADALAH FIX UTAMA ^ ^ ^
+
+                'role_id' => $role->id_role,
+
 
                 'email_verified_at' => $isGoogle ? now() : null, // Verifikasi jika Google
             ]);
