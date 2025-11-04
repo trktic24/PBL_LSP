@@ -25,5 +25,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\UnitKompetensi::factory(20)->create();
         \App\Models\Elemen::factory(20)->create();
         \App\Models\KriteriaUnjukKerja::factory(20)->create();
+        \App\Models\ResponApl2Ia01::factory(20)->create();
     }
 }
