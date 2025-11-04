@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admin', function (Blueprint $table) {
+        Schema::create('master_poin_siapa_melakukan_asesmen', function (Blueprint $table) {
+            // PK PERSIS kayak ERD
+            $table->id('id_siapa_melakukan_asesmen');
             
-            $table->id('id_admin');
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
-            $table->string('nama_admin');
-            $table->string('tanda_tangan_admin')->nullable()->comment('Path ke file tanda tangan admin');
+            // Logikanya bener (pilihan jadi BARIS)
+            $table->string('pilihan'); // 'Lembaga Sertifikasi', 'Organisasi...', dll
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admin');
+        Schema::dropIfExists('master_poin_siapa_melakukan_asesmen');
     }
 };
