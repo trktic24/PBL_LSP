@@ -55,6 +55,7 @@ return new class extends Migration
             $table->string('sertifikat_asesor')->comment('Path ke file sertifikat');
             $table->string('sertifikasi_kompetensi')->comment('Path ke file sertifikasi');
             $table->string('tanda_tangan')->comment('Path ke file tanda tangan');
+            $table->boolean('is_verified')->default(false)->comment('Status verifikasi asesor');
 
             // Standar timestamp seperti di tabel users
             $table->timestamps(); 
