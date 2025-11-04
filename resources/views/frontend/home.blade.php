@@ -20,7 +20,7 @@
                     dropdownMenu.classList.toggle('hidden');
                 });
             }
-            
+
             // Menutup dropdown jika klik di luar
             document.addEventListener('click', function (event) {
                 if (dropdownMenu && !dropdownMenu.classList.contains('hidden') && !userMenuButton.contains(event.target)) {
@@ -34,7 +34,7 @@
 
     <header class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            
+
             <div class="flex items-center space-x-6">
                 <div class="w-10 h-10 flex items-center justify-center">
                     <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" width="100">
@@ -83,8 +83,8 @@
                 <div class="flex items-center space-x-3 cursor-pointer" id="userMenuButton">
                     <span class="text-gray-800 font-semibold">{{ Auth::user()->name ?? 'User' }}</span>
                     <a href="{{ route('profil') }}">
-                        <img src="{{ Auth::user()->photo_url ?? asset('images/default-profile.png') }}" 
-                             alt="Foto Profil" 
+                        <img src="{{ Auth::user()->photo_url ?? asset('images/default-profile.png') }}"
+                             alt="Foto Profil"
                              class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover">
                     </a>
                     <!-- Tombol Dropdown -->

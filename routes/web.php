@@ -186,4 +186,23 @@ Route::get('/keep-alive', function () {
 });
 
 
+Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
+Route::get('/soal/create', [SoalController::class, 'create'])->name('soal.create');
+Route::post('/soal', [SoalController::class, 'store'])->name('soal.store');
+Route::get('/soal/{id}/edit', [SoalController::class, 'edit'])->name('soal.edit');
+Route::put('/soal/{id}', [SoalController::class, 'update'])->name('soal.update');
+Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('soal.destroy');
+Route::get('/onlysoal', [SoalController::class, 'onlySoal'])->name('soal.only');
+
+// CRUD kunci jawaban
+Route::post('/soal/{id}/kunci', [SoalController::class, 'storeKunci'])->name('kunci.store');
+Route::put('/kunci/{id}', [SoalController::class, 'updateKunci'])->name('kunci.update');
+Route::delete('/kunci/{id}', [SoalController::class, 'destroyKunci'])->name('kunci.destroy');
+
+// Menampilkan halaman menjawab soal
+Route::get('/jawab', [SoalController::class, 'jawabIndex'])->name('jawab.index');
+
+// Menyimpan jawaban user
+Route::post('/jawab', [SoalController::class, 'jawabStore'])->name('jawab.store');
+
 require __DIR__.'/auth.php';
