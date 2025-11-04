@@ -2,68 +2,101 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banding;
+use App\Models\Asesmen; // Asumsi Model Asesmen yang menyimpan data hasil asesmen
 use Illuminate\Http\Request;
-use App\Models\BandingAsesmen;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
-class BandingAsesmenController extends Controller
+class BandingController extends Controller
 {
     /**
-     * Menyimpan pengajuan banding asesmen yang baru.
+     * Menampilkan formulir banding dengan data asesmen terkait yang sudah terisi.
+     * @param int $id_asesmen ID dari Asesmen yang akan diajukan banding
+     */
+    public function create($id_asesmen)
+    {
+        try {
+            // Eager loading relasi yang diperlukan untuk mengisi form
+            // Kita masih butuh relasi ke Asesor, Asesi, dan Skema untuk mengisi field di Blade.
+            $dataAsesmen = Asesmen::with([
+                'asesi.user', 
+                'asesor.user', 
+                'skema'
+            ])->findOrFail($id_asesmen);
+
+            // Format data yang akan dikirim ke view 'banding.blade.php'
+            $viewData = (object) [
+                // Field yang dibutuhkan untuk tampilan form:
+                'nama_asesor' => $dataAsesmen->asesor->user->nama ?? 'Nama Asesor Tidak Tersedia', 
+                'nama_asesi' => $dataAsesmen->asesi->user->nama ?? 'Nama Asesi Tidak Tersedia',
+                'skema_sertifikasi' => $dataAsesmen->skema->nama_skema ?? 'Skema Tidak Tersedia', 
+                'no_skema_sertifikasi' => $dataAsesmen->skema->no_skema ?? 'No. Skema Tidak Tersedia',
+                'tanggal_asesmen' => $dataAsesmen->tanggal_asesmen,
+                
+                // Field hidden yang wajib ada di Model Banding (sesuai Model Anda):
+                'id_asesmen' => $dataAsesmen->id_asesmen,
+                'id_asesi' => $dataAsesmen->id_asesi, // Diambil dari FK di tabel asesmen
+            ];
+            
+            return view('banding', ['dataAsesmen' => $viewData]);
+
+        } catch (\Exception $e) {
+            Log::error("Error memuat form banding:", ['error' => $e->getMessage()]);
+            return abort(404, 'Data Asesmen yang terkait tidak dapat ditemukan atau dimuat. Periksa relasi Model Asesmen Anda.');
+        }
+    }
+
+    /**
+     * Menyimpan pengajuan banding dari formulir.
      */
     public function store(Request $request)
     {
-        // 1. Validasi Data
-        $validator = Validator::make($request->all(), [
-            'nama_asesi' => 'required|string|max:255',
-            'nama_asesor' => 'required|string|max:255',
-            'tanggal_asesmen' => 'required|date',
-            
-            // Perhatikan bahwa input checkbox/radio biasanya mengirimkan 'on' atau 1/0
-            'proses_banding_dijelaskan' => 'nullable|boolean', 
-            'diskusi_banding_dengan_asesor' => 'nullable|boolean',
-            'melibatkan_orang_lain' => 'nullable|boolean',
-            
-            'skema_sertifikasi' => 'required|string|max:255',
-            'no_skema_sertifikasi' => 'required|string|max:255',
-            'alasan_banding' => 'required|string',
+        // 1. Validasi Input Formulir
+        $validated = $request->validate([
+            // Data Banding
+            'ya_tidak_1' => 'required|in:Ya,Tidak',
+            'ya_tidak_2' => 'required|in:Ya,Tidak',
+            'ya_tidak_3' => 'required|in:Ya,Tidak',
+            'alasan_banding' => 'required|string|max:1000',
             'tanggal_pengajuan_banding' => 'required|date',
-            // Untuk tanda tangan, jika berupa upload file/gambar
-            // 'tanda_tangan_asesi' => 'nullable|image|max:2048', 
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        // 2. Proses Penyimpanan Tanda Tangan (Opsional)
-        // Jika Anda mengupload gambar tanda tangan, tambahkan logika ini
-        $tanda_tangan_path = null;
-        if ($request->hasFile('tanda_tangan_asesi')) {
-            $tanda_tangan_path = $request->file('tanda_tangan_asesi')->store('signatures', 'public');
-        }
-
-        // 3. Menyimpan Data ke Database
-        $banding = BandingAsesmen::create([
-            'nama_asesi' => $request->nama_asesi,
-            'nama_asesor' => $request->nama_asesor,
-            'tanggal_asesmen' => $request->tanggal_asesmen,
             
-            // Konversi nilai input (misal 'on' atau null) ke boolean
-            'proses_banding_dijelaskan' => $request->boolean('proses_banding_dijelaskan'), 
-            'diskusi_banding_dengan_asesor' => $request->boolean('diskusi_banding_dengan_asesor'),
-            'melibatkan_orang_lain' => $request->boolean('melibatkan_orang_lain'),
+            // Hidden fields (FKs)
+            'id_asesmen' => 'required|integer|exists:asesmen,id_asesmen',
+            'id_asesi' => 'required|integer|exists:asesi,id_asesi',
             
-            'skema_sertifikasi' => $request->skema_sertifikasi,
-            'no_skema_sertifikasi' => $request->no_skema_sertifikasi,
-            'alasan_banding' => $request->alasan_banding,
-            'tanda_tangan_asesi' => $tanda_tangan_path,
-            'tanggal_pengajuan_banding' => $request->tanggal_pengajuan_banding,
+            // Checkbox (nullable)
+            'tuk_sewaktu' => 'nullable',
+            'tuk_tempatkerja' => 'nullable',
+            'tuk_mandiri' => 'nullable',
         ]);
+        
+        // 2. Menyiapkan Data untuk Disimpan
+        $dataToStore = [
+            'id_asesmen' => $validated['id_asesmen'],
+            'id_asesi' => $validated['id_asesi'],
+            
+            // Checkbox: true jika ada di request, false jika tidak ada
+            'tuk_sewaktu' => $request->has('tuk_sewaktu'), 
+            'tuk_tempatkerja' => $request->has('tuk_tempatkerja'),
+            'tuk_mandiri' => $request->has('tuk_mandiri'),
 
-        return response()->json([
-            'message' => 'Pengajuan Banding Asesmen berhasil disimpan.', 
-            'data' => $banding
-        ], 201);
+            'ya_tidak_1' => $validated['ya_tidak_1'],
+            'ya_tidak_2' => $validated['ya_tidak_2'],
+            'ya_tidak_3' => $validated['ya_tidak_3'],
+            'alasan_banding' => $validated['alasan_banding'],
+            'tanggal_pengajuan_banding' => $validated['tanggal_pengajuan_banding'],
+        ];
+
+        // 3. Simpan data menggunakan Model Banding
+        try {
+            Banding::create($dataToStore);
+            
+            // Redirect ke halaman sukses
+            return redirect()->route('dashboard')->with('success', 'Pengajuan banding Anda berhasil dikirim.');
+
+        } catch (\Exception $e) {
+            Log::error("Gagal menyimpan banding:", ['error' => $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan banding. Silakan coba lagi.');
+        }
     }
 }

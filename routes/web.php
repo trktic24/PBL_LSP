@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TandaTanganController;
+use App\Http\Controllers\BandingAsesmenController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
 
@@ -99,9 +100,9 @@ Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
-Route::get('/banding', function () {
-    return view('banding');
-});
+Route::get('/banding', [BandingAsesmenController::class, 'create'])->name('banding.create');
+
+Route::post('/banding', [BandingAsesmenController::class, 'store'])->name('banding.store');
 
 Route::get('/pertanyaan_lisan', function () {
     return view('pertanyaan_lisan');
