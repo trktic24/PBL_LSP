@@ -92,9 +92,10 @@
                 <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded">
               </td>
               <td class="px-4 py-3 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
-                  <i class="fas fa-pen"></i> <span>Edit</span>
-                </button>
+                <a href="{{ url('edit_schedule') }}" 
+                  class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
+                    <i class="fas fa-pen"></i> <span>Edit</span>
+                </a>
                 <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">
                   <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
