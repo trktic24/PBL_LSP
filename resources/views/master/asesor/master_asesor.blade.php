@@ -6,11 +6,8 @@
   <title>Master Asesor | LSP Polines</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
@@ -23,11 +20,30 @@
   <div class="min-h-screen flex flex-col">
     
     <x-navbar />
+
     <main class="p-6">
       <div class="mb-6">
         <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
         <h2 class="text-3xl font-bold text-gray-900">Daftar Asesor</h2>
       </div>
+
+      @if (session('success'))
+        <div x-data="{ show: true }"
+             x-init="setTimeout(() => show = false, 5000)"
+             x-show="show"
+             x-transition
+             class="fixed top-24 right-10 z-50 bg-green-500 text-white py-3 px-5 rounded-lg shadow-lg flex items-center"
+             role="alert">
+            <i class="fas fa-check-circle mr-3 text-lg"></i>
+            <div>
+                <span class="font-semibold">Berhasil!</span>
+                <p class="text-sm">{{ session('success') }}</p>
+            </div>
+            <button @click="show = false" class="ml-4 -mr-1 text-green-100 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+      @endif
 
       <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
         <div class="relative w-full md:w-1/3">
@@ -59,15 +75,18 @@
               <th class="px-6 py-3">Aksi</th>
             </tr>
           </thead>
+          
           <tbody class="divide-y divide-gray-200">
-            <tr>
-              <td class="px-6 py-4">1</td>
-              <td class="px-6 py-4 font-medium">Rafa Saputra</td>
-              <td class="px-6 py-4">rafa@polines.ac.id</td>
-              <td class="px-6 py-4">0812-3456-7890</td>
-              <td class="px-6 py-4">Teknologi Informasi</td>
+            @forelse ($asesors as $asesor)
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-6 py-4">{{ $asesor->id_asesor }}</td>
+              <td class="px-6 py-4 font-medium">{{ $asesor->nama_lengkap }}</td>
+              <td class="px-6 py-4">{{ $asesor->user->email ?? 'N/A' }}</td>
+              <td class="px-6 py-4">{{ $asesor->nomor_hp }}</td>
+              <td class="px-6 py-4">{{ $asesor->skema->nama_skema ?? 'N/A' }}</td>
               <td class="px-6 py-4 flex space-x-2">
-                <a href="{{ route('edit_asesor1', 1) }}"
+                
+                <a href="{{ route('edit_asesor1', $asesor->id_asesor) }}"
                     class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
                     <i class="fas fa-pen"></i> <span>Edit</span>
                 </a>
@@ -82,32 +101,16 @@
                 </a>
               </td>
             </tr>
+            @empty
             <tr>
-              <td class="px-6 py-4">2</td>
-              <td class="px-6 py-4 font-medium">Roihan Enrico</td>
-              <td class="px-6 py-4">roihan@polines.ac.id</td>
-              <td class="px-6 py-4">0813-1111-2222</td>
-              <td class="px-6 py-4">Jaringan Komputer</td>
-              <td class="px-6 py-4 flex space-x-2">
-                <a href="{{ route('edit_asesor1', 2) }}"
-                    class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                    <i class="fas fa-pen"></i> <span>Edit</span>
-                </a>
-
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-trash"></i> <span>Delete</span>
-                </button>
-
-                <a href="{{ route('asesor_profile_settings') }}"
-                   class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-eye"></i> <span>View</span>
-                </a>
+              <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                Belum ada data asesor yang ditampilkan.
               </td>
             </tr>
+            @endforelse
           </tbody>
-        </table>
-
-        </div>
+          </table>
+      </div>
     </main>
   </div>
 </body>

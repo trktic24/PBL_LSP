@@ -12,14 +12,24 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Buat role 'admin' dengan id_role = 1
+        // Hapus isi yang lama dan ganti dengan ini:
+
+        // 1. Buat role 'admin'
         Role::create([
             'id_role' => 1,
             'nama_role' => 'admin' // Sesuaikan nama kolom jika beda
         ]);
 
-        // Anda bisa tambahkan role lain di sini jika perlu
-        // Role::create(['id_role' => 2, 'nama_role' => 'asesor']);
-        // Role::create(['id_role' => 3, 'nama_role' => 'asesi']);
+        // 2. Buat role 'asesor' (INI YANG HILANG)
+        Role::create([
+            'id_role' => 2,
+            'nama_role' => 'asesor'
+        ]);
+
+        // 3. Buat role 'asesi' (INI YANG HILANG)
+        Role::create([
+            'id_role' => 3,
+            'nama_role' => 'asesi'
+        ]);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Skema;
 use App\Models\UnitKompetensi;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log; // Untuk debugging
+use Illuminate\Support\Facades\Log; 
 
 class SkemaController extends Controller
 {
@@ -14,16 +14,16 @@ class SkemaController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validasi semua input
+        // 1. Validasi input (Sesuai dengan form Anda)
         $validated = $request->validate([
             'nama_skema' => 'required|string|max:255',
-            'gambar_skema' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // 2MB max
-            'file_skkni' => 'nullable|file|mimes:pdf|max:2048', // 2MB max
+            'gambar_skema' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'file_skkni' => 'nullable|file|mimes:pdf|max:2048',
             'deskripsi' => 'required|string',
             'units' => 'required|array|min:1',
-            'units.*.code' => 'required|string', // Pastikan setiap unit punya kode
-            'tanggal' => 'required|date',
-            'asesor' => 'required', // Sesuaikan validasi jika perlu
+            'units.*.code' => 'required|string',
+            'tanggal' => 'required|date', // Catatan: kolom 'tanggal' tidak ada di migrasi Anda
+            'asesor' => 'required', // Catatan: kolom 'id_asesor' tidak ada di migrasi Anda
         ]);
 
         // 2. Handle Upload File
@@ -38,15 +38,15 @@ class SkemaController extends Controller
         }
 
         try {
-            // 3. Buat Skema Utama
+            // 3. Buat Skema Utama (Sesuaikan dengan kolom migrasi 'skema')
             $skema = Skema::create([
                 'nama_skema' => $validated['nama_skema'],
-                'deskripsi' => $validated['deskripsi'],
-                'tanggal_pelaksanaan' => $validated['tanggal'],
-                'gambar_skema' => $gambarPath,
-                'file_skkni' => $skkniPath,
-                // 'id_asesor' => $validated['asesor'], // Sesuaikan nama kolom
-                // Tambahkan kolom lain yang relevan di sini
+                'deskripsi_skema' => $validated['deskripsi'], // Form 'deskripsi' -> DB 'deskripsi_skema'
+                'gambar' => $gambarPath,           // Form 'gambar_skema' -> DB 'gambar'
+                'SKKNI' => $skkniPath,              // Form 'file_skkni' -> DB 'SKKNI'
+                
+                // Migrasi Anda punya kolom 'kode_unit'. Kita isi dengan unit pertama.
+                'kode_unit' => $validated['units'][0]['code'], 
             ]);
 
             // 4. Simpan Unit Kompetensi (Relasi)
@@ -54,7 +54,6 @@ class SkemaController extends Controller
                 UnitKompetensi::create([
                     'id_skema' => $skema->id_skema, // Hubungkan ke skema baru
                     'kode_unit' => $unit['code'],
-                    // 'judul_unit' => $unit['title'], // (Anda hapus ini, jadi di-komen)
                 ]);
             }
 
@@ -62,9 +61,8 @@ class SkemaController extends Controller
             return redirect()->route('master_skema')->with('success', 'Skema baru berhasil ditambahkan!');
 
         } catch (\Exception $e) {
-            // Jika ada error, catat dan kembali dengan pesan error
             Log::error('Gagal menyimpan skema: ' . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 }

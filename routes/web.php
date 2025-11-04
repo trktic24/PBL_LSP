@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\SkemaController; 
+use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\AsesorController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -79,20 +80,27 @@ Route::middleware('auth')->group(function () {
 
     // 5. Master - Asesor
     Route::get('/master_asesor', function () {
-        return view('master.asesor.master_asesor');
+        // Ambil semua asesor, dan muat relasi 'user' dan 'skema'
+        $asesors = \App\Models\Asesor::with(['user', 'skema'])->get(); 
+        
+        return view('master.asesor.master_asesor', [
+            'asesors' => $asesors
+        ]);
     })->name('master_asesor');
-    Route::get('/add_asesor1', function () {
-        return view('master.asesor.add_asesor1');
-    })->name('add_asesor1');
-    Route::get('/add_asesor2', function () {
-        return view('master.asesor.add_asesor2');
-    })->name('add_asesor2');
-    Route::get('/add_asesor3', function () {
-        return view('master.asesor.add_asesor3');
-    })->name('add_asesor3');
-    Route::post('/store-asesor', function () {
-        return redirect()->route('master_asesor')->with('success', 'Asesor berhasil ditambahkan!');
-    })->name('asesor.store');
+
+    // Rute Form Step 1
+    Route::get('/add_asesor1', [AsesorController::class, 'createStep1'])->name('add_asesor1');
+    Route::post('/add_asesor1', [AsesorController::class, 'postStep1'])->name('add_asesor1.post');
+    
+    // Rute Form Step 2
+    Route::get('/add_asesor2', [AsesorController::class, 'createStep2'])->name('add_asesor2');
+    Route::post('/add_asesor2', [AsesorController::class, 'postStep2'])->name('add_asesor2.post');
+
+    // Rute Form Step 3 (Final)
+    Route::get('/add_asesor3', [AsesorController::class, 'createStep3'])->name('add_asesor3');
+    Route::post('/store-asesor', [AsesorController::class, 'store'])->name('asesor.store');
+    
+    // Rute Edit
     Route::get('/edit-asesor-step-1/{id}', function ($id) {
         return view('master.asesor.edit_asesor1', ['asesor' => (object)['id' => $id, 'user' => (object)['name' => 'Nama Tes', 'email' => 'email@tes.com']]]);
     })->name('edit_asesor1');
