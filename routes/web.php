@@ -30,6 +30,9 @@ Route::get('/skema/{id}', [HomeController::class, 'show'])->name('detail_skema')
 // DITAMBAHKAN: Route untuk menangani detail jadwal
 Route::get('/jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('jadwal.detail');
 
+Route::get('/detail_skema/{id}', [HomeController::class, 'show'])->name('detail_skema');
+Route::get('/detail_jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('detail_jadwal');
+
 /*
 |--------------------------------------------------------------------------
 | Custom Routes (Info TUK dan Alur)
