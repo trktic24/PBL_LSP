@@ -26,7 +26,6 @@
 
     <div class="flex min-h-screen">
         
-         <!-- Sidebar Kiri -->
         <x-sidebar></x-sidebar>
         
         <main class="flex-1 p-12 bg-white overflow-y-auto">
@@ -67,13 +66,41 @@
                 </div>
 
                 <form id="signature-upload-form" method="POST" action="{{ route('simpan.tandatangan') }}">
-                    @csrf  <input type="hidden" name="signature_data_base64" id="signature-data-base64"> 
+                    @csrf 
+                    
+                    <div class="mt-6">
+                        
+                        <div id="signature-preview-container" class="drag-drop-area w-full h-48 border border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-gray-50 mb-4 transition-all duration-300">
+                            <img id="signature-preview" class="max-h-full max-w-full object-contain hidden" alt="Tanda Tangan Preview">
+                            <span id="upload-placeholder" class="text-gray-500 text-sm">Upload File Tanda Tangan Anda di sini (PNG/JPG)</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="file-input-wrapper">
+                                <label for="signature-file-input" class="cursor-pointer px-4 py-2 bg-blue-100 text-blue-700 font-medium rounded-lg hover:bg-blue-200 transition-colors">
+                                    Choose File
+                                </label>
+                                <input type="file" id="signature-file-input" accept="image/png, image/jpeg"/>
+                            </div>
+                            </div>
+
+                        <input type="hidden" name="data_tanda_tangan" id="data-tanda-tangan-base64">
+                        
+                        <div class="flex justify-end items-center mt-4 space-x-3">
+                            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors" id="clear-signature">
+                                Hapus
+                            </button>
+                            <button type="button" class="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 shadow-md transition-colors disabled:bg-blue-300" id="save-signature" disabled>
+                                Simpan
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="flex justify-between items-center mt-12">
                         <a href="{{ url('/bukti_pemohon') }}" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
                             Sebelumnya
                         </a>
-                        <button type="submit" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors" id="submit-selanjutnya">
+                        <button type="submit" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
                             Selanjutnya
                         </button>
                     </div>
@@ -93,7 +120,9 @@
             const placeholder = document.getElementById('upload-placeholder');
             const saveButton = document.getElementById('save-signature');
             const clearButton = document.getElementById('clear-signature');
-            const base64Input = document.getElementById('signature-data-base64');
+            
+            // PERUBAHAN JS: ID input hidden diubah agar sesuai dengan HTML baru
+            const base64Input = document.getElementById('data-tanda-tangan-base64'); 
             const form = document.getElementById('signature-upload-form');
 
             let uploadedFileBase64 = null; // Menyimpan Base64 sementara
@@ -126,7 +155,7 @@
             }
 
             // ----------------------------------------------------
-            // 1. Logika Upload File & Drag/Drop
+            // 1. Logika Upload File & Drag/Drop (Tidak Berubah)
             // ----------------------------------------------------
 
             // A. File Input Change Handler (Saat tombol "Choose File" digunakan)
@@ -172,7 +201,7 @@
 
 
             // ----------------------------------------------------
-            // 2. Logika Tombol Simpan dan Hapus
+            // 2. Logika Tombol Simpan dan Hapus (Sesuai dengan ID baru)
             // ----------------------------------------------------
 
             saveButton.addEventListener('click', function() {
@@ -211,11 +240,11 @@
 
 
             // ----------------------------------------------------
-            // 3. Logika Submit Form (Selanjutnya)
+            // 3. Logika Submit Form (Validasi)
             // ----------------------------------------------------
             form.addEventListener('submit', function(event) {
                 
-                // Validasi apakah data sudah disimpan ke input hidden
+                // Validasi apakah data sudah disimpan ke input hidden (sudah klik Simpan)
                 if (!base64Input.value) {
                     event.preventDefault(); // Menghentikan submit
                     
@@ -224,7 +253,7 @@
                 }
 
                 console.log("Data Base64 Tanda Tangan siap dikirim ke backend.");
-                // Lanjutkan submit form ke endpoint server Anda
+                // Jika validasi sukses, form akan melanjutkan submit ke action="{{ route('simpan.tandatangan') }}"
             });
             
 
