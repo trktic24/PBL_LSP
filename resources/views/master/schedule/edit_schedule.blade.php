@@ -44,7 +44,8 @@
                     <a href="{{ route('master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium justify-self-start">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center flex-1 -ml-12 sm:-ml-20">EDIT SCHEDULE</h1>
+
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center">EDIT SCHEDULE</h1>
                     <div class="w-16"></div>
                 </div>
 

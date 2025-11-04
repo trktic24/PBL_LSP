@@ -126,6 +126,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/tuk_tempatkerja', function () {
         return view('tuk.tuk_tempatkerja');
     })->name('tuk_tempatkerja');
+    Route::get('/edit_tuk', function () {
+        return view('tuk.edit_tuk');
+    })->name('edit_tuk');
 
     // 9. Profile Asesi
     Route::get('/asesi_profile_settings', function () {
