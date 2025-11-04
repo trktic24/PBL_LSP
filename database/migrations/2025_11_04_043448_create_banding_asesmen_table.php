@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Menjalankan migration untuk membuat tabel 'banding'.
      */
-    public public function up(): void
+    public function up(): void
     {
         Schema::create('banding', function (Blueprint $table) {
             $table->id('id_banding'); // Primary Key
@@ -44,7 +44,7 @@ return new class extends Migration
     /**
      * Membatalkan migration (rollback).
      */
-    public public function down(): void
+    public function down(): void
     {
         Schema::dropIfExists('banding');
     }
