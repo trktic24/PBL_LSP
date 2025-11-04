@@ -1,4 +1,11 @@
+@php
+    // Bersihin session Google lama biar email gak ke-lock
+    if (!request()->has('step') || request('step') == 1) {
+        session()->forget('google_register_data');
+    }
+@endphp
 <x-register-layout>
+
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <div class="bg-gray-100 w-full flex items-center justify-center py-5 min-h-screen">
@@ -82,7 +89,11 @@
             <form id="register-form" method="POST" action="{{ route('register.store') }}" enctype="multipart/form-data" novalidate>
                 @csrf
                 {{-- Input 'role' ini nilainya dinamis, diambil dari state 'role' Alpine.js --}}
-                <input type="hidden" name="role" x-model="role">
+                <input type="hidden" name="role" x-model="role" value="{{ $role_id ?? session('google_register_data.role_id') }}">
+                <input type="hidden" name="is_google_register" value="{{ session()->has('google_register_data') ? '1' : '0' }}">
+                <input type="hidden" name="google_id" value="{{ session('google_register_data.google_id') ?? '' }}">
+                <input type="hidden" name="email" value="{{ session('google_register_data.email') ?? old('email') }}">
+
                 @if ($errors->any())
     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4" role="alert">
         <p class="font-bold">Ada Error Validasi:</p>
@@ -236,7 +247,11 @@
 
                                     <x-login-form-input
                                         id="email" name="email" type="email" label="Email"
-                                        :error="$errors->first('email')" required autofocus
+                                        :error="$errors->first('email')"
+                                        :value="session('google_register_data.email') ?? old('email')"
+                                        :readonly="session()->has('google_register_data')"
+                                        required
+                                        autofocus
                                     />
                                     <div x-data="{ show: false, pass :'', conf:'' }">
                                         <div class="flex flex-col md:flex-row gap-4">
@@ -308,7 +323,7 @@
                                     <hr class="mt-2">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                                    <x-login-form-input id="asesi_nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required />
+                                    <x-login-form-input id="asesi_nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required x-show="role === 'asesi'" :value="old('nama_lengkap') ?? session('google_register_data.name')"/>
                                     <div>
                                         <x-login-form-input id="asesi_nik" name="nik" label="NIK" x-model="nik" :error="$errors->first('nik')" required />
                                         <p x-show="nik.length>0 && nik.length !== 16"
@@ -390,6 +405,12 @@
                                 Kembali
                             </button>
                             {{-- Tombol Submit Final untuk Asesi --}}
+                            @if(session()->has('google_register_data'))
+                            <input type="hidden" name="role_id"
+                            value="{{ \App\Models\Role::where('nama_role', session('google_register_data.role'))->first()->id ?? '' }}">
+                            @endif
+
+
                             <x-login-button-biru type="submit" class="px-10 py-3">
                                 Daftar
                             </x-login-button-biru>
@@ -410,8 +431,7 @@
                                 <h2 class="text-lg font-semibold text-gray-800">Data Pribadi</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                                    <x-login-form-input id="asesor_nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required />
-                                    {{-- 'no_registrasi_asesor' di form -> 'nomor_regis' di DB --}}
+                                    <x-login-form-input id="asesor_nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required x-show="role === 'asesor'" :value="old('nama_lengkap') ?? session('google_register_data.name')"/>
                                     <x-login-form-input id="no_registrasi_asesor" name="no_registrasi_asesor" label="No Registrasi Asesor" :error="$errors->first('no_registrasi_asesor')" required />
                                     <x-login-form-input id="asesor_nik" name="nik" label="NIK" :error="$errors->first('nik')" required />
                                 </div>
@@ -582,7 +602,9 @@ document.addEventListener('alpine:init', () => {
             // 🚀 PANGGIL FUNGSI KEEP-ALIVE DI SINI
             // Ini akan jalan pas halaman pertama kali dibuka
             this.keepAlive();
-
+            document.querySelector('form')?.addEventListener('submit', () => {
+                this.clearStorage();
+            });
             // 🔁 Load data dari localStorage
             const saved = localStorage.getItem('register_form');
             if (saved) {

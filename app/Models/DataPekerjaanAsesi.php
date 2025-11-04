@@ -14,12 +14,12 @@ class DataPekerjaanAsesi extends Model
     protected $primaryKey = 'id_pekerjaan';
 
     protected $fillable = [
-        'id_asesi',
-        'nama_institusi_perusahaan',
-        'jabatan',
-        'alamat_kantor',
-        'kode_pos',
-        'no_telepon_kantor',
+    'id_asesi',
+    'nama_institusi_pekerjaan',
+    'jabatan',
+    'alamat_institusi',
+    'kode_pos_institusi',
+    'no_telepon_institusi',
     ];
 
     public function asesi(): BelongsTo

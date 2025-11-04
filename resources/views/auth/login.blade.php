@@ -84,7 +84,7 @@
                     <div class="flex-grow border-t border-gray-200"></div>
                 </div>
 
-                <x-login-button-google class="w-full sm:w-1/2">
+                <x-login-button-google href="{{ route('google.login')}}" class="w-full sm:w-1/2">
                     Continue with Google
                 </x-login-button-google>
             </div>

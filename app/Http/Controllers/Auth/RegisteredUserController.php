@@ -3,47 +3,76 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Role;
 use App\Models\Asesi;
 use App\Models\Asesor;
 use App\Models\DataPekerjaanAsesi;
+use App\Models\Role;
+use App\Models\Skema;
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Carbon\Carbon;
 
 class RegisteredUserController extends Controller
 {
-    public function create(): View
+    /**
+     * Tampilkan view registrasi.
+     */
+    public function create(Request $request): View
     {
+        // Bersihkan session Google jika user kembali ke step 1
+        if (!$request->has('step') || $request->step == 1) {
+            session()->forget('google_register_data');
+        }
         return view('auth.register');
     }
 
+    /**
+     * Tangani request registrasi.
+     */
     public function store(Request $request): RedirectResponse
     {
-        // dd('MASUK NIH');
+        // Gabungkan data session Google ke request jika ada
+        if (session()->has('google_register_data')) {
+            $request->merge([
+                'is_google_register' => true,
+                'google_id' => session('google_register_data.google_id'),
+                'email' => session('google_register_data.email'),
+                'nama_lengkap' => session('google_register_data.name'),
+                'role' => session('google_register_data.role'),
+            ]);
+        }
+
+        $isGoogle = $request->boolean('is_google_register');
         $roleName = $request->input('role'); // 'asesi' atau 'asesor'
+
+        // Ambil model Role. Ini akan dipakai untuk 'role_id'
         $role = Role::where('nama_role', $roleName)->firstOrFail();
 
         // ✅ VALIDASI DASAR
         $rules = [
             'role' => ['required', 'string', 'in:asesi,asesor'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            // Rule 'unique' akan diabaikan untuk user Google jika email sudah ada di request (dari session)
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'password' => $isGoogle ? ['nullable'] : ['required', 'confirmed', Rules\Password::defaults()],
+            'is_google_register' => ['nullable', 'boolean'],
+            'google_id' => ['nullable', 'string'],
         ];
 
+        // ✅ VALIDASI ASESI (GANTI DARI NULLABLE -> REQUIRED)
         if ($roleName === 'asesi') {
             $asesiRules = [
-                'nama_lengkap' => ['nullable', 'string', 'max:255'],
+                'nama_lengkap' => ['required', 'string', 'max:255'],
                 'nik' => ['nullable', 'string', 'size:16', 'unique:asesi,nik'],
                 'tempat_lahir' => ['nullable', 'string', 'max:100'],
                 'tanggal_lahir' => ['nullable', 'string', 'date_format:d-m-Y'],
@@ -60,14 +89,15 @@ class RegisteredUserController extends Controller
                 'alamat_institusi' => ['nullable', 'string'], // -> alamat_kantor
                 'jabatan' => ['nullable', 'string', 'max:255'],
                 'kode_pos_institusi' => ['nullable', 'string', 'max:15'],
-                'no_telepon_institusi' => ['nullable', 'string', 'max:16'],
+                'no_telepon_institusi' => ['nullable', 'string', 'max:16'], // Ini opsional
             ];
             $rules = array_merge($rules, $asesiRules);
         }
 
+        // ✅ VALIDASI ASESOR (GANTI DARI NULLABLE -> REQUIRED)
         if ($roleName === 'asesor') {
             $asesorRules = [
-                'nama_lengkap' => ['nullable', 'string', 'max:255'],
+                'nama_lengkap' => ['required', 'string', 'max:255'],
                 'no_registrasi_asesor' => ['nullable', 'string', 'max:50', 'unique:asesor,nomor_regis'],
                 'nik' => ['nullable', 'string', 'size:16', 'unique:asesor,nik'],
                 'tempat_lahir' => ['nullable', 'string', 'max:100'],
@@ -81,11 +111,11 @@ class RegisteredUserController extends Controller
                 'provinsi' => ['nullable', 'string', 'max:255'],
                 'no_hp' => ['nullable', 'string', 'max:14'],
                 'npwp' => ['nullable', 'string', 'max:25'],
-                'skema' => ['nullable', 'string', 'exists:skema,id_skema'],
+                'skema' => ['nullable', 'string', 'exists:skema,id_skema'], // 'nullable'
                 'nama_bank' => ['nullable', 'string', 'max:100'],
                 'nomor_rekening' => ['nullable', 'string', 'max:20'],
 
-                // FILES
+                // FILES (bisa 'nullable' atau 'nullable' tergantung logika form, 'nullable' oke)
                 'ktp_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
                 'foto_file' => ['nullable', File::types(['jpg', 'png'])->max(5 * 1024)],
                 'npwp_file' => ['nullable', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
@@ -107,19 +137,26 @@ class RegisteredUserController extends Controller
             // === USERS ===
             $user = User::create([
                 'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'role_id' => $role->id,
+                'password' => $isGoogle
+                                ? Hash::make(Str::random(24)) // Password random
+                                : Hash::make($validated['password']), // Password dari form
+                'google_id' => $validated['google_id'] ?? null,
+
+                // V V V INI ADALAH FIX UTAMA V V V
+                'role_id' => $role->id, // Simpan 'role_id' (angka), BUKAN 'role' (string)
+                // ^ ^ ^ INI ADALAH FIX UTAMA ^ ^ ^
+
+                'email_verified_at' => $isGoogle ? now() : null, // Verifikasi jika Google
             ]);
 
-            $tanggalLahir = !empty($validated['tanggal_lahir'])
-            ? Carbon::createFromFormat('d-m-Y', $validated['tanggal_lahir'])->format('Y-m-d')
-            : null;
+            // Format tanggal & JK
+            $tanggalLahir = Carbon::createFromFormat('d-m-Y', $validated['tanggal_lahir'])->format('Y-m-d');
             $jk = $validated['jenis_kelamin'] === 'Laki-laki' ? 1 : 0;
 
             // === ASESI ===
             if ($roleName === 'asesi') {
                 $asesi = Asesi::create([
-                    'id_user' => $user->id_user,
+                    'id_user' => $user->id_user, // Asumsi 'id_user' adalah Primary Key
                     'nama_lengkap' => $validated['nama_lengkap'],
                     'nik' => $validated['nik'],
                     'tempat_lahir' => $validated['tempat_lahir'],
@@ -140,7 +177,7 @@ class RegisteredUserController extends Controller
                     'nama_institusi_pekerjaan' => $validated['nama_institusi'],
                     'jabatan' => $validated['jabatan'],
                     'alamat_institusi' => $validated['alamat_institusi'],
-                    'kode_pos_institusi' => $validated['kode_pos_institusi'] ?? null,
+                    'kode_pos_institusi' => $validated['kode_pos_institusi'],
                     'no_telepon_institusi' => $validated['no_telepon_institusi'] ?? null,
                 ]);
             }
@@ -168,8 +205,9 @@ class RegisteredUserController extends Controller
                         $filePaths[$column] = $path;
                     }
                 }
-                // Sebelum Asesor::create()
-                $skema = \App\Models\Skema::where('id_skema', $validated['skema'])->first();
+
+                $skema = Skema::where('id_skema', $validated['skema'])->first();
+
                 Asesor::create([
                     'id_user' => $user->id_user,
                     'id_skema' => $skema ? $skema->id_skema : null,
@@ -189,28 +227,36 @@ class RegisteredUserController extends Controller
                     'NPWP' => $validated['npwp'],
                     'nama_bank' => $validated['nama_bank'],
                     'norek' => $validated['nomor_rekening'],
-                    ...$filePaths,
+                    ...$filePaths, // Gabungkan semua path file
                 ]);
             }
 
             DB::commit();
+
+            // Bersihkan session Google setelah sukses
+            session()->forget(['google_register_data']);
+
         } catch (\Exception $e) {
             DB::rollBack();
+            // Hapus folder file jika gagal simpan asesor
             if ($roleName === 'asesor' && isset($storagePath)) {
                 Storage::deleteDirectory($storagePath);
             }
+            // Kembalikan ke form dengan error
             return back()->with('error', 'Terjadi kesalahan: '.$e->getMessage())->withInput();
         }
 
         event(new Registered($user));
         Auth::login($user);
-        if ($roleName === 'asesi') {
-    return redirect()->route('asesi.dashboard');
-    } elseif ($roleName === 'asesor') {
-        return redirect()->route('asesor.dashboard');
-    }
 
-    // Fallback jika ada role lain (misal admin)
-    return redirect()->route('dashboard');
+        // Redirect ke dashboard yang sesuai
+        if ($roleName === 'asesi') {
+            return redirect()->route('asesi.dashboard');
+        } elseif ($roleName === 'asesor') {
+            return redirect()->route('asesor.dashboard');
+        }
+
+        // Fallback
+        return redirect()->route('dashboard');
     }
 }

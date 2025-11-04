@@ -10,10 +10,6 @@ Route::get('/navbar', function () {
     return view('navbar-fix');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::get('/jadwal', function () {
     return view('jadwal');
 })->name('jadwal');
