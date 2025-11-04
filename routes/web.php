@@ -100,7 +100,7 @@ Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
-Route::get('/banding', [BandingAsesmenController::class, 'create'])->name('banding.create');
+Route::get('/banding/{id_asesmen?}', [BandingAsesmenController::class, 'create'])->name('banding.create');
 
 Route::post('/banding', [BandingAsesmenController::class, 'store'])->name('banding.store');
 

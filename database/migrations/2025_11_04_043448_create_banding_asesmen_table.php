@@ -36,8 +36,10 @@ return new class extends Migration
 
             $table->text('alasan_banding');
             $table->date('tanggal_pengajuan_banding');
+            $table->longText('tanda_tangan_asesi');
 
             $table->timestamps();
+            $table->unique('id_asesmen');
         });
     }
 

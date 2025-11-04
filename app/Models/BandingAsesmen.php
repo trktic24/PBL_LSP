@@ -19,10 +19,10 @@ class Banding extends Model
     // Primary key untuk Model ini
     protected $primaryKey = 'id_banding';
 
-    // Izinkan semua field dari form untuk diisi (pastikan migration sudah dibuat)
+    // Izinkan semua field dari form untuk diisi
     protected $fillable = [
         'id_asesi',
-        'id_asesmen', // Menggunakan 'id_asesmen' sebagai Foreign Key ke tabel asesmen
+        'id_asesmen', // Foreign Key ke tabel asesmen
         'tuk_sewaktu',
         'tuk_tempatkerja',
         'tuk_mandiri',
@@ -31,13 +31,16 @@ class Banding extends Model
         'ya_tidak_3',
         'alasan_banding',
         'tanggal_pengajuan_banding',
+        'tanda_tangan_asesi', // <-- WAJIB DITAMBAHKAN
     ];
     
     // Konversi tipe data
     protected $casts = [
+        // 'tuk_sewaktu', 'tuk_tempatkerja', 'tuk_mandiri' tetap boolean
         'tuk_sewaktu' => 'boolean',
         'tuk_tempatkerja' => 'boolean',
         'tuk_mandiri' => 'boolean',
+        // Hapus cast untuk ya_tidak_1, 2, 3 karena nilainya adalah string ('Ya'/'Tidak')
         'tanggal_pengajuan_banding' => 'date',
     ];
 
@@ -50,7 +53,8 @@ class Banding extends Model
     public function asesi(): BelongsTo
     {
         // Model Asesi menggunakan primary key 'id_asesi'
-        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
+        // Asumsi Model Asesi sudah didefinisikan
+        return $this->belongsTo(\App\Models\Asesi::class, 'id_asesi', 'id_asesi');
     }
 
     /**
@@ -59,6 +63,7 @@ class Banding extends Model
     public function asesmen(): BelongsTo
     {
         // Model Asesmen menggunakan primary key 'id_asesmen'
-        return $this->belongsTo(Asesmen::class, 'id_asesmen', 'id_asesmen');
+        // Asumsi Model Asesmen sudah didefinisikan
+        return $this->belongsTo(\App\Models\Asesmen::class, 'id_asesmen', 'id_asesmen');
     }
 }

@@ -3,100 +3,106 @@
 namespace App\Http\Controllers;
 
 use App\Models\Banding;
-use App\Models\Asesmen; // Asumsi Model Asesmen yang menyimpan data hasil asesmen
+use App\Models\Asesmen; // PENTING: Class ini harus ada di app/Models/Asesmen.php
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
-class BandingController extends Controller
+class BandingAsesmenController extends Controller
 {
     /**
-     * Menampilkan formulir banding dengan data asesmen terkait yang sudah terisi.
-     * @param int $id_asesmen ID dari Asesmen yang akan diajukan banding
+     * Menampilkan formulir banding. ID asesmen bersifat opsional.
+     * * Jika $id_asesmen adalah null (akses via /banding), form akan tampil kosong.
+     * Jika $id_asesmen ada (akses via /banding/1), form akan tampil dengan data asesmen.
+     *
+     * @param int|null $id_asesmen ID dari Asesmen yang akan diajukan banding
+     * @return \Illuminate\Http\Response
      */
-    public function create($id_asesmen)
+    public function create($id_asesmen = null) // Wajib: Tambahkan = null
     {
         try {
-            // Eager loading relasi yang diperlukan untuk mengisi form
-            // Kita masih butuh relasi ke Asesor, Asesi, dan Skema untuk mengisi field di Blade.
-            $dataAsesmen = Asesmen::with([
-                'asesi.user', 
-                'asesor.user', 
-                'skema'
-            ])->findOrFail($id_asesmen);
+            // --- KASUS 1: Akses /banding (ID tidak diberikan) ---
+            if (is_null($id_asesmen)) {
+                // Buat objek Asesmen kosong (dummy)
+                $dataAsesmen = new Asesmen();
+                $id_asesi = null; // Asesi juga kosong
+                // Langsung tampilkan form
+                return view('banding', compact('dataAsesmen', 'id_asesi'));
+            }
 
-            // Format data yang akan dikirim ke view 'banding.blade.php'
-            $viewData = (object) [
-                // Field yang dibutuhkan untuk tampilan form:
-                'nama_asesor' => $dataAsesmen->asesor->user->nama ?? 'Nama Asesor Tidak Tersedia', 
-                'nama_asesi' => $dataAsesmen->asesi->user->nama ?? 'Nama Asesi Tidak Tersedia',
-                'skema_sertifikasi' => $dataAsesmen->skema->nama_skema ?? 'Skema Tidak Tersedia', 
-                'no_skema_sertifikasi' => $dataAsesmen->skema->no_skema ?? 'No. Skema Tidak Tersedia',
-                'tanggal_asesmen' => $dataAsesmen->tanggal_asesmen,
-                
-                // Field hidden yang wajib ada di Model Banding (sesuai Model Anda):
-                'id_asesmen' => $dataAsesmen->id_asesmen,
-                'id_asesi' => $dataAsesmen->id_asesi, // Diambil dari FK di tabel asesmen
-            ];
+            // --- KASUS 2: Akses /banding/{id} (ID diberikan) ---
             
-            return view('banding', ['dataAsesmen' => $viewData]);
+            // 1. Cari data asesmen (menggunakan find() agar tidak error jika tidak ada)
+            $dataAsesmen = Asesmen::find($id_asesmen);
+            $id_asesi = null;
 
+            // 2. Cek apakah asesmen ditemukan
+            if ($dataAsesmen) {
+                // Jika DITEMUKAN, cek duplikasi banding
+                $id_asesi = $dataAsesmen->id_asesi ?? null;
+                $banding = Banding::where('id_asesmen', $id_asesmen)->first();
+
+                if ($banding) {
+                    return redirect()->route('dashboard')->with('info', 'Pengajuan banding untuk asesmen ini sudah pernah diajukan.');
+                }
+
+            } else {
+                // 3. Jika ID diberikan tapi data TIDAK DITEMUKAN
+                Log::warning('Formulir banding dibuka untuk id_asesmen yang tidak ada: ' . $id_asesmen);
+                $dataAsesmen = new Asesmen();
+                $dataAsesmen->id_asesmen = $id_asesmen; // Set ID agar hidden input terisi
+            }
+            
+            // Kirim data ke view. 
+            return view('banding', compact('dataAsesmen', 'id_asesi'));
+            
         } catch (\Exception $e) {
-            Log::error("Error memuat form banding:", ['error' => $e->getMessage()]);
-            return abort(404, 'Data Asesmen yang terkait tidak dapat ditemukan atau dimuat. Periksa relasi Model Asesmen Anda.');
+            Log::error('Error loading Banding form: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memuat data asesmen untuk banding.');
         }
     }
 
     /**
-     * Menyimpan pengajuan banding dari formulir.
+     * Menyimpan pengajuan banding yang baru.
      */
     public function store(Request $request)
     {
-        // 1. Validasi Input Formulir
-        $validated = $request->validate([
-            // Data Banding
-            'ya_tidak_1' => 'required|in:Ya,Tidak',
-            'ya_tidak_2' => 'required|in:Ya,Tidak',
-            'ya_tidak_3' => 'required|in:Ya,Tidak',
-            'alasan_banding' => 'required|string|max:1000',
-            'tanggal_pengajuan_banding' => 'required|date',
-            
-            // Hidden fields (FKs)
-            'id_asesmen' => 'required|integer|exists:asesmen,id_asesmen',
-            'id_asesi' => 'required|integer|exists:asesi,id_asesi',
-            
-            // Checkbox (nullable)
+        // ... (Logika store tetap sama dan akan memastikan 
+        // id_asesmen dan id_asesi benar-benar ada di database sebelum disimpan)
+        
+        // 1. Validasi Data
+        $validatedData = $request->validate([
+            'id_asesmen' => 'required|exists:asesmen,id_asesmen|unique:banding,id_asesmen', 
+            'id_asesi' => 'required|exists:asesi,id_asesi',
             'tuk_sewaktu' => 'nullable',
             'tuk_tempatkerja' => 'nullable',
             'tuk_mandiri' => 'nullable',
+            'ya_tidak_1' => 'required|in:Ya,Tidak',
+            'ya_tidak_2' => 'required|in:Ya,Tidak',
+            'ya_tidak_3' => 'required|in:Ya,Tidak',
+            'alasan_banding' => 'required|string|max:5000',
+            'tanda_tangan_asesi' => 'required|string',
         ]);
         
-        // 2. Menyiapkan Data untuk Disimpan
-        $dataToStore = [
-            'id_asesmen' => $validated['id_asesmen'],
-            'id_asesi' => $validated['id_asesi'],
-            
-            // Checkbox: true jika ada di request, false jika tidak ada
-            'tuk_sewaktu' => $request->has('tuk_sewaktu'), 
-            'tuk_tempatkerja' => $request->has('tuk_tempatkerja'),
-            'tuk_mandiri' => $request->has('tuk_mandiri'),
-
-            'ya_tidak_1' => $validated['ya_tidak_1'],
-            'ya_tidak_2' => $validated['ya_tidak_2'],
-            'ya_tidak_3' => $validated['ya_tidak_3'],
-            'alasan_banding' => $validated['alasan_banding'],
-            'tanggal_pengajuan_banding' => $validated['tanggal_pengajuan_banding'],
-        ];
-
-        // 3. Simpan data menggunakan Model Banding
+        // 2. Proses Penyimpanan
+        DB::beginTransaction();
         try {
-            Banding::create($dataToStore);
             
-            // Redirect ke halaman sukses
-            return redirect()->route('dashboard')->with('success', 'Pengajuan banding Anda berhasil dikirim.');
+            $dataToCreate = $validatedData;
+            $dataToCreate['tuk_sewaktu'] = $request->has('tuk_sewaktu');
+            $dataToCreate['tuk_tempatkerja'] = $request->has('tuk_tempatkerja');
+            $dataToCreate['tuk_mandiri'] = $request->has('tuk_mandiri');
+            $dataToCreate['tanggal_pengajuan_banding'] = now()->toDateString();
+            
+            Banding::create($dataToCreate);
+            DB::commit();
+
+            return redirect()->route('dashboard')->with('success', 'Pengajuan Banding berhasil disimpan.');
 
         } catch (\Exception $e) {
-            Log::error("Gagal menyimpan banding:", ['error' => $e->getMessage()]);
-            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan banding. Silakan coba lagi.');
+            DB::rollBack();
+            Log::error('Error saving Banding: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menyimpan pengajuan Banding. Silakan coba lagi.');
         }
     }
 }
