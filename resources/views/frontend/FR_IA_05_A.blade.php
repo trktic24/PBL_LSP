@@ -4,7 +4,8 @@
     <main class="main-content">
        <x-header_form.header_form title="FR.IA.05A. DPT - PERTANYAAN TERTULIS PILIHAN GANDA" />
 
-        <form class="form-body mt-6">               
+        <form class="form-body mt-6" action="{{ route('pertanyaan.store') }}" method="POST">  
+            @csrf             
             <x-identitas_skema_form.identitas_skema_form
                 skema="Junior Web Developer"
                 nomorSkema="SKK.XXXXX.XXXX"
