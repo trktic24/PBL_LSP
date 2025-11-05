@@ -151,7 +151,6 @@ class RegisteredUserController extends Controller
 
             // Format tanggal & JK
             $tanggalLahir = Carbon::createFromFormat('d-m-Y', $validated['tanggal_lahir'])->format('Y-m-d');
-            $jk = $validated['jenis_kelamin'] === 'Laki-laki' ? 1 : 0;
 
             // === ASESI ===
             if ($roleName === 'asesi') {
@@ -161,7 +160,7 @@ class RegisteredUserController extends Controller
                     'nik' => $validated['nik'],
                     'tempat_lahir' => $validated['tempat_lahir'],
                     'tanggal_lahir' => $tanggalLahir,
-                    'jenis_kelamin' => $jk,
+                    'jenis_kelamin' => $validated['jenis_kelamin'],
                     'kebangsaan' => $validated['kebangsaan'],
                     'pendidikan' => $validated['kualifikasi'],
                     'pekerjaan' => $validated['pekerjaan'],
@@ -216,7 +215,7 @@ class RegisteredUserController extends Controller
                     'nik' => $validated['nik'],
                     'tempat_lahir' => $validated['tempat_lahir'],
                     'tanggal_lahir' => $tanggalLahir,
-                    'jenis_kelamin' => $jk,
+                    'jenis_kelamin' => $validated['jenis_kelamin'],
                     'pekerjaan' => $validated['pekerjaan'],
                     'kebangsaan' => $validated['asesor_kebangsaan'],
                     'alamat_rumah' => $validated['alamat_rumah'],

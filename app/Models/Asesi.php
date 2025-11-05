@@ -35,7 +35,6 @@ class Asesi extends Model
 
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'jenis_kelamin' => 'boolean',
     ];
 
     // Relasi ke user

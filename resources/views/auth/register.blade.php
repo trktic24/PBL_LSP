@@ -49,7 +49,7 @@
           - role: 'asesi' atau 'asesor'
           - currentStep: 1, 2, atau 3
         --}}
-        <div class="w-full max-w-3xl md:max-w-4xl lg:max-w-5xl bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col"
+        <div class="w-full max-w-3xl md:max-w-4xl lg:max-w-5xl bg-white rounded-3xl border border-gray-250 shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col"
     x-data="registerForm"
     x-init="init()">
 
@@ -286,13 +286,12 @@
                             </div>
 
                             <div class="hidden md:flex items-center justify-center">
-                                <img x-show="role === 'asesi'" style="display: none;" src="{{ asset('images/ilustrasi-asesi.svg') }}" alt="Ilustasi Asesi" class="max-w-[300px] mx-auto">
-                                <img x-show="role === 'asesor'" style="display: none;" src="{{ asset('images/ilustrasi-asesor.svg') }}" alt="Ilustrasi Asesor" class="max-w-[300px] mx-auto">
+                                <img x-show="role === 'asesi'" style="display: none;" src="{{ asset('images/ilustrasi-4.jpg') }}" alt="Ilustasi Asesi" class="max-w-[250px] mx-auto">
+                                <img x-show="role === 'asesor'" style="display: none;" src="{{ asset('images/ilustrasi-2.jpg') }}" alt="Ilustrasi Asesor" class="max-w-[250px] mx-auto">
                             </div>
                         </div>
 
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-                            {{-- Tombol 'Next' --}}
                             <x-login-button-biru type="button" @click.prevent="currentStep = 2"  class="w-full sm:w-1/2">
                                 Selanjutnya
                             </x-login-button-biru>
@@ -428,7 +427,7 @@
                     --}}
                     <fieldset x-show="role === 'asesor' && currentStep === 2" x-bind:disabled="role !== 'asesor'" style="display: none;">
                         <div class="space-y-8">
-                            {{-- Data Pribadi --}}
+
                             <div class="space-y-5">
                                 <h2 class="text-lg font-semibold text-gray-800">Data Pribadi</h2>
                                 <hr class="mt-2">
@@ -438,7 +437,7 @@
                                     <x-login-form-input id="asesor_nik" name="nik" label="NIK" :error="$errors->first('nik')" required />
                                 </div>
                             </div>
-                            {{-- Informasi Pribadi --}}
+
                             <div class="space-y-5">
                                 <h2 class="text-lg font-semibold text-gray-800">Informasi Pribadi</h2>
                                 <hr class="mt-2">
@@ -540,9 +539,9 @@
                                 <p class="text-sm text-gray-500 mt-1">Unggah dokumen dalam format .pdf, .jpg, atau .png. Maksimal ukuran per file adalah 5MB.</p>
                         <div class="mt-6 space-y-4">
                             <x-file-input id="ktp_file" name="ktp_file" label="KTP" required x-bind:disabled="role !== 'asesor'"/>
-                            <x-file-input id="foto_file" name="foto_file" label="Pas Foto" required x-bind:disabled="role !== 'asesor'"/>
-                            <p class="text-xs text-gray-500 -mt-3 ms-2">
-                                * Format yang diizinkan: **.jpg, .png**
+                            <x-file-input id="foto_file" name="foto_file" label="Pas Foto" required x-bind:disabled="role !== 'asesor'" />
+                            <p class="text-xs text-gray-500 mt-1 ms-1 italic">
+                                Format yang diizinkan: <span class="font-semibold">.jpg, .png</span>
                             </p>
                             <x-file-input id="npwp_file" name="npwp_file" label="NPWP" required x-bind:disabled="role !== 'asesor'"/>
                             <x-file-input id="rekening_file" name="rekening_file" label="Rekening " required x-bind:disabled="role !== 'asesor'"/>
@@ -551,8 +550,8 @@
                             <x-file-input id="sertifikat_asesor_file" name="sertifikat_asesor_file" label="Sertifikat Asesor Kompetensi" required x-bind:disabled="role !== 'asesor'"/>
                             <x-file-input id="sertifikat_kompetensi_file" name="sertifikat_kompetensi_file" label="Sertifikat Kompetensi" required x-bind:disabled="role !== 'asesor'"/>
                             <x-file-input id="ttd_file" name="ttd_file" label="Scan Tanda Tangan" required x-bind:disabled="role !== 'asesor'"/>
-                            <p class="text-xs text-gray-500 -mt-3 ms-2">
-                                * Format yang diizinkan: **WAJIB .png**
+                            <p class="text-xs text-gray-500 mt-1 ms-1 italic">
+                                Format yang diizinkan: <span class="font-semibold">.png</span>
                             </p>
                         </div>
                         </div>

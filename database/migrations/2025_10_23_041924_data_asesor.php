@@ -22,7 +22,7 @@ return new class extends Migration
         $table->string('nik', 16)->nullable()->unique();
         $table->string('tempat_lahir', 100)->nullable();
         $table->date('tanggal_lahir')->nullable();
-        $table->boolean('jenis_kelamin')->nullable()->comment('1 Laki-laki, 0 Perempuan');
+        $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
         $table->string('kebangsaan', 100)->nullable();
         $table->string('pekerjaan')->nullable();
 

@@ -20,7 +20,7 @@ return new class extends Migration
     $table->string('nik', 16)->nullable()->unique();
     $table->string('tempat_lahir', 100)->nullable();
     $table->date('tanggal_lahir')->nullable();
-    $table->boolean('jenis_kelamin')->nullable()->comment('1 Laki-laki, 0 Perempuan');
+    $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
     $table->string('kebangsaan', 100)->nullable();
     $table->string('pendidikan')->nullable();
     $table->string('pekerjaan')->nullable();
@@ -30,7 +30,6 @@ return new class extends Migration
     $table->string('kabupaten_kota')->nullable();
     $table->string('provinsi')->nullable();
     $table->string('nomor_hp', 16)->nullable();
-
     $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
 
     $table->timestamps();

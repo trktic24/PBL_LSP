@@ -50,7 +50,6 @@ class Asesor extends Model
     // Casting
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'jenis_kelamin' => 'boolean',
     ];
 
     // Relasi: Satu Asesor dimiliki oleh satu User
