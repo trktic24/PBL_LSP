@@ -13,6 +13,9 @@ class DatabaseSeeder extends Seeder
             TujuanAssesmenMapa01::class,
             MasterPoinSiapaAsesmenSeeder::class,
             PoinHubunganStandarSeeder::class,
+            KonfirmasiOrangRelevanSeeder::class,
+            StandarIndustriMapa01Seeder::class,
+            PemenuhanDimensiAk06Seeder::class,
         ]);
     }
 }

@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Jalankan migrasi.
      */
@@ -20,13 +19,15 @@ return new class extends Migration
             // --- INI PERBAIKAN LOGIKANYA ---
             // Daripada bikin kolom 'lingkungan' dan 'peluang',
             // kita bikin 'grup' biar bisa nyimpen SEMUA pilihan dari form.
-            
-            
-            $table->boolean('lingkungan')-> comment("nyata atau simulasi"); 
-            $table->boolean('peluang')->comment('tersedia atau terbatas'); 
-            
+
+            // 1. Buat 'Lingkungan' (sesuai ERD lu)
+            $table->enum('lingkungan', ['nyata', 'simulasi'])->nullable();
+
+            // 2. Buat 'Peluang' (sesuai ERD lu)
+            $table->enum('peluang', ['tersedia', 'terbatas'])->nullable();
+
             $table->timestamps();
-            
+
             // CATATAN: FK 'id_siapa_melakukan_asesmen' di ERD lu itu
             // kayaknya salah gambar, jadi kita skip biar logikanya bener.
         });
