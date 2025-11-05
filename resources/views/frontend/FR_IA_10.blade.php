@@ -1,6 +1,7 @@
 @extends('layouts.app-sidebar')
 @section('content')
     <main class="main-content">
+        <div class="p-8">
         
         <x-header_form.header_form title="FR.IA.10. VPK - VERIFIKASI PIHAK KETIGA" />
 
@@ -193,6 +194,6 @@
             </div>
 
         </form>
-
+        </div>
     </main>
 @endsection

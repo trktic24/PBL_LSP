@@ -4,7 +4,10 @@
     'tuk' => 'Tempat Kerja', // Nilai default
     'namaAsesor' => 'Data Asesor Default',
     'namaAsesi' => 'Data Asesi Default',
-    'tanggal' => 'Tanggal Default'
+    'tanggal' => 'Tanggal Default',
+    'waktu' => '09.00 WIB',
+    'showWaktu' => true
+
 ])
 
 {{-- 
@@ -20,6 +23,11 @@
 <div {{ $attributes->merge(['class' => 'form-row grid grid-cols-1 md:grid-cols-[250px_1fr] md:gap-x-6 gap-y-1.5 items-start md:items-center']) }}>
     
     <label class="text-sm font-bold text-black">Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
+    <div class="flex items-center">
+        <p class="ml-2 font-medium text-gray-600"></p>
+    </div>
+
+    <label class="text-sm font-bold text-black">Judul</label>
     <div class="flex items-center">
         <span>:</span>
         <p class="ml-2 font-medium text-gray-600">{{ $skema }}</p>
@@ -79,4 +87,12 @@
         <span>:</span>
         <p class="ml-2 font-medium text-gray-600">{{ $tanggal }}</p>
     </div>
+
+    @if($showWaktu)
+        <label class="text-sm font-bold text-black">Waktu</label>
+        <div class="flex items-center">
+            <span>:</span>
+            <p class="ml-2 font-medium text-gray-600">{{ $waktu }}</p>
+        </div>
+    @endif    
 </div>

@@ -1,8 +1,10 @@
 <div class="form-group mb-4">
     {{-- Label tetap dinamis --}}
-    <label for="{{ $id }}" class="block text-sm font-medium text-gray-700 mb-1">
-        {{ $label }} :
-    </label>
+    @if (isset($label))
+        <label for="{{ $id }}" class="block text-sm font-medium text-gray-700 mb-1">
+            {{ $label }} :
+        </label>
+    @endif
 
     {{-- LOGIKA BERSYARAT: Cek apakah inputnya adalah 'textarea' --}}
     @if (isset($type) && $type === 'textarea')

@@ -2,6 +2,7 @@
 @section('content')
 
     <main class="main-content">
+        <div class="p-8">
         
         <x-header_form.header_form title="FR.IA.07. DPL - DAFTAR PERTANYAAN LISAN" />
 
@@ -12,7 +13,8 @@
                 tuk="Tempat Kerja" 
                 namaAsesor="Ajeng Febria Hidayati"
                 namaAsesi="Tatang Sidartang"
-                tanggal="3 November 2025" 
+                tanggal="3 November 2025"
+                :showWaktu="false" 
             />
 
 
@@ -200,12 +202,13 @@
             </div>
 
 
-            <div class="form-section my-8">
-                <h3 class="font-bold mt-6">PENYUSUN DAN VALIDATOR</h3>
+            <div class="form-section overflow-x-auto my-8">
+                <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Penyusun dan Validator</h2>
                 <x-kolom_ttd.penyusunvalidator/>
             
             </div>
         </form>
+        </div>
 
     </main>
 @endsection
