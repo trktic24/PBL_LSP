@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('soal_ia06', function (Blueprint $table) {
-            $table->id('id_soal_ia06');
+        Schema::create('catatan_keterangan_AK07', function (Blueprint $table) {
+            // PK PERSIS kayak ERD
+            $table->id('id_catatan_keterangan_AK07');
 
-            // isi dari database soal_ia06
-            $table->string('soal_ia06');
+            // --- INI PERBAIKAN LOGIKANYA ---
+            // 'catatan' kita jadiin kolom buat nampung NAMA PILIHAN CHECKBOX
+            $table->text('catatan');
+
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('soal_ia06');
+        Schema::dropIfExists('catatan_keterangan_AK07');
     }
 };
