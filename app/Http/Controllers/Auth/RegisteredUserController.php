@@ -248,14 +248,7 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        // Redirect ke dashboard yang sesuai
-        if ($roleName === 'asesi') {
-            return redirect()->route('asesi.dashboard');
-        } elseif ($roleName === 'asesor') {
-            return redirect()->route('asesor.dashboard');
-        }
-
         // Fallback
-        return redirect()->route('dashboard');
+        return redirect('/');
     }
 }

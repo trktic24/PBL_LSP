@@ -33,17 +33,7 @@ class GoogleAuthController extends Controller
             if ($user) {
             Auth::login($user);
 
-            $roleName = $user->role->nama_role ?? null; // ambil nama role dari relasi
-
-            if ($roleName === 'asesi') {
-                return redirect()->route('asesi.dashboard');
-            } elseif ($roleName === 'asesor') {
-                return redirect()->route('asesor.dashboard');
-            } elseif ($roleName === 'admin') {
-                return redirect()->route('admin.dashboard');
-            } else {
-                return redirect()->route('dashboard');
-            }
+            return redirect()->intended('/');
         }
 
 

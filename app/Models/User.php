@@ -84,5 +84,32 @@ class User extends Authenticatable
     {
         return $this->role()->where('nama_role', $roleName)->exists();
     }
+    /**
+     * Bikin atribut 'nama_lengkap' palsu yang ngambil data
+     * dari relasi asesi atau asesor.
+     *
+     * @return string
+     */
+    public function getNamaLengkapAttribute(): string
+    {
+        // Cek dulu rolenya, 'role' bakal di-lazy-load di sini
+        if ($this->role->nama_role === 'asesi') {
+            // Kalo rolenya asesi, ambil nama dari relasi asesi
+            // 'asesi' bakal di-lazy-load di sini
+            return $this->asesi->nama_lengkap ?? 'Asesi';
+
+        } elseif ($this->role->nama_role === 'asesor') {
+            // Kalo rolenya asesor, ambil nama dari relasi asesor
+            // 'asesor' bakal di-lazy-load di sini
+            return $this->asesor->nama_lengkap ?? 'Asesor';
+
+        } elseif ($this->role->nama_role === 'admin') {
+            // Admin mungkin gak punya tabel profil, jadi kasih default
+            return 'Administrator';
+        }
+
+        // Fallback terakhir
+        return 'User';
+    }
 }
 
