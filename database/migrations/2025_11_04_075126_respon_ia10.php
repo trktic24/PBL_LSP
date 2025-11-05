@@ -17,8 +17,10 @@ return new class extends Migration
             $table->foreignId('id_pertanyaan_ia10')->constrained('pertanyaan_ia10', 'id_pertanyaan_ia10')->onUpdate('cascade')->onDelete('cascade');
 
             // isi kolom Database respon_ia10
-            $table->enum('jawaban_pilihan', ['Ya', 'Tidak']);
-            $table->string('jawaban_isian');
+            $table->text('pertanyaan_ia10');
+            $table->boolean('jawaban_pilihan_iya')->default(false)->comment('1 untuk Ya, 0 untuk Tidak');
+            $table->boolean('jawaban_pilihan_tidak')->default(false)->comment('1 untuk Tidak, 0 untuk Ya');
+            $table->text('jawaban_isian');
             $table->timestamps();
         });
     }

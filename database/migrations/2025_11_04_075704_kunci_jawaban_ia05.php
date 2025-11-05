@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('id_soal_ia05')->constrained('soal_ia05', 'id_soal_ia05')->onUpdate('cascade')->onDelete('cascade');
 
             // isi dari database kunci_jawaban_ia05
+            $table->integer('nomor_kunci_jawaban_ia05');
             $table->string('teks_kunci_jawaban_ia05');
-            $table->boolean('is_kunci_jawaban')->default(false);
             $table->timestamps();
         });
     }
