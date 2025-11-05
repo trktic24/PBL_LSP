@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Asesor\IA02Controller;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormIa10Controller;
 
+//dashboard
 Route::get('/home', function () {
     return view('frontend/home');
 })->name('home');
@@ -22,9 +24,12 @@ return view('frontend/daftar_asesi');
 Route::get('/tracker', function () {
     return view('frontend/tracker');
 })->name('tracker');
+
+// Forms Frontend Routes
 Route::get('/FR-IA-10', function () {
     return view('frontend/FR_IA_10');
 })->name('FR-IA-10');
+
 Route::get('/fr-ia-06-c', function () {
     return view('frontend/fr_IA_06_c');
 })->name('fr_IA_06_c');
@@ -34,9 +39,11 @@ Route::get('/fr-ia-06-a', function () {
 Route::get('/fr-ia-06-b', function () {
     return view('frontend/fr_IA_06_b');
 })->name('fr_IA_06_b');
+
 Route::get('/fr-ia-07', function () {
     return view('frontend/FR_IA_07');
 })->name('FR_IA_07');
+
 Route::get('/fr-ia-05-a', function () {
     return view('frontend/FR_IA_05_A');
 })->name('FR_IA_05_A');
@@ -46,11 +53,10 @@ Route::get('/fr-ia-05-b', function () {
 Route::get('/fr-ia-05-c', function () {
     return view('frontend/FR_IA_05_C');
 })->name('FR_IA_05_C');
+
 Route::get('/fr-ia-02', function () {
     return view('frontend/FR_IA_02');
 })->name('FR_IA_02');
-
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -65,8 +71,15 @@ Route::middleware('auth')->group(function () {
     ->middleware('auth') // <-- TAMBAHKAN INI JUGA
     ->name('fr-ia-10.store');
     Route::get('/dashboard', function () {return view('dashboard'); })->middleware(['auth'])->name('dashboard');
+
+    Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])
+         ->name('fr-ia-02.show');
+         
+    Route::post('/fr-ia-02/{id}', [IA02Controller::class, 'store'])
+         ->name('fr-ia-02.store');
 });
 
+//IA06 CRUD Punya gupi
 Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
 Route::get('/soal/create', [SoalController::class, 'create'])->name('soal.create');
 Route::post('/soal', [SoalController::class, 'store'])->name('soal.store');
