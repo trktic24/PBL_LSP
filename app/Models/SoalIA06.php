@@ -9,12 +9,26 @@ class SoalIA06 extends Model
 {
     use HasFactory;
 
-    protected $table = 'soal_IA06';
-    protected $primaryKey = 'id_soal_IA06';
-    protected $fillable = ['soal_IA06'];
+    // Tentukan nama tabel & primary key
+    protected $table = 'soal_ia06';
+    protected $primaryKey = 'id_soal_ia06';
 
-    public function kuncis()
+    /**
+     * Kolom yang boleh diisi (mass assignable).
+     */
+    protected $fillable = [
+        'soal_ia06',
+        'kunci_jawaban_ia06' // Kunci jawaban master sekarang ada di sini
+    ];
+
+    /**
+     * Relasi "Satu Soal" memiliki "Banyak Jawaban Asesi".
+     * Kita beri nama relasinya 'jawabanAsesi' agar jelas,
+     * meskipun modelnya bernama KunciIA06.
+     */
+    public function jawabanAsesi()
     {
-        return $this->hasMany(KunciIA06::class, 'id_soal_IA06');
+        // Model KunciIA06 adalah tabel 'kunci_ia06'
+        return $this->hasMany(KunciIA06::class, 'id_soal_ia06', 'id_soal_ia06');
     }
 }

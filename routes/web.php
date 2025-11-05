@@ -5,7 +5,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormIa10Controller;
 
-//dashboard
+
+
 Route::get('/home', function () {
     return view('frontend/home');
 })->name('home');
@@ -64,39 +65,23 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/fr-ia-10', [FormIa10Controller::class, 'create'])->name('fr-ia-10.create');
     Route::get('/fr-ia-10', [FormIa10Controller::class, 'create'])
-    ->middleware('auth') 
+
+    ->middleware('auth')
+    ->middleware('auth') //
     ->name('fr-ia-10.create');
     Route::post('/fr-ia-10', [FormIa10Controller::class, 'store'])->name('fr-ia-10.store');
     Route::post('/fr-ia-10', [FormIa10Controller::class, 'store'])
-    ->middleware('auth') 
+    ->middleware('auth')
     ->name('fr-ia-10.store');
     Route::get('/dashboard', function () {return view('dashboard'); })->middleware(['auth'])->name('dashboard');
 
     Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])
          ->name('fr-ia-02.show');
-         
+
     Route::post('/fr-ia-02/{id}', [IA02Controller::class, 'store'])
          ->name('fr-ia-02.store');
 });
 
-//IA06 CRUD Punya gupi
-Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
-Route::get('/soal/create', [SoalController::class, 'create'])->name('soal.create');
-Route::post('/soal', [SoalController::class, 'store'])->name('soal.store');
-Route::get('/soal/{id}/edit', [SoalController::class, 'edit'])->name('soal.edit');
-Route::put('/soal/{id}', [SoalController::class, 'update'])->name('soal.update');
-Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('soal.destroy');
-Route::get('/onlysoal', [SoalController::class, 'onlySoal'])->name('soal.only');
 
-// CRUD kunci jawaban
-Route::post('/soal/{id}/kunci', [SoalController::class, 'storeKunci'])->name('kunci.store');
-Route::put('/kunci/{id}', [SoalController::class, 'updateKunci'])->name('kunci.update');
-Route::delete('/kunci/{id}', [SoalController::class, 'destroyKunci'])->name('kunci.destroy');
-
-// Menampilkan halaman menjawab soal
-Route::get('/jawab', [SoalController::class, 'jawabIndex'])->name('jawab.index');
-
-// Menyimpan jawaban user
-Route::post('/jawab', [SoalController::class, 'jawabStore'])->name('jawab.store');
 
 require __DIR__.'/auth.php';
