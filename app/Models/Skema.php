@@ -18,10 +18,12 @@ class Skema extends Model
         'kode_unit',
         'nama_skema',
         'deskripsi_skema',
+        'SKKNI',
+        'gambar',
     ];
 
     public function asesors(): HasMany
     {
-        return $this->hasMany(Asesor::class, 'skema_id');
+        return $this->hasMany(Asesor::class, 'id_skema', 'id_skema');
     }
 }

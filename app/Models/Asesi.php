@@ -29,7 +29,6 @@ class Asesi extends Model
         'kabupaten_kota',
         'provinsi',
         'nomor_hp',
-        'email',
         'tanda_tangan',
     ];
 
