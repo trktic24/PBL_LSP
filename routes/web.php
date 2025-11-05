@@ -5,7 +5,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\AsesorController; 
-use App\Http\Controllers\AsesiController; // Di-import dengan benar
+use App\Http\Controllers\AsesiController; 
+use App\Models\Skema;  // <-- Pastikan ini ada
+use App\Models\Asesor; // <-- Pastikan ini ada
 
 /*
 |--------------------------------------------------------------------------
@@ -40,7 +42,10 @@ Route::middleware('auth')->group(function () {
 
     // 4. Master - Skema
     Route::get('/master_skema', function () {
-        return view('master.skema.master_skema');
+        $skemas = Skema::all(); 
+        return view('master.skema.master_skema', [
+            'skemas' => $skemas // Mengirim data skema ke view
+        ]);
     })->name('master_skema');
     Route::get('/add_skema', function () {
         return view('master.skema.add_skema');

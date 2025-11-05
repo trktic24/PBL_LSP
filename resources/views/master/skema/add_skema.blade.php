@@ -68,10 +68,11 @@
               <i class="fas fa-plus mr-1"></i> Tambah Kode Unit
             </button>
           </div>
+          
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div x-data="{ fileName: '' }">
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Gambar Skema <span class="text-gray-400">(Opsional)</span>
+                Gambar Skema <span class="text-red-500">*</span>
               </label>
               <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
                 <i class="fas fa-upload text-gray-500 mr-3"></i>
@@ -91,6 +92,7 @@
               </label>
             </div>
           </div>
+
           <div>
             <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-2">
               Deskripsi <span class="text-red-500">*</span>
@@ -98,27 +100,6 @@
             <textarea id="deskripsi" name="deskripsi" required
                       class="w-full p-3 border border-gray-300 rounded-lg h-28 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
                       placeholder="Masukkan deskripsi skema"></textarea>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal Pelaksanaan <span class="text-red-500">*</span>
-              </label>
-              <input type="date" id="tanggal" name="tanggal" required
-                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            </div>
-            <div>
-              <label for="asesor" class="block text-sm font-medium text-gray-700 mb-2">
-                Daftar Asesor <span class="text-red-500">*</span>
-              </label>
-              <select id="asesor" name="asesor" required
-                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
-                <option value="">Pilih Asesor</option>
-                <option>Asesor 1</option>
-                <option>Asesor 2</option>
-              </select>
-            </div>
           </div>
 
           <div class="pt-4">

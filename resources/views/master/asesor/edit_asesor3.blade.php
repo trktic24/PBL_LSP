@@ -44,12 +44,12 @@
                 <div class="rounded-full h-5 w-5 flex items-center justify-center bg-green-500 text-white text-xs font-medium">1</div>
                 <p class="mt-2 text-xs font-medium text-green-500">Informasi Akun</p>
             </div>
-            <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
+            <div class="flex-1 h-0.5 bg-green-400 mx-4 mt-2.5"></div> 
             <div class="flex flex-col items-center text-center w-32">
                 <div class="rounded-full h-5 w-5 flex items-center justify-center bg-green-500 text-white text-xs font-medium">2</div>
                 <p class="mt-2 text-xs font-medium text-green-500">Data Pribadi</p>
             </div>
-            <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
+            <div class="flex-1 h-0.5 bg-green-400 mx-4 mt-2.5"></div> 
             <div class="flex flex-col items-center text-center w-32">
                 <div class="rounded-full h-5 w-5 flex items-center justify-center bg-blue-600 text-white text-xs font-medium">3</div>
                 <p class="mt-2 text-xs font-medium text-blue-600">Kelengkapan Dokumen</p>

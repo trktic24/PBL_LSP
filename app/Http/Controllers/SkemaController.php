@@ -22,8 +22,6 @@ class SkemaController extends Controller
             'deskripsi' => 'required|string',
             'units' => 'required|array|min:1',
             'units.*.code' => 'required|string',
-            'tanggal' => 'required|date', // Catatan: kolom 'tanggal' tidak ada di migrasi Anda
-            'asesor' => 'required', // Catatan: kolom 'id_asesor' tidak ada di migrasi Anda
         ]);
 
         // 2. Handle Upload File

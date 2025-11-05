@@ -16,8 +16,6 @@
   <style>
     body { font-family: 'Poppins', sans-serif; }
     ::-webkit-scrollbar { width: 0; }
-    ::-webkit-scrollbar-thumb { background-color: transparent; }
-    ::-webkit-scrollbar-track { background-color: transparent; }
   </style>
 </head>
 
@@ -25,11 +23,30 @@
   <div class="min-h-screen flex flex-col">
     
     <x-navbar />
+
     <main class="p-6">
       <div class="mb-6">
         <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
         <h2 class="text-3xl font-bold text-gray-900">Daftar Skema</h2>
       </div>
+
+      @if (session('success'))
+        <div x-data="{ show: true }"
+             x-init="setTimeout(() => show = false, 5000)"
+             x-show="show"
+             x-transition
+             class="fixed top-24 right-10 z-50 bg-green-500 text-white py-3 px-5 rounded-lg shadow-lg flex items-center"
+             role="alert">
+            <i class="fas fa-check-circle mr-3 text-lg"></i>
+            <div>
+                <span class="font-semibold">Berhasil!</span>
+                <p class="text-sm">{{ session('success') }}</p>
+            </div>
+            <button @click="show = false" class="ml-4 -mr-1 text-green-100 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+      @endif
 
       <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div class="relative w-full sm:w-1/2 md:w-1/3">
@@ -46,62 +63,65 @@
              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center transition">
             <i class="fas fa-plus mr-2"></i> Add Skema
           </a>
-
         </div>
       </div>
 
       <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 w-full overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-          <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+        
+        <table class="min-w-full divide-y divide-gray-200 text-xs">
+          <thead class="bg-gray-50 text-gray-600 uppercase">
             <tr>
-              <th class="px-6 py-3 text-left">ID</th>
-              <th class="px-6 py-3 text-left">Kode Unit Skema</th>
-              <th class="px-6 py-3 text-left">Nama Skema</th>
-              <th class="px-6 py-3 text-left">Jenis Sertifikasi</th>
-              <th class="px-6 py-3 text-left">Jumlah Unit</th>
-              <th class="px-6 py-3 text-left">Status</th>
-              <th class="px-6 py-3 text-mid">Aksi</th>
+              <th class="px-4 py-2 text-left">ID</th>
+              <th class="px-4 py-2 text-left">Kode Unit</th>
+              <th class="px-4 py-2 text-left">Nama Skema</th>
+              <th class="px-4 py-2 text-left">Deskripsi</th>
+              <th class="px-4 py-2 text-left">SKKNI</th>
+              <th class="px-4 py-2 text-left">Gambar</th>
+              <th class="px-4 py-2 text-left">Tgl Dibuat</th>
+              <th class="px-4 py-2 text-mid">Aksi</th>
             </tr>
           </thead>
 
           <tbody class="divide-y divide-gray-100">
-            <tr>
-              <td class="px-6 py-4">1</td>
-              <td class="px-6 py-4">2609051226</td>
-              <td class="px-6 py-4 font-medium">Cybersecurity</td>
-              <td class="px-6 py-4">KKNI Level 5</td>
-              <td class="px-6 py-4">8 Unit</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Aktif</span>
+            @forelse ($skemas as $skema)
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-4 py-2">{{ $skema->id_skema }}</td>
+              <td class="px-4 py-2">{{ $skema->kode_unit }}</td>
+              <td class="px-4 py-2 font-medium">{{ $skema->nama_skema }}</td>
+              <td class="px-4 py-2 text-gray-600" title="{{ $skema->deskripsi_skema }}">
+                {{ Str::limit($skema->deskripsi_skema, 40, '...') }}
               </td>
-              <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-pen"></i> <span>Edit</span>
-                </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-trash"></i> <span>Delete</span>
-                </button>
+              <td class="px-4 py-2">
+                @if($skema->SKKNI)
+                  <a href="{{ Storage::url($skema->SKKNI) }}" target="_blank" class="text-blue-600 hover:underline">Lihat PDF</a>
+                @else
+                  <span class="text-gray-400">N/A</span>
+                @endif
               </td>
-            </tr>
-
-            <tr>
-              <td class="px-6 py-4">2</td>
-              <td class="px-6 py-4">2609051227</td>
-              <td class="px-6 py-4 font-medium">Data Analyst</td>
-              <td class="px-6 py-4">KKNI Level 6</td>
-              <td class="px-6 py-4">10 Unit</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-700 rounded-full">Pending</span>
+              <td class="px-4 py-2">
+                @if($skema->gambar)
+                  <a href="{{ Storage::url($skema->gambar) }}" target="_blank" class="text-blue-600 hover:underline">Lihat Gambar</a>
+                @else
+                  <span class="text-gray-400">N/A</span>
+                @endif
               </td>
-              <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-pen"></i> <span>Edit</span>
+              <td class="px-4 py-2 text-gray-500">{{ $skema->created_at->format('d/m/Y') }}</td>
+              <td class="px-4 py-2 flex space-x-2">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg transition">
+                  <i class="fas fa-pen text-xs"></i> <span>Edit</span>
                 </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-trash"></i> <span>Delete</span>
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg transition">
+                  <i class="fas fa-trash text-xs"></i> <span>Delete</span>
                 </button>
               </td>
             </tr>
+            @empty
+            <tr>
+              <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                Belum ada data skema yang ditampilkan.
+              </td>
+            </tr>
+            @endforelse
           </tbody>
         </table>
       </div>

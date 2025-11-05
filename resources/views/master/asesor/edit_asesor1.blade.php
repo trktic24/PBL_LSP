@@ -19,43 +19,43 @@
     <x-navbar />
     
     <main class="flex-1 flex flex-col items-center pt-10 pb-12 px-4">
-      <div class="w-full max-w-4xl mb-4">
-         <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
-            <i class="fas fa-arrow-left mr-2"></i> Back
-         </a>
-      </div>
-
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
         
-        <h1 class="text-3xl font-bold text-gray-900 text-center mb-6">EDIT ASESOR</h1>
+        <div class="grid grid-cols-3 items-center mb-10">
+          <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium justify-self-start">
+            <i class="fas fa-arrow-left mr-2"></i> Back
+          </a>
+          <h1 class="text-3xl font-bold text-gray-900 text-center">EDIT ASESOR</h1>
+          <div></div>
+        </div>
         
         <div class="flex items-start w-full max-w-3xl mx-auto mb-12">
-            <div class="flex flex-col items-center text-center w-32">
-                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-blue-600 text-white text-xs font-medium">1</div>
-                <p class="mt-2 text-xs font-medium text-blue-600">Informasi Akun</p>
-            </div>
-            <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
-            <div class="flex flex-col items-center text-center w-32">
-                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">2</div>
-                <p class="mt-2 text-xs font-medium text-gray-500">Data Pribadi</p>
-            </div>
-            <div class="flex-1 h-0.5 bg-gray-300 mx-4 mt-2.5"></div> 
-            <div class="flex flex-col items-center text-center w-32">
-                <div class="rounded-full h-5 w-5 flex items-center justify-center bg-gray-500 text-white text-xs font-medium">3</div>
-                <p class="mt-2 text-xs font-medium text-gray-500">Kelengkapan Dokumen</p>
-            </div>
+          <div class="flex flex-col items-center text-center w-32">
+            <div class="rounded-full h-5 w-5 flex items-center justify-center bg-blue-600 text-white text-xs font-medium">1</div>
+            <p class="mt-2 text-xs font-medium text-blue-600">Informasi Akun</p>
+          </div>
+          <div class="flex-1 h-0.5 bg-green-400 mx-4 mt-2.5"></div>
+          <div class="flex flex-col items-center text-center w-32">
+            <div class="rounded-full h-5 w-5 flex items-center justify-center bg-green-500 text-white text-xs font-medium">2</div>
+            <p class="mt-2 text-xs font-medium text-green-500">Data Pribadi</p>
+          </div>
+          <div class="flex-1 h-0.5 bg-green-400 mx-4 mt-2.5"></div>
+          <div class="flex flex-col items-center text-center w-32">
+            <div class="rounded-full h-5 w-5 flex items-center justify-center bg-green-500 text-white text-xs font-medium">3</div>
+            <p class="mt-2 text-xs font-medium text-green-500">Kelengkapan Dokumen</p>
+          </div>
         </div>
 
-        <form action="{{ route('asesor.update.step1', $asesor->id_asesor) }}" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
+        <form action="{{ route('add_asesor1.post') }}" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
           @csrf
-          @method('PATCH') <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Informasi Akun</h2>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Informasi Akun</h2>
           
           <div>
             <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
             <input type="text" id="nama" name="nama"
                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Masukkan Nama"
-                   value="{{ old('nama', $asesor->user->name ?? $asesor->nama_lengkap) }}" required>
+                   value="{{ old('nama', $asesor->user->name ?? $asesor->nama_lengkap ?? '') }}" required>
           </div>
           
           <div>
@@ -66,7 +66,7 @@
                    value="{{ old('email', $asesor->user->email ?? '') }}" required>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <input type="hidden" name="id_skema" value="1"> <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
               <input :type="showPassword ? 'text' : 'password'" id="password" name="password"
