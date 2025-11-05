@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kunci_jawaban_ia06', function (Blueprint $table) {
-            $table->id('id_kunci_jawaban_ia06');
-            $table->foreignId('id_soal_ia06')->constrained('soal_ia06', 'id_soal_ia06')->onUpdate('cascade')->onDelete('cascade');
+        Schema::create('kunci_jawaban_ia05', function (Blueprint $table) {
+            $table->id('id_kunci_jawaban_ia05');
+            $table->foreignId('id_soal_ia05')->constrained('soal_ia05', 'id_soal_ia05')->onUpdate('cascade')->onDelete('cascade');
 
-            // isi dari database kunci_jawaban_ia06
-            $table->string('teks_kunci_jawaban_ia06');
+            // isi dari database kunci_jawaban_ia05
+            $table->string('teks_kunci_jawaban_ia05');
             $table->boolean('is_kunci_jawaban')->default(false);
             $table->timestamps();
         });
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kunci_jawaban_ia06');
+        Schema::dropIfExists('kunci_jawaban_ia05');
     }
 };
