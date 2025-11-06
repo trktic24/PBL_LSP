@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Asesor;
 use App\Models\Asesi;
+use App\Models\Tuk; // Pastikan Model Tuk ada
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class, // Membuat role 1, 2, 3
             UserSeeder::class, // Membuat 1 user 'admin' (role_id 1)
+            JenisTukSeeder::class, // Membuat 2 jenis_tukq
         ]);
 
         // Buat 10 data Asesor dummy
@@ -25,5 +27,6 @@ class DatabaseSeeder extends Seeder
         // dan SkemaFactory.
         Asesor::factory(10)->create();
         Asesi::factory(10)->create();
+        Tuk::factory(10)->create();
     }
 }

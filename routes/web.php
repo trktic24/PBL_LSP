@@ -6,8 +6,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\AsesorController; 
 use App\Http\Controllers\AsesiController; 
+use App\Http\Controllers\TukController; // Panggil Controller Tuk
 use App\Models\Skema;  // <-- Pastikan ini ada
 use App\Models\Asesor; // <-- Pastikan ini ada
+use App\Models\Tuk; // <-- Pastikan ini ada
 
 /*
 |--------------------------------------------------------------------------
@@ -130,8 +132,9 @@ Route::middleware('auth')->group(function () {
     
     // 8. TUK
     Route::get('/master_tuk', function () {
-    return view('tuk.master_tuk');
-    })->name('master_tuk');
+        $tuks = Tuk::all(); // Ambil semua TUK
+        return view('tuk.master_tuk', ['tuks' => $tuks]);
+    })->name('master_tuk'); // Ini halaman utama TUK
     Route::get('/add_tuk', function () {
         return view('tuk.add_tuk');
     })->name('add_tuk');
