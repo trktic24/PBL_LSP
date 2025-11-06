@@ -1,52 +1,137 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+<x-register-layout>
+    <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+    <div class="bg-gray-100 w-full flex items-center justify-center py-5">
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <div class="w-full max-w-3xl md:max-w-4xl lg:max-w-5xl bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)] flex flex-col"
+             x-data="{ role: 'asesi' }">
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <div class="flex w-full">
+                <button type="button" @click="role = 'asesi'"
+                        :class="{
+                            'bg-white text-blue-600 border-b-[3px] border-blue-600': role === 'asesi',
+                            'bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200': role !== 'asesi'
+                        }"
+                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl focus:outline-none hover:bg-white hover:text-blue-700 transition-colors duration-150">
+                    Asesi
+                </button>
+                <button type="button" @click="role = 'asesor'"
+                        :class="{
+                            'bg-white text-blue-600 border-b-[3px] border-blue-600': role === 'asesor',
+                            'bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200': role !== 'asesor'
+                        }"
+                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tr-3xl focus:outline-none hover:bg-white hover:text-blue-700 transition-colors duration-150">
+                    Asesor
+                </button>
+            </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+            <div class="p-10 md:p-12">
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+                <div class="mb-8"> <div class="mb-6"> <a href="/">
+                            <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="Logo LSP Polines" class="h-20 w-auto">
+                        </a>
+                    </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+                    <div x-show="role === 'asesor'" style="display: none;" class="mb-8"> <div class="flex items-start max-w-screen-lg mx-auto">
+                            <div class="w-full">
+                                <div class="flex items-center w-full">
+                                    <div class="w-7 h-7 shrink-0 mx-[-1px] bg-blue-600 flex items-center justify-center rounded-full">
+                                        <span class="text-sm text-white font-semibold">1</span>
+                                    </div>
+                                    <div class="w-full h-[3px] mx-4 rounded-lg bg-blue-600"></div>
+                                </div>
+                                <div class="mt-2 mr-4">
+                                    <h6 class="text-sm font-semibold text-blue-600">Informasi Akun</h6>
+                                    <p class="text-xs text-gray-500">Sedang diisi</p> </div>
+                            </div>
+                            <div class="w-full">
+                                <div class="flex items-center w-full">
+                                    <div class="w-7 h-7 shrink-0 mx-[-1px] bg-gray-300 flex items-center justify-center rounded-full">
+                                        <span class="text-sm text-gray-500 font-semibold">2</span> </div>
+                                    <div class="w-full h-[3px] mx-4 rounded-lg bg-gray-300"></div> </div>
+                                <div class="mt-2 mr-4">
+                                    <h6 class="text-sm font-semibold text-gray-500">Informasi Pribadi</h6> <p class="text-xs text-gray-500">Belum</p> </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <div class="w-7 h-7 shrink-0 mx-[-1px] bg-gray-300 flex items-center justify-center rounded-full">
+                                        <span class="text-sm text-gray-500 font-semibold">3</span> </div>
+                                </div>
+                                <div class="mt-2">
+                                    <h6 class="text-sm font-semibold text-gray-500">Kelengkapan Dokumen</h6> <p class="text-xs text-gray-500">Belum</p> </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+                    <div>
+                        <h1 x-show="role === 'asesi'" class="text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesi</h1>
+                        <h1 x-show="role === 'asesor'" style="display: none;" class="text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesor</h1>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+                        <p class="text-sm text-gray-500">
+                            Sudah punya akun?
+                            <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-700 font-medium">
+                                Login
+                            </a>
+                        </p>
+                    </div>
+                </div> <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
+                    <div class="flex flex-col justify-center">
+                        <form id="register-form" method="POST" action="{{ route('register') }}" class="space-y-4">
+                            @csrf
+                            <input type="hidden" name="role" x-model="role">
+                            <x-login-form-input
+                                id="name" name="name" type="text" label="Nama Lengkap"
+                                :error="$errors->first('name')" required autofocus
+                            />
+                            <x-login-form-input
+                                id="email" name="email" type="email" label="Email"
+                                :error="$errors->first('email')" required
+                            />
+                            <div x-data="{ show: false }">
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <x-login-form-input
+                                        id="password" name="password" type="password"
+                                        x-bind:type="show ? 'text' : 'password'" label="Password"
+                                        :error="$errors->first('password')" required autocomplete="new-password"
+                                    />
+                                    <x-login-form-input
+                                        id="password_confirmation" name="password_confirmation" type="password"
+                                        x-bind:type="show ? 'text' : 'password'" label="Konfirmasi Password"
+                                        :error="$errors->first('password_confirmation')" required autocomplete="new-password"
+                                    />
+                                </div>
+                                <div class="flex items-center mt-2">
+                                    <input id="show_password_checkbox" type="checkbox"
+                                           @click="show = !show"
+                                           class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <label for="show_password_checkbox" class="ml-2 text-sm text-gray-600">
+                                        Tampilkan Password
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+                    <div class="hidden md:flex items-center justify-center">
+                        <img x-show="role === 'asesi'" src="{{ asset('images/ilustrasi-asesi.svg') }}" alt="Ilustasi Asesi" class="max-w-[300px] mx-auto">
+                        <img x-show="role === 'asesor'" style="display: none;" src="{{ asset('images/ilustrasi-asesor.svg') }}" alt="Ilustrasi Asesor" class="max-w-[300px] mx-auto">
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+                    <x-login-button-biru type="submit" form="register-form" class="w-full sm:w-1/2">
+                        Daftar Sekarang
+                    </x-login-button-biru>
+                    <div class="flex items-center">
+                        <div class="flex-grow border-t border-gray-200"></div>
+                        <span class="px-3 text-sm text-gray-400 font-medium">OR</span>
+                        <div class="flex-grow border-t border-gray-200"></div>
+                    </div>
+                    <x-login-button-google class="w-full sm:w-1/2">
+                        Continue with Google
+                    </x-login-button-google>
+                </div>
+
+            </div> </div> </div>
+</x-register-layout>
