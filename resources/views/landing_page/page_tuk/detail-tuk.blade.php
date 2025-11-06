@@ -40,16 +40,15 @@
                 <p>{{ $data_tuk['telepon'] }}</p>
             </div>
             
-            {{-- Tombol Google Maps (SUDAH DIPERBAIKI) --}}
+            {{-- Tombol Google Maps --}}
             <a href="https://maps.app.goo.gl/r4CwetwpJKiUypTZA" 
-               target="_blank" {{-- Tambahkan target="_blank" agar membuka di tab baru --}}
+               target="_blank" 
                class="mt-6 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 flex items-center space-x-2 transition duration-150 w-max">
                 <i class="fas fa-map-marked-alt"></i>
                 <span>Buka di Google Maps</span>
             </a>
             
-            {{-- Tambahkan untuk konfirmasi ID (opsional) --}}
-            <p class="text-xs text-gray-400 pt-4">TUK ID: {{ $data_tuk['id'] }}</p>
+            
         </div>
         
         {{-- BAGIAN KANAN: IMAGE PLACEHOLDER --}}

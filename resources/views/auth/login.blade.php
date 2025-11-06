@@ -1,5 +1,4 @@
 <x-register-layout>
-    <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <div class="bg-gray-100 w-full flex items-center justify-center py-5">
         <div class="w-full max-w-4xl bg-white rounded-3xl p-10 md:p-12 border border-gray-300 shadow-md">
@@ -11,6 +10,8 @@
                             <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="Logo LSP Polines" class="h-20 w-auto">
                         </a>
                     </div>
+
+                    <x-auth-session-status class="mb-4" :status="session('status')" />
 
                     <div class="mt-6 mb-8">
                         <h1 class="text-2xl font-semibold text-gray-900 mb-1">Masuk ke Akun Anda</h1>
@@ -67,8 +68,8 @@
                 </div>
 
                 <div class="hidden md:flex items-center justify-center">
-                    <img src="{{ asset('images/ilustrasi-login.svg') }}" alt="Ilustrasi Login"
-                         class="max-w-[300px] mx-auto">
+                    <img src="{{ asset('images/ilustrasi-1.jpg') }}" alt="Ilustrasi Login"
+                         class="max-w-[200px] mx-auto">
                 </div>
             </div>
 
@@ -84,7 +85,7 @@
                     <div class="flex-grow border-t border-gray-200"></div>
                 </div>
 
-                <x-login-button-google class="w-full sm:w-1/2">
+                <x-login-button-google href="{{ route('google.login')}}" class=" font-poppins w-full sm:w-1/2">
                     Continue with Google
                 </x-login-button-google>
             </div>

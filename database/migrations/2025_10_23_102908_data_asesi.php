@@ -12,43 +12,28 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('asesi', function (Blueprint $table) {
-            // Sesuai ERD: id_asesi (PK)
-            $table->id('id_asesi');
+    $table->id('id_asesi');
 
-            // Sesuai ERD: id_user (FK)
-            // Ini akan membuat foreign key ke kolom 'id' di tabel 'users'
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
+    $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
 
-            // Atribut lainnya
-            $table->string('nama_lengkap');
-            
-            // (int) -> Diubah ke string
-            $table->string('nik', 16)->nullable()->unique();
-            
-            // (bool) -> Diterapkan sebagai boolean
-            $table->boolean('jenis_kelamin')->nullable()->comment('misal: 1 Laki-laki, 0 Perempuan');
-            
-            $table->string('tempat_lahir', 100)->nullable();
-            $table->date('tanggal_lahir')->nullable();
-            $table->string('kebangsaan', 100)->nullable();
-            
-            // (str) -> Diubah ke text
-            $table->text('alamat_rumah')->nullable();
-            
-            // (int) -> Diubah ke string
-            $table->string('kode_pos', 10)->nullable();
-            $table->string('nomor_telepon_rumah', 20)->nullable();
-            $table->string('nomor_hp', 20)->nullable();
-            
-            $table->string('pendidikan')->nullable();
-            $table->string('pekerjaan')->nullable();
+    $table->string('nama_lengkap')->nullable();
+    $table->string('nik', 16)->nullable()->unique();
+    $table->string('tempat_lahir', 100)->nullable();
+    $table->date('tanggal_lahir')->nullable();
+    $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
+    $table->string('kebangsaan', 100)->nullable();
+    $table->string('pendidikan')->nullable();
+    $table->string('pekerjaan')->nullable();
 
-            // (str: path) -> Diubah ke string
-            $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
+    $table->text('alamat_rumah')->nullable();
+    $table->string('kode_pos', 10)->nullable();
+    $table->string('kabupaten_kota')->nullable();
+    $table->string('provinsi')->nullable();
+    $table->string('nomor_hp', 16)->nullable();
+    $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
 
-            // Standar timestamp
-            $table->timestamps();
-        });
+    $table->timestamps();
+});
     }
 
     /**

@@ -1,3 +1,52 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Jadwal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Script sederhana untuk toggle dropdown (opsional, tapi agar sesuai fungsi)
+        document.addEventListener('DOMContentLoaded', function () {
+            const userMenuButton = document.getElementById('userMenuButton');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const dropdownToggle = document.getElementById('dropdownToggle');
+
+            if (userMenuButton) {
+                userMenuButton.addEventListener('click', function (event) {
+                    // Menghentikan event agar tidak langsung menutup
+                    event.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Menutup dropdown jika klik di luar
+            document.addEventListener('click', function (event) {
+                if (dropdownMenu && !dropdownMenu.classList.contains('hidden') && !userMenuButton.contains(event.target)) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <header class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <div class="flex items-center space-x-6">
+                <div class="w-10 h-10 flex items-center justify-center">
+                    <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" width="100">
+                </div>
+
+                <nav class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 text-gray-700 font-medium">
+                    <a href="{{ route('home') }}" class="text-blue-600 font-semibold underline">Home</a>
+                    <a href="{{ route('jadwal') }}" class="hover:text-blue-600">Jadwal Asesmen</a>
+                    <a href="{{ route('laporan') }}" class="hover:text-blue-600">Laporan</a>
+                    <a href="{{ route('profil') }}" class="hover:text-blue-600">Profil</a>
+                </nav>
+=======
 @extends('layouts.app-profil')
 @section('content')
 
@@ -26,94 +75,42 @@
                 <button class="btn btn-sm font-bold bg-yellow-400 text-black border-none rounded-full px-6">Semua</button>
                 <button class="btn btn-sm font-bold bg-yellow-100 text-gray-700 border-none rounded-full px-6 hover:bg-yellow-200">Software</button>
                 <button class="btn btn-sm font-bold bg-yellow-100 text-gray-700 border-none rounded-full px-6 hover:bg-yellow-200">IoT</button>
+>>>>>>> 3ef7adc3e335d9d6c4534613859955b9a89479bc
             </div>
-        </div>
-    </section>
 
-    <script>
-        const scrollContainer = document.getElementById("scrollContainer");
-        let isDown = false, startX, scrollLeft;
-        scrollContainer.addEventListener("mousedown", (e) => {
-            isDown = true; scrollContainer.classList.add("active");
-            startX = e.pageX - scrollContainer.offsetLeft; scrollLeft = scrollContainer.scrollLeft;
-        });
-        scrollContainer.addEventListener("mouseleave", () => { isDown = false; });
-        scrollContainer.addEventListener("mouseup", () => { isDown = false; });
-        scrollContainer.addEventListener("mousemove", (e) => {
-            if (!isDown) return; e.preventDefault();
-            const x = e.pageX - scrollContainer.offsetLeft; const walk = (x - startX) * 2;
-            scrollContainer.scrollLeft = scrollLeft - walk;
-        });
-    </script>
-
-    {{-- Carousel Grid Skema (Masih Statis) --}}
-    <section class="px-10 mb-16">
-        @php
-            $slide1Images = ['skema1.jpg','skema2.jpg','skema3.jpg','skema4.jpg','skema5.jpg','skema6.jpg',];
-            $slide2Images = ['skema7.jpg','skema8.jpg','skema9.jpg','skema10.jpg','skema11.jpg','skema12.jpg',];
-        @endphp
-        <div id="gridCarousel" class="relative overflow-hidden rounded-3xl">
-            <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0 p-6">
-                    @foreach ($slide1Images as $index => $file)
-                        <div class="transition hover:scale-105">
-                            <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3"><img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 1 }}" class="h-48 w-full object-cover"></div>
-                            <div class="px-2"><h2 class="text-lg font-bold text-gray-800">Skema {{ $index + 1 }} A</h2><p class="text-gray-600">Rp. x.xxx.xxx</p></div>
-                        </div>
-                    @endforeach
+            <!-- Profil User -->
+            <div class="relative">
+                <div class="flex items-center space-x-3 cursor-pointer" id="userMenuButton">
+                    <span class="text-gray-800 font-semibold">{{ Auth::user()->name ?? 'User' }}</span>
+                    <a href="{{ route('profil') }}">
+                        <img src="{{ Auth::user()->photo_url ?? asset('images/default-profile.png') }}"
+                             alt="Foto Profil"
+                             class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover">
+                    </a>
+                    <!-- Tombol Dropdown -->
+                    <button id="dropdownToggle" class="focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full shrink-0 p-6">
-                    @foreach ($slide2Images as $index => $file)
-                        <div class="transition hover:scale-105">
-                            <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3"><img src="{{ asset('images/' . $file) }}" alt="Skema {{ $index + 7 }}" class="h-48 w-full object-cover"></div>
-                            <div class="px-2"><h2 class="text-lg font-bold text-gray-800">Skema {{ $index + 7 }} B</h2><p class="text-gray-600">Rp. x.xxx.xxx</p></div>
-                        </div>
-                    @endforeach
+
+                <!-- Dropdown Menu -->
+                <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg border border-gray-200">
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Log Out
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-    </section>
+    </header>
 
-    <script>
-        const gridSlides = document.getElementById('gridSlides'); const slides = document.querySelectorAll('#gridSlides > div');
-        const totalSlides = slides.length; let currentIndex = 0;
-        function showSlide(index) { gridSlides.style.transform = `translateX(-${index * 100}%)`; }
-        setInterval(() => { currentIndex = (currentIndex + 1) % totalSlides; showSlide(currentIndex); }, 5000);
-    </script>
-
-    {{-- ====================================================== --}}
-    {{-- BAGIAN "Jadwal yang Akan Datang" (SUDAH DIPERBAIKI) --}}
-    {{-- ====================================================== --}}
-    <section class="bg-gray-50 py-12 px-10 text-center">
-        <h2 class="text-3xl font-bold mb-8">Jadwal yang Akan Datang</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-            
-            {{-- Perulangan ini akan berjalan JIKA data dummy Anda ada --}}
-            @foreach($jadwals as $jadwal)
-                <div class="card bg-white shadow-lg rounded-2xl">
-                    <div class="card-body flex flex-col p-8">
-                        <p class="text-base mb-1 font-bold text-left">Sertifikasi:</p>
-                        <p class="text-base mb-3 text-left">{{ $jadwal->nama_skema }}</p>
-                        
-                        <p class="text-base mb-1 font-bold text-left">TUK:</p>
-                        <p class="text-base mb-3 text-left">{{ $jadwal->tuk }}</p>
-                        
-                        <p class="text-base mb-1 font-bold text-left">Tanggal:</p>
-                        <p class="text-base mb-6 text-left">{{ $jadwal->tanggal->format('d F Y') }}</p>
-                        
-                        {{-- Ini adalah link yang benar --}}
-                        <a href="{{ route('jadwal.detail', ['id' => $jadwal->id]) }}" 
-                           class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">
-                           Detail
-                        </a>
-                    </div>
-                </div>
-            @endforeach
-
-            @if($jadwals->isEmpty())
-                <p class="text-gray-600 col-span-1 md:col-span-2">Belum ada jadwal yang akan datang saat ini. (Silakan jalankan `php artisan migrate:fresh --seed`)</p>
-            @endif
-
-        </div>
-    </section>
-@endsection
+    <!-- KONTEN TABEL -->
+    <main class="max-w-7xl mx-auto mt-8 px-6">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-6">Halaman Belum Tersedia</h1>
+    </main>
+</body>
+</html>

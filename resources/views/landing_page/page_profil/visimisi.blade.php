@@ -6,10 +6,10 @@
     <section id="visi-misi" class="py-20 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <img src="https://lsp.polines.ac.id/wp-content/uploads/2022/02/cropped-logo-lsp-polines-web-3.png" alt="LSP POLINES" class="mb-3 mx-auto" style="height: 60px;">
-                <p class="text-gray-600 text-xl">Lorem ipsum dolor sit amet</p>
+                <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="LSP POLINES" class="mb-3 mx-auto" style="height: 200px;">
+                <p class="font-bold text-3xl">Lembaga Sertifikasi Profesi Politeknik Negeri Semarang</p>
             </div>
-            
+
             <div class="flex flex-wrap justify-center gap-6">
                 <div class="w-full md:w-1/2 lg:w-5/12">
                     <div class="bg-white shadow-lg rounded-lg p-10 text-center h-full">
@@ -24,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-6 flex justify-center">
                 <div class="w-full lg:w-10/12">
                     <div class="bg-white shadow-lg rounded-lg p-12">

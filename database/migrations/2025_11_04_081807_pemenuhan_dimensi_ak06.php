@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            // Sesuai ERD (id_role)
-            $table->id(); 
-            
-            // Sesuai ERD (nama_role)
-            $table->string('nama_role')->unique();
-            
+        Schema::create('pemenuhan_dimensi_ak06', function (Blueprint $table) {
+            // PK PERSIS kayak ERD
+            $table->id('id_pemenuhan_dimensi_ak06');
+
+            // --- INI PERBAIKAN LOGIKANYA ---
+            // Kita bikin 1 kolom buat nampung 5 pilihan itu
+            $table->string('nama_dimensi');
+
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('pemenuhan_dimensi_ak06');
     }
 };

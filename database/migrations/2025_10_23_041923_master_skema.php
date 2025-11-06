@@ -19,14 +19,20 @@ return new class extends Migration
             // kode_unit (int) - Saya ubah jadi string
             // Alasan: Kode unit seringkali mengandung titik atau huruf (misal: J.620100.001.01)
             // Jika ini adalah foreign key ke tabel 'unit_kompetensi', sesuaikan
-            $table->string('kode_unit')->nullable();
+            $table->string('kode_unit');
 
             // nama_skema (str)
             $table->string('nama_skema');
 
             // Deskripsi_skema (str) - Saya ubah jadi text
             // Alasan: Deskripsi biasanya panjang dan melebihi 255 karakter
-            $table->text('deskripsi_skema')->nullable();
+            $table->text('deskripsi_skema');
+
+            // SKKNI
+            $table->string('SKKNI')->comment('File pdf atau dokumen terkait SKKNI');
+
+            // Gambar Skema
+            $table->string('gambar')->comment('path untuk unggah gambar');
 
             // Standar timestamp
             $table->timestamps();
