@@ -70,12 +70,8 @@ Route::get('/sertifikasi', function () {
 
 // Rute untuk Daftar Asesor (buat placeholder dulu)
 Route::get('/daftar-asesor', function () {
-<<<<<<< HEAD
     // return view('page_info.daftar-asesor'); // Ganti ke view yang bener nanti
-    return view('page_info.daftar-asesor');; // Placeholder
-=======
-    return view('page_info.daftar-asesor');
->>>>>>> ae8d29c51b17632980becc99da22b540298c9c56
+    return view('page_info.daftar-asesor'); // Placehold
 })->name('info.daftar-asesor'); // Nama untuk dropdown Info
 
 //

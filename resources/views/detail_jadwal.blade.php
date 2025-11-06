@@ -1,3 +1,6 @@
+@extends('layouts.app-profil')
+@section('content')
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,9 +10,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <div class="bg-white rounded-lg shadow-md p-6">
+<body class="bg-gray-50 pt-16">
+    <div class="container mx-auto px-4 py-20 max-w-12xl">
             <!-- Header Section -->
             <div class="mb-6">
                 <h1 class="text-3xl font-bold mb-4">CYBERSECURITY</h1>
@@ -34,7 +36,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left Column -->
-                <div class="lg:col-span-2">
+                 <div class="lg:col-span-8">
                     <!-- Deskripsi Skema -->
                     <div class="mb-12">
                         <h2 class="text-xl font-bold mb-3">Deskripsi Skema</h2>
@@ -53,7 +55,7 @@
                 </div>
 
                 <!-- Right Column - Info Card -->
-                <div class="lg:col-span-1">
+                <div class="lg:col-span-4">
                     <div class="bg-white border border-gray-300 rounded-lg p-12" style="box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.12);">
                         <!-- Harga -->
                         <div class="flex justify-between items-center mb-5">
