@@ -2,36 +2,46 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User; // Pastikan ini ada
-use App\Models\Skema; // Tambahkan ini
+use App\Models\User;  
+use App\Models\Skema; 
 
 class Asesor extends Model
 {
-    // Nama tabel secara eksplisit (Sudah benar)
-    protected $table = 'asesor'; 
+    use HasFactory;
 
-    // Kolom-kolom yang boleh diisi secara massal (PENTING untuk keamanan)
-    // Sesuaikan kolom ini dengan kolom lain yang ada di tabel 'asesor'
-    protected $fillable = [
-        'id_user',
-        'id_skema',
-        // tambahkan kolom lain seperti 'nama', 'nip', dll.
-    ];
+    /**
+     * Nama tabel yang digunakan oleh model.
+     */
+    protected $table = 'asesor';
 
-    // Relasi: Asesor milik satu User (Sudah benar)
+    /**
+     * Primary key yang digunakan oleh tabel.
+     */
+    protected $primaryKey = 'id_asesor';
+
+    /**
+     * Kolom yang DIJAGA (selain ini boleh diisi).
+     * Kosongkan array ini agar semua kolom bisa diisi.
+     */
+    protected $guarded = [];
+
+    /**
+     * Relasi ke model User.
+     * Satu Asesor dimiliki oleh satu User.
+     */
     public function user()
     {
-        // Secara default akan mencari 'user_id' di tabel 'asesor', 
-        // tapi Anda sudah secara eksplisit menunjuk 'id_user' (Sudah benar)
-        return $this->belongsTo(User::class, 'id_user');
-    } 
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
+    }
 
-    // Relasi: Asesor milik satu Skema (Perlu Ditambahkan)
+    /**
+     * Relasi ke model Skema.
+     * Satu Asesor terkait dengan satu Skema.
+     */
     public function skema()
     {
-        // Anggap foreign key di tabel 'asesor' adalah 'id_skema' 
-        // dan primary key di tabel 'skema' adalah 'id'
-        return $this->belongsTo(Skema::class, 'id_skema');
-    } 
+        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+    }
 }

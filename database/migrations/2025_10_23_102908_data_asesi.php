@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('nik', 16)->unique(); // (int) -> Diubah ke string
             $table->string('tempat_lahir', 100);
             $table->date('tanggal_lahir');
-            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan', 'Lainnya', 'Tidak diketahui'])->comment('Pilih jenis kelamin anda');
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
             $table->string('kebangsaan', 100)->nullable();
             $table->string('pendidikan');
             $table->string('pekerjaan');
