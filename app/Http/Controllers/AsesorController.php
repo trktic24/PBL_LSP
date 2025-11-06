@@ -45,11 +45,12 @@ class AsesorController extends Controller
      */
     public function postStep1(Request $request)
     {
+        // PERBAIKAN: Disesuaikan dengan form add_asesor1
         $validatedData = $request->validate([
             'email' => 'required|email|unique:users,email',
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:4|confirmed',
-            'id_skema' => 'required|exists:master_skema,id_skema',
+            'id_skema' => 'required|exists:skema,id_skema',
         ]);
 
         // Inisialisasi session jika belum ada
@@ -65,26 +66,50 @@ class AsesorController extends Controller
      */
     public function postStep2(Request $request)
     {
+        // PERBAIKAN: Validasi disesuaikan dengan database dan form
         $validatedData = $request->validate([
+            'nomor_regis' => 'required|string|unique:asesor,nomor_regis',
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|size:16|unique:asesor,nik',
             'tempat_lahir' => 'required|string',
-            'tanggal_lahir' => 'required|date',
-            'jenis_kelamin' => 'required|boolean',
+            
+            // Validasi 3 field tanggal
+            'tanggal_lahir' => 'required|integer',
+            'bulan_lahir' => 'required|integer',
+            'tahun_lahir' => 'required|integer',
+
+            // Validasi 1 atau 0
+            'jenis_kelamin' => 'required|boolean', 
+            
             'kebangsaan' => 'required|string',
-            'alamat_rumah' => 'required|string',
-            'kode_pos' => 'required|string:5',
-            'kabupaten_kota' => 'required|string',
+            'pekerjaan' => 'required|string', // Field ini wajib ada
+            'alamat' => 'required|string', 
+            'kab_kota' => 'required|string',
             'provinsi' => 'required|string',
-            'nomor_hp' => 'required|string:14',
-            'pekerjaan' => 'required|string',
+            'kode_pos' => 'nullable|string:5',
+            'no_hp' => 'required|string|max:15', 
+            'npwp' => 'required|string|max:25',
             'nama_bank' => 'required|string',
-            'norek' => 'required|string:20',
-            'NPWP' => 'required|string:25',
+            'no_rekening' => 'required|string|max:20', 
         ]);
+
+        // Gabungkan tanggal lahir
+        $tanggal_lahir_full = $validatedData['tahun_lahir'] . '-' . 
+                              $validatedData['bulan_lahir'] . '-' . 
+                              $validatedData['tanggal_lahir'];
 
         $asesor = $request->session()->get('asesor');
         $asesor->fill($validatedData);
+        
+        // Timpa/Set data dengan nama kolom DB yang benar
+        $asesor->tanggal_lahir = $tanggal_lahir_full;
+        $asesor->alamat_rumah = $validatedData['alamat'];
+        $asesor->kabupaten_kota = $validatedData['kab_kota'];
+        $asesor->nomor_hp = $validatedData['no_hp'];
+        $asesor->norek = $validatedData['no_rekening'];
+        $asesor->NPWP = $validatedData['npwp'];
+        // 'pekerjaan' dan 'nama_lengkap' sudah terisi otomatis oleh fill()
+
         $request->session()->put('asesor', $asesor);
 
         return redirect()->route('add_asesor3');
@@ -93,11 +118,17 @@ class AsesorController extends Controller
     /**
      * Simpan data dari Step 3 dan masukkan ke Database
      */
-    public function store(Request $request)
+     public function store(Request $request)
     {
+        // 1. Ambil data Asesor (sebagai OBJEK) dari session
         $asesorData = $request->session()->get('asesor');
 
-        // Validasi file
+        // Pastikan data session ada
+        if (!$asesorData) {
+            return redirect()->route('add_asesor1')->with('error', 'Sesi Anda telah berakhir, silakan mulai lagi.');
+        }
+
+        // 2. Validasi file (nama field HARUS SAMA dengan kolom DB)
         $validatedFiles = $request->validate([
             'ktp' => 'required|file|mimes:pdf,jpg,png|max:2048',
             'pas_foto' => 'required|file|mimes:jpg,png|max:2048',
@@ -113,7 +144,7 @@ class AsesorController extends Controller
         // Gunakan Transaksi Database untuk keamanan
         DB::beginTransaction();
         try {
-            // 1. Buat User baru
+            // 3. Buat User baru
             $user = User::create([
                 'username' => $asesorData->username,
                 'email' => $asesorData->email,
@@ -121,31 +152,51 @@ class AsesorController extends Controller
                 'role_id' => 2, // Asumsi '2' adalah ID untuk role Asesor
             ]);
 
-            // 2. Upload semua file
+            // 4. PERBAIKAN: Buat array data yang BERSIH untuk tabel 'asesor'
+            $finalAsesorData = [
+                'id_user' => $user->id_user,
+                'id_skema' => $asesorData->id_skema,
+                'nomor_regis' => $asesorData->nomor_regis,
+                'nama_lengkap' => $asesorData->nama_lengkap,
+                'nik' => $asesorData->nik,
+                'tanggal_lahir' => $asesorData->tanggal_lahir, // Sudah Y-m-d dari Step 2
+                'tempat_lahir' => $asesorData->tempat_lahir,
+                'jenis_kelamin' => $asesorData->jenis_kelamin, // Sudah 1/0 dari Step 2
+                'kebangsaan' => $asesorData->kebangsaan,
+                'pekerjaan' => $asesorData->pekerjaan,
+                'alamat_rumah' => $asesorData->alamat_rumah,
+                'kode_pos' => $asesorData->kode_pos,
+                'kabupaten_kota' => $asesorData->kabupaten_kota,
+                'provinsi' => $asesorData->provinsi,
+                'nomor_hp' => $asesorData->nomor_hp,
+                'NPWP' => $asesorData->NPWP,
+                'nama_bank' => $asesorData->nama_bank,
+                'norek' => $asesorData->norek,
+                'is_verified' => false,
+            ];
+
+            // 5. Upload file dan tambahkan path ke array
+            $uploadPath = 'public/asesor_files/' . $user->id_user;
             foreach ($validatedFiles as $key => $file) {
-                $path = $file->store('public/asesor_files/' . $user->id_user);
-                $asesorData[$key] = $path; // Simpan path-nya
+                $path = $file->store($uploadPath);
+                $finalAsesorData[$key] = $path; // $key sudah benar (ktp, pas_foto, dll)
             }
 
-            // 3. Isi sisa data Asesor
-            $asesorData['id_user'] = $user->id_user;
-            $asesorData['nomor_regis'] = 'REG-' . date('Ym') . $user->id_user; // Contoh No. Regis
-            $asesorData['is_verified'] = false; // Admin harus verifikasi
+            // 6. PERBAIKAN: Simpan Asesor ke database menggunakan Asesor::create
+            Asesor::create($finalAsesorData);
 
-            // 4. Simpan Asesor ke database
-            Asesor::create($asesorData->toArray());
-
-            // 5. Jika sukses, hapus session dan commit
+            // 7. Jika sukses, hapus session dan commit
             DB::commit();
             $request->session()->forget('asesor');
 
             return redirect()->route('master_asesor')->with('success', 'Asesor baru berhasil ditambahkan!');
 
         } catch (\Exception $e) {
-            // 6. Jika gagal, batalkan semua dan kembali
+            // 8. Jika gagal, batalkan semua dan kembali
             DB::rollBack();
             Log::error('Gagal menyimpan asesor: ' . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan. ' . $e->getMessage());
+            // Kembalikan error agar bisa dilihat di blade
+            return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
