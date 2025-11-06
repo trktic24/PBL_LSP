@@ -15,6 +15,17 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
+    Route::get('register/asesi', function(){
+        return view('auth.register-asesi');
+    })->name('register.asesi');
+
+    Route::get('register/asesor', function(){
+        return view('auth.register-asesor');
+    })->name('register.asesor');
+    Route::get('register/asesor-next', function(){
+        return view('auth.register-asesor-next');
+    })->name('register.asesor.next');
+
     Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
@@ -25,7 +36,7 @@ Route::middleware('guest')->group(function () {
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    Route::post('   ', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
