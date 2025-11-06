@@ -43,23 +43,52 @@
         </li>
 
         {{-- 🟦 Menu utama --}}
-        @php
-          $menus = [
-            ['name' => 'Home', 'href' => '/'],
-            ['name' => 'Jadwal Asesmen', 'href' => '/jadwal'],
-            ['name' => 'Sertifikasi', 'href' => '/detail_skema'],
-          ];
-        @endphp
-
-        @foreach ($menus as $menu)
-          <li>
-            <a href="{{ url($menu['href']) }}"
+        <li>
+            <a href="{{ url('/') }}"
               class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
-              {{ request()->is(ltrim($menu['href'], '/')) ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
-              {{ $menu['name'] }}
+              {{ request()->is('/') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+              Home
             </a>
-          </li>
-        @endforeach
+        </li>
+        <li>
+            <a href="{{ url('/jadwal') }}"
+              class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
+              {{ request()->is('jadwal') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+              Jadwal Asesmen
+            </a>
+        </li>
+
+        @guest
+            <li>
+                <a href="{{ url('/skema') }}"
+                  class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
+                  {{ request()->is('skema') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+                  Sertifikasi
+                </a>
+            </li>
+        @endguest
+
+        @auth
+            {{-- Tampil jika PENGGUNA SUDAH LOGIN --}}
+            @if(auth()->user()->role->nama_role == 'asesi') {{-- Sesuaikan cek role Anda --}}
+                <li>
+                    <a href="{{ url('/riwayat-sertifikasi') }}" {{-- Arahkan ke URL riwayat --}}
+                      class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
+                      {{ request()->is('riwayat-sertifikasi') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+                      Sertifikasi
+                    </a>
+                </li>
+            @else
+                {{-- Jika dia Admin atau Asesor, arahkan ke dashboard mereka --}}
+                <li>
+                    <a href="{{ url('/dashboard') }}"
+                      class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
+                      {{ request()->is('dashboard') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+                      Dashboard
+                    </a>
+                </li>
+            @endif
+        @endauth
 
         {{-- 🔽 Dropdown Info --}}
         <li class="relative px-2 py-2">
