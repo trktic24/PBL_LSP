@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>LSP Polines - @yield('title', 'Halaman Form')</title>
+
+  <link rel="icon" type="image/png" href="{{ asset('images\Logo_LSP_No_BG.png') }}">
+
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <script src="https://cdn.tailwindcss.com"></script>
   @stack('css')

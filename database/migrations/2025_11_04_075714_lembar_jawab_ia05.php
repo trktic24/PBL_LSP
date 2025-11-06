@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreignId('id_kunci_jawaban_ia05')->constrained('kunci_jawaban_ia05', 'id_kunci_jawaban_ia05')->onUpdate('cascade')->onDelete('cascade');
 
             // isi dari database lembar_jawab_ia05
+            $table->string('teks_jawaban_asesi_ia05');
+            $table->boolean('pencapaian_ia05_iya')->default(false)->comment('1 untuk Kompeten, 0 untuk Belum Kompeten');
+            $table->boolean('pencapaian_ia05_tidak')->default(false)->comment('1 untuk Tidak Kompeten, 0 untuk Kompeten');
             $table->timestamps();
         });
     }

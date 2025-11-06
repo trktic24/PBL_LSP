@@ -14,7 +14,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
 
     /**
-     * Tentukan Primary Key-nya.
+     * Beri tahu Laravel bahwa Primary Key Anda BUKAN 'id',
+     * tapi 'id_user'.
      */
     protected $primaryKey = 'id_user';
 
@@ -50,7 +51,7 @@ class User extends Authenticatable
      */
     public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'role_id', 'id_role');
     }
 
     /**
