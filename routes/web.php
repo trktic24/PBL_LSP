@@ -3,11 +3,33 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TandaTanganController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SkemaController;
 
 
 Route::get('/', function () {
     return view('halaman_ambil_skema');
 });
+
+Route::get('/home', function () {
+    return view('frontend/home');
+})->name('home');
+Route::get('/jadwal', function () {
+    return view('frontend/jadwal');
+})->name('jadwal');
+Route::get('/laporan', function () {
+    return view('frontend/laporan');
+})->name('laporan');
+Route::get('/profil', function () {
+    return view('frontend/profil');
+})->name('profil');
+Route::get('/daftar_asesi', function () {
+return view('frontend/daftar_asesi');
+})->name('daftar_asesi');
+Route::get('/tracker', function () {
+    return view('frontend/tracker');
+})->name('tracker');
+
+
 
 Route::get('/tracker', function () {
     return view('tracker');
@@ -95,11 +117,26 @@ Route::get('/verifikasi_tuk', function () {
 
 Route::get('/tanda_tangan_pemohon', [TandaTanganController::class, 'showTandaTanganForm'])
     ->name('tanda_tangan_pemohon.show');
+Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
+
+Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/home', function () {
+    return view('frontend/home');
+})->name('home');
+Route::get('/jadwal', function () {
+    return view('frontend/jadwal');
+})->name('jadwal');
+Route::get('/laporan', function () {
+    return view('frontend/laporan');
+})->name('laporan');
+Route::get('/profil', function () {
+    return view('frontend/profil');
+})->name('profil');
 
 Route::post('/simpan/tandatangan', [TandaTanganController::class, 'simpanTandaTangan'])
     ->name('simpan.tandatangan'); 
