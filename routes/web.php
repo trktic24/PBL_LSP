@@ -185,5 +185,4 @@ Route::get('/keep-alive', function () {
     return response()->json(['status' => 'session_refreshed']);
 });
 
-
 require __DIR__.'/auth.php';
