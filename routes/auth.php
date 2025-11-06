@@ -34,16 +34,11 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 });
 
-// ==========================================================
-// 🟦 RUTE GOOGLE (Di luar grup)
-// ==========================================================
+
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
 
 
-// ==========================================================
-// 🟩 GRUP UNTUK USER (SUDAH LOGIN)
-// ==========================================================
 Route::middleware('auth')->group(function () {
 
     // 👇 PINDAHIN RUTE DASHBOARD KE SINI

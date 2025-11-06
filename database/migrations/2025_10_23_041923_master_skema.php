@@ -29,10 +29,10 @@ return new class extends Migration
             $table->text('deskripsi_skema');
 
             // SKKNI
-            $table->string('SKKNI')->comment('File pdf atau dokumen terkait SKKNI');
+            $table->string('SKKNI')->nullable()->comment('File pdf atau dokumen terkait SKKNI');
 
             // Gambar Skema
-            $table->string('gambar')->comment('path untuk unggah gambar');
+            $table->string('gambar')->nullable()->comment('path untuk unggah gambar');
 
             // Standar timestamp
             $table->timestamps();
