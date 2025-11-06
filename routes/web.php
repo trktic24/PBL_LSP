@@ -17,10 +17,6 @@ Route::get('/data_sertifikasi', function () {
     return view('data_sertifikasi');
 });
 
-Route::get('/tanda_tangan_pemohon', function () {
-    return view('tanda_tangan_pemohon');
-});
-
 Route::get('/tunggu_upload_dokumen', function () {
     return view('tunggu_upload_dokumen');
 });
@@ -97,12 +93,16 @@ Route::get('/verifikasi_tuk', function () {
     return view('verifikasi_tuk');
 });
 
+Route::get('/tanda_tangan_pemohon', [TandaTanganController::class, 'showTandaTanganForm'])
+    ->name('tanda_tangan_pemohon.show');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+
 Route::post('/simpan/tandatangan', [TandaTanganController::class, 'simpanTandaTangan'])
-    ->name('simpan.tandatangan'); // <--- INI KUNCI UTAMA
+    ->name('simpan.tandatangan'); 
     
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
