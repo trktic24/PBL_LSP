@@ -25,6 +25,7 @@
   <div class="min-h-screen flex flex-col">
 
     <x-navbar />
+
     <main class="p-6">
       <div class="mb-6">
         <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
@@ -40,6 +41,9 @@
           </div>
 
           <div class="flex space-x-2 p-1 bg-white border border-gray-200 rounded-xl shadow-sm">
+            <a href="{{ route('tuk_all') }}" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm transition-all">
+              Semua
+            </a>
             <button class="px-4 py-2 text-gray-800 font-semibold rounded-xl text-sm transition-all"
                     style="background: linear-gradient(to right, #b4e1ff, #d7f89c); box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
               Sewaktu

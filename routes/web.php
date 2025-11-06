@@ -129,6 +129,9 @@ Route::middleware('auth')->group(function () {
     })->name('edit_schedule');
     
     // 8. TUK
+    Route::get('/tuk_all', function () {
+    return view('tuk.tuk_all');
+    })->name('tuk_all');
     Route::get('/tuk_sewaktu', function () {
         return view('tuk.tuk_sewaktu');
     })->name('tuk_sewaktu');

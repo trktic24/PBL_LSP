@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TUK Tempat Kerja | LSP Polines</title>
+  <title>Semua TUK | LSP Polines</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -16,8 +16,6 @@
   <style>
     body { font-family: 'Poppins', sans-serif; }
     ::-webkit-scrollbar { width: 0; }
-    ::-webkit-scrollbar-thumb { background-color: transparent; }
-    ::-webkit-scrollbar-track { background-color: transparent; }
   </style>
 </head>
 
@@ -32,8 +30,8 @@
         <h2 class="text-3xl font-bold text-gray-900">Tempat Uji Kompetensi (TUK)</h2>
       </div>
 
-      <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
-        <div class="flex items-center w-full lg:w-auto gap-4 flex-1">
+      <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
+        <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto flex-1">
           <div class="relative w-full max-w-sm">
             <input type="text" placeholder="Search"
                    class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -41,28 +39,26 @@
           </div>
 
           <div class="flex space-x-2 p-1 bg-white border border-gray-200 rounded-xl shadow-sm">
-            <a href="{{ route('tuk_all') }}" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm transition-all">
-              Semua
-            </a>
-            <a href="{{ route('tuk_sewaktu') }}" 
-               class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm transition-all">
-              Sewaktu
-            </a>
             <button class="px-4 py-2 text-gray-800 font-semibold rounded-xl text-sm transition-all"
                     style="background: linear-gradient(to right, #b4e1ff, #d7f89c); box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
-              Tempat Kerja
+              Semua
             </button>
+            <a href="{{ route('tuk_sewaktu') }}" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm transition-all">
+              Sewaktu
+            </a>
+            <a href="{{ route('tuk_tempatkerja') }}" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl text-sm transition-all">
+              Tempat Kerja
+            </a>
           </div>
         </div>
 
-        <div class="flex space-x-3 items-center" x-data="{ open: false }">
+        <div class="flex items-center space-x-3" x-data="{ open: false }">
           <div class="relative">
             <button @click="open = !open"
                     class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 flex items-center">
               <i class="fas fa-filter mr-2"></i> Filter
               <i class="fas fa-caret-down ml-2"></i>
             </button>
-
             <div x-show="open" @click.away="open = false"
                  class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20"
                  x-transition>
@@ -71,7 +67,6 @@
               <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Ruang Tersedia</a>
             </div>
           </div>
-
           <a href="{{ route('add_tuk') }}"
              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center">
             <i class="fas fa-plus mr-2"></i> Add TUK
@@ -81,51 +76,60 @@
 
       <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 w-full overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 text-sm">
+          
           <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
             <tr>
-              <th class="px-6 py-3 text-left">ID</th>
-              <th class="px-6 py-3 text-left">Nama TUK</th>
-              <th class="px-6 py-3 text-left">Kota/Kab</th>
-              <th class="px-6 py-3 text-left">Kapasitas</th>
-              <th class="px-6 py-3 text-left">Ruang Tersedia</th>
-              <th class="px-6 py-3 text-left">Status</th>
-              <th class="px-6 py-3 text-left">Aksi</th>
+              <th class="px-6 py-3 text-left font-semibold">ID</th>
+              <th class="px-6 py-3 text-left font-semibold">Nama TUK</th>
+              <th class="px-6 py-3 text-left font-semibold">Jenis TUK</th> <th class="px-6 py-3 text-left font-semibold">Kota/Kab</th>
+              <th class="px-6 py-3 text-left font-semibold">Kapasitas</th>
+              <th class="px-6 py-3 text-left font-semibold">Ruang Tersedia</th>
+              <th class="px-6 py-3 text-left font-semibold">Status</th>
+              <th class="px-6 py-3 text-left font-semibold">Aksi</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr>
+            
+            <tr class="hover:bg-gray-50 transition">
               <td class="px-6 py-4">1</td>
-              <td class="px-6 py-4 font-medium">PT PLN (Persero) Semarang</td>
+              <td class="px-6 py-4 font-medium">Politeknik Negeri Semarang</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">Sewaktu</span>
+              </td>
               <td class="px-6 py-4">Semarang</td>
-              <td class="px-6 py-4">40</td>
-              <td class="px-6 py-4">3 Ruangan</td>
+              <td class="px-6 py-4">50</td>
+              <td class="px-6 py-4">4 Ruangan</td>
               <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Aktif</span></td>
               <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
                   <i class="fas fa-pen"></i> <span>Edit</span>
                 </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">
                   <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
               </td>
             </tr>
 
-            <tr>
+            <tr class="hover:bg-gray-50 transition">
               <td class="px-6 py-4">2</td>
-              <td class="px-6 py-4 font-medium">PT Telkom Indonesia</td>
-              <td class="px-6 py-4">Kendal</td>
-              <td class="px-6 py-4">25</td>
-              <td class="px-6 py-4">2 Ruangan</td>
-              <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-700 rounded-full">Pending</span></td>
+              <td class="px-6 py-4 font-medium">PT PLN (Persero) Semarang</td>
+              <td class="px-6 py-4">
+                <span class="px-3 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">Tempat Kerja</span>
+              </td>
+              <td class="px-6 py-4">Semarang</td>
+              <td class="px-6 py-4">40</td>
+              <td class="px-6 py-4">3 Ruangan</td>
+              <td class="px-6 py-4"><span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Aktif</span></td>
               <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
                   <i class="fas fa-pen"></i> <span>Edit</span>
                 </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
+                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">
                   <i class="fas fa-trash"></i> <span>Delete</span>
                 </button>
               </td>
             </tr>
+
           </tbody>
         </table>
       </div>
