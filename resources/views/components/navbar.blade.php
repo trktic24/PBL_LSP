@@ -58,7 +58,7 @@
         <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
        @endif
     </a>
-    <a href="{{ route('tuk_all') }}" class="relative h-full flex items-center transition
+    <a href="{{ route('master_tuk') }}" class="relative h-full flex items-center transition
        {{ request()->is('tuk_*') || request()->is('add_tuk') ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
        TUK
        @if (request()->is('tuk_*') || request()->is('add_tuk'))

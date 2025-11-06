@@ -129,18 +129,12 @@ Route::middleware('auth')->group(function () {
     })->name('edit_schedule');
     
     // 8. TUK
-    Route::get('/tuk_all', function () {
-    return view('tuk.tuk_all');
-    })->name('tuk_all');
-    Route::get('/tuk_sewaktu', function () {
-        return view('tuk.tuk_sewaktu');
-    })->name('tuk_sewaktu');
+    Route::get('/master_tuk', function () {
+    return view('tuk.master_tuk');
+    })->name('master_tuk');
     Route::get('/add_tuk', function () {
         return view('tuk.add_tuk');
     })->name('add_tuk');
-    Route::get('/tuk_tempatkerja', function () {
-        return view('tuk.tuk_tempatkerja');
-    })->name('tuk_tempatkerja');
     Route::get('/edit_tuk', function () {
         return view('tuk.edit_tuk');
     })->name('edit_tuk');
