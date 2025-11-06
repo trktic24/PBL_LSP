@@ -1,0 +1,38 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Skema;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Skema>
+ */
+class SkemaFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Skema::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            // Contoh: J.620100.001.01
+            'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01',
+            'nama_skema' => 'Skema Sertifikasi ' . $this->faker->jobTitle(),
+            'deskripsi_skema' => $this->faker->paragraph(2), // Deskripsi 2 paragraf
+
+            // Sesuai permintaan lu, ini di-null-kan
+            'SKKNI' => null,
+            'gambar' => null,
+        ];
+    }
+}

@@ -12,34 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('data_pekerjaan_asesi', function (Blueprint $table) {
-            // Sesuai ERD: id_pekerjaan (PK)
-            $table->id('id_pekerjaan');
+        $table->id('id_pekerjaan');
 
-            // Sesuai ERD: id_asesi (FK)
-            // Asumsi: Ini merujuk ke PK 'id_asesi' di tabel 'asesi'
-            // Jika tabel asesi Anda belum ada, Anda harus membuatnya terlebih dahulu.
-            $table->foreignId('id_asesi')->constrained(
-                table: 'asesi', column: 'id_asesi'
-            )->onUpdate('cascade')->onDelete('restrict');
+        $table->foreignId('id_asesi')->nullable()->constrained('asesi', 'id_asesi')->onUpdate('cascade')->onDelete('restrict');
 
-            // Nama institusi/perusahaan (str)
-            $table->string('nama_institusi_perusahaan')->nullable();
+        $table->string('nama_institusi_pekerjaan')->nullable();
+        $table->text('alamat_institusi')->nullable();
+        $table->string('jabatan')->nullable();
+        $table->string('kode_pos_institusi', 10)->nullable();
+        $table->string('no_telepon_institusi', 16)->nullable();
 
-            // Jabatan (str)
-            $table->string('jabatan')->nullable();
+        $table->timestamps();
+    });
 
-            // Alamat Kantor (str) -> Diubah ke text
-            $table->text('alamat_kantor')->nullable();
-
-            // Kode Pos (int) -> Diubah ke string
-            $table->string('kode_pos', 10)->nullable();
-
-            // No. telepon Kantor (int) -> Diubah ke string
-            $table->string('no_telepon_kantor', 20)->nullable();
-
-            // Standar timestamp
-            $table->timestamps();
-        });
     }
 
     /**
