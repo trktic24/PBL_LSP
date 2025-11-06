@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TandaTanganController;
-use App\Http\Controllers\BandingAsesmenController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
 
@@ -38,10 +37,6 @@ Route::get('/tracker', function () {
 
 Route::get('/data_sertifikasi', function () {
     return view('data_sertifikasi');
-});
-
-Route::get('/tanda_tangan_pemohon', function () {
-    return view('tanda_tangan_pemohon');
 });
 
 Route::get('/tunggu_upload_dokumen', function () {
@@ -100,9 +95,9 @@ Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
-Route::get('/banding/{id_asesmen?}', [BandingAsesmenController::class, 'create'])->name('banding.create');
-
-Route::post('/banding', [BandingAsesmenController::class, 'store'])->name('banding.store');
+Route::get('/banding', function () {
+    return view('banding');
+});
 
 Route::get('/pertanyaan_lisan', function () {
     return view('pertanyaan_lisan');
@@ -120,6 +115,8 @@ Route::get('/verifikasi_tuk', function () {
     return view('verifikasi_tuk');
 });
 
+Route::get('/tanda_tangan_pemohon', [TandaTanganController::class, 'showTandaTanganForm'])
+    ->name('tanda_tangan_pemohon.show');
 Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
 
 Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
@@ -142,7 +139,7 @@ Route::get('/profil', function () {
 })->name('profil');
 
 Route::post('/simpan/tandatangan', [TandaTanganController::class, 'simpanTandaTangan'])
-    ->name('simpan.tandatangan'); // <--- INI KUNCI UTAMA
+    ->name('simpan.tandatangan'); 
     
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
