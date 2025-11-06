@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -21,6 +22,10 @@ class DatabaseSeeder extends Seeder
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
+            JenisTukSeeder::class,
+            JadwalSeeder::class,
+            MasterTukSeeder::class,
+
         ]);
 
 }
