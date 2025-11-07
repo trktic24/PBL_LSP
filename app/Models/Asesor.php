@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Asesor extends Model
 {
     use HasFactory;
-    protected $table = 'data_asesor';
-    protected $guarded = ['id'];
+    protected $table = 'asesor';
+    protected $primaryKey = 'id_asesor';
+    protected $guarded = ['id_asesor'];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id_user');
     }
 
     // HAPUS atau GANTI FUNGSI INI:
