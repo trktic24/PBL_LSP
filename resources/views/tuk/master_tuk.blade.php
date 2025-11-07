@@ -47,7 +47,7 @@
               type="text"
               name="search"
               x-model="search"
-              placeholder="Cari ID, Nama, Alamat, Kontak..."
+              placeholder="Search..."
               class="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
