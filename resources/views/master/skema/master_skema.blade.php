@@ -6,11 +6,8 @@
   <title>Master Skema | LSP Polines</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
@@ -86,8 +83,7 @@
             @forelse ($skemas as $skema)
             <tr class="hover:bg-gray-50 transition">
               <td class="px-4 py-2">{{ $skema->id_skema }}</td>
-              <td class="px-4 py-2">{{ $skema->kode_unit }}</td>
-              <td class="px-4 py-2 font-medium">{{ $skema->nama_skema }}</td>
+              <td class="px-4 py-2">{{ $skema->kode_unit }}</td> <td class="px-4 py-2 font-medium">{{ $skema->nama_skema }}</td>
               <td class="px-4 py-2 text-gray-600" title="{{ $skema->deskripsi_skema }}">
                 {{ Str::limit($skema->deskripsi_skema, 40, '...') }}
               </td>
@@ -106,13 +102,18 @@
                 @endif
               </td>
               <td class="px-4 py-2 text-gray-500">{{ $skema->created_at->format('d/m/Y') }}</td>
+              
               <td class="px-4 py-2 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg transition">
+                <a href="{{ route('edit_skema', $skema->id_skema) }}" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded-lg transition">
                   <i class="fas fa-pen text-xs"></i> <span>Edit</span>
-                </button>
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg transition">
-                  <i class="fas fa-trash text-xs"></i> <span>Delete</span>
-                </button>
+                </a>
+                <form action="{{ route('delete_skema', $skema->id_skema) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus skema ini?');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg transition">
+                    <i class="fas fa-trash text-xs"></i> <span>Delete</span>
+                  </button>
+                </form>
               </td>
             </tr>
             @empty
@@ -123,7 +124,7 @@
             </tr>
             @endforelse
           </tbody>
-        </table>
+          </table>
       </div>
     </main>
   </div>

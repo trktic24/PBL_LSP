@@ -20,10 +20,6 @@
     ::-webkit-scrollbar {
       width: 0;
     }
-    /* Style untuk tombol TUK yang aktif */
-    .btn-tuk.active {
-       box-shadow: 0 0 0 2px #fff, 0 0 0 4px currentColor;
-    }
   </style>
 </head>
 
@@ -36,7 +32,7 @@
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
 
         <div class="flex items-center justify-between mb-10">
-          <a href="{{ route('tuk_sewaktu') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+          <a href="{{ route('master_tuk') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
             <i class="fas fa-arrow-left mr-2"></i> Back
           </a>
           <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">ADD TUK</h1>
@@ -47,110 +43,62 @@
           @csrf
 
           <div>
-            <label for="nama_ruangan" class="block text-sm font-medium text-gray-700 mb-2">
-              Nama Ruangan <span class="text-red-500">*</span>
+            <label for="nama_lokasi" class="block text-sm font-medium text-gray-700 mb-2">
+              Nama Lokasi TUK <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="nama_ruangan" name="nama_ruangan" required
+            <input type="text" id="nama_lokasi" name="nama_lokasi" required
               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Masukkan Nama Ruangan" />
-          </div>
-
-          <div x-data="{ fileName: '' }">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Gambar Ruangan
-            </label>
-            <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
-              <i class="fas fa-upload text-gray-500 mr-3"></i>
-              <span x-text="fileName || 'Pilih file untuk di-upload...'" class="text-sm text-gray-600"></span>
-              <input type="file" name="gambar_ruangan" @change="fileName = $event.target.files[0].name" class="opacity-0 absolute w-0 h-0" />
-            </label>
-          </div>
-
-          <div x-data="{ jenisTuk: 'Sewaktu' }">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Tuk <span class="text-red-500">*</span></label>
-            <div class="flex space-x-4">
-              <button type="button"
-                @click="jenisTuk = 'Sewaktu'"
-                :class="jenisTuk === 'Sewaktu' ? 'bg-blue-600 text-white btn-tuk active' : 'bg-gray-200 text-gray-700'"
-                class="btn-tuk font-semibold py-2 px-4 rounded-lg text-sm transition">
-                Sewaktu
-              </button>
-
-              <button type="button"
-                @click="jenisTuk = 'Tempat Kerja'"
-                :class="jenisTuk === 'Tempat Kerja' ? 'bg-yellow-500 text-white btn-tuk active' : 'bg-gray-200 text-gray-700'"
-                class="btn-tuk font-semibold py-2 px-4 rounded-lg text-sm transition">
-                Tempat Kerja
-              </button>
-            </div>
-            <input type="hidden" name="jenis_tuk" :value="jenisTuk">
-          </div>
-          <div class="grid grid-cols-2 gap-6">
-            <div>
-              <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-2">
-                Tanggal <span class="text-red-500">*</span>
-              </label>
-              <input type="date" id="tanggal" name="tanggal" required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-            </div>
-
-            <div>
-              <label for="jam" class="block text-sm font-medium text-gray-700 mb-2">
-                Jam <span class="text-red-500">*</span>
-              </label>
-              <input type="time" id="jam" name="jam" required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-            </div>
+              placeholder="Contoh: Lab. Jaringan, Workshop Akuntansi" />
           </div>
 
           <div>
-            <label for="nama_skema" class="block text-sm font-medium text-gray-700 mb-2">
-              Nama Skema <span class="text-red-500">*</span>
+            <label for="alamat_tuk" class="block text-sm font-medium text-gray-700 mb-2">
+              Alamat TUK <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="nama_skema" name="nama_skema" required
+            <textarea id="alamat_tuk" name="alamat_tuk" rows="3" required
               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Masukkan Nama Skema" />
+              placeholder="Masukkan Alamat Lengkap TUK"></textarea>
           </div>
-
-          <div class="grid grid-cols-2 gap-6">
+          
+          {{-- BAGIAN INI YANG DIMODIFIKASI --}}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
             <div>
-              <label for="daftar_asesor" class="block text-sm font-medium text-gray-700 mb-2">
-                Daftar Asesor <span class="text-red-500">*</span>
+              <label for="kontak_tuk" class="block text-sm font-medium text-gray-700 mb-2">
+                Kontak TUK (No. HP/Email PJ) <span class="text-red-500">*</span>
               </label>
-              <select id="daftar_asesor" name="daftar_asesor" required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
-                <option value="">Pilih asesor</option>
-                <option>Asesor 1</option>
-                <option>Asesor 2</option>
-              </select>
+              <input type="text" id="kontak_tuk" name="kontak_tuk" required
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                placeholder="Masukkan Nomor Telepon atau Email" />
             </div>
-
-            <div>
-              <label for="daftar_asesi" class="block text-sm font-medium text-gray-700 mb-2">
-                Daftar Asesi <span class="text-red-500">*</span>
+            
+            <div x-data="{ fileName: '' }">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Foto TUK <span class="text-red-500">*</span>
               </label>
-              <select id="daftar_asesi" name="daftar_asesi" required
-                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
-                <option value="">Pilih asesi</option>
-                <option>Asesi 1</option>
-                <option>Asesi 2</option>
-              </select>
+              <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
+                <i class="fas fa-upload text-gray-500 mr-3"></i>
+                <span x-text="fileName || 'Pilih file untuk di-upload...'" class="text-sm text-gray-600"></span>
+                <input type="file" name="foto_tuk" @change="fileName = $event.target.files[0].name" class="opacity-0 absolute w-0 h-0" required />
+              </label>
             </div>
           </div>
+          {{-- AKHIR BAGIAN MODIFIKASI --}}
+
 
           <div>
-            <label for="slot" class="block text-sm font-medium text-gray-700 mb-2">
-              Slot <span class="text-red-500">*</span>
+            <label for="link_gmap" class="block text-sm font-medium text-gray-700 mb-2">
+              Link Google Maps <span class="text-red-500">*</span>
             </label>
-            <input type="number" id="slot" name="slot" required min="1"
+            <input type="text" id="link_gmap" name="link_gmap" required
               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Masukkan jumlah slot" />
+              placeholder="Masukkan URL Google Maps" />
           </div>
 
           <div class="pt-4">
             <button type="submit"
               class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition">
-              Tambah
+              Tambah TUK
             </button>
           </div>
         </form>
