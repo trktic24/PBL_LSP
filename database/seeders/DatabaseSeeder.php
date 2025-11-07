@@ -16,6 +16,10 @@ class DatabaseSeeder extends Seeder
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
+            RoleSeeder::class,
+            UserSeeder::class,
+            SkemaSeeder::class,
+            AsesorSeeder::class,
         ]);
     }
 }

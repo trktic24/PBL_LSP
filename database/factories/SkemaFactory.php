@@ -15,7 +15,7 @@ class SkemaFactory extends Factory
      *
      * @var string
      */
-    protected $model = Skema::class;
+    protected $model = \App\Models\Skema::class;
 
     /**
      * Definisikan status default model.

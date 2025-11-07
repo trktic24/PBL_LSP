@@ -27,16 +27,16 @@ class AsesorFactory extends Factory
     public function definition(): array
     {
         // Buat jenis kelamin acak (1=Laki, 0=Perempuan)
-        $jenis_kelamin = fake()->randomElement([0, 1]);
+        $jenis_kelamin = fake()->randomElement(['Laki-laki', 'Perempuan']);
         // Buat nama yang sesuai dengan jenis kelamin
-        $nama_lengkap = fake()->name($jenis_kelamin == 1 ? 'male' : 'female');
+        $nama_lengkap = fake()->name($jenis_kelamin == 'Laki-laki' ? 'male' : 'female');
 
         return [
             // --- Foreign Keys ---
             // Baris ini akan OTOMATIS membuat User & Skema baru 
             // setiap kali AsesorFactory dipanggil.
             'id_user' => User::factory(),
-            'id_skema' => Skema::factory(),
+            'id_skema' => \App\Models\Skema::factory(),
 
             // --- Data Pribadi Asesor ---
             'nomor_regis' => fake()->unique()->numerify('REG.ASESOR.######'),
