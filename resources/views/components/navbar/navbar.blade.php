@@ -5,9 +5,9 @@
     font-family: 'Poppins', sans-serif;
   }
 
-  
+
   .menu-link {
-    color: #1e293b; 
+    color: #1e293b;
     border-bottom: 2px solid transparent;
     transition: all 0.2s ease;
   }

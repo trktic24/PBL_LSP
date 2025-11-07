@@ -27,9 +27,9 @@ class HomeController extends Controller
         // ----------------------------------------------------
         $profile = [
             // Gunakan nama user yang login
-            'nama' => $asesor && $asesor->user ? $asesor->user->name : 'Ajeng Febria Hidayati', 
+            'nama' => $asesor && $asesor->user ? $asesor->user->name : 'Ajeng Febria Hidayati',
             // Ambil nomor registrasi dari model User atau Asesor (di sini menggunakan dummy)
-            'nomor_registrasi' => '90973646526352', 
+            'nomor_registrasi' => '90973646526352',
             'kompetensi' => 'Pemrograman', // Ambil kompetensi dari relasi Skema/Asesor
             'foto_url' => 'https://placehold.co/60x60/8B5CF6/ffffff?text=AF',
         ];
@@ -48,7 +48,7 @@ class HomeController extends Controller
         // ----------------------------------------------------
         // 3. Data Jadwal Asesmen
         // ----------------------------------------------------
-        
+
         // Asumsi: Kita hanya menampilkan jadwal yang terkait dengan Asesor yang login (id_asesor = user id)
         // Note: Dalam kasus nyata, Anda mungkin perlu relasi User -> Asesor -> Jadwal
         $jadwal = Jadwal::where('id_asesor', $id_asesor_tes) // Jika tidak ada user, gunakan id 1

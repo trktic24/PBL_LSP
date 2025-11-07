@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
+// use App\Http\Requests\Auth\LoginRequest; // Ini kayaknya nggak kepake, bisa dihapus
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,17 +23,36 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
 
-        $request->session()->regenerate();
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+            $user = Auth::user();
+            if ($user->role && $user->role->nama_role === 'asesor' && !$user->asesor?->is_verified) {
+                Auth::logout();
+                return redirect()->route('login')
+                    ->with('error', 'Akun Anda belum diverifikasi oleh admin.');
+            }
+
+
+            return redirect()->intended('/');
+        }
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ]);
+
     }
 
     /**
      * Destroy an authenticated session.
+     * *
      */
     public function destroy(Request $request): RedirectResponse
     {

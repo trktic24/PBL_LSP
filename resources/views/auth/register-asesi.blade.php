@@ -46,41 +46,58 @@
 
                             <x-login-form-input id="nik" name="nik" label="NIK" :error="$errors->first('nik')" required />
 
-                            <x-login-form-input id="tempat_lahir" name="tempat_lahir" label="Tempat Tanggal Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
+                            <x-login-form-input id="tempat_lahir" name="tempat_lahir" label="Tempat Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
 
-                            <div>
-                            <label class="invisible block text-xs font-medium text-gray-800">.</label>
-                            <div class="flex items-center gap-3 mt-1">
-                                <input type="number" name="tgl_lahir" placeholder="Tanggal"
-                                class="block w-1/3 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm" min="1" max="31">
+                            <div x-data="{
+                                tanggal: '',
+                                formatTanggal(tgl) {
+                                    if (!tgl) return '';
+                                    const [day, month, year] = tgl.split('-');
+                                    return `${year}-${month}-${day}`;
+                                }
+                            }">
+                                <label for="tanggal_lahir" class="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir</label>
+                                <div class="relative max-w-sm">
 
-                                <select name="bln_lahir"
-                                class="block w-1/3 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm">
-                                <option value="">Bulan</option>
-                                <option value="1">Januari</option>
-                                <option value="2">Februari</option>
-                                <option value="3">Maret</option>
-                                <option value="4">April</option>
-                                <option value="5">Mei</option>
-                                <option value="6">Juni</option>
-                                <option value="7">Juli</option>
-                                <option value="8">Agustus</option>
-                                <option value="9">September</option>
-                                <option value="10">Oktober</option>
-                                <option value="11">November</option>
-                                <option value="12">Desember</option>
-                                </select>
+                                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path
+                                                d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                                        </svg>
+                                    </div>
 
-                                <input type="number" name="thn_lahir" placeholder="Tahun"
-                                class="block w-1/3 border-gray-300 focus:border-blue-600 focus:ring-blue-600 rounded-md shadow-sm" min="1900" max="2025">
+                                    <input id="tanggal_lahir"
+                                        name="tanggal_lahir"
+                                        x-model="tanggal"
+                                        datepicker
+                                        datepicker-autohide
+                                        datepicker-buttons
+                                        datepicker-format="dd-mm-yyyy"
+                                        type="text"
+                                        class="bg-gray-20 border border-gray-300 text-gray-900 text-sm rounded-lg
+                                            placeholder-gray-400
+                                            focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                                        placeholder="Pilih tanggal">
+                                </div>
+
+                                <input type="hidden" name="tanggal_lahir" :value="formatTanggal(tanggal)">
                             </div>
-                            </div>
 
-                            <x-login-form-input id="jenis_kelamin" name="jenis_kelamin" label="Jenis Kelamin" :error="$errors->first('jenis_kelamin')" required />
+                            <x-login-form-dropdown
+                                id="jenis_kelamin"
+                                name="jenis_kelamin"
+                                label="Jenis Kelamin"
+                                placeholder="Pilih jenis kelamin"
+                                :error="$errors->first('jenis_kelamin')"
+                                :options="[['value' => 1, 'label' => 'Laki-laki'], ['value' => 0, 'label' => 'Perempuan']]"
+                                required
+                            />
+
 
                             <x-login-form-input id="kebangsaan" name="kebangsaan" label="Kebangsaan" :error="$errors->first('kebangsaan')" />
 
-                            <x-login-form-input id="kualifikasi" name="kualifikasi" label="Kualifikasi Pendidikan" :error="$errors->first('kualifikasi')" required />
+                            <x-login-form-input id="pendidikan" name="pendidikan" label="Pendidikan" :error="$errors->first('pendidikan')" required />
 
                             <x-login-form-input id="pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />
                         </div>
@@ -100,10 +117,12 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                            <x-login-form-input id="kabupaten" name="kabupaten" label="Kabupaten / Kota" :error="$errors->first('kabupaten')" required />
-                            <x-login-form-input id="provinsi" name="provinsi" label="Provinsi" :error="$errors->first('provinsi')" required />
-                            <x-login-form-input id="no_hp" name="no_hp" label="Nomor HP" :error="$errors->first('no_hp')" required />
+                            <x-login-form-input id="nomor_hp" name="nomor_hp" label="Nomor HP" :error="$errors->first('nomor_hp')" required />
                             <x-login-form-input id="email" name="email" type="email" label="E-mail" :error="$errors->first('email')" required />
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                            <x-login-form-input id="kabupaten_kota" name="kabupaten_kota" label="Kabupaten/Kota" :error="$errors->first('kabupaten_kota')" required />
+                            <x-login-form-input id="email" name="provinsi" type="provinsi" label="Provinsi" :error="$errors->first('provinsi')" required />
                         </div>
                     </div>
 
@@ -113,9 +132,11 @@
                             <hr class="mt-2">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                            <x-login-form-input id="nama_lembaga" name="nama_lembaga" label="Nama Lembaga" :error="$errors->first('nama_lembaga')" required />
-                            <x-login-form-input id="alamat_kantor_1" name="alamat_kantor_1" label="Alamat Kantor" :error="$errors->first('alamat_kantor_1')" required />
+                            <x-login-form-input id="nama_institusi_perusahaan" name="nama_institusi_perusahaan" label="Nama Institusi Pekerjaan" :error="$errors->first('nama_institusi_perusahaan')" required />
+                            <x-login-form-input id="alamat_kantor" name="alamat_kantor" label="Alamat Institusi" :error="$errors->first('alamat_kantor')" required />
                             <x-login-form-input id="jabatan" name="jabatan" label="Jabatan" :error="$errors->first('jabatan')" required />
+                            <x-login-form-input id="kode_pos_kantor" name="kode_pos_ins" label="Kode Pos Insitusi" :error="$errors->first('kode_pos_kantor')"/>
+                            <x-login-form-input id="no_telepon_kantor" name="no_telepon_kantor" label="No Telepon Institusi" :error="$errors->first('no_telepon_kantor')" />
                         </div>
                     </div>
                 </form>

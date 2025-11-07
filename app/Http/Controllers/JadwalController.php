@@ -16,7 +16,7 @@ class JadwalController extends Controller
         $jadwals = Jadwal::all(); // atau $jadwals = Jadwal::paginate(10);
 
         // Kirim data 'jadwals' ke view
-        return view('frontend.jadwal', compact('jadwals'));    
+        return view('frontend.jadwal', compact('jadwals'));
     }
 
     /**

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LSP Polines - @yield('title', 'Selamat Datang Asesor')</title>
+    <title>LSP Polines - @yield('title', 'Selamat Datang')</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -19,7 +19,7 @@
 
 </head>
 
-<body class="antialiased bg-white flex flex-col min-h-screen">
+<body class="antialiased bg-white">
 
     <x-navbar.navbar-fixx/>
    
