@@ -8,29 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class Skema extends Model
 {
     use HasFactory;
+    protected $table = 'master_skema';
+    protected $guarded = ['id'];
 
-    /**
-     * Nama tabel yang digunakan oleh model.
-     * (Sesuai dengan file migrasi Anda)
-     */
-    protected $table = 'skema'; // <-- DISESUAIKAN
-
-    /**
-     * Primary key yang digunakan oleh tabel.
-     */
-    protected $primaryKey = 'id_skema';
-
-    /**
-     * Izinkan semua kolom diisi.
-     */
-    protected $guarded = [];
-
-    /**
-     * Definisikan relasi: Satu Skema memiliki BANYAK Unit Kompetensi.
-     */
     public function unitKompetensi()
     {
-        // Sesuaikan nama Model & Foreign Key jika perlu
-        return $this->hasMany(UnitKompetensi::class, 'id_skema', 'id_skema');
+        return $this->hasMany(UnitKompetensi::class, 'skema_id');
+    }
+
+    // TAMBAHKAN FUNGSI INI:
+    /**
+     * Asesor yang terhubung dengan Skema ini.
+     */
+    public function asesor()
+    {
+        return $this->belongsToMany(
+            Asesor::class,          // Model tujuan
+            'transaksi_asesor_skema', // Nama tabel pivot
+            'id_skema',             // Foreign key di pivot untuk model ini
+            'id_asesor'             // Foreign key di pivot untuk model tujuan
+        );
     }
 }
