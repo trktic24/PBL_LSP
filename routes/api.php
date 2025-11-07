@@ -4,11 +4,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\GoogleApiController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'User data retrieved successfully',
+        'data' => $request->user()
+    ]);
+});
 
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [RegisterController::class, 'register']);
-// Route::middleware('auth:sanctum')->post('/logout', [LogoutController::class, 'logout']);
+Route::middleware('auth:sanctum')->post('/logout', [LogoutController::class, 'logout']);
+Route::prefix('auth/google')->group(function () {
+    Route::get('redirect', [GoogleApiController::class, 'redirect']);
+    Route::get('callback', [GoogleApiController::class, 'callback']);
+});
