@@ -2,49 +2,86 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\JenisTuk; // Tambahkan
-use App\Models\Tuk; // Tambahkan
-use App\Models\Skema; // Sudah ada
-use App\Models\Asesor; // Tambahkan
 
 class Jadwal extends Model
 {
+    use HasFactory;
+
+    /**
+     * Nama tabel yang terkait dengan model.
+     *
+     * @var string
+     */
     protected $table = 'jadwal';
 
-    // Kolom-kolom yang boleh diisi secara massal (PENTING untuk keamanan)
+    /**
+     * Kunci primer yang terkait dengan tabel.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id_jadwal';
+
+    /**
+     * Atribut yang dapat diisi secara massal.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'id_jenis_tuk',
         'id_tuk',
         'id_skema',
         'id_asesor',
-        // Tambahkan kolom lain di tabel 'jadwal' seperti 'tanggal_mulai', 'tanggal_selesai', dll.
+        'sesi',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'tanggal_pelaksanaan',
+        'Status_jadwal',
+        'kuota_maksimal',
+        'kuota_minimal',
     ];
 
-    // Relasi ke tabel 'skema' (Sudah benar)
-    public function skema()
-    {
-        return $this->belongsTo(Skema::class, 'id_skema');
-    }
-    
-    // Relasi ke tabel 'jenis_tuk'
-    public function jenisTuk()
-    {
-        // Menggunakan foreign key 'id_jenis_tuk'
-        return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk');
-    }
-    
-    // Relasi ke tabel 'tuk'
+    /**
+     * Atribut yang harus di-cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'tanggal_mulai' => 'datetime',
+        'tanggal_selesai' => 'datetime',
+        'tanggal_pelaksanaan' => 'datetime',
+    ];
+
+    /**
+     * Mendapatkan TUK (Tempat Uji Kompetensi) yang terkait dengan jadwal.
+     */
     public function tuk()
     {
-        // Menggunakan foreign key 'id_tuk'
-        return $this->belongsTo(Tuk::class, 'id_tuk');
+        return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk');
     }
-    
-    // Relasi ke tabel 'asesor'
+
+    /**
+     * Mendapatkan skema yang terkait dengan jadwal.
+     */
+    public function skema()
+    {
+        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+    }
+
+    /**
+     * Mendapatkan asesor yang terkait dengan jadwal.
+     */
     public function asesor()
     {
-        // Menggunakan foreign key 'id_asesor'
-        return $this->belongsTo(Asesor::class, 'id_asesor');
+        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
+    }
+
+    public function jenisTuk()
+    /**
+     * Mendapatkan jenis TUK yang terkait dengan jadwal.
+     */
+    {
+        return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
 }

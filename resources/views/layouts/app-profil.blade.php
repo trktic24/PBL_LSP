@@ -21,7 +21,7 @@
 
 <body class="antialiased bg-white flex flex-col min-h-screen">
 
-    <x-navbar.navbar/>
+    <x-navbar.navbar-fixx/>
    
         <div class="bg-white flex-1 flex">
         @yield('content')
