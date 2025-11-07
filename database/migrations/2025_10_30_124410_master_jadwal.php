@@ -26,7 +26,8 @@ return new class extends Migration
             $table->integer('sesi')->comment('daftar Sesi');
             $table->dateTime('tanggal_mulai')->comment('tanggal Mulai pendaftaran');
             $table->dateTime('tanggal_selesai')->comment('tanggal Selesai pendaftaran');
-            $table->dateTime('tanggal_pelaksanaan')->comment('tanggal pelaksanaan');
+            $table->date('tanggal_pelaksanaan')->comment('tanggal pelaksanaan');
+            $table->time('waktu_mulai')->comment('Waktu Mulai pelaksanaan');
             $table->enum('Status_jadwal', ['Terjadwal', 'Selesai', 'Dibatalkan'])->comment('Status jadwal saat ini');
             $table->timestamps();
         });

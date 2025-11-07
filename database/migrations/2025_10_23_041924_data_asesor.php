@@ -14,12 +14,10 @@ return new class extends Migration
         Schema::create('asesor', function (Blueprint $table) {
             // Sesuai permintaan: id_asesor (primary) (bigint)
             $table->id('id_asesor'); 
-            
-            // Sesuai permintaan: id_skema (Foreign) (bigint) & id_user (Foreign) (bigint)
-            // Ini adalah cara modern Laravel untuk membuat foreign key (unsignedBigInteger + constraint)
-            // Pastikan Anda sudah memiliki tabel 'skema' dan 'users'
-            $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('user_id')
+                  ->constrained('users', 'id_user') // <-- Tambahkan 'id_user' di sini
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
 
             // Data Pribadi Asesor
             $table->string('nomor_regis', 50)->unique();
