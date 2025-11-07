@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('data_sertifikasi_asesi', function (Blueprint $table) {
             $table->id('id_data_sertifikasi_asesi');
-            $table->foreignId('id_asesi')->constrained('asesi', 'id_asesi')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreignId('id_jadwal')->constrained('jadwal', 'id_jadwal')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('id_asesi')->constrained('asesi', 'id_asesi')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('id_jadwal')->constrained('jadwal', 'id_jadwal')->onUpdate('cascade')->onDelete('cascade');
             // Isi kolom yang dibutuhkan untuk data sertifikasi asesi
             $table->enum('rekomendasi_apl01', ['diterima', 'tidak diterima'])->comment('Apakah asesi mendapatkan rekomendasi dari APL-01 untuk lanjut asesmen pada APL-02');
             $table->enum('tujuan_asesmen',['sertifikasi', 'PKT', 'rekognisi pmbelajaran sebelumnya', 'lainnya'])->comment('Tujuan asesmen asesi');
