@@ -9,25 +9,9 @@ class MasterTuk extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang terkait dengan model.
-     *
-     * @var string
-     */
     protected $table = 'master_tuk';
-
-    /**
-     * Kunci primer yang terkait dengan tabel.
-     *
-     * @var string
-     */
     protected $primaryKey = 'id_tuk';
 
-    /**
-     * Atribut yang dapat diisi secara massal.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'nama_lokasi',
         'alamat_tuk',
@@ -37,7 +21,7 @@ class MasterTuk extends Model
     ];
 
     /**
-     * Mendapatkan jadwal yang terkait dengan TUK.
+     * Mendefinisikan relasi one-to-many ke model Jadwal.
      */
     public function jadwal()
     {

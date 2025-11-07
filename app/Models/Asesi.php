@@ -4,29 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-<<<<<<< HEAD
-=======
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
->>>>>>> origin/kelompok_1
 
 class Asesi extends Model
 {
     use HasFactory;
 
-<<<<<<< HEAD
-    // Menentukan nama tabel yang sesuai dengan migrasi
-    protected $table = 'asesi';
-
-    // Menentukan primary key yang sesuai dengan migrasi (id_asesi)
-    protected $primaryKey = 'id_asesi';
-
-    // Menentukan kolom yang dapat diisi (fillable) untuk operasi mass assignment
-=======
     protected $table = 'asesi';
     protected $primaryKey = 'id_asesi';
 
->>>>>>> origin/kelompok_1
     protected $fillable = [
         'id_user',
         'nama_lengkap',
