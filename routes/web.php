@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
+use App\Http\Controllers\SkemaWebController;
 
 // --------------------
 // Halaman Umum (static page)
@@ -121,6 +122,7 @@ Route::get('/detail_skema', function () {
     return view('landing_page.detail.detail_skema');
 })->name('skema.detail');
 
+Route::get('/detail-skema/{id}', [SkemaWebController::class, 'show'])->name('detail_skema');
 // Rute untuk alur sertifikasi (TETAP CLOSURE)
 Route::get('/alur-sertifikasi', function () {
     return view('landing_page.page_info.alur-sertifikasi');

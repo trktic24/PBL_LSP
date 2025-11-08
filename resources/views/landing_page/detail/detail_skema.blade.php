@@ -1,20 +1,22 @@
 @extends('layouts.app-profil')
 @section('content')
 
-    {{-- Hero Section dengan Gambar Skema --}}
+    {{-- HERO SECTION --}}
     <section class="container mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
-            <img src="{{ asset('images/' . $skema['gambar']) }}" 
-                alt="{{ $skema['nama'] }}"
+            {{-- Ganti akses gambar --}}
+            <img src="{{ asset('images/' . ($skema->gambar ?? 'default.jpg')) }}" 
+                alt=""
                 class="w-full h-full object-cover">
 
-            <!-- Overlay gradient -->
             <div class="absolute inset-0 bg-gradient-to-r from-blue-500/90 via-blue-400/40 to-transparent"></div>
 
-            <!-- Text Content -->
             <div class="absolute inset-0 flex flex-col justify-center px-12 text-white">
-                <h1 class="text-6xl font-bold mb-4">{{ strtoupper($skema['nama']) }}</h1>
-                <p class="text-lg max-w-md">{{ $skema['deskripsi'] }}</p>
+                {{-- PERBAIKAN DI SINI: Akses menggunakan -> dan gunakan nama kolom 'nama_skema' --}}
+                <h1 class="text-6xl font-bold mb-4">{{ strtoupper($skema->nama_skema) }}</h1>
+            
+                {{-- Akses kolom deskripsi yang benar (misalnya deskripsi_skema) --}}
+                <p class="text-lg max-w-md">{{ $skema->deskripsi_skema ?? $skema->deskripsi ?? 'Deskripsi tidak tersedia' }}</p>
             </div>
         </div>
     </section>

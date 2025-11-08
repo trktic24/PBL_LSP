@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
+use App\Http\Controllers\Api\Auth\SkemaController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
@@ -22,3 +23,6 @@ Route::prefix('auth/google')->group(function () {
     Route::get('redirect', [GoogleApiController::class, 'redirect']);
     Route::get('callback', [GoogleApiController::class, 'callback']);
 });
+
+
+Route::get('/skema', [SkemaController::class, 'index']);
