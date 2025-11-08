@@ -2,17 +2,12 @@
 
 namespace Database\Seeders;
 
-<<<<<<< HEAD
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-=======
 use App\Models\Role;
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
->>>>>>> origin/kelompok_1
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -21,79 +16,51 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-<<<<<<< HEAD
-        // 1. Membuat 1 user Admin (data spesifik)
-        // Pola ini sama seperti Anda membuat 'Junior Web Developer'
-        User::factory()->create([
-            'username' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => 'password123', // Tetap pakai teks biasa
-            'role_id' => 1, // Asumsi 1 = role admin
-        ]);
-
-        // 2. Membuat 1 user Asesor (data spesifik)
-        User::factory()->create([
-            'username' => 'asesor01',
-            'email' => 'asesor@example.com',
-            'password' => 'password123',
-            'role_id' => 2, // Asumsi 2 = role asesor
-        ]);
-
-        // 3. Membuat 5 user Asesi/Peserta (data acak)
-        // Pola ini sama seperti Anda membuat 'count(5)'
-        User::factory()->count(5)->create([
-            'role_id' => 3, // Asumsi 3 = role asesi/peserta
-        ]);
-        
-        // Catatan: Jika role_id ingin acak juga, 
-        // Anda bisa mengaturnya di UserFactory.php
-    }
-}
-=======
-        // -- LANGKAH 1: Ambil Role yang udah dibuat sama RoleSeeder --
-
-        // Pastikan nama role-nya SAMA PERSIS kayak di RoleSeeder.php
-        // (admin, asesi, asesor, superadmin)
+        // Ambil ID dari role
         $adminRole = Role::where('nama_role', 'admin')->first();
         $asesorRole = Role::where('nama_role', 'asesor')->first();
         $asesiRole = Role::where('nama_role', 'asesi')->first();
-        $superadminRole = Role::where('nama_role', 'superadmin')->first();
 
-
-        // -- LANGKAH 2: Buat Data User (Admin, Asesor, Asesi) --
-
-        // Buat 1 User Super Admin (spesifik)
-        if ($superadminRole) {
-            User::factory()->create([
-                'email' => 'superadmin@gmail.com',
-                'password' => Hash::make('password'),
-                'role_id' => $superadminRole->id_role,
-            ]);
-        }
-
-        // Buat 1 User Admin (spesifik)
+        // Buat Admin
         if ($adminRole) {
-            User::factory()->create([
-                'email' => 'admin@gmail.com',
-                'password' => Hash::make('password'),
+            User::create([
                 'role_id' => $adminRole->id_role,
+                'email' => 'admin@example.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+                'google_id' => null,
+                'remember_token' => Str::random(10),
+                // 'username' => 'admin', // <-- DIPERBAIKI: Baris ini dihapus karena kolomnya tidak ada
             ]);
         }
 
-        // Buat 5 User Asesor (pake factory)
+        // Buat Contoh Asesor
         if ($asesorRole) {
-            // Kita override role_id-nya jadi 'Asesor'
-            User::factory()->count(5)->create([
+            User::create([
                 'role_id' => $asesorRole->id_role,
+                'email' => 'asesor@example.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+                'google_id' => null,
+                'remember_token' => Str::random(10),
+                // 'username' => 'asesor', // <-- DIPERBAIKI: Baris ini dihapus
             ]);
         }
 
-        // Buat 20 User Asesi (pake factory)
+        // Buat Contoh Asesi
         if ($asesiRole) {
-            User::factory()->count(20)->create([
+            User::create([
                 'role_id' => $asesiRole->id_role,
+                'email' => 'asesi@example.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+                'google_id' => null,
+                'remember_token' => Str::random(10),
+                // 'username' => 'asesi', // <-- DIPERBAIKI: Baris ini dihapus
             ]);
         }
+
+        // Anda bisa tambahkan factory untuk membuat data dummy lebih banyak
+        // User::factory(10)->create();
     }
 }
->>>>>>> origin/kelompok_1

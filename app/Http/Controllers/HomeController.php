@@ -77,6 +77,6 @@ class HomeController extends Controller
         }
 
 
-        return view('home', compact('profile', 'summary', 'jadwal'));
+        return view('frontend.home', compact('profile', 'summary', 'jadwal'));
     }
 }
