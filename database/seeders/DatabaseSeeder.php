@@ -7,6 +7,7 @@ use App\Models\Asesor;
 use App\Models\Asesi;
 use App\Models\Tuk; // Pastikan Model Tuk ada
 use App\Models\Skema;
+use App\Models\Schedule;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,5 +28,6 @@ class DatabaseSeeder extends Seeder
         Asesi::factory(10)->create();
         Tuk::factory(10)->create();
         Skema::factory(10)->create();
+        Schedule::factory(10)->create();
     }
 }

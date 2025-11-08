@@ -7,6 +7,7 @@ use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\AsesorController; 
 use App\Http\Controllers\AsesiController; 
 use App\Http\Controllers\TukController;
+use App\Http\Controllers\ScheduleController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
@@ -113,11 +114,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/edit-asesi-step-4', function () { return view('master.asesi.edit_asesi4'); })->name('edit_asesi4');
 
     // 7. Master - Schedule
-    Route::get('/schedule_admin', function () { return view('master.schedule.schedule_admin'); })->name('schedule_admin');
-    Route::get('/master_schedule', function () { return view('master.schedule.master_schedule'); })->name('master_schedule');
-    Route::get('/add_schedule', function () { return view('master.schedule.add_schedule'); })->name('add_schedule');
-    Route::get('/edit_schedule', function () { return view('master.schedule.edit_schedule'); })->name('edit_schedule');
-    
+    Route::controller(ScheduleController::class)->prefix('master/schedule')->group(function () {
+        Route::get('/', 'index')->name('master_schedule');
+        Route::get('/add', 'create')->name('add_schedule');
+        Route::post('/add', 'store')->name('add_schedule.store');
+        Route::get('/edit/{id_jadwal}', 'edit')->name('edit_schedule');
+        Route::patch('/update/{id_jadwal}', 'update')->name('update_schedule');
+        Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_schedule');
+    });
+    Route::get('/schedule_admin', [ScheduleController::class, 'showCalendar'])->name('schedule_admin');
+
     // 8. TUK
     Route::controller(TukController::class)->prefix('master/tuk')->group(function () {
         Route::get('/', 'index')->name('master_tuk');           // Read (All)

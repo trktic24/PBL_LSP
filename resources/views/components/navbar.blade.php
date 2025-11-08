@@ -16,7 +16,8 @@
   $isAsesiActive = request()->routeIs('master_asesi');
 
   // Cek untuk link Schedule (Master) di dropdown
-  $isMasterScheduleActive = request()->routeIs('master_schedule');
+  // Menggunakan wildcard agar add/edit/update juga terdeteksi
+  $isMasterScheduleActive = request()->is('master/schedule*');
 
   // Logika untuk Master (Gabungan dari semua di atas)
   $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive;
@@ -24,10 +25,11 @@
   // Cek untuk menu Schedule Utama
   $isScheduleActive = request()->routeIs('schedule_admin');
 
+  // === INI BAGIAN YANG DIPERBAIKI ===
   // Cek untuk menu TUK Utama
-  $isTukActive = request()->is('tuk_*') || 
-                 request()->is('add_tuk') ||
-                 request()->routeIs('master_tuk'); 
+  // Menggunakan wildcard 'master/tuk*' agar 'add_tuk' dan 'edit_tuk' terdeteksi
+  $isTukActive = request()->is('master/tuk*'); 
+  // ==================================
 
   // Cek untuk Ikon Notifikasi
   $isNotifActive = request()->routeIs('notifications');
@@ -47,7 +49,7 @@
   <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
     
     <a href="{{ route('dashboard') }}" class="relative h-full flex items-center transition
-       {{ request()->routeIs('dashboard') ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
+      {{ request()->routeIs('dashboard') ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
       Dashboard
       @if (request()->routeIs('dashboard'))
       <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
@@ -87,24 +89,24 @@
     </div>
 
     <a href="{{ route('schedule_admin') }}" class="relative h-full flex items-center transition {{ $isScheduleActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
-       Schedule
-       @if ($isScheduleActive)
-        <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
-       @endif
+        Schedule
+        @if ($isScheduleActive)
+         <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
+        @endif
     </a>
     
     <a href="{{ route('master_tuk') }}" class="relative h-full flex items-center transition {{ $isTukActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
-       TUK
-       @if ($isTukActive)
-        <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
-       @endif
+        TUK
+        @if ($isTukActive)
+         <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
+        @endif
     </a>
   </div>
 
   <div class="flex items-center space-x-6">
     <a href="{{ route('notifications') }}" 
        class="relative w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-[0_4px_8px_rgba(0,0,0,0.15)] 
-              hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+            hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
       <i class="fas fa-bell text-xl {{ $isNotifActive ? 'text-blue-600' : 'text-gray-600' }}"></i>
       <span class="absolute top-2 right-2">
         <span class="relative flex w-2 h-2">
@@ -116,7 +118,7 @@
 
     <a href="{{ route('profile_admin') }}" 
        class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-              hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
+             hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all">
       <span class="{{ $isProfileActive ? 'text-blue-600' : 'text-gray-800' }} font-semibold text-base mr-2">Admin LSP</span>
       <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner">
         <img src="{{ asset('images/profile.jpg') }}" alt="Profil" class="w-full h-full object-cover">
