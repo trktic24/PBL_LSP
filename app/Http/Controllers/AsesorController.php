@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Asesor;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log; // Pastikan Log di-import
 use Illuminate\Validation\Rule; 
 use Illuminate\Support\Facades\Storage; 
 
@@ -389,5 +389,30 @@ class AsesorController extends Controller
 
         return redirect()->route('master_asesor')
                          ->with('success', 'Data Asesor berhasil diperbarui.');
+    }
+
+    // ==========================================================
+    // <!-- FUNGSI BARU UNTUK HAPUS ASESOR -->
+    // ==========================================================
+    /**
+     * Hapus data Asesor dari database.
+     */
+    public function destroy($id_asesor)
+    {
+        try {
+            $asesor = Asesor::findOrFail($id_asesor);
+            
+            // Panggil delete(). Model Event di Asesor.php akan
+            // menangani penghapusan User dan file secara otomatis.
+            $asesor->delete();
+
+            return redirect()->route('master_asesor')
+                             ->with('success', 'Asesor berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            Log::error('Gagal menghapus asesor: ' . $e->getMessage());
+            // PERBAIKAN: Pesan error agar lebih jelas
+            return back()->with('error', 'Terjadi kesalahan saat menghapus asesor: ' . $e->getMessage());
+        }
     }
 }
