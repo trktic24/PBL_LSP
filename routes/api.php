@@ -17,7 +17,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/login', [LoginController::class, 'login']);
-Route::post('/register', [RegisterController::class, 'register']);
+Route::prefix('register')->group(function () {
+    Route::post('/asesi', [RegisterController::class, 'registerAsesi']);
+    Route::post('/asesor', [RegisterController::class, 'registerAsesor']);
+});
 Route::middleware('auth:sanctum')->post('/logout', [LogoutController::class, 'logout']);
 Route::prefix('auth/google')->group(function () {
     Route::get('redirect', [GoogleApiController::class, 'redirect']);
