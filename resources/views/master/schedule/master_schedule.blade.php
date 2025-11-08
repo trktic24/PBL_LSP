@@ -22,12 +22,8 @@
     <x-navbar />
     <main class="p-6">
       <div class="mb-6">
-        {{-- Tombol Back ini mungkin tidak lagi relevan jika ini halaman master --}}
-        {{-- <a href="{{ route('schedule_admin') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium mb-4">
-            <i class="fas fa-arrow-left mr-2"></i> Back
-        </a> --}}
         <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
-        <h2 class="text-3xl font-bold text-gray-900">Master Jadwal Uji Kompetensi</h2>
+        <h2 class="text-3xl font-bold text-gray-900">Jadwal Uji Kompetensi</h2>
       </div>
 
       <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
@@ -101,32 +97,45 @@
 
 
       <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
+        
+        <table class="min-w-full divide-y divide-gray-200 text-xs">
           
-          {{-- === HEADER TABEL DIPERBARUI === --}}
           <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
             <tr>
               <th class="px-4 py-3 text-left">ID</th>
               <th class="px-4 py-3 text-left">Skema</th>
               <th class="px-4 py-3 text-left">Asesor</th>
               <th class="px-4 py-3 text-left">TUK</th>
-              <th class="px-4 py-3 text-left">Tgl Pelaksanaan</th>
+              <th class="px-4 py-3 text-left">Pendaftaran</th>
+              <th class="px-4 py-3 text-left">Pelaksanaan</th>
+              <th class="px-4 py-3 text-left">Jenis TUK</th>
               <th class="px-4 py-3 text-left">Sesi</th>
+              <th class="px-4 py-3 text-left">Kuota (Min/Max)</th>
               <th class="px-4 py-3 text-left">Status</th>
+              <th class="px-4 py-3 text-center">Daftar Hadir</th>
+              <th class="px-4 py-3 text-center">Berita Acara</th>
               <th class="px-4 py-3 text-left">Aksi</th>
             </tr>
           </thead>
           
-          {{-- === BODY TABEL DIBUAT DINAMIS === --}}
           <tbody class="divide-y divide-gray-100">
             @forelse ($jadwals as $jadwal)
             <tr class="hover:bg-gray-50 transition">
               <td class="px-4 py-3">{{ $jadwal->id_jadwal }}</td>
-              <td class="px-4 py-3 font-semibold">{{ $jadwal->skema?->nama_skema ?? 'N/A' }}</td>
+              <td class="px-4 py-3">{{ $jadwal->skema?->nama_skema ?? 'N/A' }}</td>
               <td class="px-4 py-3">{{ $jadwal->asesor?->nama_lengkap ?? 'N/A' }}</td>
               <td class="px-4 py-3">{{ $jadwal->tuk?->nama_lokasi ?? 'N/A' }}</td>
-              <td class="px-4 py-3">{{ $jadwal->tanggal_pelaksanaan?->format('d/m/Y H:i') ?? 'N/A' }}</td>
+              
+              <td class="px-4 py-3">{{ $jadwal->tanggal_mulai?->format('d/m/Y') ?? 'N/A' }} - {{ $jadwal->tanggal_selesai?->format('d/m/Y') ?? 'N/A' }}</td>
+              
+              <td class="px-4 py-3">{{ $jadwal->tanggal_pelaksanaan?->format('d/m/Y') ?? 'N/A' }} ({{ $jadwal->waktu_mulai?->format('H:i') ?? 'N/A' }})</td>
+              
+              <td class="px-4 py-3">{{ $jadwal->jenisTuk?->jenis_tuk ?? 'N/A' }}</td>
+              
               <td class="px-4 py-3">{{ $jadwal->sesi }}</td>
+              
+              <td class="px-4 py-3">{{ $jadwal->kuota_minimal }} / {{ $jadwal->kuota_maksimal }}</td>
+
               <td class="px-4 py-3">
                 @if($jadwal->Status_jadwal == 'Selesai')
                   <span class="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">Selesai</span>
@@ -136,16 +145,26 @@
                   <span class="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">Terjadwal</span>
                 @endif
               </td>
+
+              <td class="px-4 py-3 text-center">
+                <a href="#" class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded-md transition">
+                    <i class="fas fa-list-check"></i> <span>Lihat</span>
+                </a>
+              </td>
+            
+              <td class="px-4 py-3 text-center">
+                <a href="#" class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded-md transition">
+                    <i class="fas fa-file-alt"></i> <span>Lihat</span>
+                </a>
+              </td>
+
               <td class="px-4 py-3 flex space-x-2">
-                
-                {{-- Tombol Edit Diperbaiki --}}
                 <a href="{{ route('edit_schedule', $jadwal->id_jadwal) }}" 
                    class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
                     <i class="fas fa-pen"></i> <span>Edit</span>
                 </a>
                 
-                {{-- Tombol Delete Diperbaiki --}}
-                <form action="{{ route('delete_schedule', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus jadwal ini?');">
+                <form action="{{ route('delete_schedule', $jadwal->id_jadwal) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus jadwal (ID: {{ $jadwal->id_jadwal }}) ini?');">
                   @csrf
                   @method('DELETE')
                   <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">
@@ -156,7 +175,7 @@
             </tr>
             @empty
             <tr>
-              <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+              <td colspan="13" class="px-6 py-4 text-center text-gray-500">
                 Belum ada data jadwal yang ditampilkan.
               </td>
             </tr>

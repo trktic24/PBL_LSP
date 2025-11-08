@@ -5,6 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// Kita harus meng-import class-class ini
+use App\Models\Skema;
+use App\Models\Tuk;
+use App\Models\Asesor;
+use App\Models\JenisTuk;
+
 class Schedule extends Model
 {
     use HasFactory;
@@ -14,11 +20,14 @@ class Schedule extends Model
     protected $guarded = [];
 
     /**
-     * Tentukan kolom yang harus diperlakukan sebagai tanggal.
+     * Tentukan kolom yang harus diperlakukan sebagai tipe data tertentu.
+     * (Disesuaikan dengan migrasi fiks Anda)
      */
     protected $casts = [
-        // tanggal_mulai dan tanggal_selesai dihapus
-        'tanggal_pelaksanaan' => 'date', // Diubah ke 'date'
+        'tanggal_mulai' => 'datetime',
+        'tanggal_selesai' => 'datetime',
+        'tanggal_pelaksanaan' => 'date',
+        'waktu_mulai' => 'datetime:H:i', 
     ];
 
     /* --- RELASI --- */
@@ -43,11 +52,5 @@ class Schedule extends Model
         return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
 
-    /**
-     * (BARU) Relasi ke model Asesi.
-     */
-    public function asesi()
-    {
-        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
-    }
+
 }

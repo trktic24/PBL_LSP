@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_tuk', function (Blueprint $table) {
-            $table->id('id_jenis_tuk');
+        Schema::create('catatan_keterangan_AK07', function (Blueprint $table) {
+            // PK PERSIS kayak ERD
+            $table->id('id_catatan_keterangan_AK07');
 
-            // isi kolom sesuai kebutuhan
-            $table->enum('jenis_tuk', ['Sewaktu', 'Tempat Kerja'])->comment('Jenis TUK: Sewaktu atau Tempat Kerja');
+            // --- INI PERBAIKAN LOGIKANYA ---
+            // 'catatan' kita jadiin kolom buat nampung NAMA PILIHAN CHECKBOX
+            $table->text('catatan');
+
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_tuk');
+        Schema::dropIfExists('catatan_keterangan_AK07');
     }
 };

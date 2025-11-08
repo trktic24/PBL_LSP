@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_tuk', function (Blueprint $table) {
-            $table->id('id_jenis_tuk');
+        Schema::create('soal_ia06', function (Blueprint $table) {
+            $table->id('id_soal_ia06');
 
-            // isi kolom sesuai kebutuhan
-            $table->enum('jenis_tuk', ['Sewaktu', 'Tempat Kerja'])->comment('Jenis TUK: Sewaktu atau Tempat Kerja');
+            // isi dari database soal_ia06
+            $table->text('soal_ia06');
+            $table->text('kunci_jawaban_ia06')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_tuk');
+        Schema::dropIfExists('soal_ia06');
     }
 };

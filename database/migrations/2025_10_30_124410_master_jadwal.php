@@ -19,11 +19,16 @@ return new class extends Migration
             $table->foreignId('id_tuk')->constrained('master_tuk', 'id_tuk')->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('id_asesor')->constrained('asesor', 'id_asesor')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreignId('id_asesi')->constrained('asesi', 'id_asesi')->onUpdate('cascade')->onDelete('restrict');
 
             // Isi kolom
-            $table->date('tanggal_pelaksanaan');
-            $table->string('Status_jadwal')->comment('Status bisa berupa: Terjadwal, Selesai, Dibatalkan');
+            $table->integer('kuota_maksimal')->comment('jumlah maksimal peserta');
+            $table->integer('kuota_minimal')->nullable()->default(15)->comment('jumlah minimal peserta');
+            $table->integer('sesi')->comment('daftar Sesi');
+            $table->dateTime('tanggal_mulai')->comment('tanggal Mulai pendaftaran');
+            $table->dateTime('tanggal_selesai')->comment('tanggal Selesai pendaftaran');
+            $table->date('tanggal_pelaksanaan')->comment('tanggal pelaksanaan');
+            $table->time('waktu_mulai')->comment('Waktu Mulai pelaksanaan');
+            $table->enum('Status_jadwal', ['Terjadwal', 'Selesai', 'Dibatalkan'])->comment('Status jadwal saat ini');
             $table->timestamps();
         });
     }

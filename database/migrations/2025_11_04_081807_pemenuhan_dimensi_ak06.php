@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_tuk', function (Blueprint $table) {
-            $table->id('id_jenis_tuk');
+        Schema::create('pemenuhan_dimensi_ak06', function (Blueprint $table) {
+            // PK PERSIS kayak ERD
+            $table->id('id_pemenuhan_dimensi_ak06');
 
-            // isi kolom sesuai kebutuhan
-            $table->enum('jenis_tuk', ['Sewaktu', 'Tempat Kerja'])->comment('Jenis TUK: Sewaktu atau Tempat Kerja');
+            // --- INI PERBAIKAN LOGIKANYA ---
+            // Kita bikin 1 kolom buat nampung 5 pilihan itu
+            $table->string('nama_dimensi');
+
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_tuk');
+        Schema::dropIfExists('pemenuhan_dimensi_ak06');
     }
 };

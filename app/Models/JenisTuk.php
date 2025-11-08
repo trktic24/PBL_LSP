@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models; // <-- Pastikan namespace-nya App\Models
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,24 +10,23 @@ class JenisTuk extends Model
     use HasFactory;
 
     /**
-     * Nama tabel yang terhubung dengan model.
+     * (WAJIB) Memberi tahu Laravel nama tabel yang benar.
      */
     protected $table = 'jenis_tuk';
 
     /**
-     * Primary key kustom untuk tabel.
+     * (WAJIB) Memberi tahu Laravel primary key yang benar.
      */
     protected $primaryKey = 'id_jenis_tuk';
 
     /**
-     * Izinkan semua kolom diisi.
+     * Izinkan mass assignment.
      */
     protected $guarded = [];
 
-    /**
-     * Beri tahu Laravel untuk tidak mengelola timestamps 
-     * (created_at & updated_at) di tabel ini.
-     * (Migrasi Anda sebelumnya tidak memilikinya)
-     */
-    public $timestamps = true; // <-- Ganti ke 'false' jika tabel Anda tidak punya timestamps
+    
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class, 'id_jenis_tuk', 'id_jenis_tuk');
+    }
 }

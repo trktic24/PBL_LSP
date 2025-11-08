@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_tuk', function (Blueprint $table) {
-            $table->id('id_jenis_tuk');
+        Schema::create('instrumen_asesmen_mapa02', function (Blueprint $table) {
+            $table->id('id_instrumen_asesmen_mapa02');
 
-            // isi kolom sesuai kebutuhan
-            $table->enum('jenis_tuk', ['Sewaktu', 'Tempat Kerja'])->comment('Jenis TUK: Sewaktu atau Tempat Kerja');
+            // isi model DB
+            $table->string('instrumen_asesmen_mapa02')->comment('Instrumen asesmen Mapa 02');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_tuk');
+        Schema::dropIfExists('instrumen_asesmen_mapa02');
     }
 };

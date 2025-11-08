@@ -14,30 +14,27 @@ class AsesorFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_user' => User::factory()->asesor(), // <-- Panggil state 'asesor'
-            'id_skema' => Skema::factory(),
+            'user_id' => User::factory()->asesor(),
             
             'nomor_regis' => 'REG-' . fake()->unique()->numerify('#####'),
             'nama_lengkap' => fake()->name(),
             
-            // ==========================================================
-            // PERBAIKAN DI SINI: Pastikan hanya ada 16 tanda pagar
-            // ==========================================================
-            'nik' => fake()->unique()->numerify('################'), // <-- TEPAT 16 TANDA PAGAR
+            'nik' => fake()->unique()->numerify('################'), // 16 digit
 
             'tempat_lahir' => fake()->city(),
             'tanggal_lahir' => fake()->date(),
-            'jenis_kelamin' => fake()->boolean(),
+            'jenis_kelamin' => fake()->randomElement(['Laki-laki', 'Perempuan']),
+            
             'kebangsaan' => 'Indonesia',
             'pekerjaan' => fake()->jobTitle(),
             'alamat_rumah' => fake()->address(),
             'kode_pos' => fake()->postcode(),
             'kabupaten_kota' => fake()->city(),
             'provinsi' => fake()->state(),
-            'nomor_hp' => fake()->numerify('081#########'), // 12 digit
-            'NPWP' => fake()->numerify('###############'), // 15 digit
+            'nomor_hp' => fake()->numerify('081#########'),
+            'NPWP' => fake()->numerify('###############'),
             'nama_bank' => 'BCA',
-            'norek' => fake()->numerify('##########'), // 10 digit
+            'norek' => fake()->numerify('##########'), 
             
             'ktp' => 'dummy/ktp.pdf',
             'pas_foto' => 'dummy/foto.png',

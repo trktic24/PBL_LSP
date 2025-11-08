@@ -28,8 +28,7 @@ class AsesiFactory extends Factory // WAJIB HARUS AsesiFactory
             'tanggal_lahir'  => $this->faker->dateTimeBetween('-25 years', '-18 years')->format('Y-m-d'),
             
             // === INI PERBAIKANNYA ===
-            // Kita ubah string 'Laki-laki'/'Perempuan' menjadi boolean 1/0
-            'jenis_kelamin'  => ($gender_string === 'Laki-laki') ? 1 : 0,
+            'jenis_kelamin'  => $gender_string,
             
             'kebangsaan'     => 'Indonesia',
             'pendidikan'     => $this->faker->randomElement(['D3 Teknologi Komputer', 'D4 Sistem Informasi', 'S1 Teknik Elektro']),
