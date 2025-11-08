@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('respon_ia10', function (Blueprint $table) {
             $table->id('id_respon_ia10');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_pertanyaan_ia10')->constrained('pertanyaan_ia10', 'id_pertanyaan_ia10')->onUpdate('cascade')->onDelete('cascade');
 
             // isi kolom Database respon_ia10
             $table->text('pertanyaan_ia10');
