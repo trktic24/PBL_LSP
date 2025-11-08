@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             JenisTukSeeder::class,
             JadwalSeeder::class,
             MasterTukSeeder::class,
-
+            SkemaSeeder::class,
         ]);
 
 }
