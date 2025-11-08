@@ -78,9 +78,11 @@ Route::middleware('auth')->group(function () {
     
     // 5. Master - Asesor
     Route::get('/master_asesor', function () {
+        // Menggunakan eager loading untuk performa
         $asesors = \App\Models\Asesor::with(['user', 'skema'])->get(); 
         return view('master.asesor.master_asesor', [ 'asesors' => $asesors ]);
     })->name('master_asesor');
+    
     // ... (Rute Add/Edit Asesor)
     Route::get('/add_asesor1', [AsesorController::class, 'createStep1'])->name('add_asesor1');
     Route::post('/add_asesor1', [AsesorController::class, 'postStep1'])->name('add_asesor1.post');
@@ -94,6 +96,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/update-asesor-step-2/{id_asesor}', [AsesorController::class, 'updateStep2'])->name('asesor.update.step2');
     Route::get('/edit-asesor-step-3/{id_asesor}', [AsesorController::class, 'editStep3'])->name('edit_asesor3');
     Route::patch('/update-asesor-step-3/{id_asesor}', [AsesorController::class, 'updateStep3'])->name('asesor.update.step3');
+
+    // ==========================================================
+    // <!-- RUTE BARU UNTUK HAPUS ASESOR -->
+    // ==========================================================
+    // Rute ini menangani permintaan DELETE ke URL /asesor/{id_asesor}
+    Route::delete('/asesor/{id_asesor}', [AsesorController::class, 'destroy'])->name('asesor.destroy');
     
     // 6. Master - Asesi
     Route::get('/master_asesi', [AsesiController::class, 'index'])->name('master_asesi');
