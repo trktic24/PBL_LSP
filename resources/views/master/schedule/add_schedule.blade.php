@@ -50,57 +50,78 @@
           </div>
         @endif
         
-        {{-- === FORMULIR DIPERBAIKI TOTAL === --}}
         <form action="{{ route('add_schedule.store') }}" method="POST" class="space-y-6">
           @csrf
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="id_skema" class="block text-sm font-medium text-gray-700 mb-2">Nama Skema <span class="text-red-500">*</span></label>
-              <select id="id_skema" name="id_skema" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                <option value="">Pilih Skema</option>
-                @foreach($skemas as $skema)
-                  <option value="{{ $skema->id_skema }}" {{ old('id_skema') == $skema->id_skema ? 'selected' : '' }}>
-                    {{ $skema->nama_skema }} ({{ $skema->kode_unit }})
-                  </option>
-                @endforeach
-              </select>
+              <div class="relative w-full">
+                <select id="id_skema" name="id_skema" required 
+                        {{-- 2. Class 'appearance-none pr-10' --}}
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white appearance-none pr-10">
+                  <option value="">Pilih Skema</option>
+                  @foreach($skemas as $skema)
+                    <option value="{{ $skema->id_skema }}" {{ old('id_skema') == $skema->id_skema ? 'selected' : '' }}>
+                      {{ $skema->nama_skema }} ({{ $skema->kode_unit }})
+                    </option>
+                  @endforeach
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <i class="fas fa-caret-down text-gray-500"></i>
+                </div>
+              </div>
             </div>
             <div>
               <label for="id_asesor" class="block text-sm font-medium text-gray-700 mb-2">Asesor <span class="text-red-500">*</span></label>
-              <select id="id_asesor" name="id_asesor" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                <option value="">Pilih Asesor</option>
-                @foreach($asesors as $asesor)
-                  <option value="{{ $asesor->id_asesor }}" {{ old('id_asesor') == $asesor->id_asesor ? 'selected' : '' }}>
-                    {{ $asesor->nama_lengkap }}
-                  </option>
-                @endforeach
-              </select>
+              <div class="relative w-full">
+                <select id="id_asesor" name="id_asesor" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white appearance-none pr-10">
+                  <option value="">Pilih Asesor</option>
+                  @foreach($asesors as $asesor)
+                    <option value="{{ $asesor->id_asesor }}" {{ old('id_asesor') == $asesor->id_asesor ? 'selected' : '' }}>
+                      {{ $asesor->nama_lengkap }}
+                    </option>
+                  @endforeach
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <i class="fas fa-caret-down text-gray-500"></i>
+                </div>
+              </div>
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="id_tuk" class="block text-sm font-medium text-gray-700 mb-2">Tempat Uji Kompetensi (TUK) <span class="text-red-500">*</span></label>
-              <select id="id_tuk" name="id_tuk" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                <option value="">Pilih TUK</option>
-                @foreach($tuks as $tuk)
-                  <option value="{{ $tuk->id_tuk }}" {{ old('id_tuk') == $tuk->id_tuk ? 'selected' : '' }}>
-                    {{ $tuk->nama_lokasi }}
-                  </option>
-                @endforeach
-              </select>
+              <div class="relative w-full">
+                <select id="id_tuk" name="id_tuk" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white appearance-none pr-10">
+                  <option value="">Pilih TUK</option>
+                  @foreach($tuks as $tuk)
+                    <option value="{{ $tuk->id_tuk }}" {{ old('id_tuk') == $tuk->id_tuk ? 'selected' : '' }}>
+                      {{ $tuk->nama_lokasi }}
+                    </option>
+                  @endforeach
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <i class="fas fa-caret-down text-gray-500"></i>
+                </div>
+              </div>
             </div>
             <div>
               <label for="id_jenis_tuk" class="block text-sm font-medium text-gray-700 mb-2">Jenis TUK <span class="text-red-500">*</span></label>
-              <select id="id_jenis_tuk" name="id_jenis_tuk" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                <option value="">Pilih Jenis TUK</option>
-                @foreach($jenisTuks as $jenis)
-                  <option value="{{ $jenis->id_jenis_tuk }}" {{ old('id_jenis_tuk') == $jenis->id_jenis_tuk ? 'selected' : '' }}>
-                    {{ $jenis->jenis_tuk }}
-                  </option>
-                @endforeach
-              </select>
+              <div class="relative w-full">
+                <select id="id_jenis_tuk" name="id_jenis_tuk" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white appearance-none pr-10">
+                  <option value="">Pilih Jenis TUK</option>
+                  @foreach($jenisTuks as $jenis)
+                    <option value="{{ $jenis->id_jenis_tuk }}" {{ old('id_jenis_tuk') == $jenis->id_jenis_tuk ? 'selected' : '' }}>
+                      {{ $jenis->jenis_tuk }}
+                    </option>
+                  @endforeach
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <i class="fas fa-caret-down text-gray-500"></i>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -143,11 +164,16 @@
 
           <div>
             <label for="Status_jadwal" class="block text-sm font-medium text-gray-700 mb-2">Status Jadwal <span class="text-red-500">*</span></label>
-            <select id="Status_jadwal" name="Status_jadwal" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-              <option value="Terjadwal" {{ old('Status_jadwal', 'Terjadwal') == 'Terjadwal' ? 'selected' : '' }}>Terjadwal</Ganti>
-              <option value="Selesai" {{ old('Status_jadwal') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
-              <option value="Dibatalkan" {{ old('Status_jadwal') == 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
-            </select>
+            <div class="relative w-full">
+              <select id="Status_jadwal" name="Status_jadwal" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white appearance-none pr-10">
+                <option value="Terjadwal" {{ old('Status_jadwal', 'Terjadwal') == 'Terjadwal' ? 'selected' : '' }}>Terjadwal</option>
+                <option value="Selesai" {{ old('Status_jadwal') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
+                <option value="Dibatalkan" {{ old('Status_jadwal') == 'Dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                <i class="fas fa-caret-down text-gray-500"></i>
+              </div>
+            </div>
           </div>
 
           <div class="pt-4 flex justify-center">
