@@ -415,4 +415,49 @@ class AsesorController extends Controller
             return back()->with('error', 'Terjadi kesalahan saat menghapus asesor: ' . $e->getMessage());
         }
     }
+
+    // ==========================================================
+    // <!-- FUNGSI BARU UNTUK MELIHAT PROFIL ASESOR -->
+    // ==========================================================
+    /**
+     * Menampilkan halaman profil publik seorang Asesor.
+     */
+    public function showProfile($id_asesor)
+    {
+        // Ambil data Asesor DAN data User-nya
+        $asesor = Asesor::with('user')->findOrFail($id_asesor);
+        
+        // Kirim data ke view
+        return view('profile_asesor.asesor_profile_settings', compact('asesor'));
+    }
+
+    // ==========================================================
+    // <!-- FUNGSI BARU UNTUK MELIHAT PROFIL ASESOR -->
+    // ==========================================================
+    /**
+     * Menampilkan halaman profil publik seorang Asesor.
+     */
+    public function showProfile($id_asesor)
+    {
+        // Ambil data Asesor DAN data User-nya
+        $asesor = Asesor::with('user')->findOrFail($id_asesor);
+        
+        // Kirim data ke view
+        return view('profile_asesor.asesor_profile_settings', compact('asesor'));
+    }
+
+    // ==========================================================
+    // <!-- FUNGSI BARU UNTUK MELIHAT BUKTI KELENGKAPAN -->
+    // ==========================================================
+    /**
+     * Menampilkan halaman bukti kelengkapan seorang Asesor.
+     */
+    public function showBukti($id_asesor)
+    {
+        // Ambil data Asesor
+        $asesor = Asesor::findOrFail($id_asesor);
+        
+        // Kirim data ke view
+        return view('profile_asesor.asesor_profile_bukti', compact('asesor'));
+    }
 }
