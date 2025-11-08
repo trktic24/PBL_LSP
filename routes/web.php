@@ -111,6 +111,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/add-asesi-step-3', function () { return view('master.asesi.add_asesi3'); })->name('add_asesi3');
     Route::get('/add-asesi-step-4', function () { return view('master.asesi.add_asesi4'); })->name('add_asesi4');
     Route::post('/store-asesi', function () { return redirect()->route('master_asesi')->with('success', 'Asesi berhasil ditambahkan!'); })->name('asesi.store');
+    // ... (Rute Edit Asesi)
+    Route::get('/edit-asesi-step-1', function () { return view('master.asesi.edit_asesi1'); })->name('edit_asesi1');
+    Route::get('/edit-asesi-step-2', function () { return view('master.asesi.edit_asesi2'); })->name('edit_asesi2');
+    Route::get('/edit-asesi-step-3', function () { return view('master.asesi.edit_asesi3'); })->name('edit_asesi3');
+    Route::get('/edit-asesi-step-4', function () { return view('master.asesi.edit_asesi4'); })->name('edit_asesi4');
 
     // 7. Master - Schedule
     Route::get('/schedule_admin', function () { return view('master.schedule.schedule_admin'); })->name('schedule_admin');
