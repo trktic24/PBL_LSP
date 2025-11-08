@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Models\Jadwal; 
+use App\Models\Skema;
 use \DateTime;
 use Illuminate\Support\Collection;
 
@@ -20,8 +20,8 @@ class HomeController extends Controller
                 'waktu_mulai' => '08:00',
                 'waktu_selesai' => '16:00',
                 'tuk' => 'Politeknik Negeri Semarang',
-                'deskripsi' => 'Deskripsi lengkap untuk skema sertifikasi Network Engineering. Peserta akan diuji kemampuannya dalam mengelola jaringan komputer skala menengah.',
-                'persyaratan' => '1. Mahasiswa Aktif Polines. 2. Telah mengambil mata kuliah Jaringan Komputer. 3. Membawa laptop pribadi saat ujian.',
+                'deskripsi' => 'Deskripsi lengkap untuk skema sertifikasi Network Engineering...',
+                'persyaratan' => '1. Mahasiswa Aktif Polines...',
                 'harga' => 350000,
                 'tanggal_tutup' => new DateTime('2025-12-01')
             ],
@@ -32,53 +32,22 @@ class HomeController extends Controller
                 'waktu_mulai' => '09:00',
                 'waktu_selesai' => '17:00',
                 'tuk' => 'Lab RPL Gedung D4',
-                'deskripsi' => 'Deskripsi untuk Junior Web Developer. Ujian akan mencakup HTML, CSS, JavaScript, dan PHP dasar.',
-                'persyaratan' => '1. Terbuka untuk umum. 2. Memahami dasar-dasar pemrograman web.',
+                'deskripsi' => 'Deskripsi untuk Junior Web Developer...',
+                'persyaratan' => '1. Terbuka untuk umum...',
                 'harga' => 500000,
                 'tanggal_tutup' => new DateTime('2025-11-20')
             ],
-            (object) [
-                'id' => 3,
-                'nama_skema' => 'UI/UX Designer',
-                'tanggal' => new DateTime('2026-01-20'),
-                'waktu_mulai' => '09:00',
-                'waktu_selesai' => '15:00',
-                'tuk' => 'Gedung Inkubator Bisnis Polines',
-                'deskripsi' => 'Uji kompetensi skema UI/UX Designer, mencakup riset pengguna, wireframing, dan prototyping menggunakan Figma.',
-                'persyaratan' => '1. Membawa portofolio desain (jika ada). 2. Laptop dengan software desain (Figma/Sketch) terinstal.',
-                'harga' => 450000,
-                'tanggal_tutup' => new DateTime('2026-01-10')
-            ]
         ];
     }
 
     public function index(): View
     {
-        $kategori = [
-            ['id' => 1, 'nama' => 'Semua'],
-            ['id' => 2, 'nama' => 'Software'],
-            ['id' => 3, 'nama' => 'Hardware'],
-            ['id' => 4, 'nama' => 'Jaringan'],
-            ['id' => 5, 'nama' => 'AI & Network'],
-        ];
+        // Ambil data dari tabel skema
+        $skemas = Skema::latest()->get(); // ini ambil semua dari database faker
 
-        $skemas = [
-            ['id' => 1, 'nama' => 'Junior Web Developer', 'gambar' => 'skema1.jpg', 'kategori' => 'Software'],
-            ['id' => 2, 'nama' => 'Network Administrator', 'gambar' => 'skema4.jpg', 'kategori' => 'Jaringan'],
-            ['id' => 3, 'nama' => 'Database Engineer', 'gambar' => 'skema3.jpg', 'kategori' => 'Software'],
-            ['id' => 4, 'nama' => 'UI/UX Designer', 'gambar' => 'skema2.jpg', 'kategori' => 'Software'],
-            ['id' => 5, 'nama' => 'Cyber Security', 'gambar' => 'skema5.jpg', 'kategori' => 'Hardware'],
-            ['id' => 6, 'nama' => 'Mobile Developer', 'gambar' => 'skema6.jpg', 'kategori' => 'Software'],
-            ['id' => 7, 'nama' => 'Data Analyst', 'gambar' => 'skema7.jpg','kategori' => 'AI & Network'],
-            ['id' => 8, 'nama' => 'Game Developer', 'gambar' => 'skema8.jpg', 'kategori' => 'Software'],
-            ['id' => 9, 'nama' => 'IoT Specialist', 'gambar' => 'skema9.jpg', 'kategori' => 'Hardware'],
-            ['id' => 10, 'nama' => 'Cloud Engineer', 'gambar' => 'skema10.jpg', 'kategori' => 'AI & Network'],
-            ['id' => 11, 'nama' => 'AI Engineer', 'gambar' => 'skema11.jpg', 'kategori' => 'AI & Network'],
-            ['id' => 12, 'nama' => 'Fullstack Developer', 'gambar' => 'skema12.jpg', 'kategori' => 'Software']
-        ];
-
+        // Ambil jadwal dummy
         $semuaJadwal = $this->getSemuaDummyJadwal();
-        $now = new DateTime(); 
+        $now = new DateTime();
 
         $jadwals = collect($semuaJadwal)
             ->filter(fn($jadwal) => $jadwal->tanggal >= $now)
@@ -91,28 +60,49 @@ class HomeController extends Controller
 
     public function show($id): View
     {
-        $skemas = [
-            ['id' => 1, 'nama' => 'Junior Web Developer', 'gambar' => 'skema1.jpg', 'deskripsi' => 'Ujian mencakup HTML, CSS, JS, dan PHP dasar.'],
-            ['id' => 2, 'nama' => 'Network Administrator', 'gambar' => 'skema4.jpg', 'deskripsi' => 'Menguji kemampuan mengatur jaringan komputer dan server.'],
-            ['id' => 3, 'nama' => 'Database Engineer', 'gambar' => 'skema3.jpg', 'deskripsi' => 'Menguji desain dan implementasi basis data relasional.'],
-            ['id' => 4, 'nama' => 'UI/UX Designer', 'gambar' => 'skema2.jpg', 'deskripsi' => 'Ujian mencakup riset pengguna dan pembuatan prototipe desain.'],
-            ['id' => 5, 'nama' => 'Cyber Security', 'gambar' => 'skema5.jpg', 'deskripsi' => 'Ujian tentang keamanan jaringan, analisis ancaman, dan mitigasi.'],
-            ['id' => 6, 'nama' => 'Mobile Developer', 'gambar' => 'skema6.jpg', 'deskripsi' => 'Menguji kemampuan membangun aplikasi mobile Android/iOS.'],
-            ['id' => 7, 'nama' => 'Data Analyst', 'gambar' => 'skema7.jpg', 'deskripsi' => 'Menguji kemampuan analisis data dan visualisasi menggunakan tools populer.'],
-            ['id' => 8, 'nama' => 'Game Developer', 'gambar' => 'skema8.jpg', 'deskripsi' => 'Menguji kemampuan membuat game dengan engine seperti Unity.'],
-            ['id' => 9, 'nama' => 'IoT Specialist', 'gambar' => 'skema9.jpg', 'deskripsi' => 'Menguji pemrograman dan integrasi sensor IoT.'],
-            ['id' => 10, 'nama' => 'Cloud Engineer', 'gambar' => 'skema10.jpg', 'deskripsi' => 'Menguji kemampuan membangun dan mengelola layanan cloud.'],
-            ['id' => 11, 'nama' => 'AI Engineer', 'gambar' => 'skema11.jpg', 'deskripsi' => 'Menguji kemampuan machine learning dan penerapannya.'],
-            ['id' => 12, 'nama' => 'Fullstack Developer', 'gambar' => 'skema12.jpg', 'deskripsi' => 'Ujian menggabungkan frontend, backend, dan integrasi database.'],
-        ];
+        // Cari skema berdasarkan ID dari database
+        $skema = Skema::findOrFail($id); 
+        
+        // --- INJEKSI DUMMY DATA UNTUK KONTEN (UNIT KOMPETENSI & SKKNI) ---
+        // Ini diperlukan agar detail_skema.blade.php dapat melakukan looping 
+        // pada bagian Unit Kompetensi dan SKKNI.
 
-        $skema = collect($skemas)->firstWhere('id', (int)$id);
-        if (!$skema) abort(404, 'Skema tidak ditemukan');
+        $skema->unit_kompetensi = collect([
+            (object) [
+                'kode' => '123456789',
+                'judul' => [
+                    'Mengidentifikasi Konsep Keamanan Jaringan',
+                    'Menerapkan prosedur keamanan dasar jaringan',
+                ]
+            ],
+            (object) [
+                'kode' => '987654321',
+                'judul' => [
+                    'Menganalisis potensi ancaman keamanan sistem',
+                    'Mengimplementasikan pengamanan berbasis firewall',
+                ]
+            ]
+        ]);
 
-        // Ambil jadwal yang sesuai dengan nama skema
+        $skema->skkni = collect([
+            // Asumsi properti 'link_pdf' akan diisi link unduhan dokumen
+            (object) ['nama' => 'SKKNI Keamanan Siber 1', 'link_pdf' => '#'],
+            (object) ['nama' => 'SKKNI Keamanan Siber 2', 'link_pdf' => '#'],
+        ]);
+        
+        // Memastikan properti dasar untuk Hero Section tersedia (jika tidak ada di model)
+        if (!isset($skema->gambar)) {
+             $skema->gambar = 'default_skema_image.jpg'; 
+        }
+        if (!isset($skema->deskripsi)) {
+             $namaSkema = $skema->nama_skema ?? $skema->nama ?? 'Skema Sertifikasi';
+             $skema->deskripsi = 'Deskripsi singkat mengenai ' . $namaSkema . '.';
+        }
+        
+        // Cari jadwal yang sesuai dengan nama skema
         $semuaJadwal = $this->getSemuaDummyJadwal();
         $jadwalTerkait = collect($semuaJadwal)
-            ->firstWhere('nama_skema', $skema['nama']);
+            ->firstWhere('nama_skema', $skema->nama_skema);
 
         return view('landing_page.detail.detail_skema', compact('skema', 'jadwalTerkait'));
     }

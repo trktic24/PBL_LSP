@@ -5,7 +5,7 @@
 {{-- ======================= HERO ======================= --}}
 <section class="relative h-[1000px] rounded-t-4xl overflow-hidden">
     <img src="{{ asset('images/Gedung Polines.jpg') }}"
-         alt="Gedung Polines"
+         alt=""
          class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
     <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/95 via-white/50 to-transparent"></div>
@@ -61,78 +61,52 @@ scrollContainer.addEventListener("mousemove", e => {
 
 {{-- ======================= CAROUSEL GRID SKEMA ======================= --}}
 <section class="px-10 mb-16">
-    @php
-        $skemas = $skemas ?? [];
-        $slide1 = array_slice($skemas, 0, 6);
-        $slide2 = array_slice($skemas, 6, 6);
-    @endphp
     <div id="gridCarousel" class="relative overflow-hidden rounded-3xl w-full">
         <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
-            {{-- Slide 1 --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full p-6">
-                @foreach ($slide1 as $i => $file)
-                <div class="transition hover:scale-105 skema-card" data-category="{{ $file['kategori'] }}">
-                    <a href="{{ route('detail_skema', ['id' => $file['id']]) }}">
-                        <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                            <img src="{{ asset('images/' . $file['gambar']) }}" alt="{{ $file['nama'] }}" class="h-48 w-full object-cover">
-                        </div>
-                    </a>
-                    <div class="px-2">
-                        <h2 class="text-lg font-bold text-gray-800">{{ $file['nama'] }}</h2>
-                        <p class="text-gray-600">Rp. x.xxx.xxx</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
+            @php
+                $chunks = $skemas->chunk(6); // 6 kartu per slide
+            @endphp
 
-            {{-- Slide 2 --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full p-6">
-                @foreach ($slide2 as $file)
-                <div class="transition hover:scale-105 skema-card" data-category="{{ $file['kategori'] }}">
-                    <a href="{{ route('detail_skema', ['id' => $file['id']]) }}">
-                        <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                            <img src="{{ asset('images/' . $file['gambar']) }}" alt="{{ $file['nama'] }}" class="h-48 w-full object-cover">
+            @foreach($chunks as $chunk)
+                <div class="flex-none w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
+                    @foreach($chunk as $skema)
+                        <div class="transition hover:scale-105 skema-card" data-category="{{ $skema->kategori }}">
+                            <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
+                                <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
+                                    <img src="{{ $skema->gambar ? asset('images/' . $skema->gambar) : asset('images/default.jpg') }}" 
+                                        alt="" 
+                                        class="h-48 w-full object-cover">
+                                </div>
+                            </a>
+                            <div class="px-2">
+                                <h2 class="text-lg font-bold text-gray-800">{{ $skema->nama_skema }}</h2>
+                                <p class="text-sm text-gray-500 mb-1">{{ $skema->kategori }}</p>
+                                <p class="text-gray-800 font-semibold">Rp {{ number_format($skema->harga, 0, ',', '.') }}</p>
+                            </div>
                         </div>
-                    </a>
-                    <div class="px-2">
-                        <h2 class="text-lg font-bold text-gray-800">{{ $file['nama'] }}</h2>
-                        <p class="text-gray-600">Rp. x.xxx.xxx</p>
-                    </div>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
 
 <script>
 const gridSlides = document.getElementById('gridSlides');
-const slides = document.querySelectorAll('#gridSlides > div');
+const slides = gridSlides.children;
 const totalSlides = slides.length;
 let currentIndex = 0;
-function showSlide(index) { gridSlides.style.transform = `translateX(-${index * 100}%)`; }
-setInterval(() => { currentIndex = (currentIndex + 1) % totalSlides; showSlide(currentIndex); }, 5000);
 
-// ===== FILTER KATEGORI =====
-const categoryButtons = document.querySelectorAll('#categoryButtons button');
-const cards = document.querySelectorAll('.skema-card');
+function showSlide(index) {
+    gridSlides.style.transform = `translateX(-${index * 100}%)`;
+}
 
-categoryButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // ubah warna tombol aktif
-        categoryButtons.forEach(b => b.classList.remove('active-category'));
-        categoryButtons.forEach(b => b.classList.add('inactive-category'));
-        btn.classList.remove('inactive-category');
-        btn.classList.add('active-category');
-
-        const category = btn.dataset.category;
-        cards.forEach(card => {
-            const match = (category === 'Semua') || (card.dataset.category === category);
-            card.style.display = match ? 'block' : 'none';
-        });
-    });
-});
+setInterval(() => {
+    currentIndex = (currentIndex + 1) % totalSlides;
+    showSlide(currentIndex);
+}, 5000);
 </script>
+
 
 {{-- ======================= JADWAL SERTIFIKASI ======================= --}}
 <section class="bg-gray-50 py-12 px-10 text-center">

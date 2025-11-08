@@ -20,6 +20,8 @@ class Skema extends Model
         'deskripsi_skema',
         'SKKNI',
         'gambar',
+        'harga',
+        'kategori',
     ];
 
     public function asesors(): HasMany
