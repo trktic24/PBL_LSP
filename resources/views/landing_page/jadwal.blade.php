@@ -16,43 +16,47 @@
     </div>
 
     <!-- Table Section -->
-    <div class="max-w-5xl mx-auto px-1 sm:px-90 lg:px-8 py-8 text-center">
-        <div class="bg-yellow-50 rounded-t-[3rem] shadow-md overflow-x-auto border border-gray-200 whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-yellow-50 rounded-t-[3rem] shadow-md overflow-x-auto border border-gray-200">
             <!-- Table Header -->
-            <div class="grid grid-cols-5 bg-yellow-50 border-b-2 border-gray-900">
-                <div class="px-10 py-4 text-sm font-bold text-gray-900 text-center">Skema Sertifikasi</div>
-                <div class="px-7 py-4 text-sm font-bold text-gray-900 text-center">Pendaftaran</div>
-                <div class="px-14 py-4 text-sm font-bold text-gray-900 text-center">Tanggal Asesmen</div>
-                <div class="px-20 py-4 text-sm font-bold text-gray-900 text-center">TUK</div>
-                <div class="px-2 py-4 text-sm font-bold text-gray-900 text-center">Status</div>
+            <div class="grid grid-cols-6 bg-yellow-50 border-b-2 border-gray-900">
+                <div class="px-6 py-4 text-sm font-bold text-gray-900 text-center">Skema Sertifikasi</div>
+                <div class="px-6 py-4 text-sm font-bold text-gray-900 text-center">Pendaftaran</div>
+                <div class="px-6 py-4 text-sm font-bold text-gray-900 text-center">Tanggal Asesmen</div>
+                <div class="px-6 py-4 text-sm font-bold text-gray-900 text-center">TUK</div>
+                <div class="px-6 py-4 text-sm font-bold text-gray-900 text-center">Kuota</div>
+                <div class="px-6 py-4 text-sm font-bold text-gray-900 text-center">Status</div>
             </div>
 
             <!-- Table Body -->
-            @php
-                $jadwalList = [
-                    ['skema' => 'Junior Web Dev', 'pendaftaran' => '1 - 15 Oktober 2025', 'tanggal' => '25 Oktober 2025', 'tuk' => 'Polines', 'status' => 'Dibuka', 'statusColor' => 'text-teal-700', 'statusBg' => 'bg-teal-100'],
-                    ['skema' => 'Junior Web Dev', 'pendaftaran' => '1 - 15 Oktober 2025', 'tanggal' => '25 Oktober 2025', 'tuk' => 'Polines', 'status' => 'Full', 'statusColor' => 'text-yellow-700', 'statusBg' => 'bg-yellow-200'],
-                    ['skema' => 'Junior Web Dev', 'pendaftaran' => '1 - 15 Oktober 2025', 'tanggal' => '25 Oktober 2025', 'tuk' => 'Polines', 'status' => 'Selesai', 'statusColor' => 'text-gray-700', 'statusBg' => 'bg-gray-200'],
-                    ['skema' => 'Junior Web Dev', 'pendaftaran' => '1 - 15 Oktober 2025', 'tanggal' => '25 Oktober 2025', 'tuk' => 'Polines', 'status' => 'Akan datang', 'statusColor' => 'text-blue-700', 'statusBg' => 'bg-blue-100'],
-                    ['skema' => 'Junior Web Dev', 'pendaftaran' => '1 - 15 Oktober 2025', 'tanggal' => '25 Oktober 2025', 'tuk' => 'Polines', 'status' => 'Dibuka', 'statusColor' => 'text-teal-700', 'statusBg' => 'bg-teal-100'],
-                    ['skema' => 'Junior Web Dev', 'pendaftaran' => '1 - 15 Oktober 2025', 'tanggal' => '25 Oktober 2025', 'tuk' => 'Polines', 'status' => 'Dibuka', 'statusColor' => 'text-teal-700', 'statusBg' => 'bg-teal-100'],
-                    ['skema' => 'Junior Web Dev', 'pendaftaran' => '1 - 15 Oktober 2025', 'tanggal' => '25 Oktober 2025', 'tuk' => 'Polines', 'status' => 'Dibuka', 'statusColor' => 'text-teal-700', 'statusBg' => 'bg-teal-100'],
-                    ['skema' => 'Junior Web Dev', 'pendaftaran' => '1 - 15 Oktober 2025', 'tanggal' => '25 Oktober 2025', 'tuk' => 'Polines', 'status' => 'Dibuka', 'statusColor' => 'text-teal-700', 'statusBg' => 'bg-teal-100'],
-                ];
-            @endphp
-
-            @foreach($jadwalList as $index => $jadwal)
-                <div class="grid grid-cols-5 border-b border-gray-200 bg-yellow-50">
-                    <div class="px-10 py-4 text-sm text-gray-900 text-left">{{ $jadwal['skema'] }}</div>
-                    <div class="px-7 py-4 text-sm text-gray-900 text-center">{{ $jadwal['pendaftaran'] }}</div>
-                    <div class="px-14 py-4 text-sm text-gray-900 text-center">{{ $jadwal['tanggal'] }}</div>
-                    <div class="px-20 py-4 text-sm text-gray-900 text-center">{{ $jadwal['tuk'] }}</div>
-                    <div class="px-2 py-4">
-                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap {{ $jadwal['statusColor'] }} {{ $jadwal['statusBg'] }}">{{ $jadwal['status'] }}</span>
+            @foreach($jadwalList as $jadwal)
+                <div class="grid grid-cols-6 border-b border-gray-200 bg-yellow-50 hover:bg-yellow-100 transition">
+                    <div class="px-6 py-4 text-sm text-gray-900 text-left">{{ $jadwal['skema'] }}</div>
+                    <div class="px-6 py-4 text-sm text-gray-900 text-center">
+                        {{ $jadwal['pendaftaran_mulai']->format('d') }} - {{ $jadwal['pendaftaran_selesai']->format('d M Y') }}
+                    </div>
+                    <div class="px-6 py-4 text-sm text-gray-900 text-center">
+                        {{ $jadwal['tanggal_asesmen']->format('d M Y') }}
+                    </div>
+                    <div class="px-6 py-4 text-sm text-gray-900 text-center">{{ $jadwal['tuk'] }}</div>
+                    <div class="px-6 py-4 text-sm text-gray-900 text-center">
+                        {{ $jadwal['terisi'] }}/{{ $jadwal['kuota'] }}
+                    </div>
+                    <div class="px-6 py-4 text-center">
+                        @if($jadwal['dapat_daftar'])
+                            <a href="{{ route('detail.jadwal', ['id' => $jadwal['id']]) }}" 
+                               class="inline-block px-4 py-2 rounded-full text-sm font-medium {{ $jadwal['statusColor'] }} {{ $jadwal['statusBg'] }} hover:opacity-80 transition cursor-pointer">
+                                {{ $jadwal['status'] }} - Daftar
+                            </a>
+                        @else
+                            <span class="inline-block px-4 py-2 rounded-full text-sm font-medium {{ $jadwal['statusColor'] }} {{ $jadwal['statusBg'] }} cursor-not-allowed">
+                                {{ $jadwal['status'] }}
+                            </span>
+                        @endif
                     </div>
                 </div>
             @endforeach
-        </div>
-    </div>
+        </div> <!-- Tutup div table -->
+    </div> <!-- Tutup div container -->
 </body>
 </html>

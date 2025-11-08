@@ -9,38 +9,55 @@ class Jadwal extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang terhubung dengan model ini.
-     * (Pastikan nama tabel di database Anda adalah 'jadwals')
-     * @var string
-     */
-    protected $table = 'jadwals';
+    protected $table = 'jadwal';
+    protected $primaryKey = 'id_jadwal';
 
-    /**
-     * Kolom-kolom yang dapat diisi (mass assignable).
-     * (Sesuaikan ini dengan nama kolom di database Anda)
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'nama_skema',
-        'tuk',
-        'tanggal',
-        'waktu_mulai',
-        'waktu_selesai',
-        'deskripsi',
-        'persyaratan',
-        'harga',
-        'tanggal_tutup',
+        'id_jenis_tuk',
+        'id_tuk',
+        'id_skema',
+        'id_asesor',
+        'kuota_maksimal',
+        'kuota_minimal',
+        'sesi',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'tanggal_pelaksanaan',
+        'Status_jadwal',
     ];
 
     /**
-     * Tipe data (casts) untuk atribut/kolom.
-     * Ini PENTING agar ->format('d F Y') berfungsi.
-     * @var array<string, string>
+     * The attributes that should be cast.
+     *
+     * @var array
      */
     protected $casts = [
-        'tanggal'       => 'datetime',
-        'tanggal_tutup' => 'datetime',
-        'harga'         => 'integer',
+        'tanggal_mulai' => 'datetime',
+        'tanggal_selesai' => 'datetime',
+        'tanggal_pelaksanaan' => 'datetime',
     ];
+
+    // --- RELASI (Relationships) ---
+
+    public function jenisTuk()
+    {
+        return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
+    }
+
+    public function masterTuk()
+    {
+        return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk');
+    }
+
+    public function skema()
+    {
+        // Asumsi nama model adalah Skema
+        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+    }
+
+    public function asesor()
+    {
+        // Asumsi nama model adalah Asesor
+        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
+    }
 }

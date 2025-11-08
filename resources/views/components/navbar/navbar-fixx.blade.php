@@ -1,16 +1,11 @@
 @props(['active' => 'home'])
 
-{{-- 🟦 Import font Poppins --}}
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <header
-  {{--
-    Kita tambahin @click.outside="openUser = false" di sini
-    biar dropdown user ketutup kalo klik di mana aja
-  --}}
   x-data="{ openMenu: false, openDropdown: null, openUser: false }"
   @click.outside="openUser = false"
-  class="fixed top-0 left-0 w-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-6 sm:px-12 z-50 font-[Poppins]"
+  class="fixed top-0 left-0 w-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-6 sm:px-12 z-30 font-[Poppins]"
 >
   <div class="flex items-center justify-between w-full max-w-7xl mx-auto">
 
@@ -19,20 +14,44 @@
       <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="logo" class="w-20">
     </a>
 
+    {{-- Overlay Backdrop
+      Ini lapisan gelap di belakang menu, tapi di depan konten.
+      Bikin fokus user ke menu.
+    --}}
+    <div
+      x-show="openMenu"
+      x-transition:enter="ease-out duration-300"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100"
+      x-transition:leave="ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      @click="openMenu = false"
+      class="lg:hidden fixed inset-0 bg-black/50 z-40"
+      x-cloak
+    ></div>
+
     {{-- 🟦 Menu utama (Nav) --}}
     <nav
-      :class="{ 'max-lg:hidden': !openMenu }"
+      x-show="openMenu"
+      x-transition:enter="transition ease-out duration-300 transform"
+      x-transition:enter-start="-translate-x-full"
+      x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition ease-in duration-200 transform"
+      x-transition:leave-start="translate-x-0"
+      x-transition:leave-end="-translate-x-full"
       class="lg:block max-lg:fixed max-lg:bg-white max-lg:w-2/3 max-lg:min-w-[300px]
-             max-lg:top-0 max-lg:left-0 max-lg:h-full max-lg:shadow-md max-lg:p-4 max-lg:overflow-auto z-40 mx-auto transition-all"
+             max-lg:top-0 max-lg:left-0 max-lg:h-full max-lg:shadow-md max-lg:p-4 max-lg:overflow-auto
+             z-50 mx-auto"
+      x-cloak {{-- x-cloak biar gak "flicker" pas halaman loading --}}
     >
       {{-- Tombol close (mobile) --}}
       <button
         @click="openMenu = false"
-        class="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer"
+        class="lg:hidden fixed top-2 right-4 z-60 rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer"
       >
         ✕
       </button>
-
       <ul class="lg:flex lg:items-center lg:justify-center lg:gap-x-8 max-lg:space-y-4">
 
         {{-- 🟩 Logo versi mobile --}}
@@ -60,7 +79,7 @@
 
         @guest
             <li>
-                <a href="{{ url('/skema') }}"
+                <a href="{{ url('/login') }}"
                   class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
                   {{ request()->is('skema') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
                   Sertifikasi
@@ -69,17 +88,15 @@
         @endguest
 
         @auth
-            {{-- Tampil jika PENGGUNA SUDAH LOGIN --}}
-            @if(auth()->user()->role->nama_role == 'asesi') {{-- Sesuaikan cek role Anda --}}
+            @if(auth()->user()->role->nama_role == 'asesi')
                 <li>
-                    <a href="{{ url('/riwayat-sertifikasi') }}" {{-- Arahkan ke URL riwayat --}}
+                    <a href="{{ url('/riwayat-sertifikasi') }}"
                       class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
                       {{ request()->is('riwayat-sertifikasi') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
                       Sertifikasi
                     </a>
                 </li>
             @else
-                {{-- Jika dia Admin atau Asesor, arahkan ke dashboard mereka --}}
                 <li>
                     <a href="{{ url('/dashboard') }}"
                       class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
@@ -138,7 +155,7 @@
           </ul>
         </li>
 
-        {{-- 🟩 [IMPROVEMENT] Tombol Login/Logout versi Mobile --}}
+        {{--Tombol Login/Logout versi Mobile --}}
         <li class="lg:hidden border-t border-gray-200 pt-4 mt-4 px-2 space-y-2">
           @auth
             {{-- Info User --}}
@@ -160,7 +177,7 @@
                 @csrf
                 <button type="submit" class="block w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-md">
                     Logout
-                </button>
+                </button
             </form>
           @else
             {{-- Tombol Masuk --}}
@@ -176,15 +193,13 @@
     {{-- 🟦 Link “Masuk” / Dropdown User (Desktop) --}}
     <div class="flex items-center">
       @auth
-        {{-- 🟩 [IMPROVEMENT] Tampilan Tombol User (Desktop) --}}
+
         <div class="relative">
           <button
             @click.stop="openUser = !openUser"
             class="flex items-center gap-2 rounded-full py-1 pl-2 pr-3 transition-colors duration-200 hover:bg-gray-100 focus:outline-none"
           >
-            {{-- Icon User --}}
             <span class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-blue-600 text-white font-medium text-xs">
-              {{-- Ambil 2 huruf pertama dari nama --}}
               @php
                 $nama = Auth::user()->nama_lengkap ?? 'User';
                 $words = explode(' ', $nama);
@@ -194,19 +209,13 @@
               @endphp
               {{ $initials }}
             </span>
-
-            {{-- Nama User (Sembunyi di layar kecil) --}}
             <span class="font-medium text-[15px] text-slate-900 hidden sm:block">
               {{ Auth::user()->nama_lengkap ?? 'User' }}
             </span>
-
-            {{-- Chevron --}}
             <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 10 6">
               <path d="m1 1 4 4 4-4" />
             </svg>
           </button>
-
-          {{-- 🟩 [IMPROVEMENT] Dropdown User (Desktop) --}}
           <div
             x-show="openUser"
             @click.outside="openUser = false"
@@ -218,7 +227,6 @@
             x-transition:leave-end="transform opacity-0 scale-95"
             class="absolute right-0 mt-2 w-56 bg-white border border-gray-100 shadow-lg rounded-md z-50 overflow-hidden"
           >
-            {{-- Header Dropdown --}}
             <div class="px-4 py-3 border-b border-gray-200">
               <p class="text-sm font-semibold text-gray-900 truncate">
                 {{ Auth::user()->nama_lengkap ?? 'User' }}
@@ -227,11 +235,8 @@
                 {{ Auth::user()->email ?? 'user@email.com' }}
               </p>
             </div>
-
-            {{-- Menu Navigasi --}}
             <div class="py-1">
               <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                {{-- Icon kecil (opsional, tapi bagus) --}}
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg>
                 Dashboard
               </a>
@@ -240,8 +245,6 @@
                 Profil Saya
               </a>
             </div>
-
-            {{-- Menu Logout --}}
             <div class="py-1 border-t border-gray-200">
               <form action="{{ route('logout') }}" method="POST">
                 @csrf

@@ -2,56 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tuk;
 use Illuminate\Http\Request;
 
 class TukController extends Controller
 {
     /**
      * Menampilkan daftar Tempat Uji Kompetensi (TUK).
+     * Mengambil data dari tabel master_tuk menggunakan Model Tuk.
      * Untuk rute /info-tuk
      */
     public function index()
     {
-        // --- DATA SIMULASI DAFTAR TUK (5 Jurusan) ---
-        $tuks = [
-            [
-                'id' => 1, 
-                'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Bengkel Listrik Elektro', 
-                'alamat' => 'Jl. Prof Soedarto',
-                'kontak' => '(024) 7473417 ext.301' 
-            ],
-            [
-                'id' => 2, 
-                'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Bengkel Perawatan & Produksi', 
-                'alamat' => 'Jl. Prof. Soedarto',
-                'kontak' => '(024) 7473417 ext.402'
-            ],
-            [
-                'id' => 3, 
-                'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Laboratorium Terpadu Teknik Sipil', 
-                'alamat' => 'Jl. Prof. Soedarto',
-                'kontak' => '(024) 7473417 ext.503'
-            ],
-            [
-                'id' => 4, 
-                'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Gedung Administrasi Bisnis', 
-                'alamat' => 'Jl. Prof. Soedarto',
-                'kontak' => '(024) 7473417 ext.604'
-            ],
-            [
-                'id' => 5, 
-                'nama' => 'Politeknik Negeri Semarang', 
-                'sub_nama' => 'Laboratorium Akuntansi & Keuangan', 
-                'alamat' => 'Jl. Prof. Soedarto',
-                'kontak' => '(024) 7473417 ext.705'
-            ],
-        ];
-        // ---------------------------------
-        
+        // Mengambil semua data TUK dari database
+        // Data akan tersedia dalam bentuk Collection/Array of objects (Model Tuk)
+        $tuks = Tuk::all();
+
+        // Mengirimkan data TUK ke view
         return view('landing_page.page_tuk.info-tuk', [
             'tuks' => $tuks 
         ]);
@@ -60,63 +27,20 @@ class TukController extends Controller
 
     /**
      * Menampilkan detail spesifik dari satu TUK berdasarkan ID.
-     * Catatan: Data detail di sini juga perlu diperbarui untuk ID 4 dan 5!
+     * Mengambil data dari tabel master_tuk berdasarkan primary key 'id_tuk'.
+     *
+     * @param int $id ID TUK (primary key)
      */
     public function showDetail($id)
     {
-        // Untuk DEMO, kita buat data detail TUK berdasarkan ID yang diminta
-        $data_tuk = [];
+        // Mengambil data TUK berdasarkan ID, atau memunculkan error 404 jika tidak ditemukan
+        // Pastikan nama primary key di Model Tuk adalah 'id_tuk'
+        $data_tuk = Tuk::findOrFail($id);
         
-        switch ($id) {
-            case 1:
-                $data_tuk = [
-                    'id' => 1,
-                    'nama_lengkap' => "Politeknik Negeri Semarang", 
-                    'alamat_detail' => 'Bengkel Listrik Elektro, Jl. Prof. Soedarto',
-                    'telepon' => '(024) 7473417 ext.301',
-                    'koordinat_maps' => '#', 
-                ];
-                break;
-            case 2:
-                $data_tuk = [
-                    'id' => 2,
-                    'nama_lengkap' => "Politeknik Negeri Semarang", 
-                    'alamat_detail' => 'Bengkel Perawatan & Produksi, Jl. Prof. Soedarto',
-                    'telepon' => '(024) 7473417 ext.402',
-                    'koordinat_maps' => '#', 
-                ];
-                break;
-            case 3:
-                $data_tuk = [
-                    'id' => 3,
-                    'nama_lengkap' => "Politeknik Negeri Semarang", 
-                    'alamat_detail' => 'Laboratorium Terpadu Teknik Sipil',
-                    'telepon' => '(024) 7473417 ext.503',
-                    'koordinat_maps' => '#', 
-                ];
-                break;
-            case 4:
-                $data_tuk = [
-                    'id' => 4,
-                    'nama_lengkap' => "Politeknik Negeri Semarang", 
-                    'alamat_detail' => 'Gedung Administrasi Bisnis, Jl. Prof. Soedarto',
-                    'telepon' => '(024) 7473417 ext.604',
-                    'koordinat_maps' => '#', 
-                ];
-                break;
-            case 5:
-                $data_tuk = [
-                    'id' => 5,
-                    'nama_lengkap' => "Politeknik Negeri Semarang", 
-                    'alamat_detail' => 'Laboratorium Akuntansi & Keuangan, Jl. Prof. Soedarto',
-                    'telepon' => '(024) 7473417 ext.705',
-                    'koordinat_maps' => '#', 
-                ];
-                break;
-            default:
-                // Jika ID tidak ditemukan (misalnya: ID 99)
-                abort(404);
-        }
+        // Catatan Penting: 
+        // Struktur data yang dikirim ke view sekarang adalah objek Model Tuk ($data_tuk),
+        // bukan lagi array asosiatif dengan kunci seperti 'nama_lengkap' atau 'alamat_detail'.
+        // Kunci yang tersedia adalah kolom-kolom dari tabel: 'id_tuk', 'nama', 'alamat_tuk', 'kontak_tuk', 'link_gmap', dll.
         
         return view('landing_page.page_tuk.detail-tuk', [
             'data_tuk' => $data_tuk,
