@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_tuk', function (Blueprint $table) {
-            $table->id('id_jenis_tuk');
-
-            // isi kolom sesuai kebutuhan
-            $table->string('sewaktu');
-            $table->string('tempat_kerja');
+        Schema::create('roles', function (Blueprint $table) {
+            // Sesuai ERD (id_role)
+            $table->id('id_role'); 
+            
+            // Sesuai ERD (nama_role)
+            $table->string('nama_role')->unique();            
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_tuk');
+        Schema::dropIfExists('roles');
     }
 };
