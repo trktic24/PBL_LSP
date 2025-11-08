@@ -13,7 +13,7 @@ class UnitKompetensi extends Model
     use HasFactory;
 
     // 2. WAJIB: Kasih tau nama tabelnya (karena bukan 'unit_kompetensis')
-    protected $table = 'unit_kompetensis';
+    protected $table = 'master_unit_kompetensi';
 
     // 3. WAJIB: Kasih tau nama Primary Key-nya (karena bukan 'id')
     protected $primaryKey = 'id_unit_kompetensi';

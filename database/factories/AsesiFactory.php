@@ -31,7 +31,7 @@ class AsesiFactory extends Factory
             'nik'             => fake()->unique()->numerify('################'), 
             'tempat_lahir'    => fake('id_ID')->city(),
             'tanggal_lahir'   => fake()->date('Y-m-d', '2005-01-01'),
-            'jenis_kelamin'   => fake()->boolean(),
+            'jenis_kelamin' => fake()->randomElement(['Laki-laki', 'Perempuan']),
             'kebangsaan'      => 'Indonesia',
             'pendidikan'      => fake()->randomElement(['SMK', 'SMA', 'D3', 'S1']),
             'pekerjaan'       => fake('id_ID')->jobTitle(),

@@ -41,6 +41,8 @@ class SkemaFactory extends Factory
             
             // Bikin nama file PDF palsu
             'SKKNI' => fake()->slug(3) . '_skkni.pdf',
+
+            'gambar' => null
         ];
     }
 }

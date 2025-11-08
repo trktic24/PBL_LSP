@@ -34,7 +34,7 @@ return new class extends Migration
             $table->string('kode_pos', 10)->nullable(); // (int) -> Diubah ke string
             $table->string('kabupaten_kota');
             $table->string('provinsi');
-            $table->string('nomor_hp', 16);
+            $table->string('nomor_hp', 30);
 
             // (str: path) -> Diubah ke string
             $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');

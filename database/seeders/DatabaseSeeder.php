@@ -21,11 +21,11 @@ class DatabaseSeeder extends Seeder
         // Baris ini udah bener
         \App\Models\Asesi::factory(10)->create();
         \App\Models\Skema::factory(20)->create();
-        // \App\Models\KelompokPekerjaan::factory(20)->create();
-        // \App\Models\UnitKompetensi::factory(20)->create();
-        // \App\Models\Elemen::factory(20)->create();
-        // \App\Models\KriteriaUnjukKerja::factory(20)->create();
-        // \App\Models\ResponApl2Ia01::factory(20)->create();
-        // \App\Models\JenisTuk::factory(20)->create();
+        \App\Models\KelompokPekerjaan::factory(30)->create();
+        \App\Models\UnitKompetensi::factory(25)->create();
+        \App\Models\Elemen::factory(26)->create();
+        \App\Models\KriteriaUnjukKerja::factory(20)->create();
+        \App\Models\ResponApl2Ia01::factory(20)->create();
+        \App\Models\JenisTuk::factory(20)->create();
     }
 }

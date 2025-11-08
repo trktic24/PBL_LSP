@@ -22,6 +22,14 @@ class Skema extends Model
     // 4. WAJIB: Biar Factory bisa ngisi semua kolom (Hanya satu)
     protected $guarded = [];
 
+    protected $fillable = [
+        'kode_unit',
+        'nama_skema',
+        'deskripsi_skema',
+        'SKKNI',
+        'gambar'
+    ];
+
     // --- SEMUA FUNGSI RELASI HARUS ADA DI DALAM SINI ---
 
     /**
@@ -49,5 +57,4 @@ class Skema extends Model
         // Model tujuan, Foreign Key, Local Key (PK di tabel ini)
         return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
     }
-
 } // <-- INI ADALAH PENUTUP CLASS YANG BENAR (Hanya satu)
