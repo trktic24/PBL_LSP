@@ -19,41 +19,45 @@ return new class extends Migration
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
 
-        $table->foreignId('id_skema')->nullable()->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('restrict');
-        $table->foreignId('id_user')->nullable()->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
+            // Data Pribadi Asesor
+            $table->string('nomor_regis', 50)->unique();
+            $table->string('nama_lengkap'); // Asumsi nama lengkap wajib diisi
+            $table->string('nik', 16)->unique();
 
-        $table->string('nomor_regis', 50)->nullable()->unique();
-        $table->string('nama_lengkap')->nullable();
-        $table->string('nik', 16)->nullable()->unique();
-        $table->string('tempat_lahir', 100)->nullable();
-        $table->date('tanggal_lahir')->nullable();
-        $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
-        $table->string('kebangsaan', 100)->nullable();
-        $table->string('pekerjaan')->nullable();
+            // Informasi Pribadi Lainnya
+            $table->string('tempat_lahir', 100);
+            $table->date('tanggal_lahir');
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
+            $table->string('kebangsaan', 100);
+            $table->string('pekerjaan');
 
-        $table->text('alamat_rumah')->nullable();
-        $table->string('kode_pos', 10)->nullable();
-        $table->string('kabupaten_kota')->nullable();
-        $table->string('provinsi')->nullable();
-        $table->string('nomor_hp', 14)->nullable();
-        $table->string('NPWP', 25)->nullable();
+            // Alamat dan Kontak
+            $table->text('alamat_rumah');
+            $table->string('kode_pos', 10);
+            $table->string('kabupaten_kota');
+            $table->string('provinsi');
+            $table->string('nomor_hp', 14);
+            $table->string('NPWP', 25);
 
-        $table->string('nama_bank', 100)->nullable();
-        $table->string('norek', 20)->nullable();
+            // Informasi Bank
+            $table->string('nama_bank', 100);
+            $table->string('norek', 20);
 
-        $table->string('ktp')->nullable();
-        $table->string('pas_foto')->nullable();
-        $table->string('NPWP_foto')->nullable();
-        $table->string('rekening_foto')->nullable();
-        $table->string('CV')->nullable();
-        $table->string('ijazah')->nullable();
-        $table->string('sertifikat_asesor')->nullable();
-        $table->string('sertifikasi_kompetensi')->nullable();
-        $table->string('tanda_tangan')->nullable();
-        $table->boolean('is_verified')->default(false);
+            // Atribut untuk path file
+            $table->string('ktp')->comment('Path ke file KTP');
+            $table->string('pas_foto')->comment('Path ke file pas foto');
+            $table->string('NPWP_foto')->comment('Path ke file foto NPWP');
+            $table->string('rekening_foto')->comment('Path ke file foto rekening');
+            $table->string('CV')->comment('Path ke file CV');
+            $table->string('ijazah')->comment('Path ke file ijazah');
+            $table->string('sertifikat_asesor')->comment('Path ke file sertifikat');
+            $table->string('sertifikasi_kompetensi')->comment('Path ke file sertifikasi');
+            $table->string('tanda_tangan')->comment('Path ke file tanda tangan');
+            $table->boolean('is_verified')->default(false)->comment('Status verifikasi asesor');
 
-        $table->timestamps();
-    });
+            // Standar timestamp seperti di tabel users
+            $table->timestamps();
+        });
     }
 
     /**

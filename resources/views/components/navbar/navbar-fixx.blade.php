@@ -42,7 +42,7 @@
           $menus = [
             ['name' => 'Home', 'href' => route('home')],
             ['name' => 'Jadwal', 'href' => route('jadwal.index')],
-            ['name' => 'Profil', 'href' => route('profil')],
+            ['name' => 'Profil', 'href' => route('profil.show')],
           ];
         @endphp
 
