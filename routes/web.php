@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
      * Ini akan memperbaiki error 'Undefined variable $jadwals'.
      * Nama 'jadwal' cocok dengan navbar Anda.
      */
-    Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
+    Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
 
     // CATATAN: Kita tidak pakai Route::resource('jadwal') karena itu
     // akan membuat nama 'jadwal.index' yang tidak cocok dengan navbar Anda.

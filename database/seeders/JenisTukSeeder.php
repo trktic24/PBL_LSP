@@ -13,14 +13,9 @@ class JenisTukSeeder extends Seeder
      */
     public function run(): void
     {
-        // Buat 3 data dummy JenisTuk
-        JenisTuk::factory()->count(3)->create();
-
-        // Atau, Anda bisa buat data spesifik
-        JenisTuk::create([
-            'sewaktu' => 'TUK Sewaktu',
-            'tempat_kerja' => 'TUK di Tempat Kerja',
-            'mandiri' => 'TUK Mandiri',
+        JenisTuk::insert([
+            ['jenis_tuk' => 'Sewaktu', 'created_at' => now(), 'updated_at' => now()],
+            ['jenis_tuk' => 'Tempat Kerja', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

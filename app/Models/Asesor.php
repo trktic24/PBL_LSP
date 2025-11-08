@@ -8,38 +8,32 @@ use Illuminate\Database\Eloquent\Model;
 class Asesor extends Model
 {
     use HasFactory;
-
     protected $table = 'asesor';
     protected $primaryKey = 'id_asesor';
-
-    /**
-     * $guarded adalah cara yang benar
-     * agar Seeder bisa mengisi 'id_user' dan 'id_skema' (dari factory).
-     */
     protected $guarded = ['id_asesor'];
 
-    /**
-     * DIPERBAIKI: Relasi ke User
-     * Foreign key di tabel 'asesor' adalah 'id_user'.
-     * Primary key di tabel 'users' adalah 'id_user'.
-     */
     public function user()
     {
-        // INI ADALAH PERBAIKANNYA
-        return $this->belongsTo(User::class, 'id_user', 'id_user');
+        return $this->belongsTo(User::class, 'user_id', 'id_user');
     }
 
+    // HAPUS atau GANTI FUNGSI INI:
+    // public function skema()
+    // {
+    //     return $this->belongsTo(Skema::class, 'skema_id');
+    // }
+
+    // GANTI DENGAN FUNGSI INI:
     /**
-     * Relasi ke Skema (via tabel pivot)
-     * Ini sudah benar sesuai kode Anda sebelumnya.
+     * Skema yang dimiliki/diampu oleh Asesor ini.
      */
     public function skema()
     {
         return $this->belongsToMany(
-            Skema::class,
+            Skema::class,           // Model tujuan
             'transaksi_asesor_skema', // Nama tabel pivot
-            'id_asesor',                // Foreign key di pivot untuk model ini
-            'id_skema'                  // Foreign key di pivot untuk model tujuan
+            'id_asesor',            // Foreign key di pivot untuk model ini
+            'id_skema'              // Foreign key di pivot untuk model tujuan
         );
     }
 }

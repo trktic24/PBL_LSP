@@ -2,60 +2,40 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Jadwal;
 use App\Models\JenisTuk;
-use App\Models\Tuk;
+use App\Models\MasterTuk;
 use App\Models\Skema;
 use App\Models\Asesor;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Jadwal>
- */
 class JadwalFactory extends Factory
 {
-    /**
-     * Tentukan model yang terhubung dengan factory ini.
-     *
-     * @var string
-     */
     protected $model = Jadwal::class;
 
-    /**
-     * Definisikan status default model.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        // Logika untuk membuat urutan tanggal yang masuk akal
-        // 1. Tentukan tanggal mulai pendaftaran (misal: 1-2 minggu dari sekarang)
-        $mulai = fake()->dateTimeBetween('+1 week', '+2 weeks');
-
-        // 2. Tentukan tanggal selesai pendaftaran (misal: 5-10 hari setelah pendaftaran dibuka)
-        $selesai = fake()->dateTimeBetween($mulai, (clone $mulai)->modify('+10 days'));
-
-        // 3. Tentukan tanggal pelaksanaan (misal: 1-7 hari setelah pendaftaran ditutup)
-        $pelaksanaan = fake()->dateTimeBetween((clone $selesai)->modify('+1 day'), (clone $selesai)->modify('+1 week'));
+        $tanggalMulai = $this->faker->dateTimeBetween('now', '+1 month');
+        $tanggalSelesai = (clone $tanggalMulai)->modify('+3 days');
+        $tanggalPelaksanaan = (clone $tanggalSelesai)->modify('+2 days');
 
         return [
-            // --- Foreign Keys ---
-            // Otomatis membuat model baru untuk setiap relasi
-            'id_jenis_tuk' => JenisTuk::factory(),
-            'id_tuk' => Tuk::factory(),
-            'id_skema' => Skema::factory(),
-            'id_asesor' => Asesor::factory(),
+            'id_jenis_tuk' => JenisTuk::inRandomOrder()->first()?->id_jenis_tuk ?? JenisTuk::factory(),
+            'id_tuk' => MasterTuk::inRandomOrder()->first()?->id_tuk ?? MasterTuk::factory(),
+            'id_skema' => Skema::inRandomOrder()->first()?->id_skema ?? Skema::factory(),
+            'id_asesor' => Asesor::inRandomOrder()->first()?->id_asesor ?? Asesor::factory(),
 
-            // --- Isi Kolom ---
-            'sesi' => fake()->numberBetween(1, 3), // Asumsi ada 1-3 sesi
+            'kuota_maksimal' => $this->faker->numberBetween(20, 50),
+            'kuota_minimal' => $this->faker->numberBetween(10, 15),
+            'sesi' => $this->faker->numberBetween(1, 5),
 
-            // --- Tanggal (sesuai urutan) ---
-            'tanggal_mulai' => $mulai,
-            'tanggal_selesai' => $selesai,
-            'tanggal_pelaksanaan' => $pelaksanaan,
+            'tanggal_mulai' => $tanggalMulai,
+            'tanggal_selesai' => $tanggalSelesai,
+            'tanggal_pelaksanaan' => $tanggalPelaksanaan,
+            // 🔹 Tambahkan baris ini!
+            'waktu_mulai' => $this->faker->time('H:i:s', '17:00:00'),
 
-            // --- Status ---
-            'Status_jadwal' => fake()->randomElement(['Terjadwal', 'Selesai', 'Dibatalkan']),
+            'Status_jadwal' => $this->faker->randomElement(['Terjadwal', 'Selesai', 'Dibatalkan']),
         ];
     }
 }

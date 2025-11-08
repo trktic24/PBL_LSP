@@ -4,26 +4,15 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Skema;
-use App\Models\User; // Pastikan User di-import
+use App\Models\User;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Asesor>
- */
 class AsesorFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        // DIPERBAIKI: Menghapus 'user_id' dan 'id_user' duplikat.
-        // Seeder (AsesorSeeder) akan menyediakan 'id_user' yang benar.
-        // Kita juga hanya perlu satu 'id_skema'.
-
         return [
-            'id_skema' => Skema::factory(), // Biarkan factory Skema membuat skema baru
+            'user_id' => User::factory(), // ✅ tambahkan ini
+            'id_skema' => Skema::factory(),
             'nomor_regis' => 'MET.' . fake()->randomNumber(7, true),
             'nama_lengkap' => fake()->name(),
             'nik' => fake()->numerify('################'),
@@ -36,12 +25,12 @@ class AsesorFactory extends Factory
             'kode_pos' => fake()->postcode(),
             'kabupaten_kota' => fake()->city(),
             'provinsi' => fake()->state(),
-            'nomor_hp' => fake()->phoneNumber(),
+            'nomor_hp' => substr($this->faker->phoneNumber(), 0, 14),
             'NPWP' => fake()->numerify('##.###.###.#-###.###'),
             'nama_bank' => fake()->randomElement(['BNI', 'BRI', 'BCA', 'Mandiri']),
             'norek' => fake()->creditCardNumber(),
 
-            // Path file dummy (asumsi file akan di-upload nanti)
+            // File dummy
             'ktp' => null,
             'pas_foto' => null,
             'NPWP_foto' => null,
@@ -52,7 +41,7 @@ class AsesorFactory extends Factory
             'sertifikasi_kompetensi' => null,
             'tanda_tangan' => null,
 
-            'is_verified' => true, // Set default terverifikasi untuk testing
+            'is_verified' => true,
         ];
     }
 }

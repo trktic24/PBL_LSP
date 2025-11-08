@@ -87,7 +87,7 @@
                         <span class="w-5/12 text-sm text-gray-800 font-medium">Junior Web Dev</span>
                         <span class="w-4/12 text-sm text-gray-800">29 September 2025</span>
                         <span class="w-2/12">
-                            <a href="{{ route('daftar_asesi') }}" class="bg-yellow-400 text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-500">Lihat Detail</a>
+                            <a href="{{ route('daftar_asesi', 1) }}" class="bg-yellow-400 text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-500">Lihat Detail</a>
                         </span>
                     </div>
                     <div class="flex px-6 py-4 items-center">
