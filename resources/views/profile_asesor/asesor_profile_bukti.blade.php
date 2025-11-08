@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  
+  {{-- Tambahan: Load Storage facade untuk URL --}}
+  @php use Illuminate\Support\Facades\Storage; @endphp
 
   <style>
     body { font-family: 'Poppins', sans-serif; background-color: #f9fafb; }
@@ -28,24 +31,28 @@
       <h2 class="text-lg font-bold text-gray-900 mb-3">Biodata</h2>
 
       <div class="w-36 h-36 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] mb-4">
-        <img src="{{ asset('images/asesi.jpg') }}" alt="Foto Profil" class="w-full h-full object-cover">
+        {{-- Foto profil dinamis --}}
+        <img src="{{ $asesor->pas_foto ? Storage::url($asesor->pas_foto) : asset('images/asesi.jpg') }}" alt="Foto Profil" class="w-full h-full object-cover">
       </div>
 
-      <h3 class="text-lg font-semibold text-gray-900">Roihan Enrico</h3>
+      {{-- Nama dinamis --}}
+      <h3 class="text-lg font-semibold text-gray-900">{{ $asesor->nama_lengkap }}</h3>
       <p class="text-gray-500 text-sm mb-8">Asesor</p>
 
       <div class="w-[90%] bg-white/40 backdrop-blur-md rounded-2xl p-4 
                   shadow-[0_0_15px_rgba(0,0,0,0.15)] mb-6">
         
         <div class="flex flex-col space-y-4 mt-3 mb-3">
-            <a href="{{ route('asesor_profile_settings') }}" 
+            {{-- Link 'Profile Settings' dinamis --}}
+            <a href="{{ route('asesor.profile', $asesor->id_asesor) }}" 
                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->routeIs('asesor_profile_settings') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ request()->routeIs('asesor.profile') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
             </a>
 
+            {{-- Link 'Tinjauan' dan 'Tracker' statis (sesuai routes/web.php) --}}
             <a href="{{ route('asesor_profile_tinjauan') }}" 
                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
@@ -53,7 +60,6 @@
                     {{ request()->routeIs('asesor_profile_tinjauan') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-clipboard-list text-l mr-3"></i> Tinjauan Asesmen
             </a>
-
             <a href="{{ route('asesor_profile_tracker') }}" 
                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
@@ -62,11 +68,12 @@
                 <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
             </a>
 
-            <a href="{{ route('asesor_profile_bukti') }}" 
+            {{-- Link 'Bukti Kelengkapan' dinamis --}}
+            <a href="{{ route('asesor.bukti', $asesor->id_asesor) }}" 
                class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->routeIs('asesor_profile_bukti') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ request()->routeIs('asesor.bukti') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-check text-l mr-3"></i> Bukti Kelengkapan
             </a>
         </div>
@@ -85,18 +92,25 @@
 
         <div class="space-y-6">
           
-          @php
+          {{-- PERBAIKAN: Komentar diubah ke Blade comment agar tidak error --}}
+          {{-- PERUBAHAN: Blok @php dinamis berdasarkan data $asesor --}}
+          {{-- @php
             $documents = [
-                ['title' => 'KTP', 'subtitle' => 'Sertifikasi Pelatihan / Sertifikat Kompetensi Polines', 'files' => 1, 'file_name' => 'ktp_roihan.png'],
-                ['title' => 'Foto', 'subtitle' => 'Sertifikasi Pelatihan / Sertifikat Kompetensi Polines', 'files' => 1, 'file_name' => 'foto_formal.png'],
-                ['title' => 'NPWP', 'subtitle' => 'NPWP', 'files' => 1, 'file_name' => 'npwp_roihan.png'],
-                ['title' => 'Rekening', 'subtitle' => 'Rekening', 'files' => 1, 'file_name' => 'rekening_bca.png'],
-                ['title' => 'Curiculum Vitae (CV)', 'subtitle' => 'CV', 'files' => 1, 'file_name' => 'cv_terbaru.pdf'],
-                ['title' => 'Ijazah Pendidikan', 'subtitle' => 'Ijazah pendidikan D4/S1, S2 & S3', 'files' => 3, 'file_name' => 'ijazah_s1.pdf'],
-                ['title' => 'Sertifikat Asesor Kompetensi', 'subtitle' => 'Sertifikat kompetensi sebagai seorang asesor', 'files' => 1, 'file_name' => 'sertif_asesor.pdf'],
+                ['key' => 'ktp', 'title' => 'KTP', 'subtitle' => 'Kartu Tanda Penduduk', 'file_path' => $asesor->ktp],
+                ['key' => 'pas_foto', 'title' => 'Foto', 'subtitle' => 'Pas Foto 3x4', 'file_path' => $asesor->pas_foto],
+                ['key' => 'NPWP_foto', 'title' => 'NPWP', 'subtitle' => 'Kartu NPWP', 'file_path' => $asesor->NPWP_foto],
+                ['key' => 'rekening_foto', 'title' => 'Rekening', 'subtitle' => 'Buku Rekening Bank', 'file_path' => $asesor->rekening_foto],
+                ['key' => 'CV', 'title' => 'Curiculum Vitae (CV)', 'subtitle' => 'CV terbaru', 'file_path' => $asesor->CV],
+                ['key' => 'ijazah', 'title' => 'Ijazah Pendidikan', 'subtitle' => 'Ijazah pendidikan terakhir', 'file_path' => $asesor->ijazah],
+                ['key' => 'sertifikat_asesor', 'title' => 'Sertifikat Asesor Kompetensi', 'subtitle' => 'Sertifikat kompetensi sebagai asesor', 'file_path' => $asesor->sertifikat_asesor],
+                ['key' => 'sertifikasi_kompetensi', 'title' => 'Sertifikasi Kompetensi', 'subtitle' => 'Sertifikat teknis/pendukung', 'file_path' => $asesor->sertifikasi_kompetensi],
             ];
-          @endphp
+          @endphp --}}
+          {{-- PERUBAHAN: Blok @php di atas (baris 90-100) telah dihapus/dikomentari. --}}
+          {{-- Logika ini dipindahkan ke AsesorController. --}}
 
+
+          {{-- Loop dimulai di sini --}}
           @foreach ($documents as $doc)
           <div class="border border-gray-200 rounded-xl shadow-sm overflow-hidden" x-data="{ open: true }">
             <div @click="open = !open" class="flex items-center justify-between px-6 py-4 bg-gray-50 cursor-pointer">
@@ -105,67 +119,95 @@
                 <p class="text-sm text-gray-500">{{ $doc['subtitle'] }}</p>
               </div>
               <div class="flex items-center space-x-3">
-                <span class="text-sm text-red-500 font-semibold">{{ $doc['files'] }} berkas</span>
+                @if ($doc['file_path'])
+                  <span class="text-sm text-green-600 font-semibold">1 berkas</span>
+                @else
+                  <span class="text-sm text-red-500 font-semibold">0 berkas</span>
+                @endif
                 <i class="fas text-gray-500 transition-transform" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
               </div>
             </div>
             
             <div x-show="open" x-transition class="p-6 border-t border-gray-200">
-              <div class="flex items-center space-x-4">
-                <div class="w-14 h-14 flex items-center justify-center bg-blue-100 text-blue-600 font-semibold rounded-lg text-lg">
-                  .png
+              @if ($doc['file_path'])
+                <div class="flex items-center space-x-4">
+                  <div class="w-14 h-14 flex items-center justify-center bg-blue-100 text-blue-600 font-semibold rounded-lg text-lg">
+                    {{-- Menampilkan ekstensi file --}}
+                    .{{ pathinfo($doc['file_path'], PATHINFO_EXTENSION) }}
+                  </div>
+                  <div class="flex-1">
+                    {{-- Menampilkan nama file --}}
+                    <p class="font-medium text-gray-700 text-sm">{{ basename($doc['file_path']) }}</p>
+                    <p class="text-gray-500 text-xs mt-1">Keterangan:</p>
+                    <p class="text-gray-600 text-xs">File telah diupload.</p>
+                  </div>
+                  <div class="flex flex-col space-y-2">
+                    {{-- Tombol View untuk melihat file di tab baru --}}
+                    <a href="{{ Storage::url($doc['file_path']) }}" target="_blank"
+                       class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow flex items-center justify-center">
+                      <i class="fas fa-eye mr-1.5"></i> View
+                    </a>
+                    {{-- Tombol Edit mengarah ke halaman edit step 3 --}}
+                    <a href="{{ route('edit_asesor3', $asesor->id_asesor) }}"
+                       class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow flex items-center justify-center">
+                      <i class="fas fa-edit mr-1.5"></i> Edit
+                    </a>
+                  </div>
                 </div>
-                <div class="flex-1">
-                  <p class="font-medium text-gray-700 text-sm">{{ $doc['file_name'] }}</p>
-                  <p class="text-gray-500 text-xs mt-1">Keterangan:</p>
-                  <p class="text-gray-600 text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+              @else
+                {{-- Tampilan jika file belum diupload --}}
+                <div class="flex items-center justify-between">
+                  <p class="text-sm text-gray-500">Berkas belum diupload.</p>
+                  <a href="{{ route('edit_asesor3', $asesor->id_asesor) }}"
+                     class="bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-full text-xs font-medium shadow flex items-center">
+                    <i class="fas fa-upload mr-1.5"></i> Upload
+                  </a>
                 </div>
-                <div class="flex flex-col space-y-2">
-                  <button class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow flex items-center justify-center">
-                    <i class="fas fa-edit mr-1.5"></i> Edit
-                  </button>
-                  <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-xs font-medium shadow flex items-center justify-center">
-                    <i class="fas fa-trash mr-1.5"></i> Delete
-                  </button>
-                </div>
-              </div>
+              @endif
             </div>
           </div>
+          {{-- ========================================================= --}}
+          {{-- PERBAIKAN: Menambahkan @endforeach untuk menutup loop      --}}
+          {{-- ========================================================= --}}
           @endforeach
 
         </div>
         
+        {{-- Bagian Tanda Tangan --}}
         <div class="mt-10 bg-white rounded-2xl shadow-xl p-8 relative border border-gray-200">
           
           <div class="absolute top-6 right-6 flex space-x-2">
-            <button class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-semibold px-4 py-1.5 rounded-full text-xs flex items-center shadow-sm">
+            {{-- Tombol Edit mengarah ke halaman edit step 3 --}}
+            <a href="{{ route('edit_asesor3', $asesor->id_asesor) }}" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-semibold px-4 py-1.5 rounded-full text-xs flex items-center shadow-sm">
               <i class="fas fa-edit mr-1.5 text-xs"></i> Edit
-            </button>
-            <button class="bg-red-100 hover:bg-red-200 text-red-600 font-semibold px-4 py-1.5 rounded-full text-xs flex items-center shadow-sm">
-              <i class="fas fa-trash mr-1.5 text-xs"></i> Delete
-            </button>
+            </a>
           </div>
 
           <h3 class="text-3xl font-bold text-gray-800 text-center mb-8">Tanda Tangan Pemohon</h3>
           
           <p class="font-semibold text-gray-800 mb-4">Saya yang bertanda tangan di bawah ini</p>
 
+          {{-- Data dinamis untuk tanda tangan --}}
           <div class="space-y-2 text-sm text-gray-700 mb-6">
-            <p><span class="font-bold w-36 inline-block">Nama</span> <span class="font-bold mr-2">:</span> Rafa Saputra</p>
-            <p><span class="font-bold w-36 inline-block">Jabatan</span> <span class="font-bold mr-2">:</span> Wakil Presiden</p>
-            <p><span class="font-bold w-36 inline-block">Perusahaan</span> <span class="font-bold mr-2">:</span> Roihan Company</p>
-            <p><span class="font-bold w-36 inline-block">Alamat Perusahaan</span> <span class="font-bold mr-2">:</span> Jakarta, Mranggen</p>
+            <p><span class="font-bold w-36 inline-block">Nama</span> <span class="font-bold mr-2">:</span> {{ $asesor->nama_lengkap }}</p>
+            <p><span class="font-bold w-36 inline-block">Pekerjaan</span> <span class="font-bold mr-2">:</span> {{ $asesor->pekerjaan }}</p>
+            <p><span class="font-bold w-36 inline-block">Alamat</span> <span class="font-bold mr-2">:</span> {{ $asesor->alamat_rumah ?? '-' }}</p>
           </div>
 
           <p class="mt-6 text-gray-700 text-sm mb-6 max-w-2xl">
             Dengan ini saya menyatakan mengisi data dengan sebenarnya untuk dapat digunakan
-            sebagai bukti pemenuhan syarat Sertifikasi Lorem Ipsum Dolor Sit Amet.
+            sebagai bukti pemenuhan syarat Sertifikasi.
           </p>
 
+          {{-- Tanda tangan dinamis --}}
           <div class="mt-6 border border-gray-300 rounded-lg w-full max-w-md h-40 flex items-center justify-center relative mx-auto bg-white">
-            <img src="{{ asset('images/ttd_sample.png') }}" alt="Tanda Tangan" class="object-contain h-24">
+            @if($asesor->tanda_tangan)
+              <img src="{{ Storage::url($asesor->tanda_tangan) }}" alt="Tanda Tangan" class="object-contain h-24">
+            @else
+              <p class="text-xs text-red-500">*Tanda Tangan belum diupload</p>
+            @endif
           </div>
-          <p class="text-xs text-red-500 mt-2 text-center">*Tanda Tangan di sini</p>
+          <p class="text-xs text-gray-500 mt-2 text-center">*Tanda Tangan Pemohon</p>
 
           <div class="mt-8">
             <span class="bg-green-500 text-white font-bold px-6 py-2 rounded-lg shadow-md text-sm">
