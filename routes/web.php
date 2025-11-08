@@ -7,23 +7,6 @@ use App\Http\Controllers\Asesor\AsesorTableController;
 
 /*
 |--------------------------------------------------------------------------
-| Halaman Umum (Static Page)
-|--------------------------------------------------------------------------
-*/
-Route::get('/navbar', function () {
-    return view('navbar-fix');
-})->name('navbar');
-
-Route::get('/daftar_asesi', function () {
-    return view('frontend/daftar_asesi');
-})->name('daftar_asesi');
-
-Route::get('/tracker', function () {
-    return view('frontend/tracker');
-})->name('tracker');
-
-/*
-|--------------------------------------------------------------------------
 | Halaman Home & Detail Skema
 |--------------------------------------------------------------------------
 | Diperbaiki: hanya satu route /skema/{id} yang aktif untuk mencegah konflik.
@@ -94,4 +77,44 @@ Route::get('/keep-alive', function () {
     return response()->json(['status' => 'session_refreshed']);
 });
 
+
 require __DIR__.'/auth.php';
+
+// // Grup rute yang WAJIB LOGIN (sudah ada 'auth' dari Breeze)
+// Route::middleware(['auth'])->group(function () {
+
+//     // Contoh rute dashboard (semua role yg login bisa akses)
+//     Route::get('/dashboard', [DashboardController::class, 'index'])
+//         ->name('dashboard');
+
+//     // --- INI CONTOH ROLE HIERARKI ---
+
+//     // 1. HANYA Superadmin
+//     // Admin, Asesor, Asesi -> GABISA MASUK (403 Forbidden)
+//     Route::middleware(['role:superadmin'])->group(function () {
+//         Route::get('/superadmin/logs', [SuperAdminController::class, 'viewLogs']);
+//         // ...rute superadmin lainnya
+//     });
+
+//     // 2. HANYA Admin dan Superadmin
+//     // Asesor, Asesi -> GABISA MASUK
+//     Route::middleware(['role:admin,superadmin'])->group(function () {
+//         Route::get('/admin/manage-users', [AdminController::class, 'manageUsers']);
+//         // ...rute admin lainnya
+//     });
+
+//     // 3. HANYA Asesor (dan Admin/Superadmin jika perlu)
+//     // Asesi -> GABISA MASUK
+//     Route::middleware(['role:asesor,admin,superadmin'])->group(function () {
+//         Route::get('/asesor/data-asesi', [AsesorController::class, 'viewAsesi']);
+//         // ...rute asesor lainnya
+//     });
+
+//     // 4. HANYA Asesi
+//     // Semua role lain -> GABISA MASUK
+//     Route::middleware(['role:asesi'])->group(function () {
+//         Route::get('/asesi/profile-saya', [AsesiController::class, 'myProfile']);
+//         // ...rute asesi lainnya
+//     });
+
+// });
