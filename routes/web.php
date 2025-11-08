@@ -1,10 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Asesor\IA02Controller;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\JadwalController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FormIa10Controller;
+use App\Http\Controllers\AsesorController;
+use App\Http\Controllers\HomeController;
 
 
 
@@ -26,6 +27,7 @@ return view('frontend/daftar_asesi');
 Route::get('/tracker', function () {
     return view('frontend/tracker');
 })->name('tracker');
+Route::get('/asesor', [AsesorController::class, 'index'])->name('asesor.index');
 
 // Forms Frontend Routes
 Route::get('/FR-IA-10', function () {
@@ -61,17 +63,18 @@ Route::get('/fr-ia-02', function () {
 })->name('FR_IA_02');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/fr-ia-10', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
-    Route::get('/fr-ia-10', [IA10Controller::class, 'create'])
+    Route::get('/fr-ia-10', [FormIa10Controller::class, 'create'])->name('fr-ia-10.create');
+    Route::get('/fr-ia-10', [FormIa10Controller::class, 'create'])
 
     ->middleware('auth')
     ->middleware('auth') //
     ->name('fr-ia-10.create');
-    Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
-    Route::post('/fr-ia-10', [IA10Controller::class, 'store'])
+    Route::post('/fr-ia-10', [FormIa10Controller::class, 'store'])->name('fr-ia-10.store');
+    Route::post('/fr-ia-10', [FormIa10Controller::class, 'store'])
     ->middleware('auth')
     ->name('fr-ia-10.store');
     Route::get('/dashboard', function () {return view('dashboard'); })->middleware(['auth'])->name('dashboard');
@@ -83,6 +86,6 @@ Route::middleware('auth')->group(function () {
          ->name('fr-ia-02.store');
 });
 
-Route::resource('jadwal', JadwalController::class);
+
 
 require __DIR__.'/auth.php';
