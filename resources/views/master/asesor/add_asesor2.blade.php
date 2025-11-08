@@ -30,7 +30,15 @@
     <main class="flex-1 flex justify-center items-start pt-10 pb-12 px-4">
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
         
-        <h1 class="text-3xl font-bold text-gray-900 text-center mb-6">ADD ASESOR</h1>
+        <div class="flex items-center justify-between mb-10 relative">
+            <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+              <i class="fas fa-arrow-left mr-2"></i> Back
+            </a> 
+            <h1 class="text-3xl font-bold text-gray-900 text-center absolute left-1/2 -translate-x-1/2">
+              ADD ASESOR
+            </h1>
+            <div class="w-[80px]"></div> 
+        </div>
         
         @if ($errors->any())
             <div class="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700" role="alert">
@@ -121,8 +129,9 @@
               <select id="jenis_kelamin" name="jenis_kelamin" required
                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
                 <option value="">Pilih Jenis Kelamin</option>
-                <option value="1" {{ old('jenis_kelamin', $asesor->jenis_kelamin ?? '') == '1' ? 'selected' : '' }}>Laki-laki</option>
-                <option value="0" {{ old('jenis_kelamin', $asesor->jenis_kelamin ?? '') == '0' ? 'selected' : '' }}>Perempuan</option>
+                <!-- PERBAIKAN: Mengganti value 0/1 menjadi string yang sesuai dengan DB & Validasi -->
+                <option value="Laki-laki" {{ old('jenis_kelamin', $asesor->jenis_kelamin ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                <option value="Perempuan" {{ old('jenis_kelamin', $asesor->jenis_kelamin ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
               </select>
               
               <label for="kebangsaan" class="block text-sm font-medium text-gray-700 mb-2 mt-6">Kebangsaan <span class="text-red-500">*</span></label>
@@ -137,16 +146,18 @@
           <h3 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4 pt-4">Alamat & Kontak</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="md:col-span-2">
-              <label for="alamat" class="block text-sm font-medium text-gray-700 mb-2">Alamat Rumah <span class="text-red-500">*</span></label>
-              <textarea id="alamat" name="alamat" required rows="3"
+              <!-- PERBAIKAN: ganti id/name 'alamat' -> 'alamat_rumah' -->
+              <label for="alamat_rumah" class="block text-sm font-medium text-gray-700 mb-2">Alamat Rumah <span class="text-red-500">*</span></label>
+              <textarea id="alamat_rumah" name="alamat_rumah" required rows="3"
                         class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
-                        placeholder="Masukkan Alamat Rumah">{{ old('alamat', $asesor->alamat_rumah ?? '') }}</textarea>
+                        placeholder="Masukkan Alamat Rumah">{{ old('alamat_rumah', $asesor->alamat_rumah ?? '') }}</textarea>
             </div>
             <div>
-              <label for="kab_kota" class="block text-sm font-medium text-gray-700 mb-2">Kabupaten / Kota <span class="text-red-500">*</span></label>
-              <input type="text" id="kab_kota" name="kab_kota" required
+              <!-- PERBAIKAN: ganti id/name 'kab_kota' -> 'kabupaten_kota' -->
+              <label for="kabupaten_kota" class="block text-sm font-medium text-gray-700 mb-2">Kabupaten / Kota <span class="text-red-500">*</span></label>
+              <input type="text" id="kabupaten_kota" name="kabupaten_kota" required
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                     value="{{ old('kab_kota', $asesor->kabupaten_kota ?? '') }}">
+                     value="{{ old('kabupaten_kota', $asesor->kabupaten_kota ?? '') }}">
             </div>
             <div>
               <label for="provinsi" class="block text-sm font-medium text-gray-700 mb-2">Provinsi <span class="text-red-500">*</span></label>
@@ -161,10 +172,11 @@
                      value="{{ old('kode_pos', $asesor->kode_pos ?? '') }}">
             </div>
             <div>
-              <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-2">Nomor HP <span class="text-red-500">*</span></label>
-              <input type="text" id="no_hp" name="no_hp" required
+              <!-- PERBAIKAN: ganti id/name 'no_hp' -> 'nomor_hp' -->
+              <label for="nomor_hp" class="block text-sm font-medium text-gray-700 mb-2">Nomor HP <span class="text-red-500">*</span></label>
+              <input type="text" id="nomor_hp" name="nomor_hp" required
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                     placeholder="0812..." value="{{ old('no_hp', $asesor->nomor_hp ?? '') }}">
+                     placeholder="0812..." value="{{ old('nomor_hp', $asesor->nomor_hp ?? '') }}">
             </div>
             
             <div>
@@ -175,10 +187,11 @@
             </div>
             
             <div class="md:col-span-2">
-              <label for="npwp" class="block text-sm font-medium text-gray-700 mb-2">NPWP <span class="text-red-500">*</span></label>
-              <input type="text" id="npwp" name="npwp" required
+              <!-- PERBAIKAN: ganti id/name 'npwp' -> 'NPWP' (sesuai migrasi & validasi) -->
+              <label for="NPWP" class="block text-sm font-medium text-gray-700 mb-2">NPWP <span class="text-red-500">*</span></label>
+              <input type="text" id="NPWP" name="NPWP" required
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                     placeholder="Masukkan NPWP" value="{{ old('npwp', $asesor->NPWP ?? '') }}">
+                     placeholder="Masukkan NPWP" value="{{ old('NPWP', $asesor->NPWP ?? '') }}">
             </div>
           </div>
 
@@ -191,10 +204,11 @@
                      value="{{ old('nama_bank', $asesor->nama_bank ?? '') }}">
             </div>
             <div>
-              <label for="no_rekening" class="block text-sm font-medium text-gray-700 mb-2">Nomor Rekening <span class="text-red-500">*</span></label>
-              <input type="text" id="no_rekening" name="no_rekening" required
+              <!-- PERBAIKAN: ganti id/name 'no_rekening' -> 'norek' -->
+              <label for="norek" class="block text-sm font-medium text-gray-700 mb-2">Nomor Rekening <span class="text-red-500">*</span></label>
+              <input type="text" id="norek" name="norek" required
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                     value="{{ old('no_rekening', $asesor->norek ?? '') }}">
+                     value="{{ old('norek', $asesor->norek ?? '') }}">
             </div>
           </div>
 

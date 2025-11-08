@@ -49,4 +49,23 @@ class AsesorFactory extends Factory
             'is_verified' => true,
         ];
     }
+
+    /**
+     * Konfigurasi state model.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (Asesor $asesor) {
+            // 1. Ambil 1 atau 2 skema secara acak
+            $skemas = Skema::inRandomOrder()->limit(rand(1, 2))->get();
+
+            // 2. Hubungkan skema tersebut ke asesor yang baru dibuat
+            // Ini akan membuat data di tabel 'Transaksi_asesor_skema'
+            if ($skemas->isNotEmpty()) {
+                $asesor->skemas()->attach($skemas);
+            }
+        });
+    }
 }

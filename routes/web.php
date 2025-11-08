@@ -73,11 +73,9 @@ Route::middleware('auth')->group(function () {
     // ==========================================================
     
     // 5. Master - Asesor
-    Route::get('/master_asesor', function () {
-        // Menggunakan eager loading untuk performa
-        $asesors = \App\Models\Asesor::with(['user', 'skema'])->get(); 
-        return view('master.asesor.master_asesor', [ 'asesors' => $asesors ]);
-    })->name('master_asesor');
+    
+    // PERBAIKAN: Mengarahkan ke AsesorController@index agar Eager Loading, Search, dan Pagination berfungsi
+    Route::get('/master_asesor', [AsesorController::class, 'index'])->name('master_asesor');
     
     // ... (Rute Add/Edit Asesor)
     Route::get('/add_asesor1', [AsesorController::class, 'createStep1'])->name('add_asesor1');
@@ -85,7 +83,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/add_asesor2', [AsesorController::class, 'createStep2'])->name('add_asesor2');
     Route::post('/add_asesor2', [AsesorController::class, 'postStep2'])->name('add_asesor2.post');
     Route::get('/add_asesor3', [AsesorController::class, 'createStep3'])->name('add_asesor3');
-    Route::post('/store-asesor', [AsesorController::class, 'store'])->name('asesor.store');
+    
+    // PERBAIKAN: Menyamakan path dengan rute yang lain agar konsisten
+    Route::post('/asesor/store', [AsesorController::class, 'store'])->name('asesor.store');
+    
     Route::get('/edit-asesor-step-1/{id_asesor}', [AsesorController::class, 'editStep1'])->name('edit_asesor1');
     Route::patch('/update-asesor-step-1/{id_asesor}', [AsesorController::class, 'updateStep1'])->name('asesor.update.step1');
     Route::get('/edit-asesor-step-2/{id_asesor}', [AsesorController::class, 'editStep2'])->name('edit_asesor2');

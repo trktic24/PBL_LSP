@@ -11,15 +11,8 @@
   <style>
     body { font-family: 'Poppins', sans-serif; }
     ::-webkit-scrollbar { width: 0; }
-    select {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-      background-position: right 0.5rem center;
-      background-repeat: no-repeat;
-      background-size: 1.5em 1.5em;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-    }
+    /* Menghapus style 'select' default agar multi-select box terlihat normal */
+    [x-cloak] { display: none !important; }
   </style>
 </head>
 
@@ -30,12 +23,16 @@
     <main class="flex-1 flex flex-col items-center pt-10 pb-12 px-4">
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
 
-        <div class="w-full max-w-4xl mb-4">
+        <!-- PERBAIKAN: Tata letak header dirapikan -->
+        <div class="flex items-center justify-between mb-10">
           <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
               <i class="fas fa-arrow-left mr-2"></i> Back
           </a>
+          <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">ADD ASESOR</h1>
+          <!-- Spacer element to balance the flex container -->
+          <div class="w-[80px]"></div> 
         </div>
-        <h1 class="text-3xl font-bold text-gray-900 text-center mb-6">ADD ASESOR</h1>
+        
         @if ($errors->any())
             <div class="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700" role="alert">
                 <span class="font-bold">Error Validasi!</span>
@@ -69,17 +66,6 @@
             </div>
         </div>
 
-        @if ($errors->any())
-            <div class="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700" role="alert">
-                <span class="font-bold">Error Validasi!</span>
-                <ul class="mt-2 list-inside list-disc">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        
         <form action="{{ route('add_asesor1.post') }}" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
           @csrf
           <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Informasi Akun</h2>
@@ -98,22 +84,59 @@
                    placeholder="Masukkan Alamat Email" value="{{ old('email', $asesor->email ?? '') }}">
           </div>
 
-          <div>
-            <label for="id_skema" class="block text-sm font-medium text-gray-700 mb-2">Bidang Sertifikasi (Skema) <span class="text-red-500">*</span></label>
-            <select id="id_skema" name="id_skema" required
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="">Pilih Skema</option>
-              @php
-                  // Ambil skema jika belum ada (Quick fix)
-                  $skemas = \App\Models\Skema::all();
-              @endphp
-              @foreach ($skemas as $skema)
-                <option value="{{ $skema->id_skema }}" {{ old('id_skema', $asesor->id_skema ?? '') == $skema->id_skema ? 'selected' : '' }}>
-                  {{ $skema->nama_skema }}
-                </option>
-              @endforeach
-            </select>
+          <!-- PERBAIKAN: Input Skema diubah menjadi Dropdown Multi-select Kustom dengan Alpine.js -->
+          @php
+              // PERBAIKAN BUG FINAL:
+              // Cek data session dengan lebih aman untuk menghindari error "Undefined property"
+              // yang menyebabkan Alpine.js crash dan data 'old()' gagal terisi.
+              $session_skemas = [];
+              if (isset($asesor) && property_exists($asesor, 'skema_ids') && is_array($asesor->skema_ids)) {
+                  $session_skemas = $asesor->skema_ids;
+              }
+              $old_skemas = old('skema_ids', $session_skemas);
+          @endphp
+          <div x-data="{ 
+                  open: false, 
+                  selectedSkemas: @json($old_skemas) 
+               }" 
+               @click.away="open = false" 
+               class="relative">
+            
+            <label class="block text-sm font-medium text-gray-700 mb-2">Bidang Sertifikasi (Skema) <span class="text-red-500">*</span></label>
+            <p class="text-xs text-gray-500 mb-2">Pilih satu atau lebih skema yang dikuasai.</p>
+            
+            <!-- Tombol Dropdown Palsu -->
+            <!-- PERBAIKAN: Menambahkan .stop untuk memastikan toggle tidak berbenturan -->
+            <button type="button" @click.stop="open = !open" 
+                    class="w-full p-3 border border-gray-300 rounded-lg bg-white text-left flex justify-between items-center focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <span x-text="selectedSkemas.length > 0 ? selectedSkemas.length + ' skema dipilih' : 'Pilih skema...'"
+                    :class="selectedSkemas.length > 0 ? 'text-gray-900' : 'text-gray-400'"></span>
+              <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="{ 'rotate-180': open }"></i>
+            </button>
+
+            <!-- Daftar Checkbox (Dropdown Asli) -->
+            <div x-show="open" 
+                 x-transition 
+                 x-cloak
+                 class="absolute z-10 w-full mt-1 border border-gray-300 rounded-lg bg-white h-48 overflow-y-auto space-y-2 p-3 shadow-lg">
+              
+              @forelse ($skemas as $skema)
+                <div class="flex items-center">
+                  <input type="checkbox" id="add_skema_{{ $skema->id_skema }}" 
+                         name="skema_ids[]" 
+                         value="{{ $skema->id_skema }}"
+                         x-model="selectedSkemas"
+                         class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                  <label for="add_skema_{{ $skema->id_skema }}" class="ml-2 block text-sm text-gray-900">
+                    {{ $skema->nama_skema }}
+                  </label>
+                </div>
+              @empty
+                <p class="text-sm text-gray-500">Belum ada data skema. Harap tambahkan skema terlebih dahulu.</p>
+              @endforelse
+            </div>
           </div>
+          <!-- Akhir Dropdown Kustom -->
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>

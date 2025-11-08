@@ -13,79 +13,68 @@ class Asesor extends Model
     use HasFactory;
 
     /**
-     * Nama tabel yang digunakan oleh model.
+     * Nama tabel yang terkait dengan model.
+     *
+     * @var string
      */
     protected $table = 'asesor';
 
     /**
-     * Primary key yang digunakan oleh tabel.
+     * Primary key untuk model.
+     *
+     * @var string
      */
     protected $primaryKey = 'id_asesor';
 
     /**
-     * Kolom yang DIJAGA (selain ini boleh diisi).
-     * Kosongkan array ini agar semua kolom bisa diisi.
+     * Atribut yang dapat diisi secara massal.
+     *
+     * @var array
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'nomor_regis',
+        'nama_lengkap',
+        'nik',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'kebangsaan',
+        'pekerjaan',
+        'alamat_rumah',
+        'kode_pos',
+        'kabupaten_kota',
+        'provinsi',
+        'nomor_hp',
+        'NPWP',
+        'nama_bank',
+        'norek',
+        'ktp',
+        'pas_foto',
+        'NPWP_foto',
+        'rekening_foto',
+        'CV',
+        'ijazah',
+        'sertifikat_asesor',
+        'sertifikasi_kompetensi',
+        'tanda_tangan',
+        'is_verified',
+    ];
 
     /**
-     * Booted method untuk mendaftarkan model event.
-     * LOGIKA DIPERBAIKI: Pisahkan antara 'deleting' dan 'deleted'
-     */
-    protected static function booted()
-    {
-        /**
-         * Event 'deleting' (SEBELUM asesor dihapus)
-         * Kita gunakan untuk menghapus file-filenya.
-         * Ini aman karena tidak ada constraint database.
-         */
-        static::deleting(function ($asesor) {
-            
-            // Hapus folder file terkait
-            // Asumsi path: public/asesor_files/{id_user}
-            if ($asesor->id_user) {
-                $uploadPath = 'public/asesor_files/' . $asesor->id_user;
-                if (Storage::directoryExists($uploadPath)) {
-                    // Hapus direktori beserta semua isinya
-                    Storage::deleteDirectory($uploadPath);
-                }
-            }
-        });
-
-        /**
-         * Event 'deleted' (SETELAH asesor dihapus)
-         * Kita gunakan untuk menghapus user (parent) terkait.
-         */
-        static::deleted(function ($asesor) {
-
-            // Hapus User (akun login) terkait
-            // Ini aman dilakukan karena data 'asesor' (child) sudah terhapus
-            // dari database, sehingga foreign key constraint tidak akan gagal.
-            
-            // Kita perlu mencari user-nya secara manual menggunakan find
-            $user = User::find($asesor->id_user);
-            
-            if ($user) {
-                $user->delete();
-            }
-        });
-    }
-
-    /**
-     * Relasi ke model User.
-     * Satu Asesor dimiliki oleh satu User.
+     * Relasi one-to-one ke model User.
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user');
+        return $this->belongsTo(User::class, 'user_id', 'id_user');
     }
 
     /**
-     * Relasi ke model Skema.
-     * Satu Asesor terkait dengan satu Skema.
+     * Relasi many-to-many ke model Skema.
+     * Ini adalah perbaikan utamanya.
      */
-    public function skema()
+    public function skemas()
     {
-        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+        return $this->belongsToMany(Skema::class, 'Transaksi_asesor_skema', 'id_asesor', 'id_skema');
     }
 }

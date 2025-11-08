@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Asesor;
+use App\Models\Skema; // Ini SANGAT PENTING
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; // Pastikan Log di-import
+use Illuminate\Support\Facades\Log; 
 use Illuminate\Validation\Rule; 
 use Illuminate\Support\Facades\Storage; 
 
@@ -17,11 +18,78 @@ class AsesorController extends Controller
     // MENAMPILKAN HALAMAN (GET)
     // ==========================================================
 
+    /**
+     * PERBAIKAN: Menampilkan halaman master asesor (daftar asesor)
+     */
+    public function index(Request $request)
+    {
+        // PERBAIKAN: Ambil semua parameter filter
+        $requestData = $request->only(['search', 'skema_id', 'jenis_kelamin', 'is_verified']);
+
+        // Query dasar dengan relasi yang dibutuhkan
+        $query = Asesor::with(['user', 'skemas']);
+
+        // Logika pencarian
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('nama_lengkap', 'like', $searchTerm)
+                  ->orWhere('nomor_regis', 'like', $searchTerm)
+                  ->orWhere('nik', 'like', $searchTerm)
+                  ->orWhere('nomor_hp', 'like', $searchTerm)
+                  ->orWhere('pekerjaan', 'like', $searchTerm)
+                  ->orWhere('kabupaten_kota', 'like', $searchTerm)
+                  ->orWhere('provinsi', 'like', $searchTerm)
+                  // Mencari di relasi user
+                  ->orWhereHas('user', function($userQuery) use ($searchTerm) {
+                      $userQuery->where('email', 'like', $searchTerm);
+                  })
+                  // Mencari di relasi 'skemas'
+                  ->orWhereHas('skemas', function($skemaQuery) use ($searchTerm) {
+                      $skemaQuery->where('nama_skema', 'like', $searchTerm);
+                  });
+            });
+        }
+        
+        // Logika filter skema (sudah ada)
+        if ($request->filled('skema_id')) {
+            $query->whereHas('skemas', function($skemaQuery) use ($request) {
+                $skemaQuery->where('skema.id_skema', $request->skema_id);
+            });
+        }
+
+        // PERBAIKAN BARU: Logika filter Jenis Kelamin
+        if ($request->filled('jenis_kelamin')) {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+
+        // PERBAIKAN BARU: Logika filter Status Verifikasi
+        if ($request->filled('is_verified')) { 
+            $query->where('is_verified', $request->is_verified);
+        }
+
+        // Ambil semua skema untuk dropdown filter
+        $skemas = Skema::orderBy('nama_skema')->get();
+        
+        // Paginate hasil DAN tambahkan parameter filter ke link pagination
+        $asesors = $query->paginate(10)->appends($requestData); 
+        
+        // Kirim data ke view
+        return view('master.asesor.master_asesor', compact('asesors', 'skemas', 'requestData'));
+    }
+
+
     public function createStep1(Request $request)
+// ... (sisa kode controller Anda tetap sama) ...
+// ... (pastikan Anda menyalin bagian 'index' yang baru di atas) ...
+// ... (sisa file tidak berubah) ...
     {
         // Ambil data lama dari session jika ada (untuk tombol 'back')
         $asesor = $request->session()->get('asesor');
-        return view('master.asesor.add_asesor1', compact('asesor'));
+        // PERBAIKAN: Ambil semua skema untuk dropdown
+        $skemas = Skema::all();
+        return view('master.asesor.add_asesor1', compact('asesor', 'skemas'));
     }
 
     public function createStep2(Request $request)
@@ -45,17 +113,22 @@ class AsesorController extends Controller
      */
     public function postStep1(Request $request)
     {
-        // PERBAIKAN: Disesuaikan dengan form add_asesor1
+        // PERBAIKAN: Validasi skema dikembalikan sebagai array
         $validatedData = $request->validate([
             'email' => 'required|email|unique:users,email',
             'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:4|confirmed',
-            'id_skema' => 'required|exists:skema,id_skema',
+            'skema_ids' => 'required|array', // Harus array
+            'skema_ids.*' => 'exists:skema,id_skema', // Setiap item harus ada di tabel skema
         ]);
 
         // Inisialisasi session jika belum ada
         $asesor = $request->session()->get('asesor', new Asesor());
         $asesor->fill($validatedData);
+        
+        // PERBAIKAN: Simpan skema_ids ke session
+        $asesor->skema_ids = $validatedData['skema_ids'];
+        
         $request->session()->put('asesor', $asesor);
 
         return redirect()->route('add_asesor2');
@@ -66,31 +139,30 @@ class AsesorController extends Controller
      */
     public function postStep2(Request $request)
     {
-        // PERBAIKAN: Validasi disesuaikan dengan database dan form
+        // Validasi ini sudah benar dan sesuai dengan migrasi asesor
         $validatedData = $request->validate([
             'nomor_regis' => 'required|string|unique:asesor,nomor_regis',
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|size:16|unique:asesor,nik',
             'tempat_lahir' => 'required|string',
             
-            // Validasi 3 field tanggal
             'tanggal_lahir' => 'required|integer',
             'bulan_lahir' => 'required|integer',
             'tahun_lahir' => 'required|integer',
 
-            // Validasi 1 atau 0
-            'jenis_kelamin' => 'required|boolean', 
+            'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan'])], 
             
             'kebangsaan' => 'required|string',
-            'pekerjaan' => 'required|string', // Field ini wajib ada
-            'alamat' => 'required|string', 
-            'kab_kota' => 'required|string',
+            'pekerjaan' => 'required|string',
+            
+            'alamat_rumah' => 'required|string', 
+            'kabupaten_kota' => 'required|string',
             'provinsi' => 'required|string',
             'kode_pos' => 'nullable|string:5',
-            'no_hp' => 'required|string|max:15', 
-            'npwp' => 'required|string|max:25',
+            'nomor_hp' => 'required|string|max:15', 
+            'NPWP' => 'required|string|max:25',
             'nama_bank' => 'required|string',
-            'no_rekening' => 'required|string|max:20', 
+            'norek' => 'required|string|max:20', 
         ]);
 
         // Gabungkan tanggal lahir
@@ -101,15 +173,8 @@ class AsesorController extends Controller
         $asesor = $request->session()->get('asesor');
         $asesor->fill($validatedData);
         
-        // Timpa/Set data dengan nama kolom DB yang benar
         $asesor->tanggal_lahir = $tanggal_lahir_full;
-        $asesor->alamat_rumah = $validatedData['alamat'];
-        $asesor->kabupaten_kota = $validatedData['kab_kota'];
-        $asesor->nomor_hp = $validatedData['no_hp'];
-        $asesor->norek = $validatedData['no_rekening'];
-        $asesor->NPWP = $validatedData['npwp'];
-        // 'pekerjaan' dan 'nama_lengkap' sudah terisi otomatis oleh fill()
-
+        
         $request->session()->put('asesor', $asesor);
 
         return redirect()->route('add_asesor3');
@@ -124,7 +189,7 @@ class AsesorController extends Controller
         $asesorData = $request->session()->get('asesor');
 
         // Pastikan data session ada
-        if (!$asesorData) {
+        if (!$asesorData || !isset($asesorData->skema_ids)) {
             return redirect()->route('add_asesor1')->with('error', 'Sesi Anda telah berakhir, silakan mulai lagi.');
         }
 
@@ -152,16 +217,15 @@ class AsesorController extends Controller
                 'role_id' => 2, // Asumsi '2' adalah ID untuk role Asesor
             ]);
 
-            // 4. PERBAIKAN: Buat array data yang BERSIH untuk tabel 'asesor'
+            // 4. Buat array data yang BERSIH untuk tabel 'asesor'
             $finalAsesorData = [
-                'id_user' => $user->id_user,
-                'id_skema' => $asesorData->id_skema,
+                'user_id' => $user->id_user, 
                 'nomor_regis' => $asesorData->nomor_regis,
                 'nama_lengkap' => $asesorData->nama_lengkap,
                 'nik' => $asesorData->nik,
-                'tanggal_lahir' => $asesorData->tanggal_lahir, // Sudah Y-m-d dari Step 2
+                'tanggal_lahir' => $asesorData->tanggal_lahir, 
                 'tempat_lahir' => $asesorData->tempat_lahir,
-                'jenis_kelamin' => $asesorData->jenis_kelamin, // Sudah 1/0 dari Step 2
+                'jenis_kelamin' => $asesorData->jenis_kelamin, 
                 'kebangsaan' => $asesorData->kebangsaan,
                 'pekerjaan' => $asesorData->pekerjaan,
                 'alamat_rumah' => $asesorData->alamat_rumah,
@@ -179,20 +243,25 @@ class AsesorController extends Controller
             $uploadPath = 'public/asesor_files/' . $user->id_user;
             foreach ($validatedFiles as $key => $file) {
                 $path = $file->store($uploadPath);
-                $finalAsesorData[$key] = $path; // $key sudah benar (ktp, pas_foto, dll)
+                $finalAsesorData[$key] = $path; 
             }
 
-            // 6. PERBAIKAN: Simpan Asesor ke database menggunakan Asesor::create
-            Asesor::create($finalAsesorData);
+            // 6. Simpan Asesor ke database
+            $asesor = Asesor::create($finalAsesorData);
+            
+            // 7. PERBAIKAN: Simpan relasi skema ke tabel pivot
+            if (!empty($asesorData->skema_ids)) {
+                $asesor->skemas()->attach($asesorData->skema_ids);
+            }
 
-            // 7. Jika sukses, hapus session dan commit
+            // 8. Jika sukses, hapus session dan commit
             DB::commit();
             $request->session()->forget('asesor');
 
             return redirect()->route('master_asesor')->with('success', 'Asesor baru berhasil ditambahkan!');
 
         } catch (\Exception $e) {
-            // 8. Jika gagal, batalkan semua dan kembali
+            // 9. Jika gagal, batalkan semua dan kembali
             DB::rollBack();
             Log::error('Gagal menyimpan asesor: ' . $e->getMessage());
             // Kembalikan error agar bisa dilihat di blade
@@ -209,9 +278,13 @@ class AsesorController extends Controller
      */
     public function editStep1($id_asesor)
     {
-        // Ambil data Asesor DAN data User-nya
-        $asesor = Asesor::with('user')->findOrFail($id_asesor);
-        return view('master.asesor.edit_asesor1', compact('asesor'));
+        // Ambil data Asesor DAN relasi 'user' dan 'skemas'
+        $asesor = Asesor::with(['user', 'skemas'])->findOrFail($id_asesor);
+        
+        // PERBAIKAN: Ambil semua skema untuk V
+        $skemas = Skema::all(); 
+        
+        return view('master.asesor.edit_asesor1', compact('asesor', 'skemas'));
     }
 
     /**
@@ -222,23 +295,23 @@ class AsesorController extends Controller
         $asesor = Asesor::with('user')->findOrFail($id_asesor);
         $user = $asesor->user;
 
-        // Validasi data
+        // Validasi data (skema dikembalikan)
         $validatedUserData = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => [
                 'required',
                 'email',
-                // Pastikan email unik, KECUALI untuk user ini
                 Rule::unique('users')->ignore($user->id_user, 'id_user'),
             ],
             'password' => 'nullable|string|min:4|confirmed',
+            'skema_ids' => 'nullable|array', // Boleh null/kosong, tapi harus array
+            'skema_ids.*' => 'exists:skema,id_skema',
         ]);
 
         // Update data User
         $user->username = $validatedUserData['nama'];
         $user->email = $validatedUserData['email'];
         
-        // Hanya update password jika diisi
         if (!empty($validatedUserData['password'])) {
             $user->password = Hash::make($validatedUserData['password']);
         }
@@ -248,6 +321,11 @@ class AsesorController extends Controller
         $asesor->nama_lengkap = $validatedUserData['nama'];
         $asesor->save();
 
+        // PERBAIKAN: Gunakan sync() untuk update relasi di tabel pivot
+        // 'sync' akan menghapus relasi lama dan menambah relasi baru
+        $skema_ids = $validatedUserData['skema_ids'] ?? []; // Default array kosong jika tidak ada
+        $asesor->skemas()->sync($skema_ids);
+        
         // Redirect ke step 2
         return redirect()->route('edit_asesor2', $id_asesor)
                          ->with('success-step', 'Data Akun berhasil diperbarui.');
@@ -281,28 +359,23 @@ class AsesorController extends Controller
             ],
             'tempat_lahir' => 'required|string',
             
-            // Validasi Tanggal (3 field integer)
             'tanggal_lahir' => 'required|integer', 
             'bulan_lahir' => 'required|integer',   
             'tahun_lahir' => 'required|integer',   
             
-            // PERBAIKAN: Validasi Jenis Kelamin (boolean untuk 1/0)
-            'jenis_kelamin' => 'required|boolean', 
+            'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan'])], 
             
             'kebangsaan' => 'required|string',
-            
-            // PERBAIKAN: Tambahkan validasi 'pekerjaan'
             'pekerjaan' => 'required|string',
             
-            // Validasi disesuaikan dengan nama field di blade
-            'alamat' => 'required|string', 
-            'kab_kota' => 'required|string',
+            'alamat_rumah' => 'required|string', 
+            'kabupaten_kota' => 'required|string',
             'provinsi' => 'required|string',
             'kode_pos' => 'nullable|string:5',
-            'no_hp' => 'required|string|max:15', 
-            'npwp' => 'required|string|max:25',
+            'nomor_hp' => 'required|string|max:15', 
+            'NPWP' => 'required|string|max:25',
             'nama_bank' => 'required|string',
-            'no_rekening' => 'required|string|max:20', 
+            'norek' => 'required|string|max:20', 
         ]);
 
         // Gabungkan tanggal lahir
@@ -310,29 +383,14 @@ class AsesorController extends Controller
                               $validatedAsesorData['bulan_lahir'] . '-' . 
                               $validatedAsesorData['tanggal_lahir'];
 
-        // Update data Asesor (Pemetaan disamakan dengan database)
-        $asesor->update([
-            'nomor_regis' => $validatedAsesorData['nomor_regis'],
-            'nama_lengkap' => $validatedAsesorData['nama_lengkap'],
-            'nik' => $validatedAsesorData['nik'],
-            'tempat_lahir' => $validatedAsesorData['tempat_lahir'],
-            'tanggal_lahir' => $tanggal_lahir_full,
-            'jenis_kelamin' => $validatedAsesorData['jenis_kelamin'],
-            'kebangsaan' => $validatedAsesorData['kebangsaan'],
-            
-            // PERBAIKAN: Tambahkan 'pekerjaan'
-            'pekerjaan' => $validatedAsesorData['pekerjaan'],
-            
-            // Pemetaan nama kolom database (kiri) dari nama field blade (kanan)
-            'alamat_rumah' => $validatedAsesorData['alamat'],
-            'kabupaten_kota' => $validatedAsesorData['kab_kota'],
-            'provinsi' => $validatedAsesorData['provinsi'],
-            'kode_pos' => $validatedAsesorData['kode_pos'],
-            'nomor_hp' => $validatedAsesorData['no_hp'],
-            'NPWP' => $validatedAsesorData['npwp'],
-            'nama_bank' => $validatedAsesorData['nama_bank'],
-            'norek' => $validatedAsesorData['no_rekening'],
-        ]);
+        $updateData = $validatedAsesorData;
+        $updateData['tanggal_lahir'] = $tanggal_lahir_full; // Timpa dengan tanggal yang sudah digabung
+        
+        // Hapus field yang tidak ada di tabel asesor
+        unset($updateData['bulan_lahir']);
+        unset($updateData['tahun_lahir']);
+        
+        $asesor->update($updateData);
 
         return redirect()->route('edit_asesor3', $id_asesor)
                          ->with('success-step', 'Data Pribadi berhasil diperbarui.');
@@ -354,7 +412,6 @@ class AsesorController extends Controller
     {
         $asesor = Asesor::findOrFail($id_asesor);
         
-        // PERBAIKAN: Validasi file disesuaikan dengan nama kolom DB
         $validatedFiles = $request->validate([
             'ktp' => 'nullable|file|mimes:pdf,jpg,png|max:5120',
             'pas_foto' => 'nullable|file|mimes:jpg,png|max:5120',
@@ -364,28 +421,24 @@ class AsesorController extends Controller
             'ijazah' => 'nullable|file|mimes:pdf|max:5120',
             'sertifikat_asesor' => 'nullable|file|mimes:pdf|max:5120',
             'sertifikasi_kompetensi' => 'nullable|file|mimes:pdf|max:5120',
-            // 'tanda_tangan' opsional, bisa ditambahkan jika perlu diedit
-            // 'tanda_tangan' => 'nullable|file|mimes:png|max:5120', 
+            'tanda_tangan' => 'nullable|file|mimes:png|max:5120', 
         ]);
 
-        $uploadPath = 'public/asesor_files/' . $asesor->id_user;
+        $uploadPath = 'public/asesor_files/' . $asesor->user_id;
         
-        // Loop menggunakan $validatedFiles yang sudah benar
         foreach ($validatedFiles as $key => $file) {
             if ($request->hasFile($key)) {
                 
-                // Hapus file lama jika ada
                 if ($asesor->$key) {
                     Storage::delete($asesor->$key);
                 }
                 
-                // Simpan file baru
                 $path = $file->store($uploadPath);
-                $asesor->$key = $path; // Update path di model
+                $asesor->$key = $path; 
             }
         }
         
-        $asesor->save(); // Simpan perubahan path file
+        $asesor->save(); 
 
         return redirect()->route('master_asesor')
                          ->with('success', 'Data Asesor berhasil diperbarui.');
@@ -402,8 +455,6 @@ class AsesorController extends Controller
         try {
             $asesor = Asesor::findOrFail($id_asesor);
             
-            // Panggil delete(). Model Event di Asesor.php akan
-            // menangani penghapusan User dan file secara otomatis.
             $asesor->delete();
 
             return redirect()->route('master_asesor')
@@ -411,7 +462,6 @@ class AsesorController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Gagal menghapus asesor: ' . $e->getMessage());
-            // PERBAIKAN: Pesan error agar lebih jelas
             return back()->with('error', 'Terjadi kesalahan saat menghapus asesor: ' . $e->getMessage());
         }
     }

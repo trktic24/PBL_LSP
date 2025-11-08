@@ -11,6 +11,8 @@
   <style>
     body { font-family: 'Poppins', sans-serif; }
     ::-webkit-scrollbar { width: 0; }
+    /* Menghapus style 'select' default agar multi-select box terlihat normal */
+    [x-cloak] { display: none !important; }
   </style>
 </head>
 
@@ -22,12 +24,14 @@
 
     <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
         
-        <div class="flex items-center justify-between mb-10">
-          <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+        <div class="flex items-center justify-between mb-10 relative">
+            <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
               <i class="fas fa-arrow-left mr-2"></i> Back
-          </a>
-          <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">EDIT ASESOR</h1>
-          <div class="w-[80px]"></div>
+            </a> 
+            <h1 class="text-3xl font-bold text-gray-900 text-center absolute left-1/2 -translate-x-1/2">
+              EDIT ASESOR
+            </h1>
+            <div class="w-[80px]"></div> 
         </div>
         
         @if ($errors->any())
@@ -76,6 +80,53 @@
                    placeholder="Masukkan Alamat Email"
                    value="{{ old('email', $asesor->user->email ?? '') }}" required>
           </div>
+
+          <!-- PERBAIKAN: Input Skema diubah menjadi Dropdown Multi-select Kustom dengan Alpine.js -->
+          @php
+              // Ambil skema yang dimiliki asesor ini
+              $current_skemas = old('skema_ids', $asesor->skemas->pluck('id_skema')->toArray());
+          @endphp
+          <div x-data="{ 
+                  open: false, 
+                  selectedSkemas: @json($current_skemas) 
+               }" 
+               @click.away="open = false" 
+               class="relative">
+            
+            <label class="block text-sm font-medium text-gray-700 mb-2">Bidang Sertifikasi (Skema)</label>
+            <p class="text-xs text-gray-500 mb-2">Pilih satu atau lebih skema yang dikuasai.</p>
+            
+            <!-- Tombol Dropdown Palsu -->
+            <button type="button" @click="open = !open" 
+                    class="w-full p-3 border border-gray-300 rounded-lg bg-white text-left flex justify-between items-center focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <span x-text="selectedSkemas.length > 0 ? selectedSkemas.length + ' skema dipilih' : 'Pilih skema...'"
+                    :class="selectedSkemas.length > 0 ? 'text-gray-900' : 'text-gray-400'"></span>
+              <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="{ 'rotate-180': open }"></i>
+            </button>
+
+            <!-- Daftar Checkbox (Dropdown Asli) -->
+            <div x-show="open" 
+                 x-transition 
+                 x-cloak
+                 class="absolute z-10 w-full mt-1 border border-gray-300 rounded-lg bg-white h-48 overflow-y-auto space-y-2 p-3 shadow-lg">
+              
+              @forelse ($skemas as $skema)
+                <div class="flex items-center">
+                  <input type="checkbox" id="edit_skema_{{ $skema->id_skema }}" 
+                         name="skema_ids[]" 
+                         value="{{ $skema->id_skema }}"
+                         x-model="selectedSkemas"
+                         class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                  <label for="edit_skema_{{ $skema->id_skema }}" class="ml-2 block text-sm text-gray-900">
+                    {{ $skema->nama_skema }}
+                  </label>
+                </div>
+              @empty
+                <p class="text-sm text-gray-500">Belum ada data skema.</p>
+              @endforelse
+            </div>
+          </div>
+          <!-- Akhir Dropdown Kustom -->
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
