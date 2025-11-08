@@ -43,10 +43,6 @@ Route::get('/upload_bukti_pembayaran', function () {
     return view('upload_bukti_pembayaran');
 });
 
-Route::get('/bukti_pemohon', function () {
-    return view('bukti_pemohon');
-});
-
 Route::get('/praasesmen1', function () {
     return view('praasesmen1');
 });
