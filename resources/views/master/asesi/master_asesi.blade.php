@@ -72,9 +72,9 @@
               <td class="px-6 py-4">{{ $asesi['nomor_hp'] }}</td>
               <td class="px-6 py-4">{{ $asesi['skema_sertifikasi'] }}</td>
               <td class="px-6 py-4 flex space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                <a href="{{ route('edit_asesi1', $asesi['id']) }}" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
                   <i class="fas fa-pen"></i> <span>Edit</span>
-                </button>
+                </a>
 
                 <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
                   <i class="fas fa-trash"></i> <span>Delete</span>
