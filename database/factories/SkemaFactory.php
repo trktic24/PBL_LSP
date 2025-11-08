@@ -5,9 +5,6 @@ namespace Database\Factories;
 use App\Models\Skema;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Skema>
- */
 class SkemaFactory extends Factory
 {
     /**
@@ -25,14 +22,24 @@ class SkemaFactory extends Factory
     public function definition(): array
     {
         return [
-            // Contoh: J.620100.001.01
             'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01',
             'nama_skema' => 'Skema Sertifikasi ' . $this->faker->jobTitle(),
-            'deskripsi_skema' => $this->faker->paragraph(2), // Deskripsi 2 paragraf
-
-            // Sesuai permintaan lu, ini di-null-kan
+            'deskripsi_skema' => $this->faker->paragraph(2),
+            
+            // Field opsional (boleh null)
             'SKKNI' => null,
             'gambar' => null,
+
+            // Field baru hasil migrasi
+            'harga' => $this->faker->numberBetween(100000, 1000000), // harga antara 100 ribu - 1 juta
+            'kategori' => $this->faker->randomElement([
+                'Teknologi Informasi',
+                'Bisnis & Manajemen',
+                'Konstruksi',
+                'Desain Grafis',
+                'Administrasi',
+                'Jaringan & Keamanan',
+            ]),
         ];
     }
 }

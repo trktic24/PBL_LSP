@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
+            SkemaSeeder::class,
         ]);
 
 }
