@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TandaTanganController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\PaymentController;
 
 
 Route::get('/', function () {
@@ -106,6 +107,8 @@ Route::get('/verifikasi_tuk', function () {
 Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
 
 Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
+
+Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');
 
 
 Route::get('/dashboard', function () {
