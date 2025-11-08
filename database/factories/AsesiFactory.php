@@ -12,11 +12,13 @@ class AsesiFactory extends Factory // WAJIB HARUS AsesiFactory
 
     public function definition():array
     {
-        // ... (Logika Factory Anda yang sudah benar)
         $user = User::factory()->create(['role_id' => 3]); 
         
-        $gender = $this->faker->randomElement(['Laki-laki', 'Perempuan']);
-        $fullName = $this->faker->firstName($gender) . ' ' . $this->faker->lastName();
+        // Logika ini tetap sama, menghasilkan string 'Laki-laki' atau 'Perempuan'
+        $gender_string = $this->faker->randomElement(['Laki-laki', 'Perempuan']);
+        
+        // $gender_string digunakan untuk membuat nama yang sesuai
+        $fullName = $this->faker->firstName($gender_string) . ' ' . $this->faker->lastName();
         
         return [
             'id_user'        => $user->id_user, 
@@ -24,7 +26,11 @@ class AsesiFactory extends Factory // WAJIB HARUS AsesiFactory
             'nik'            => $this->faker->unique()->numerify('################'),
             'tempat_lahir'   => $this->faker->city(),
             'tanggal_lahir'  => $this->faker->dateTimeBetween('-25 years', '-18 years')->format('Y-m-d'),
-            'jenis_kelamin'  => $gender,
+            
+            // === INI PERBAIKANNYA ===
+            // Kita ubah string 'Laki-laki'/'Perempuan' menjadi boolean 1/0
+            'jenis_kelamin'  => ($gender_string === 'Laki-laki') ? 1 : 0,
+            
             'kebangsaan'     => 'Indonesia',
             'pendidikan'     => $this->faker->randomElement(['D3 Teknologi Komputer', 'D4 Sistem Informasi', 'S1 Teknik Elektro']),
             'pekerjaan'      => $this->faker->randomElement(['Mahasiswa', 'Staf IT', 'Admin Kantor']),
