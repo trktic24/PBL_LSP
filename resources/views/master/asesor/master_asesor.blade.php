@@ -125,7 +125,8 @@
                 </form>
                 <!-- ========================================================== -->
 
-                <a href="{{ route('asesor_profile_settings') }}"
+                <!-- PERUBAHAN: Link 'View' diubah agar dinamis -->
+                <a href="{{ route('asesor.profile', $asesor->id_asesor) }}"
                    class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
                   <i class="fas fa-eye"></i> <span>View</span>
                 </a>
