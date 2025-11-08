@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
+use App\Http\Controllers\Asesor\AsesorTableController;
 
 // --------------------
 // Halaman Umum (static page)
@@ -93,9 +94,8 @@ Route::get('/sertifikasi', function () {
 })->name('sertifikasi');
 
 // Rute untuk Daftar Asesor (TETAP CLOSURE)
-Route::get('/daftar-asesor', function () {
-    return view('landing_page.page_info.daftar-asesor');
-})->name('info.daftar-asesor');
+Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
+
 
 // (TETAP CLOSURE)
 Route::get('/detail_jadwal', function () {
@@ -169,9 +169,8 @@ Route::get('/sertifikasi', function () {
 })->name('sertifikasi');
 
 // Rute untuk Daftar Asesor (TETAP CLOSURE)
-Route::get('/daftar-asesor', function () {
-    return view('landing_page.page_info.daftar-asesor');
-})->name('info.daftar-asesor');
+Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
+
 
 // (TETAP CLOSURE)
 Route::get('/detail_jadwal', function () {
