@@ -16,15 +16,19 @@ Route::get('/tracker', function () {
 });
 
 Route::get('/data_sertifikasi', function () {
-    return view('data_sertifikasi');
+    return view('formulir pendaftaran/data_sertifikasi');
 });
 
 Route::get('/tanda_tangan_pemohon', function () {
-    return view('tanda_tangan_pemohon');
+    return view('formulir pendaftaran/tanda_tangan_pemohon');
 });
 
 Route::get('/tunggu_upload_dokumen', function () {
-    return view('tunggu_upload_dokumen');
+    return view('formulir pendaftaran/tunggu_upload_dokumen');
+});
+
+Route::get('/tunggu_upload_dokumen', function () {
+    return view('formulir pendaftaran/dokumen_belum_memenuhi');
 });
 
 Route::get('/belum_lulus', function () {
@@ -32,7 +36,7 @@ Route::get('/belum_lulus', function () {
 });
 
 Route::get('/bukti_pemohon', function () {
-    return view('bukti_pemohon');
+    return view('formulir pendaftaran/bukti_pemohon');
 });
 
 Route::get('/upload_bukti_pembayaran', function () {
@@ -104,17 +108,10 @@ Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
 Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
 
 
-
-Route::get('/daftar-skema', [BelajarController::class, 'index']);
-
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::post('/simpan/tandatangan', [TandaTanganController::class, 'simpanTandaTangan'])
-    ->name('simpan.tandatangan'); // <--- INI KUNCI UTAMA
-    
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
