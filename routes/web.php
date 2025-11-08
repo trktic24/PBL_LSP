@@ -83,9 +83,7 @@ Route::get('/sertifikasi', function () {
     return "Halaman Sertifikasi"; // Placeholder
 })->name('sertifikasi');
 
-Route::get('/daftar-asesor', function () {
-    return view('landing_page.page_info.daftar-asesor');
-})->name('info.daftar-asesor');
+Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
 
 /*
 |--------------------------------------------------------------------------
