@@ -27,6 +27,7 @@
         <h2 class="text-3xl font-bold text-gray-900">Daftar Asesor</h2>
       </div>
 
+      <!-- Notifikasi Sukses -->
       @if (session('success'))
         <div x-data="{ show: true }"
              x-init="setTimeout(() => show = false, 5000)"
@@ -44,6 +45,26 @@
             </button>
         </div>
       @endif
+
+      <!-- Notifikasi Error -->
+      @if (session('error'))
+        <div x-data="{ show: true }"
+             x-init="setTimeout(() => show = false, 5000)"
+             x-show="show"
+             x-transition
+             class="fixed top-24 right-10 z-50 bg-red-500 text-white py-3 px-5 rounded-lg shadow-lg flex items-center"
+             role="alert">
+            <i class="fas fa-exclamation-triangle mr-3 text-lg"></i>
+            <div>
+                <span class="font-semibold">Gagal!</span>
+                <p class="text-sm">{{ session('error') }}</p>
+            </div>
+            <button @click="show = false" class="ml-4 -mr-1 text-red-100 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+      @endif
+
 
       <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
         <div class="relative w-full md:w-1/3">
@@ -91,9 +112,18 @@
                     <i class="fas fa-pen"></i> <span>Edit</span>
                 </a>
 
-                <button class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-trash"></i> <span>Delete</span>
-                </button>
+                <!-- ========================================================== -->
+                <!-- FORM UNTUK HAPUS ASESOR -->
+                <!-- ========================================================== -->
+                <form action="{{ route('asesor.destroy', $asesor->id_asesor) }}" method="POST" class="inline"
+                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus asesor {{ $asesor->nama_lengkap }}? Tindakan ini akan menghapus data asesor, akun user, dan semua file terkait.');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
+                    <i class="fas fa-trash"></i> <span>Delete</span>
+                  </button>
+                </form>
+                <!-- ========================================================== -->
 
                 <a href="{{ route('asesor_profile_settings') }}"
                    class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
