@@ -32,6 +32,10 @@ Route::get('/tunggu_upload_dokumen', function () {
     return view('formulir pendaftaran/dokumen_belum_memenuhi');
 });
 
+Route::get('/pembayaran', function () {
+    return view('pembayaran/pembayaran');
+});
+
 Route::get('/belum_lulus', function () {
     return view('belum_lulus');
 });
