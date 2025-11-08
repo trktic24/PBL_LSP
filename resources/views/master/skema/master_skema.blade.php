@@ -162,7 +162,7 @@
                 <form 
                   action="{{ route('delete_skema', $skema->id_skema) }}" 
                   method="POST" 
-                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus skema {{ addslashes($skema->nama_skema) }} (ID: {{ $skema->id_skema }})? Tindakan ini akan menghapus data skema dan semua file (gambar dan PDF) terkait.');"
+                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus skema {{ addslashes($skema->nama_skema) }} (ID: {{ $skema->id_skema }})? Tindakan ini akan menghapus data skema.');"
                 >
                   @csrf
                   @method('DELETE')
