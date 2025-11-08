@@ -29,7 +29,7 @@ class AsesorTableController extends Controller
         $asesors = $query->get();
 
         // Kirim data ke view
-        return view('landing_page_info.daftar-asesor', compact('asesors'));
+        return view('landing_page.page_info.daftar-asesor', compact('asesors'));
 
     }
 }
