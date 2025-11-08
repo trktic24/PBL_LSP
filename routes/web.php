@@ -99,9 +99,9 @@ Route::get('/verifikasi_tuk', function () {
     return view('verifikasi_tuk');
 });
 
-Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
+// Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
 
-Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
+// Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
 
 
 

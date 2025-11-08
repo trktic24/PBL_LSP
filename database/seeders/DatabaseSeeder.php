@@ -27,5 +27,10 @@ class DatabaseSeeder extends Seeder
         \App\Models\KriteriaUnjukKerja::factory(20)->create();
         \App\Models\ResponApl2Ia01::factory(20)->create();
         \App\Models\JenisTuk::factory(20)->create();
+        \App\Models\BuktiKelengkapan::factory(20)->create();
+        \App\Models\DataSertifikasiAsesi::factory(20)->create();
+        \App\Models\Asesor::factory(20)->create();
+        \App\Models\Jadwal::factory(20)->create();
+        \App\Models\MasterTuk::factory(20)->create();
     }
 }
