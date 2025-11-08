@@ -135,11 +135,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/asesi_profile_tracker', function () { return view('profile_asesi.asesi_profile_tracker'); })->name('asesi_profile_tracker');
 
     // 10. Profile Asesor
-    Route::get('/asesor_profile_bukti', function () { return view('profile_asesor.asesor_profile_bukti'); })->name('asesor_profile_bukti');
-    Route::get('/asesor_profile_settings', function () { return view('profile_asesor.asesor_profile_settings'); })->name('asesor_profile_settings');
+// PERUBAHAN: Rute 'asesor_profile_bukti' lama dihapus (diberi komentar)
+    // Route::get('/asesor_profile_bukti', function () { return view('profile_asesor.asesor_profile_bukti'); })->name('asesor_profile_bukti');
+    
+    // RUTE BARU: Untuk menampilkan bukti kelengkapan asesor berdasarkan ID
+    Route::get('/asesor/{id_asesor}/bukti', [AsesorController::class, 'showBukti'])->name('asesor.bukti');
+    
+    // PERUBAHAN: Rute 'asesor_profile_settings' lama dihapus (diberi komentar)
+    // Route::get('/asesor_profile_settings', function () { return view('profile_asesor.asesor_profile_settings'); })->name('asesor_profile_settings');
+    
+    // RUTE BARU: Untuk menampilkan profil asesor berdasarkan ID
+    Route::get('/asesor/{id_asesor}/profile', [AsesorController::class, 'showProfile'])->name('asesor.profile');
+
     Route::get('/asesor_profile_tinjauan', function () { return view('profile_asesor.asesor_profile_tinjauan'); })->name('asesor_profile_tinjauan');
     Route::get('/asesor_profile_tracker', function () { return view('profile_asesor.asesor_profile_tracker'); })->name('asesor_profile_tracker');
-    
 });
 
 require __DIR__.'/auth.php';
