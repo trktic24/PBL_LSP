@@ -6,6 +6,7 @@ use App\Http\Controllers\TandaTanganController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AsesmenController;
 
 
 Route::get('/', function () {
@@ -97,12 +98,20 @@ Route::get('/umpan_balik', function () {
 });
 
 Route::get('/fr_ak01', function () {
-    return view('fr_ak01');
+    // Ubah dari 'fr_ak01' menjadi 'persetujuan assesmen dan kerahasiaan.fr_ak01'
+    return view('persetujuan assesmen dan kerahasiaan.fr_ak01'); 
 });
+
+Route::get('/asesmen/fr-ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
+
+Route::get('/fr_ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
 
 Route::get('/verifikasi_tuk', function () {
     return view('verifikasi_tuk');
 });
+
+Route::post('/simpan-tandatangan', [TandaTanganController::class, 'store'])
+    ->name('simpan.tandatangan');
 
 // Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
 
