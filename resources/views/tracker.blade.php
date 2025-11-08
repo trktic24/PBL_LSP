@@ -139,7 +139,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900">Pembayaran</h3>
+                            <a href="/pembayaran" class="text-lg font-semibold text-gray-900">Pembayaran</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Lunas</p>
                             <button
