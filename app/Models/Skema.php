@@ -25,12 +25,4 @@ class Skema extends Model
      */
     protected $guarded = [];
 
-    /**
-     * Definisikan relasi: Satu Skema memiliki BANYAK Unit Kompetensi.
-     */
-    public function unitKompetensi()
-    {
-        // Sesuaikan nama Model & Foreign Key jika perlu
-        return $this->hasMany(UnitKompetensi::class, 'id_skema', 'id_skema');
-    }
 }

@@ -57,18 +57,13 @@ Route::middleware('auth')->group(function () {
     // ==========================================================
     Route::controller(SkemaController::class)->prefix('master/skema')->group(function () {
         
-        // Read (Index) - Diubah kembali mengambil dari Skema::all()
-        Route::get('/', function () {
-            $skemas = Skema::all(); 
-            return view('master.skema.master_skema', [
-                'skemas' => $skemas // <-- Mengirim $skemas
-            ]);
-        })->name('master_skema');
+        // DIPERBAIKI: Sekarang menunjuk ke 'index' (dengan logika search/sort)
+        Route::get('/', 'index')->name('master_skema');
         
-        // Rute Create, Update, Delete tetap sama
-        Route::get('/add', function () {
-            return view('master.skema.add_skema');
-        })->name('add_skema');
+        // DIPERBAIKI: Sekarang menunjuk ke 'create'
+        Route::get('/add', 'create')->name('add_skema');
+        
+        // Rute-rute ini sudah benar
         Route::post('/add', 'store')->name('add_skema.store');
         Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
         Route::patch('/update/{id_skema}', 'update')->name('update_skema');

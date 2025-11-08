@@ -30,6 +30,18 @@
           <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">ADD SKEMA</h1>
           <div class="w-[80px]"></div>
         </div>
+        
+        {{-- Tampilkan error validasi jika ada --}}
+        @if ($errors->any())
+          <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-200 rounded-lg">
+            <strong>Terdapat kesalahan:</strong>
+            <ul class="list-disc pl-5 mt-2">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
 
         <form action="{{ route('add_skema.store') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
           @csrf
@@ -40,34 +52,20 @@
             </label>
             <input type="text" id="nama_skema" name="nama_skema" required
                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                   placeholder="Masukkan Nama Skema">
+                   placeholder="Masukkan Nama Skema" value="{{ old('nama_skema') }}">
           </div>
 
-          <div x-data="{ units: [{ code: '' }] }">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+          {{-- === INI BAGIAN YANG DIPERBAIKI === --}}
+          {{-- Menghapus Alpine.js 'units' dan menggantinya dengan 1 input 'kode_unit' --}}
+          <div>
+            <label for="kode_unit" class="block text-sm font-medium text-gray-700 mb-2">
               Kode Unit Kompetensi <span class="text-red-500">*</span>
             </label>
-            
-            <div class="space-y-3">
-              <template x-for="(unit, index) in units" :key="index">
-                <div class="flex items-center space-x-3">
-                  <input type="text" :name="'units[' + index + '][code]'" x-model="unit.code"
-                         class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                         placeholder="Kode Unit (cth: J.61100.001.01)">
-
-                  <button @click.prevent="units.splice(index, 1)" x-show="units.length > 1"
-                          class="text-red-500 hover:text-red-700 p-2">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </template>
-            </div>
-
-            <button @click.prevent="units.push({ code: '' })"
-                    class="mt-3 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg transition">
-              <i class="fas fa-plus mr-1"></i> Tambah Kode Unit
-            </button>
+            <input type="text" id="kode_unit" name="kode_unit" required
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   placeholder="Kode Unit (cth: J.61100.001.01)" value="{{ old('kode_unit') }}">
           </div>
+          {{-- =================================== --}}
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div x-data="{ fileName: '' }">
@@ -77,18 +75,18 @@
               <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
                 <i class="fas fa-upload text-gray-500 mr-3"></i>
                 <span x-text="fileName || 'Pilih gambar...'" class="text-sm text-gray-600 truncate"></span>
-                <input type="file" name="gambar_skema" @change="fileName = $event.target.files.length > 0 ? $event.target.files[0].name : ''" class="opacity-0 absolute w-0 h-0" />
+                <input type="file" name="gambar_skema" @change="fileName = $event.target.files.length > 0 ? $event.target.files[0].name : ''" class="opacity-0 absolute w-0 h-0" required />
               </label>
             </div>
 
             <div x-data="{ fileName: '' }">
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                File SKKNI <span class="text-gray-400">(PDF)</span>
+                File SKKNI <span class="text-red-500">*</span> <span class="text-gray-400">(PDF)</span>
               </label>
               <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
                 <i class="fas fa-file-pdf text-red-500 mr-3"></i>
                 <span x-text="fileName || 'Pilih file PDF...'" class="text-sm text-gray-600 truncate"></span>
-                <input type="file" name="file_skkni" @change="fileName = $event.target.files.length > 0 ? $event.target.files[0].name : ''" class="opacity-0 absolute w-0 h-0" accept=".pdf" />
+                <input type="file" name="file_skkni" @change="fileName = $event.target.files.length > 0 ? $event.target.files[0].name : ''" class="opacity-0 absolute w-0 h-0" accept=".pdf" required />
               </label>
             </div>
           </div>
@@ -99,7 +97,7 @@
             </label>
             <textarea id="deskripsi" name="deskripsi" required
                       class="w-full p-3 border border-gray-300 rounded-lg h-28 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
-                      placeholder="Masukkan deskripsi skema"></textarea>
+                      placeholder="Masukkan deskripsi skema">{{ old('deskripsi') }}</textarea>
           </div>
 
           <div class="pt-4">

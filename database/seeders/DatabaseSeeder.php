@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Asesor;
 use App\Models\Asesi;
 use App\Models\Tuk; // Pastikan Model Tuk ada
+use App\Models\Skema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,12 +22,10 @@ class DatabaseSeeder extends Seeder
             JenisTukSeeder::class, // Membuat 2 jenis_tukq
         ]);
 
-        // Buat 10 data Asesor dummy
-        // Ini akan otomatis memanggil AsesorFactory,
-        // yang juga akan otomatis memanggil UserFactory (untuk role_id 2)
-        // dan SkemaFactory.
+        
         Asesor::factory(10)->create();
         Asesi::factory(10)->create();
         Tuk::factory(10)->create();
+        Skema::factory(10)->create();
     }
 }
