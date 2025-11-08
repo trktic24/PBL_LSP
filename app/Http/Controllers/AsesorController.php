@@ -432,21 +432,6 @@ class AsesorController extends Controller
     }
 
     // ==========================================================
-    // <!-- FUNGSI BARU UNTUK MELIHAT PROFIL ASESOR -->
-    // ==========================================================
-    /**
-     * Menampilkan halaman profil publik seorang Asesor.
-     */
-    public function showProfile($id_asesor)
-    {
-        // Ambil data Asesor DAN data User-nya
-        $asesor = Asesor::with('user')->findOrFail($id_asesor);
-        
-        // Kirim data ke view
-        return view('profile_asesor.asesor_profile_settings', compact('asesor'));
-    }
-
-    // ==========================================================
     // <!-- FUNGSI BARU UNTUK MELIHAT BUKTI KELENGKAPAN -->
     // ==========================================================
     /**
@@ -456,8 +441,21 @@ class AsesorController extends Controller
     {
         // Ambil data Asesor
         $asesor = Asesor::findOrFail($id_asesor);
+
+        // BARU: Pindahkan logika array $documents dari view ke controller
+        $documents = [
+            ['key' => 'ktp', 'title' => 'KTP', 'subtitle' => 'Kartu Tanda Penduduk', 'file_path' => $asesor->ktp],
+            ['key' => 'pas_foto', 'title' => 'Foto', 'subtitle' => 'Pas Foto 3x4', 'file_path' => $asesor->pas_foto],
+            ['key' => 'NPWP_foto', 'title' => 'NPWP', 'subtitle' => 'Kartu NPWP', 'file_path' => $asesor->NPWP_foto],
+            ['key' => 'rekening_foto', 'title' => 'Rekening', 'subtitle' => 'Buku Rekening Bank', 'file_path' => $asesor->rekening_foto],
+            ['key' => 'CV', 'title' => 'Curiculum Vitae (CV)', 'subtitle' => 'CV terbaru', 'file_path' => $asesor->CV],
+            ['key' => 'ijazah', 'title' => 'Ijazah Pendidikan', 'subtitle' => 'Ijazah pendidikan terakhir', 'file_path' => $asesor->ijazah],
+            ['key' => 'sertifikat_asesor', 'title' => 'Sertifikat Asesor Kompetensi', 'subtitle' => 'Sertifikat kompetensi sebagai asesor', 'file_path' => $asesor->sertifikat_asesor],
+            ['key' => 'sertifikasi_kompetensi', 'title' => 'Sertifikasi Kompetensi', 'subtitle' => 'Sertifikat teknis/pendukung', 'file_path' => $asesor->sertifikasi_kompetensi],
+        ];
         
         // Kirim data ke view
-        return view('profile_asesor.asesor_profile_bukti', compact('asesor'));
+        // DIRUBAH: Tambahkan 'documents' ke compact
+        return view('profile_asesor.asesor_profile_bukti', compact('asesor', 'documents'));
     }
 }
