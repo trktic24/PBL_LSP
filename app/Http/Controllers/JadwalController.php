@@ -13,7 +13,7 @@ class JadwalController extends Controller
     public function index()
     {
         // Ambil semua data jadwal
-        $jadwals = Jadwal::all(); // atau $jadwals = Jadwal::paginate(10);
+        $jadwals = Jadwal::with(['asesor', 'skema', 'tuk', 'jenisTuk'])->get(); // atau $jadwals = Jadwal::paginate(10);
 
         // Kirim data 'jadwals' ke view
         return view('frontend.jadwal', compact('jadwals'));    

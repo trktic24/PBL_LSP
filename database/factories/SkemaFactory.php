@@ -15,7 +15,7 @@ class SkemaFactory extends Factory
      *
      * @var string
      */
-    protected $model = \App\Models\Skema::class;
+    protected $model = Skema::class;
 
     /**
      * Definisikan status default model.
@@ -26,7 +26,7 @@ class SkemaFactory extends Factory
     {
         return [
             // Membuat kode unit yang terlihat realistis
-            'kode_unit' => fake()->numerify('J.620100.###.##'), 
+            'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01', 
             
             // Memilih nama skema yang umum dari daftar
             'nama_skema' => fake()->randomElement([

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Skema extends Model
 {
     use HasFactory;
-    protected $table = 'master_skema';
+    protected $table = 'skema';
     protected $guarded = ['id'];
 
     public function unitKompetensi()

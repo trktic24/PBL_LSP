@@ -35,8 +35,8 @@ class AsesorFactory extends Factory
             // --- Foreign Keys ---
             // Baris ini akan OTOMATIS membuat User & Skema baru 
             // setiap kali AsesorFactory dipanggil.
-            'id_user' => User::factory(),
-            'id_skema' => \App\Models\Skema::factory(),
+            'user_id' => User::factory(),
+            //'id_skema' => Skema::factory(),
 
             // --- Data Pribadi Asesor ---
             'nomor_regis' => fake()->unique()->numerify('REG.ASESOR.######'),
@@ -63,13 +63,13 @@ class AsesorFactory extends Factory
             // --- Path File (Hanya path dummy) ---
             'ktp' => '/storage/files/dummy_ktp.jpg',
             'pas_foto' => fake()->imageUrl(480, 640, 'people'), // URL gambar palsu
-            'NPWP_foto' => '/storage/files/dummy_npwp.jpg',
-            'rekening_foto' => '/storage/files/dummy_rekening.jpg',
+            'NPWP_foto' => '/storage/files/dummy_npwp.jpeg',
+            'rekening_foto' => '/storage/files/dummy_rekening.jpeg',
             'CV' => '/storage/files/dummy_cv.pdf',
             'ijazah' => '/storage/files/dummy_ijazah.pdf',
             'sertifikat_asesor' => '/storage/files/dummy_sertifikat_asesor.pdf',
             'sertifikasi_kompetensi' => '/storage/files/dummy_sertifikasi_kompetensi.pdf',
-            'tanda_tangan' => '/storage/files/dummy_ttd.png',
+            'tanda_tangan' => '/storage/files/dummy_ttd.jpg',
 
             // --- Status ---
             'is_verified' => fake()->boolean(80), // 80% kemungkinan datanya true (verified)
