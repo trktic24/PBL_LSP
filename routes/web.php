@@ -108,7 +108,7 @@ Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
 
 Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
 
-Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');
+Route::get('/pembayaran', [PaymentController::class, 'createTransaction'])->name('payment.create');
 
 
 Route::get('/dashboard', function () {
