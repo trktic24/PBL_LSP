@@ -125,6 +125,7 @@ Route::get('/fr_ak01', function () {
 =======
 // Controller Web Khusus Tanda Tangan
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
+use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -135,16 +136,16 @@ use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 // === HALAMAN STATIS / VIEW ===
 Route::get('/', function () { return view('halaman_ambil_skema'); });
 Route::get('/tracker', function () { return view('tracker'); });
-Route::get('/data_sertifikasi', function () { return view('formulir pendaftaran/data_sertifikasi'); });
-Route::get('/tunggu_upload_dokumen', function () { return view('formulir pendaftaran/tunggu_upload_dokumen'); });
-Route::get('/belum_memenuhi', function () { return view('formulir pendaftaran/dokumen_belum_memenuhi'); });
+Route::get('/data_sertifikasi', function () { return view('formulir_pendaftaran/data_sertifikasi'); });
+Route::get('/tunggu_upload_dokumen', function () { return view('formulir_pendaftaran/tunggu_upload_dokumen'); });
+Route::get('/belum_memenuhi', function () { return view('formulir_pendaftaran/dokumen_belum_memenuhi'); });
 
 // Hati-hati, tadi ada 2 route '/pembayaran'. Gua pilih yang view dulu.
 // Kalo '/pembayaran' itu harusnya langsung transaksi, pakai yang PaymentController.
 Route::get('/pembayaran', function () { return view('pembayaran/pembayaran'); });
 
 Route::get('/belum_lulus', function () { return view('belum_lulus'); });
-Route::get('/bukti_pemohon', function () { return view('formulir pendaftaran/bukti_pemohon'); });
+Route::get('/bukti_pemohon', function () { return view('formulir_pendaftaran/bukti_pemohon'); });
 Route::get('/upload_bukti_pembayaran', function () { return view('upload_bukti_pembayaran'); });
 
 // Route Pra-asesmen
@@ -161,7 +162,7 @@ Route::get('/tunggu_pembayaran', function () { return view('tunggu_pembayaran');
 Route::get('/banding', function () { return view('banding'); });
 Route::get('/pertanyaan_lisan', function () { return view('pertanyaan_lisan'); });
 Route::get('/umpan_balik', function () { return view('umpan_balik'); });
-Route::get('/fr_ak01', function () { return view('persetujuan assesmen dan kerahasiaan.fr_ak01'); });
+Route::get('/fr_ak01', function () { return view('persetujuan_assesmen_dan_kerahasiaan.fr_ak01'); });
 Route::get('/verifikasi_tuk', function () { return view('verifikasi_tuk'); });
 
 
@@ -202,6 +203,10 @@ Route::get('/formulir-selesai', function () {
 })->name('form.selesai');
 // ========================================
 
+
+//route buat data sertifikasi
+Route::get('/formulir/data-sertifikasi', [DataSertifikasiAsesiController::class, 'showDataSertifikasiAsesiPage'])
+    ->name('formulir.data-sertifikasi');
 
 // === AUTH & DASHBOARD ===
 Route::get('/dashboard', function () {
