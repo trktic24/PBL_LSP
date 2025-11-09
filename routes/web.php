@@ -19,16 +19,16 @@ use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 // === HALAMAN STATIS / VIEW ===
 Route::get('/', function () { return view('halaman_ambil_skema'); });
 Route::get('/tracker', function () { return view('tracker'); });
-Route::get('/data_sertifikasi', function () { return view('formulir pendaftaran/data_sertifikasi'); });
-Route::get('/tunggu_upload_dokumen', function () { return view('formulir pendaftaran/tunggu_upload_dokumen'); });
-Route::get('/belum_memenuhi', function () { return view('formulir pendaftaran/dokumen_belum_memenuhi'); });
+Route::get('/data_sertifikasi', function () { return view('formulir_pendaftaran/data_sertifikasi'); });
+Route::get('/tunggu_upload_dokumen', function () { return view('formulir_pendaftaran/tunggu_upload_dokumen'); });
+Route::get('/belum_memenuhi', function () { return view('formulir_pendaftaran/dokumen_belum_memenuhi'); });
 
 // Hati-hati, tadi ada 2 route '/pembayaran'. Gua pilih yang view dulu.
 // Kalo '/pembayaran' itu harusnya langsung transaksi, pakai yang PaymentController.
 Route::get('/pembayaran', function () { return view('pembayaran/pembayaran'); });
 
 Route::get('/belum_lulus', function () { return view('belum_lulus'); });
-Route::get('/bukti_pemohon', function () { return view('formulir pendaftaran/bukti_pemohon'); });
+Route::get('/bukti_pemohon', function () { return view('formulir_pendaftaran/bukti_pemohon'); });
 Route::get('/upload_bukti_pembayaran', function () { return view('upload_bukti_pembayaran'); });
 
 // Route Pra-asesmen

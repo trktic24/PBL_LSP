@@ -2,8 +2,7 @@
 
 namespace Database\Factories;
 use App\Models\DataPekerjaanAsesi;
-use App\Models\Asesi; // Pastikan Model Asesi sudah di-import
-use App\Models\DataPekerjaanAsesi; // Pastiin nama model lu bener
+use App\Models\Asesi; 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -11,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DataPekerjaanAsesiFactory extends Factory
 {
-
     /**
      * Model yang digunakan oleh factory ini.
      *
@@ -20,7 +18,6 @@ class DataPekerjaanAsesiFactory extends Factory
     protected $model = DataPekerjaanAsesi::class;
 
     /**
-     * Definisikan status default model.
      *
      * @return array<string, mixed>
      */
@@ -31,39 +28,30 @@ class DataPekerjaanAsesiFactory extends Factory
             // Asumsi: foreign key di Model Asesi adalah 'id_asesi'
             'id_asesi' => Asesi::factory()->create(['id_asesi' => null])->id_asesi,
 
-            // Data Pekerjaan Sekarang
+            // Data pekerjaan
             'nama_institusi_pekerjaan' => fake()->company(),
             'alamat_institusi' => fake()->address(),
-            'jabatan' => fake()->randomElement(['Software Engineer', 'Junior Developer', 'System Administrator', 'UX Designer', 'Network Technician', 'Web Designer', 'IT Support']),
-            // Menggunakan postcode() untuk kode pos
+            'jabatan' => fake()->randomElement([
+                'Software Engineer',
+                'Junior Developer',
+                'System Administrator',
+                'UX Designer',
+                'Network Technician',
+                'Web Designer',
+                'IT Support'
+            ]),
             'kode_pos_institusi' => fake()->postcode(),
-            // Menggunakan numerify() untuk nomor telepon yang formatnya sesuai
             'no_telepon_institusi' => fake()->numerify('08##########'),
-
-            // Kolom timestamps akan diisi otomatis
         ];
     }
 
     /**
-     * Definisikan state untuk mengaitkan Pekerjaan dengan Asesi yang sudah ada.
+     * State opsional untuk mengaitkan ke Asesi tertentu.
      */
     public function forAsesi(int $asesiId): static
     {
-        return $this->state(
-            fn(array $attributes) => [
-                'id_asesi' => $asesiId,
-            ],
-        );
-    }
-}
-            
-            // Ini ngisi kolom sesuai migrasi lu
-            'id_asesi' => \App\Models\Asesi::factory(),
-            'nama_institusi_pekerjaan' => fake()->company(),
-            'alamat_institusi'         => fake()->address(),
-            'jabatan'                  => fake()->jobTitle(),
-            'kode_pos_institusi'       => fake()->postcode(),
-            'no_telepon_institusi'     => fake()->numerify('081#########'), 
-        ];
+        return $this->state(fn(array $attributes) => [
+            'id_asesi' => $asesiId,
+        ]);
     }
 }

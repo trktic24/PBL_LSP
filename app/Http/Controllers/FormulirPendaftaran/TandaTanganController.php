@@ -30,7 +30,7 @@ class TandaTanganController extends Controller
         Log::info("WEB: Menampilkan halaman tanda tangan untuk Asesi ID $id_asesi_hardcoded");
         
         // 3. CUMA KIRIM ID-NYA AJA, BUKAN SEMUA DATA ASESI
-        return view('formulir pendaftaran.tanda_tangan_pemohon', [
+        return view('formulir_pendaftaran.tanda_tangan_pemohon', [
             'id_asesi_untuk_js' => $id_asesi_hardcoded
         ]);
     }
