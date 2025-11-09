@@ -19,15 +19,15 @@ Route::get('/tracker', function () {
 });
 
 Route::get('/data_sertifikasi', function () {
-    return view('formulir pendaftaran/data_sertifikasi');
+    return view('formulir_pendaftaran/data_sertifikasi');
 });;
 
 Route::get('/tunggu_upload_dokumen', function () {
-    return view('formulir pendaftaran/tunggu_upload_dokumen');
+    return view('formulir_pendaftaran/tunggu_upload_dokumen');
 });
 
 Route::get('/belum_memenuhi', function () {
-    return view('formulir pendaftaran/dokumen_belum_memenuhi');
+    return view('formulir_pendaftaran/dokumen_belum_memenuhi');
 });
 
 Route::get('/pembayaran', function () {
@@ -39,7 +39,7 @@ Route::get('/belum_lulus', function () {
 });
 
 Route::get('/bukti_pemohon', function () {
-    return view('formulir pendaftaran/bukti_pemohon');
+    return view('formulir_pendaftaran/bukti_pemohon');
 });
 
 Route::get('/upload_bukti_pembayaran', function () {
