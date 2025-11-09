@@ -24,10 +24,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         
-        Asesor::factory(10)->create();
-        Asesi::factory(10)->create();
-        Tuk::factory(10)->create();
-        Skema::factory(10)->create();
-        Schedule::factory(10)->create();
+        Asesor::factory(20)->create();
+        Asesi::factory(20)->create();
+        Tuk::factory(20)->create();
+        Skema::factory(20)->create();
+        Schedule::factory(20)->create();
     }
 }

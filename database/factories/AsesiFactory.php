@@ -1,23 +1,21 @@
 <?php
 
-namespace Database\Factories; // WAJIB HARUS Database\Factories
+namespace Database\Factories;
 
 use App\Models\Asesi;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class AsesiFactory extends Factory // WAJIB HARUS AsesiFactory
+class AsesiFactory extends Factory
 {
     protected $model = Asesi::class;
 
     public function definition():array
     {
+        // Buat User baru dengan role_id 3 (Asesi)
         $user = User::factory()->create(['role_id' => 3]); 
         
-        // Logika ini tetap sama, menghasilkan string 'Laki-laki' atau 'Perempuan'
         $gender_string = $this->faker->randomElement(['Laki-laki', 'Perempuan']);
-        
-        // $gender_string digunakan untuk membuat nama yang sesuai
         $fullName = $this->faker->firstName($gender_string) . ' ' . $this->faker->lastName();
         
         return [
@@ -26,13 +24,10 @@ class AsesiFactory extends Factory // WAJIB HARUS AsesiFactory
             'nik'            => $this->faker->unique()->numerify('################'),
             'tempat_lahir'   => $this->faker->city(),
             'tanggal_lahir'  => $this->faker->dateTimeBetween('-25 years', '-18 years')->format('Y-m-d'),
-            
-            // === INI PERBAIKANNYA ===
-            'jenis_kelamin'  => $gender_string,
-            
+            'jenis_kelamin'  => $gender_string, // Sesuai dengan Enum
             'kebangsaan'     => 'Indonesia',
-            'pendidikan'     => $this->faker->randomElement(['D3 Teknologi Komputer', 'D4 Sistem Informasi', 'S1 Teknik Elektro']),
-            'pekerjaan'      => $this->faker->randomElement(['Mahasiswa', 'Staf IT', 'Admin Kantor']),
+            'pendidikan'     => $this->faker->randomElement(['D3', 'D4', 'S1']),
+            'pekerjaan'      => $this->faker->randomElement(['Mahasiswa', 'Staf IT', 'Admin']),
             'alamat_rumah'   => $this->faker->address(),
             'kode_pos'       => $this->faker->postcode(),
             'kabupaten_kota' => $this->faker->city(),

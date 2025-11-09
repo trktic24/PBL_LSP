@@ -11,6 +11,8 @@ use App\Http\Controllers\ScheduleController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
+use App\Models\Schedule;
+use App\Models\Asesi;
 // UnitKompetensi tidak kita panggil lagi di sini
 // use App\Models\UnitKompetensi; 
 
@@ -33,7 +35,26 @@ Route::middleware('auth')->group(function () {
 
     // 1. Dashboard
     Route::get('/dashboard', function () {
-        return view('dashboard.dashboard_admin');
+        // 3. TAMBAHKAN LOGIKA UNTUK MENGAMBIL DATA
+        $asesmenBerlangsung = Schedule::where('Status_jadwal', 'Terjadwal')->count();
+        $asesmenSelesai = Schedule::where('Status_jadwal', 'Selesai')->count();
+        $jumlahAsesi = Asesi::count();
+        $jumlahAsesor = Asesor::count();
+        
+        $jadwalTerbaru = Schedule::with('skema') // Ambil relasi skema
+                            ->where('Status_jadwal', 'Terjadwal')
+                            ->orderBy('tanggal_pelaksanaan', 'asc') // Tampilkan yang paling dekat
+                            ->take(5) // Batasi hanya 5
+                            ->get();
+
+        // 4. KIRIM DATA KE VIEW
+        return view('dashboard.dashboard_admin', [
+            'asesmenBerlangsung' => $asesmenBerlangsung,
+            'asesmenSelesai' => $asesmenSelesai,
+            'jumlahAsesi' => $jumlahAsesi,
+            'jumlahAsesor' => $jumlahAsesor,
+            'jadwalTerbaru' => $jadwalTerbaru,
+        ]);
     })->name('dashboard');
 
     // 2. Notification
@@ -101,18 +122,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/asesor/{id_asesor}', [AsesorController::class, 'destroy'])->name('asesor.destroy');
     
     // 6. Master - Asesi
-    Route::get('/master_asesi', [AsesiController::class, 'index'])->name('master_asesi');
-    // ... (Rute Add Asesi)
-    Route::get('/add-asesi-step-1', function () { return view('master.asesi.add_asesi1'); })->name('add_asesi1');
-    Route::get('/add-asesi-step-2', function () { return view('master.asesi.add_asesi2'); })->name('add_asesi2');
-    Route::get('/add-asesi-step-3', function () { return view('master.asesi.add_asesi3'); })->name('add_asesi3');
-    Route::get('/add-asesi-step-4', function () { return view('master.asesi.add_asesi4'); })->name('add_asesi4');
-    Route::post('/store-asesi', function () { return redirect()->route('master_asesi')->with('success', 'Asesi berhasil ditambahkan!'); })->name('asesi.store');
-    // ... (Rute Edit Asesi)
-    Route::get('/edit-asesi-step-1', function () { return view('master.asesi.edit_asesi1'); })->name('edit_asesi1');
-    Route::get('/edit-asesi-step-2', function () { return view('master.asesi.edit_asesi2'); })->name('edit_asesi2');
-    Route::get('/edit-asesi-step-3', function () { return view('master.asesi.edit_asesi3'); })->name('edit_asesi3');
-    Route::get('/edit-asesi-step-4', function () { return view('master.asesi.edit_asesi4'); })->name('edit_asesi4');
+    Route::controller(AsesiController::class)->prefix('master/asesi')->group(function () {
+        Route::get('/', 'index')->name('master_asesi');
+        Route::get('/add', 'create')->name('add_asesi');
+        Route::post('/add', 'store')->name('add_asesi.store');
+        Route::get('/edit/{id_asesi}', 'edit')->name('edit_asesi');
+        Route::patch('/update/{id_asesi}', 'update')->name('update_asesi');
+        Route::delete('/delete/{id_asesi}', 'destroy')->name('delete_asesi');
+    });
 
     // 7. Master - Schedule
     Route::controller(ScheduleController::class)->prefix('master/schedule')->group(function () {

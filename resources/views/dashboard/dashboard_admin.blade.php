@@ -6,26 +6,16 @@
   <title>Dashboard | LSP Polines</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
   <style>
       body {
           font-family: 'Poppins', sans-serif;
       }
-      /* Hilangkan efek scrollbar biru */
       ::-webkit-scrollbar {
           width: 0;
-      }
-      ::-webkit-scrollbar-thumb {
-          background-color: transparent;
-      }
-      ::-webkit-scrollbar-track {
-          background-color: transparent;
       }
   </style>
 </head>
@@ -57,48 +47,43 @@
       </div>
 
       <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-
         <div class="bg-white p-6 rounded-xl shadow-lg flex items-center border-b-4 border-blue-600/30 min-h-[200px]">
           <div class="flex justify-center items-center w-1/3">
             <i class="far fa-calendar-alt text-8xl text-blue-600/80"></i>
           </div>
           <div class="relative flex-1 h-full flex items-center justify-center">
             <p class="absolute top-4 text-sm text-gray-500">Asesmen Berlangsung</p>
-            <p class="text-5xl font-bold text-gray-900">33</p>
+            <p class="text-5xl font-bold text-gray-900">{{ $asesmenBerlangsung }}</p>
           </div>
         </div>
-
         <div class="bg-white p-6 rounded-xl shadow-lg flex items-center border-b-4 border-green-600/30 min-h-[200px]">
           <div class="flex justify-center items-center w-1/3">
             <i class="far fa-calendar-check text-8xl text-green-500"></i>
           </div>
           <div class="relative flex-1 h-full flex items-center justify-center">
             <p class="absolute top-4 text-sm text-gray-500">Asesmen Selesai</p>
-            <p class="text-5xl font-bold text-gray-900">3</p>
+            <p class="text-5xl font-bold text-gray-900">{{ $asesmenSelesai }}</p>
           </div>
         </div>
-
         <div class="bg-white p-6 rounded-xl shadow-lg flex items-center border-b-4 border-yellow-600/30 min-h-[200px]">
           <div class="flex justify-center items-center w-1/3">
             <i class="fas fa-book-reader text-8xl text-yellow-400"></i>
           </div>
           <div class="relative flex-1 h-full flex items-center justify-center">
             <p class="absolute top-4 text-sm text-gray-500">Jumlah Asesi</p>
-            <p class="text-5xl font-bold text-gray-900">34,567</p>
+            <p class="text-5xl font-bold text-gray-900">{{ $jumlahAsesi }}</p>
           </div>
         </div>
-
         <div class="bg-white p-6 rounded-xl shadow-lg flex items-center border-b-4 border-red-600/30 min-h-[200px]">
           <div class="flex justify-center items-center w-1/3">
             <i class="fas fa-chalkboard-teacher text-8xl text-red-500"></i>
           </div>
           <div class="relative flex-1 h-full flex items-center justify-center">
             <p class="absolute top-4 text-sm text-gray-500">Jumlah Asesor</p>
-            <p class="text-5xl font-bold text-gray-900">90</p>
+            <p class="text-5xl font-bold text-gray-900">{{ $jumlahAsesor }}</p>
           </div>
         </div>
       </section>
-
 
       <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div class="bg-white p-4 rounded-xl shadow-lg">
@@ -108,7 +93,6 @@
               alt="Line Chart" class="object-cover w-full h-full">
           </div>
         </div>
-
         <div class="bg-white p-4 rounded-xl shadow-lg">
           <h3 class="text-md font-semibold mb-2">Statistik Asesi yang Mengikuti Skema</h3>
           <div class="h-64 flex items-center justify-center border border-gray-200 rounded-lg overflow-hidden">
@@ -116,7 +100,6 @@
               alt="Bar Chart" class="object-cover w-full h-full">
           </div>
         </div>
-
         <div class="bg-white p-4 rounded-xl shadow-lg">
           <h3 class="text-md font-semibold mb-2">Progress Skema</h3>
           <div class="h-64 flex items-center justify-center border border-gray-200 rounded-lg overflow-hidden">
@@ -127,48 +110,51 @@
       </section>
 
       <section class="bg-white p-4 rounded-xl shadow-lg overflow-x-auto">
+        <h3 class="text-lg font-semibold mb-4 px-2">Jadwal Terdekat (Status: Terjadwal)</h3>
         <table class="min-w-full divide-y divide-gray-200 text-sm">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Course Name</th>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">ID</th>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">ID Jadwal</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Nama Skema</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Sesi</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Kuota (Min/Max)</th>
+              <th class="px-6 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Tgl Pelaksanaan</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
+            
+            @forelse ($jadwalTerbaru as $jadwal)
             <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-gray-700">
+                {{ $jadwal->id_jadwal }}
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="h-10 w-10 mr-3 bg-blue-100 rounded-full flex items-center justify-center">
                     <i class="fas fa-microchip text-blue-600"></i>
                   </div>
-                  <span class="text-sm font-medium text-gray-900">Data Scientist</span>
+                  <span class="text-sm font-medium text-gray-900">
+                    {{ $jadwal->skema?->nama_skema ?? 'N/A' }}
+                  </span>
                 </div>
               </td>
-              <td class="px-6 py-4 text-gray-600">—</td>
-              <td class="px-6 py-4 text-gray-600">201939</td>
-              <td class="px-6 py-4 text-gray-600">3</td>
-              <td class="px-6 py-4">
-                <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+              <td class="px-6 py-4 text-gray-700">{{ $jadwal->sesi }}</td>
+              
+              {{-- INI BAGIAN YANG DIPERBARUI --}}
+              <td class="px-6 py-4 text-gray-700">{{ $jadwal->kuota_minimal }} / {{ $jadwal->kuota_maksimal }}</td>
+              
+              <td class="px-6 py-4 text-gray-700">
+                {{ $jadwal->tanggal_pelaksanaan?->format('d/m/Y') ?? 'N/A' }}
               </td>
             </tr>
-
+            @empty
             <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="h-10 w-10 mr-3 bg-red-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-fingerprint text-red-600"></i>
-                  </div>
-                  <span class="text-sm font-medium text-gray-900">Blockchain Architect</span>
-                </div>
+              <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                Tidak ada jadwal yang sedang berlangsung.
               </td>
-              <td class="px-6 py-4 text-gray-600">name</td>
-              <td class="px-6 py-4 text-gray-600">id</td>
-              <td class="px-6 py-4 text-gray-600">amount</td>
-              <td class="px-6 py-4 text-gray-600">status</td>
             </tr>
+            @endforelse
+            
           </tbody>
         </table>
       </section>

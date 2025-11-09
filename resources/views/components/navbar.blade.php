@@ -2,21 +2,20 @@
   // --- Logika Status Aktif ---
   
   // Cek untuk link Skema di dropdown (TERMASUK EDIT/UPDATE)
-  $isSkemaActive = request()->routeIs('master_skema') || 
-                   request()->routeIs('add_skema') ||
-                   request()->routeIs('edit_skema') ||
-                   request()->routeIs('update_skema');
+  $isSkemaActive = request()->is('master/skema*');
 
   // Cek untuk link Asesor di dropdown
   $isAsesorActive = request()->is('master_asesor') || 
-                    request()->is('add_asesor*') || 
-                    request()->is('edit_asesor*');
+                   request()->is('add_asesor*') || 
+                   request()->is('edit_asesor*');
 
+  // === INI BAGIAN YANG DIPERBAIKI ===
   // Cek untuk link Asesi di dropdown
-  $isAsesiActive = request()->routeIs('master_asesi');
+  // Diubah agar 'add_asesi' dan 'edit_asesi' juga terdeteksi
+  $isAsesiActive = request()->is('master/asesi*');
+  // =================================
 
   // Cek untuk link Schedule (Master) di dropdown
-  // Menggunakan wildcard agar add/edit/update juga terdeteksi
   $isMasterScheduleActive = request()->is('master/schedule*');
 
   // Logika untuk Master (Gabungan dari semua di atas)
@@ -25,11 +24,8 @@
   // Cek untuk menu Schedule Utama
   $isScheduleActive = request()->routeIs('schedule_admin');
 
-  // === INI BAGIAN YANG DIPERBAIKI ===
   // Cek untuk menu TUK Utama
-  // Menggunakan wildcard 'master/tuk*' agar 'add_tuk' dan 'edit_tuk' terdeteksi
   $isTukActive = request()->is('master/tuk*'); 
-  // ==================================
 
   // Cek untuk Ikon Notifikasi
   $isNotifActive = request()->routeIs('notifications');

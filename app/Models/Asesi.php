@@ -9,42 +9,34 @@ class Asesi extends Model
 {
     use HasFactory;
 
-    // Menentukan nama tabel yang sesuai dengan migrasi
+    /**
+     * Nama tabel yang digunakan oleh model.
+     */
     protected $table = 'asesi';
 
-    // Menentukan primary key yang sesuai dengan migrasi (id_asesi)
+    /**
+     * Primary key yang digunakan oleh tabel.
+     */
     protected $primaryKey = 'id_asesi';
 
-    // Menentukan kolom yang dapat diisi (fillable) untuk operasi mass assignment
-    protected $fillable = [
-        'id_user',
-        'nama_lengkap',
-        'nik',
-        'tempat_lahir',
-        'tanggal_lahir',
-        'jenis_kelamin',
-        'kebangsaan',
-        'pendidikan',
-        'pekerjaan',
-        'alamat_rumah',
-        'kode_pos',
-        'kabupaten_kota',
-        'provinsi',
-        'nomor_hp',
-        'tanda_tangan',
-    ];
+    /**
+     * Izinkan semua kolom diisi.
+     */
+    protected $guarded = [];
 
-    // Menentukan tipe data untuk kolom tertentu (optional, tapi disarankan)
+    /**
+     * Tentukan kolom yang harus diperlakukan sebagai tanggal.
+     */
     protected $casts = [
         'tanggal_lahir' => 'date',
     ];
 
     /**
-     * Relasi ke Model User (sesuai foreignId id_user)
+     * Definisikan relasi: Satu Asesi 'dimiliki oleh' satu User.
      */
     public function user()
     {
-        // Sesuaikan jika nama foreign key di model 'User' adalah 'id_user'
+        // Terhubung ke model User, menggunakan 'id_user' sebagai foreign key
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 }
