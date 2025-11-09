@@ -19,6 +19,9 @@ use App\Http\Controllers\HomeController;
 |
 */
 
+Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');
+
+
 Route::middleware('auth')->group(function () {
 
     /**

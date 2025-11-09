@@ -16,6 +16,8 @@ class User extends Authenticatable
      * Beri tahu Eloquent bahwa primary key Anda bukan 'id'.
      */
     protected $primaryKey = 'id_user';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     /**
      * The attributes that are mass assignable.
@@ -52,6 +54,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return $this->primaryKey;
     }
 
     public function role()
