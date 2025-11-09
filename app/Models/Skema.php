@@ -24,5 +24,10 @@ class Skema extends Model
      * Izinkan semua kolom diisi.
      */
     protected $guarded = [];
+    public function unitkompetensi()
+    {
+         return $this->hasMany(UnitKompetensi::class, 'id_kelompok_pekerjaan', 'id_skema'); 
+        // tapi logikanya harus sesuai ERD, biasanya ini kurang tepat
+    }
 
 }

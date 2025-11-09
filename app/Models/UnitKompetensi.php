@@ -29,6 +29,6 @@ class UnitKompetensi extends Model
     public function skema()
     {
         // (Foreign key di tabel ini, Primary key di tabel skema)
-        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+        return $this->belongsTo(Skema::class, 'id_kelompok_pekerjaan', 'id_skema');
     }
 }
