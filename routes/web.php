@@ -7,6 +7,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 use App\Http\Controllers\AsesmenController;
+use App\Http\Controllers\Apl01PdfController;
 
 
 Route::get('/', function () {
@@ -154,8 +155,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-
-use App\Http\Controllers\Apl01PdfController;
 
 // Route untuk download PDF
 Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])
