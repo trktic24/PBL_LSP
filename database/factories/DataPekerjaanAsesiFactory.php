@@ -1,13 +1,9 @@
 <?php
 
 namespace Database\Factories;
-
-<<<<<<< HEAD
 use App\Models\DataPekerjaanAsesi;
 use App\Models\Asesi; // Pastikan Model Asesi sudah di-import
-=======
 use App\Models\DataPekerjaanAsesi; // Pastiin nama model lu bener
->>>>>>> b0ece75a6179d03b2deb8f62d21f45081de1e0b5
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DataPekerjaanAsesiFactory extends Factory
 {
-<<<<<<< HEAD
+
     /**
      * Model yang digunakan oleh factory ini.
      *
@@ -25,19 +21,12 @@ class DataPekerjaanAsesiFactory extends Factory
 
     /**
      * Definisikan status default model.
-=======
-
-    protected $model = DataPekerjaanAsesi::class;
-    /**
-     * Define the model's default state.
->>>>>>> b0ece75a6179d03b2deb8f62d21f45081de1e0b5
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-<<<<<<< HEAD
             // Foreign Key ke tabel 'asesi'. Menggunakan factory Asesi untuk memastikan Asesi dibuat.
             // Asumsi: foreign key di Model Asesi adalah 'id_asesi'
             'id_asesi' => Asesi::factory()->create(['id_asesi' => null])->id_asesi,
@@ -67,7 +56,6 @@ class DataPekerjaanAsesiFactory extends Factory
         );
     }
 }
-=======
             
             // Ini ngisi kolom sesuai migrasi lu
             'id_asesi' => \App\Models\Asesi::factory(),
@@ -79,4 +67,3 @@ class DataPekerjaanAsesiFactory extends Factory
         ];
     }
 }
->>>>>>> b0ece75a6179d03b2deb8f62d21f45081de1e0b5

@@ -4,11 +4,6 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-    "content-hash": "e3ecc7dd2a48895267541b5a7797351b",
-=======
-    "content-hash": "d359a18c192d4f1773824e2b2d89ec64",
->>>>>>> 856503bd652fef0d5f2ec0c0d6611cc40e7e43c9
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -461,7 +456,7 @@
         {
             "name": "dompdf/dompdf",
             "version": "v3.1.4",
-<<<<<<< HEAD
+            
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
@@ -617,8 +612,7 @@
         {
             "name": "dragonmantank/cron-expression",
             "version": "v3.4.0",
-=======
->>>>>>> 856503bd652fef0d5f2ec0c0d6611cc40e7e43c9
+
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
