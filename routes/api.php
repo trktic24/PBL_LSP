@@ -18,12 +18,12 @@ use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 Route::get('/get-asesi-data/{id}', [TandaTanganController::class, 'getAsesiDataApi'])
        ->name('api.get.asesi'); // <-- Namanya kita samain
 
-// API buat nyimpen data (POST /api/ajax-simpan-tandatangan)
-Route::post('/ajax-simpan-tandatangan', [TandaTanganController::class, 'storeAjax'])
-       ->name('simpan.tandatangan.ajax'); // <-- Namanya kita samain
+// API buat nyimpen data (POST /api/ajax-simpan-tandatangan/1)
+Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganController::class, 'storeAjax'])
+       ->name('simpan.tandatangan.ajax');
 
-// API buat hapus Tanda Tangan
-Route::post('/ajax-hapus-tandatangan', [TandaTanganController::class, 'deleteAjax'])
+// API buat nge-hapus data (POST /api/ajax-hapus-tandatangan/1)
+Route::post('/ajax-hapus-tandatangan/{id_asesi}', [TandaTanganController::class, 'deleteAjax'])
        ->name('hapus.tandatangan.ajax');
 
 

@@ -111,7 +111,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <a href="\data_sertifikasi" class="text-lg font-semibold text-gray-900">Formulir Pendaftaran
+                            <a href="{{ route('data.sertifikasi', ['id_asesi' => $asesi->id_asesi]) }}" class="text-lg font-semibold text-gray-900">Formulir Pendaftaran
                                 Sertifikasi</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
@@ -137,7 +137,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <a href="/pembayaran" class="text-lg font-semibold text-gray-900">Pembayaran</a>
+                            <a href="/bayar" class="text-lg font-semibold text-gray-900">Pembayaran</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Lunas</p>
                             <button

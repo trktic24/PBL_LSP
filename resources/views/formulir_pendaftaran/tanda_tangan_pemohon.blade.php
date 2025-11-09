@@ -22,7 +22,7 @@
 <body class="bg-gray-100">
     <div class="flex min-h-screen">
 
-        <x-sidebar></x-sidebar>
+        <x-sidebar :idAsesi="$id_asesi_untuk_js"></x-sidebar>
 
         <main class="flex-1 p-12 bg-white overflow-y-auto">
             <div class="max-w-3xl mx-auto">
@@ -138,7 +138,7 @@
                     </div>
 
                     <div class="flex justify-between items-center mt-12">
-                        <a href="{{ url('/bukti_pemohon') }}"
+                        <a href="{{ route('bukti.pemohon', ['id_asesi' => $id_asesi_untuk_js]) }}"
                             class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
                             Sebelumnya
                         </a>
@@ -180,7 +180,7 @@
             function populateData(data) {
                 // Isi data pemohon
                 document.getElementById('nama-pemohon').textContent = ': ' + (data.nama_lengkap ||
-                'Data tidak ada');
+                    'Data tidak ada');
 
                 // Cek relasi 'dataPekerjaan'
                 if (data.data_pekerjaan) {
@@ -296,7 +296,7 @@
                 }
                 this.textContent = 'Menyimpan...';
                 this.disabled = true;
-                fetch("{{ route('simpan.tandatangan.ajax') }}", {
+                fetch(`/api/ajax-simpan-tandatangan/${asesiId}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -331,7 +331,7 @@
 
             // 3. Logika Tombol Hapus (DIUBAH JADI PERMANEN)
             clearButton.addEventListener('click', function() {
-                
+
                 // KONFIRMASI DULU!
                 if (!confirm('Yakin mau hapus tanda tangan ini PERMANEN? Data ini gak bisa balik lagi.')) {
                     return; // Kalo batal, stop
@@ -343,45 +343,45 @@
                 saveButton.disabled = true; // Nonaktifkan tombol Simpan juga
 
                 // Tembak API 'deleteAjax'
-                fetch("{{ route('hapus.tandatangan.ajax') }}", {
-                    method: 'POST', // Kita pake POST aja biar gampang
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    // Gak perlu 'body', karena ID-nya hardcoded di controller
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Kalo SUKSES
-                        alert(data.message); // "Berhasil dihapus!"
+                fetch(`/api/ajax-hapus-tandatangan/${asesiId}`, {
+                        method: 'POST', // Kita pake POST aja biar gampang
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        // Gak perlu 'body', karena ID-nya hardcoded di controller
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Kalo SUKSES
+                            alert(data.message); // "Berhasil dihapus!"
 
-                        // Reset tampilan (balikin ke semula)
-                        fileInput.value = '';
-                        uploadedFileBase64 = null;
-                        previewImg.classList.add('hidden');
-                        previewImg.src = '';
-                        placeholder.classList.remove('hidden');
-                        saveButton.textContent = 'Simpan';
-                        saveButton.disabled = true; // Tetep disabled sampe milih file baru
-                        base64Input.value = ''; // Kosongin input hidden
-                    } else {
-                        // Kalo GAGAL
-                        alert('Error: ' + data.message);
-                    }
-                    
-                    // Balikin tombol Hapus ke semula
-                    clearButton.textContent = 'Hapus';
-                    clearButton.disabled = false;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Gagal terhubung ke server. Coba lagi.');
-                    clearButton.textContent = 'Hapus';
-                    clearButton.disabled = false;
-                });
+                            // Reset tampilan (balikin ke semula)
+                            fileInput.value = '';
+                            uploadedFileBase64 = null;
+                            previewImg.classList.add('hidden');
+                            previewImg.src = '';
+                            placeholder.classList.remove('hidden');
+                            saveButton.textContent = 'Simpan';
+                            saveButton.disabled = true; // Tetep disabled sampe milih file baru
+                            base64Input.value = ''; // Kosongin input hidden
+                        } else {
+                            // Kalo GAGAL
+                            alert('Error: ' + data.message);
+                        }
+
+                        // Balikin tombol Hapus ke semula
+                        clearButton.textContent = 'Hapus';
+                        clearButton.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Gagal terhubung ke server. Coba lagi.');
+                        clearButton.textContent = 'Hapus';
+                        clearButton.disabled = false;
+                    });
             });
 
         });

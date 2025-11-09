@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     </head>
 <body class="bg-gray-100">
-        <x-sidebar></x-sidebar>
+        <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
         <main class="flex-1 p-12 bg-white overflow-y-auto">
             <div class="max-w-3xl mx-auto text-center">
                 

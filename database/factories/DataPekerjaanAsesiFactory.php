@@ -26,7 +26,7 @@ class DataPekerjaanAsesiFactory extends Factory
         return [
             // Foreign Key ke tabel 'asesi'. Menggunakan factory Asesi untuk memastikan Asesi dibuat.
             // Asumsi: foreign key di Model Asesi adalah 'id_asesi'
-            'id_asesi' => Asesi::factory()->create(['id_asesi' => null])->id_asesi,
+            'id_asesi' => fake()->unique()->numberBetween(1, 20),
 
             // Data pekerjaan
             'nama_institusi_pekerjaan' => fake()->company(),

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Asesi; // <-- [PENTING] Tambahin ini buat route /tracker
 
 // Import Controller
 use App\Http\Controllers\SkemaController;
@@ -22,35 +23,59 @@ use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 // 1. HALAMAN STATIS (VIEW ONLY)
 // ====================================================
 Route::get('/', function () { return view('halaman_ambil_skema'); });
-Route::get('/tracker', function () { return view('tracker'); });
-Route::get('/belum_lulus', function () { return view('belum_lulus'); });
 
-// Group Formulir Pendaftaran
-Route::prefix('formulir')->group(function () {
-    // Note: URL asli lu gak pake prefix 'formulir', jadi gua balikin ke aslinya
-    // biar gak ngerusak link yang udah ada.
-});
-Route::get('/data_sertifikasi', function () { return view('formulir_pendaftaran/data_sertifikasi'); });
+// --- Formulir Pendaftaran Views ---
+Route::get('/data_sertifikasi/{id_asesi}', function ($id_asesi) {
+    try {
+        // Kita ambil data asesi-nya pake ID dari URL
+        $asesi = Asesi::findOrFail($id_asesi); 
+
+        // Sekarang kita kirim data $asesi itu ke view
+        return view('formulir_pendaftaran/data_sertifikasi', [
+            'asesi' => $asesi
+        ]);
+
+    } catch (\Exception $e) {
+        // Kalo Asesi ID-nya gak ada, mentalin ke home
+        return redirect('/')->with('error', 'Data Asesi tidak ditemukan.');
+    }
+})->name('data.sertifikasi'); // Kita kasih nama route-nya
+
 Route::get('/tunggu_upload_dokumen', function () { return view('formulir_pendaftaran/tunggu_upload_dokumen'); });
 Route::get('/belum_memenuhi', function () { return view('formulir_pendaftaran/dokumen_belum_memenuhi'); });
-Route::get('/bukti_pemohon', function () { return view('formulir_pendaftaran/bukti_pemohon'); });
+Route::get('/bukti_pemohon/{id_asesi}', function ($id_asesi) {
+    try {
+        // Kita ambil data asesi-nya pake ID dari URL
+        $asesi = Asesi::findOrFail($id_asesi); 
 
-// Group Pembayaran View
+        // Sekarang kita kirim data $asesi itu ke view
+        return view('formulir_pendaftaran/bukti_pemohon', [
+            'asesi' => $asesi
+        ]);
+
+    } catch (\Exception $e) {
+        // Kalo Asesi ID-nya gak ada, mentalin ke home
+        return redirect('/')->with('error', 'Data Asesi tidak ditemukan.');
+    }
+})->name('bukti.pemohon'); // Kita kasih nama route-nya
+
+// --- Pembayaran Views ---
 Route::get('/pembayaran', function () { return view('pembayaran/pembayaran'); });
 Route::get('/upload_bukti_pembayaran', function () { return view('upload_bukti_pembayaran'); });
 Route::get('/tunggu_pembayaran', function () { return view('tunggu_pembayaran'); });
 
-// Group Pra-Asesmen View
-Route::get('/praasesmen1', function () { return view('praasesmen1'); });
-Route::get('/praasesmen2', function () { return view('praasesmen2'); });
-Route::get('/praasesmen3', function () { return view('praasesmen3'); });
-Route::get('/praasesmen4', function () { return view('praasesmen4'); });
-Route::get('/praasesmen5', function () { return view('praasesmen5'); });
-Route::get('/praasesmen6', function () { return view('praasesmen6'); });
-Route::get('/praasesmen7', function () { return view('praasesmen7'); });
-Route::get('/praasesmen8', function () { return view('praasesmen8'); });
+// --- Pra-Asesmen Views ---
+Route::get('/praasesmen1', function () { return view('pra-assesmen.praasesmen1'); });
+Route::get('/praasesmen2', function () { return view('pra-assesmen.praasesmen2'); });
+Route::get('/praasesmen3', function () { return view('pra-assesmen.praasesmen3'); });
+Route::get('/praasesmen4', function () { return view('pra-assesmen.praasesmen4'); });
+Route::get('/praasesmen5', function () { return view('pra-assesmen.praasesmen5'); });
+Route::get('/praasesmen6', function () { return view('pra-assesmen.praasesmen6'); });
+Route::get('/praasesmen7', function () { return view('pra-assesmen.praasesmen7'); });
+Route::get('/praasesmen8', function () { return view('pra-assesmen.praasesmen8'); });
 
-// Group Asesmen Lainnya View
+// --- Asesmen Lainnya Views ---
+Route::get('/belum_lulus', function () { return view('belum_lulus'); });
 Route::get('/banding', function () { return view('banding'); });
 Route::get('/pertanyaan_lisan', function () { return view('pertanyaan_lisan'); });
 Route::get('/umpan_balik', function () { return view('umpan_balik'); });
@@ -62,8 +87,26 @@ Route::get('/verifikasi_tuk', function () { return view('verifikasi_tuk'); });
 // 2. FEATURE ROUTES (CONTROLLER)
 // ====================================================
 
+// --- Tracker (FIXED) ---
+// PERHATIAN: URL-nya sekarang jadi /tracker/{id_asesi}
+Route::get('/tracker/{id_asesi}', function ($id_asesi) {
+    try {
+        // Ambil data asesi + relasi 'skema'
+        $asesi = Asesi::with('skema')->findOrFail($id_asesi); 
+
+        // Kirim data asesi ke view tracker
+        return view('tracker', [
+            'asesi' => $asesi
+        ]);
+
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        // Jika Asesi dengan ID tsb tidak ada, kembali ke home
+        return redirect('/')->with('error', 'Data Asesi tidak ditemukan.');
+    }
+})->name('tracker');
+
 // --- Tanda Tangan (Web View Only) ---
-Route::get('/halaman-tanda-tangan', [TandaTanganController::class, 'showSignaturePage'])
+Route::get('/halaman-tanda-tangan/{id_asesi}', [TandaTanganController::class, 'showSignaturePage'])
        ->name('show.tandatangan');
 Route::get('/formulir-selesai', function () {
     return 'BERHASIL DISIMPAN! Ini halaman selanjutnya.';
@@ -82,9 +125,6 @@ Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('pay
 // --- PDF ---
 Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])->name('apl01.download');
 Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])->name('apl01.preview');
-
-// --- Skema (Optional, uncomment kalo butuh) ---
-// Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
 
 
 // ====================================================

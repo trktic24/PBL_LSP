@@ -9,7 +9,7 @@
 
   <body class="bg-gray-100">
     <div class="flex min-h-screen">
-      <x-sidebar></x-sidebar>
+      <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
       <!-- Main Content -->
        <main class="flex-1 p-12 bg-white overflow-y-auto">
         <div class="max-w-3xl mx-auto text-center">

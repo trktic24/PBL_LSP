@@ -1,6 +1,13 @@
+@props(['idAsesi' => 1])
+{{-- 
+  Ini artinya: "Woi sidebar, siap-siap ya, 
+  lu bakal dikirimin data namanya 'idAsesi'. 
+  Kalo gak dikirim, pake ID 1 aja buat jaga-jaga."
+--}}
+
 <aside class="w-80 bg-gradient-to-b from-yellow-100 via-blue-100 to-blue-300 p-6 relative z-10 shadow-[8px_0_20px_-5px_rgba(0,0,0,0.15)]">
     <div class="mb-6">
-        <a href="/tracker" class="flex items-center text-gray-700 hover:text-gray-900">
+        <a href="{{ route('tracker', ['id_asesi' => $idAsesi]) }}" class="flex items-center text-gray-700 hover:text-gray-900">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>

@@ -12,7 +12,7 @@
 <body class="bg-gray-100">
 
     <div class="flex min-h-screen">
-        <x-sidebar></x-sidebar>
+        <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
         <main class="flex-1 p-12 bg-white overflow-y-auto">
             <div class="max-w-4xl mx-auto">
 
@@ -173,7 +173,7 @@
                 </div>
                 <!-- ... (Sisa kode tombol Anda tetap sama) ... -->
                 <div class="flex justify-end items-center">
-                    <a href="/bukti_pemohon"
+                    <a href="{{ route('bukti.pemohon', ['id_asesi' => $asesi->id_asesi]) }}"
                         class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
                         Selanjutnya
                     </a>
