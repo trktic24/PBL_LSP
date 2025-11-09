@@ -22,7 +22,6 @@ class Asesi extends Model
     protected $guarded = [];
     // -----------------------
 
-
     /**
      * Relasi ke User
      */
@@ -38,5 +37,13 @@ class Asesi extends Model
     {
         // Pastiin nama Model-nya bener (DataPekerjaanAsesi)
         return $this->hasOne(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
+    }
+
+    /**
+     * Relasi ke DataSertifikasiAsesi
+     */
+    public function dataSertifikasi(): HasOne
+    {
+        return $this->hasOne(DataSertifikasiAsesi::class, 'id_asesi', 'id_asesi');
     }
 }

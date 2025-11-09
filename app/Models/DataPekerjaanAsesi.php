@@ -21,7 +21,7 @@ class DataPekerjaanAsesi extends Model
      * 3. Kasih tau Laravel nama Primary Key-nya
      * (karena lu pake 'id_pekerjaan_asesi', bukan 'id')
      */
-    protected $primaryKey = 'id_pekerjaan_asesi';
+    protected $primaryKey = 'id_pekerjaan';
 
     /**
      * 4. Izinkan mass assignment

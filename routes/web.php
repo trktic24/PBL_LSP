@@ -5,9 +5,10 @@ use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\BelajarController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
-// Controller Web (Cuma buat nampilin halaman)
-use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 use App\Http\Controllers\AsesmenController;
+use App\Http\Controllers\Apl01PdfController;
+// Controller Web Khusus Tanda Tangan
+use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,48 +16,68 @@ use App\Http\Controllers\AsesmenController;
 |--------------------------------------------------------------------------
 */
 
+// === HALAMAN STATIS / VIEW ===
 Route::get('/', function () { return view('halaman_ambil_skema'); });
 Route::get('/tracker', function () { return view('tracker'); });
 Route::get('/data_sertifikasi', function () { return view('formulir pendaftaran/data_sertifikasi'); });
 Route::get('/tunggu_upload_dokumen', function () { return view('formulir pendaftaran/tunggu_upload_dokumen'); });
 Route::get('/belum_memenuhi', function () { return view('formulir pendaftaran/dokumen_belum_memenuhi'); });
+
+// Hati-hati, tadi ada 2 route '/pembayaran'. Gua pilih yang view dulu.
+// Kalo '/pembayaran' itu harusnya langsung transaksi, pakai yang PaymentController.
 Route::get('/pembayaran', function () { return view('pembayaran/pembayaran'); });
+
 Route::get('/belum_lulus', function () { return view('belum_lulus'); });
 Route::get('/bukti_pemohon', function () { return view('formulir pendaftaran/bukti_pemohon'); });
 Route::get('/upload_bukti_pembayaran', function () { return view('upload_bukti_pembayaran'); });
 
-// ... (Route praasesmen lu yang banyak itu) ...
+// Route Pra-asesmen
 Route::get('/praasesmen1', function () { return view('praasesmen1'); });
-// ... dst ...
+Route::get('/praasesmen2', function () { return view('praasesmen2'); });
+Route::get('/praasesmen3', function () { return view('praasesmen3'); });
+Route::get('/praasesmen4', function () { return view('praasesmen4'); });
+Route::get('/praasesmen5', function () { return view('praasesmen5'); });
+Route::get('/praasesmen6', function () { return view('praasesmen6'); });
+Route::get('/praasesmen7', function () { return view('praasesmen7'); });
+Route::get('/praasesmen8', function () { return view('praasesmen8'); });
 
 Route::get('/tunggu_pembayaran', function () { return view('tunggu_pembayaran'); });
 Route::get('/banding', function () { return view('banding'); });
 Route::get('/pertanyaan_lisan', function () { return view('pertanyaan_lisan'); });
 Route::get('/umpan_balik', function () { return view('umpan_balik'); });
 Route::get('/fr_ak01', function () { return view('persetujuan assesmen dan kerahasiaan.fr_ak01'); });
-Route::get('/asesmen/fr-ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
 Route::get('/verifikasi_tuk', function () { return view('verifikasi_tuk'); });
 
 
-// ====================================================
-// ROUTE TANDA TANGAN (VERSI BERSIH/API)
-// ====================================================
+// === ROUTE CONTROLLER ===
 
-// 1. Cuma butuh GET untuk nampilin halamannya aja.
-//    Sisanya udah diurus sama api.php dan JavaScript.
+// Asesmen
+Route::get('/asesmen/fr-ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
+
+// Payment
+// Tadi ada 2 route '/pembayaran', gua ganti URL ini jadi '/proses-bayar' biar gak bentrok
+Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');
+Route::get('/proses-bayar', [PaymentController::class, 'createTransaction'])->name('payment.process');
+
+// PDF APL-01
+Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])->name('apl01.download');
+Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])->name('apl01.preview');
+
+
+// === FITUR TANDA TANGAN (SUDAH BENAR) ===
 Route::get('/halaman-tanda-tangan', [TandaTanganController::class, 'showSignaturePage'])
        ->name('show.tandatangan');
 
-// 2. Halaman "Selesai" (dummy)
 Route::get('/formulir-selesai', function () {
     return 'BERHASIL DISIMPAN! Ini halaman selanjutnya.';
 })->name('form.selesai');
+// ========================================
 
-// ====================================================
 
-
-Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');
-Route::get('/dashboard', function () { return view('dashboard'); })->middleware(['auth', 'verified'])->name('dashboard');
+// === AUTH & DASHBOARD ===
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
