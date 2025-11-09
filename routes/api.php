@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganController;
+use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,19 @@ Route::post('/ajax-simpan-tandatangan', [TandaTanganController::class, 'storeAja
 // API buat hapus Tanda Tangan
 Route::post('/ajax-hapus-tandatangan', [TandaTanganController::class, 'deleteAjax'])
        ->name('hapus.tandatangan.ajax');
+
+
+// buat api data sertifikasi
+Route::prefix('data-sertifikasi')->group(function () {
+    // GET /api/data-sertifikasi/{id}
+    Route::get('/{id}', [DataSertifikasiAsesiController::class, 'getDataSertifikasiAsesiApi'])
+        ->name('api.data_sertifikasi.get');
+
+    // POST /api/data-sertifikasi (simpan data baru)
+    Route::post('/', [DataSertifikasiAsesiController::class, 'storeAjax'])
+        ->name('api.data_sertifikasi.store');
+
+    // DELETE /api/data-sertifikasi/{id} (hapus data)
+    Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
+        ->name('api.data_sertifikasi.delete');
+});
