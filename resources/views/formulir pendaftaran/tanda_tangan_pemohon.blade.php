@@ -85,7 +85,7 @@
                         Dengan ini saya menyatakan mengisi data dengan sebenarnya...
                     </p>
                 </div>
-                <form id="signature-upload-form">
+                <form id="signature-upload-form" data-asesi-id="{{ $id_asesi_untuk_js }}">
                     @csrf
 
                     <div class="mt-6">
@@ -156,6 +156,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
+            // Ambil semua elemen penting
             const fileInput = document.getElementById('signature-file-input');
             const previewContainer = document.getElementById('signature-preview-container');
             const previewImg = document.getElementById('signature-preview');
@@ -165,8 +166,77 @@
             const base64Input = document.getElementById('data-tanda-tangan-base64');
             const form = document.getElementById('signature-upload-form');
             const csrfToken = form.querySelector('input[name="_token"]').value;
+
+            // Ambil ID Asesi dari tag <form>
+            const asesiId = form.dataset.asesiId;
+
             let uploadedFileBase64 = null;
 
+            // ========================================================
+            // || INI KODE BARU YANG DIMINTA DOSEN LU (FETCH DATA) ||
+            // ========================================================
+
+            // 1. Fungsi buat ngisi data ke HTML
+            function populateData(data) {
+                // Isi data pemohon
+                document.getElementById('nama-pemohon').textContent = ': ' + (data.nama_lengkap ||
+                'Data tidak ada');
+
+                // Cek relasi 'dataPekerjaan'
+                if (data.data_pekerjaan) {
+                    document.getElementById('jabatan-pemohon').textContent = ': ' + (data.data_pekerjaan.jabatan ||
+                        'Data tidak ada');
+                    document.getElementById('perusahaan-pemohon').textContent = ': ' + (data.data_pekerjaan
+                        .nama_institusi_pekerjaan || 'Data tidak ada');
+                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + (data.data_pekerjaan
+                        .alamat_institusi || 'Data tidak ada');
+                } else {
+                    document.getElementById('jabatan-pemohon').textContent = ': Data tidak ada';
+                    document.getElementById('perusahaan-pemohon').textContent = ': Data tidak ada';
+                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': Data tidak ada';
+                }
+
+                // Cek data tanda tangan (INI PENTING BUAT REFRESH)
+                if (data.tanda_tangan) {
+                    previewImg.src = `{{ asset('') }}${data.tanda_tangan}`; // Tampilin gambar
+                    previewImg.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    base64Input.value = data.tanda_tangan; // Isi input hidden
+                    saveButton.textContent = 'Tersimpan ✔️';
+                    saveButton.disabled = true;
+                } else {
+                    // Kalo gak ada TTD, pastiin placeholder-nya bener
+                    previewImg.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                    saveButton.textContent = 'Simpan';
+                    saveButton.disabled = true; // Disabled sampe user milih file
+                }
+            }
+
+            // 2. Tembak API-nya pas halaman kebuka
+            fetch(`/api/get-asesi-data/${asesiId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Gagal mengambil data Asesi');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Kalo sukses, panggil fungsi buat ngisi data
+                    populateData(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    alert('Gagal memuat data pemohon. Coba refresh halaman.');
+                    document.getElementById('nama-pemohon').textContent = ': Gagal memuat';
+                    // ... (bisa diisi error di span lain) ...
+                });
+
+            // ========================================================
+            // || KODE LAMA LU (UPLOAD/SIMPAN) TETAP DI SINI ||
+            // ========================================================
+
+            // Fungsi processFile (Gak berubah, udah bener)
             function processFile(file) {
                 if (!file.type.startsWith('image/')) {
                     alert("Format file tidak didukung...");
@@ -187,7 +257,7 @@
                 reader.readAsDataURL(file);
             }
 
-            // 1. Logika Upload File & Drag/Drop
+            // 1. Logika Upload File & Drag/Drop (Gak berubah)
             fileInput.addEventListener('change', function() {
                 if (this.files && this.files[0]) {
                     processFile(this.files[0]);
@@ -218,7 +288,7 @@
                 }
             }
 
-            // 2. Logika Tombol Simpan (AJAX)
+            // 2. Logika Tombol Simpan (AJAX) (Gak berubah)
             saveButton.addEventListener('click', function() {
                 if (!uploadedFileBase64) {
                     alert('Mohon unggah file gambar tanda tangan terlebih dahulu.');
@@ -242,7 +312,7 @@
                         if (data.success) {
                             saveButton.textContent = 'Tersimpan ✔️';
                             saveButton.disabled = true;
-                            base64Input.value = data.path; // SINKRONKAN
+                            base64Input.value = data.path;
                             uploadedFileBase64 = null;
                             alert(data.message);
                         } else {
@@ -259,23 +329,59 @@
                     });
             });
 
-            // 3. Logika Tombol Hapus
+            // 3. Logika Tombol Hapus (DIUBAH JADI PERMANEN)
             clearButton.addEventListener('click', function() {
-                fileInput.value = '';
-                uploadedFileBase64 = null;
-                previewImg.classList.add('hidden');
-                previewImg.src = '';
-                placeholder.classList.remove('hidden');
-                saveButton.textContent = 'Simpan';
-                saveButton.disabled = true;
-                base64Input.value = '';
-                alert(
-                    'Tanda tangan dihapus dari tampilan. Klik "Simpan" untuk menghapus permanen di server.');
-                // Note: Kalo mau hapus permanen, 'base64Input' udah kosong. 
-                // Tombol "Simpan" harus di-enable dan kirim 'null' atau string kosong.
-                // Kita modif dikit:
-                saveButton.disabled = false; // Aktifkan tombol simpan
-                uploadedFileBase64 = ""; // Set jadi string kosong buat dikirim
+                
+                // KONFIRMASI DULU!
+                if (!confirm('Yakin mau hapus tanda tangan ini PERMANEN? Data ini gak bisa balik lagi.')) {
+                    return; // Kalo batal, stop
+                }
+
+                // Tampilkan loading di tombol Hapus
+                clearButton.textContent = 'Menghapus...';
+                clearButton.disabled = true;
+                saveButton.disabled = true; // Nonaktifkan tombol Simpan juga
+
+                // Tembak API 'deleteAjax'
+                fetch("{{ route('hapus.tandatangan.ajax') }}", {
+                    method: 'POST', // Kita pake POST aja biar gampang
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    // Gak perlu 'body', karena ID-nya hardcoded di controller
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Kalo SUKSES
+                        alert(data.message); // "Berhasil dihapus!"
+
+                        // Reset tampilan (balikin ke semula)
+                        fileInput.value = '';
+                        uploadedFileBase64 = null;
+                        previewImg.classList.add('hidden');
+                        previewImg.src = '';
+                        placeholder.classList.remove('hidden');
+                        saveButton.textContent = 'Simpan';
+                        saveButton.disabled = true; // Tetep disabled sampe milih file baru
+                        base64Input.value = ''; // Kosongin input hidden
+                    } else {
+                        // Kalo GAGAL
+                        alert('Error: ' + data.message);
+                    }
+                    
+                    // Balikin tombol Hapus ke semula
+                    clearButton.textContent = 'Hapus';
+                    clearButton.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal terhubung ke server. Coba lagi.');
+                    clearButton.textContent = 'Hapus';
+                    clearButton.disabled = false;
+                });
             });
 
         });
