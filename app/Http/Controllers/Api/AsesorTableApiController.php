@@ -22,33 +22,4 @@ class AsesorTableApiController extends Controller
             'data' => $data
         ]);
     }
-
-    /**
-     * Endpoint: GET /api/asesor/search?q=
-     * Pencarian berdasarkan nama asesor atau nomor registrasi.
-     */
-    public function search(Request $request)
-    {
-        $q = $request->query('q');
-
-        // Jika query kosong, kembalikan hasil kosong
-        if (!$q) {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Parameter pencarian tidak diberikan.',
-                'data' => []
-            ]);
-        }
-
-        $data = Asesor::where('nama', 'LIKE', "%$q%")
-                      ->orWhere('no_reg', 'LIKE', "%$q%")
-                      ->get();
-
-        return response()->json([
-            'status' => 'success',
-            'query' => $q,
-            'count' => $data->count(),
-            'data' => $data
-        ]);
-    }
 }
