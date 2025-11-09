@@ -43,7 +43,7 @@ class PaymentController extends Controller
         $item_details = [
             [
                 'id'       => 'SERTIFIKASI-01', // ID produk/sertifikasi
-                'price'    => 10,
+                'price'    => 100000,
                 'quantity' => 1,
                 'name'     => 'Biaya Sertifikasi Skema A'
             ]
