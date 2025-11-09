@@ -2,24 +2,19 @@
 
 namespace Database\Seeders;
 
-
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\MasterTuk;
-use App\Models\Jadwal; // <-- Tambahkan Model Jadwal
+
 
 class MasterTukSeeder extends Seeder
 {
-
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        // 1. Hapus data di TABEL ANAK (Jadwal) yang merujuk ke master_tuk
-        //    Ini harus dilakukan sebelum menghapus data induk.
-        Jadwal::truncate(); // <-- Tambahkan baris ini!
-
-        // 2. MENGHAPUS DATA LAMA di TABEL INDUK (MasterTuk)
-        MasterTuk::truncate();
-        
-        // 3. MEMBUAT DATA BARU
+        // Buat 10 data dummy lokasi TUK
         MasterTuk::factory()->count(10)->create();
     }
 }
