@@ -12,10 +12,35 @@
     <div class="absolute top-1/3 left-16 text-black drop-shadow-lg max-w-xl">
         <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
         <p class="text-xl mb-6 leading-relaxed">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
+
+        {{-- ======================= KODE TOMBOL YANG DITAMBAHKAN ======================= --}}
+        <div class="flex items-center gap-6 mt-8">
+            {{-- Tombol Daftar (Kuning) --}}
+            <a href="{{ route('login') }}" {{-- DIUBAH: Mengarah ke route 'login' --}}
+            class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
+                    hover:bg-yellow-500 transition-all duration-300 ease-in-out
+                    transform hover:scale-105">
+                Daftar
+            </a>
+            
+            {{-- Tombol Eksplore Skema (Link) --}}
+            <a href="#skema-sertifikasi" {{-- DIUBAH: Mengarah ke ID 'skema-sertifikasi' di bawah --}}
+               class="text-black font-semibold text-lg flex items-center gap-2 
+                      hover:gap-3 transition-all duration-300 ease-in-out group">
+                Eksplore Skema
+                <span class="font-bold text-xl transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+            </a>
+        </div>
+        {{-- ===================== AKHIR KODE TOMBOL YANG DITAMBAHKAN ===================== --}}
+
     </div>
 </section>
 
 <style>
+html {
+    scroll-behavior: smooth;
+}
+
 #scrollContainer::-webkit-scrollbar { display: none; }
 #scrollContainer { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -54,7 +79,8 @@
 </style>
 
 {{-- ======================= FILTER KATEGORI ======================= --}}
-<section class="py-10 text-center relative z-[100] bg-white -mt-10">
+<section id="skema-sertifikasi" {{-- <== PASTIKAN ID INI TERPASANG --}}
+            class="py-10 text-center relative z-[100] bg-white -mt-10">
         <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
         <div id="categoryButtons" class="inline-flex gap-4">
             @foreach($categories as $category)
@@ -100,8 +126,8 @@ scrollContainer.addEventListener("mousemove", e => {
                             <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
                                 <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
                                     <img src="{{ $skema->gambar ? asset('images/' . $skema->gambar) : asset('images/default.jpg') }}" 
-                                        alt="" 
-                                        class="h-48 w-full object-cover">
+                                         alt="" 
+                                         class="h-48 w-full object-cover">
                                 </div>
                             </a>
                             <div class="px-2">
