@@ -25,7 +25,6 @@
 
             <h1 class="text-3xl font-bold mb-2">Skema Sertifikat</h1>
 
-            <!-- Profile Image -->
             <div class="flex justify-center my-6">
                 <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-800 shadow-lg">
                     <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=400&fit=crop"
@@ -33,19 +32,16 @@
                 </div>
             </div>
 
-            <!-- Job Title -->
             <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold">Junior Web</h2>
-                <h2 class="text-2xl font-bold">Developer</h2>
-                <p class="text-gray-600 text-sm mt-2">SKMI2XXXXXX</p>
+                <h2 class="text-2xl font-bold">{{ $asesi->skema->judul_skema ?? 'Judul Skema' }}</h2>
+                <p class="text-gray-600 text-sm mt-2">{{ $asesi->skema->nomor_skema ?? 'Nomor Skema' }}</p>
+                <p class="text-xl font-medium text-gray-800 mt-4">{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}</p>
             </div>
 
-            <!-- Description -->
             <p class="text-center text-sm text-gray-700 mb-8 px-4">
                 Lorem ipsum dolor sit amet, congue eu libero. You're the best person I've ever met
             </p>
 
-            <!-- Persyaratan Utama -->
             <div>
                 <h3 class="font-bold text-lg mb-4">Persyaratan Utama</h3>
                 <ul class="space-y-2">
@@ -119,10 +115,12 @@
                                 Sertifikasi</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
-                            <button
-                                class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600">
+                            
+                            <a href="{{ route('apl01.download', ['id_asesi' => $asesi->id_asesi]) }}"
+                               target="_blank"
+                               class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600 inline-block">
                                 Unduh Document
-                            </button>
+                            </a>
                         </div>
                     </li>
 
