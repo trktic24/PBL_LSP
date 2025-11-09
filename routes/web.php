@@ -11,6 +11,8 @@ use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\Apl01PdfController;
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
+use App\Models\Asesor; // Pastikan use Model ini
+use App\Models\Asesi;  // Pastikan use Model ini
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +56,8 @@ Route::get('/praasesmen8', function () { return view('praasesmen8'); });
 Route::get('/banding', function () { return view('banding'); });
 Route::get('/pertanyaan_lisan', function () { return view('pertanyaan_lisan'); });
 Route::get('/umpan_balik', function () { return view('umpan_balik'); });
-Route::get('/fr_ak01', function () { return view('persetujuan assesmen dan kerahasiaan.fr_ak01'); });
+//Route::get('/fr_ak01', function () { return view('persetujuan_assesmen_dan_kerahasiaan/fr_ak01'); });
+Route::get('/fr_ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.show_view'); // Ini hanya menampilkan kerangka HTML View
 Route::get('/verifikasi_tuk', function () { return view('verifikasi_tuk'); });
 
 
@@ -74,7 +77,8 @@ Route::get('/formulir/data-sertifikasi', [DataSertifikasiAsesiController::class,
     ->name('formulir.data-sertifikasi');
 
 // --- Asesmen ---
-Route::get('/asesmen/fr-ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
+//Route::get('/asesmen/fr_ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
+Route::get('/api/asesmen/fr-ak01-data', [AsesmenController::class, 'getFrAk01Data'])->name('api.asesmen.fr_ak01');
 
 // --- Pembayaran (Action) ---
 Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');

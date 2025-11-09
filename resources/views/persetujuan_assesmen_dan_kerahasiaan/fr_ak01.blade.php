@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Persetujuan Asesmen</title>
+    <title>Persetujuan Asesmen dan Kerahasiaan (API)</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Gaya tambahan agar checkbox yang disabled tidak terlihat terlalu pudar */
+        input[type="checkbox"]:disabled {
+            opacity: 1; 
+            cursor: default;
+        }
+        /* Gaya untuk menonaktifkan interaksi pada label */
+        label input[type="checkbox"]:disabled:hover {
+            cursor: default;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
 
@@ -26,75 +37,51 @@
                     
                     <dt class="col-span-1 font-medium text-gray-800">TUK</dt>
                     <dd class="col-span-3 flex flex-wrap gap-x-6 gap-y-2 items-center">
-                        {{-- Logika untuk menampilkan centang TUK (asumsi data TUK ada di $data_asesmen['tuk']) --}}
-                        @php
-                            $tuk_selected = $data_asesmen['tuk'] ?? '';
-                        @endphp
-                        
+                        {{-- Elemen TUK: ID digunakan untuk diisi oleh JS --}}
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Sewaktu" 
-                                @checked($tuk_selected === 'Sewaktu') 
-                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
+                            <input type="checkbox" value="Sewaktu" id="tuk_Sewaktu" disabled class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
                             Sewaktu
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Tempat Kerja" 
-                                @checked($tuk_selected === 'Tempat Kerja') 
-                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
+                            <input type="checkbox" value="Tempat Kerja" id="tuk_Tempat Kerja" disabled class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
                             Tempat Kerja
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Mandiri" 
-                                @checked($tuk_selected === 'Mandiri') 
-                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
+                            <input type="checkbox" value="Mandiri" id="tuk_Mandiri" disabled class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
                             Mandiri
                         </label>
                     </dd>
                     
-                    {{-- Nama Asesor --}}
+                    {{-- Nama Asesor (diisi oleh JS) --}}
                     <dt class="col-span-1 font-medium text-gray-800">Nama Asesor</dt>
-                    <dd class="col-span-3 text-gray-800">: {{ $asesor->nama_lengkap ?? '[Nama Asesor Belum Tersedia]' }}</dd>
+                    <dd class="col-span-3 text-gray-800">: <span id="nama_asesor">[Memuat Data...]</span></dd>
 
-                    {{-- Nama Asesi --}}
+                    {{-- Nama Asesi (diisi oleh JS) --}}
                     <dt class="col-span-1 font-medium text-gray-800">Nama Asesi</dt>
-                    <dd class="col-span-3 text-gray-800">: {{ $asesi->nama_lengkap ?? '[Nama Asesi Belum Tersedia]' }}</dd>
+                    <dd class="col-span-3 text-gray-800">: <span id="nama_asesi">[Memuat Data...]</span></dd>
                     
                     <dt class="col-span-1 font-medium text-gray-800">Bukti yang akan dikumpulkan</dt>
                     <dd class="col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
                         
-                        {{-- Logika untuk menampilkan centang Bukti --}}
-                        @php
-                            $bukti_checked = $data_asesmen['bukti_dikumpulkan'] ?? [];
-                        @endphp
-
+                        {{-- Elemen Bukti: ID digunakan untuk diisi oleh JS --}}
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Verifikasi Portofolio" 
-                                @checked(in_array('Verifikasi Portofolio', $bukti_checked)) 
-                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
+                            <input type="checkbox" value="Verifikasi Portofolio" id="bukti_Verifikasi Portofolio" disabled class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
                             Verifikasi Portofolio
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Hasil Test Tulis" 
-                                @checked(in_array('Hasil Test Tulis', $bukti_checked)) 
-                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
+                            <input type="checkbox" value="Hasil Test Tulis" id="bukti_Hasil Test Tulis" disabled class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
                             Hasil Test Tulis
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Hasil Tes Lisan" 
-                                @checked(in_array('Hasil Tes Lisan', $bukti_checked)) 
-                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
+                            <input type="checkbox" value="Hasil Tes Lisan" id="bukti_Hasil Tes Lisan" disabled class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
                             Hasil Tes Lisan
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Hasil Wawancara" 
-                                @checked(in_array('Hasil Wawancara', $bukti_checked)) 
-                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
+                            <input type="checkbox" value="Hasil Wawancara" id="bukti_Hasil Wawancara" disabled class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
                             Hasil Wawancara
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Observasi Langsung" 
-                                @checked(in_array('Observasi Langsung', $bukti_checked)) 
-                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
+                            <input type="checkbox" value="Observasi Langsung" id="bukti_Observasi Langsung" disabled class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
                             Observasi Langsung
                         </label>
                     </dd>
@@ -109,8 +96,9 @@
                 </p>
 
                 <div class="mt-6">
-                    <div class="w-full h-48 bg-gray-50 border border-gray-300 rounded-lg shadow-inner">
-                        {{-- Area untuk tanda tangan digital --}}
+                    {{-- Container TTD: Akan diisi gambar oleh JavaScript --}}
+                    <div class="w-full h-48 bg-gray-50 border border-gray-300 rounded-lg shadow-inner flex items-center justify-center overflow-hidden" id="ttd_container">
+                        <p id="ttd_placeholder" class="text-gray-500 text-sm">Area Tanda Tangan</p>
                     </div>
                     <div class="flex justify-between items-center mt-2">
                         <p class="text-red-600 text-xs italic">*Tanda Tangan di sini</p>
@@ -133,6 +121,70 @@
         </main>
 
     </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ambil URL API dari named route Laravel
+        const apiUrl = '{{ route('api.asesmen.fr_ak01') }}'; 
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 1. ISI NAMA ASESOR DAN ASESI
+                document.getElementById('nama_asesor').innerText = data.asesor.nama_lengkap;
+                document.getElementById('nama_asesi').innerText = data.asesi.nama_lengkap;
+
+                // 2. ISI TUK
+                const tukId = `tuk_${data.data_asesmen.tuk}`;
+                const tukElement = document.getElementById(tukId);
+                if (tukElement) {
+                    tukElement.checked = true;
+                }
+                
+                // 3. ISI BUKTI DIKUMPULKAN
+                data.data_asesmen.bukti_dikumpulkan.forEach(bukti => {
+                    const buktiId = `bukti_${bukti}`; 
+                    const buktiElement = document.getElementById(buktiId);
+                    if (buktiElement) {
+                        buktiElement.checked = true;
+                    }
+                });
+
+                // 4. TAMPILKAN TANDA TANGAN ASESI (TTD)
+                if (data.tanda_tangan) {
+                    const ttdContainer = document.getElementById('ttd_container');
+                    
+                    // Path harus relatif ke folder public
+                    const ttdPath = `/${data.tanda_tangan}`; 
+                    
+                    // Kosongkan container dan isi dengan tag gambar
+                    ttdContainer.innerHTML = `
+                        <img 
+                            src="${ttdPath}" 
+                            alt="Tanda Tangan Asesi" 
+                            class="object-contain h-full w-full p-2"
+                            onerror="this.parentNode.innerHTML = '<p class=\\'text-red-500 text-sm\\'>Gagal memuat gambar TTD atau file tidak ditemukan.</p>'"
+                        >`;
+                } else {
+                    // Jika path TTD NULL di DB
+                    document.getElementById('ttd_placeholder').innerText = 'Tanda tangan belum tersedia di database.';
+                }
+
+            })
+            .catch(error => {
+                console.error('Gagal memuat data dari API:', error);
+                document.getElementById('nama_asesor').innerText = 'Gagal Memuat Data!';
+                document.getElementById('nama_asesi').innerText = 'Gagal Memuat Data!';
+                // Tampilkan pesan error di container TTD
+                document.getElementById('ttd_container').innerHTML = '<p class="text-red-500 text-sm">Gagal memuat semua data formulir.</p>';
+            });
+    });
+</script>
 
 </body>
 </html>
