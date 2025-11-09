@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 
 use Illuminate\Database\Seeder;
+use App\Models\Skema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,6 +28,6 @@ class DatabaseSeeder extends Seeder
             MasterTukSeeder::class,
             SkemaSeeder::class,
         ]);
-
-}
+        Skema::factory()->count(50)->create();
+    }
 }

@@ -20,6 +20,7 @@ class SkemaSeeder extends Seeder
 
         // Data Skema 1: Software
         Skema::create([
+            'kode_unit' => 'J.620100.001.01',
             'nama_skema' => 'Skema Sertifikasi Web Developer',
             $nama_kolom_kategori => 'Software', 
             'deskripsi_skema' => 'Sertifikasi untuk pengembang aplikasi web.',
@@ -28,6 +29,7 @@ class SkemaSeeder extends Seeder
         
         // Data Skema 2: Hardware
         Skema::create([
+            'kode_unit' => 'J.620100.002.01',
             'nama_skema' => 'Skema Sertifikasi Teknisi Komputer',
             $nama_kolom_kategori => 'Hardware',
             'deskripsi_skema' => 'Sertifikasi untuk perakitan dan perbaikan perangkat keras.',
@@ -36,6 +38,7 @@ class SkemaSeeder extends Seeder
         
         // Data Skema 3: Jaringan
         Skema::create([
+            'kode_unit' => 'J.620100.003.01',
             'nama_skema' => 'Skema Sertifikasi Jaringan Komputer',
             $nama_kolom_kategori => 'Jaringan',
             'deskripsi_skema' => 'Sertifikasi untuk instalasi dan administrasi jaringan.',
