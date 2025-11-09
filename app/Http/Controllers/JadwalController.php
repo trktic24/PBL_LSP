@@ -50,7 +50,7 @@ class JadwalController extends Controller
             }
         }
 
-        return view('frontend.jadwal', compact('jadwalList'));
+        return view('landing_page.jadwal', compact('jadwalList'));
     }
 
     // Method baru untuk detail jadwal

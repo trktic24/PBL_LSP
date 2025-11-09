@@ -4,23 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\Asesor\AsesorTableController;
-
-/*
-|--------------------------------------------------------------------------
-| Halaman Umum (Static Page)
-|--------------------------------------------------------------------------
-*/
-Route::get('/navbar', function () {
-    return view('navbar-fix');
-})->name('navbar');
-
-Route::get('/daftar_asesi', function () {
-    return view('frontend/daftar_asesi');
-})->name('daftar_asesi');
-
-Route::get('/tracker', function () {
-    return view('frontend/tracker');
-})->name('tracker');
+use App\Http\Controllers\JadwalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,17 +59,13 @@ Route::get('/mitra', function () {
 | Halaman Utama & Menu Utama
 |--------------------------------------------------------------------------
 */
-Route::get('/jadwal', function () {
-    return view('landing_page.jadwal');
-})->name('jadwal');
+Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
 
 Route::get('/sertifikasi', function () {
     return "Halaman Sertifikasi"; // Placeholder
 })->name('sertifikasi');
 
-Route::get('/daftar-asesor', function () {
-    return view('landing_page.page_info.daftar-asesor');
-})->name('info.daftar-asesor');
+Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
 
 /*
 |--------------------------------------------------------------------------
@@ -96,4 +76,44 @@ Route::get('/keep-alive', function () {
     return response()->json(['status' => 'session_refreshed']);
 });
 
+
 require __DIR__.'/auth.php';
+
+// // Grup rute yang WAJIB LOGIN (sudah ada 'auth' dari Breeze)
+// Route::middleware(['auth'])->group(function () {
+
+//     // Contoh rute dashboard (semua role yg login bisa akses)
+//     Route::get('/dashboard', [DashboardController::class, 'index'])
+//         ->name('dashboard');
+
+//     // --- INI CONTOH ROLE HIERARKI ---
+
+//     // 1. HANYA Superadmin
+//     // Admin, Asesor, Asesi -> GABISA MASUK (403 Forbidden)
+//     Route::middleware(['role:superadmin'])->group(function () {
+//         Route::get('/superadmin/logs', [SuperAdminController::class, 'viewLogs']);
+//         // ...rute superadmin lainnya
+//     });
+
+//     // 2. HANYA Admin dan Superadmin
+//     // Asesor, Asesi -> GABISA MASUK
+//     Route::middleware(['role:admin,superadmin'])->group(function () {
+//         Route::get('/admin/manage-users', [AdminController::class, 'manageUsers']);
+//         // ...rute admin lainnya
+//     });
+
+//     // 3. HANYA Asesor (dan Admin/Superadmin jika perlu)
+//     // Asesi -> GABISA MASUK
+//     Route::middleware(['role:asesor,admin,superadmin'])->group(function () {
+//         Route::get('/asesor/data-asesi', [AsesorController::class, 'viewAsesi']);
+//         // ...rute asesor lainnya
+//     });
+
+//     // 4. HANYA Asesi
+//     // Semua role lain -> GABISA MASUK
+//     Route::middleware(['role:asesi'])->group(function () {
+//         Route::get('/asesi/profile-saya', [AsesiController::class, 'myProfile']);
+//         // ...rute asesi lainnya
+//     });
+
+// });

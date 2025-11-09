@@ -22,10 +22,17 @@ class DatabaseSeeder extends Seeder
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
+<<<<<<< HEAD
             SkemaSeeder::class,
             JenisTukSeeder::class,
             JadwalSeeder::class,
             MasterTukSeeder::class,
+=======
+            JenisTukSeeder::class,
+            JadwalSeeder::class,
+            MasterTukSeeder::class,
+
+>>>>>>> bf190bc54185d06db213f0083b503685b7a505a4
         ]);
 
 }
