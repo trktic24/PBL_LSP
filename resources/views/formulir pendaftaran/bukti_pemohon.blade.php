@@ -465,7 +465,7 @@
                         class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300">
                         Sebelumnya
                     </a>
-                    <a href="/tanda_tangan_pemohon"
+                    <a href="/halaman-tanda-tangan"
                         class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
                         Selanjutnya
                     </a>

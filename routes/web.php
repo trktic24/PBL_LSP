@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\BelajarController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TandaTanganController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\BelajarController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
+use App\Http\Controllers\AsesmenController;
 
 
 Route::get('/', function () {
@@ -18,17 +19,13 @@ Route::get('/tracker', function () {
 
 Route::get('/data_sertifikasi', function () {
     return view('formulir pendaftaran/data_sertifikasi');
-});
-
-Route::get('/tanda_tangan_pemohon', function () {
-    return view('formulir pendaftaran/tanda_tangan_pemohon');
-});
+});;
 
 Route::get('/tunggu_upload_dokumen', function () {
     return view('formulir pendaftaran/tunggu_upload_dokumen');
 });
 
-Route::get('/tunggu_upload_dokumen', function () {
+Route::get('/belum_memenuhi', function () {
     return view('formulir pendaftaran/dokumen_belum_memenuhi');
 });
 
@@ -97,16 +94,50 @@ Route::get('/umpan_balik', function () {
 });
 
 Route::get('/fr_ak01', function () {
-    return view('fr_ak01');
+    // Ubah dari 'fr_ak01' menjadi 'persetujuan assesmen dan kerahasiaan.fr_ak01'
+    return view('persetujuan assesmen dan kerahasiaan.fr_ak01'); 
 });
+
+Route::get('/asesmen/fr-ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
+
+Route::get('/fr_ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
 
 Route::get('/verifikasi_tuk', function () {
     return view('verifikasi_tuk');
 });
 
-Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
+Route::post('/simpan-tandatangan', [TandaTanganController::class, 'store'])
+    ->name('simpan.tandatangan');
 
-Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
+// Route::get('/', [SkemaController::class, 'show'])->defaults('id', 1);
+
+// Route::get('/skema/{id}', [SkemaController::class, 'show'])->name('skema.show');
+
+// === ROUTE UNTUK HALAMAN TANDA TANGAN ===
+
+// 2. Route GET: Buat nampilin halaman tanda tangan
+// URL: /halaman-tanda-tangan
+// Controller: TandaTanganController, method: showSignaturePage
+Route::get('/halaman-tanda-tangan', [TandaTanganController::class, 'showSignaturePage'])
+       ->name('show.tandatangan');
+
+// 3. Route POST: Buat nerima data form pas di-submit
+// URL: /simpan-tanda-tangan
+// Controller: TandaTanganController, method: store
+Route::post('/simpan-tanda-tangan', [TandaTanganController::class, 'store'])
+       ->name('simpan.tandatangan');
+
+// 4. Route GET: Halaman tujuan setelah sukses submit
+// (Ini halaman dummy, sesuai redirect di controller)
+Route::get('/formulir-selesai', function () {
+    return 'BERHASIL DISIMPAN! Ini halaman selanjutnya.';
+})->name('form.selesai');
+
+// !!! TAMBAHKAN ROUTE INI !!!
+Route::post('/ajax-simpan-tandatangan', [TandaTanganController::class, 'storeAjax'])
+       ->name('simpan.tandatangan.ajax');
+
+// === AKHIR ROUTE TANDA TANGAN ===
 
 Route::get('/pembayaran', [PaymentController::class, 'createTransaction'])->name('payment.create');
 
