@@ -174,7 +174,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class, // Hapus jika tidak digunakan
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Barryvdh\DomPDF\ServiceProvider::class,
+        //Barryvdh\DomPDF\ServiceProvider::class,
 
     ],
 

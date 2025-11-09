@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 // Kita HAPUS 'use Request', 'use File', 'use Validator', 'use Asesi'
 // karena udah gak dipake di file ini.
 
-class TandaTanganController extends Controller
+class DataSertifikasiAsesiController extends Controller
 {
     /**
      * Method untuk MENAMPILKAN halaman tanda tangan.
@@ -22,15 +22,14 @@ class TandaTanganController extends Controller
      * Nanti JavaScript di view yang akan "nembak" API pake ID ini
      * untuk ngambil data JSON-nya.
      */
-    public function showSignaturePage()
+    public function showDataSertifikasiAsesiPage()
     {
         // "Hack" untuk ngetes: kita tetap pake Asesi ID 1
         $id_asesi_hardcoded = 1; 
 
-        Log::info("WEB: Menampilkan halaman tanda tangan untuk Asesi ID $id_asesi_hardcoded");
-        
-        // 3. CUMA KIRIM ID-NYA AJA, BUKAN SEMUA DATA ASESI
-        return view('formulir_pendaftaran.tanda_tangan_pemohon', [
+         Log::info("WEB: Menampilkan halaman Data Sertifikasi Asesi untuk Asesi ID {$id_asesi_hardcoded}");
+
+        return view('formulir_pendaftaran.data_sertifikasi', [
             'id_asesi_untuk_js' => $id_asesi_hardcoded
         ]);
     }
