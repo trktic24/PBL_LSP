@@ -25,10 +25,13 @@ Route::get('/tunggu_upload_dokumen', function () {
     return view('formulir pendaftaran/tunggu_upload_dokumen');
 });
 
+<<<<<<< HEAD
+=======
 Route::get('/belum_memenuhi', function () {
     return view('formulir pendaftaran/dokumen_belum_memenuhi');
 });
 
+>>>>>>> b0ece75a6179d03b2deb8f62d21f45081de1e0b5
 Route::get('/pembayaran', function () {
     return view('pembayaran/pembayaran');
 });
@@ -153,3 +156,14 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+
+use App\Http\Controllers\Apl01PdfController;
+
+// Route untuk download PDF
+Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])
+    ->name('apl01.download');
+
+// Route untuk preview PDF (optional)
+Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])
+    ->name('apl01.preview');
