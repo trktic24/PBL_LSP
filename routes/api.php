@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
 use App\Http\Controllers\Api\Auth\SkemaController;
+use App\Http\Controllers\Api\AsesorTableApiController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
@@ -29,3 +30,6 @@ Route::prefix('auth/google')->group(function () {
 
 
 Route::get('/skema', [SkemaController::class, 'index']);
+
+Route::get('/asesor', [AsesorTableApiController::class, 'index']);
+Route::get('/asesor/search', [AsesorTableApiController::class, 'search']);
