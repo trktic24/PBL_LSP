@@ -23,7 +23,18 @@ class SkemaFactory extends Factory
     {
         return [
             'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01',
-            'nama_skema' => 'Skema Sertifikasi ' . $this->faker->jobTitle(),
+            'nama_skema' => 'Skema Sertifikasi ' . $this->faker->randomElement([
+                'Network Engineer',
+                'Software Developer',
+                'Database Administrator',
+                'UI/UX Designer',
+                'Cybersecurity Analyst',
+                'Cloud Specialist',
+                'AI Engineer',
+                'Data Scientist',
+                'IT Support Technician',
+                'Hardware Engineer',
+            ]),
             'deskripsi_skema' => $this->faker->paragraph(2),
             
             // Field opsional (boleh null)
@@ -33,12 +44,14 @@ class SkemaFactory extends Factory
             // Field baru hasil migrasi
             'harga' => $this->faker->numberBetween(100000, 1000000), // harga antara 100 ribu - 1 juta
             'kategori' => $this->faker->randomElement([
-                'Teknologi Informasi',
-                'Bisnis & Manajemen',
-                'Konstruksi',
-                'Desain Grafis',
-                'Administrasi',
-                'Jaringan & Keamanan',
+                'Software',
+                'Hardware',
+                'Network',
+                'Keamanan',
+                'Cloud',
+                'AI',
+                'Data',
+                'UI/UX',
             ]),
         ];
     }

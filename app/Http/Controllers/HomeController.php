@@ -45,6 +45,10 @@ class HomeController extends Controller
         // Ambil data dari tabel skema
         $skemas = Skema::latest()->get(); // ini ambil semua dari database faker
 
+        // Ambil daftar kategori unik dari kolom 'kategori'
+        $categories = $skemas->pluck('kategori')->unique()->values()->all();
+        array_unshift($categories, 'Semua');
+
         // Ambil jadwal dummy
         $semuaJadwal = $this->getSemuaDummyJadwal();
         $now = new DateTime();
@@ -55,7 +59,7 @@ class HomeController extends Controller
             ->take(2)
             ->values();
 
-        return view('landing_page.home', compact('skemas', 'jadwals'));
+        return view('landing_page.home', compact('skemas', 'jadwals', 'categories'));
     }
 
     public function show($id): View

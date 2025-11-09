@@ -8,7 +8,7 @@
          alt=""
          class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
-    <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/95 via-white/50 to-transparent"></div>
+    <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
     <div class="absolute top-1/3 left-16 text-black drop-shadow-lg max-w-xl">
         <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
         <p class="text-xl mb-6 leading-relaxed">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
@@ -18,26 +18,52 @@
 <style>
 #scrollContainer::-webkit-scrollbar { display: none; }
 #scrollContainer { -ms-overflow-style: none; scrollbar-width: none; }
-.active-category {
-    background-color: rgb(250 204 21); /* kuning pekat */
-    color: black;
+
+#categoryButtons {
+    position: relative;
+    z-index: 50; /* pastikan di atas elemen lain */
 }
+
+.active-category {
+    background-color: rgb(250 204 21);
+    color: black;
+    transform: scale(1.2);
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 4px 12px rgba(250, 204, 21, 0.6);
+}
+
 .inactive-category {
-    background-color: rgb(254 249 195); /* kuning pudar */
+    background-color: rgb(254 249 195);
     color: #444;
+    transform: scale(1);
+    transition: all 0.25s ease-in-out;
+}
+
+.inactive-category:hover {
+    background-color: rgb(254 240 138);
+}
+
+.active-category {
+    transform: scale(1.2) translateY(-3px);
+}
+
+/* Tambahkan jarak agar efek glow tidak tertutup */
+#scrollContainer {
+    margin-bottom: 2rem;
 }
 </style>
 
 {{-- ======================= FILTER KATEGORI ======================= --}}
-<section class="py-10 text-center">
-    <div id="scrollContainer" class="overflow-x-auto whitespace-nowrap px-6 cursor-grab active:cursor-grabbing select-none">
+<section class="py-10 text-center relative z-[100] bg-white -mt-10">
         <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
         <div id="categoryButtons" class="inline-flex gap-4">
-            <button data-category="Semua" class="btn btn-sm font-bold rounded-full px-6 border-none active-category">Semua</button>
-            <button data-category="Software" class="btn btn-sm font-bold rounded-full px-6 border-none inactive-category hover:bg-yellow-200">Software</button>
-            <button data-category="Hardware" class="btn btn-sm font-bold rounded-full px-6 border-none inactive-category hover:bg-yellow-200">Hardware</button>
-            <button data-category="Jaringan" class="btn btn-sm font-bold rounded-full px-6 border-none inactive-category hover:bg-yellow-200">Jaringan</button>
-            <button data-category="AI & Network" class="btn btn-sm font-bold rounded-full px-6 border-none inactive-category hover:bg-yellow-200">AI & Network</button>
+            @foreach($categories as $category)
+                <button data-category="{{ $category }}"
+                        class="btn btn-sm font-bold rounded-full px-6 border-none 
+                        {{ $loop->first ? 'active-category' : 'inactive-category hover:bg-yellow-200' }}">
+                    {{ $category }}
+                </button>
+            @endforeach
         </div>
     </div>
 </section>
@@ -90,6 +116,34 @@ scrollContainer.addEventListener("mousemove", e => {
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('#categoryButtons button');
+    const cards = document.querySelectorAll('.skema-card');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            const selectedCategory = button.dataset.category;
+
+            // ubah tampilan tombol aktif
+            buttons.forEach(btn => {
+                btn.classList.remove('active-category');
+                btn.classList.add('inactive-category');
+            });
+            button.classList.add('active-category');
+            button.classList.remove('inactive-category');
+
+            // tampilkan kartu sesuai kategori
+            cards.forEach(card => {
+                const cardCategory = card.dataset.category;
+                card.style.display = (selectedCategory === 'Semua' || cardCategory === selectedCategory)
+                    ? '' : 'none';
+            });
+        });
+    });
+});
+</script>
 
 <script>
 const gridSlides = document.getElementById('gridSlides');
