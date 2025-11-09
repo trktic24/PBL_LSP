@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Persetujuan Asesmen</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    </head>
+</head>
 <body class="bg-gray-100">
 
     <div class="flex min-h-screen">
@@ -32,53 +32,69 @@
                         @endphp
                         
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Sewaktu" @checked($tuk_selected === 'Sewaktu') class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
+                            <input type="checkbox" value="Sewaktu" 
+                                @checked($tuk_selected === 'Sewaktu') 
+                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
                             Sewaktu
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Tempat Kerja" @checked($tuk_selected === 'Tempat Kerja') class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
+                            <input type="checkbox" value="Tempat Kerja" 
+                                @checked($tuk_selected === 'Tempat Kerja') 
+                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
                             Tempat Kerja
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Mandiri" @checked($tuk_selected === 'Mandiri') class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
+                            <input type="checkbox" value="Mandiri" 
+                                @checked($tuk_selected === 'Mandiri') 
+                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
                             Mandiri
                         </label>
                     </dd>
                     
-                    {{-- START PERBAIKAN: Nama Asesor. Jika gagal, akan memunculkan error Laravel (bukan placeholder) --}}
+                    {{-- Nama Asesor --}}
                     <dt class="col-span-1 font-medium text-gray-800">Nama Asesor</dt>
-                    <dd class="col-span-3 text-gray-800">: **{{ $asesor->nama_lengkap ?? '[Nama Asesor Belum Tersedia]' }}**</dd>
+                    <dd class="col-span-3 text-gray-800">: {{ $asesor->nama_lengkap ?? '[Nama Asesor Belum Tersedia]' }}</dd>
 
-                    {{-- START PERBAIKAN: Nama Asesi --}}
+                    {{-- Nama Asesi --}}
                     <dt class="col-span-1 font-medium text-gray-800">Nama Asesi</dt>
-                    <dd class="col-span-3 text-gray-800">: **{{ $asesi->nama_lengkap ?? '[Nama Asesi Belum Tersedia]' }}**</dd>
+                    <dd class="col-span-3 text-gray-800">: {{ $asesi->nama_lengkap ?? '[Nama Asesi Belum Tersedia]' }}</dd>
                     
                     <dt class="col-span-1 font-medium text-gray-800">Bukti yang akan dikumpulkan</dt>
                     <dd class="col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
                         
-                        {{-- Logika untuk menampilkan centang Bukti (asumsi data bukti ada di $data_asesmen['bukti_dikumpulkan']) --}}
+                        {{-- Logika untuk menampilkan centang Bukti --}}
                         @php
                             $bukti_checked = $data_asesmen['bukti_dikumpulkan'] ?? [];
                         @endphp
 
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Verifikasi Portofolio" @checked(in_array('Verifikasi Portofolio', $bukti_checked)) class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
+                            <input type="checkbox" value="Verifikasi Portofolio" 
+                                @checked(in_array('Verifikasi Portofolio', $bukti_checked)) 
+                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
                             Verifikasi Portofolio
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Hasil Test Tulis" @checked(in_array('Hasil Test Tulis', $bukti_checked)) class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
+                            <input type="checkbox" value="Hasil Test Tulis" 
+                                @checked(in_array('Hasil Test Tulis', $bukti_checked)) 
+                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
                             Hasil Test Tulis
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Hasil Tes Lisan" @checked(in_array('Hasil Tes Lisan', $bukti_checked)) class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
+                            <input type="checkbox" value="Hasil Tes Lisan" 
+                                @checked(in_array('Hasil Tes Lisan', $bukti_checked)) 
+                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
                             Hasil Tes Lisan
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Hasil Wawancara" @checked(in_array('Hasil Wawancara', $bukti_checked)) class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
+                            <input type="checkbox" value="Hasil Wawancara" 
+                                @checked(in_array('Hasil Wawancara', $bukti_checked)) 
+                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
                             Hasil Wawancara
                         </label>
                         <label class="flex items-center text-gray-700">
-                            <input type="checkbox" value="Observasi Langsung" @checked(in_array('Observasi Langsung', $bukti_checked)) class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2">
+                            <input type="checkbox" value="Observasi Langsung" 
+                                @checked(in_array('Observasi Langsung', $bukti_checked)) 
+                                **disabled** class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-2 opacity-50 cursor-not-allowed">
                             Observasi Langsung
                         </label>
                     </dd>
@@ -95,7 +111,7 @@
                 <div class="mt-6">
                     <div class="w-full h-48 bg-gray-50 border border-gray-300 rounded-lg shadow-inner">
                         {{-- Area untuk tanda tangan digital --}}
-                        </div>
+                    </div>
                     <div class="flex justify-between items-center mt-2">
                         <p class="text-red-600 text-xs italic">*Tanda Tangan di sini</p>
                         <button class="px-4 py-1.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-300">
