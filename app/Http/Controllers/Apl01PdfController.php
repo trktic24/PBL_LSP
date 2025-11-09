@@ -140,7 +140,7 @@ class Apl01PdfController extends Controller
         $fullPathTandaTangan = null;
         if ($pathTandaTangan) {
             try {
-                $imagePath = storage_path('app/public/' . $pathTandaTangan);
+                $imagePath = public_path($pathTandaTangan); // <-- Ganti jadi ini
                 if (file_exists($imagePath)) {
                     $imageData = file_get_contents($imagePath);
                     $imageType = pathinfo($imagePath, PATHINFO_EXTENSION);

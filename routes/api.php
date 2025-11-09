@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
+use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,12 +19,12 @@ use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 Route::get('/get-asesi-data/{id}', [TandaTanganController::class, 'getAsesiDataApi'])
        ->name('api.get.asesi'); // <-- Namanya kita samain
 
-// API buat nyimpen data (POST /api/ajax-simpan-tandatangan)
-Route::post('/ajax-simpan-tandatangan', [TandaTanganController::class, 'storeAjax'])
-       ->name('simpan.tandatangan.ajax'); // <-- Namanya kita samain
+// API buat nyimpen data (POST /api/ajax-simpan-tandatangan/1)
+Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganController::class, 'storeAjax'])
+       ->name('simpan.tandatangan.ajax');
 
-// API buat hapus Tanda Tangan
-Route::post('/ajax-hapus-tandatangan', [TandaTanganController::class, 'deleteAjax'])
+// API buat nge-hapus data (POST /api/ajax-hapus-tandatangan/1)
+Route::post('/ajax-hapus-tandatangan/{id_asesi}', [TandaTanganController::class, 'deleteAjax'])
        ->name('hapus.tandatangan.ajax');
 
 
@@ -41,3 +42,11 @@ Route::prefix('data-sertifikasi')->group(function () {
     Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
         ->name('api.data_sertifikasi.delete');
 });
+
+
+// API KERAHASIAAN AK01
+Route::get('/get-frak01-data/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data'])
+       ->name('api.get.frak01');
+
+Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
+       ->name('api.setuju.frak01');

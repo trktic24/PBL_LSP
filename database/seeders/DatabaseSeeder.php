@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         
         // Baris ini udah bener
-        \App\Models\Asesi::factory(10)->create();
+        \App\Models\Asesi::factory(20)->create();
         \App\Models\Skema::factory(20)->create();
         \App\Models\KelompokPekerjaan::factory(30)->create();
         \App\Models\UnitKompetensi::factory(25)->create();

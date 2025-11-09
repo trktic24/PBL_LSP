@@ -1,9 +1,8 @@
 <?php
 
 namespace Database\Factories;
-
 use App\Models\DataPekerjaanAsesi;
-use App\Models\Asesi;
+use App\Models\Asesi; 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,15 +18,15 @@ class DataPekerjaanAsesiFactory extends Factory
     protected $model = DataPekerjaanAsesi::class;
 
     /**
-     * Definisikan state default model.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            // Relasi ke tabel Asesi
-            'id_asesi' => Asesi::factory(),
+            // Foreign Key ke tabel 'asesi'. Menggunakan factory Asesi untuk memastikan Asesi dibuat.
+            // Asumsi: foreign key di Model Asesi adalah 'id_asesi'
+            'id_asesi' => fake()->unique()->numberBetween(1, 20),
 
             // Data pekerjaan
             'nama_institusi_pekerjaan' => fake()->company(),

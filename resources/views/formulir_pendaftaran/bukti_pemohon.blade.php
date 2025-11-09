@@ -13,7 +13,7 @@
     <div class="flex min-h-screen">
 
         <!-- Sidebar lu (biarin aja) -->
-        <x-sidebar></x-sidebar>
+        <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
 
         <main class="flex-1 p-12 bg-white overflow-y-auto">
             <div class="max-w-4xl mx-auto">
@@ -461,11 +461,11 @@
                 </div>
 
                 <div class="flex justify-between items-center mt-10">
-                    <a href="/data_sertifikasi"
+                    <a href="{{ route('data.sertifikasi', ['id_asesi' => $asesi->id_asesi]) }}"
                         class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300">
                         Sebelumnya
                     </a>
-                    <a href="/halaman-tanda-tangan"
+                    <a href="{{ route('show.tandatangan', ['id_asesi' => $asesi->id_asesi]) }}"
                         class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
                         Selanjutnya
                     </a>
