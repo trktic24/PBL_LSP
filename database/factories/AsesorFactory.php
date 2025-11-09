@@ -2,20 +2,18 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Skema;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AsesorFactory extends Factory
 {
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(), // ✅ tambahkan ini
-            'id_skema' => Skema::factory(),
-            'nomor_regis' => 'MET.' . fake()->randomNumber(7, true),
+            'user_id' => \App\Models\User::inRandomOrder()->first()?->id_user ?? \App\Models\User::factory(),
+            'nomor_regis' => 'MET.' . fake()->unique()->numberBetween(1000000, 9999999),
             'nama_lengkap' => fake()->name(),
-            'nik' => fake()->numerify('################'),
+            'nik' => fake()->unique()->numerify('################'),
             'tempat_lahir' => fake()->city(),
             'tanggal_lahir' => fake()->date(),
             'jenis_kelamin' => fake()->randomElement(['Laki-laki', 'Perempuan']),
@@ -25,23 +23,23 @@ class AsesorFactory extends Factory
             'kode_pos' => fake()->postcode(),
             'kabupaten_kota' => fake()->city(),
             'provinsi' => fake()->state(),
-            'nomor_hp' => substr($this->faker->phoneNumber(), 0, 14),
+            'nomor_hp' => '+62' . fake()->numerify('8##########'),
             'NPWP' => fake()->numerify('##.###.###.#-###.###'),
-            'nama_bank' => fake()->randomElement(['BNI', 'BRI', 'BCA', 'Mandiri']),
-            'norek' => fake()->creditCardNumber(),
+            'nama_bank' => fake()->randomElement(['Mandiri', 'BCA', 'BRI']),
+            'norek' => fake()->numerify('################'),
 
-            // File dummy
-            'ktp' => null,
-            'pas_foto' => null,
-            'NPWP_foto' => null,
-            'rekening_foto' => null,
-            'CV' => null,
-            'ijazah' => null,
-            'sertifikat_asesor' => null,
-            'sertifikasi_kompetensi' => null,
-            'tanda_tangan' => null,
+            // file dummy
+            'ktp' => 'uploads/ktp/dummy.png',
+            'pas_foto' => 'uploads/pasfoto/dummy.png',
+            'NPWP_foto' => 'uploads/npwp/dummy.png',
+            'rekening_foto' => 'uploads/rekening/dummy.png',
+            'CV' => 'uploads/cv/dummy.pdf',
+            'ijazah' => 'uploads/ijazah/dummy.pdf',
+            'sertifikat_asesor' => 'uploads/sertifikat/dummy.pdf',
+            'sertifikasi_kompetensi' => 'uploads/kompetensi/dummy.pdf',
+            'tanda_tangan' => 'uploads/ttd/dummy.png',
 
-            'is_verified' => true,
+            'is_verified' => 1,
         ];
     }
 }

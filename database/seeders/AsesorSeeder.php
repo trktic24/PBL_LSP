@@ -3,21 +3,28 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Asesor;
 use App\Models\User;
+use App\Models\Asesor;
 
 class AsesorSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil user asesor yang dibuat oleh UserSeeder
-        $asesorUser = User::where('email', 'asesor@example.com')->first();
+        // ambil semua user dengan role asesor
+        $asesorUsers = User::whereHas('role', function ($q) {
+            $q->where('nama_role', 'asesor');
+        })->get();
 
-        if ($asesorUser) {
-            // Isi kedua kolom supaya tidak error
+        if ($asesorUsers->isEmpty()) {
+            // kalau belum ada user asesor, buat beberapa dummy user
+            $asesorUsers = User::factory()->count(5)->create([
+                'role_id' => 2, // pastikan id 2 = role asesor
+            ]);
+        }
+
+        foreach ($asesorUsers as $user) {
             Asesor::factory()->create([
-                'id_user' => $asesorUser->id_user,  // kolom nullable
-                'user_id' => $asesorUser->id_user,  // kolom wajib isi (NOT NULL)
+                'user_id' => $user->id_user, // gunakan id_user bukan id
             ]);
         }
     }
