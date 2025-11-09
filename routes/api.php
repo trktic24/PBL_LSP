@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
 use App\Http\Controllers\Api\Auth\SkemaController;
+use App\Http\Controllers\Api\TukController; // <-- TAMBAHKAN INI
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
@@ -28,4 +29,9 @@ Route::prefix('auth/google')->group(function () {
 });
 
 
+// Rute API TUK (Tempat Uji Kompetensi)
+// Menggunakan apiResource untuk mendaftarkan semua metode CRUD (index, show, store, update, destroy)
+Route::apiResource('tuks', TukController::class); // <-- BARIS BARU
+
+// Rute API Skema
 Route::get('/skema', [SkemaController::class, 'index']);
