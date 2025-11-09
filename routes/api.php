@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
+use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,3 +42,11 @@ Route::prefix('data-sertifikasi')->group(function () {
     Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
         ->name('api.data_sertifikasi.delete');
 });
+
+
+// API KERAHASIAAN AK01
+Route::get('/get-frak01-data/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data'])
+       ->name('api.get.frak01');
+
+Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
+       ->name('api.setuju.frak01');

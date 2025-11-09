@@ -1,16 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Asesi; // <-- [PENTING] Tambahin ini buat route /tracker
+use App\Http\Controllers\SkemaController;
 
 // Import Controller
-use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\BelajarController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\Apl01PdfController;
+use App\Models\Asesor; // Pastikan use Model ini
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
+use App\Http\Controllers\Kerahasiaan\PersetujuanKerahasiaanController;
+use App\Models\Asesi; // <-- [PENTING] Tambahin ini buat route /tracker
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 
 /*
@@ -79,7 +81,8 @@ Route::get('/belum_lulus', function () { return view('belum_lulus'); });
 Route::get('/banding', function () { return view('banding'); });
 Route::get('/pertanyaan_lisan', function () { return view('pertanyaan_lisan'); });
 Route::get('/umpan_balik', function () { return view('umpan_balik'); });
-Route::get('/fr_ak01', function () { return view('persetujuan assesmen dan kerahasiaan.fr_ak01'); });
+//Route::get('/fr_ak01', function () { return view('persetujuan_assesmen_dan_kerahasiaan/fr_ak01'); });
+Route::get('/fr_ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.show_view'); // Ini hanya menampilkan kerangka HTML View
 Route::get('/verifikasi_tuk', function () { return view('verifikasi_tuk'); });
 
 
@@ -116,8 +119,10 @@ Route::get('/formulir-selesai', function () {
 Route::get('/formulir/data-sertifikasi', [DataSertifikasiAsesiController::class, 'showDataSertifikasiAsesiPage'])
     ->name('formulir.data-sertifikasi');
 
-// --- Asesmen ---
-Route::get('/asesmen/fr-ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
+// --- Kerahasiaan ---
+//Route::get('/asesmen/fr_ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
+Route::get('/kerahasiaan/fr-ak01/{id_asesi}', [PersetujuanKerahasiaanController::class, 'showFrAk01'])
+       ->name('kerahasiaan.fr_ak01');
 
 // --- Pembayaran (Action) ---
 Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');

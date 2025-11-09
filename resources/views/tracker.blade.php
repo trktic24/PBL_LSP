@@ -206,7 +206,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900">Persetujuan Asesmen dan Kerahasiaan</h3>
+                            <a href="{{ route('kerahasiaan.fr_ak01', ['id_asesi' => $asesi->id_asesi]) }}" class="text-lg font-semibold text-gray-900">Persetujuan Asesmen dan Kerahasiaan</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
                             <button
