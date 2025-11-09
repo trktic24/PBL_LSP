@@ -2,30 +2,32 @@
 
 /**
  * File: app/Http/Controllers/FormulirPendaftaran/TandaTanganController.php
- * Ini adalah kode controller FULL FINAL.
+ * * Versi RAPI: Controller ini HANYA bertugas menampilkan halaman (view).
+ * Semua logic pengambilan data & simpan data dipindah ke API Controller.
  */
 
-namespace App\Http\Controllers\FormulirPendaftaran; // 1. Namespace sesuai folder
+namespace App\Http\Controllers\FormulirPendaftaran; // 1. Namespace udah bener
 
-// 2. Import semua class yang kita butuhin
+// 2. Import-nya jadi LEBIH SEDIKIT
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator; // <-- PENTING: Buat validasi manual
-use App\Models\Asesi;
+// Kita HAPUS 'use Request', 'use File', 'use Validator', 'use Asesi'
+// karena udah gak dipake di file ini.
 
 class TandaTanganController extends Controller
 {
     /**
      * Method untuk MENAMPILKAN halaman tanda tangan.
-     * Ini yang jalan pas lu buka halaman atau di-refresh.
+     * * Versi API: CUMA ngirim ID Asesi-nya aja ke view.
+     * Nanti JavaScript di view yang akan "nembak" API pake ID ini
+     * untuk ngambil data JSON-nya.
      */
     public function showSignaturePage()
     {
-        // "Hack" untuk ngetes: ambil Asesi ID 1
-        $id_asesi_hardcoded = 1;
+        // "Hack" untuk ngetes: kita tetap pake Asesi ID 1
+        $id_asesi_hardcoded = 1; 
 
+<<<<<<< HEAD
         Log::info('Mencoba mencari Asesi ID 1 DAN data pekerjaannya...');
 
         // GANTI BARIS INI:
@@ -38,7 +40,7 @@ class TandaTanganController extends Controller
 
         Log::info('Asesi ID 1 dan relasinya ditemukan. Menampilkan view...');
 
-        return view('formulir pendaftaran.tanda_tangan_pemohon', ['asesi' => $asesi]);
+        return view('formulir_pendaftaran.tanda_tangan_pemohon', ['asesi' => $asesi]);
     }
 
     /**
@@ -228,6 +230,17 @@ class TandaTanganController extends Controller
             'success' => true,
             'message' => 'Tanda tangan berhasil disimpan!',
             'path' => $dbPath, // Kita kirim balik path-nya biar JS bisa update
+=======
+        Log::info("WEB: Menampilkan halaman tanda tangan untuk Asesi ID $id_asesi_hardcoded");
+        
+        // 3. CUMA KIRIM ID-NYA AJA, BUKAN SEMUA DATA ASESI
+        return view('formulir pendaftaran.tanda_tangan_pemohon', [
+            'id_asesi_untuk_js' => $id_asesi_hardcoded
+>>>>>>> 8f4d691803abb5b9928cbe9d78a15339bd791522
         ]);
     }
+
+    // 4. SEMUA FUNGSI LAIN (store, storeAjax) DIHAPUS
+    // ... (Fungsi-fungsi itu udah pindah ke controller API lu) ...
+
 }
