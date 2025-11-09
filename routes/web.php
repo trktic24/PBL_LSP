@@ -8,15 +8,39 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\Apl01PdfController;
-
+use App\Models\Asesi; // <-- Pastikan ini ada
 
 Route::get('/', function () {
     return view('halaman_ambil_skema');
 });
 
-Route::get('/tracker', function () {
-    return view('tracker');
-});
+/*
+|--------------------------------------------------------------------------
+| INI ADALAH ROUTE YANG DIPERBAIKI
+|--------------------------------------------------------------------------
+|
+| 1. URL diubah menjadi '/tracker/{id_asesi}'
+| 2. Fungsi 'function()' diubah menjadi 'function($id_asesi)'
+| 3. Kita mencari Asesi berdasarkan ID dari URL
+| 4. Middleware auth dihilangkan
+|
+*/
+Route::get('/tracker/{id_asesi}', function ($id_asesi) {
+    try {
+        // Ambil data asesi berdasarkan ID dari URL
+        // Kita gunakan with() (eager loading) agar lebih efisien
+        $asesi = Asesi::with('skema')->findOrFail($id_asesi); 
+
+        // Kirim data asesi ke view tracker
+        return view('tracker', [
+            'asesi' => $asesi
+        ]);
+
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        // Jika Asesi dengan ID tsb tidak ada, kembali ke home
+        return redirect('/')->with('error', 'Data Asesi tidak ditemukan.');
+    }
+})->name('tracker'); // Kita beri nama 'tracker'
 
 Route::get('/data_sertifikasi', function () {
     return view('formulir_pendaftaran/data_sertifikasi');
@@ -118,7 +142,7 @@ Route::post('/simpan-tandatangan', [TandaTanganController::class, 'store'])
 // === ROUTE UNTUK HALAMAN TANDA TANGAN ===
 
 // 2. Route GET: Buat nampilin halaman tanda tangan
-// URL: /halaman-tanda-tangan
+// URL: /halaman-tanda-angan
 // Controller: TandaTanganController, method: showSignaturePage
 Route::get('/halaman-tanda-tangan', [TandaTanganController::class, 'showSignaturePage'])
        ->name('show.tandatangan');
@@ -164,3 +188,5 @@ Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download']
 // Route untuk preview PDF (optional)
 Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])
     ->name('apl01.preview');
+
+// Route /tracker yang duplikat dan error di bagian bawah file sudah dihapus.

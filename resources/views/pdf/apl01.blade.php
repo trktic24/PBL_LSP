@@ -1,327 +1,446 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
-    <title>FR.APL.01 - Testing</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>FR.APL.01 - Permohonan Sertifikasi Kompetensi</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
-            font-size: 11pt;
+            font-size: 10pt;
+            line-height: 1.3;
+            color: #000;
+            padding: 15mm;
         }
-
-        h1 {
+        
+        .header {
+            display: table;
+            width: 100%;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        
+        .header-left {
+            display: table-cell;
+            width: 50%;
+            vertical-align: middle;
+        }
+        
+        .header-right {
+            display: table-cell;
+            width: 50%;
+            text-align: right;
+            vertical-align: middle;
+        }
+        
+        .title {
             text-align: center;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        h2 {
-            text-align: center;
-            color: #666;
-            font-size: 13pt;
-            margin-top: 0;
-        }
-
-        .section {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-        }
-
-        .section h3 {
-            margin-top: 0;
-            color: #2563eb;
-            font-size: 12pt;
-        }
-
-        .info-row {
-            margin: 8px 0;
-        }
-
-        .label {
+            font-size: 14pt;
             font-weight: bold;
-            display: inline-block;
-            width: 200px;
+            margin: 10px 0;
         }
-
+        
+        .subtitle {
+            text-align: center;
+            font-size: 12pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 10pt;
+        }
+        
+        .subsection-title {
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            font-size: 10pt;
+            margin-left: 15px;
+        }
+        
+        .info-text {
+            margin-bottom: 10px;
+            font-size: 9pt;
+            line-height: 1.4;
+        }
+        
+        .form-row {
+            display: table;
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        
+        .form-label {
+            display: table-cell;
+            width: 180px;
+            padding-left: 30px;
+            vertical-align: top;
+        }
+        
+        .form-separator {
+            display: table-cell;
+            width: 15px;
+            text-align: center;
+            vertical-align: top;
+        }
+        
+        .form-value {
+            display: table-cell;
+            border-bottom: 1px dotted #666;
+            padding-left: 5px;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0;
+            margin: 8px 0;
         }
-
-        table,
-        th,
-        td {
-            border: 1px solid #333;
+        
+        table, th, td {
+            border: 1px solid #000;
         }
-
-        th,
-        td {
-            padding: 8px;
+        
+        th, td {
+            padding: 5px;
             text-align: left;
-            font-size: 10pt;
+            font-size: 9pt;
         }
-
+        
         th {
-            background-color: #e0e0e0;
+            background-color: #e8e8e8;
             font-weight: bold;
-        }
-
-        .signature {
-            margin-top: 30px;
             text-align: center;
         }
-
-        .signature img {
-            max-width: 200px;
-            max-height: 100px;
+        
+        .checkbox {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 1px solid #000;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        
+        .checkbox.checked {
+            background-color: #000;
+        }
+        
+        .checkbox.checked::after {
+            content: '✓';
+            color: #fff;
+            font-size: 10px;
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            line-height: 10px;
+        }
+        
+        .signature-section {
+            margin-top: 25px;
+            display: table;
+            width: 100%;
+        }
+        
+        .signature-box {
+            display: table-cell;
+            width: 48%;
+            text-align: center;
+            vertical-align: top;
+        }
+        
+        .signature-img {
+            margin: 15px auto;
+            height: 60px;
             border: 1px solid #ccc;
         }
-
-        .empty-state {
-            color: #999;
-            font-style: italic;
-            text-align: center;
-            padding: 20px;
+        
+        .page-break {
+            page-break-after: always;
         }
     </style>
 </head>
-
 <body>
-    <h1>FORMULIR PERMOHONAN SERTIFIKASI KOMPETENSI</h1>
-    <h2>FR.APL.01 (Testing Version)</h2>
-
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <strong>BNSP</strong><br>
+            <small>BADAN NASIONAL SERTIFIKASI PROFESI</small>
+        </div>
+        <div class="header-right">
+            <img src="{{ public_path('images/Logo_LSP_No_BG.png') }}" alt="LSP POLINES" style="height: 50px;"><br>
+            <strong>LSP POLINES</strong>
+        </div>
+    </div>
+    
+    <div class="title">PERMOHONAN SERTIFIKASI KOMPETENSI</div>
+    <div class="subtitle">FR.APL.01</div>
+    
     <hr>
-
-    <!-- BAGIAN 1: DATA PRIBADI -->
-    <div class="section">
-        <h3>Bagian 1: Data Pribadi Asesi</h3>
-
-        <div class="info-row">
-            <span class="label">Nama Lengkap:</span>
-            {{ $asesi->nama_lengkap ?? 'Belum diisi' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">NIK:</span>
-            {{ $asesi->nik ?? 'Belum diisi' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">Tempat Lahir:</span>
-            {{ $asesi->tempat_lahir ?? 'Belum diisi' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">Tanggal Lahir:</span>
-            {{ $asesi->tanggal_lahir ? \Carbon\Carbon::parse($asesi->tanggal_lahir)->format('d-m-Y') : 'Belum diisi' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">Jenis Kelamin:</span>
-            {{ $asesi->jenis_kelamin ? ($asesi->jenis_kelamin == 1 ? 'Laki-laki' : 'Perempuan') : 'Belum diisi' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">Kebangsaan:</span>
-            {{ $asesi->kebangsaan ?? 'Indonesia' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">Alamat Rumah:</span>
-            {{ $asesi->alamat_rumah ?? 'Belum diisi' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">Kode Pos:</span>
-            {{ $asesi->kode_pos ?? 'Belum diisi' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">Pendidikan:</span>
-            {{ $asesi->pendidikan ?? 'Belum diisi' }}
-        </div>
-
-        <div class="info-row">
-            <span class="label">No. HP:</span>
-            {{ $asesi->nomor_hp ?? 'Belum diisi' }}
+    
+    <!-- BAGIAN A: RINCIAN DATA PEMOHON -->
+    <div class="section-title">A. Rincian Data Pemohon Sertifikasi</div>
+    <p class="info-text">
+        Pada bagian ini, cantumkan data pribadi, data pendidikan formal serta data pekerjaan Anda pada saat ini.
+    </p>
+    
+    <!-- a. Data Pribadi -->
+    <div class="subsection-title">a. Data Pribadi</div>
+    
+    <div class="form-row">
+        <div class="form-label">Nama Lengkap</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $asesi->nama_lengkap ?? '' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">NIK</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $asesi->nik ?? '' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">Tempat / tgl. Lahir</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">
+            {{ $asesi->tempat_lahir ?? '' }} / 
+            {{ $asesi->tanggal_lahir ? \Carbon\Carbon::parse($asesi->tanggal_lahir)->format('d-m-Y') : '' }}
         </div>
     </div>
-
-    <!-- BAGIAN 2: DATA PEKERJAAN -->
-    <div class="section">
-        <h3>Bagian 2: Data Pekerjaan Sekarang</h3>
-
-        @if ($dataPekerjaan)
-            <div class="info-row">
-                <span class="label">Nama Perusahaan:</span>
-                {{ $dataPekerjaan->nama_perusahaan ?? ($dataPekerjaan->nama_institusi_pekerjaan ?? 'Belum diisi') }}
-            </div>
-
-            <div class="info-row">
-                <span class="label">Jabatan:</span>
-                {{ $dataPekerjaan->jabatan ?? 'Belum diisi' }}
-            </div>
-
-            <div class="info-row">
-                <span class="label">Alamat Kantor:</span>
-                {{ $dataPekerjaan->alamat_kantor ?? ($dataPekerjaan->alamat_institusi ?? 'Belum diisi') }}
-            </div>
-
-            <div class="info-row">
-                <span class="label">No. Telepon Kantor:</span>
-                {{ $dataPekerjaan->no_telp_kantor ?? ($dataPekerjaan->no_telepon_institusi ?? 'Belum diisi') }}
-            </div>
-            <div class="info-row">
-                <span class="label">Kode Pos Kantor:</span>
-                {{ $dataPekerjaan->kode_pos_institusi ?? 'Belum diisi' }}
-            </div>
-        @else
-            <p class="empty-state">Data pekerjaan belum diisi</p>
-        @endif
+    
+    <div class="form-row">
+        <div class="form-label">Jenis Kelamin</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $asesi->jenis_kelamin == 1 ? 'Laki-laki' : 'Perempuan' }}</div>
     </div>
-
-    <!-- BAGIAN 3: DATA SERTIFIKASI -->
-    <div class="section">
-        <h3>Bagian 3: Data Sertifikasi</h3>
-
-        @if ($dataSertifikasi)
-            <div class="info-row">
-                <span class="label">Tujuan Asesmen:</span>
-                {{ ucfirst(str_replace('_', ' ', $tujuanAsesmen ?? 'Belum diisi')) }}
-            </div>
-
-            @if ($dataSertifikasi->jadwal && $dataSertifikasi->jadwal->masterSkema)
-                <div class="info-row">
-                    <span class="label">Skema Sertifikasi:</span>
-                    {{ $dataSertifikasi->jadwal->masterSkema->nama_skema ?? 'Belum diisi' }}
-                </div>
-
-                <div class="info-row">
-                    <span class="label">Nomor Skema:</span>
-                    {{ $dataSertifikasi->jadwal->masterSkema->nomor_skema ?? 'Belum diisi' }}
-                </div>
+    
+    <div class="form-row">
+        <div class="form-label">Kebangsaan</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $asesi->kebangsaan ?? 'Indonesia' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">Alamat Rumah</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $asesi->alamat_rumah ?? '' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">Kode pos</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $asesi->kode_pos ?? '' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">No. Telepon/E-mail</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $asesi->nomor_hp ?? '' }} / {{ $asesi->user->email ?? '' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">Kualifikasi Pendidikan</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $asesi->pendidikan ?? '' }}</div>
+    </div>
+    
+    <!-- b. Data Pekerjaan Sekarang -->
+    <div class="subsection-title">b. Data Pekerjaan Sekarang</div>
+    
+    @if($dataPekerjaan)
+    <div class="form-row">
+        <div class="form-label">Nama Institusi</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $dataPekerjaan->nama_perusahaan ?? '' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">Jabatan</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $dataPekerjaan->jabatan ?? '' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">Alamat Kantor</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $dataPekerjaan->alamat_kantor ?? '' }}</div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-label">No. Telepon/Fax/Email</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">{{ $dataPekerjaan->no_telp_kantor ?? '' }} / {{ $dataPekerjaan->email_kantor ?? '' }}</div>
+    </div>
+    @endif
+    
+    <!-- BAGIAN B: DATA SERTIFIKASI -->
+    <div class="section-title" style="margin-top: 20px;">B. Data Sertifikasi</div>
+    <p class="info-text">
+        Berikut Judul dan Nomor Skema Sertifikasi yang anda ajukan berikut Daftar Unit Kompetensi sesuai kemasan pada skema sertifikasi untuk mendapatkan pengakuan sesuai dengan latar belakang pendidikan, pelatihan serta pengalaman kerja yang anda miliki.
+    </p>
+    
+    @if($dataSertifikasi)
+    <table style="margin-bottom: 10px;">
+        <tr>
+            <th style="text-align: left; width: 200px;">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)</th>
+            <th style="text-align: left;">Judul</th>
+            <td style="border: none; width: 15px;">:</td>
+            <td>{{ $dataSertifikasi->jadwal->masterSkema->nama_skema ?? '' }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left;"></th>
+            <th style="text-align: left;">Nomor</th>
+            <td style="border: none;">:</td>
+            <td>{{ $dataSertifikasi->jadwal->masterSkema->nomor_skema ?? '' }}</td>
+        </tr>
+    </table>
+    
+    <div class="form-row" style="margin-bottom: 10px;">
+        <div class="form-label">Tujuan Asesmen</div>
+        <div class="form-separator">:</div>
+        <div class="form-value">
+            <span class="checkbox {{ strtolower($tujuanAsesmen ?? '') == 'sertifikasi' ? 'checked' : '' }}"></span> Sertifikasi<br>
+            <span class="checkbox {{ strtolower($tujuanAsesmen ?? '') == 'pkt' ? 'checked' : '' }}"></span> Pengakuan Kompetensi Terkini (PKT)<br>
+            <span class="checkbox {{ strtolower($tujuanAsesmen ?? '') == 'rekognisi pembelajaran lampau' ? 'checked' : '' }}"></span> Rekognisi Pembelajaran Lampau<br>
+            <span class="checkbox {{ strtolower($tujuanAsesmen ?? '') == 'lainnya' ? 'checked' : '' }}"></span> Lainnya
+        </div>
+    </div>
+    @endif
+    
+    <!-- Daftar Unit Kompetensi -->
+    <p style="margin-top: 15px; margin-bottom: 5px;"><strong>Daftar Unit Kompetensi sesuai kemasan</strong></p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 30px;">No.</th>
+                <th style="width: 100px;">Kode Unit</th>
+                <th>Judul Unit</th>
+                <th style="width: 100px;">Standar Kompetensi Kerja</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(is_countable($unitKompetensi) && count($unitKompetensi) > 0)
+                @foreach($unitKompetensi as $index => $unit)
+                <tr>
+                    <td style="text-align: center;">{{ $index + 1 }}</td>
+                    <td>{{ $unit->kode_unit ?? '' }}</td>
+                    <td>{{ $unit->nama_unit ?? '' }}</td>
+                    <td style="text-align: center;">{{ $unit->standar_kompetensi_kerja ?? 'SKKNI' }}</td>
+                </tr>
+                @endforeach
             @else
-                <p class="empty-state">Data skema belum tersedia</p>
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #999;">Belum ada unit kompetensi</td>
+                </tr>
             @endif
-        @else
-            <p class="empty-state">Data sertifikasi belum diisi</p>
-        @endif
-    </div>
-
-    <!-- BAGIAN 4: UNIT KOMPETENSI -->
-    <div class="section">
-        <h3>Bagian 4: Daftar Unit Kompetensi</h3>
-
-        @if (is_countable($unitKompetensi) && count($unitKompetensi) > 0)
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 40px; text-align: center;">No.</th>
-                        <th style="width: 120px;">Kode Unit</th>
-                        <th>Nama Unit Kompetensi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($unitKompetensi as $index => $unit)
-                        <tr>
-                            <td style="text-align: center;">{{ $index + 1 }}</td>
-                            <td>{{ $unit->kode_unit ?? '-' }}</td>
-                            <td>{{ $unit->nama_unit ?? '-' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @else
-            <p class="empty-state">Belum ada unit kompetensi terdaftar</p>
-        @endif
-    </div>
-
-    <!-- BAGIAN 5: BUKTI KELENGKAPAN -->
-    <div class="section">
-        <h3>Bagian 5: Bukti Kelengkapan Pemohon</h3>
-
-        @if ($buktiKelengkapan && count($buktiKelengkapan) > 0)
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 40px; text-align: center;">No.</th>
-                        <th>Nama Bukti</th>
-                        <th style="width: 150px; text-align: center;">Status Kelengkapan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($buktiKelengkapan as $index => $bukti)
-                        <tr>
-                            <td style="text-align: center;">{{ $index + 1 }}</td>
-                            <td>{{ $bukti->bukti_kelengkapan ?? '-' }}</td>
-                            <td style="text-align: center;">
-                                @if ($bukti->status_kelengkapan == 'memenuhi')
-                                    <strong style="color: green;">✓ Memenuhi</strong>
-                                @elseif($bukti->status_kelengkapan == 'tidak_memenuhi')
-                                    <strong style="color: red;">✗ Tidak Memenuhi</strong>
-                                @else
-                                    <span style="color: #999;">Tidak Ada</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @else
-            <p class="empty-state">Belum ada bukti kelengkapan terdaftar</p>
-        @endif
-    </div>
-
-    <!-- BAGIAN 6: TANDA TANGAN -->
-    <div class="signature">
-        <h3>Tanda Tangan Pemohon</h3>
-
-        <div class="signature">
-            <h3>Tanda Tangan Pemohon</h3>
-
-            @if ($fullPathTandaTangan)
-                @php
-                    // Check jika path-nya adalah URL eksternal (teratasi di Controller)
-                    $isUrl = filter_var($fullPathTandaTangan, FILTER_VALIDATE_URL);
-                @endphp
-
-                @if (!$isUrl && file_exists($fullPathTandaTangan))
-                    {{-- PERBAIKAN KRITIS: Konversi gambar lokal ke Base64 --}}
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents($fullPathTandaTangan)) }}"
-                        alt="Tanda Tangan">
-                @elseif($isUrl)
-                    {{-- Jika itu URL (eksternal), Dompdf bisa memuatnya (karena isRemoteEnabled = true) --}}
-                    <img src="{{ $fullPathTandaTangan }}" alt="Tanda Tangan">
-                @else
-                    <div style="border: 1px dashed #ccc; padding: 30px; color: #999; background-color: #f5f5f5;">
-                        (Tanda tangan belum tersedia atau path tidak valid)
-                    </div>
+        </tbody>
+    </table>
+    
+    <!-- BAGIAN C: BUKTI KELENGKAPAN -->
+    <div class="section-title" style="margin-top: 20px;">C. Bukti Kelengkapan Pemohon</div>
+    
+    <p class="subsection-title">a. Bukti Persyaratan Dasar Pemohon</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 30px;">No.</th>
+                <th>Bukti Persyaratan Dasar</th>
+                <th style="width: 80px;">Memenuhi Syarat</th>
+                <th style="width: 100px;">Tidak Memenuhi Syarat</th>
+                <th style="width: 70px;">Tidak Ada</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $persyaratanDasar = ['KTP/Identitas', 'Ijazah Pendidikan', 'Sertifikat Pelatihan'];
+            @endphp
+            @foreach($persyaratanDasar as $index => $nama)
+            <tr>
+                <td style="text-align: center;">{{ $index + 1 }}</td>
+                <td>{{ $nama }}</td>
+                <td style="text-align: center;"><span class="checkbox"></span></td>
+                <td style="text-align: center;"><span class="checkbox"></span></td>
+                <td style="text-align: center;"><span class="checkbox"></span></td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    
+    <p class="subsection-title">b. Bukti Administratif</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 30px;">No.</th>
+                <th>Bukti Administratif</th>
+                <th style="width: 80px;">Memenuhi Syarat</th>
+                <th style="width: 100px;">Tidak Memenuhi Syarat</th>
+                <th style="width: 70px;">Tidak Ada</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $administratif = ['Formulir Permohonan', 'Pas Foto', 'Bukti Pembayaran'];
+            @endphp
+            @foreach($administratif as $index => $nama)
+            <tr>
+                <td style="text-align: center;">{{ $index + 1 }}</td>
+                <td>{{ $nama }}</td>
+                <td style="text-align: center;"><span class="checkbox"></span></td>
+                <td style="text-align: center;"><span class="checkbox"></span></td>
+                <td style="text-align: center;"><span class="checkbox"></span></td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    
+    <!-- BAGIAN D: REKOMENDASI -->
+    <div class="section-title" style="margin-top: 20px;">D. Rekomendasi</div>
+    <p class="info-text">
+        Berdasarkan ketentuan persyaratan dasar, maka pemohon <strong>Diterima/Tidak diterima</strong> sebagai peserta sertifikasi
+    </p>
+    
+    <!-- TANDA TANGAN -->
+    <div class="signature-section">
+        <div class="signature-box">
+            <strong>Pemohon,</strong><br>
+            <small>(nama asesi)</small>
+            <div class="signature-img">
+                @if($fullPathTandaTangan && file_exists($fullPathTandaTangan))
+                    <img src="{{ $fullPathTandaTangan }}" alt="TTD" style="max-height: 60px;">
                 @endif
-            @else
-                <div style="border: 1px dashed #ccc; padding: 30px; color: #999; background-color: #f5f5f5;">
-                    (Tanda tangan belum tersedia)
-                </div>
-            @endif
-
-            {{-- Sisanya tetap --}}
+            </div>
+            <strong>(tanda tangan)</strong>
+            <div style="margin-top: 10px;">
+                <strong>{{ $asesi->nama_lengkap ?? '' }}</strong>
+            </div>
         </div>
-
-        <p style="margin-top: 10px;">
-            <strong>Nama:</strong> {{ $asesi->nama_lengkap ?? '-' }}<br>
-            <strong>Tanggal:</strong> {{ date('d F Y') }}
-        </p>
+        
+        <div class="signature-box">
+            <strong>Lembaga Sertifikasi Profesi</strong><br>
+            <small>(nama admin)</small>
+            <div class="signature-img"></div>
+            <strong>(tanda tangan)</strong>
+            <div style="margin-top: 10px;">
+                <strong>_______________________</strong>
+            </div>
+        </div>
     </div>
-
-    <hr style="margin-top: 30px;">
-
-    <p style="text-align: center; color: #999; font-size: 10px;">
-        Dokumen ini dicetak pada: {{ date('d F Y, H:i:s') }} WIB
+    
+    <p style="margin-top: 20px; text-align: center; font-size: 8pt; color: #666;">
+        Dokumen dicetak otomatis pada {{ now()->format('d F Y, H:i') }} WIB
     </p>
 </body>
-
 </html>

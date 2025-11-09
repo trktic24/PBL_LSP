@@ -38,7 +38,7 @@ class TandaTanganController extends Controller
 
         Log::info('Asesi ID 1 dan relasinya ditemukan. Menampilkan view...');
 
-        return view('formulir pendaftaran.tanda_tangan_pemohon', ['asesi' => $asesi]);
+        return view('formulir_pendaftaran.tanda_tangan_pemohon', ['asesi' => $asesi]);
     }
 
     /**
