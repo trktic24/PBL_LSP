@@ -32,5 +32,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\Asesor::factory(20)->create();
         \App\Models\Jadwal::factory(20)->create();
         \App\Models\MasterTuk::factory(20)->create();
+        \App\Models\DataPekerjaanAsesi::factory(20)->create();
     }
 }

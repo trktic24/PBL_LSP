@@ -61,9 +61,9 @@ class DataSertifikasiAsesi extends Model
         return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
     }
 
-    /**
-     * Relasi ke Jadwal (parent)
-     */
+    // /**
+    //  * Relasi ke Jadwal (parent)
+    //  */
     // public function jadwal(): BelongsTo
     // {
     //     return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
