@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\AsesorController;
-use App\Http\Controllers\Api\TukController;
+use App\Http\Controllers\Api\TukController; 
 
 Route::prefix('v1')->group(function () {
 
@@ -20,11 +20,13 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [LoginController::class, 'logout']);
         Route::get('/me', [LoginController::class, 'me']); 
 
+        // RUTE MASTER ASESOR
+        Route::get('/asesors', [AsesorController::class, 'index']);
+        Route::post('/asesors', [AsesorController::class, 'index']);
+
         // RUTE MASTER
         Route::get('/skema', [SkemaController::class, 'index']);
         Route::post('/skema', [SkemaController::class, 'store']);
-        Route::get('/asesor', [AsesorController::class, 'index']);
         Route::get('/tuk', [TukController::class, 'index']);
-
     });
 });
