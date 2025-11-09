@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models; // <-- Pastikan namespace-nya App\Models
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class JenisTuk extends Model
 {
     use HasFactory;
-
-    /**
-     * Nama tabel yang terhubung dengan model.
-     */
-    protected $table = 'jenis_tuk';
+    
+    // Model 'JenisTuk' akan mencari tabel 'jenis_tuks' secara default.
+    // Jika nama tabel di database Anda adalah 'jenis_tuk' (tanpa 's'),
+    // Anda harus menambahkan baris ini:
+    protected $table = 'jenis_tuk'; 
 
     /**
      * Primary key kustom untuk tabel.

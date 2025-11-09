@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Skema extends Model
 {
     use HasFactory;
+    
+    // Model 'Skema' akan mencari tabel 'skemas' secara default.
+    // Jika nama tabel di database Anda adalah 'skema' (tanpa 's'),
+    // Anda harus menambahkan baris ini:
     protected $table = 'skema';
     protected $guarded = ['id'];
 

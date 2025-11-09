@@ -15,14 +15,11 @@ Route::get('/home', function () {
 Route::get('/jadwal', function () {
     return view('frontend/jadwal');
 })->name('jadwal');
-Route::get('/laporan', function () {
-    return view('frontend/laporan');
-})->name('laporan');
 Route::get('/profil', function () {
     return view('frontend/profil');
 })->name('profil');
-Route::get('/daftar_asesi', function () {
-return view('frontend/daftar_asesi');
+Route::get('/daftar_asesi/{id}', function ($id) {
+    return view('frontend/daftar_asesi', ['jadwal_id' => $id]);
 })->name('daftar_asesi');
 Route::get('/tracker', function () {
     return view('frontend/tracker');
@@ -86,6 +83,6 @@ Route::middleware('auth')->group(function () {
          ->name('fr-ia-02.store');
 });
 
-
+Route::get('/jadwal-asesmen', [ApiJadwalController::class, 'index']);
 
 require __DIR__.'/auth.php';

@@ -8,13 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class MasterTuk extends Model
 {
     use HasFactory;
-
-    /**
-     * Nama tabel yang terkait dengan model.
-     *
-     * @var string
-     */
-    protected $table = 'master_tuk';
+    
+    // Model 'MasterTuk' akan mencari tabel 'master_tuks' secara default.
+    // Jika nama tabel di database Anda adalah 'master_tuk' (tanpa 's'),
+    // Anda harus menambahkan baris ini:
+    protected $table = 'master_tuk'; 
+    
 
     /**
      * Kunci primer yang terkait dengan tabel.
