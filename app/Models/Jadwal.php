@@ -10,6 +10,14 @@ class Jadwal extends Model
     use HasFactory;
 
     /**
+     * Menonaktifkan timestamps agar Model tidak mencari kolom created_at/updated_at.
+     * Ini adalah perbaikan utama untuk Error 500 Anda.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
      * Nama tabel yang terkait dengan model.
      *
      * @var string
@@ -77,10 +85,10 @@ class Jadwal extends Model
         return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
     }
 
-    public function jenisTuk()
     /**
      * Mendapatkan jenis TUK yang terkait dengan jadwal.
      */
+    public function jenisTuk()
     {
         return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
