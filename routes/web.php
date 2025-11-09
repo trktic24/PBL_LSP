@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\Asesor\AsesorTableController;
+use App\Http\Controllers\JadwalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,9 +59,7 @@ Route::get('/mitra', function () {
 | Halaman Utama & Menu Utama
 |--------------------------------------------------------------------------
 */
-Route::get('/jadwal', function () {
-    return view('landing_page.jadwal');
-})->name('jadwal');
+Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
 
 Route::get('/sertifikasi', function () {
     return "Halaman Sertifikasi"; // Placeholder
