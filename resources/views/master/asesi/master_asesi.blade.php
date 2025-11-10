@@ -142,11 +142,6 @@
                     <i class="fas fa-trash"></i> <span>Delete</span>
                   </button>
                 </form>
-
-                <a href="{{ route('asesi_profile_settings') }}"
-                   class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
-                  <i class="fas fa-eye"></i> <span>View</span>
-                </a>
               </td>
             </tr>
             @empty

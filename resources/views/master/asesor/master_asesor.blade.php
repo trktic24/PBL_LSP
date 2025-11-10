@@ -25,6 +25,10 @@
     <x-navbar />
 
     <main class="p-6">
+      <div class="mb-6">
+        <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
+        <h2 class="text-3xl font-bold text-gray-900">Daftar Asesor</h2>
+      </div>
 <!-- ... (kode filter tidak berubah) ... -->
       <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
         <form 
