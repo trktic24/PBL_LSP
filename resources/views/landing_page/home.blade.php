@@ -22,10 +22,10 @@
                     transform hover:scale-105">
                 Daftar
             </a>
-            
+
             {{-- Tombol Eksplore Skema (Link) --}}
             <a href="#skema-sertifikasi" {{-- DIUBAH: Mengarah ke ID 'skema-sertifikasi' di bawah --}}
-               class="text-black font-semibold text-lg flex items-center gap-2 
+               class="text-black font-semibold text-lg flex items-center gap-2
                       hover:gap-3 transition-all duration-300 ease-in-out group">
                 Eksplore Skema
                 <span class="font-bold text-xl transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
@@ -85,7 +85,7 @@ html {
         <div id="categoryButtons" class="inline-flex gap-4">
             @foreach($categories as $category)
                 <button data-category="{{ $category }}"
-                        class="btn btn-sm font-bold rounded-full px-6 border-none 
+                        class="btn btn-sm font-bold rounded-full px-6 border-none
                         {{ $loop->first ? 'active-category' : 'inactive-category hover:bg-yellow-200' }}">
                     {{ $category }}
                 </button>
@@ -95,19 +95,22 @@ html {
 </section>
 
 <script>
+// ======================= SCROLL DRAG KATEGORI =======================
 const scrollContainer = document.getElementById("scrollContainer");
 let isDown = false, startX, scrollLeft;
 scrollContainer.addEventListener("mousedown", e => {
-    isDown = true; startX = e.pageX - scrollContainer.offsetLeft;
-    scrollLeft = scrollContainer.scrollLeft;
+    isDown = true;
+    startX = e.pageX - scrollContainer.offsetLeft;
+    scrollLeft = scrollContainer.scrollLeft;
 });
 scrollContainer.addEventListener("mouseleave", () => isDown = false);
 scrollContainer.addEventListener("mouseup", () => isDown = false);
 scrollContainer.addEventListener("mousemove", e => {
-    if(!isDown) return; e.preventDefault();
-    const x = e.pageX - scrollContainer.offsetLeft;
-    const walk = (x - startX) * 2;
-    scrollContainer.scrollLeft = scrollLeft - walk;
+    if(!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainer.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollContainer.scrollLeft = scrollLeft - walk;
 });
 </script>
 
@@ -125,8 +128,8 @@ scrollContainer.addEventListener("mousemove", e => {
                         <div class="transition hover:scale-105 skema-card" data-category="{{ $skema->kategori }}">
                             <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
                                 <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                                    <img src="{{ $skema->gambar ? asset('images/' . $skema->gambar) : asset('images/default.jpg') }}" 
-                                         alt="" 
+                                    <img src="{{ $skema->gambar ? asset('images/' . $skema->gambar) : asset('images/default.jpg') }}"
+                                         alt=""
                                          class="h-48 w-full object-cover">
                                 </div>
                             </a>

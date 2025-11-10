@@ -8,8 +8,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [
             base_path('routes/web.php'),
-            base_path('routes/webprofil.php'),
         ],
+        api: __DIR__.'/../routes/api.php',
         commands: base_path('routes/console.php'),
         health: '/up',
     )

@@ -21,6 +21,22 @@ class SkemaFactory extends Factory
      */
     public function definition(): array
     {
+        // Daftar Kategori IT yang Anda inginkan
+        $categories = [
+            'Software Development',
+            'Network & Infrastructure',
+            'Data Science & AI',
+            'Cyber Security',
+            'Cloud Computing',
+            'UI/UX Design',
+            'Mobile Development',
+            'Database Administration',
+            'DevOps & Automation',
+            'Game Development',
+            'Business Analyst IT',
+            'Digital Marketing IT'
+        ];
+
         return [
             'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01',
             'nama_skema' => 'Skema Sertifikasi ' . $this->faker->randomElement([
@@ -36,7 +52,7 @@ class SkemaFactory extends Factory
                 'Hardware Engineer',
             ]),
             'deskripsi_skema' => $this->faker->paragraph(2),
-            
+
             // Field opsional (boleh null)
             'SKKNI' => null,
             'gambar' => null,

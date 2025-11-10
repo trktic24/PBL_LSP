@@ -21,14 +21,13 @@ class TukController extends Controller
 
         // Mengirimkan data TUK ke view
         return view('landing_page.page_tuk.info-tuk', [
-            'tuks' => $tuks 
+            'tuks' => $tuks
         ]);
     }
 
 
     /**
      * Menampilkan detail spesifik dari satu TUK berdasarkan ID.
-     * Mengambil data dari tabel master_tuk berdasarkan primary key 'id_tuk'.
      *
      * @param int $id ID TUK (primary key)
      */
@@ -36,10 +35,10 @@ class TukController extends Controller
     {
         // PERBAIKAN: Menggunakan MasterTuk::findOrFail()
         $data_tuk = MasterTuk::findOrFail($id);
-        
-        // Catatan Penting: 
+
+        // Catatan Penting:
         // Kunci yang tersedia adalah kolom-kolom dari tabel: 'id_tuk', 'nama_lokasi', 'alamat_tuk', 'kontak_tuk', 'link_gmap', dll.
-        
+
         return view('landing_page.page_tuk.detail-tuk', [
             'data_tuk' => $data_tuk,
         ]);

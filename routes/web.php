@@ -6,6 +6,7 @@ use App\Http\Controllers\TukController;
 use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Api\CountryController;
+use App\Http\Controllers\SkemaWebController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +56,7 @@ Route::get('/mitra', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Halaman Utama & Menu Utama
+| Halaman Utama & Menu Utama (YANG PAKE CONTROLLER)
 |--------------------------------------------------------------------------
 */
 Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
@@ -68,14 +69,18 @@ Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('inf
 
 /*
 |--------------------------------------------------------------------------
-| Keep Alive
+| API & Keep Alive
 |--------------------------------------------------------------------------
 */
 Route::get('/keep-alive', function () {
     return response()->json(['status' => 'session_refreshed']);
 });
 Route::get('/api/search-countries', [CountryController::class, 'search'])
-      ->name('api.countries.search');
+    ->name('api.countries.search');
 
-
+/*
+|--------------------------------------------------------------------------
+| Auth Routes
+|--------------------------------------------------------------------------
+*/
 require __DIR__.'/auth.php';

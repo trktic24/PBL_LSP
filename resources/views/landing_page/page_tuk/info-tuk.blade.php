@@ -30,21 +30,21 @@
                 <tr class="hover:bg-[#fff4d6] transition">
                     <td class="px-6 py-4 text-gray-900">
                         {{-- PERBAIKAN: Menggunakan nama_lokasi --}}
-                        {{ $tuk->nama_lokasi }} <br> 
+                        {{ $tuk->nama_lokasi }} <br>
                         {{-- Anda perlu mengecek kolom apa yang seharusnya mengisi sub_nama. Saya hapus sub_nama karena tidak ada di factory Anda --}}
                         {{-- Jika Anda ingin menampilkan bagian dari alamat, Anda bisa menambahkan logika di sini --}}
-                        <span class="text-sm text-gray-600">Terdaftar Resmi</span> 
+                        <span class="text-sm text-gray-600">Terdaftar Resmi</span>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-700">
                         {{-- PERBAIKAN: Menggunakan alamat_tuk --}}
-                        {{ $tuk->alamat_tuk }} 
+                        {{ $tuk->alamat_tuk }}
                         {{-- Saya hapus baris statis di bawah karena alamat seharusnya sudah lengkap dari database --}}
                         {{-- <br>Tembalang, Semarang, Jawa Tengah --}}
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-700">
                         {{-- PERBAIKAN: Menggunakan kontak_tuk --}}
                         {{ $tuk->kontak_tuk }}
-                    </td> 
+                    </td>
                     <td class="px-6 py-4 text-center">
                         <a href="{{ route('info.tuk.detail', ['id' => $tuk->id_tuk]) }}"
                         {{-- PERBAIKAN: Menggunakan id_tuk --}}
