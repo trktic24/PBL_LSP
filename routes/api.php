@@ -38,4 +38,3 @@ Route::apiResource('tuks', TukController::class); // <-- BARIS BARU
 Route::get('/skema', [SkemaController::class, 'index']);
 
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
-Route::get('/asesor/search', [AsesorTableApiController::class, 'search']);
