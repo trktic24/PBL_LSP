@@ -29,16 +29,20 @@
                 @forelse ($tuks as $tuk)
                 <tr class="hover:bg-[#fff4d6] transition">
                     <td class="px-6 py-4 text-gray-900">
-                        {{ $tuk['nama'] }} <br>
-                        <span class="text-sm text-gray-600">{{ $tuk['sub_nama'] }}</span>
+                        {{-- MENGGUNAKAN SINTAKS OBJEK: $tuk->nama --}}
+                        {{ $tuk->nama }} <br>
+                        <span class="text-sm text-gray-600">{{ $tuk->sub_nama }}</span>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-700">
-                        {{ $tuk['alamat'] }}<br>Tembalang, Semarang, Jawa Tengah
+                        {{-- MENGGUNAKAN SINTAKS OBJEK: $tuk->alamat --}}
+                        {{ $tuk->alamat }}<br>Tembalang, Semarang, Jawa Tengah
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ $tuk['kontak'] }}</td> 
+                    {{-- MENGGUNAKAN SINTAKS OBJEK: $tuk->kontak --}}
+                    <td class="px-6 py-4 text-sm text-gray-700">{{ $tuk->kontak }}</td> 
                     <td class="px-6 py-4 text-center">
-                        <a href="{{ route('info.tuk.detail', ['id' => $tuk['id']]) }}"
-                           class="bg-yellow-400 hover:bg-yellow-500 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-sm">
+                        {{-- PERBAIKAN RUTE: Menggunakan sintaks objek dan primary key $tuk->id_tuk --}}
+                        <a href="{{ route('info-tuk.detail', ['id' => $tuk->id_tuk ]) }}"
+                            class="bg-yellow-400 hover:bg-yellow-500 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-sm">
                             Detail
                         </a>
                     </td>
