@@ -23,6 +23,7 @@ class Jadwal extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'tanggal_pelaksanaan',
+        'waktu_mulai',
         'Status_jadwal',
     ];
 

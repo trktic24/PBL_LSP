@@ -22,6 +22,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
+use Livewire\Attributes\Validate;
 
 class RegisteredUserController extends Controller
 {
@@ -34,7 +35,16 @@ class RegisteredUserController extends Controller
         if (!$request->has('step') || $request->step == 1) {
             session()->forget('google_register_data');
         }
-        return view('auth.register');
+        $allSkemas = Skema::orderBy('nama_skema', 'asc')->get();
+        $skemaOptions = $allSkemas->map(function ($skema) {
+        return [
+            'value' => $skema->id_skema, // Kirim ID-nya
+            'label' => $skema->nama_skema, // Tampilin Namanya
+        ];
+    });
+        return view('auth.register', [
+        'skemaOptions' => $skemaOptions
+    ]);
     }
 
     /**
@@ -111,7 +121,7 @@ class RegisteredUserController extends Controller
                 'provinsi' => ['required', 'string', 'max:255'],
                 'no_hp' => ['required', 'string', 'max:14'],
                 'npwp' => ['required', 'string', 'max:25'],
-                'skema' => ['nullable', 'string'],
+                'skema' => ['required', 'integer', 'exists:skema,id_skema'],
                 'nama_bank' => ['required', 'string', 'max:100'],
                 'nomor_rekening' => ['required', 'string', 'max:20'],
 
@@ -209,7 +219,7 @@ class RegisteredUserController extends Controller
 
                 Asesor::create([
                     'id_user' => $user->id_user,
-                    'id_skema' => null,
+                    'id_skema' => $validated['skema'],
                     'nama_lengkap' => $validated['nama_lengkap'],
                     'nomor_regis' => $validated['no_registrasi_asesor'],
                     'nik' => $validated['nik'],
@@ -247,6 +257,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
+        if ($user->role->nama_role === 'asesor') {
+            // Arahkan Asesor ke halaman tunggu
+            return redirect()->route('auth.wait'); // 👈 BIKIN ROUTE INI
+        }
 
         // Fallback
         return redirect('/');

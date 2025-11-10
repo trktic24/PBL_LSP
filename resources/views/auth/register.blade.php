@@ -253,17 +253,17 @@
                                         required
                                         autofocus
                                     />
-                                    <div x-data="{ show: false, pass :'', conf:'' }">
+                                    <div>
                                         <div class="flex flex-col md:flex-row gap-4">
                                             <x-login-form-input
                                                 id="password" name="password" type="password"
-                                                x-bind:type="show ? 'text' : 'password'" label="Password"
+                                                x-bind:type="showPass ? 'text' : 'password'" label="Password"
                                                 x-model="pass"
                                                 :error="$errors->first('password')" required autocomplete="new-password"
                                             />
                                             <x-login-form-input
                                                 id="password_confirmation" name="password_confirmation" type="password"
-                                                x-bind:type="show ? 'text' : 'password'" label="Konfirmasi Password"
+                                                x-bind:type="showPass ? 'text' : 'password'" label="Konfirmasi Password"
                                                 x-model="conf"
                                                 :error="$errors->first('password_confirmation')" required autocomplete="new-password"
                                             />
@@ -275,7 +275,7 @@
                                         </p>
                                         <div class="flex items-center mt-2">
                                             <input id="show_password_checkbox" type="checkbox"
-                                                   @click="show = !show"
+                                                   @click="showPass = !showPass"
                                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                             <label for="show_password_checkbox" class="ml-2 text-sm text-gray-600">
                                                 Tampilkan Password
@@ -356,7 +356,7 @@
                                         ]"
                                         required
                                     />
-                                    <x-login-form-input id="asesi_kebangsaan" name="kebangsaan" label="Kebangsaan" :error="$errors->first('kebangsaan')" />
+                                    <x-autocomplete-input id="asesi_kebangsaan" name="kebangsaan" label="Kebangsaan"  :error="$errors->first('kebangsaan')" required />
                                     {{-- 'kualifikasi' di form -> 'pendidikan' di DB --}}
                                     <x-login-form-input id="asesi_kualifikasi" name="kualifikasi" label="Kualifikasi Pendidikan" :error="$errors->first('kualifikasi')" required />
                                     <x-login-form-input id="asesi_pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />
@@ -433,7 +433,7 @@
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     <x-login-form-input id="asesor_nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required x-show="role === 'asesor'" :value="old('nama_lengkap') ?? session('google_register_data.name')"/>
-                                    <x-login-form-input id="no_registrasi_asesor" name="no_registrasi_asesor" label="No Registrasi Asesor" :error="$errors->first('no_registrasi_asesor')" required />
+                                    <x-login-form-input id="no_registrasi_asesor" name="no_registrasi_asesor" label="No Registrasi MET" :error="$errors->first('no_registrasi_asesor')" required />
                                     <x-login-form-input id="asesor_nik" name="nik" label="NIK" :error="$errors->first('nik')" required />
                                 </div>
                             </div>
@@ -464,17 +464,14 @@
                                         ]"
                                         required
                                     />
-                                    <x-login-form-input id="asesor_kebangsaan" name="asesor_kebangsaan" label="Kebangsaan" :error="$errors->first('pekerjaan')" required/>
+                                    <x-autocomplete-input id="asesor_kebangsaan" name="asesor_kebangsaan" label="Kebangsaan" :error="$errors->first('asesor_kebangsaan')" required/>
                                     <x-login-form-input id="asesor_pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />
-                                        <x-login-form-dropdown
+                                    <x-login-form-dropdown
                                         id="skema"
                                         name="skema"
                                         label="Pilih Skema Sertifikasi"
-                                        :options="[
-                                            ['value' => 'web_dev', 'label' => 'Web Developer'],
-                                            ['value' => 'uiux', 'label' => 'UI/UX Designer'],
-                                            ['value' => 'network', 'label' => 'Network Engineer']
-                                        ]"
+                                        placeholder="Pilih skema"
+                                        :options="$skemaOptions"  :error="$errors->first('skema')"
                                         required
                                     />
                                     </div>
@@ -582,6 +579,9 @@ document.addEventListener('alpine:init', () => {
         role: '{{ request('role') ?? $initialRole }}',
         currentStep: {{ request('step') ?? $initialStep }},
         nik: '{{ old('nik', '') }}',
+        showPass: false,
+        pass: '',
+        conf: '',
 
         // FUNGSI UNTUK MENJAGA SESSION TETAP HIDUP
         keepAlive() {
@@ -608,9 +608,9 @@ document.addEventListener('alpine:init', () => {
             // 🚀 PANGGIL FUNGSI KEEP-ALIVE DI SINI
             // Ini akan jalan pas halaman pertama kali dibuka
             this.keepAlive();
-            document.querySelector('form')?.addEventListener('submit', () => {
-                this.clearStorage();
-            });
+            if (this.currentStep === 1) {
+                const hasStep1Errors = {{ ($errors->has('email') || $errors->has('password')) ? 'true' : 'false' }};
+                if (!hasStep1Errors) {this.clearStorage();}}
             // 🔁 Load data dari localStorage
             const saved = localStorage.getItem('register_form');
             if (saved) {
@@ -620,8 +620,18 @@ document.addEventListener('alpine:init', () => {
                     // Kita nggak akan pernah nimpa _token
                     if (key !== '_token') {
                         let el = document.querySelector(`[name="${key}"]`);
-                        if (el) el.value = value;
-                    }
+                        if (el) {
+                            el.value = value; // 👈 KODE LAMA
+                            el.dispatchEvent(new Event('input')); }
+                        if (key === 'password') {
+                            this.pass = value;
+                        }
+                        if (key === 'password_confirmation') {
+                            this.conf = value;
+                        }
+                        if (key === 'nik') {
+                            this.nik = value;
+                    }}
                 });
             }
 

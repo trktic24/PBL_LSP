@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::table('skema', function (Blueprint $table) {
-            $table->string('kategori')->nullable()->after('nama_skema');
-        });
-    }
+    // public function up(): void
+    // {
+    //     Schema::table('skema', function (Blueprint $table) {
+    //         $table->string('kategori')->nullable()->after('nama_skema');
+    //     });
+    // }
 
     public function down(): void
     {

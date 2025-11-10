@@ -40,6 +40,7 @@ class JadwalFactory extends Factory
             'tanggal_mulai' => $mulai,
             'tanggal_selesai' => $selesai,
             'tanggal_pelaksanaan' => $pelaksanaan,
+            'waktu_mulai' => $mulai->format('H:i:s'),
             'Status_jadwal' => $this->faker->randomElement(['Terjadwal', 'Selesai', 'Dibatalkan']),
         ];
     }
