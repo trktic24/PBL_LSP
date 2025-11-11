@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Daftarin alias middleware
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'check.asesor.approved' => \App\Http\Middleware\CheckAsesorApproved::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

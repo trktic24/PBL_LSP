@@ -47,15 +47,6 @@ Route::middleware('auth')->group(function () {
     // Rute Logout
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    // Rute Halaman Tunggu Verifikasi (Khusus Asesor 'pending')
-    Route::get('/tunggu-verifikasi', function () {
-        $user = Auth::user();
-        if ($user->role->nama_role !== 'asesor' || $user->asesor?->status_verifikasi !== 'pending') {
-            return redirect()->route('dashboard'); // Lempar kalo udah approved
-        }
-        return view('auth.verification-asesor');
-    })->name('auth.wait');
-
     // Rute Profil (Bisa diakses semua role)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -156,3 +147,14 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
 });
+
+
+Route::get('/tunggu-verifikasi', function () {
+    $user = Auth::user();
+
+    if (!$user) return redirect()->route('login');
+    if ($user->role->nama_role !== 'asesor') return redirect()->route('dashboard');
+    if ($user->asesor?->status_verifikasi !== 'pending') return redirect()->route('dashboard');
+
+    return view('auth.verification-asesor');
+})->name('auth.wait');
