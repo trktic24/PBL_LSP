@@ -67,7 +67,7 @@
                             'bg-white text-blue-600 border-b-[3px] border-blue-600': role === 'asesi',
                             'bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200': role !== 'asesi'
                         }"
-                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl focus:outline-none transition-colors duration-150">
+                        class="font-poppins flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl focus:outline-none transition-colors duration-150">
                     Asesi
                 </button>
                 <button type="button" @click="role = 'asesor'; currentStep = 1"
@@ -75,7 +75,7 @@
                             'bg-white text-blue-600 border-b-[3px] border-blue-600': role === 'asesor',
                             'bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200': role !== 'asesor'
                         }"
-                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tr-3xl focus:outline-none transition-colors duration-150">
+                        class="font-poppins flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tr-3xl focus:outline-none transition-colors duration-150">
                     Asesor
                 </button>
             </div>
@@ -220,8 +220,8 @@
 
 
                         <div>
-                            <h1 x-show="role === 'asesi'" style="display: none;" class="text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesi</h1>
-                            <h1 x-show="role === 'asesor'" style="display: none;" class="text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesor</h1>
+                            <h1 x-show="role === 'asesi'" style="display: none;" class="font-poppins text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesi</h1>
+                            <h1 x-show="role === 'asesor'" style="display: none;" class="font-poppins text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesor</h1>
 
                             <p class="text-sm text-gray-500">
                                 Sudah punya akun?
@@ -320,7 +320,7 @@
                         <div class="space-y-8">
                             <div class="space-y-5">
                                 <div>
-                                    <h2 class="text-lg font-semibold text-gray-800">Data Pribadi</h2>
+                                    <h2 class="font-poppins text-lg font-semibold text-gray-800">Data Pribadi</h2>
                                     <hr class="mt-2">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
@@ -364,7 +364,7 @@
                             </div>
                             <div class="space-y-5">
                                 <div>
-                                    <h2 class="text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
+                                    <h2 class="font-poppins text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
                                     <hr class="mt-2">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-5">
@@ -383,7 +383,7 @@
                             </div>
                             <div class="space-y-5">
                                 <div>
-                                    <h2 class="text-lg font-semibold text-gray-800">Data Pekerjaan Sekarang</h2>
+                                    <h2 class="font-poppins text-lg font-semibold text-gray-800">Data Pekerjaan Sekarang</h2>
                                     <hr class="mt-2">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
@@ -429,7 +429,7 @@
                         <div class="space-y-8">
 
                             <div class="space-y-5">
-                                <h2 class="text-lg font-semibold text-gray-800">Data Pribadi</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Data Pribadi</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     <x-login-form-input id="asesor_nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required x-show="role === 'asesor'" :value="old('nama_lengkap') ?? session('google_register_data.name')"/>
@@ -439,7 +439,7 @@
                             </div>
 
                             <div class="space-y-5">
-                                <h2 class="text-lg font-semibold text-gray-800">Informasi Pribadi</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Informasi Pribadi</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     <x-login-form-input id="asesor_tempat_lahir" name="tempat_lahir" label="Tempat Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
@@ -479,7 +479,7 @@
                             </div>
                             {{-- Alamat & Kontak --}}
                             <div class="space-y-5">
-                                <h2 class="text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-5">
                                     <div class="md:col-span-2">
@@ -498,7 +498,7 @@
                             </div>
                             {{-- Informasi Bank --}}
                             <div class="space-y-5">
-                                <h2 class="text-lg font-semibold text-gray-800">Informasi Bank</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Informasi Bank</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     <x-login-form-input id="nama_bank" name="nama_bank" label="Nama Bank" :error="$errors->first('nama_bank')" required />
@@ -532,7 +532,7 @@
                     <fieldset x-show="role === 'asesor' && currentStep === 3" x-bind:disabled="role !== 'asesor'" style="display: none;">
                         <div class="space-y-8">
                             <div>
-                                <h2 class="text-lg font-semibold text-gray-800">Kelengkapan Dokumen</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Kelengkapan Dokumen</h2>
                                 <p class="text-sm text-gray-500 mt-1">Unggah dokumen dalam format .pdf, .jpg, atau .png. Maksimal ukuran per file adalah 5MB.</p>
                         <div class="mt-6 space-y-4">
                             <x-file-input id="ktp_file" name="ktp_file" label="KTP" required x-bind:disabled="role !== 'asesor'"/>
