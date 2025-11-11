@@ -15,6 +15,7 @@ return new class extends Migration
             // Sesuai ERD: id_skema (PK)
             // Ini akan membuat kolom BIGINT UNSIGNED AUTO_INCREMENT
             $table->id('id_skema');
+            $table->foreignId('categorie_id')->constrained('categories', 'id')->onUpdate('cascade')->onDelete('cascade');
 
             // kode_unit (int) - Saya ubah jadi string
             // Alasan: Kode unit seringkali mengandung titik atau huruf (misal: J.620100.001.01)
@@ -27,6 +28,8 @@ return new class extends Migration
             // Deskripsi_skema (str) - Saya ubah jadi text
             // Alasan: Deskripsi biasanya panjang dan melebihi 255 karakter
             $table->text('deskripsi_skema');
+            $table->bigInteger('harga')->nullable();
+
 
             // SKKNI
             $table->string('SKKNI')->comment('File pdf atau dokumen terkait SKKNI');
