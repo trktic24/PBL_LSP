@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('skema', function (Blueprint $table) {
-            $table->decimal('harga', 10, 2)->nullable()->after('deskripsi_skema');
-            $table->string('kategori')->nullable()->after('harga');
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_kategori');
+            $table->string('slug')->unique();
+            $table->timestamps();
         });
     }
 
@@ -22,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('skema', function (Blueprint $table) {
-            $table->dropColumn(['harga', 'kategori']);
-        });
+        Schema::dropIfExists('categories');
     }
 };

@@ -371,7 +371,7 @@
                                     <div class="md:col-span-2">
                                         <x-login-form-input id="asesi_alamat_rumah" name="alamat_rumah" label="Alamat Rumah" :error="$errors->first('alamat_rumah')" required />
                                     </div>
-                                    <x-login-form-input id="asesi_kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" />
+                                    <x-login-form-input id="asesi_kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required/>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     {{-- 'kabupaten' di form -> 'kabupaten_kota' di DB --}}
@@ -393,7 +393,7 @@
                                     <x-login-form-input id="asesi_alamat_institusi" name="alamat_institusi" label="Alamat Institusi" :error="$errors->first('alamat_kantor')" required />
                                     <x-login-form-input id="asesi_jabatan" name="jabatan" label="Jabatan" :error="$errors->first('jabatan')" required />
                                     <x-login-form-input id="kode_pos_institusi" name="kode_pos_institusi" label="Kode Pos Institusi" :error="$errors->first('kode_pos_institusi')" required />
-                                    <x-login-form-input id="no_telepon_institusi" name="no_telepon_institusi" label="No Telepon Institusi" :error="$errors->first('no_telepon_institusi')"/>
+                                    <x-login-form-input id="no_telepon_institusi" name="no_telepon_institusi" label="No Telepon Institusi" :error="$errors->first('no_telepon_institusi')" required/>
                                 </div>
                             </div>
                         </div>

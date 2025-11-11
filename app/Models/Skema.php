@@ -21,11 +21,16 @@ class Skema extends Model
         'SKKNI',
         'gambar',
         'harga',
-        'kategori',
+        'category_id',
     ];
 
     public function asesors(): HasMany
     {
         return $this->hasMany(Asesor::class, 'id_skema', 'id_skema');
+    }
+    public function category()
+    {
+        // Satu skema milik SATU kategori
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }

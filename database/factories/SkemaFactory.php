@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Skema;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Category;
 
 class SkemaFactory extends Factory
 {
@@ -21,7 +22,6 @@ class SkemaFactory extends Factory
      */
     public function definition(): array
     {
-        // Daftar Kategori IT yang Anda inginkan
         $categories = [
             'Software Development',
             'Network & Infrastructure',
@@ -36,6 +36,7 @@ class SkemaFactory extends Factory
             'Business Analyst IT',
             'Digital Marketing IT'
         ];
+        $categoryIds = Category::pluck('id');
 
         return [
             'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01',
@@ -59,16 +60,7 @@ class SkemaFactory extends Factory
 
             // Field baru hasil migrasi
             'harga' => $this->faker->numberBetween(100000, 1000000), // harga antara 100 ribu - 1 juta
-            'kategori' => $this->faker->randomElement([
-                'Software',
-                'Hardware',
-                'Network',
-                'Keamanan',
-                'Cloud',
-                'AI',
-                'Data',
-                'UI/UX',
-            ]),
+            'category_id' => $this->faker->randomElement($categoryIds),
         ];
     }
 }
