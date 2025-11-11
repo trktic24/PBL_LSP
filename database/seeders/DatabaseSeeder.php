@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             UserSeeder::class,
+            CountrySeeder::class,
+            JenisTukSeeder::class,
+            MasterTukSeeder::class,
+            SkemaSeeder::class,
             AsesiSeeder::class,
             AsesorSeeder::class,
             TujuanAssesmenMapa01::class,
@@ -22,11 +26,8 @@ class DatabaseSeeder extends Seeder
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
-            JenisTukSeeder::class,
             JadwalSeeder::class,
-            MasterTukSeeder::class,
-            CountrySeeder::class,
-            SkemaSeeder::class,
         ]);
+
     }
 }

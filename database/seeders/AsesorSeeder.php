@@ -16,10 +16,6 @@ class AsesorSeeder extends Seeder
      */
     public function run(): void
     {
-        // -- LANGKAH 1: Buat data master Skema --
-        // (Ini ASUMSI lu udah punya SkemaFactory)
-        // Kalo belum, bikin dulu: php artisan make:factory SkemaFactory
-        Skema::factory()->count(10)->create();
 
         // Ambil SEMUA ID skema yang barusan dibuat
         $skemaIds = Skema::pluck('id_skema');
