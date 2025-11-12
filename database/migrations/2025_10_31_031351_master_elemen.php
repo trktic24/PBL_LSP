@@ -15,9 +15,6 @@ return new class extends Migration {
 
             $table->foreignId('id_unit_kompetensi')->constrained('master_unit_kompetensi', 'id_unit_kompetensi')->onUpdate('cascade')->onDelete('cascade');
 
-            // Kolom sisanya (sesuai ERD)
-            $table->string('no_elemen');
-
             // 'elemen' lebih baik pakai text() karena bisa jadi deskripsi panjang
             $table->text('elemen');
             $table->timestamps();

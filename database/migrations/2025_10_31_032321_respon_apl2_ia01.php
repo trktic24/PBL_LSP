@@ -16,7 +16,7 @@ return new class extends Migration {
             // --- KUNCI 1 ---
             // Bikin FK 'id_data_sertifikasi_asesi'
             // Asumsi: Nyambung ke tabel 'data_sertifikasi_asesi' dengan PK 'id_data_sertifikasi_asesi'
-            // $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
             // --- KUNCI 2 ---
             // Bikin FK 'id_kriteria' yang nyambung ke:
@@ -27,10 +27,10 @@ return new class extends Migration {
             // Kolom sisanya (sesuai ERD)
             // Ini semua diisi nanti sama asesi/asesor, jadi kita buat 'nullable()'
 
-            $table->text('respon_asesi_apl02')->nullable();
-            $table->text('bukti_asesi_apl02')->nullable();
-            $table->boolean('pencapaian_ia01')->nullable(); // K/BK
-            $table->boolean('penilaian_lanjut_ia01')->nullable(); // V/A/T
+            $table->text('respon_asesi_apl02')->comment('Respon asesi untuk pertanyaan APL-02');
+            $table->text('bukti_asesi_apl02')->comment('Bukti asesi untuk pertanyaan APL-02');
+            $table->boolean('pencapaian_ia01')->comment('Pencapaian IA01 (ya/tidak)');
+            $table->string('penilaian_lanjut_ia01')->comment('Penilaian Lanjut IA01 (V/A/T)');
             $table->timestamps();
         });
     }

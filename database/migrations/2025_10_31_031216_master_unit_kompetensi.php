@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->foreignId('id_kelompok_pekerjaan')->constrained('kelompok_pekerjaans', 'id_kelompok_pekerjaan')->onUpdate('cascade')->onDelete('cascade');
 
             // Kolom sisanya (sesuai ERD)
-            $table->string('kode_unit');
-            $table->string('judul_unit');
+            // $table->string('kode_unit');
+            // $table->string('judul_unit');
             $table->string('jenis_standar');
             $table->timestamps();
         });
