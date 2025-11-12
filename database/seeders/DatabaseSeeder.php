@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
             JadwalSeeder::class,
+            CategorySeeder::class,
         ]);
 
     }

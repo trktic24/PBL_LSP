@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\Skema;
+use App\Models\Category;
 use \DateTime;
 use Illuminate\Support\Collection;
 
@@ -42,12 +43,11 @@ class HomeController extends Controller
 
     public function index(): View
     {
-        // Ambil data dari tabel skema
-        $skemas = Skema::latest()->get(); // ini ambil semua dari database faker
-
-        // Ambil daftar kategori unik dari kolom 'kategori'
-        $categories = $skemas->pluck('kategori')->unique()->values()->all();
+        $categories = Category::all()->pluck('nama_kategori')->all();
         array_unshift($categories, 'Semua');
+
+        // Ambil data dari tabel skema
+        $skemas = Skema::with('category')->latest()->get(); // ini ambil semua dari database faker
 
         // Ambil jadwal dummy
         $semuaJadwal = $this->getSemuaDummyJadwal();
@@ -62,6 +62,19 @@ class HomeController extends Controller
         return view('landing_page.home', compact('skemas', 'jadwals', 'categories'));
     }
 
+    public function filterSkema(Request $request)
+    {
+        $categoryId = $request->input('category_id');
+
+        $category = Category::where('nama_kategori', $categoryId)->first();
+        $query = Skema::with('category');
+
+        if ($categoryId !== 'Semua' && $category) {
+            $query->where('category_id', $category->id);
+        }
+        
+        $skemas = $query->get();
+    }
     public function show($id): View
     {
         // Cari skema berdasarkan ID dari database
