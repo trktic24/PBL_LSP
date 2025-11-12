@@ -14,6 +14,7 @@ use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 use App\Http\Controllers\Kerahasiaan\PersetujuanKerahasiaanController;
 use App\Models\Asesi; // <-- [PENTING] Tambahin ini buat route /tracker
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
+use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,6 +117,10 @@ Route::get('/formulir-selesai', function () {
 // --- Data Sertifikasi ---
 Route::get('/formulir/data-sertifikasi', [DataSertifikasiAsesiController::class, 'showDataSertifikasiAsesiPage'])
     ->name('formulir.data-sertifikasi');
+
+//bukti kelengkapan
+Route::get('/formulir/bukti-pemohon', [BuktiKelengkapanController::class, 'showBuktiKelengkapanPage'])
+    ->name('web.bukti_pemohon.show');
 
 // --- Kerahasiaan ---
 //Route::get('/asesmen/fr_ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
