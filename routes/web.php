@@ -24,7 +24,8 @@ Route::get('/detail_skema/{id}', [HomeController::class, 'show'])->name('detail_
 // Rute Detail Jadwal
 Route::get('/detail_jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('detail_jadwal');
 Route::get('/jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('jadwal.detail');
-
+// 🟦 TAMBAHKAN BARIS INI UNTUK DETAIL BERITA 🟦
+Route::get('/berita/{id}', [HomeController::class, 'showBeritaDetail'])->name('berita.detail');
 /*
 |--------------------------------------------------------------------------
 | Custom Routes (Info TUK dan Alur)

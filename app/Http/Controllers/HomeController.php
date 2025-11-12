@@ -41,6 +41,29 @@ class HomeController extends Controller
         ];
     }
 
+    private function getSemuaDummyBerita()
+    {
+        return [
+            (object)[
+                'id' => 1,
+                'judul' => 'LSP Polines Adakan Uji Kompetensi Skema Jaringan',
+                'tanggal' => now()->subDays(2),
+                'gambar' => 'https://placehold.co/600x400/96C9F4/white?text=Berita+1'
+            ],
+            (object)[
+                'id' => 2,
+                'judul' => 'Kerjasama Baru LSP Polines dengan Industri Digital',
+                'tanggal' => now()->subDays(5),
+                'gambar' => 'https://placehold.co/600x400/FACC15/white?text=Berita+2'
+            ],
+            (object)[
+                'id' => 3,
+                'judul' => 'Sosialisasi Pentingnya Sertifikasi di Era Industri 4.0',
+                'tanggal' => now()->subWeeks(1),
+                'gambar' => 'https://placehold.co/600x400/3B82F6/white?text=Berita+3'
+            ],
+        ];
+    }
     public function index(): View
     {
         $categories = Category::all()->pluck('nama_kategori')->all();
@@ -59,7 +82,11 @@ class HomeController extends Controller
             ->take(2)
             ->values();
 
-        return view('landing_page.home', compact('skemas', 'jadwals', 'categories'));
+        // AMBIL BERITA (MODIFIKASI)
+        $beritas = collect($this->getSemuaDummyBerita())->take(3);
+
+        // KIRIM BERITA KE VIEW (MODIFIKASI)
+        return view('landing_page.home', compact('skemas', 'jadwals', 'categories', 'beritas'));
     }
 
     public function filterSkema(Request $request)
@@ -145,6 +172,20 @@ class HomeController extends Controller
 
         return view('landing_page.detail.detail_jadwal', [
             'jadwal' => $jadwal
+        ]);
+    }
+    // FUNGSI BARU UNTUK MENANGANI DETAIL BERITA
+    public function showBeritaDetail($id): View
+    {
+        $semuaBerita = $this->getSemuaDummyBerita();
+        $berita = collect($semuaBerita)->firstWhere('id', (int)$id);
+
+        if (!$berita) {
+            abort(404, 'Berita tidak ditemukan');
+        }
+
+        return view('landing_page.detail.berita_detail', [
+            'berita' => $berita
         ]);
     }
 }

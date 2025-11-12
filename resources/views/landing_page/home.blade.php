@@ -3,29 +3,43 @@
 @section('content')
 
 {{-- ======================= HERO ======================= --}}
-<section class="relative h-[1000px] rounded-t-4xl overflow-hidden">
+<section class="relative h-[900px] rounded-t-4xl overflow-hidden"> 
     <img src="{{ asset('images/Gedung Polines.jpg') }}"
         alt="Gedung Polines"
         class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
     <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
-    <div class="absolute top-1/3 left-16 text-black drop-shadow-lg max-w-xl">
-        <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
-        <p class="text-xl mb-6 leading-relaxed">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
+    ...
+    <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
 
-        <div class="flex items-center gap-6 mt-8">
-            <a href="{{ route('login') }}"
-            class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
-                    hover:bg-yellow-500 transition-all duration-300 ease-in-out
-                    transform hover:scale-105">
-                Daftar
-            </a>
-            <a href="#skema-sertifikasi"
-               class="text-black font-semibold text-lg flex items-center gap-2
-                       hover:gap-3 transition-all duration-300 ease-in-out group">
-                Eksplore Skema
-                <span class="font-bold text-xl transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
-            </a>
+    {{-- POSISI DIATUR OLEH CONTAINER DI DALAMNYA --}}
+    <div class="absolute top-1/3 inset-x-0">
+        
+        {{-- 
+          Wrapper container baru. 
+          GANTI 'px-8' DI BAWAH INI dengan padding dari navbar Anda (dari Langkah 1)--}}
+        <div class="container mx-auto px-8"> {{-- <-- GANTI 'px-8' INI --}}
+            
+            {{-- Konten Anda (kelas 'left-16' sudah dihapus) --}}
+            <div class="text-black drop-shadow-lg max-w-xl">
+                <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
+                <p class="text-xl mb-6 leading-relaxed">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
+
+                <div class="flex items-center gap-6 mt-8">
+                    <a href="{{ route('login') }}"
+                       class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
+                              hover:bg-yellow-500 transition-all duration-300 ease-in-out
+                              transform hover:scale-105">
+                        Daftar
+                    </a>
+                    <a href="#skema-sertifikasi"
+                       class="text-black font-semibold text-lg flex items-center gap-2
+                              hover:gap-3 transition-all duration-300 ease-in-out group">
+                        Eksplore Skema
+                        <span class="font-bold text-xl transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -293,6 +307,55 @@ if (scrollContainer) {
                 <p>Belum ada jadwal yang akan datang saat ini.</p>
             </div>
         @endforelse
+    </div>
+</section>
+
+{{-- ======================= BERITA TERBARU (MODIFIKASI) ======================= --}}
+<section id="berita-terbaru" class="bg-white py-12 px-10 text-center"> {{-- <-- ID DITAMBAHKAN --}}
+    <h2 class="text-3xl font-bold mb-8">Berita Terbaru</h2>
+    
+    {{-- Grid untuk Kartu Berita --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        
+        {{-- Kita looping data berita dari controller --}}
+        @forelse ($beritas as $berita)
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] text-left">
+                
+                {{-- LINK HREF DIPERBARUI --}}
+                <a href="{{ route('berita.detail', ['id' => $berita->id]) }}"> 
+                    
+                    {{-- Gambar Berita --}}
+                    <img src="{{ $berita->gambar }}" 
+                         alt="{{ $berita->judul }}" 
+                         class="w-full h-48 object-cover">
+                    
+                    <div class="p-6">
+                        {{-- Tanggal Publish --}}
+                        <p class="text-sm text-gray-500 mb-2">
+                            {{ $berita->tanggal->format('d F Y') }}
+                        </p>
+                        
+                        {{-- Judul Berita --}}
+                        <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" style="min-height: 3.5rem;">
+                            {{ $berita->judul }}
+                        </h3>
+                        
+                        {{-- Link Baca Selengkapnya (Tema Biru Polines) --}}
+                        <span class="font-semibold text-blue-700 hover:underline flex items-center gap-1 group">
+                            Baca Selengkapnya
+                            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+                        </span>
+                    </div>
+
+                </a>
+            </div>
+        @empty
+            {{-- Tampilan jika tidak ada berita --}}
+            <div class="md:col-span-2 lg:col-span-3 text-center text-gray-500 py-16">
+                <p class="text-xl">Belum ada berita yang dipublikasikan.</p>
+            </div>
+        @endforelse
+
     </div>
 </section>
 

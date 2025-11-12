@@ -11,7 +11,7 @@
     }
 </style> -->
 
-<section class="bg-white border border-gray-300 rounded-lg mx-6 md:mx-12 my-10 p-8">
+<section class="bg-white border border-white rounded-lg mx-6 md:mx-12 my-10 p-8">
     <div class="max-w-4xl mx-auto">
         <h2 class="text-2xl md:text-3xl font-semibold text-center text-gray-900 mb-12">
             Alur Proses Sertifikasi
