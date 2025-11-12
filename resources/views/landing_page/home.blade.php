@@ -3,7 +3,7 @@
 @section('content')
 
 {{-- ======================= HERO ======================= --}}
-<section class="relative h-[900px] rounded-t-4xl overflow-hidden"> 
+<section class="relative h-[900px] rounded-t-4xl overflow-hidden z-10"> 
     <img src="{{ asset('images/Gedung Polines.jpg') }}"
         alt="Gedung Polines"
         class="w-full h-full object-cover">
@@ -105,7 +105,7 @@ html { scroll-behavior: smooth; }
 
 {{-- ======================= FILTER KATEGORI (FIXED TAMPILAN) ====================== --}}
 <section id="skema-sertifikasi" 
-             class="py-10 text-center relative z-[100] bg-white -mt-10">
+             class="py-10 text-center relative z-20 bg-white -mt-10">
     <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
     
     {{-- FIX: Menggunakan container lebar penuh dan menghilangkan max-w-4xl --}}
