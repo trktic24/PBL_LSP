@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>LSP Polines - @yield('title', 'Halaman Form')</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
-  <script src="https://cdn.tailwindcss.com"></script>
   @stack('css')
 
   <!-- Google Fonts Poppins -->
