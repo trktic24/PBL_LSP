@@ -65,4 +65,4 @@ class LoginController extends Controller
         // Kembalikan data user yang sedang login
         return response()->json($request->user());
     }
-}
+} 
