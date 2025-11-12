@@ -22,21 +22,15 @@ class SkemaFactory extends Factory
      */
     public function definition(): array
     {
-        $categories = [
-            'Software Development',
-            'Network & Infrastructure',
-            'Data Science & AI',
-            'Cyber Security',
-            'Cloud Computing',
-            'UI/UX Design',
-            'Mobile Development',
-            'Database Administration',
-            'DevOps & Automation',
-            'Game Development',
-            'Business Analyst IT',
-            'Digital Marketing IT'
-        ];
-        $categoryIds = Category::pluck('id');
+        // Ambil semua ID dari tabel categories dan ubah menjadi array
+        $categoryIds = Category::pluck('id')->all();
+
+        // Pencegahan error jika tidak ada kategori.
+        if (empty($categoryIds)) {
+            // Anda bisa mengembalikan ID 1 atau null, tergantung setting database Anda
+            // Misalnya, kita kembalikan ID default 1 untuk menghindari crash
+            return $this->getDefaultSkemaDefinition();
+        }
 
         return [
             'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01',
@@ -54,13 +48,31 @@ class SkemaFactory extends Factory
             ]),
             'deskripsi_skema' => $this->faker->paragraph(2),
 
-            // Field opsional (boleh null)
+            // Field opsional
             'SKKNI' => null,
             'gambar' => null,
 
             // Field baru hasil migrasi
-            'harga' => $this->faker->numberBetween(100000, 1000000), // harga antara 100 ribu - 1 juta
+            'harga' => $this->faker->numberBetween(100000, 1000000), 
+            
+            // PENGISIAN RANDOM: Memilih salah satu ID kategori secara acak
             'category_id' => $this->faker->randomElement($categoryIds),
+        ];
+    }
+    
+    /**
+     * Return a default definition if categories are not yet seeded.
+     */
+    protected function getDefaultSkemaDefinition(): array
+    {
+        return [
+            'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01',
+            'nama_skema' => 'Skema Sertifikasi Default',
+            'deskripsi_skema' => $this->faker->paragraph(2),
+            'SKKNI' => null,
+            'gambar' => null,
+            'harga' => $this->faker->numberBetween(100000, 1000000), 
+            'category_id' => 1, // Default ID jika tidak ada kategori
         ];
     }
 }

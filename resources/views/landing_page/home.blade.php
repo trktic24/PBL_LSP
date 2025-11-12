@@ -46,6 +46,26 @@
 
 <style>
 /* ======================= FIX CSS UNTUK FORMAT KATEGORI ======================= */
+/* [BARU] Styling untuk tombol Navigasi */
+.carousel-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px; /* Full rounded */
+    transition: background 0.3s, opacity 0.3s;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-nav-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
 html { scroll-behavior: smooth; }
 #scrollContainer::-webkit-scrollbar { display: none; }
 #scrollContainer { -ms-overflow-style: none; scrollbar-width: none; margin-bottom: 2rem; }
@@ -92,7 +112,7 @@ html { scroll-behavior: smooth; }
     <div class="relative w-full px-4 mx-auto">
         {{-- FIX: Menggunakan justify-start agar item berada di kiri (walaupun di scroll) --}}
         <div id="scrollContainer" 
-             class="flex flex-row gap-4 overflow-x-scroll whitespace-nowrap justify-start pb-4">
+             class="flex flex-row gap-4 overflow-x-scroll whitespace-nowrap justify-start py-4 px-4">
             
             {{-- FIX: Menggunakan w-fit dan mx-auto agar tombol rata tengah jika kurang dari lebar layar --}}
             <div id="categoryButtons" class="inline-flex gap-4 w-fit mx-auto"> 
@@ -110,9 +130,16 @@ html { scroll-behavior: smooth; }
 </section>
 
 {{-- ======================= CAROUSEL GRID SKEMA ======================= --}}
-<section class="px-10 mb-16">
-    <div id="gridCarousel" class="relative overflow-hidden rounded-3xl w-full">
+<section class="px-4 md:px-10 mb-16">
+    <div id="gridCarousel" class="relative overflow-hidden rounded-3xl w-full max-w-7xl mx-auto">
+        <button id="prevBtn" 
+                class="carousel-nav-btn left-2 disabled:opacity-30 disabled:cursor-not-allowed" 
+                onclick="moveSlide(-1)">&#10094;</button>
         
+        <button id="nextBtn" 
+                class="carousel-nav-btn right-2 disabled:opacity-30 disabled:cursor-not-allowed" 
+                onclick="moveSlide(1)">&#10095;</button>
+
         <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
             @php
                 $chunks = $skemas->chunk(6); // 6 kartu per slide
@@ -180,59 +207,65 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedButton.classList.remove('inactive-category');
     }
     
+    window.moveSlide = function(direction) {
+        if (isFilterActive) return; // Jangan geser jika sedang mode filter
+
+        let newIndex = currentIndex + direction;
+
+        if (newIndex < 0) {
+            newIndex = 0; // Batas kiri
+        } else if (newIndex >= totalSlides) {
+            newIndex = totalSlides - 1; // Batas kanan
+        }
+
+        showSlide(newIndex);
+    }
+
+    function showSlide(index) {
+        if (isFilterActive) return;
+
+        currentIndex = index;
+        gridSlides.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        // Update status tombol navigasi
+        if (prevBtn && nextBtn) {
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === totalSlides - 1;
+        }
+    }
+
     // Set default button (Semua)
     const defaultButton = document.querySelector('button[data-category="Semua"]');
     if (defaultButton) {
         setActiveButton(defaultButton);
+        showSlide(0);
     }
 
-    // Fungsi untuk menggeser carousel (tanpa filter)
-    function showSlide(index) {
-        if (!isFilterActive) {
-            currentIndex = index;
-            gridSlides.style.transform = `translateX(-${currentIndex * 100}%)`;
-        }
-    }
-    
-    // Autoscroll
-    let carouselInterval = setInterval(() => {
-        if (!isFilterActive) {
-            currentIndex = (currentIndex + 1) % totalSlides;
-            showSlide(currentIndex);
-        }
-    }, 5000);
-
-    // Fungsi utama filter
     buttons.forEach(button => {
         button.addEventListener('click', () => {
             const selectedCategory = button.dataset.category;
             let visibleCardCount = 0;
-
             setActiveButton(button);
-            
-            // Tentukan apakah filter 'Semua' sedang aktif
             isFilterActive = (selectedCategory !== 'Semua');
-            
-            if (isFilterActive) {
-                // Hentikan autoscroll dan reset slide ke 0
-                clearInterval(carouselInterval);
-                gridSlides.style.transform = `translateX(0%)`;
-                
-                // Sembunyikan semua slide di awal
-                slides.forEach(slide => slide.classList.add('hidden-slide'));
 
+            if (isFilterActive) {
+                // Mode Filter: Sembunyikan navigasi, reset slide, dan sembunyikan semua slide di awal
+                if (prevBtn && nextBtn) {
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                }
+                gridSlides.style.transform = `translateX(0%)`;
+                slides.forEach(slide => slide.classList.add('hidden-slide'));
             } else {
-                // Filter "Semua" aktif: Tampilkan semua slide dan aktifkan autoscroll
+                // Mode "Semua": Tampilkan navigasi, reset slide, dan tampilkan semua slide
+                if (prevBtn && nextBtn) {
+                    prevBtn.style.display = 'block';
+                    nextBtn.style.display = 'block';
+                }
                 slides.forEach(slide => slide.classList.remove('hidden-slide'));
-                currentIndex = 0;
                 showSlide(0); 
-                carouselInterval = setInterval(() => {
-                    currentIndex = (currentIndex + 1) % totalSlides;
-                    showSlide(currentIndex);
-                }, 5000);
             }
 
-            // Tampilkan kartu sesuai kategori
             cards.forEach(card => {
                 const cardCategory = card.dataset.category;
                 
@@ -241,17 +274,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Gunakan 'block' atau 'none' untuk kartu
                 card.style.display = isVisible ? 'block' : 'none';
                 
-                if (isVisible) {
+                if (isVisible && isFilterActive) {
                     visibleCardCount++;
                     // Jika filter aktif, pastikan slide induk kartu yang terlihat juga ditampilkan
-                    if(isFilterActive) {
-                        card.closest('.skema-slide').classList.remove('hidden-slide');
-                    }
+                    card.closest('.skema-slide').classList.remove('hidden-slide');
                 }
             });
-
-            // Tampilkan/Sembunyikan pesan "Tidak ada hasil"
-            if (visibleCardCount === 0) {
+            if (visibleCardCount === 0 && isFilterActive) {
                 noResultsMessage.classList.remove('hidden');
             } else {
                 noResultsMessage.classList.add('hidden');

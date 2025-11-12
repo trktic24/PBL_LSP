@@ -9,6 +9,6 @@ class SkemaSeeder extends Seeder
 {
     public function run(): void
     {
-        Skema::factory(30)->create();
+        Skema::factory(100)->create();
     }
 }
