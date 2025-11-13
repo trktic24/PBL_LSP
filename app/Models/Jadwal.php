@@ -60,4 +60,11 @@ class Jadwal extends Model
         // Asumsi nama model adalah Asesor
         return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
     }
+
+    public function asesi()
+{
+    return $this->belongsToMany(Asesi::class, 'data_sertifikasi_asesi', 'id_jadwal', 'id_asesi');
+}
+
+
 }
