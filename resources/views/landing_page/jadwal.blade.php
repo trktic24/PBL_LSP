@@ -1,20 +1,7 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Asesmen</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Header Section -->
-{{-- 1. Mewarisi layout utama (yang sudah punya header, footer, & CSS) --}}
+
 @extends('layouts.app-profil')
 
-{{-- 2. Mengatur judul halaman (menggantikan tag <title>) --}}
 @section('title', 'Jadwal Asesmen')
-
-{{-- 3. Memasukkan semua konten Anda ke 'slot' konten di layout --}}
 @section('content')
 
     <div class="bg-white py-12">
@@ -172,5 +159,4 @@
             document.getElementById('noResult').classList.toggle('hidden', visibleCount > 0);
         });
     </script>
-</body>
-</html>
+@endsection
