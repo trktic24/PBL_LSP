@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'google_id' => null,
                 'remember_token' => Str::random(10),
-                // 'username' => 'admin', // <-- DIPERBAIKI: Baris ini dihapus karena kolomnya tidak ada
+                'username' => 'admin', // <-- DIPERBAIKI: Baris ini dihapus karena kolomnya tidak ada
             ]);
         }
 
@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'google_id' => null,
                 'remember_token' => Str::random(10),
-                // 'username' => 'asesor', // <-- DIPERBAIKI: Baris ini dihapus
+                'username' => 'asesor', // <-- DIPERBAIKI: Baris ini dihapus
             ]);
         }
 
@@ -56,7 +56,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'google_id' => null,
                 'remember_token' => Str::random(10),
-                // 'username' => 'asesi', // <-- DIPERBAIKI: Baris ini dihapus
+                'username' => 'asesi', // <-- DIPERBAIKI: Baris ini dihapus
             ]);
         }
 

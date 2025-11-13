@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Asesor\FormIA07Controller;
 
 
 
@@ -57,9 +58,8 @@ Route::middleware('auth')->group(function () {
     /**
      * DAFTAR ASESI (per jadwal)
      */
-    Route::get('/daftar_asesi/{id}', function ($id) {
-        return view('frontend.daftar_asesi', ['jadwal_id' => $id]);
-    })->name('daftar_asesi');
+    Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])
+         ->name('daftar_asesi');
 
     /**
      * TRACKER ASESMEN

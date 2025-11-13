@@ -16,28 +16,34 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Mendapatkan user yang sedang login (Asumsi: User adalah Asesor)
-        $id_asesor_tes =1;
+        // Mendapatkan user yang sedang login
+        $user = Auth::user(); 
 
-        // Ambil data asesor berdasarkan ID hard-code
-        $asesor = Asesor::with('user', 'skema')->find($id_asesor_tes);
+        // dd($user);
+        // Ambil data asesor berdasarkan user yang login
+        $asesor = Asesor::where('user_id', $user->id_user)
+        ->with('skemas')
+        ->first(); 
+
+        // dd($asesor);
+        // Jika user yang login tidak punya profil asesor, berikan error
+        if (!$asesor) {
+            abort(403, 'Profil Asesor tidak ditemukan untuk user ini.');
+        }
 
         // ----------------------------------------------------
-        // 1. Data Profil (Menggunakan data dummy jika User tidak lengkap)
+        // 1. Data Profil (Menggunakan data asesor asli)
         // ----------------------------------------------------
         $profile = [
-            // Gunakan nama user yang login
-            'nama' => $asesor && $asesor->user ? $asesor->user->name : 'Ajeng Febria Hidayati',
-            // Ambil nomor registrasi dari model User atau Asesor (di sini menggunakan dummy)
-            'nomor_registrasi' => '90973646526352',
-            'kompetensi' => 'Pemrograman', // Ambil kompetensi dari relasi Skema/Asesor
-            'foto_url' => 'https://placehold.co/60x60/8B5CF6/ffffff?text=AF',
+            'nama' => $asesor->nama_lengkap, 
+            'nomor_registrasi' => $asesor->nomor_regis, 
+            'kompetensi' => $asesor->skemas ? $asesor->skemas->first()->nama_skema : $asesor->pekerjaan, 
+            'foto_url' => $asesor->pas_foto ? asset('storage/' . $asesor->pas_foto) : asset('images/profil_asesor.jpeg'),
         ];
 
         // ----------------------------------------------------
-        // 2. Data Ringkasan (Menggunakan data dummy karena tabel belum dibuat)
+        // 2. Data Ringkasan (Masih dummy, sesuai file Anda)
         // ----------------------------------------------------
-        // Dalam implementasi nyata, ini akan dihitung dari tabel 'asesmen'
         $summary = [
             'belum_direview' => 5,
             'dalam_proses' => 7,
@@ -46,37 +52,39 @@ class HomeController extends Controller
         ];
 
         // ----------------------------------------------------
-        // 3. Data Jadwal Asesmen
+        // 3. Data Jadwal Asesmen (FIXED)
         // ----------------------------------------------------
-
-        // Asumsi: Kita hanya menampilkan jadwal yang terkait dengan Asesor yang login (id_asesor = user id)
-        // Note: Dalam kasus nyata, Anda mungkin perlu relasi User -> Asesor -> Jadwal
-        $jadwal = Jadwal::where('id_asesor', $id_asesor_tes) // Jika tidak ada user, gunakan id 1
-                        ->with('skema', 'tuk') // Load relasi Skema dan TUK
-                        ->orderBy('tanggal_mulai', 'asc')
-                        ->limit(5)
-                        ->get();
+        
+        // Asumsi: Kita hanya menampilkan jadwal yang terkait dengan Asesor yang login
+        $jadwals = Jadwal::where('id_asesor', $asesor->id_asesor) // <-- SUDAH DIGANTI
+                            ->with('skema', 'tuk') 
+                            ->orderBy('tanggal_mulai', 'asc')
+                            ->limit(5)
+                            ->get();
 
         // Data dummy jika database belum terisi atau testing
-        if ($jadwal->isEmpty()) {
-            $jadwal = [
-                (object)['skema_nama' => 'Junior Web Dev', 'tanggal' => '29 September 2025'],
-                (object)['skema_nama' => 'Data Science', 'tanggal' => '24 November 2025'],
-                (object)['skema_nama' => 'Programming', 'tanggal' => '30 November 2025'],
-                (object)['skema_nama' => 'Game Dev', 'tanggal' => '4 Januari 2026'],
-                (object)['skema_nama' => 'Cyber Security', 'tanggal' => '10 Januari 2026'],
+        if ($jadwals->isEmpty()) {
+            $jadwals = [
+                (object)['id_jadwal' => null, 'skema_nama' => 'Junior Web Dev', 'tanggal' => '29 September 2025'],
+                (object)['id_jadwal' => null, 'skema_nama' => 'Data Science', 'tanggal' => '24 November 2025'],
+                (object)['id_jadwal' => null, 'skema_nama' => 'Programming', 'tanggal' => '30 November 2025'],
+                (object)['id_jadwal' => null, 'skema_nama' => 'Game Dev', 'tanggal' => '4 Januari 2026'],
+                (object)['id_jadwal' => null, 'skema_nama' => 'Cyber Security', 'tanggal' => '10 Januari 2026'],
             ];
         } else {
             // Jika data ada, format ulang agar sesuai dengan view
-            $jadwal = $jadwal->map(function ($item) {
+            $jadwals = $jadwals->map(function ($item) {
                 return (object) [
+                    'id_jadwal' => $item->id_jadwal, // <-- Tambahkan ID untuk link
                     'skema_nama' => $item->skema->nama_skema ?? 'Skema Tidak Ditemukan',
-                    'tanggal' => $item->tanggal_mulai ? date('d F Y', strtotime($item->tanggal_mulai)) : 'N/A',
+                    'tanggal_pelaksanaan' => $item->tanggal_mulai ? date('d F Y', strtotime($item->tanggal_mulai)) : 'N/A',
+                    'waktu_mulai' => $item->waktu_mulai ?? 'N/A',
+                    'status_jadwal'=> $item->Status_jadwal ?? 'Baru',
                 ];
             });
         }
 
-
-        return view('frontend.home', compact('profile', 'summary', 'jadwal'));
+        // Return ke view yang benar
+        return view('frontend.home', compact('profile', 'summary', 'jadwals'));
     }
 }

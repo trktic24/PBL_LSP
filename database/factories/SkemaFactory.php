@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Skema;
+use App\Models\Categorie;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Skema>
@@ -25,6 +26,7 @@ class SkemaFactory extends Factory
     public function definition(): array
     {
         return [
+            'categorie_id' => Categorie::factory(), 
             // Membuat kode unit yang terlihat realistis
             'kode_unit' => fake()->numerify('J.620100.###.##'),
 

@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('berita_acara', function (Blueprint $table) {
-            $table->id('id_berita_acara');
-            $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+        Schema::create('unit_kompetensi', function (Blueprint $table) {
+            $table->id('id_unit_kompetensi');
 
-            //  isi kolom Database berita_acara
-            $table->string('keterangan');
+            // isi kolom sesuai ERD
+            $table->string('kode_unit')->unique();
+            $table->string('judul_unit');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('unit_kompetensi');
     }
 };

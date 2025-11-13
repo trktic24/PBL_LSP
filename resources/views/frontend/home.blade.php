@@ -7,10 +7,10 @@
                 alt="Foto Profil"
                 class="w-20 h-20 rounded-full object-cover border-4 border-blue-500">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">Selamat Datang Ajeng!</h1>
-                <p class="text-xl font-semibold text-gray-800 mt-1">Ajeng Febria Hidayati</p>
-                <p class="text-base text-gray-600">90973646526352</p>
-                <p class="text-base text-gray-600">Pemrograman</p>
+                <h1 class="text-3xl font-bold text-gray-900">Selamat Datang {{ $profile['nama'] }}!</h1>
+                <p class="text-xl font-semibold text-gray-800 mt-1">{{ $profile['nama'] }}</p>
+                <p class="text-base text-gray-600">{{ $profile['nomor_registrasi'] }}</p>
+                <p class="text-base text-gray-600">{{ $profile['kompetensi'] }}</p>
             </div>
         </div>
 
@@ -73,57 +73,50 @@
                 <h2 class="text-2xl font-semibold text-gray-800">Jadwal Anda</h2>
             </div>
 
-            <div class="bg-amber-50 rounded-xl border border-gray-300 shadow-sm overflow-hidden">
-                <div class="flex px-6 py-3 border-b-2 border-black">
-                    <span class="w-1/12 text-sm font-semibold text-gray-700">No</span>
-                    <span class="w-5/12 text-sm font-semibold text-gray-700">Skema Sertifikasi</span>
-                    <span class="w-4/12 text-sm font-semibold text-gray-700">Tanggal</span>
-                    <span class="w-2/12 text-sm font-semibold text-gray-700">Aksi</span>
-                </div>
-
-                <div class="divide-y divide-gray-200">
-                    <div class="flex px-6 py-4 items-center">
-                        <span class="w-1/12 text-sm text-gray-800">1</span>
-                        <span class="w-5/12 text-sm text-gray-800 font-medium">Junior Web Dev</span>
-                        <span class="w-4/12 text-sm text-gray-800">29 September 2025</span>
-                        <span class="w-2/12">
-                            <a href="{{ route('daftar_asesi', 1) }}" class="bg-yellow-400 text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-500">Lihat Detail</a>
-                        </span>
-                    </div>
-                    <div class="flex px-6 py-4 items-center">
-                        <span class="w-1/12 text-sm text-gray-800">2</span>
-                        <span class="w-5/12 text-sm text-gray-800 font-medium">Data Science</span>
-                        <span class="w-4/12 text-sm text-gray-800">24 November 2025</span>
-                        <span class="w-2/12">
-                            <a href="#" class="bg-yellow-400 text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-500">Lihat Detail</a>
-                        </span>
-                    </div>
-                    <div class="flex px-6 py-4 items-center">
-                        <span class="w-1/12 text-sm text-gray-800">3</span>
-                        <span class="w-5/12 text-sm text-gray-800 font-medium">Programming</span>
-                        <span class="w-4/12 text-sm text-gray-800">30 November 2025</span>
-                        <span class="w-2/12">
-                            <a href="#" class="bg-yellow-400 text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-500">Lihat Detail</a>
-                        </span>
-                    </div>
-                    <div class="flex px-6 py-4 items-center">
-                        <span class="w-1/12 text-sm text-gray-800">4</span>
-                        <span class="w-5/12 text-sm text-gray-800 font-medium">Game Dev</span>
-                        <span class="w-4/12 text-sm text-gray-800">4 Januari 2025</span>
-                        <span class="w-2/12">
-                            <a href="#" class="bg-yellow-400 text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-500">Lihat Detail</a>
-                        </span>
-                    </div>
-                    <div class="flex px-6 py-4 items-center">
-                        <span class="w-1/12 text-sm text-gray-800">5</span>
-                        <span class="w-5/12 text-sm text-gray-800 font-medium">Cyber Security</span>
-                        <span class="w-4/12 text-sm text-gray-800">10 Januari 2025</span>
-                        <span class="w-2/12">
-                            <a href="#" class="bg-yellow-400 text-black text-xs font-bold py-1 px-3 rounded-md hover:bg-yellow-500">Lihat Detail</a>
-                        </span>
-                    </div>
-                </div>
-            </div>
+    <div class="bg-amber-50 shadow-md rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead class="bg-amber-200 text-gray-800">
+                    <tr>
+                        <th class="py-3 px-4 text-left">No</th>
+                        <th class="py-3 px-4 text-left">Nama Skema</th>
+                        <th class="py-3 px-4 text-center">Waktu Mulai</th>
+                        <th class="py-3 px-4 text-center">Tanggal</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    {{-- Loop data dari controller --}}
+                    @forelse ($jadwals as $jadwal)
+                        <tr class="border-b hover:bg-amber-100">
+                            <td class="py-3 px-4">{{ $loop->iteration }}</td>
+                            <td class="py-3 px-4">{{ $jadwal->skema_nama ?? 'N/A' }}</td>
+                            <td class="py-3 px-4 text-center">{{ $jadwal->waktu_mulai ? $jadwal->waktu_mulai->format('H:i') : 'N/A' }}</td>
+                            <td class="py-3 px-4 text-center">{{ $jadwal->tanggal_pelaksanaan ? \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->translatedFormat('d F Y') : 'N/A' }}</td>
+                            <td class="py-3 px-4 text-center">{{ $jadwal->status_jadwal ?? 'N/A' }}</td>
+                            <td class="py-3 px-4 text-center space-x-2">
+                                @if ($jadwal->id_jadwal)
+                                    <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-sm font-medium">
+                                        Lihat
+                                    </a>
+                                @else
+                                    <span class="text-gray-400 text-sm">N/A</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        {{-- Tampil jika $jadwals kosong --}}
+                        <tr>
+                            <td colspan="9" class="py-4 px-4 text-center text-gray-500">
+                                Belum ada jadwal asesmen yang tersedia.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 
             <div class="text-right mt-4">
                 <a href="#" class="text-sm text-blue-600 hover:underline font-medium">Lihat Selengkapnya</a>

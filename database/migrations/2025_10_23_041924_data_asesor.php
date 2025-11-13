@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('asesor', function (Blueprint $table) {
             // Sesuai permintaan: id_asesor (primary) (bigint)
-            $table->id('id_asesor');
+            $table->id('id_asesor'); 
             $table->foreignId('user_id')
                   ->constrained('users', 'id_user') // <-- Tambahkan 'id_user' di sini
                   ->onUpdate('cascade')
@@ -56,7 +56,7 @@ return new class extends Migration
             $table->boolean('is_verified')->default(false)->comment('Status verifikasi asesor');
 
             // Standar timestamp seperti di tabel users
-            $table->timestamps();
+            $table->timestamps(); 
         });
     }
 
