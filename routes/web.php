@@ -14,6 +14,7 @@ use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 use App\Http\Controllers\Kerahasiaan\PersetujuanKerahasiaanController;
 use App\Models\Asesi; // <-- [PENTING] Tambahin ini buat route /tracker
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
+use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -119,6 +120,7 @@ Route::get('/formulir-selesai', function () {
 Route::get('/formulir/data-sertifikasi', [DataSertifikasiAsesiController::class, 'showDataSertifikasiAsesiPage'])
     ->name('formulir.data-sertifikasi');
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 Route::get('/belum_memenuhi', function () {
     return view('formulir_pendaftaran/dokumen_belum_memenuhi');
@@ -245,6 +247,12 @@ Route::get('/asesmen/fr-ak01', [AsesmenController::class, 'showFrAk01'])->name('
 // Payment
 // Tadi ada 2 route '/pembayaran', gua ganti URL ini jadi '/proses-bayar' biar gak bentrok
 =======
+=======
+//bukti kelengkapan
+Route::get('/formulir/bukti-pemohon', [BuktiKelengkapanController::class, 'showBuktiKelengkapanPage'])
+    ->name('web.bukti_pemohon.show');
+
+>>>>>>> d48454bbf8f4c112e7aadf187f8ed953d9876bdd
 // --- Kerahasiaan ---
 //Route::get('/asesmen/fr_ak01', [AsesmenController::class, 'showFrAk01'])->name('asesmen.fr_ak01');
 Route::get('/kerahasiaan/fr-ak01/{id_asesi}', [PersetujuanKerahasiaanController::class, 'showFrAk01'])

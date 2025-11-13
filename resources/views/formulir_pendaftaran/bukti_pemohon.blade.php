@@ -13,7 +13,7 @@
     <div class="flex min-h-screen">
 
         <!-- Sidebar lu (biarin aja) -->
-        <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
+        <x-sidebar></x-sidebar>
 
         <main class="flex-1 p-12 bg-white overflow-y-auto">
             <div class="max-w-4xl mx-auto">
@@ -461,11 +461,11 @@
                 </div>
 
                 <div class="flex justify-between items-center mt-10">
-                    <a href="{{ route('data.sertifikasi', ['id_asesi' => $asesi->id_asesi]) }}"
+                    <a href="/data_sertifikasi"
                         class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300">
                         Sebelumnya
                     </a>
-                    <a href="{{ route('show.tandatangan', ['id_asesi' => $asesi->id_asesi]) }}"
+                    <a href="/halaman-tanda-tangan"
                         class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
                         Selanjutnya
                     </a>
@@ -621,13 +621,13 @@
                             modal.innerHTML = `
                                 <div class="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                                     <div class="mt-3 text-center">
-                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Data Disimpan (Simulasi)</h3>
+                                        <h3 class="text-lg leading-6 font-medium text-gray-900">Data Disimpan</h3>
                                         <div class="mt-2 px-7 py-3">
                                             <p class="text-sm text-gray-500">
                                                 <strong>File:</strong> ${file.name}<br>
                                                 <strong>Keterangan:</strong> ${description || '(Tidak ada)'}
                                             </p>
-                                            <p class="text-xs text-gray-400 mt-4">(Di aplikasi nyata, data ini akan dikirim ke server)</p>
+                                            <p class="text-xs text-gray-400 mt-4">(Data ini akan dikirim ke server)</p>
                                         </div>
                                         <div class="items-center px-4 py-3">
                                             <button class="close-modal px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">

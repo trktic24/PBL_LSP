@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
+use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +44,24 @@ Route::prefix('data-sertifikasi')->group(function () {
     Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
         ->name('api.data_sertifikasi.delete');
 });
+
+//bukti kelengkapan api
+
+//api bukti kelengkapan
+Route::prefix('bukti-kelengkapan')->group(function () {
+    // GET /api/bukti-kelengkapan/{id_data_sertifikasi_asesi}
+    Route::get('/{id_data_sertifikasi_asesi}', [BuktiKelengkapanController::class, 'getDataBuktiKelengkapanApi'])
+        ->name('api.bukti_kelengkapan.get');
+
+    // POST /api/bukti-kelengkapan (simpan atau update data)
+    Route::post('/', [BuktiKelengkapanController::class, 'storeAjax'])
+        ->name('api.bukti_kelengkapan.store');
+
+    // DELETE /api/bukti-kelengkapan/{id} (hapus data)
+    Route::delete('/{id}', [BuktiKelengkapanController::class, 'deleteAjax'])
+        ->name('api.bukti_kelengkapan.delete');
+});
+
 
 
 // API KERAHASIAAN AK01
