@@ -23,6 +23,9 @@ return view('frontend/daftar_asesi');
 Route::get('/tracker', function () {
     return view('frontend/tracker');
 })->name('tracker');
+Route::get('/FR-MAPA-02', function () {
+    return view('frontend/FR_MAPA_02');
+})->name('MAPA-02');
 
 
 Route::middleware('auth')->group(function () {
