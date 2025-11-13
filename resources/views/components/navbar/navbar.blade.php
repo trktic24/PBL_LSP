@@ -1,167 +1,142 @@
-@props(['active' => 'home'])
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
 
-<header 
-  x-data="{ openMenu: false, openDropdown: false }" 
-  class="fixed top-0 left-0 w-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-6 sm:px-12 z-50 font-[Poppins]"
->
-  <div class="flex items-center justify-between w-full max-w-7xl mx-auto">
+  
+  .menu-link {
+    color: #1e293b; 
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
 
-    {{-- 🟦 Logo --}}
-    <a href="{{ url('/') }}">
-      <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" alt="logo" class="w-20">
+  .menu-link:hover {
+    color: #1d4ed8;
+    border-bottom: 2px solid #2563eb;
+  }
+
+  .menu-link.active {
+    color: #1d4ed8;
+    border-bottom: 2px solid #2563eb;
+  }
+</style>
+
+<!-- 🟦 Navbar -->
+<header class="fixed top-0 left-0 w-full flex [box-shadow:rgba(0,0,0,0.1)_-4px_9px_25px_-6px]
+  py-4 px-4 sm:px-10 bg-white min-h-[75px] tracking-wide z-50">
+  <div class="flex flex-wrap items-center gap-4 w-full">
+
+    <a href="#">
+      <img src="images\Logo LSP No BG.png" alt="logo" class="w-36" />
     </a>
 
-    {{-- 🟦 Menu utama --}}
-    <nav 
-      :class="{ 'max-lg:hidden': !openMenu }"
-      class="lg:flex lg:flex-1 lg:justify-center max-lg:fixed max-lg:flex max-lg:flex-col max-lg:justify-between
-             max-lg:bg-white max-lg:w-2/3 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:h-full 
-             max-lg:shadow-md max-lg:p-4 max-lg:overflow-auto z-40 mx-auto transition-all"
-    >
-      {{-- Tombol close (mobile) --}}
-      <button 
-        @click="openMenu = false"
-        class="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer"
-      >
-        ✕
-      </button>
+    <div id="collapseMenu"
+      class="lg:ml-12 max-lg:hidden lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-40 max-lg:before:inset-0 max-lg:before:z-50">
 
-      {{-- 🟩 Menu utama --}}
-      <ul class="lg:flex lg:items-center lg:justify-center lg:gap-x-8 max-lg:space-y-4">
-        {{-- 🟩 Logo versi mobile --}}
-        <li class="max-lg:border-b max-lg:border-gray-300 max-lg:pb-4 px-3 lg:hidden">
-          <a href="{{ url('/') }}">
-            <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" alt="logo" class="w-20">
-          </a>
-        </li>
-
-        {{-- 🟦 Menu --}}
-        @php
-          $menus = [
-            ['name' => 'Home', 'href' => route('home')],
-            ['name' => 'Jadwal', 'href' => route('jadwal')],
-            ['name' => 'Profil', 'href' => route('profil')],
-          ];
-        @endphp
-
-        @foreach ($menus as $menu)
-          <li>
-            <a href="{{ $menu['href'] }}"
-              class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
-              {{ request()->is(ltrim(parse_url($menu['href'], PHP_URL_PATH), '/')) 
-                ? 'text-blue-700 border-blue-600' 
-                : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
-              {{ $menu['name'] }}
-            </a>
-          </li>
-        @endforeach
-      </ul>
-
-      {{-- 🟨 Profil User (mobile: bawah sidebar) --}}
-      <div class="lg:hidden mt-auto border-t border-gray-200 pt-4 relative" x-data="{ openDropdownMobile: false }">
-        <div class="flex items-center justify-between px-2">
-          {{-- klik foto/nama -> pindah ke profil --}}
-          <a 
-            href="{{ route('profil') }}" 
-            class="flex items-center space-x-3 cursor-pointer select-none"
-          >
-            <img 
-              src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}" 
-              alt="Foto Profil" 
-              class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover"
-            >
-            <span class="text-gray-800 font-semibold">
-              {{ Auth::user()->name ?? 'User' }}
-            </span>
-          </a>
-
-          {{-- tombol panah untuk toggle dropdown (logout) --}}
-          <button @click="openDropdownMobile = !openDropdownMobile" class="p-2 rounded-md focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        </div>
-
-        {{-- dropdown mobile (muncul di atas area profil) --}}
-        <div 
-          x-show="openDropdownMobile"
-          @click.away="openDropdownMobile = false"
-          x-transition.opacity.scale.95
-          class="absolute right-4 bottom-14 w-40 bg-white rounded-md shadow-lg border border-gray-200 z-50"
-        >
-          <form action="{{ route('logout') }}" method="POST" class="px-2 py-2">
-            @csrf
-            <button 
-              type="submit" 
-              class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-            >
-              Log Out
-            </button>
-          </form>
-        </div>
-      </div>
-    </nav>
-
-    {{-- 🟦 Profil di pojok kanan (desktop) --}}
-    <div 
-      x-data="{ openDropdown: false }"
-      class="hidden lg:flex items-center space-x-3 cursor-pointer select-none relative"
-    >
-      {{-- Klik ke profil --}}
-      <a href="{{ route('profil') }}" class="flex items-center space-x-3">
-        <span class="text-gray-800 font-semibold">
-          {{ Auth::user()->name ?? 'User' }}
-        </span>
-        <img 
-          src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}" 
-          alt="Foto Profil" 
-          class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover"
-        >
-      </a>
-
-      {{-- Dropdown Toggle --}}
-      <button @click="openDropdown = !openDropdown" class="focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      <!-- Tombol Tutup Menu (Mobile) -->
+      <button id="toggleClose"
+        class="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 fill-black" viewBox="0 0 320.591 320.591">
+          <path
+            d="M30.391 318.583a30.37 30.37 0 0 1-21.56-7.288c-11.774-11.844-11.774-30.973 0-42.817L266.643 10.665c12.246-11.459 31.462-10.822 42.921 1.424 10.362 11.074 10.966 28.095 1.414 39.875L51.647 311.295a30.366 30.366 0 0 1-21.256 7.288z"/>
+          <path
+            d="M287.9 318.583a30.37 30.37 0 0 1-21.257-8.806L8.83 51.963C-2.078 39.225-.595 20.055 12.143 9.146c11.369-9.736 28.136-9.736 39.504 0l259.331 257.813c12.243 11.462 12.876 30.679 1.414 42.922-.456.487-.927.958-1.414 1.414a30.368 30.368 0 0 1-23.078 7.288z"/>
         </svg>
       </button>
 
-      {{-- Dropdown desktop --}}
-      <div 
-        x-show="openDropdown"
-        @click.away="openDropdown = false"
-        x-transition.opacity.scale.80
-        class="absolute right-0 top-[60px] w-40 bg-white rounded-md shadow-lg border border-gray-200 z-50"
-      >
-        <form action="{{ route('logout') }}" method="POST">
-          @csrf
-          <button 
-            type="submit" 
-            class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            Log Out
+      <!-- 🟩 Daftar Menu -->
+      <ul class="lg:flex lg:gap-x-4 max-lg:space-y-3 max-lg:fixed max-lg:bg-white
+        max-lg:w-2/3 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-4
+        max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
+
+        <li class="max-lg:border-b max-lg:border-gray-300 max-lg:pb-4 px-3 lg:hidden">
+          <a href="#">
+            <img src="images\Logo LSP No BG.png" alt="logo" class="w-36" />
+          </a>
+        </li>
+
+        <li><a href="#" class="menu-link active block font-medium text-base px-3 py-2">Home</a></li>
+        <li><a href="#" class="menu-link block font-medium text-base px-3 py-2">Jadwal Asesmen</a></li>
+        <li><a href="#" class="menu-link block font-medium text-base px-3 py-2">Sertifikasi</a></li>
+
+        <li class="relative group px-3 py-2">
+          <button class="flex items-center text-slate-900 font-medium text-base hover:text-blue-700 focus:outline-none">
+            Info
+            <svg class="w-3 h-3 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 10 6">
+              <path d="m1 1 4 4 4-4" />
+            </svg>
           </button>
-        </form>
-      </div>
+
+          <ul class="absolute hidden group-hover:block bg-white shadow-md rounded-md mt-2 w-44 border border-gray-100 z-50">
+            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Alur Proses</a></li>
+            <li><hr class="my-0 border-gray-200"></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Daftar Asesor</a></li>
+            <li><hr class="my-0 border-gray-200"></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">TUK</a></li>
+          </ul>
+        </li>
+
+        <li class="relative group px-3 py-2">
+          <button class="flex items-center text-slate-900 font-medium text-base hover:text-blue-700 focus:outline-none">
+            Profil
+            <svg class="w-3 h-3 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 10 6">
+              <path d="m1 1 4 4 4-4" />
+            </svg>
+          </button>
+
+          <ul class="absolute hidden group-hover:block bg-white shadow-md rounded-md mt-2 w-44 border border-gray-100 z-50">
+            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Visi & Misi</a></li>
+            <li><hr class="my-0 border-gray-200"></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Struktur</a></li>
+            <li><hr class="my-0 border-gray-200"></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Mitra</a></li>
+          </ul>
+        </li>
+      </ul>
     </div>
 
-    {{-- 🟦 Tombol toggle menu (mobile) --}}
-    <button @click="openMenu = true" class="flex ml-2 lg:hidden">
-      <svg class="w-7 h-7" fill="#000" viewBox="0 0 20 20">
-        <path 
-          fill-rule="evenodd"
-          d="M3 5h14M3 10h14M3 15h14"
-          stroke="currentColor" 
-          stroke-width="2" 
-          stroke-linecap="round"
-        ></path>
-      </svg>
-    </button>
+    <div class="flex ml-auto items-center">
+      <button class="px-4 py-2 text-[15px] rounded-md font-medium text-white bg-blue-600 hover:bg-blue-700 cursor-pointer">
+        Masuk
+      </button>
 
+      <div id="toggleOpen" class="flex ml-4 lg:hidden">
+        <button class="cursor-pointer">
+          <svg class="w-7 h-7" fill="#000" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </header>
 
+
 <div class="h-[80px]"></div>
+
+
+<script>
+  const toggleOpen = document.getElementById("toggleOpen");
+  const toggleClose = document.getElementById("toggleClose");
+  const collapseMenu = document.getElementById("collapseMenu");
+
+
+  toggleOpen.addEventListener("click", () => {
+    collapseMenu.classList.remove("max-lg:hidden");
+  });
+  toggleClose.addEventListener("click", () => {
+    collapseMenu.classList.add("max-lg:hidden");
+  });
+
+  const menuLinks = document.querySelectorAll(".menu-link");
+  menuLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      menuLinks.forEach(l => l.classList.remove("active"));
+      link.classList.add("active");
+    });
+  });
+</script>

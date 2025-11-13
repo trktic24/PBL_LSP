@@ -1,4 +1,4 @@
-<div class="border border-gray-900 shadow-md overflow-x-auto rounded-lg">
+<div class="border border-gray-900 shadow-md overflow-x-auto">
 
     <table class="w-full">
         

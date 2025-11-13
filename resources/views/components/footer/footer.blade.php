@@ -58,7 +58,7 @@
     <div class="relative max-w-6xl mx-auto mt-3 flex items-center justify-between gap-3">
       {{-- Logo kiri --}}
       <div class="flex items-center gap-2">
-        <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" alt="Logo LSP POLINES" class="w-10">
+        <img src="{{ asset('images/Polines Onli.png') }}" alt="Logo LSP POLINES" class="w-10">
       </div>
 
       {{-- Copyright --}}
