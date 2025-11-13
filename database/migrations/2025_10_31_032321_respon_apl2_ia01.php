@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('respon_apl2_ia01', function (Blueprint $table) {
-            $table->id('id_respon_apl2');
+            $table->id('id_respon_apl2_ia01');
 
             // --- KUNCI 1 ---
             // Bikin FK 'id_data_sertifikasi_asesi'
@@ -27,10 +27,10 @@ return new class extends Migration {
             // Kolom sisanya (sesuai ERD)
             // Ini semua diisi nanti sama asesi/asesor, jadi kita buat 'nullable()'
 
-            $table->text('respon_asesi_apl02')->comment('Respon asesi untuk pertanyaan APL-02');
-            $table->text('bukti_asesi_apl02')->comment('Bukti asesi untuk pertanyaan APL-02');
-            $table->boolean('pencapaian_ia01')->comment('Pencapaian IA01 (ya/tidak)');
-            $table->string('penilaian_lanjut_ia01')->comment('Penilaian Lanjut IA01 (V/A/T)');
+            $table->char('respon_asesi_apl02', 5)->nullable()->comment('Respon asesi untuk pertanyaan APL-02 (K/BK)');
+            $table->string('bukti_asesi_apl02')->nullable()->comment('Bukti asesi untuk pertanyaan APL-02 (PDF)');
+            $table->boolean('pencapaian_ia01')->nullable()->comment('Pencapaian IA01 (ya/tidak)');
+            $table->text('penilaian_lanjut_ia01')->nullable()->comment('Penilaian Lanjut IA01 (V/A/T)');
             $table->timestamps();
         });
     }

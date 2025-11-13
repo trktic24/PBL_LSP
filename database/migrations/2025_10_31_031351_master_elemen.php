@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('master_elemen', function (Blueprint $table) {
             $table->id('id_elemen');
 
-            $table->foreignId('id_unit_kompetensi')->constrained('master_unit_kompetensi', 'id_unit_kompetensi')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('cascade');
 
             // 'elemen' lebih baik pakai text() karena bisa jadi deskripsi panjang
             $table->text('elemen');
