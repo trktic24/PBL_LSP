@@ -8,6 +8,15 @@
 </head>
 <body class="bg-gray-50">
     <!-- Header Section -->
+{{-- 1. Mewarisi layout utama (yang sudah punya header, footer, & CSS) --}}
+@extends('layouts.app-profil')
+
+{{-- 2. Mengatur judul halaman (menggantikan tag <title>) --}}
+@section('title', 'Jadwal Asesmen')
+
+{{-- 3. Memasukkan semua konten Anda ke 'slot' konten di layout --}}
+@section('content')
+
     <div class="bg-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Jadwal Asesmen</h1>

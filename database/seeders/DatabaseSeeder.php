@@ -4,16 +4,23 @@ namespace Database\Seeders;
 
 
 use Illuminate\Database\Seeder;
+use App\Models\Skema;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
 
-        // User::factory(10)->create();
         $this->call([
+            // Pindahkan CategorySeeder ke atas agar data kategori tersedia lebih dulu
+            CategorySeeder::class,
+            
             RoleSeeder::class,
             UserSeeder::class,
+            CountrySeeder::class,
+            JenisTukSeeder::class,
+            MasterTukSeeder::class,
+            SkemaSeeder::class, // SkemaSeeder sekarang menggunakan data dari CategorySeeder
             AsesiSeeder::class,
             AsesorSeeder::class,
             TujuanAssesmenMapa01::class,
@@ -22,11 +29,8 @@ class DatabaseSeeder extends Seeder
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
-            JenisTukSeeder::class,
             JadwalSeeder::class,
-            MasterTukSeeder::class,
-
         ]);
 
-}
+    }
 }

@@ -2,64 +2,69 @@
 
 @section('title', 'Detail Tempat Uji Kompetensi')
 
-{{-- SECTION STYLES untuk menyembunyikan footer (tetap dipertahankan) --}}
-@section('styles')
-<style>
-    /* Menyembunyikan Global Footer */
-    footer, .global-footer {
-        display: none !important;
-    }
-</style>
-@endsection
+
 
 @section('content')
 
-{{-- Container Utama --}}
-<div class="container mx-auto px-4 py-12">
+<div class="min-h-screen bg-[#fffdf5] py-16 px-6 lg:px-8">
     
     {{-- Judul Halaman --}}
-    <h1 class="text-3xl font-semibold text-center mb-10 text-gray-800">Detail Tempat Uji Kompetensi</h1>
+    <div class="max-w-4xl mx-auto text-center mb-10">
+        <h1 class="text-3xl font-semibold text-gray-800">Detail Tempat Uji Kompetensi</h1>
+        <div class="mt-2 w-24 h-1 bg-yellow-400 mx-auto rounded-full"></div>
+    </div>
 
-    {{-- KARTU UTAMA: DETAIL TUK CARD --}}
-    <div class="bg-white rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+    {{-- Kartu Detail TUK --}}
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 p-8">
         
-        {{-- BAGIAN KIRI: CARD INFO --}}
-        <div class="p-8 lg:p-12 md:w-1/2 space-y-4">
-            {{-- Nama Tempat DINAMIS --}}
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">{{ $data_tuk['nama_lengkap'] }}</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ $data_tuk->nama_lokasi }}</h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {{-- Detail Alamat DINAMIS --}}
-            <div class="flex items-center space-x-3 text-lg text-gray-700">
-                <i class="fas fa-map-marker-alt w-5 h-5 text-gray-900"></i>
-                <p>{{ $data_tuk['alamat_detail'] }}</p>
+            {{-- KOLOM KIRI: LOKASI & KONTAK --}}
+            <div class="lg:col-span-1 space-y-6">
+                
+                {{-- DETAIL LOKASI & ALAMAT --}}
+                <div class="flex items-start space-x-3">
+
+                    <span class="text-3xl font-bold text-gray-700 leading-none">📍</span>
+                    <div>
+                        <p class="font-medium text-gray-900">Alamat</p>
+
+                        <p class="text-sm text-gray-600">{{ $data_tuk->alamat_tuk }}</p>
+                    </div>
+                </div>
+
+                {{-- DETAIL KONTAK --}}
+                <div class="flex items-start space-x-3">
+
+                    <span class="text-3xl font-bold text-gray-700 leading-none">📞</span>
+                    <div>
+                        <p class="font-medium text-gray-900">Kontak</p>
+                        
+                        <p class="text-sm text-gray-600">{{ $data_tuk->kontak_tuk }}</p>
+                    </div>
+                </div>
+
+                {{-- Tombol Google Maps (PERBAIKAN DI SINI) --}}
+                <a href="https://maps.app.goo.gl/fbM6ufytVieBm69a6" target="_blank"
+                   class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow transition duration-150 mt-4">
+                    Buka di Google Maps
+                </a>
             </div>
-            
-            {{-- Detail Telepon DINAMIS --}}
-            <div class="flex items-center space-x-3 text-lg text-gray-700">
-                <i class="fas fa-phone-alt w-5 h-5 text-gray-900"></i>
-                <p>{{ $data_tuk['telepon'] }}</p>
-            </div>
-            
-            {{-- Tombol Google Maps --}}
-            <a href="https://maps.app.goo.gl/r4CwetwpJKiUypTZA" 
-               target="_blank" 
-               class="mt-6 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 flex items-center space-x-2 transition duration-150 w-max">
-                <i class="fas fa-map-marked-alt"></i>
-                <span>Buka di Google Maps</span>
-            </a>
-            
-            
-        </div>
-        
-        {{-- BAGIAN KANAN: IMAGE PLACEHOLDER --}}
-        <div class="p-8 md:p-12 md:w-1/2 flex items-center justify-center">
-            <div class="w-full h-64 bg-gray-300 flex items-center justify-center rounded-lg overflow-hidden">
-                <div class="text-center p-6 text-gray-600">
-                    <i class="fas fa-image text-4xl mb-2"></i>
-                    <span class="text-base font-medium">fe:picture</span>
+
+            {{-- KOLOM KANAN: FOTO TUK --}}
+            <div class="lg:col-span-2">
+                <div class="bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
+                    
+                    <img src="{{ $data_tuk->foto_tuk }}" alt="Foto Tempat Uji Kompetensi" 
+                         class="w-full h-80 object-cover" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/placeholder_tuk.png') }}';">
                 </div>
             </div>
+            
         </div>
+        
     </div>
 </div>
 

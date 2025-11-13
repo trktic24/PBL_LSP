@@ -8,8 +8,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [
             base_path('routes/web.php'),
-            base_path('routes/webprofil.php'),
         ],
+        api: __DIR__.'/../routes/api.php',
         commands: base_path('routes/console.php'),
         health: '/up',
     )
@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Daftarin alias middleware
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'check.asesor.approved' => \App\Http\Middleware\CheckAsesorApproved::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

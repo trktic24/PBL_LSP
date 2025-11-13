@@ -1,3 +1,8 @@
+<!-- ✅ Anti FOUC untuk semua elemen x-cloak -->
+<style>
+  [x-cloak] { display: none !important; }
+</style>
+
 <footer
   x-data="footerData()"
   class="w-full text-white py-16 font-[Poppins] text-center"
@@ -23,7 +28,7 @@
     {{-- Tombol --}}
     <div class="mt-8 sm:mt-10">
       <button
-        @click="showModal = true"
+        @click="openModal()"
         class="inline-block bg-blue-500 text-white font-semibold px-10 py-3 rounded-full rounded-tr-none
                border border-white shadow-md hover:shadow-lg transition-all duration-300
                hover:bg-white hover:text-blue-600 hover:border-blue-600">
@@ -31,19 +36,16 @@
       </button>
     </div>
 
-    {{-- Jarak besar antara tombol dan alamat --}}
     <div class="mt-24"></div>
   </div>
 
   {{-- Bagian alamat dan kontak --}}
   <div class="w-full px-6 sm:px-12">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-sm text-white/90 gap-14 max-w-6xl mx-auto">
-      {{-- Kolom kiri (Alamat) --}}
       <div class="text-center md:text-left leading-relaxed">
         <p>Jl. Prof. Soedarto, SH,<br>Tembalang, Semarang, Jawa Tengah</p>
       </div>
 
-      {{-- Kolom kanan (Kontak) --}}
       <div class="text-center md:text-right leading-relaxed">
         <p>(024) 7473417 ext.516<br>lsp@polines.ac.id</p>
       </div>
@@ -56,17 +58,14 @@
 
     {{-- Footer bawah --}}
     <div class="relative max-w-6xl mx-auto mt-3 flex items-center justify-between gap-3">
-      {{-- Logo kiri --}}
       <div class="flex items-center gap-2">
         <img src="{{ asset('images/Polines Onli.png') }}" alt="Logo LSP POLINES" class="w-10">
       </div>
 
-      {{-- Copyright --}}
       <p class="absolute left-1/2 transform -translate-x-1/2 text-xs text-white/70">
         © <span x-text="year"></span> LSP POLINES. All rights reserved.
       </p>
 
-      {{-- Icon sosial kanan --}}
       <div class="flex gap-2">
         <template x-for="icon in socialLinks" :key="icon.name">
           <a
@@ -81,25 +80,22 @@
     </div>
   </div>
 
-  {{-- MODAL Hubungi Kami --}}
+  {{-- ✅ MODAL Hubungi Kami --}}
   <div
     x-show="showModal"
     x-transition.opacity
     x-cloak
-    @click.self="showModal = false"
+    @click.self="closeModal()"
     class="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm"
   >
     <div
       x-transition.scale.origin.center
       class="relative bg-white rounded-2xl shadow-lg w-full max-w-xs mx-auto overflow-hidden font-[Poppins]"
     >
-      {{-- Modal header --}}
       <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-900 tracking-wide">
-          Hubungi Kami
-        </h3>
+        <h3 class="text-sm font-semibold text-gray-900 tracking-wide">Hubungi Kami</h3>
         <button
-          @click="showModal = false"
+          @click="closeModal()"
           class="text-gray-400 hover:bg-gray-200 hover:text-gray-800 rounded-lg text-xs h-7 w-7 flex justify-center items-center transition"
         >
           <svg class="w-2.5 h-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -109,9 +105,8 @@
         </button>
       </div>
 
-      {{-- Modal body --}}
       <div class="p-5 space-y-3">
-        {{-- WhatsApp --}}
+
         <a href="https://wa.me/6281234567890" target="_blank"
            class="flex items-center justify-between w-full border border-gray-200 rounded-lg px-4 py-3
                   transition-all duration-300 hover:shadow-md hover:border-blue-500/70 hover:ring-1 hover:ring-blue-400/40">
@@ -121,7 +116,6 @@
           </div>
         </a>
 
-        {{-- Gmail --}}
         <a href="mailto:lsp@polines.ac.id"
            class="flex items-center justify-between w-full border border-gray-200 rounded-lg px-4 py-3
                   transition-all duration-300 hover:shadow-md hover:border-blue-500/70 hover:ring-1 hover:ring-blue-400/40">
@@ -130,6 +124,7 @@
             <span class="font-medium text-gray-800 text-sm">Gmail</span>
           </div>
         </a>
+
       </div>
     </div>
   </div>
@@ -141,11 +136,31 @@
 {{-- Alpine.js --}}
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+<!-- ✅ Alpine Store untuk kunci modal agar tidak tampil sekedip -->
+<script>
+  document.addEventListener("alpine:init", () => {
+    Alpine.store("footerModal", { showModal: false });
+  });
+</script>
+
 <script>
   function footerData() {
     return {
       year: new Date().getFullYear(),
-      showModal: false,
+
+      // ✅ Modal selalu tertutup saat halaman pertama kali dimuat
+      showModal: Alpine.store("footerModal").showModal,
+
+      openModal() {
+        this.showModal = true;
+        Alpine.store("footerModal").showModal = true;
+      },
+
+      closeModal() {
+        this.showModal = false;
+        Alpine.store("footerModal").showModal = false;
+      },
+
       socialLinks: [
         { name: 'linkedin-in', link: 'https://linkedin.com' },
         { name: 'facebook-f', link: 'https://www.facebook.com/PolinesOfficial' },

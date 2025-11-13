@@ -20,10 +20,17 @@ class Skema extends Model
         'deskripsi_skema',
         'SKKNI',
         'gambar',
+        'harga',
+        'category_id',
     ];
 
     public function asesors(): HasMany
     {
         return $this->hasMany(Asesor::class, 'id_skema', 'id_skema');
+    }
+    public function category()
+    {
+        // Satu skema milik SATU kategori
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }

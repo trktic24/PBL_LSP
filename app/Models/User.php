@@ -5,13 +5,15 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
+    use HasFactory,HasApiTokens, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
 
     /**
      * Kolom yang boleh diisi secara massal.

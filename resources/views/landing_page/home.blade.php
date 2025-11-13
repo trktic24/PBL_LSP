@@ -3,135 +3,313 @@
 @section('content')
 
 {{-- ======================= HERO ======================= --}}
-<section class="relative h-[1000px] rounded-t-4xl overflow-hidden">
+<section class="relative h-[900px] rounded-t-4xl overflow-hidden z-10"> 
     <img src="{{ asset('images/Gedung Polines.jpg') }}"
-         alt="Gedung Polines"
-         class="w-full h-full object-cover">
+        alt="Gedung Polines"
+        class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
-    <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-white/95 via-white/50 to-transparent"></div>
-    <div class="absolute top-1/3 left-16 text-black drop-shadow-lg max-w-xl">
-        <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
-        <p class="text-xl mb-6 leading-relaxed">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
+    <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
+    ...
+    <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
+
+    {{-- POSISI DIATUR OLEH CONTAINER DI DALAMNYA --}}
+    <div class="absolute top-1/3 inset-x-0">
+        
+        {{-- 
+          Wrapper container baru. 
+          GANTI 'px-8' DI BAWAH INI dengan padding dari navbar Anda (dari Langkah 1)--}}
+        <div class="container mx-auto px-8"> {{-- <-- GANTI 'px-8' INI --}}
+            
+            {{-- Konten Anda (kelas 'left-16' sudah dihapus) --}}
+            <div class="text-black drop-shadow-lg max-w-xl">
+                <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
+                <p class="text-xl mb-6 leading-relaxed">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
+
+                <div class="flex items-center gap-6 mt-8">
+                    <a href="{{ route('login') }}"
+                       class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
+                              hover:bg-yellow-500 transition-all duration-300 ease-in-out
+                              transform hover:scale-105">
+                        Daftar
+                    </a>
+                    <a href="#skema-sertifikasi"
+                       class="text-black font-semibold text-lg flex items-center gap-2
+                              hover:gap-3 transition-all duration-300 ease-in-out group">
+                        Eksplore Skema
+                        <span class="font-bold text-xl transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
 <style>
-#scrollContainer::-webkit-scrollbar { display: none; }
-#scrollContainer { -ms-overflow-style: none; scrollbar-width: none; }
-.active-category {
-    background-color: rgb(250 204 21); /* kuning pekat */
-    color: black;
+/* ======================= FIX CSS UNTUK FORMAT KATEGORI ======================= */
+/* [BARU] Styling untuk tombol Navigasi */
+.carousel-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px; /* Full rounded */
+    transition: background 0.3s, opacity 0.3s;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+.carousel-nav-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+html { scroll-behavior: smooth; }
+#scrollContainer::-webkit-scrollbar { display: none; }
+#scrollContainer { -ms-overflow-style: none; scrollbar-width: none; margin-bottom: 2rem; }
+
+.active-category {
+    background-color: rgb(250 204 21) !important; /* Kuning 500 */
+    color: black;
+    transform: translateY(-3px) scale(1.05) !important;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 6px 15px rgba(250, 204, 21, 0.5);
+}
+
 .inactive-category {
-    background-color: rgb(254 249 195); /* kuning pudar */
+    background-color: rgb(254 249 195) !important; /* Kuning 100 */
     color: #444;
+    transform: scale(1);
+    transition: all 0.25s ease-in-out;
+}
+
+.inactive-category:hover {
+    background-color: rgb(254 240 138); /* Kuning 200 */
+}
+
+/* FIX KRUSIAL: Pastikan teks kategori tidak kepotong */
+.category-btn {
+    white-space: nowrap !important; /* Mencegah teks turun baris */
+    height: auto !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+/* Sembunyikan slide tambahan saat filter aktif */
+.skema-slide.hidden-slide {
+    display: none !important;
 }
 </style>
 
-{{-- ======================= FILTER KATEGORI ======================= --}}
-<section class="py-10 text-center">
-    <div id="scrollContainer" class="overflow-x-auto whitespace-nowrap px-6 cursor-grab active:cursor-grabbing select-none">
-        <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
-        <div id="categoryButtons" class="inline-flex gap-4">
-            <button data-category="Semua" class="btn btn-sm font-bold rounded-full px-6 border-none active-category">Semua</button>
-            <button data-category="Software" class="btn btn-sm font-bold rounded-full px-6 border-none inactive-category hover:bg-yellow-200">Software</button>
-            <button data-category="Hardware" class="btn btn-sm font-bold rounded-full px-6 border-none inactive-category hover:bg-yellow-200">Hardware</button>
-            <button data-category="Jaringan" class="btn btn-sm font-bold rounded-full px-6 border-none inactive-category hover:bg-yellow-200">Jaringan</button>
-            <button data-category="AI & Network" class="btn btn-sm font-bold rounded-full px-6 border-none inactive-category hover:bg-yellow-200">AI & Network</button>
+{{-- ======================= FILTER KATEGORI (FIXED TAMPILAN) ====================== --}}
+<section id="skema-sertifikasi" 
+             class="py-10 text-center relative z-20 bg-white -mt-10">
+    <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
+    
+    {{-- FIX: Menggunakan container lebar penuh dan menghilangkan max-w-4xl --}}
+    <div class="relative w-full px-4 mx-auto">
+        {{-- FIX: Menggunakan justify-start agar item berada di kiri (walaupun di scroll) --}}
+        <div id="scrollContainer" 
+             class="flex flex-row gap-4 overflow-x-scroll whitespace-nowrap justify-start py-4 px-4">
+            
+            {{-- FIX: Menggunakan w-fit dan mx-auto agar tombol rata tengah jika kurang dari lebar layar --}}
+            <div id="categoryButtons" class="inline-flex gap-4 w-fit mx-auto"> 
+                @foreach($categories as $category)
+                    <button data-category="{{ $category }}"
+                            class="category-btn btn btn-sm font-bold rounded-full px-4 border-none
+                            {{ $loop->first ? 'active-category' : 'inactive-category' }}">
+                        {{ $category }} 
+                    </button>
+                @endforeach
+            </div>
+
         </div>
     </div>
 </section>
-
-<script>
-const scrollContainer = document.getElementById("scrollContainer");
-let isDown = false, startX, scrollLeft;
-scrollContainer.addEventListener("mousedown", e => {
-    isDown = true; startX = e.pageX - scrollContainer.offsetLeft;
-    scrollLeft = scrollContainer.scrollLeft;
-});
-scrollContainer.addEventListener("mouseleave", () => isDown = false);
-scrollContainer.addEventListener("mouseup", () => isDown = false);
-scrollContainer.addEventListener("mousemove", e => {
-    if(!isDown) return; e.preventDefault();
-    const x = e.pageX - scrollContainer.offsetLeft;
-    const walk = (x - startX) * 2;
-    scrollContainer.scrollLeft = scrollLeft - walk;
-});
-</script>
 
 {{-- ======================= CAROUSEL GRID SKEMA ======================= --}}
-<section class="px-10 mb-16">
-    @php
-        $skemas = $skemas ?? [];
-        $slide1 = array_slice($skemas, 0, 6);
-        $slide2 = array_slice($skemas, 6, 6);
-    @endphp
-    <div id="gridCarousel" class="relative overflow-hidden rounded-3xl w-full">
-        <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
-            {{-- Slide 1 --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full p-6">
-                @foreach ($slide1 as $i => $file)
-                <div class="transition hover:scale-105 skema-card" data-category="{{ $file['kategori'] }}">
-                    <a href="{{ route('detail_skema', ['id' => $file['id']]) }}">
-                        <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                            <img src="{{ asset('images/' . $file['gambar']) }}" alt="{{ $file['nama'] }}" class="h-48 w-full object-cover">
-                        </div>
-                    </a>
-                    <div class="px-2">
-                        <h2 class="text-lg font-bold text-gray-800">{{ $file['nama'] }}</h2>
-                        <p class="text-gray-600">Rp. x.xxx.xxx</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
+<section class="px-4 md:px-10 mb-16">
+    <div id="gridCarousel" class="relative overflow-hidden rounded-3xl w-full max-w-7xl mx-auto">
+        <button id="prevBtn" 
+                class="carousel-nav-btn left-2 disabled:opacity-30 disabled:cursor-not-allowed" 
+                onclick="moveSlide(-1)">&#10094;</button>
+        
+        <button id="nextBtn" 
+                class="carousel-nav-btn right-2 disabled:opacity-30 disabled:cursor-not-allowed" 
+                onclick="moveSlide(1)">&#10095;</button>
 
-            {{-- Slide 2 --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 flex-none w-full p-6">
-                @foreach ($slide2 as $file)
-                <div class="transition hover:scale-105 skema-card" data-category="{{ $file['kategori'] }}">
-                    <a href="{{ route('detail_skema', ['id' => $file['id']]) }}">
-                        <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                            <img src="{{ asset('images/' . $file['gambar']) }}" alt="{{ $file['nama'] }}" class="h-48 w-full object-cover">
+        <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
+            @php
+                $chunks = $skemas->chunk(6); // 6 kartu per slide
+            @endphp
+
+            @forelse($chunks as $index => $chunk)
+                {{-- Setiap chunk (kelompok 6 kartu) menjadi 1 slide --}}
+                <div class="flex-none w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6 skema-slide" data-slide-index="{{ $index }}">
+                    @foreach($chunk as $skema)
+                        @php
+                            // FIX RELASI KRUSIAL: Menggunakan Nullsafe Operator (?->) pada relasi 'category'
+                            $categoryName = $skema->category?->nama_kategori ?? 'Tidak Terkategori';
+                        @endphp
+                        
+                        <div class="transition hover:scale-105 skema-card" data-category="{{ $categoryName }}">
+                            <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
+                                <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
+                                    <img src="{{ $skema->gambar ? asset('images/' . $skema->gambar) : asset('images/default.jpg') }}"
+                                         alt="Gambar Skema"
+                                         class="h-48 w-full object-cover">
+                                </div>
+                            </a>
+                            <div class="px-2">
+                                <h2 class="text-lg font-bold text-gray-800">{{ $skema->nama_skema }}</h2>
+                                <p class="text-sm text-gray-500 mb-1">{{ $categoryName }}</p>
+                                <p class="text-gray-800 font-semibold">Rp {{ number_format($skema->harga, 0, ',', '.') }}</p>
+                            </div>
                         </div>
-                    </a>
-                    <div class="px-2">
-                        <h2 class="text-lg font-bold text-gray-800">{{ $file['nama'] }}</h2>
-                        <p class="text-gray-600">Rp. x.xxx.xxx</p>
-                    </div>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
+            @empty
+                <div class="text-center text-gray-500 py-10 w-full">
+                    <p>Tidak ada skema sertifikasi yang tersedia saat ini.</p>
+                </div>
+            @endforelse
         </div>
+        
+        {{-- Area untuk pesan jika filter tidak menemukan hasil --}}
+        <div id="noResultsMessage" class="hidden text-center text-gray-500 py-10">
+            <p>Tidak ada skema yang ditemukan untuk kategori ini.</p>
+        </div>
+
     </div>
 </section>
 
 <script>
-const gridSlides = document.getElementById('gridSlides');
-const slides = document.querySelectorAll('#gridSlides > div');
-const totalSlides = slides.length;
-let currentIndex = 0;
-function showSlide(index) { gridSlides.style.transform = `translateX(-${index * 100}%)`; }
-setInterval(() => { currentIndex = (currentIndex + 1) % totalSlides; showSlide(currentIndex); }, 5000);
+// ======================= LOGIKA FILTER DAN CAROUSEL (Final) =======================
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('#categoryButtons button');
+    const cards = document.querySelectorAll('.skema-card');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    const gridSlides = document.getElementById('gridSlides');
+    const slides = document.querySelectorAll('.skema-slide');
+    const totalSlides = slides.length;
+    let currentIndex = 0;
+    let isFilterActive = false;
 
-// ===== FILTER KATEGORI =====
-const categoryButtons = document.querySelectorAll('#categoryButtons button');
-const cards = document.querySelectorAll('.skema-card');
+    // Fungsi untuk memperbarui tampilan tombol
+    function setActiveButton(selectedButton) {
+        buttons.forEach(btn => {
+            btn.classList.remove('active-category');
+            btn.classList.add('inactive-category');
+        });
+        selectedButton.classList.add('active-category');
+        selectedButton.classList.remove('inactive-category');
+    }
+    
+    window.moveSlide = function(direction) {
+        if (isFilterActive) return; // Jangan geser jika sedang mode filter
 
-categoryButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // ubah warna tombol aktif
-        categoryButtons.forEach(b => b.classList.remove('active-category'));
-        categoryButtons.forEach(b => b.classList.add('inactive-category'));
-        btn.classList.remove('inactive-category');
-        btn.classList.add('active-category');
+        let newIndex = currentIndex + direction;
 
-        const category = btn.dataset.category;
-        cards.forEach(card => {
-            const match = (category === 'Semua') || (card.dataset.category === category);
-            card.style.display = match ? 'block' : 'none';
+        if (newIndex < 0) {
+            newIndex = 0; // Batas kiri
+        } else if (newIndex >= totalSlides) {
+            newIndex = totalSlides - 1; // Batas kanan
+        }
+
+        showSlide(newIndex);
+    }
+
+    function showSlide(index) {
+        if (isFilterActive) return;
+
+        currentIndex = index;
+        gridSlides.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        // Update status tombol navigasi
+        if (prevBtn && nextBtn) {
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === totalSlides - 1;
+        }
+    }
+
+    // Set default button (Semua)
+    const defaultButton = document.querySelector('button[data-category="Semua"]');
+    if (defaultButton) {
+        setActiveButton(defaultButton);
+        showSlide(0);
+    }
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            const selectedCategory = button.dataset.category;
+            let visibleCardCount = 0;
+            setActiveButton(button);
+            isFilterActive = (selectedCategory !== 'Semua');
+
+            if (isFilterActive) {
+                // Mode Filter: Sembunyikan navigasi, reset slide, dan sembunyikan semua slide di awal
+                if (prevBtn && nextBtn) {
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                }
+                gridSlides.style.transform = `translateX(0%)`;
+                slides.forEach(slide => slide.classList.add('hidden-slide'));
+            } else {
+                // Mode "Semua": Tampilkan navigasi, reset slide, dan tampilkan semua slide
+                if (prevBtn && nextBtn) {
+                    prevBtn.style.display = 'block';
+                    nextBtn.style.display = 'block';
+                }
+                slides.forEach(slide => slide.classList.remove('hidden-slide'));
+                showSlide(0); 
+            }
+
+            cards.forEach(card => {
+                const cardCategory = card.dataset.category;
+                
+                const isVisible = (selectedCategory === 'Semua' || cardCategory === selectedCategory);
+                
+                // Gunakan 'block' atau 'none' untuk kartu
+                card.style.display = isVisible ? 'block' : 'none';
+                
+                if (isVisible && isFilterActive) {
+                    visibleCardCount++;
+                    // Jika filter aktif, pastikan slide induk kartu yang terlihat juga ditampilkan
+                    card.closest('.skema-slide').classList.remove('hidden-slide');
+                }
+            });
+            if (visibleCardCount === 0 && isFilterActive) {
+                noResultsMessage.classList.remove('hidden');
+            } else {
+                noResultsMessage.classList.add('hidden');
+            }
         });
     });
 });
+
+// ======================= SCROLL DRAG KATEGORI =======================
+const scrollContainer = document.getElementById("scrollContainer");
+if (scrollContainer) { 
+    let isDown = false, startX, scrollLeft;
+    scrollContainer.addEventListener("mousedown", e => {
+        isDown = true;
+        startX = e.pageX - scrollContainer.offsetLeft;
+        scrollLeft = scrollContainer.scrollLeft;
+        scrollContainer.style.cursor = 'grabbing'; 
+    });
+    scrollContainer.addEventListener("mouseleave", () => { isDown = false; scrollContainer.style.cursor = 'grab'; });
+    scrollContainer.addEventListener("mouseup", () => { isDown = false; scrollContainer.style.cursor = 'grab'; });
+    scrollContainer.addEventListener("mousemove", e => {
+        if(!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - scrollContainer.offsetLeft;
+        const walk = (x - startX) * 2;
+        scrollContainer.scrollLeft = scrollLeft - walk;
+    });
+    scrollContainer.style.cursor = 'grab'; 
+}
 </script>
 
 {{-- ======================= JADWAL SERTIFIKASI ======================= --}}
@@ -158,6 +336,55 @@ categoryButtons.forEach(btn => {
                 <p>Belum ada jadwal yang akan datang saat ini.</p>
             </div>
         @endforelse
+    </div>
+</section>
+
+{{-- ======================= BERITA TERBARU (MODIFIKASI) ======================= --}}
+<section id="berita-terbaru" class="bg-white py-12 px-10 text-center"> {{-- <-- ID DITAMBAHKAN --}}
+    <h2 class="text-3xl font-bold mb-8">Berita Terbaru</h2>
+    
+    {{-- Grid untuk Kartu Berita --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        
+        {{-- Kita looping data berita dari controller --}}
+        @forelse ($beritas as $berita)
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] text-left">
+                
+                {{-- LINK HREF DIPERBARUI --}}
+                <a href="{{ route('berita.detail', ['id' => $berita->id]) }}"> 
+                    
+                    {{-- Gambar Berita --}}
+                    <img src="{{ $berita->gambar }}" 
+                         alt="{{ $berita->judul }}" 
+                         class="w-full h-48 object-cover">
+                    
+                    <div class="p-6">
+                        {{-- Tanggal Publish --}}
+                        <p class="text-sm text-gray-500 mb-2">
+                            {{ $berita->tanggal->format('d F Y') }}
+                        </p>
+                        
+                        {{-- Judul Berita --}}
+                        <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" style="min-height: 3.5rem;">
+                            {{ $berita->judul }}
+                        </h3>
+                        
+                        {{-- Link Baca Selengkapnya (Tema Biru Polines) --}}
+                        <span class="font-semibold text-blue-700 hover:underline flex items-center gap-1 group">
+                            Baca Selengkapnya
+                            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+                        </span>
+                    </div>
+
+                </a>
+            </div>
+        @empty
+            {{-- Tampilan jika tidak ada berita --}}
+            <div class="md:col-span-2 lg:col-span-3 text-center text-gray-500 py-16">
+                <p class="text-xl">Belum ada berita yang dipublikasikan.</p>
+            </div>
+        @endforelse
+
     </div>
 </section>
 

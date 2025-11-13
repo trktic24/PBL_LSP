@@ -63,7 +63,7 @@ class AsesorFactory extends Factory
             'tanda_tangan' => null,
 
             // 80% user asesor langsung di-verify
-            'is_verified' => $this->faker->boolean(80),
+            'status_verifikasi' => $this->faker->boolean(80) ? 'approved' : $this->faker->randomElement(['pending', 'rejected']),
         ];
     }
 }

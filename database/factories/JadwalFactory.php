@@ -29,10 +29,11 @@ class JadwalFactory extends Factory
         return [
             // Baris ini akan otomatis membuat data baru di tabel relasi
             // jika belum ada data.
-            'id_jenis_tuk' => JenisTuk::factory(),
-            'id_tuk' => MasterTuk::factory(),
-            'id_skema' => Skema::factory(), // Asumsi SkemaFactory ada
-            'id_asesor' => Asesor::factory(), // Asumsi AsesorFactory ada
+            'id_jenis_tuk' => JenisTuk::inRandomOrder()->value('id_jenis_tuk'),
+            'id_tuk'       => MasterTuk::inRandomOrder()->value('id_tuk'),
+            'id_skema'     => Skema::inRandomOrder()->value('id_skema'),
+            'id_asesor'    => Asesor::inRandomOrder()->value('id_asesor'),
+
 
             'kuota_maksimal' => $this->faker->numberBetween(50, 100),
             'kuota_minimal' => 15, // Sesuai default di migrasi
@@ -40,6 +41,7 @@ class JadwalFactory extends Factory
             'tanggal_mulai' => $mulai,
             'tanggal_selesai' => $selesai,
             'tanggal_pelaksanaan' => $pelaksanaan,
+            'waktu_mulai' => $mulai->format('H:i:s'),
             'Status_jadwal' => $this->faker->randomElement(['Terjadwal', 'Selesai', 'Dibatalkan']),
         ];
     }
