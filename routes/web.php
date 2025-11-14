@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
 
+// [PERUBAHAN 1] Tambahkan impor Model Skema di sini
+use App\Models\Skema; 
+
 // Import Controller
 use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\BelajarController;
@@ -25,7 +28,24 @@ use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 // ====================================================
 // 1. HALAMAN STATIS (VIEW ONLY)
 // ====================================================
-Route::get('/', function () { return view('halaman_ambil_skema'); });
+
+// [PERUBAHAN 2] Rute '/' Anda telah diperbaiki
+Route::get('/', function () {
+    
+    // 1. Ambil skema PERTAMA dari database beserta relasinya
+    $skema_pertama = Skema::with(['unitKompetensi', 'detailSertifikasi'])->first();
+
+    // 2. Jika database kosong, beri pesan error
+    if (!$skema_pertama) {
+        abort(404, 'Tidak ada data skema yang ditemukan di database.');
+    }
+
+    // 3. Kirim data skema itu ke view dengan nama variabel 'skema'
+    return view('halaman_ambil_skema', [
+        'skema' => $skema_pertama
+    ]);
+});
+
 
 // --- Formulir Pendaftaran Views ---
 Route::get('/data_sertifikasi/{id_asesi}', function ($id_asesi) {
@@ -131,6 +151,9 @@ Route::get('/kerahasiaan/fr-ak01/{id_asesi}', [PersetujuanKerahasiaanController:
 
 // --- Pembayaran (Action) ---
 Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');
+
+Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])
+      ->name('pembayaran_diproses'); // <-- INI YANG MEMPERBAIKI ERROR
 
 // --- PDF ---
 Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])->name('apl01.download');

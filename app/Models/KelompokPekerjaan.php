@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+// [PERBAIKAN] Tambahkan 2 baris ini
+use App\Models\Skema;
+use App\Models\UnitKompetensi;
+
 class KelompokPekerjaan extends Model
 {
     // 1. WAJIB: Biar bisa nyambung ke Factory

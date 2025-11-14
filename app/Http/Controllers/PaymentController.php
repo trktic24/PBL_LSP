@@ -14,8 +14,7 @@ class PaymentController extends Controller
     public function createTransaction(Request $request)
     {
         // 1. SET KONFIGURASI MIDTRANS
-        // Ambil konfigurasi dari file config/midtrans.php
-        // (yang datanya mengambil dari .env)
+        // (Kode Anda yang lain di sini)
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = true;
@@ -23,15 +22,14 @@ class PaymentController extends Controller
 
 
         // 2. SIAPKAN DATA TRANSAKSI (CONTOH)
-        // Nanti, data ini harusnya Anda ambil dari database atau session
-        // berdasarkan sertifikasi yang dipilih user.
+        // (Kode Anda yang lain di sini)
         $transaction_details = [
             'order_id' => 'LSP-' . uniqid(), // ID Invoice/Order (WAJIB UNIK)
             'gross_amount' => 150000, // Total harga (contoh: Rp 150.000)
         ];
 
         // 3. (OPSIONAL) SIAPKAN DATA CUSTOMER
-        // Ini contoh, idealnya ambil dari data user yang login
+        // (Kode Anda yang lain di sini)
         $customer_details = [
             'first_name'    => "Budi",
             'last_name'     => "Utomo",
@@ -40,10 +38,11 @@ class PaymentController extends Controller
         ];
 
         // 4. (OPSIONAL) SIAPKAN DATA ITEM/PRODUK
+        // (Kode Anda yang lain di sini)
         $item_details = [
             [
                 'id'       => 'SERTIFIKASI-01', // ID produk/sertifikasi
-                'price'    => 100000,
+                'price'    => 150000,
                 'quantity' => 1,
                 'name'     => 'Biaya Sertifikasi Skema A'
             ]
@@ -54,22 +53,47 @@ class PaymentController extends Controller
             'transaction_details' => $transaction_details,
             'customer_details'    => $customer_details,
             'item_details'        => $item_details,
-            // 'enabled_payments' => ['gopay', 'shopeepay', 'bca_va'], // (Opsional) Filter metode bayar
+            // 'enabled_payments' => ['gopay', 'shopeepay', 'bca_va'],
+
+            // ▼▼▼ BLOK TAMBAHAN UNTUK FIX REDIRECT ▼▼▼
+            'callbacks' => [
+                // URL untuk tombol "Back to Merchant" (Selesai Bayar)
+                'finish' => route('pembayaran_diproses'),
+                
+                // URL untuk tombol "Keluar halaman ini" (Batal/Unfinish)
+                'unfinish' => route('pembayaran_diproses'),
+            ]
+            // ▲▲▲ SELESAI ▲▲▲
         ];
 
 
         try {
             // 6. MINTA PAYMENT URL DARI MIDTRANS
-            // Midtrans akan mengembalikan URL halaman pembayaran (Snap URL)
+            // (Kode Anda yang lain di sini)
             $paymentUrl = Snap::getSnapUrl($params);
 
             // 7. ARAHKAN USER KE HALAMAN PEMBAYARAN
-            // User akan otomatis diarahkan ke halaman Midtrans
+            // (Kode Anda yang lain di sini)
             return redirect($paymentUrl);
 
         } catch (\Exception $e) {
             // Tangani error jika terjadi
             return "Error: " . $e->getMessage();
         }
+    }
+
+    // Pastikan Anda juga memiliki method processed() dan success()
+    // yang sudah kita bahas sebelumnya
+    public function processed(Request $request)
+    {
+        $orderId = $request->query('order_id');
+        $status = $request->query('transaction_status');
+        $statusCode = $request->query('status_code');
+
+        return view('pembayaran/pembayaran_diproses', [
+            'order_id' => $orderId,
+            'status' => $status,
+            'status_code' => $statusCode
+        ]);
     }
 }
