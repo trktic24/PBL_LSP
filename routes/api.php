@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< HEAD
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
@@ -71,9 +70,7 @@ Route::get('/get-frak01-data/{id_asesi}', [PersetujuanKerahasiaanAPIController::
 
 Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
        ->name('api.setuju.frak01');
-=======
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\LogoutController;
@@ -110,4 +107,3 @@ Route::apiResource('tuks', TukController::class); // <-- BARIS BARU
 Route::get('/skema', [SkemaController::class, 'index']);
 
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
->>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
