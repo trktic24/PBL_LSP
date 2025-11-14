@@ -13,14 +13,6 @@ return new class extends Migration
     {
         Schema::create('respon_ia10', function (Blueprint $table) {
             $table->id('id_respon_ia10');
-<<<<<<< HEAD
-            $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_pertanyaan_ia10')->constrained('pertanyaan_ia10', 'id_pertanyaan_ia10')->onUpdate('cascade')->onDelete('cascade');
-
-            // isi kolom Database respon_ia10
-            $table->enum('jawaban_pilihan', ['Ya', 'Tidak']);
-            $table->string('jawaban_isian');
-=======
             $table->foreignId('id_data_sertifikasi_asesi')->nullable()->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
 
@@ -29,7 +21,6 @@ return new class extends Migration
             $table->boolean('jawaban_pilihan_iya')->default(false)->comment('1 untuk Ya, 0 untuk Tidak');
             $table->boolean('jawaban_pilihan_tidak')->default(false)->comment('1 untuk Tidak, 0 untuk Ya');
             $table->text('jawaban_isian');
->>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
             $table->timestamps();
         });
     }

@@ -52,15 +52,8 @@ class Skema extends Model
     /**
      * Relasi: 1 Skema punya BANYAK DetailSertifikasi
      */
-<<<<<<< HEAD
-    public function detailSertifikasi(): HasMany
-    {
-        return $this->hasMany(DetailSertifikasi::class, 'id_skema', 'id_skema');
-    }
-=======
     // public function detailSertifikasi(): HasMany
     // {
     //     return $this->hasMany(DetailSertifikasi::class, 'id_skema', 'id_skema');
     // }
->>>>>>> a207304fb630326f8ef5676460513c43fd940463
 }
