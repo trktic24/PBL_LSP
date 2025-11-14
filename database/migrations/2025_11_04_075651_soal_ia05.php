@@ -15,7 +15,16 @@ return new class extends Migration
             $table->id('id_soal_ia05');
 
             // isi dari database soal_ia06
+<<<<<<< HEAD
             $table->string('soal_ia05');
+=======
+            $table->text('soal_ia05');
+            $table->string('opsi_jawaban_a');
+            $table->string('opsi_jawaban_b');
+            $table->string('opsi_jawaban_c');
+            $table->string('opsi_jawaban_d');
+
+>>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
             $table->timestamps();
         });
     }

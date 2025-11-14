@@ -61,4 +61,5 @@ class Asesi extends Model
         return $this->hasOne(DataSertifikasiAsesi::class, 'id_asesi', 'id_asesi');
     }
 
-} // <-- Kurung kurawal penutup class
+}
+

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DataPekerjaanAsesi extends Model
 {
+<<<<<<< HEAD
     // 1. (Opsional) Boleh ditambahin kalo lu mau bikin factory-nya juga
     use HasFactory;
 
@@ -44,3 +45,24 @@ class DataPekerjaanAsesi extends Model
         return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
     }
 }
+=======
+    use HasFactory;
+
+    protected $table = 'data_pekerjaan_asesi';
+    protected $primaryKey = 'id_pekerjaan';
+
+    protected $fillable = [
+    'id_asesi',
+    'nama_institusi_pekerjaan',
+    'jabatan',
+    'alamat_institusi',
+    'kode_pos_institusi',
+    'no_telepon_institusi',
+    ];
+
+    public function asesi(): BelongsTo
+    {
+        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
+    }
+}
+>>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
