@@ -1,31 +1,38 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-    </div>
+<x-register-layout :backUrl="route('login')">
+    {{-- Kita bungkus pakai card putih yang sama kayak 'forgot-password' --}}
+    <div class="w-full max-w-md bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)]">
+        <div class="p-10 md:p-12">
 
-    @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-        </div>
-    @endif
+            <h1 class="text-2xl font-semibold">Verifikasi Email Anda</h1>
+            <p class="text-gray-600 mt-2 mb-4">
+                Satu langkah lagi! Sebelum lanjut, cek email Anda untuk link verifikasi. Jika tidak ada, kami bisa kirim ulang.
+            </p>
 
-    <div class="mt-4 flex items-center justify-between">
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
+            {{-- Status kalo email baru aja dikirim ulang --}}
+            @if (session('status') == 'verification-link-sent')
+                <div class="mb-4 font-medium text-sm text-green-600">
+                    Link verifikasi baru telah dikirim ke alamat email Anda.
+                </div>
+            @endif
 
-            <div>
-                <x-primary-button>
-                    {{ __('Resend Verification Email') }}
-                </x-primary-button>
+            <div class="mt-4 flex flex-col sm:flex-row items-center gap-4">
+                {{-- Tombol Kirim Ulang --}}
+                <form method="POST" action="{{ route('verification.send') }}" class="w-full">
+                    @csrf
+                    <x-login-button-biru type="submit" class="w-full">
+                        Kirim Ulang Email Verifikasi
+                    </x-login-button-biru>
+                </form>
+
+                {{-- Tombol Logout --}}
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <button type="submit" class="w-full text-center py-3 px-4 rounded-full text-gray-700 font-semibold bg-gray-100 hover:bg-gray-200 transition-colors">
+                        Logout
+                    </button>
+                </form>
             </div>
-        </form>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-
-            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                {{ __('Log Out') }}
-            </button>
-        </form>
+        </div>
     </div>
-</x-guest-layout>
+</x-register-layout>

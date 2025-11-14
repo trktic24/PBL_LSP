@@ -2,44 +2,116 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Asesor;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory,HasApiTokens, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
 
-    // --- PASTIIN INI SEMUA ADA ---
+    /**
+     * Kolom yang boleh diisi secara massal.
+     * Disesuaikan dengan ERD Anda.
+     */
+    protected $table ='users';
     protected $primaryKey = 'id_user';
 
     /**
-     * Izinkan kolom ini diisi sama Factory
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
-    protected $fillable = ['username', 'email', 'password', 'role_id', 'google_id'];
-    // ----------------------------
-
-    protected $hidden = ['password', 'remember_token'];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+    protected $fillable = [
+        'role_id', // Tambahkan role_id
+        'email',
+        'password',
+        'google_id', // Tambahkan google_id
     ];
 
     /**
-     * Relasi ke Role: 1 User punya 1 Role
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
-    public function role()
-    {
-        return $this->belongsTo(Role::class, 'role_id', 'id_role');
-    }
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     /**
-     * Relasi ke Asesi: 1 User punya 1 data Asesi
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
      */
-    public function asesi()
+    protected function casts(): array
     {
-        // FK di 'asesi' adalah 'id_user', PK di 'users' adalah 'id_user'
-        return $this->hasOne(asesi::class, 'id_user', 'id_user');
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    // Relasi: Satu User punya satu Role
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id'); // 'role_id' adalah foreign key di tabel users
+    }
+
+    // Relasi: Satu User punya satu data Asesi (jika dia asesi)
+    public function asesi(): HasOne
+    {
+        return $this->hasOne(Asesi::class, 'id_user', 'id_user'); // FK, Owner Key
+    }
+
+    // Relasi: Satu User punya satu data Asesor (jika dia asesor)
+    public function asesor(): HasOne
+    {
+        return $this->hasOne(Asesor::class, 'id_user', 'id_user'); // FK, Owner Key
+    }
+
+    // Relasi: Satu User punya satu data Admin (jika dia admin)
+    public function admin(): HasOne
+    {
+        return $this->hasOne(Admin::class, 'id_user', 'id_user'); // FK, Owner Key
+    }
+
+    // Helper cek role (opsional tapi berguna)
+    public function hasRole(string $roleName): bool
+    {
+        return $this->role()->where('nama_role', $roleName)->exists();
+    }
+    /**
+     * Bikin atribut 'nama_lengkap' palsu yang ngambil data
+     * dari relasi asesi atau asesor.
+     *
+     * @return string
+     */
+    public function getNamaLengkapAttribute(): string
+    {
+        // Cek dulu rolenya, 'role' bakal di-lazy-load di sini
+        if ($this->role->nama_role === 'asesi') {
+            // Kalo rolenya asesi, ambil nama dari relasi asesi
+            // 'asesi' bakal di-lazy-load di sini
+            return $this->asesi->nama_lengkap ?? 'Asesi';
+
+        } elseif ($this->role->nama_role === 'asesor') {
+            // Kalo rolenya asesor, ambil nama dari relasi asesor
+            // 'asesor' bakal di-lazy-load di sini
+            return $this->asesor->nama_lengkap ?? 'Asesor';
+
+        } elseif ($this->role->nama_role === 'admin') {
+            // Admin mungkin gak punya tabel profil, jadi kasih default
+            return 'Administrator';
+        }
+
+        // Fallback terakhir
+        return 'User';
     }
 }

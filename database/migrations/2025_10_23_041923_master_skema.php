@@ -27,9 +27,13 @@ return new class extends Migration
             // Deskripsi_skema (str) - Saya ubah jadi text
             // Alasan: Deskripsi biasanya panjang dan melebihi 255 karakter
             $table->text('deskripsi_skema');
-
+            $table->bigInteger('harga')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained('categories');
             // SKKNI
-            $table->string('SKKNI')->comment('File pdf atau dokumen terkait SKKNI');
+            $table->string('SKKNI')->nullable()->comment('File pdf atau dokumen terkait SKKNI');
+
+            // Gambar Skema
+            $table->string('gambar')->nullable()->comment('path untuk unggah gambar');
 
             // Gambar Skema 
             $table->string('gambar')->comment('path untuk unggah gambar')->nullable();
