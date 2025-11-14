@@ -5,7 +5,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\JadwalController; 
 use App\Http\Controllers\Asesor\AsesorTableController;
-use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\SkemaWebController;
 
@@ -37,7 +36,6 @@ Route::get('/jadwal/{id}', [JadwalController::class, 'show'])->name('jadwal.show
 
 // Halaman form pendaftaran peserta → landing_page.detail.detail_jadwal
 Route::get('/jadwal/{id}/detail', [JadwalController::class, 'detail'])->name('jadwal.detail');
-Route::get('/jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('jadwal.detail');
 // 🟦 TAMBAHKAN BARIS INI UNTUK DETAIL BERITA 🟦
 Route::get('/berita/{id}', [HomeController::class, 'showBeritaDetail'])->name('berita.detail');
 /*
@@ -74,7 +72,6 @@ Route::get('/mitra', function () {
 | Halaman Utama & Menu Utama (YANG PAKE CONTROLLER)
 |--------------------------------------------------------------------------
 */
-Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
 
 Route::get('/sertifikasi', function () {
     return "Halaman Sertifikasi"; // Placeholder

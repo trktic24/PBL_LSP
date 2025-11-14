@@ -140,7 +140,7 @@ class JadwalController extends Controller
      */
     public function detail($id)
     {
-        $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor', 'peserta'])
+        $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor', 'asesi'])
                         ->findOrFail($id);
         
         // Double check status
