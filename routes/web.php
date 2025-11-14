@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
 use App\Http\Controllers\SkemaController;
 
 // [PERUBAHAN 1] Tambahkan impor Model Skema di sini
@@ -165,7 +164,6 @@ Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-=======
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\Asesor\AsesorTableController;
@@ -182,7 +180,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Route resmi untuk detail skema
 Route::get('/skema/{id}', [HomeController::class, 'show'])->name('skema.detail');
->>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
 
 // Tetap biarkan route /detail_skema/{id} jika masih dipakai di Blade lain
 Route::get('/detail_skema/{id}', [HomeController::class, 'show'])->name('detail_skema');
@@ -244,14 +241,9 @@ Route::get('/keep-alive', function () {
 Route::get('/api/search-countries', [CountryController::class, 'search'])
     ->name('api.countries.search');
 
-<<<<<<< HEAD
-// Load Auth Routes (Login, Register, dll)
-require __DIR__.'/auth.php';
-=======
 /*
 |--------------------------------------------------------------------------
 | Auth Routes
 |--------------------------------------------------------------------------
 */
 require __DIR__.'/auth.php';
->>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
