@@ -22,9 +22,11 @@ class SkemaFactory extends Factory
      */
     public function definition(): array
     {
+        $nomorGambar = fake()->numberBetween(1, 12);
         return [
             // Bikin kode unit palsu yg mirip aslinya
             'kode_unit' => 'J.' . fake()->numerify('620100.0##.0#'),
+            
             
             // Bikin nama skema yg realistis
             'nama_skema' => 'Skema Sertifikasi ' . fake()->randomElement([
@@ -42,7 +44,7 @@ class SkemaFactory extends Factory
             // Bikin nama file PDF palsu
             'SKKNI' => fake()->slug(3) . '_skkni.pdf',
 
-            'gambar' => null
+            'gambar' => 'skema' . $nomorGambar . '.jpg'
         ];
     }
 }

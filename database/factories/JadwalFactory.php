@@ -33,6 +33,8 @@ class JadwalFactory extends Factory
             'tanggal_selesai' => $selesai,
             'tanggal_pelaksanaan' => $pelaksanaan,
             'Status_jadwal' => 'Terjadwal',
+            'kuota_maksimal' => 40,
+            'waktu_mulai' => fake()->time('H:i:s')
         ];
     }
 }

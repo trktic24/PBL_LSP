@@ -29,7 +29,7 @@ return new class extends Migration
     $table->string('kode_pos', 10)->nullable();
     $table->string('kabupaten_kota')->nullable();
     $table->string('provinsi')->nullable();
-    $table->string('nomor_hp', 16)->nullable();
+    $table->string('nomor_hp', 30)->nullable();
     $table->string('tanda_tangan')->nullable()->comment('Path ke file tanda tangan');
 
     $table->timestamps();

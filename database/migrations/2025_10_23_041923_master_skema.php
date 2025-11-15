@@ -35,9 +35,6 @@ return new class extends Migration
             // Gambar Skema
             $table->string('gambar')->nullable()->comment('path untuk unggah gambar');
 
-            // Gambar Skema 
-            $table->string('gambar')->comment('path untuk unggah gambar')->nullable();
-
             // Standar timestamp
             $table->timestamps();
         });

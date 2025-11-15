@@ -37,3 +37,4 @@ class SkemaController extends Controller
     // Anda bisa tambahkan fungsi 'index' untuk halaman list jika mau,
     // tapi untuk sekarang kita gunakan closure di web.php
 }
+

@@ -21,7 +21,7 @@ class AsesorFactory extends Factory
             'nik' => $this->faker->unique()->numerify('################'),
             'tempat_lahir' => $this->faker->city(),
             'tanggal_lahir' => $this->faker->date(),
-            'jenis_kelamin' => $this->faker->boolean(),
+            'jenis_kelamin' => 'Laki-laki',
             'kebangsaan' => 'Indonesia',
             'pekerjaan' => $this->faker->jobTitle(),
             'alamat_rumah' => $this->faker->address(),
@@ -41,7 +41,7 @@ class AsesorFactory extends Factory
             'sertifikat_asesor' => 'path/to/fake_sert_asesor.pdf',
             'sertifikasi_kompetensi' => 'path/to/fake_sert_kompetensi.pdf',
             'tanda_tangan' => 'path/to/fake_ttd.png',
-            'is_verified' => $this->faker->boolean(),
+            // 'is_verified' => $this->faker->boolean(),
         ];
     }
 }
