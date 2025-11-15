@@ -5,7 +5,7 @@
     <section class="container mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
             {{-- Menggunakan $skema->gambar (Menggunakan isset untuk keamanan) --}}
-            <img src="{{ asset('images/' . ($skema->gambar ?? 'placeholder_default.jpg')) }}"
+            <img src="{{ asset('images/skema/' . ($skema->gambar ?? 'placeholder_default.jpg')) }}"
                 alt=""
                 class="w-full h-full object-cover">
 

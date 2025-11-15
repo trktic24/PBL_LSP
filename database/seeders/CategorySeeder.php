@@ -26,11 +26,10 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $categoryName) {
-            Category::create([
-                'nama_kategori' => $categoryName,
-                // Pastikan slug juga dibuat, karena di migration ada rule unique()
-                'slug' => Str::slug($categoryName), 
-            ]);
+            Category::firstOrCreate(
+                ['slug' => Str::slug($categoryName)],
+                ['nama_kategori' => $categoryName]
+            );
         }
         
         // Opsional: Anda bisa menggunakan Factory di sini untuk menambahkan data dummy

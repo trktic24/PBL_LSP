@@ -46,24 +46,28 @@
 
 <style>
 /* ======================= FIX CSS UNTUK FORMAT KATEGORI ======================= */
-/* [BARU] Styling untuk tombol Navigasi */
+body {
+    overflow-x: hidden; /* Tambahkan ini */
+}
+
 .carousel-nav-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 20;
-    background: rgba(0, 0, 0, 0.4);
-    color: white;
+    z-index: 100;
+    background: white;
+    color: black;
     padding: 0.5rem 0.75rem;
     border-radius: 9999px; /* Full rounded */
-    transition: background 0.3s, opacity 0.3s;
+    transition: all 0.3s;
     cursor: pointer;
     border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .carousel-nav-btn:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgb(55 65 81);
+    color: white;
 }
 
 html { scroll-behavior: smooth; }
@@ -91,10 +95,12 @@ html { scroll-behavior: smooth; }
 
 /* FIX KRUSIAL: Pastikan teks kategori tidak kepotong */
 .category-btn {
-    white-space: nowrap !important; /* Mencegah teks turun baris */
+    white-space: nowrap !important; /* Mencegah wrap */
     height: auto !important;
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
+    display: inline-flex !important; /* Ganti dari inline-block ke inline-flex */
+    width: fit-content !important;
 }
 
 /* Sembunyikan slide tambahan saat filter aktif */
@@ -109,18 +115,19 @@ html { scroll-behavior: smooth; }
     <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
     
     {{-- FIX: Menggunakan container lebar penuh dan menghilangkan max-w-4xl --}}
-    <div class="relative w-full px-4 mx-auto">
+    <div class="relative w-full max-w-7xl mx-auto">
         {{-- FIX: Menggunakan justify-start agar item berada di kiri (walaupun di scroll) --}}
         <div id="scrollContainer" 
              class="flex flex-row gap-4 overflow-x-scroll whitespace-nowrap justify-start py-4 px-4">
             
             {{-- FIX: Menggunakan w-fit dan mx-auto agar tombol rata tengah jika kurang dari lebar layar --}}
-            <div id="categoryButtons" class="inline-flex gap-4 w-fit mx-auto"> 
+            <div id="categoryButtons" class="inline-flex gap-4 w-fit px-4"> 
                 @foreach($categories as $category)
                     <button data-category="{{ $category }}"
-                            class="category-btn btn btn-sm font-bold rounded-full px-4 border-none
-                            {{ $loop->first ? 'active-category' : 'inactive-category' }}">
-                        {{ $category }} 
+                        class="category-btn text-sm font-bold rounded-full px-4 py-2 border-none 
+                        {{ $loop->first ? 'active-category' : 'inactive-category' }}
+                        "> 
+                        {{ $category }}
                     </button>
                 @endforeach
             </div>
@@ -130,36 +137,37 @@ html { scroll-behavior: smooth; }
 </section>
 
 {{-- ======================= CAROUSEL GRID SKEMA ======================= --}}
-<section class="px-4 md:px-10 mb-16">
-    <div id="gridCarousel" class="relative overflow-hidden rounded-3xl w-full max-w-7xl mx-auto">
+<section class="px-4 md:px-10 mb-16 relative min-h-[700px]">
+    <div class="relative w-full max-w-7xl mx-auto">
         <button id="prevBtn" 
-                class="carousel-nav-btn left-2 disabled:opacity-30 disabled:cursor-not-allowed" 
+                class="carousel-nav-btn -left-4 md:-left-8 disabled:opacity-30 disabled:cursor-not-allowed" 
                 onclick="moveSlide(-1)">&#10094;</button>
         
         <button id="nextBtn" 
-                class="carousel-nav-btn right-2 disabled:opacity-30 disabled:cursor-not-allowed" 
+                class="carousel-nav-btn -right-4 md:-right-8 disabled:opacity-30 disabled:cursor-not-allowed" 
                 onclick="moveSlide(1)">&#10095;</button>
 
+        <div id="gridCarousel" class="relative overflow-hidden rounded-3xl w-full">
+        
         <div class="flex transition-transform duration-700 ease-in-out" id="gridSlides">
+
             @php
                 $chunks = $skemas->chunk(6); // 6 kartu per slide
             @endphp
 
             @forelse($chunks as $index => $chunk)
-                {{-- Setiap chunk (kelompok 6 kartu) menjadi 1 slide --}}
-                <div class="flex-none w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6 skema-slide" data-slide-index="{{ $index }}">
+                <div class="flex-none w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 px-4 skema-slide" data-slide-index="{{ $index }}">
                     @foreach($chunk as $skema)
                         @php
-                            // FIX RELASI KRUSIAL: Menggunakan Nullsafe Operator (?->) pada relasi 'category'
                             $categoryName = $skema->category?->nama_kategori ?? 'Tidak Terkategori';
                         @endphp
                         
                         <div class="transition hover:scale-105 skema-card" data-category="{{ $categoryName }}">
                             <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
                                 <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                                    <img src="{{ $skema->gambar ? asset('images/' . $skema->gambar) : asset('images/default.jpg') }}"
-                                         alt="Gambar Skema"
-                                         class="h-48 w-full object-cover">
+                                    <img src="{{ asset('images/skema/' . ($skema->gambar ?? 'default.jpg')) }}"
+                                        alt="Gambar Skema"
+                                        class="w-full h-48 object-cover">
                                 </div>
                             </a>
                             <div class="px-2">
