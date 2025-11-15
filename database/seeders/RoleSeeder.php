@@ -15,21 +15,21 @@ class RoleSeeder extends Seeder
         // Hapus isi yang lama dan ganti dengan ini:
 
         // 1. Buat role 'admin'
-        Role::create([
-            'id_role' => 1,
-            'nama_role' => 'admin' // Sesuaikan nama kolom jika beda
-        ]);
+        Role::updateOrCreate(
+            ['id_role' => 1], // Cari berdasarkan ID ini
+            ['nama_role' => 'admin'] // Data untuk di-update atau di-create
+        );
 
-        // 2. Buat role 'asesor' (INI YANG HILANG)
-        Role::create([
-            'id_role' => 2,
-            'nama_role' => 'asesor'
-        ]);
+        // 2. Buat role 'asesor'
+        Role::updateOrCreate(
+            ['id_role' => 2],
+            ['nama_role' => 'asesor']
+        );
 
-        // 3. Buat role 'asesi' (INI YANG HILANG)
-        Role::create([
-            'id_role' => 3,
-            'nama_role' => 'asesi'
-        ]);
+        // 3. Buat role 'asesi'
+        Role::updateOrCreate(
+            ['id_role' => 3],
+            ['nama_role' => 'asesi']
+        );
     }
 }

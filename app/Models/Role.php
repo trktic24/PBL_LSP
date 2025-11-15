@@ -11,6 +11,23 @@ class Role extends Model
     use HasFactory;
 
     /**
+     * (WAJIB) Memberi tahu Laravel nama tabel yang benar.
+     */
+    protected $table = 'roles';
+
+    /**
+     * (WAJIB) Memberi tahu Laravel primary key yang benar.
+     */
+    protected $primaryKey = 'id_role';
+
+    /**
+     * (WAJIB) Memberi tahu Laravel bahwa 'id_role' bukan auto-incrementing
+     * jika Anda mengisinya secara manual di seeder (cth: 1, 2, 3).
+     * Jika auto-increment, Anda bisa hapus baris ini.
+     */
+    public $incrementing = false; 
+    
+    /**
      * Kolom yang boleh diisi
      */
     protected $fillable = [
@@ -22,7 +39,8 @@ class Role extends Model
      */
     public function users(): HasMany
     {
-        return $this->hasMany(User::class);
+        // KITA HARUS EKSPLISIT MENENTUKAN KUNCI RELASINYA
+        // return $this->hasMany(Model, foreign_key_di_tabel_users, local_key_di_tabel_roles);
+        return $this->hasMany(User::class, 'role_id', 'id_role');
     }
 }
-

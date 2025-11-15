@@ -3,44 +3,56 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tuk;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException; 
 
 class TukController extends Controller
 {
     /**
      * Menampilkan halaman list TUK (Read).
+     * LOGIKA DIPERBARUI UNTUK PAGINASI
      */
     public function index(Request $request)
     {
-        // Mulai query
+        // 1. Ambil input sort dan direction, beri nilai default
+        $sortColumn = $request->input('sort', 'id_tuk');
+        $sortDirection = $request->input('direction', 'asc');
+
+        // 2. Daftar kolom yang BOLEH di-sort (untuk keamanan)
+        $allowedColumns = ['id_tuk', 'nama_lokasi', 'alamat_tuk', 'kontak_tuk'];
+        
+        if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'id_tuk';
+        if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
+
+        // 3. Mulai query
         $query = Tuk::query();
 
-        // Cek jika ada input 'search'
+        // 4. Terapkan 'search' (Filter)
         if ($request->has('search') && $request->input('search') != '') {
-            
             $searchTerm = $request->input('search');
-
-            // === INI BAGIAN YANG DIPERBARUI ===
-            // Tambahkan kondisi WHERE
-            // Mencari di semua kolom teks + ID
             $query->where(function($q) use ($searchTerm) {
                 $q->where('nama_lokasi', 'like', '%' . $searchTerm . '%')
                   ->orWhere('alamat_tuk', 'like', '%' . $searchTerm . '%')
                   ->orWhere('kontak_tuk', 'like', '%' . $searchTerm . '%')
                   ->orWhere('link_gmap', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('id_tuk', '=', $searchTerm); // Mencari ID TUK yang sama persis
+                  ->orWhere('id_tuk', '=', $searchTerm);
             });
-            // ===================================
         }
 
-        // Eksekusi query dan ambil hasilnya
-        $tuks = $query->get();
+        // 5. Terapkan 'orderBy' (Sorting)
+        $query->orderBy($sortColumn, $sortDirection);
 
-        // Kirim data TUK yang sudah difilter
-        return view('tuk.master_tuk', [
-            'tuks' => $tuks
-        ]);
+        // 6. === INI PERBAIKANNYA ===
+        // Ganti get() menjadi paginate(). Kita set 10 data per halaman.
+        $tuks = $query->paginate(10)->onEachSide(0.5);
+        
+        // 7. (WAJIB) Sertakan parameter search/sort di link paginasi
+        $tuks->appends($request->only(['sort', 'direction', 'search']));
+
+        // 8. Kirim data TUK yang sudah di-paginate
+        return view('tuk.master_tuk', ['tuks' => $tuks]);
     }
 
     /**
@@ -69,7 +81,7 @@ class TukController extends Controller
 
         $tuk = Tuk::create($validatedData); 
 
-        return redirect()->route('master_tuk')->with('success', "TUK (ID: {$tuk->id_tuk}) - {$tuk->nama_lokasi} - berhasil ditambahkan!");
+        return redirect()->route('master_tuk')->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil ditambahkan!");
     }
 
     /**
@@ -100,7 +112,7 @@ class TukController extends Controller
 
         if ($request->hasFile('foto_tuk')) {
             if ($tuk->foto_tuk) {
-                Storage::disk('public')->delete($tuk->foto_tuk);
+                Storage::disk('public')->delete(str_replace('public/', '', $tuk->foto_tuk));
             }
             $path = $request->file('foto_tuk')->store('photos/tuk', 'public');
             $validatedData['foto_tuk'] = $path;
@@ -108,7 +120,7 @@ class TukController extends Controller
 
         $tuk->update($validatedData);
 
-        return redirect()->route('master_tuk')->with('success', "TUK (ID: {$tuk->id_tuk}) - {$tuk->nama_lokasi} - berhasil diperbarui!");
+        return redirect()->route('master_tuk')->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil diperbarui!");
     }
 
     /**
@@ -117,16 +129,28 @@ class TukController extends Controller
     public function destroy($id)
     {
         $tuk = Tuk::findOrFail($id);
-
         $id_tuk = $tuk->id_tuk;
         $nama_lokasi = $tuk->nama_lokasi;
 
-        if ($tuk->foto_tuk) {
-            Storage::disk('public')->delete($tuk->foto_tuk);
+        $conflictingSchedule = Schedule::where('id_tuk', $id_tuk)->first();
+
+        if ($conflictingSchedule) {
+            return back()->with('error', 
+                "Gagal menghapus TUK (ID: {$id_tuk}): TUK ini masih terhubung dengan Jadwal (ID: {$conflictingSchedule->id_jadwal})."
+            );
         }
 
-        $tuk->delete();
+        try {
+            if ($tuk->foto_tuk) {
+                Storage::disk('public')->delete(str_replace('public/', '', $tuk->foto_tuk));
+            }
 
-        return redirect()->route('master_tuk')->with('success', "TUK (ID: {$id_tuk}) - {$nama_lokasi} - berhasil dihapus!");
+            $tuk->delete();
+
+            return redirect()->route('master_tuk')->with('success', "TUK (ID: {$id_tuk}) {$nama_lokasi} Berhasil dihapus!");
+
+        } catch (QueryException $e) {
+            return back()->with('error', 'Terjadi kesalahan database: ' . $e->getMessage());
+        }
     }
 }
