@@ -22,7 +22,7 @@
 
     @if(session('error'))
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-red 100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <span class="block sm:inline">{{ session('error') }}</span>
             </div>
         </div>
@@ -30,24 +30,24 @@
 
     <!-- Search Box Simple -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 flex justify-end">
-        <div class="relative max-w-xs">
+        <div class="relative w-78">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
             <input type="text" 
                    id="searchInput"
                    placeholder="Search" 
-                   class="block w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-full bg-white focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-600">
+                   class="block w-full pl-9 pr-4 py-2 text-sm border border-gray-700 rounded-full bg-white focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-600">
         </div>
     </div>
 
     <!-- Table Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div class="bg-white rounded-t-3xl shadow-lg overflow-hidden border border-gray-200">
             <!-- Table Header -->
-            <div class="bg-yellow-50 border-b-2 border-gray-300">
+            <div class="bg-yellow-50 border-b-2 border-gray-900">
                 <div class="grid grid-cols-5 gap-4 px-6 py-4">
                     <div class="text-sm font-bold text-gray-900 text-left">Skema Sertifikasi</div>
                     <div class="text-sm font-bold text-gray-900 text-center">Pendaftaran</div>
@@ -67,7 +67,7 @@
                         
                         switch($item->Status_jadwal) {
                             case 'Terjadwal':
-                                $statusClass = 'bg-teal-100 text-teal-800'; 
+                                $statusClass = 'bg-teal-200 text-teal-800'; 
                                 $canRegister = true;
                                 break;
                             case 'Full':
