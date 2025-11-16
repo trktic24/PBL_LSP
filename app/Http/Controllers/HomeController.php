@@ -7,6 +7,8 @@ use Illuminate\View\View;
 use App\Models\Skema;
 use \DateTime;
 use Illuminate\Support\Collection;
+// Tambahkan model Jadwal jika belum ada
+use App\Models\Jadwal;
 
 class HomeController extends Controller
 {
@@ -42,35 +44,34 @@ class HomeController extends Controller
 
     public function index(): View
     {
-        // Ambil data dari tabel skema
-        $skemas = Skema::latest()->get(); // ini ambil semua dari database faker
-
-        // Ambil daftar kategori unik dari kolom 'kategori'
+        // ... (Fungsi index Anda tidak diubah)
+        $skemas = Skema::latest()->get();
         $categories = $skemas->pluck('kategori')->unique()->values()->all();
         array_unshift($categories, 'Semua');
-
-        // Ambil jadwal dummy
         $semuaJadwal = $this->getSemuaDummyJadwal();
         $now = new DateTime();
-
         $jadwals = collect($semuaJadwal)
             ->filter(fn($jadwal) => $jadwal->tanggal >= $now)
             ->sortBy(fn($jadwal) => $jadwal->tanggal)
             ->take(2)
             ->values();
-
         return view('landing_page.home', compact('skemas', 'jadwals', 'categories'));
     }
 
     public function show($id): View
     {
-        // Cari skema berdasarkan ID dari database
-        $skema = Skema::findOrFail($id); 
+        // [MODIFIKASI 1 DARI 2]
+        // Kita ambil skema, DAN juga relasi 'jadwals' (yang kita buat di Model)
+        // serta relasi 'tuk' dari setiap jadwal.
+        try {
+            $skema = Skema::with('jadwals.tuk')->findOrFail($id); 
+        } catch (\Exception $e) {
+            // Jika skema tidak ditemukan, kembali ke home
+            return redirect()->route('home')->with('error', 'Skema tidak ditemukan.');
+        }
         
         // --- INJEKSI DUMMY DATA UNTUK KONTEN (UNIT KOMPETENSI & SKKNI) ---
-        // Ini diperlukan agar detail_skema.blade.php dapat melakukan looping 
-        // pada bagian Unit Kompetensi dan SKKNI.
-
+        // Kode dummy data Anda dipertahankan, tidak diubah
         $skema->unit_kompetensi = collect([
             (object) [
                 'kode' => '123456789',
@@ -89,7 +90,6 @@ class HomeController extends Controller
         ]);
 
         $skema->skkni = collect([
-            // Asumsi properti 'link_pdf' akan diisi link unduhan dokumen
             (object) ['nama' => 'SKKNI Keamanan Siber 1', 'link_pdf' => '#'],
             (object) ['nama' => 'SKKNI Keamanan Siber 2', 'link_pdf' => '#'],
         ]);
@@ -103,26 +103,34 @@ class HomeController extends Controller
              $skema->deskripsi = 'Deskripsi singkat mengenai ' . $namaSkema . '.';
         }
         
-        // Cari jadwal yang sesuai dengan nama skema
-        $semuaJadwal = $this->getSemuaDummyJadwal();
-        $jadwalTerkait = collect($semuaJadwal)
-            ->firstWhere('nama_skema', $skema->nama_skema);
+        // [MODIFIKASI 2 DARI 2]
+        // Bagian 'jadwalTerkait' ini sudah tidak diperlukan lagi,
+        // karena view baru kita me-looping '$skema->jadwals'
+        
+        // $semuaJadwal = $this->getSemuaDummyJadwal();
+        // $jadwalTerkait = collect($semuaJadwal)
+        //     ->firstWhere('nama_skema', $skema->nama_skema);
 
-        return view('landing_page.detail.detail_skema', compact('skema', 'jadwalTerkait'));
+        // [PERBAIKAN]
+        // Mengarahkan ke nama view yang benar: 'landing_page.detail.detail_skema'
+        return view('landing_page.detail.detail_skema', compact('skema'));
     }
 
     public function jadwal(): View
     {
+        // ... (Fungsi Anda tidak diubah)
         return view('landing_page.frontend.jadwal');
     }
 
     public function laporan(): View
     {
+        // ... (Fungsi Anda tidak diubah)
         return view('landing_page.frontend.laporan');
     }
 
     public function showJadwalDetail($id): View
     {
+        // ... (Fungsi Anda tidak diubah)
         $semuaJadwal = $this->getSemuaDummyJadwal();
         $jadwal = collect($semuaJadwal)->firstWhere('id', (int)$id);
 

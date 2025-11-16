@@ -12,6 +12,8 @@
 
     <div class="flex min-h-screen">
 
+        @if($sertifikasi)
+
         <aside
             class="w-80 bg-gradient-to-b from-yellow-100 via-blue-100 to-blue-300 p-6 relative z-10 shadow-[8px_0_20px_-5px_rgba(0,0,0,0.15)]">
             <div class="mb-6">
@@ -33,9 +35,9 @@
             </div>
 
             <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold">{{ $asesi->skema->judul_skema ?? 'Judul Skema' }}</h2>
-                <p class="text-gray-600 text-sm mt-2">{{ $asesi->skema->nomor_skema ?? 'Nomor Skema' }}</p>
-                <p class="text-xl font-medium text-gray-800 mt-4">{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}</p>
+                <h2 class="text-2xl font-bold">{{ $sertifikasi->jadwal->skema->nama_skema ?? 'Judul Skema' }}</h2>
+                <p class="text-gray-600 text-sm mt-2">{{ $sertifikasi->jadwal->skema->kode_unit ?? 'Nomor Skema' }}</p>
+                <p class="text-xl font-medium text-gray-800 mt-4">{{ $sertifikasi->asesi->nama_lengkap ?? 'Nama Asesi' }}</p>
             </div>
 
             <p class="text-center text-sm text-gray-700 mb-8 px-4">
@@ -91,10 +93,10 @@
                         function renderCheckmark()
                         {
                             return '<div class="absolute -top-1 -left-1.5 z-10 bg-green-500 rounded-full p-0.5 border-2 border-white">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="white" class="w-3 h-3">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                    </svg>
-                                </div>';
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="white" class="w-3 h-3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </div>';
                         }
                     @endphp
 
@@ -111,14 +113,14 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <a href="{{ route('data.sertifikasi', ['id_asesi' => $asesi->id_asesi]) }}" class="text-lg font-semibold text-gray-900">Formulir Pendaftaran
+                            <a href="{{ route('data.sertifikasi', ['id_asesi' => $sertifikasi->id_asesi]) }}" class="text-lg font-semibold text-gray-900">Formulir Pendaftaran
                                 Sertifikasi</a>
-                            <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
+                            <p class="text-sm text-gray-500">{{ $sertifikasi->tanggal_daftar->format('l, d F Y') }}</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
                             
-                            <a href="{{ route('apl01.download', ['id_asesi' => $asesi->id_asesi]) }}"
-                               target="_blank"
-                               class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600 inline-block">
+                            <a href="{{ route('apl01.download', ['id_asesi' => $sertifikasi->id_asesi]) }}"
+                                target="_blank"
+                                class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600 inline-block">
                                 Unduh Document
                             </a>
                         </div>
@@ -206,7 +208,7 @@
                             {!! renderCheckmark() !!}
                         </div>
                         <div class="flex-1">
-                            <a href="{{ route('kerahasiaan.fr_ak01', ['id_asesi' => $asesi->id_asesi]) }}" class="text-lg font-semibold text-gray-900">Persetujuan Asesmen dan Kerahasiaan</a>
+                            <a href="{{ route('kerahasiaan.fr_ak01', ['id_asesi' => $sertifikasi->id_asesi]) }}" class="text-lg font-semibold text-gray-900">Persetujuan Asesmen dan Kerahasiaan</a>
                             <p class="text-sm text-gray-500">Jumat, 29 September 2025</p>
                             <p class="text-xs text-green-600 font-medium">Diterima</p>
                             <button
@@ -336,6 +338,20 @@
                 </ol>
             </div>
         </main>
+
+        @else
+
+        <main class="flex-1 p-10 overflow-y-auto">
+            <div class="max-w-3xl mx-auto">
+                <div class="alert alert-info text-center shadow-sm bg-white p-10 rounded-2xl" style="border-radius: 15px; padding: 30px;">
+                    <h2 class="text-3xl font-bold mb-4">Belum Ada Pendaftaran</h2>
+                    <p class="text-lg text-gray-600">Anda belum terdaftar pada skema sertifikasi apapun.</p>
+                </div>
+            </div>
+        </main>
+
+        @endif
+
     </div>
 </body>
 

@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 // [PERBAIKAN] Pastikan KETIGA baris ini ada
 use App\Models\UnitKompetensi;
 use App\Models\KelompokPekerjaan;
-use App\Models\DetailSertifikasi; // <-- Ini yang menyebabkan error Anda saat ini
+use App\Models\DetailSertifikasi;
+use App\Models\Jadwal; // <-- DITAMBAHKAN
 
 
 class Skema extends Model
@@ -25,6 +26,17 @@ class Skema extends Model
     ];
 
     // --- FUNGSI RELASI ---
+
+    /**
+     * ==========================================================
+     * [FUNGSI BARU DITAMBAHKAN]
+     * Relasi: 1 Skema punya BANYAK Jadwal
+     * ==========================================================
+     */
+    public function jadwals(): HasMany
+    {
+        return $this->hasMany(Jadwal::class, 'id_skema', 'id_skema');
+    }
 
     /**
      * Relasi HasManyThrough: Skema -> KelompokPekerjaan -> UnitKompetensi
@@ -54,6 +66,6 @@ class Skema extends Model
      */
     // public function detailSertifikasi(): HasMany
     // {
-    //     return $this->hasMany(DetailSertifikasi::class, 'id_skema', 'id_skema');
+    //     // return $this->hasMany(DetailSertifikasi::class, 'id_skema', 'id_skema');
     // }
 }

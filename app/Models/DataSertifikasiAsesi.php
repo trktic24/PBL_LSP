@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+// Pastikan semua model yang direlasikan di-import
+use App\Models\Jadwal;
+use App\Models\Asesi;
+use App\Models\BuktiKelengkapan;
+
 class DataSertifikasiAsesi extends Model
 {
     use HasFactory;
@@ -21,7 +26,7 @@ class DataSertifikasiAsesi extends Model
         'id_asesi',
         'id_jadwal',
         'tujuan_asesmen',
-        'tujuan_asesmen_lainnya', // Kolom baru kita
+        'tujuan_asesmen_lainnya',
         'tanggal_daftar',
         'rekomendasi_apl01',
         'rekomendasi_apl02',
@@ -61,13 +66,14 @@ class DataSertifikasiAsesi extends Model
         return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
     }
 
-    // /**
-    //  * Relasi ke Jadwal (parent)
-    //  */
-    // public function jadwal(): BelongsTo
-    // {
-    //     return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
-    // }
+    /**
+     * Relasi ke Jadwal (parent)
+     * Ini adalah fungsi yang kita perbaiki
+     */
+    public function jadwal(): BelongsTo
+    {
+        return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
+    }
 
     /**
      * Relasi ke BuktiKelengkapan (children)
