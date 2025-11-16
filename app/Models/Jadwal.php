@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon; // PENTING: Import Carbon
 
 class Jadwal extends Model
 {
@@ -28,15 +29,36 @@ class Jadwal extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
+     * Kosongkan/hapus protected $casts untuk kolom datetime.
+     * Kita menggunakan Custom Accessor di bawah untuk Null Safety yang lebih baik.
      */
     protected $casts = [
-        'tanggal_mulai' => 'datetime',
-        'tanggal_selesai' => 'datetime',
-        'tanggal_pelaksanaan' => 'datetime',
+        // Dibiarkan kosong/dihapus karena kita menggunakan Accessor untuk null safety
     ];
+
+    // --- CUSTOM ACCESSORS UNTUK NULL SAFETY (WAJIB DIBERIKAN UNTUK SEMUA KOLOM TANGGAL/WAKTU) ---
+
+    public function getTanggalMulaiAttribute($value)
+    {
+        // Jika nilai (dari DB) kosong (null atau string kosong), kembalikan null. Jika tidak, parse.
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public function getTanggalSelesaiAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public function getTanggalPelaksanaanAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+    
+    public function getWaktuMulaiAttribute($value)
+    {
+        // Accessor ini sekarang menangani waktu_mulai yang mungkin kosong.
+        return $value ? Carbon::parse($value) : null;
+    }
 
     // --- RELASI (Relationships) ---
 
@@ -52,20 +74,16 @@ class Jadwal extends Model
 
     public function skema()
     {
-        // Asumsi nama model adalah Skema
         return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
     }
 
     public function asesor()
     {
-        // Asumsi nama model adalah Asesor
         return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
     }
 
     public function asesi()
-{
-    return $this->belongsToMany(Asesi::class, 'data_sertifikasi_asesi', 'id_jadwal', 'id_asesi');
-}
-
-
+    {
+        return $this->belongsToMany(Asesi::class, 'data_sertifikasi_asesi', 'id_jadwal', 'id_asesi');
+    }
 }

@@ -13,6 +13,7 @@
             <div class="flex flex-wrap gap-6 text-gray-900 text-sm">
                 <div class="flex items-center gap-2">
                     <i class="far fa-calendar"></i>
+                    <span>{{ $jadwal->tanggal?->format('d F Y') ?? 'Tanggal Tidak Tersedia' }}</span>
                     {{-- Menggunakan kolom tanggal_pelaksanaan dari Model Jadwal --}}
                     <span>{{ $jadwal->tanggal_pelaksanaan?->format('d F Y') ?? 'TBA' }}</span>
                 </div>
@@ -64,6 +65,7 @@
                     </a>
                     
                     <p class="text-center text-gray-500 text-xs">
+                        Pendaftaran ditutup tanggal {{ $jadwal->tanggal_selesai->format('d F Y') }}
                         {{-- Menggunakan kolom tanggal_selesai (penutupan) dari Model Jadwal --}}
                         Pendaftaran ditutup tanggal {{ $jadwal->tanggal_selesai?->format('d F Y') ?? 'TBA' }}
                     </p>
