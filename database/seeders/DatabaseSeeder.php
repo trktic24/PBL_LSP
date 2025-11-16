@@ -26,17 +26,21 @@ class DatabaseSeeder extends Seeder
             AsesorSeeder::class,
 
             // 3. Data pendukung lainnya
+            JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
+            DataSertifikasiAsesiSeeder::class,
             TujuanAssesmenMapa01::class,
             MasterPoinSiapaAsesmenSeeder::class,
             PoinHubunganStandarSeeder::class,
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
+            Ia07Seeder::class,
 
             // 4. Data Transaksi (Jalankan PALING AKHIR)
             CategorieSeeder::class,
+            UnitKompetensiSeeder::class,
+            KelompokPekerjaanSeeder::class,
             SkemaSeeder::class,
-            JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
         ]);
     }
 }

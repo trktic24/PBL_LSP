@@ -3,9 +3,13 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Skema;
+// use App\Models\Skema; // Tidak perlu jika $model di-hardcode di bawah
 use App\Models\Categorie;
+use App\Models\KelompokPekerjaan; // <-- DITAMBAHKAN
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Skema>
+ */
 class SkemaFactory extends Factory
 {
     /**
@@ -23,11 +27,17 @@ class SkemaFactory extends Factory
     public function definition(): array
     {
         return [
+            // Sesuai dengan migration 'categorie_id'
             'categorie_id' => Categorie::factory(),
-            // Membuat kode unit yang terlihat realistis
-            'kode_unit' => fake()->numerify('J.620100.###.##'),
+            
+            // Sesuai dengan migration 'id_kelompok_pekerjaan' (BARU)
+            'id_kelompok_pekerjaan' => \App\Models\KelompokPekerjaan::factory(),
 
-            // Memilih nama skema yang umum dari daftar
+            // Diubah dari 'kode_unit' menjadi 'nomor_skema' (DIUBAH)
+            // Ditambahkan unique() karena ada constraint ->unique() di migration
+            'nomor_skema' => fake()->unique()->numerify('J.620100.###.##'),
+
+            // Nama skema (tetap sama)
             'nama_skema' => fake()->randomElement([
                 'Junior Web Developer',
                 'Ahli Digital Marketing',
@@ -37,13 +47,16 @@ class SkemaFactory extends Factory
                 'Data Analyst',
             ]),
 
-            // Membuat deskripsi palsu (3 kalimat)
+            // Deskripsi skema (tetap sama)
             'deskripsi_skema' => fake()->paragraph(3, true),
 
-            // Path dummy untuk file PDF
+            // Kolom 'harga' (BARU)
+            'harga' => fake()->numberBetween(500000, 3000000),
+
+            // SKKNI (tetap sama)
             'SKKNI' => '/storage/files/dummy_skkni.pdf',
 
-            // URL gambar placeholder yang nyata
+            // Gambar (tetap sama)
             'gambar' => fake()->imageUrl(640, 480, 'technology', true),
         ];
     }

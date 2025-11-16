@@ -11,8 +11,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-    use HasFactory,HasApiTokens, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
+    use HasFactory, HasApiTokens, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
 
     /**
      * TAMBAHKAN INI:

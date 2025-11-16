@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
 
         // Buat Admin
         if ($adminRole) {
-            User::create([
+            User::updateOrCreate([
                 'role_id' => $adminRole->id_role,
                 'email' => 'admin@example.com',
                 'email_verified_at' => now(),
@@ -37,20 +37,24 @@ class UserSeeder extends Seeder
         // Buat Contoh Asesor
         if ($asesorRole) {
             // Kita override role_id-nya jadi 'Asesor'
-            User::factory()->count(50)->create([
+            User::factory()->count(15)->create([
                 'role_id' => $asesorRole->id_role,
-                'email' => 'asesor@example.com',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password'),
-                'google_id' => null,
-                'remember_token' => Str::random(10),
-                'username' => 'asesor', // <-- DIPERBAIKI: Baris ini dihapus
             ]);
+            User::updateOrCreate(
+                ['username' => 'asesor'],
+                [
+                    'role_id' => $asesorRole->id_role,
+                    'email' => 'asesor@example.com',
+                    'email_verified_at' => now(),
+                    'password' => Hash::make('password'),
+                    'google_id' => null,
+                    'remember_token' => Str::random(10),
+                ]);
         }
 
         // Buat Contoh Asesi
         if ($asesiRole) {
-            User::create([
+            User::updateOrCreate([
                 'role_id' => $asesiRole->id_role,
                 'email' => 'asesi@example.com',
                 'email_verified_at' => now(),
