@@ -1,6 +1,6 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="flex items-center justify-between">
-        {{-- Ringkasan Jumlah Data (Bisa dihapus jika tidak dibutuhkan) --}}
+    <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="flex items-center justify-center">
+        {{-- Ringkasan Jumlah Data (dihilangkan untuk fokus pada tombol) --}}
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
                 <p class="text-sm text-gray-700 leading-5">
@@ -17,19 +17,31 @@
 
         {{-- NAVIGATION LINKS (TOMBOL NEXT/PREVIOUS DAN ANGKA) --}}
         <div class="flex items-center">
-            <div>
-                {{-- PREVIOUS BUTTON (KUNING) --}}
+            <div class="relative z-0 inline-flex shadow-sm rounded-md"> 
+                
+                {{-- TOMBOL FIRST PAGE (PANAH GANDA KIRI: << - PUTIH) --}}
                 @if ($paginator->onFirstPage())
-                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default rounded-l-md leading-5">
-                        {!! __('pagination.previous') !!}
+                    <span class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 cursor-default rounded-l-md leading-5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
                     </span>
                 @else
-                    <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-black bg-yellow-400 border border-yellow-500 rounded-l-md leading-5 hover:bg-yellow-500 transition duration-150 ease-in-out focus:outline-none focus:ring ring-yellow-300">
-                        {!! __('pagination.previous') !!}
+                    <a href="{{ $paginator->url(1) }}" class="relative inline-flex items-center px-2 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-l-md leading-5 hover:bg-gray-100 transition duration-150 ease-in-out focus:outline-none focus:ring ring-gray-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
+                    </a>
+                @endif
+                
+                {{-- PREVIOUS BUTTON (PANAH TUNGGAL KIRI: < - PUTIH) --}}
+                @if ($paginator->onFirstPage())
+                    <span class="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 -ml-px">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </span>
+                @else
+                    <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="relative inline-flex items-center px-2 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 leading-5 hover:bg-gray-100 transition duration-150 ease-in-out focus:outline-none focus:ring ring-gray-300 -ml-px">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </a>
                 @endif
 
-                {{-- LOOP PAGES --}}
+                {{-- LOOP PAGES (TOMBOL ANGKA) --}}
                 @foreach ($elements as $element)
                     @if (is_string($element))
                         <span aria-disabled="true">
@@ -50,7 +62,7 @@
                                 </span>
                             {{-- INACTIVE PAGE (WARNA PUTIH/GRAY) --}}
                             @else
-                                <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-semibold text-gray-700 bg-white border border-gray-300 leading-5 hover:text-blue-500 transition duration-150 ease-in-out focus:outline-none focus:ring ring-gray-300">
+                                <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-semibold text-gray-700 bg-white border border-gray-300 leading-5 hover:bg-gray-100 transition duration-150 ease-in-out focus:outline-none focus:ring ring-gray-300">
                                     {{ $page }}
                                 </a>
                             @endif
@@ -58,16 +70,31 @@
                     @endif
                 @endforeach
 
-                {{-- NEXT BUTTON (KUNING) --}}
+                {{-- NEXT BUTTON (PANAH TUNGGAL KANAN: > - PUTIH) --}}
                 @if ($paginator->hasMorePages())
-                    <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-semibold text-black bg-yellow-400 border border-yellow-500 rounded-r-md leading-5 hover:bg-yellow-500 transition duration-150 ease-in-out focus:outline-none focus:ring ring-yellow-300">
-                        {!! __('pagination.next') !!}
+                    <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="relative inline-flex items-center px-2 py-2 -ml-px text-sm font-semibold text-gray-700 bg-white border border-gray-300 leading-5 hover:bg-gray-100 transition duration-150 ease-in-out focus:outline-none focus:ring ring-gray-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </a>
                 @else
-                    <span class="relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default rounded-r-md leading-5">
-                        {!! __('pagination.next') !!}
+                    <span class="relative inline-flex items-center px-2 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </span>
                 @endif
+                
+                {{-- TOMBOL LAST PAGE (PANAH GANDA KANAN: >> - PUTIH) --}}
+                @php
+                    $lastPage = $paginator->lastPage();
+                @endphp
+                @if ($paginator->hasMorePages())
+                    <a href="{{ $paginator->url($lastPage) }}" class="relative inline-flex items-center px-2 py-2 -ml-px text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-r-md leading-5 hover:bg-gray-100 transition duration-150 ease-in-out focus:outline-none focus:ring ring-gray-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7m-8 0l7-7-7-7"></path></svg>
+                    </a>
+                @else
+                    <span class="relative inline-flex items-center px-2 py-2 -ml-px text-sm font-medium text-gray-400 bg-white border border-gray-300 cursor-default rounded-r-md leading-5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7m-8 0l7-7-7-7"></path></svg>
+                    </span>
+                @endif
+
             </div>
         </div>
     </nav>
