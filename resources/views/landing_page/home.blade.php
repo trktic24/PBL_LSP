@@ -3,32 +3,36 @@
 @section('content')
 
 {{-- ======================= HERO ======================= --}}
-<section class="relative h-[900px] rounded-t-4xl overflow-hidden z-10"> 
+<section class="relative h-[900px] rounded-t-4xl overflow-hidden z-10">
+    {{-- Gambar Latar Belakang --}}
     <img src="{{ asset('images/Gedung Polines.jpg') }}"
         alt="Gedung Polines"
         class="w-full h-full object-cover">
+    
+    {{-- Overlay Gradasi Biru --}}
     <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
+    
+    {{-- Gradasi Putih di Bawah --}}
     <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
-    {{-- POSISI DIATUR OLEH CONTAINER DI DALAMNYA --}}
+    
+    {{-- Konten Utama (Header Text dan Tombol) --}}
     <div class="absolute top-1/3 inset-x-0">
         
-        {{-- 
-          Wrapper container baru. 
-          GANTI 'px-8' DI BAWAH INI dengan padding dari navbar Anda (dari Langkah 1)--}}
-        <div class="container mx-auto px-8"> {{-- <-- GANTI 'px-8' INI --}}
+        <div class="container mx-auto px-8"> 
             
-            {{-- Konten Anda (kelas 'left-16' sudah dihapus) --}}
             <div class="text-black drop-shadow-lg max-w-xl">
                 <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
                 <p class="text-xl mb-6 leading-relaxed">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
 
                 <div class="flex items-center gap-6 mt-8">
+                    {{-- Tombol Daftar --}}
                     <a href="{{ route('login') }}"
                         class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
                              hover:bg-yellow-500 transition-all duration-300 ease-in-out
                              transform hover:scale-105">
                         Daftar
                     </a>
+                    {{-- Tombol Eksplore --}}
                     <a href="#skema-sertifikasi"
                         class="text-black font-semibold text-lg flex items-center gap-2
                              hover:gap-3 transition-all duration-300 ease-in-out group">
@@ -41,8 +45,8 @@
     </div>
 </section>
 
+{{-- ======================= CSS UNTUK FILTER & CAROUSEL ======================= --}}
 <style>
-/* ======================= FIX CSS UNTUK FORMAT KATEGORI ======================= */
 body {
     overflow-x: hidden; /* Tambahkan ini */
 }
@@ -106,18 +110,15 @@ html { scroll-behavior: smooth; }
 }
 </style>
 
-{{-- ======================= FILTER KATEGORI (FIXED TAMPILAN) ====================== --}}
+{{-- ======================= FILTER KATEGORI ====================== --}}
 <section id="skema-sertifikasi" 
              class="py-10 text-center relative z-20 bg-white -mt-10">
     <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
     
-    {{-- FIX: Menggunakan container lebar penuh dan menghilangkan max-w-4xl --}}
     <div class="relative w-full max-w-7xl mx-auto">
-        {{-- FIX: Menggunakan justify-start agar item berada di kiri (walaupun di scroll) --}}
         <div id="scrollContainer" 
              class="flex flex-row gap-4 overflow-x-scroll whitespace-nowrap justify-start py-4 px-4">
             
-            {{-- FIX: Menggunakan w-fit dan mx-auto agar tombol rata tengah jika kurang dari lebar layar --}}
             <div id="categoryButtons" class="inline-flex gap-4 w-fit px-4"> 
                 @foreach($categories as $category)
                     <button data-category="{{ $category }}"
@@ -136,6 +137,7 @@ html { scroll-behavior: smooth; }
 {{-- ======================= CAROUSEL GRID SKEMA ======================= --}}
 <section class="px-4 md:px-10 mb-16 relative min-h-[700px]">
     <div class="relative w-full max-w-7xl mx-auto">
+        {{-- Tombol Navigasi Carousel --}}
         <button id="prevBtn" 
                 class="carousel-nav-btn -left-4 md:-left-8 disabled:opacity-30 disabled:cursor-not-allowed" 
                 onclick="moveSlide(-1)">&#10094;</button>
@@ -162,6 +164,7 @@ html { scroll-behavior: smooth; }
                         <div class="transition hover:scale-105 skema-card" data-category="{{ $categoryName }}">
                             <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
                                 <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
+                                    {{-- Menggunakan asset path relatif untuk gambar skema --}}
                                     <img src="{{ asset('images/skema/' . ($skema->gambar ?? 'default.jpg')) }}"
                                         alt="Gambar Skema"
                                         class="w-full h-48 object-cover">
@@ -190,6 +193,7 @@ html { scroll-behavior: smooth; }
     </div>
 </section>
 
+{{-- ======================= SCRIPT JAVASCRIPT CAROUSEL DAN FILTER ======================= --}}
 <script>
 // ======================= LOGIKA FILTER DAN CAROUSEL (Final) =======================
 document.addEventListener('DOMContentLoaded', () => {
@@ -329,18 +333,18 @@ if (scrollContainer) {
             <div class="card bg-white shadow-lg rounded-2xl">
                 <div class="card-body flex flex-col p-8">
                     <p class="text-base mb-1 font-bold text-left">Sertifikasi:</p>
-                    {{-- FIX: Gunakan relasi skema --}}
-                    <p class="text-base mb-3 text-left">{{ $jadwal->skema->nama_skema ?? 'Skema Tidak Ditemukan' }}</p>
+                    {{-- Mengambil nama skema dari relasi 'skema' --}}
+                    <p class="text-base mb-3 text-left">{{ $jadwal->skema?->nama_skema ?? 'Skema tidak ditemukan' }}</p>
 
                     <p class="text-base mb-1 font-bold text-left">TUK:</p>
-                    {{-- FIX: Gunakan relasi masterTuk --}}
-                    <p class="text-base mb-3 text-left">{{ $jadwal->masterTuk->nama_tuk ?? 'TUK Tidak Ditemukan' }}</p>
+                    {{-- Mengambil nama TUK dari relasi 'masterTuk' --}}
+                    <p class="text-base mb-3 text-left">{{ $jadwal->masterTuk?->nama_tuk ?? 'TUK tidak spesifik' }}</p>
 
                     <p class="text-base mb-1 font-bold text-left">Tanggal:</p>
-                    {{-- FIX: Gunakan field tanggal_pelaksanaan dan cek null --}}
-                    <p class="text-base mb-6 text-left">{{ $jadwal->tanggal_pelaksanaan ? $jadwal->tanggal_pelaksanaan->format('d F Y') : 'Tanggal belum diatur' }}</p>
+                    {{-- Menggunakan kolom 'tanggal_pelaksanaan' dan memformatnya --}}
+                    <p class="text-base mb-6 text-left">{{ $jadwal->tanggal_pelaksanaan ? \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('d F Y') : 'Tanggal belum diatur' }}</p>
 
-                    {{-- FIX KRUSIAL: Ubah ke route 'detail_jadwal' dan berikan ID tanpa array --}}
+                    {{-- Menggunakan primary key 'id_jadwal' untuk detail jadwal --}}
                     <a href="{{ route('detail_jadwal', $jadwal->id_jadwal) }}" 
                        class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">Detail</a>
                 </div>
@@ -353,29 +357,27 @@ if (scrollContainer) {
     </div>
 </section>
 
-{{-- ======================= BERITA TERBARU (MODIFIKASI) ======================= --}}
-<section id="berita-terbaru" class="bg-white py-12 px-10 text-center"> {{-- <-- ID DITAMBAHKAN --}}
+{{-- ======================= BERITA TERBARU ======================= --}}
+<section id="berita-terbaru" class="bg-white py-12 px-10 text-center">
     <h2 class="text-3xl font-bold mb-8">Berita Terbaru</h2>
     
     {{-- Grid untuk Kartu Berita --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
         
-        {{-- Kita looping data berita dari controller --}}
         @forelse ($beritas as $berita)
             <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] text-left">
                 
-                {{-- LINK HREF DIPERBARUI --}}
                 <a href="{{ route('berita.detail', ['id' => $berita->id]) }}"> 
                     
-                    {{-- Gambar Berita --}}
-                    <img src="{{ $berita->gambar }}" 
-                            alt="{{ $berita->judul }}" 
-                            class="w-full h-48 object-cover">
+                    {{-- Gambar Berita (Menggunakan asset('storage/berita/...') sebagai path gambar yang lebih umum) --}}
+                    <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
+                        alt="{{ $berita->judul }}" 
+                        class="w-full h-48 object-cover">
                     
                     <div class="p-6">
                         {{-- Tanggal Publish --}}
                         <p class="text-sm text-gray-500 mb-2">
-                            {{ $berita->tanggal->format('d F Y') }}
+                            {{ $berita->created_at->format('d F Y') }}
                         </p>
                         
                         {{-- Judul Berita --}}
@@ -383,7 +385,7 @@ if (scrollContainer) {
                             {{ $berita->judul }}
                         </h3>
                         
-                        {{-- Link Baca Selengkapnya (Tema Biru Polines) --}}
+                        {{-- Link Baca Selengkapnya --}}
                         <span class="font-semibold text-blue-700 hover:underline flex items-center gap-1 group">
                             Baca Selengkapnya
                             <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
