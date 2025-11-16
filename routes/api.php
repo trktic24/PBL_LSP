@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Auth\GoogleApiController;
 use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\TukController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\Api\AsesorTableApiController;
+use App\Http\Controllers\Api\BeritaController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
@@ -38,3 +39,9 @@ Route::apiResource('tuks', TukController::class); // <-- BARIS BARU
 Route::get('/skema', [SkemaController::class, 'index']);
 
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
+
+//Api Berita
+Route::apiResource('berita', BeritaController::class);
+Route::middleware('auts:sanctum')->get('user', function (Request $request) {
+    return $request->user();
+});

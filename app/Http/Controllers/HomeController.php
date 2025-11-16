@@ -6,11 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\Skema;
 use App\Models\Category;
+use App\Models\Berita; // Model Berita sudah di-import
 use \DateTime;
 use Illuminate\Support\Collection;
 
+// 'use App\Http\Controllers\Controller;' SUDAH DIHAPUS DARI SINI
 class HomeController extends Controller
 {
+    // Ini tetap dummy karena belum kita migrasikan
     private function getSemuaDummyJadwal()
     {
         return [
@@ -41,29 +44,8 @@ class HomeController extends Controller
         ];
     }
 
-    private function getSemuaDummyBerita()
-    {
-        return [
-            (object)[
-                'id' => 1,
-                'judul' => 'LSP Polines Adakan Uji Kompetensi Skema Jaringan',
-                'tanggal' => now()->subDays(2),
-                'gambar' => 'https://placehold.co/600x400/96C9F4/white?text=Berita+1'
-            ],
-            (object)[
-                'id' => 2,
-                'judul' => 'Kerjasama Baru LSP Polines dengan Industri Digital',
-                'tanggal' => now()->subDays(5),
-                'gambar' => 'https://placehold.co/600x400/FACC15/white?text=Berita+2'
-            ],
-            (object)[
-                'id' => 3,
-                'judul' => 'Sosialisasi Pentingnya Sertifikasi di Era Industri 4.0',
-                'tanggal' => now()->subWeeks(1),
-                'gambar' => 'https://placehold.co/600x400/3B82F6/white?text=Berita+3'
-            ],
-        ];
-    }
+    // FUNGSI DUMMY BERITA SUDAH DIHAPUS
+
     public function index(): View
     {
         $categories = Category::all()->pluck('nama_kategori')->all();
@@ -82,8 +64,8 @@ class HomeController extends Controller
             ->take(2)
             ->values();
 
-        // AMBIL BERITA (MODIFIKASI)
-        $beritas = collect($this->getSemuaDummyBerita())->take(3);
+        // 🟦 MODIFIKASI: AMBIL BERITA DARI DATABASE 🟦
+        $beritas = Berita::latest()->take(3)->get();
 
         // KIRIM BERITA KE VIEW (MODIFIKASI)
         return view('landing_page.home', compact('skemas', 'jadwals', 'categories', 'beritas'));
@@ -108,9 +90,6 @@ class HomeController extends Controller
         $skema = Skema::findOrFail($id); 
         
         // --- INJEKSI DUMMY DATA UNTUK KONTEN (UNIT KOMPETENSI & SKKNI) ---
-        // Ini diperlukan agar detail_skema.blade.php dapat melakukan looping 
-        // pada bagian Unit Kompetensi dan SKKNI.
-
         $skema->unit_kompetensi = collect([
             (object) [
                 'kode' => '123456789',
@@ -129,12 +108,10 @@ class HomeController extends Controller
         ]);
 
         $skema->skkni = collect([
-            // Asumsi properti 'link_pdf' akan diisi link unduhan dokumen
             (object) ['nama' => 'SKKNI Keamanan Siber 1', 'link_pdf' => '#'],
             (object) ['nama' => 'SKKNI Keamanan Siber 2', 'link_pdf' => '#'],
         ]);
         
-        // Memastikan properti dasar untuk Hero Section tersedia (jika tidak ada di model)
         if (!isset($skema->gambar)) {
              $skema->gambar = 'default_skema_image.jpg'; 
         }
@@ -174,18 +151,16 @@ class HomeController extends Controller
             'jadwal' => $jadwal
         ]);
     }
-    // FUNGSI BARU UNTUK MENANGANI DETAIL BERITA
+
+    // 🟦 MODIFIKASI: FUNGSI DETAIL BERITA DARI DATABASE 🟦
     public function showBeritaDetail($id): View
     {
-        $semuaBerita = $this->getSemuaDummyBerita();
-        $berita = collect($semuaBerita)->firstWhere('id', (int)$id);
-
-        if (!$berita) {
-            abort(404, 'Berita tidak ditemukan');
-        }
+        // Ambil dari DB atau tampilkan 404 jika tidak ketemu
+        $berita = Berita::findOrFail($id); 
 
         return view('landing_page.detail.berita_detail', [
             'berita' => $berita
         ]);
     }
 }
+// <-- KARAKTER '}' EKSTRA SUDAH DIHAPUS DARI SINI

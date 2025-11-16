@@ -362,14 +362,14 @@ if (scrollContainer) {
                 <a href="{{ route('berita.detail', ['id' => $berita->id]) }}"> 
                     
                     {{-- Gambar Berita --}}
-                    <img src="{{ $berita->gambar }}" 
+                    <img src="{{ asset('storage/berita/' . $berita->gambar) }}"
                          alt="{{ $berita->judul }}" 
                          class="w-full h-48 object-cover">
                     
                     <div class="p-6">
                         {{-- Tanggal Publish --}}
                         <p class="text-sm text-gray-500 mb-2">
-                            {{ $berita->tanggal->format('d F Y') }}
+                            {{ $berita->created_at->format('d F Y') }}
                         </p>
                         
                         {{-- Judul Berita --}}

@@ -9,19 +9,17 @@
         
         {{-- Info Meta: Tanggal --}}
         <p class="text-base text-gray-600 mb-6">
-            Dipublikasikan pada: {{ $berita->tanggal->format('d F Y') }}
+            Dipublikasikan pada: {{ $berita->created_at->format('d F Y') }}
         </p>
         
         {{-- Gambar Utama --}}
-        <img src="{{ $berita->gambar }}" 
+        <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
              alt="{{ $berita->judul }}" 
              class="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg mb-8">
         
-        {{-- Konten Berita (Dummy) --}}
+        {{-- Konten Berita (Dari Database) --}}
         <div class="text-gray-800 text-lg leading-relaxed space-y-6">
-            <p>Ini adalah paragraf pertama dari konten berita. Karena ini adalah data dummy, kami belum memiliki isi lengkap untuk "{{ $berita->judul }}".</p>
-            <p>Dalam implementasi nyata, Anda akan mengambil konten ini dari database (misalnya, kolom `isi_berita` atau `content`).</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            {!! nl2br(e($berita->isi)) !!}
         </div>
 
         {{-- Tombol Kembali --}}
