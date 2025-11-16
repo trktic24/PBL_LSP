@@ -8,28 +8,55 @@ use Illuminate\Http\Request;
 
 class AsesorTableController extends Controller
 {
-    /**
-     * Menampilkan daftar asesor dari database.
-     * Rute: /daftar-asesor
-     */
     public function index(Request $request)
     {
-        // Ambil semua data asesor dari tabel 'asesor'
-        // Bisa ditambahkan pencarian jika diperlukan
         $query = Asesor::query();
 
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where('nama_lengkap', 'like', "%{$search}%")
+        // ---------------------------
+        // SEARCH
+        // ---------------------------
+        if ($request->search) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
                   ->orWhere('nomor_regis', 'like', "%{$search}%")
                   ->orWhere('provinsi', 'like', "%{$search}%")
                   ->orWhere('pekerjaan', 'like', "%{$search}%");
+            });
         }
 
+        // ---------------------------
+        // FILTER MULTI PROVINSI
+        // ---------------------------
+        if ($request->provinsi) {
+            $provinsi = is_array($request->provinsi)
+                ? $request->provinsi
+                : [$request->provinsi];
+
+            $query->whereIn('provinsi', $provinsi);
+        }
+
+        // ---------------------------
+        // FILTER MULTI BIDANG
+        // ---------------------------
+        if ($request->bidang) {
+            $bidang = is_array($request->bidang)
+                ? $request->bidang
+                : [$request->bidang];
+
+            $query->whereIn('pekerjaan', $bidang);
+        }
+
+        // Ambil hasil filter
         $asesors = $query->get();
 
-        // Kirim data ke view
-        return view('landing_page.page_info.daftar-asesor', compact('asesors'));
+        // Dropdown
+        $listProvinsi = Asesor::select('provinsi')->distinct()->orderBy('provinsi')->pluck('provinsi');
+        $listBidang   = Asesor::select('pekerjaan')->distinct()->orderBy('pekerjaan')->pluck('pekerjaan');
 
+        return view('landing_page.page_info.daftar-asesor', compact(
+            'asesors', 'listProvinsi', 'listBidang'
+        ));
     }
 }
