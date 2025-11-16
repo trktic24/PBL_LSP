@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 class TukController extends Controller
 {
     /**
-     * Menampilkan daftar Tempat Uji Kompetensi (TUK) dengan fitur Sorting dan Searching.
-     * Logika filtering provinsi dihapus.
+     * Menampilkan daftar Tempat Uji Kompetensi (TUK) dengan fitur Sorting, Searching, dan Pagination.
      */
     public function index(Request $request)
     {
@@ -27,7 +26,7 @@ class TukController extends Controller
         }
         
         // 3. LOGIKA SORTING
-        // Default sort diatur ke 'nama_lokasi'
+        
         $sortColumn = $request->get('sort', 'nama_lokasi'); 
         $sortDirection = $request->get('direction', 'asc');
 
@@ -41,8 +40,8 @@ class TukController extends Controller
             $query->orderBy('nama_lokasi', 'asc'); 
         }
 
-        // 4. Ambil data TUK (dengan Pagination)
-        $tuks = $query->paginate(15); 
+        // 4. Ambil data TUK (dengan Pagination 10 data per halaman)
+        $tuks = $query->paginate(10); 
         
         // Mengirimkan data TUK ke view
         return view('landing_page.page_tuk.info-tuk', [

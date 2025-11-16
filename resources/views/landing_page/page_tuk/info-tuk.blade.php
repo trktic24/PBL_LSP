@@ -135,7 +135,7 @@
             </table>
         </div>
         
-        {{-- Jika menggunakan pagination, ini akan menampilkan link navigasi --}}
+        {{-- PAGINATION LINKS --}}
         @if (isset($tuks) && method_exists($tuks, 'links'))
             <div class="mt-4">
                 {{ $tuks->appends(request()->except('page'))->links() }}
