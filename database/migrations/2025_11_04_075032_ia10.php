@@ -17,8 +17,6 @@ return new class extends Migration
 
             // isi dari database ia10
             $table->text('pertanyaan');
-            $table->boolean('jawaban_iya')->default(false)->comment('1 untuk Ya, 0 untuk Tidak');
-            $table->boolean('jawaban_tidak')->default(false)->comment('1 untuk Tidak, 0 untuk Ya');
             $table->timestamps();
         });
     }
