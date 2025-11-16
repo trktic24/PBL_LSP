@@ -318,36 +318,126 @@ if (scrollContainer) {
     });
     scrollContainer.style.cursor = 'grab'; 
 }
+
+// {{-- ======================= SCRIPT UNTUK SLIDER JADWAL ======================= --}}
+document.addEventListener('DOMContentLoaded', () => {
+    const track = document.getElementById('jadwal-track');
+    const prevBtn = document.getElementById('jadwal-prev');
+    const nextBtn = document.getElementById('jadwal-next');
+
+    // Cek jika elemen slider ada di halaman ini
+    if (track && prevBtn && nextBtn) {
+        const slides = Array.from(track.children);
+        const totalSlides = slides.length;
+        let currentIndex = 0;
+
+        // Fungsi untuk menggeser slide
+        function showSlide(index) {
+            if (!track) return; // Pastikan track ada
+            track.style.transform = `translateX(-${index * 100}%)`;
+            
+            // Atur status tombol
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === totalSlides - 1);
+        }
+
+        // Event listener untuk tombol
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showSlide(currentIndex);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < totalSlides - 1) {
+                currentIndex++;
+                showSlide(currentIndex);
+            }
+        });
+
+        // Tampilkan slide pertama saat load
+        showSlide(0);
+    }
+
+});
 </script>
 
-{{-- ======================= JADWAL SERTIFIKASI ======================= --}}
-<section class="bg-gray-50 py-12 px-10 text-center">
+{{-- ======================= JADWAL SERTIFIKASI (VERSI SLIDER) ======================= --}}
+<section class="bg-gray-50 py-12 px-10 text-center relative">
     <h2 class="text-3xl font-bold mb-8">Jadwal yang Akan Datang</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-        @forelse ($jadwals as $jadwal)
-            <div class="card bg-white shadow-lg rounded-2xl">
-                <div class="card-body flex flex-col p-8">
-                    <p class="text-base mb-1 font-bold text-left">Sertifikasi:</p>
-                    {{-- Mengambil nama skema dari relasi 'skema' --}}
-                    <p class="text-base mb-3 text-left">{{ $jadwal->skema?->nama_skema ?? 'Skema tidak ditemukan' }}</p>
 
-                    <p class="text-base mb-1 font-bold text-left">TUK:</p>
-                    {{-- Mengambil nama TUK dari relasi 'masterTuk' (Asumsi nama kolomnya 'nama_tuk') --}}
-                    <p class="text-base mb-3 text-left">{{ $jadwal->masterTuk?->nama_tuk ?? 'TUK tidak spesifik' }}</p>
+    @php
+        // Membagi data jadwal menjadi kelompok-kelompok (3 jadwal per kelompok/slide)
+        $jadwalChunks = $jadwals->chunk(3);
+    @endphp
 
-                    <p class="text-base mb-1 font-bold text-left">Tanggal:</p>
-                    {{-- Menggunakan kolom 'tanggal_pelaksanaan' --}}
-                    <p class="text-base mb-6 text-left">{{ $jadwal->tanggal_pelaksanaan ? $jadwal->tanggal_pelaksanaan->format('d F Y') : 'Tanggal belum diatur' }}</p>
+    <div class="max-w-6xl mx-auto relative">
+        {{-- Kontainer Slider (Menyembunyikan overflow) --}}
+        <div class="overflow-hidden relative rounded-2xl">
+            
+            {{-- Track Slider (yang akan bergerak) --}}
+            <div class="flex transition-transform duration-500 ease-in-out" id="jadwal-track">
 
-                    {{-- Menggunakan primary key 'id_jadwal' dari model Anda --}}
-                    <a href="{{ route('jadwal.detail', ['id' => $jadwal->id_jadwal]) }}" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">Detail</a>
-                </div>
+                @forelse($jadwalChunks as $chunk)
+                    {{-- Setiap Slide (berisi 3 kartu) --}}
+                    <div class="flex-none w-full grid grid-cols-1 md:grid-cols-3 gap-6 p-2">
+                        
+                        @foreach($chunk as $jadwal)
+                            {{-- KARTU JADWAL (Ukuran Dikecilkan) --}}
+                            <div class="card bg-white shadow-lg rounded-2xl">
+                                <div class="card-body flex flex-col p-6 text-left"> {{-- Padding dikecilkan ke p-6 --}}
+                                    
+                                    <p class="text-sm mb-1 font-bold">Sertifikasi:</p> {{-- Font dikecilkan --}}
+                                    <p class="text-base font-semibold mb-3 h-12 line-clamp-2">{{ $jadwal->skema?->nama_skema ?? 'Skema tidak ditemukan' }}</p>
+
+                                    <p class="text-sm mb-1 font-bold">TUK:</p>
+                                    <p class="text-base mb-3">{{ $jadwal->masterTuk?->nama_lokasi ?? 'TUK tidak spesifik' }}</p>
+
+                                    <p class="text-sm mb-1 font-bold">Tanggal:</p>
+                                    <p class="text-base mb-6">{{ $jadwal->tanggal_pelaksanaan ? $jadwal->tanggal_pelaksanaan->format('d F Y') : 'TBA' }}</p>
+
+                                    <a href="{{ route('jadwal.detail', ['id' => $jadwal->id_jadwal]) }}" 
+                                       class="btn bg-yellow-400 text-black font-semibold border-none 
+                                              hover:bg-yellow-300 px-6 py-2 rounded-full text-sm mt-auto">Detail</a> {{-- Tombol dikecilkan --}}
+                                </div>
+                            </div>
+                        @endforeach
+
+                        {{-- Jika chunk tidak penuh 3 (misal sisa 1 atau 2), biarkan kosong --}}
+                        @if($loop->last && $chunk->count() < 3)
+                            @for ($i = 0; $i < (3 - $chunk->count()); $i++)
+                                <div class="hidden md:block"></div> {{-- Placeholder agar rapi --}}
+                            @endfor
+                        @endif
+
+                    </div>
+                @empty
+                    {{-- Tampilan jika tidak ada jadwal sama sekali --}}
+                    <div class="w-full text-center text-gray-500 py-10">
+                        <p>Belum ada jadwal yang akan datang saat ini.</p>
+                    </div>
+                @endforelse
+
             </div>
-        @empty
-            <div class="md:col-span-2 text-center text-gray-500">
-                <p>Belum ada jadwal yang akan datang saat ini.</p>
-            </div>
-        @endforelse
+        </div>
+
+        {{-- Tombol Navigasi Slider --}}
+        @if($jadwalChunks->count() > 1)
+            <button id="jadwal-prev" 
+                    class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 
+                           bg-white rounded-full shadow-md w-10 h-10 flex items-center justify-center 
+                           text-gray-700 hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed z-10">
+                &larr;
+            </button>
+            <button id="jadwal-next" 
+                    class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 
+                           bg-white rounded-full shadow-md w-10 h-10 flex items-center justify-center 
+                           text-gray-700 hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed z-10">
+                &rarr;
+            </button>
+        @endif
+
     </div>
 </section>
 
