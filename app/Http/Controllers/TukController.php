@@ -44,15 +44,28 @@ class TukController extends Controller
         // 5. Terapkan 'orderBy' (Sorting)
         $query->orderBy($sortColumn, $sortDirection);
 
-        // 6. === INI PERBAIKANNYA ===
-        // Ganti get() menjadi paginate(). Kita set 10 data per halaman.
-        $tuks = $query->paginate(10)->onEachSide(0.5);
+        // 6. === PERUBAHAN: Paginate Dinamis ===
         
-        // 7. (WAJIB) Sertakan parameter search/sort di link paginasi
-        $tuks->appends($request->only(['sort', 'direction', 'search']));
+        // 6a. Daftar 'per_page' yang valid (untuk keamanan)
+        $allowedPerpage = [10, 25, 50, 100]; 
+        
+        // 6b. Ambil 'per_page' dari request, default-nya 10
+        $perPage = $request->input('per_page', 10);
+        if (!in_array($perPage, $allowedPerpage)) {
+            $perPage = 10; // Reset jika nilainya tidak valid
+        }
 
-        // 8. Kirim data TUK yang sudah di-paginate
-        return view('tuk.master_tuk', ['tuks' => $tuks]);
+        // 6c. Gunakan $perPage di paginate()
+        $tuks = $query->paginate($perPage)->onEachSide(0.5);
+        
+        // 7. (WAJIB) Tambahkan 'per_page' ke appends()
+        $tuks->appends($request->only(['sort', 'direction', 'search', 'per_page'])); // <-- 'per_page' DITAMBAHKAN
+
+        // 8. Kirim data TUK dan $perPage ke view
+        return view('tuk.master_tuk', [
+            'tuks' => $tuks,
+            'perPage' => $perPage // <-- DATA INI DIKIRIM KE VIEW
+        ]);
     }
 
     /**
@@ -112,7 +125,7 @@ class TukController extends Controller
 
         if ($request->hasFile('foto_tuk')) {
             if ($tuk->foto_tuk) {
-                Storage::disk('public')->delete(str_replace('public/', '', $tuk->foto_tuk));
+                Storage::disk('public')->delete($tuk->foto_tuk);
             }
             $path = $request->file('foto_tuk')->store('photos/tuk', 'public');
             $validatedData['foto_tuk'] = $path;
@@ -142,7 +155,7 @@ class TukController extends Controller
 
         try {
             if ($tuk->foto_tuk) {
-                Storage::disk('public')->delete(str_replace('public/', '', $tuk->foto_tuk));
+                Storage::disk('public')->delete($tuk->foto_tuk);
             }
 
             $tuk->delete();

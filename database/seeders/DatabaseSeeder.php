@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
 
         
         Asesor::factory(20)->create();
-        Asesi::factory(50)->create();
+        Asesi::factory(200)->create();
         Tuk::factory(20)->create();
         Skema::factory(20)->create();
-        Schedule::factory(20)->create();
+        Schedule::factory(50)->create();
     }
 }
