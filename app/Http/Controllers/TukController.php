@@ -2,26 +2,51 @@
 
 namespace App\Http\Controllers;
 
-// Ganti "use App\Models\Tuk;"
-use App\Models\MasterTuk; // <-- PERBAIKAN: Menggunakan Model yang benar
-
+use App\Models\MasterTuk;
 use Illuminate\Http\Request;
 
 class TukController extends Controller
 {
     /**
-     * Menampilkan daftar Tempat Uji Kompetensi (TUK).
-     * Mengambil data dari tabel master_tuk menggunakan Model MasterTuk.
-     * Untuk rute /info-tuk
+     * Menampilkan daftar Tempat Uji Kompetensi (TUK) dengan fitur Sorting dan Searching.
+     * Logika filtering provinsi dihapus.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // PERBAIKAN: Menggunakan MasterTuk::all()
-        $tuks = MasterTuk::all();
+        // 1. Inisialisasi Query Builder
+        $query = MasterTuk::query();
 
+        // 2. LOGIKA SEARCHING (Berdasarkan nama_lokasi atau alamat_tuk)
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->get('search') . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                // Kolom sesuai tabel: nama_lokasi dan alamat_tuk
+                $q->where('nama_lokasi', 'like', $searchTerm)
+                  ->orWhere('alamat_tuk', 'like', $searchTerm);
+            });
+        }
+        
+        // 3. LOGIKA SORTING
+        // Default sort diatur ke 'nama_lokasi'
+        $sortColumn = $request->get('sort', 'nama_lokasi'); 
+        $sortDirection = $request->get('direction', 'asc');
+
+        // Daftar kolom yang diizinkan untuk sorting
+        $allowedColumns = ['nama_lokasi', 'alamat_tuk', 'kontak_tuk', 'created_at'];
+
+        if (in_array($sortColumn, $allowedColumns)) { 
+            $query->orderBy($sortColumn, $sortDirection);
+        } else {
+            // Fallback jika kolom tidak valid
+            $query->orderBy('nama_lokasi', 'asc'); 
+        }
+
+        // 4. Ambil data TUK (dengan Pagination)
+        $tuks = $query->paginate(15); 
+        
         // Mengirimkan data TUK ke view
         return view('landing_page.page_tuk.info-tuk', [
-            'tuks' => $tuks
+            'tuks' => $tuks,
         ]);
     }
 
@@ -33,11 +58,9 @@ class TukController extends Controller
      */
     public function showDetail($id)
     {
-        // PERBAIKAN: Menggunakan MasterTuk::findOrFail()
-        $data_tuk = MasterTuk::findOrFail($id);
 
-        // Catatan Penting:
-        // Kunci yang tersedia adalah kolom-kolom dari tabel: 'id_tuk', 'nama_lokasi', 'alamat_tuk', 'kontak_tuk', 'link_gmap', dll.
+        $data_tuk = MasterTuk::findOrFail($id);
+        
 
         return view('landing_page.page_tuk.detail-tuk', [
             'data_tuk' => $data_tuk,

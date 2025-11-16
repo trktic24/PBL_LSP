@@ -27,23 +27,30 @@
         }
     </style>
 
-    {{-- HEADER BLOCK DARI DAFTAR ASESOR --}}
+    {{-- HEADER BLOCK --}}
     <div class="bg-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Tempat Uji Kompetensi</h1>
-            {{-- Mengubah subjudul agar sesuai dengan konteks TUK --}}
+            
             <p class="text-gray-600">Daftar lokasi pelaksanaan uji kompetensi<br>yang terdaftar secara resmi</p>
         </div>
     </div>
 
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {{-- SEARCH BOX DARI DAFTAR ASESOR --}}
+
+        {{-- KONTROL SEARCHING (HANYA SEARCH BOX DI KANAN) --}}
         <div class="flex justify-end mb-4">
+            
+            {{-- SEARCH BOX --}}
             <form method="GET" action="{{ url('/info-tuk') }}" class="relative">
+                {{-- Membawa parameter sort yang sudah ada --}}
+                <input type="hidden" name="sort" value="{{ request('sort') }}">
+                <input type="hidden" name="direction" value="{{ request('direction') }}">
+
                 <input
                     type="text"
                     name="search"
-                    placeholder="Search"
+                    placeholder="Search Tempat atau Alamat"
                     value="{{ request('search') }}"
                     class="w-64 pl-10 pr-4 py-2 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent"
                 >
@@ -54,14 +61,44 @@
         </div>
 
         {{-- Kartu Tabel --}}
-        {{-- Menggunakan class .table-container dari CSS Anda --}}
+
         <div class="shadow-md border border-gray-200 table-container bg-white">
             <table class="min-w-full text-left text-gray-700">
                 
                 <thead class="border-b-2 border-gray-900">
                     <tr>
-                        <th class="px-6 py-4 text-sm font-bold text-gray-900 text-center w-[30%] rounded-tl-3xl">Tempat</th>
-                        <th class="px-6 py-4 text-sm font-bold text-gray-900 text-center w-[40%]">Alamat</th>
+                        {{-- KOLOM TEMPAT (UNTUK SORTING) --}}
+                        <th class="px-6 py-4 text-sm font-bold text-gray-900 text-center w-[30%] rounded-tl-3xl">
+                            @php
+                                $currentSort = request('sort', 'nama_lokasi');
+                                $currentDirection = request('direction', 'asc');
+                                $newDirection = ($currentSort == 'nama_lokasi' && $currentDirection == 'asc') ? 'desc' : 'asc';
+                            @endphp
+                            <a href="{{ url('/info-tuk') }}?sort=nama_lokasi&direction={{ $newDirection }}&search={{ request('search') }}"
+                               class="flex items-center justify-center">
+                                Tempat
+                                @if ($currentSort == 'nama_lokasi')
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $currentDirection == 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                    </svg>
+                                @endif
+                            </a>
+                        </th>
+                        {{-- KOLOM ALAMAT (UNTUK SORTING) --}}
+                         <th class="px-6 py-4 text-sm font-bold text-gray-900 text-center w-[40%]">
+                            @php
+                                $newDirection = ($currentSort == 'alamat_tuk' && $currentDirection == 'asc') ? 'desc' : 'asc';
+                            @endphp
+                            <a href="{{ url('/info-tuk') }}?sort=alamat_tuk&direction={{ $newDirection }}&search={{ request('search') }}"
+                               class="flex items-center justify-center">
+                                Alamat
+                                @if ($currentSort == 'alamat_tuk')
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $currentDirection == 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                    </svg>
+                                @endif
+                            </a>
+                        </th>
                         <th class="px-6 py-4 text-sm font-bold text-gray-900 text-center w-[20%]">Kontak</th>
                         <th class="px-6 py-4 text-sm font-bold text-gray-900 text-center w-[10%] rounded-tr-3xl">Detail</th>
                     </tr>
@@ -97,5 +134,12 @@
                 </tbody>
             </table>
         </div>
+        
+        {{-- Jika menggunakan pagination, ini akan menampilkan link navigasi --}}
+        @if (isset($tuks) && method_exists($tuks, 'links'))
+            <div class="mt-4">
+                {{ $tuks->appends(request()->except('page'))->links() }}
+            </div>
+        @endif
     </div>
 @endsection
