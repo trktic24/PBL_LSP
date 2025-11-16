@@ -398,8 +398,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <p class="text-base mb-6">{{ $jadwal->tanggal_pelaksanaan ? $jadwal->tanggal_pelaksanaan->format('d F Y') : 'TBA' }}</p>
 
                                     <a href="{{ route('jadwal.detail', ['id' => $jadwal->id_jadwal]) }}" 
-                                       class="btn bg-yellow-400 text-black font-semibold border-none 
-                                              hover:bg-yellow-300 px-6 py-2 rounded-full text-sm mt-auto">Detail</a> {{-- Tombol dikecilkan --}}
+                                        class="btn bg-yellow-400 text-black font-semibold border-none 
+                                        hover:bg-yellow-300 px-8 py-3 rounded-full text-base mt-auto w-full text-center">Detail</a>
                                 </div>
                             </div>
                         @endforeach

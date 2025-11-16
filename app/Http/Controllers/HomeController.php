@@ -61,8 +61,9 @@ class HomeController extends Controller
 
         $jadwals = Jadwal::with(['skema', 'masterTuk']) // Load relasi
             ->where('tanggal_pelaksanaan', '>=', $today) // Hanya jadwal yang akan datang
+            ->where('Status_jadwal', 'Terjadwal') // Hanya Jadwal dengan status Terjadwal aja yang ditampilkan
             ->orderBy('tanggal_pelaksanaan', 'asc') // Urutkan dari yang paling dekat
-            ->take(9) // Ambil 3
+            ->take(9) // Ambil 9 (untuk 3 slide)
             ->get();
 
         // 🟦 MODIFIKASI: AMBIL BERITA DARI DATABASE 🟦
