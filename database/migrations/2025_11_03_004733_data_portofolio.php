@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('portofolio', function (Blueprint $table) {
             $table->id('id_portofolio');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+
+            // isi dari database portofolio
             $table->string('persyaratan_dasar')->comment('Sertakan dokumen');
             $table->string('persyaratan_administratif')->comment('Sertakan dokumen');
             $table->timestamps();

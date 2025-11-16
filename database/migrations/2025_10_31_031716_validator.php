@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('no_MET_validator');
 
             // 'ttd' (tanda tangan) kemungkinan path ke file, jadi bisa null
-            $table->string('ttd')->nullable();
+            $table->string('ttd')->nullable()->comment('Path ke file tanda tangan validator');
             $table->timestamps();
         });
     }

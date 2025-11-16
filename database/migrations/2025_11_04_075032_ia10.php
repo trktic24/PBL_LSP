@@ -16,12 +16,7 @@ return new class extends Migration
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
             // isi dari database ia10
-            $table->string('pertanyaan1');
-            $table->string('pertanyaan2');
-            $table->string('pertanyaan3');
-            $table->string('jawaban1');
-            $table->string('jawaban2');
-            $table->string('jawaban3');
+            $table->text('pertanyaan');
             $table->timestamps();
         });
     }

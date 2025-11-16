@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pertanyaan_ia10', function (Blueprint $table) {
-            $table->id('id_pertanyaan_ia10');
-            $table->string('pertanyaan');
+        Schema::create('unit_kompetensi', function (Blueprint $table) {
+            $table->id('id_unit_kompetensi');
+
+            // isi kolom sesuai ERD
+            $table->string('kode_unit')->unique();
+            $table->string('judul_unit');
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pertanyaan_ia10');
+        Schema::dropIfExists('unit_kompetensi');
     }
 };
