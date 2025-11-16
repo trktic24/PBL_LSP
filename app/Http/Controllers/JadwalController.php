@@ -143,19 +143,22 @@ class JadwalController extends Controller
         $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor', 'asesi'])
                         ->findOrFail($id);
         
-        // Double check status
+        // Cek status (logika ini sudah ada di file Anda, ini bagus)
         $this->updateStatusJadwal($jadwal);
         
-        // Jika bukan status DIBUKA, redirect kembali
-        if($jadwal->Status_jadwal != 'Dibuka') {
+        // Jika bukan status DIBUKA (atau Terjadwal), redirect kembali
+        // Sesuaikan 'Dibuka' dengan status Anda, misal 'Terjadwal'
+        if(!in_array($jadwal->Status_jadwal, ['Dibuka', 'Terjadwal'])) {
             return redirect()->route('jadwal.index')
-                            ->with('error', 'Pendaftaran sudah ditutup atau belum dibuka.');
+                            ->with('error', 'Pendaftaran untuk jadwal ini sudah ditutup atau belum dibuka.');
         }
         
-        $jumlahPeserta = $jadwal->peserta->count();
+        $jumlahPeserta = $jadwal->asesi->count(); // Anda menggunakan relasi 'asesi', bukan 'peserta'
         $sisaKuota = $jadwal->kuota_maksimal - $jumlahPeserta;
         
-        return view('jadwal.detail', compact('jadwal', 'jumlahPeserta', 'sisaKuota'));
+        // 🟦 INI ADALAH PERUBAHAN UTAMA 🟦
+        // Mengarahkan ke file view yang Anda inginkan
+        return view('landing_page.detail.detail_jadwal', compact('jadwal', 'jumlahPeserta', 'sisaKuota'));
     }
 
     /**

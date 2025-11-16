@@ -111,9 +111,9 @@
                             <!-- Status -->
                             <div class="text-center">
                                  @if(in_array($item->Status_jadwal, ['Terjadwal']))
-                                    <a href="{{ route('jadwal.show', $item->id_jadwal) }}"
+                                    <a href="{{ route('jadwal.detail', ['id' => $item->id_jadwal]) }}"
                                         class="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold {{ $statusClass }} transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer">
-                                         {{ $item->Status_jadwal }} - Lihat Detail
+                                        {{ $item->Status_jadwal }} - Lihat Detail
                                     </a>
                                 @else
                                     <span class="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold {{ $statusClass }} opacity-90 cursor-not-allowed">
