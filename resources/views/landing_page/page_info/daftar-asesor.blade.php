@@ -25,7 +25,6 @@
     }
     .filter-btn:hover { background: #f3f3f3; }
 
-    /* ikon tidak gepeng */
     .filter-btn svg {
         width: 18px;
         height: 18px;
@@ -57,9 +56,6 @@
         to { opacity:1; transform: translateY(0); }
     }
 
-    /* ----------------------------- */
-    /* SUBMENU DROPDOWN */
-    /* ----------------------------- */
     .dropdown-btn {
         width: 100%;
         padding: 10px 14px;
@@ -74,7 +70,6 @@
         align-items: center;
     }
 
-    /* icon submenu tidak gepeng */
     .dropdown-btn svg {
         width: 16px;
         height: 16px;
@@ -236,6 +231,13 @@
             </tbody>
         </table>
     </div>
+
+    {{-- PAGINATION --}}
+    @if (isset($asesors) && method_exists($asesors, 'links'))
+        <div class="mt-4">
+            {{ $asesors->appends(request()->except('page'))->links() }}
+        </div>
+    @endif
 
 </div>
 

@@ -12,9 +12,9 @@ class AsesorTableController extends Controller
     {
         $query = Asesor::query();
 
-        // ---------------------------
-        // SEARCH
-        // ---------------------------
+        // ================================
+        // SEARCH GLOBAL
+        // ================================
         if ($request->search) {
             $search = $request->search;
 
@@ -26,34 +26,37 @@ class AsesorTableController extends Controller
             });
         }
 
-        // ---------------------------
-        // FILTER MULTI PROVINSI
-        // ---------------------------
+        // ================================
+        // FILTER PROVINSI
+        // ================================
         if ($request->provinsi) {
-            $provinsi = is_array($request->provinsi)
-                ? $request->provinsi
-                : [$request->provinsi];
-
-            $query->whereIn('provinsi', $provinsi);
+            $query->whereIn('provinsi', $request->provinsi);
         }
 
-        // ---------------------------
-        // FILTER MULTI BIDANG
-        // ---------------------------
+        // ================================
+        // FILTER BIDANG / KEAHLIAN
+        // ================================
         if ($request->bidang) {
-            $bidang = is_array($request->bidang)
-                ? $request->bidang
-                : [$request->bidang];
-
-            $query->whereIn('pekerjaan', $bidang);
+            $query->whereIn('pekerjaan', $request->bidang);
         }
 
-        // Ambil hasil filter
-        $asesors = $query->get();
+        // ================================
+        // PAGINATION (20 per halaman)
+        // ================================
+        $asesors = $query->paginate(20);
 
-        // Dropdown
-        $listProvinsi = Asesor::select('provinsi')->distinct()->orderBy('provinsi')->pluck('provinsi');
-        $listBidang   = Asesor::select('pekerjaan')->distinct()->orderBy('pekerjaan')->pluck('pekerjaan');
+        // ================================
+        // DATA FILTER DROPDOWN
+        // ================================
+        $listProvinsi = Asesor::select('provinsi')
+            ->distinct()
+            ->orderBy('provinsi')
+            ->pluck('provinsi');
+
+        $listBidang = Asesor::select('pekerjaan')
+            ->distinct()
+            ->orderBy('pekerjaan')
+            ->pluck('pekerjaan');
 
         return view('landing_page.page_info.daftar-asesor', compact(
             'asesors', 'listProvinsi', 'listBidang'
