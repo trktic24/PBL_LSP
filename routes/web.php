@@ -8,7 +8,7 @@ use App\Models\Skema;
 
 // Import Controller
 use App\Http\Controllers\AsesmenController;
-use App\Http\Controllers\BelajarController;
+
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Apl01PdfController;
