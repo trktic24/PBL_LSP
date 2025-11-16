@@ -328,15 +328,19 @@ if (scrollContainer) {
             <div class="card bg-white shadow-lg rounded-2xl">
                 <div class="card-body flex flex-col p-8">
                     <p class="text-base mb-1 font-bold text-left">Sertifikasi:</p>
-                    <p class="text-base mb-3 text-left">{{ $jadwal->nama_skema }}</p>
+                    {{-- Mengambil nama skema dari relasi 'skema' --}}
+                    <p class="text-base mb-3 text-left">{{ $jadwal->skema?->nama_skema ?? 'Skema tidak ditemukan' }}</p>
 
                     <p class="text-base mb-1 font-bold text-left">TUK:</p>
-                    <p class="text-base mb-3 text-left">{{ $jadwal->tuk }}</p>
+                    {{-- Mengambil nama TUK dari relasi 'masterTuk' (Asumsi nama kolomnya 'nama_tuk') --}}
+                    <p class="text-base mb-3 text-left">{{ $jadwal->masterTuk?->nama_tuk ?? 'TUK tidak spesifik' }}</p>
 
                     <p class="text-base mb-1 font-bold text-left">Tanggal:</p>
-                    <p class="text-base mb-6 text-left">{{ $jadwal->tanggal ? $jadwal->tanggal->format('d F Y') : 'Tanggal belum diatur' }}</p>
+                    {{-- Menggunakan kolom 'tanggal_pelaksanaan' --}}
+                    <p class="text-base mb-6 text-left">{{ $jadwal->tanggal_pelaksanaan ? $jadwal->tanggal_pelaksanaan->format('d F Y') : 'Tanggal belum diatur' }}</p>
 
-                    <a href="{{ route('jadwal.detail', ['id' => $jadwal->id]) }}" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">Detail</a>
+                    {{-- Menggunakan primary key 'id_jadwal' dari model Anda --}}
+                    <a href="{{ route('jadwal.detail', ['id' => $jadwal->id_jadwal]) }}" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">Detail</a>
                 </div>
             </div>
         @empty

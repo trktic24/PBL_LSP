@@ -7,6 +7,8 @@ use Illuminate\View\View;
 use App\Models\Skema;
 use App\Models\Category;
 use App\Models\Berita; // Model Berita sudah di-import
+use App\Models\Jadwal;
+use Carbon\Carbon;
 use \DateTime;
 use Illuminate\Support\Collection;
 
@@ -54,15 +56,14 @@ class HomeController extends Controller
         // Ambil data dari tabel skema
         $skemas = Skema::with('category')->latest()->get(); // ini ambil semua dari database faker
 
-        // Ambil jadwal dummy
-        $semuaJadwal = $this->getSemuaDummyJadwal();
-        $now = new DateTime();
+        // Ambil 3 jadwal terdekat dari database
+        $today = Carbon::now()->startOfDay();
 
-        $jadwals = collect($semuaJadwal)
-            ->filter(fn($jadwal) => $jadwal->tanggal >= $now)
-            ->sortBy(fn($jadwal) => $jadwal->tanggal)
-            ->take(2)
-            ->values();
+        $jadwals = Jadwal::with(['skema', 'masterTuk']) // Load relasi
+            ->where('tanggal_pelaksanaan', '>=', $today) // Hanya jadwal yang akan datang
+            ->orderBy('tanggal_pelaksanaan', 'asc') // Urutkan dari yang paling dekat
+            ->take(3) // Ambil 3
+            ->get();
 
         // 🟦 MODIFIKASI: AMBIL BERITA DARI DATABASE 🟦
         $beritas = Berita::latest()->take(3)->get();
