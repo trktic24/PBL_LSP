@@ -4,33 +4,66 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class BandingAsesmen extends Model
+/**
+ * Model untuk merekam Pengajuan Banding.
+ * Terkait dengan Asesmen yang dibandig (Model Asesmen).
+ */
+class Banding extends Model
 {
     use HasFactory;
-    
-    // Sesuaikan nama tabel jika Anda mengikuti konvensi jamak
-    protected $table = 'banding_asesmen'; 
 
+    // Nama tabel di database
+    protected $table = 'banding';
+    // Primary key untuk Model ini
+    protected $primaryKey = 'id_banding';
+
+    // Izinkan semua field dari form untuk diisi
     protected $fillable = [
-        'nama_asesi',
-        'nama_asesor',
-        'tanggal_asesmen',
-        'proses_banding_dijelaskan',
-        'diskusi_banding_dengan_asesor',
-        'melibatkan_orang_lain',
-        'skema_sertifikasi',
-        'no_skema_sertifikasi',
+        'id_asesi',
+        'id_asesmen', // Foreign Key ke tabel asesmen
+        'tuk_sewaktu',
+        'tuk_tempatkerja',
+        'tuk_mandiri',
+        'ya_tidak_1',
+        'ya_tidak_2',
+        'ya_tidak_3',
         'alasan_banding',
-        'tanda_tangan_asesi',
         'tanggal_pengajuan_banding',
+        'tanda_tangan_asesi', // <-- WAJIB DITAMBAHKAN
     ];
-
+    
+    // Konversi tipe data
     protected $casts = [
-        'tanggal_asesmen' => 'date',
-        'proses_banding_dijelaskan' => 'boolean',
-        'diskusi_banding_dengan_asesor' => 'boolean',
-        'melibatkan_orang_lain' => 'boolean',
+        // 'tuk_sewaktu', 'tuk_tempatkerja', 'tuk_mandiri' tetap boolean
+        'tuk_sewaktu' => 'boolean',
+        'tuk_tempatkerja' => 'boolean',
+        'tuk_mandiri' => 'boolean',
+        // Hapus cast untuk ya_tidak_1, 2, 3 karena nilainya adalah string ('Ya'/'Tidak')
         'tanggal_pengajuan_banding' => 'date',
     ];
+
+
+    // --- RELASI (HUBUNGAN) ---
+
+    /**
+     * Hubungan dengan Model Asesi (Satu banding dimiliki oleh satu Asesi)
+     */
+    public function asesi(): BelongsTo
+    {
+        // Model Asesi menggunakan primary key 'id_asesi'
+        // Asumsi Model Asesi sudah didefinisikan
+        return $this->belongsTo(\App\Models\Asesi::class, 'id_asesi', 'id_asesi');
+    }
+
+    /**
+     * Hubungan dengan Model Asesmen (Satu banding terkait dengan satu hasil asesmen)
+     */
+    public function asesmen(): BelongsTo
+    {
+        // Model Asesmen menggunakan primary key 'id_asesmen'
+        // Asumsi Model Asesmen sudah didefinisikan
+        return $this->belongsTo(\App\Models\Asesmen::class, 'id_asesmen', 'id_asesmen');
+    }
 }

@@ -7,44 +7,47 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Menjalankan migration untuk membuat tabel 'banding'.
      */
     public function up(): void
     {
-        Schema::create('banding_asesmen', function (Blueprint $table) {
-            $table->id();
+        Schema::create('banding', function (Blueprint $table) {
+            $table->id('id_banding'); // Primary Key
+
+            // Foreign Key (FK) ke tabel 'asesmen'
+            // Asumsi tabel 'asesmen' sudah ada dengan PK 'id_asesmen'
+            $table->unsignedBigInteger('id_asesmen');
+            $table->foreign('id_asesmen')->references('id_asesmen')->on('asesmen')->onDelete('cascade');
             
-            // Kolom Data Asesmen
-            $table->string('nama_asesi');
-            $table->string('nama_asesor');
-            $table->date('tanggal_asesmen');
+            // Foreign Key (FK) ke tabel 'asesi'
+            // Asumsi tabel 'asesi' sudah ada dengan PK 'id_asesi'
+            $table->unsignedBigInteger('id_asesi');
+            $table->foreign('id_asesi')->references('id_asesi')->on('asesi')->onDelete('cascade');
 
-            // Kolom Pertanyaan Ya/Tidak
-            $table->boolean('proses_banding_dijelaskan')->comment('Apakah Proses Banding telah dijelaskan kepada Anda?');
-            $table->boolean('diskusi_banding_dengan_asesor')->comment('Apakah Anda telah mendiskusikan Banding dengan Asesor?');
-            $table->boolean('melibatkan_orang_lain')->comment('Apakah Anda mau melibatkan "orang lain" membantu Anda dalam Proses Banding?');
+            // Data TUK (Boolean, default false)
+            $table->boolean('tuk_sewaktu')->default(false);
+            $table->boolean('tuk_tempatkerja')->default(false);
+            $table->boolean('tuk_mandiri')->default(false);
+            
+            // Data Ya/Tidak (Enum)
+            $table->enum('ya_tidak_1', ['Ya', 'Tidak']);
+            $table->enum('ya_tidak_2', ['Ya', 'Tidak']);
+            $table->enum('ya_tidak_3', ['Ya', 'Tidak']);
 
-            // Kolom Skema Sertifikasi
-            $table->string('skema_sertifikasi');
-            $table->string('no_skema_sertifikasi');
-
-            // Kolom Alasan Banding
             $table->text('alasan_banding');
-            
-            // Kolom Tanda Tangan dan Tanggal (untuk record data)
-            // Tanda tangan biasanya disimpan sebagai path file atau string base64 jika menggunakan tanda tangan digital sederhana
-            $table->string('tanda_tangan_asesi')->nullable(); 
             $table->date('tanggal_pengajuan_banding');
+            $table->longText('tanda_tangan_asesi');
 
             $table->timestamps();
+            $table->unique('id_asesmen');
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Membatalkan migration (rollback).
      */
     public function down(): void
     {
-        Schema::dropIfExists('banding_asesmen');
+        Schema::dropIfExists('banding');
     }
 };
