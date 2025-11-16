@@ -28,9 +28,15 @@ class Skema extends Model
     {
         return $this->hasMany(Asesor::class, 'id_skema', 'id_skema');
     }
+
     public function category()
     {
         // Satu skema milik SATU kategori
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function jadwal()
+    {
+        return $this->hasMany(Jadwal::class, 'id_skema', 'id_skema');
     }
 }

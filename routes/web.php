@@ -6,7 +6,7 @@ use App\Http\Controllers\TukController;
 use App\Http\Controllers\JadwalController; 
 use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\Api\CountryController;
-use App\Http\Controllers\SkemaWebController;
+// SkemaWebController dihapus karena tidak digunakan dan dapat menyebabkan ClassNotFound error.
 
 /*
 |--------------------------------------------------------------------------
@@ -21,14 +21,12 @@ Route::get('/skema/{id}', [HomeController::class, 'show'])->name('skema.detail')
 // Tetap biarkan route /detail_skema/{id} jika masih dipakai di Blade lain
 Route::get('/detail_skema/{id}', [HomeController::class, 'show'])->name('detail_skema');
 
-// Rute Detail Jadwal
+// Rute Detail Jadwal (FIX)
+Route::get('/detail-jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('detail_jadwal');
 
 // --------------------
 // JADWAL ROUTES (PAKAI JadwalController)
 // --------------------
-// Halaman daftar jadwal → landing_page.jadwal
-// DITAMBAHKAN: Route untuk menangani detail jadwal
-
 Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
 
 // Halaman detail jadwal (redirect logic ada di controller)
@@ -36,8 +34,10 @@ Route::get('/jadwal/{id}', [JadwalController::class, 'show'])->name('jadwal.show
 
 // Halaman form pendaftaran peserta → landing_page.detail.detail_jadwal
 Route::get('/jadwal/{id}/detail', [JadwalController::class, 'detail'])->name('jadwal.detail');
-// 🟦 TAMBAHKAN BARIS INI UNTUK DETAIL BERITA 🟦
+
+// DETAIL BERITA
 Route::get('/berita/{id}', [HomeController::class, 'showBeritaDetail'])->name('berita.detail');
+
 /*
 |--------------------------------------------------------------------------
 | Custom Routes (Info TUK dan Alur)

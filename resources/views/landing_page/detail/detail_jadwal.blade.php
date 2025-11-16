@@ -11,7 +11,7 @@
             <div class="flex flex-wrap gap-6 text-gray-900 text-sm">
                 <div class="flex items-center gap-2">
                     <i class="far fa-calendar"></i>
-                    <span>{{ $jadwal->tanggal->format('d F Y') }}</span>
+                    <span>{{ $jadwal->tanggal?->format('d F Y') ?? 'Tanggal Tidak Tersedia' }}</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <i class="far fa-clock"></i>
@@ -52,7 +52,7 @@
                         Daftar Sekarang
                     </a>
                     <p class="text-center text-gray-500 text-xs">
-                        Pendaftaran ditutup tanggal {{ $jadwal->tanggal_tutup->format('d F Y') }}
+                        Pendaftaran ditutup tanggal {{ $jadwal->tanggal_selesai->format('d F Y') }}
                     </p>
                 </div>
             </div>

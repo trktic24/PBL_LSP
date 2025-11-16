@@ -6,42 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\Skema;
 use App\Models\Category;
-use \DateTime;
+use App\Models\Jadwal; 
 use Illuminate\Support\Collection;
+use Carbon\Carbon; // Import Carbon untuk DateTime yang lebih baik
 
 class HomeController extends Controller
 {
-    private function getSemuaDummyJadwal()
-    {
-        return [
-            (object) [
-                'id' => 1,
-                'nama_skema' => 'Network Engineering',
-                'tanggal' => new DateTime('2025-12-15'),
-                'waktu_mulai' => '08:00',
-                'waktu_selesai' => '16:00',
-                'tuk' => 'Politeknik Negeri Semarang',
-                'deskripsi' => 'Deskripsi lengkap untuk skema sertifikasi Network Engineering...',
-                'persyaratan' => '1. Mahasiswa Aktif Polines...',
-                'harga' => 350000,
-                'tanggal_tutup' => new DateTime('2025-12-01')
-            ],
-            (object) [
-                'id' => 2,
-                'nama_skema' => 'Junior Web Developer',
-                'tanggal' => new DateTime('2025-11-30'),
-                'waktu_mulai' => '09:00',
-                'waktu_selesai' => '17:00',
-                'tuk' => 'Lab RPL Gedung D4',
-                'deskripsi' => 'Deskripsi untuk Junior Web Developer...',
-                'persyaratan' => '1. Terbuka untuk umum...',
-                'harga' => 500000,
-                'tanggal_tutup' => new DateTime('2025-11-20')
-            ],
-        ];
-    }
-
-    private function getSemuaDummyBerita()
+    // FUNGSI INI HANYA UNTUK BERITA (DATA BERITA MASIH DUMMY)
+    private function getSemuaDummyBerita() 
     {
         return [
             (object)[
@@ -64,28 +36,27 @@ class HomeController extends Controller
             ],
         ];
     }
+    
     public function index(): View
     {
         $categories = Category::all()->pluck('nama_kategori')->all();
         array_unshift($categories, 'Semua');
 
         // Ambil data dari tabel skema
-        $skemas = Skema::with('category')->latest()->get(); // ini ambil semua dari database faker
+        $skemas = Skema::with('category')->latest()->get(); 
 
-        // Ambil jadwal dummy
-        $semuaJadwal = $this->getSemuaDummyJadwal();
-        $now = new DateTime();
-
-        $jadwals = collect($semuaJadwal)
-            ->filter(fn($jadwal) => $jadwal->tanggal >= $now)
-            ->sortBy(fn($jadwal) => $jadwal->tanggal)
-            ->take(2)
-            ->values();
-
-        // AMBIL BERITA (MODIFIKASI)
+        // [PERUBAHAN KRUSIAL]: MENGAMBIL SEMUA JADWAL (TIDAK HANYA YANG AKAN DATANG)
+        // Logika pengecekan tanggal akan dipindahkan ke home.blade.php
+        $jadwals = Jadwal::with('skema', 'masterTuk')
+                            ->orderBy('tanggal_pelaksanaan', 'asc') 
+                            // Kita ambil 3 jadwal (terbaru) untuk memastikan ada yang sudah lewat jika ada
+                            ->take(3) 
+                            ->get();
+                            
+        // AMBIL BERITA (MASIH DUMMY)
         $beritas = collect($this->getSemuaDummyBerita())->take(3);
 
-        // KIRIM BERITA KE VIEW (MODIFIKASI)
+        // KIRIM DATA KE VIEW
         return view('landing_page.home', compact('skemas', 'jadwals', 'categories', 'beritas'));
     }
 
@@ -102,15 +73,13 @@ class HomeController extends Controller
         
         $skemas = $query->get();
     }
+    
     public function show($id): View
     {
-        // Cari skema berdasarkan ID dari database
-        $skema = Skema::findOrFail($id); 
+        // Menggunakan Eager Loading untuk 'jadwal' dan relasi 'masterTuk' di dalamnya
+        $skema = Skema::with(['jadwal.masterTuk', 'category', 'asesors'])->findOrFail($id);
         
         // --- INJEKSI DUMMY DATA UNTUK KONTEN (UNIT KOMPETENSI & SKKNI) ---
-        // Ini diperlukan agar detail_skema.blade.php dapat melakukan looping 
-        // pada bagian Unit Kompetensi dan SKKNI.
-
         $skema->unit_kompetensi = collect([
             (object) [
                 'kode' => '123456789',
@@ -129,12 +98,10 @@ class HomeController extends Controller
         ]);
 
         $skema->skkni = collect([
-            // Asumsi properti 'link_pdf' akan diisi link unduhan dokumen
             (object) ['nama' => 'SKKNI Keamanan Siber 1', 'link_pdf' => '#'],
             (object) ['nama' => 'SKKNI Keamanan Siber 2', 'link_pdf' => '#'],
         ]);
         
-        // Memastikan properti dasar untuk Hero Section tersedia (jika tidak ada di model)
         if (!isset($skema->gambar)) {
              $skema->gambar = 'default_skema_image.jpg'; 
         }
@@ -143,12 +110,7 @@ class HomeController extends Controller
              $skema->deskripsi = 'Deskripsi singkat mengenai ' . $namaSkema . '.';
         }
         
-        // Cari jadwal yang sesuai dengan nama skema
-        $semuaJadwal = $this->getSemuaDummyJadwal();
-        $jadwalTerkait = collect($semuaJadwal)
-            ->firstWhere('nama_skema', $skema->nama_skema);
-
-        return view('landing_page.detail.detail_skema', compact('skema', 'jadwalTerkait'));
+        return view('landing_page.detail.detail_skema', compact('skema'));
     }
 
     public function jadwal(): View
@@ -161,20 +123,27 @@ class HomeController extends Controller
         return view('landing_page.frontend.laporan');
     }
 
+    /**
+     * Menampilkan halaman detail jadwal dari ID Jadwal di database.
+     * @param int $id ID Jadwal
+     * @return View
+     */
     public function showJadwalDetail($id): View
     {
-        $semuaJadwal = $this->getSemuaDummyJadwal();
-        $jadwal = collect($semuaJadwal)->firstWhere('id', (int)$id);
-
-        if (!$jadwal) {
-            abort(404, 'Jadwal tidak ditemukan');
-        }
+        // [KODE UTAMA]: MENGAMBIL DETAIL JADWAL DARI DATABASE (MODEL JADWAL)
+        $jadwal = Jadwal::with('skema', 'masterTuk')->findOrFail($id); 
+        
+        // Memastikan tanggal pelaksanaan diubah menjadi objek Carbon untuk perbandingan
+        $tanggal_pelaksanaan = Carbon::parse($jadwal->tanggal_pelaksanaan);
+        $is_past = $tanggal_pelaksanaan->isPast();
 
         return view('landing_page.detail.detail_jadwal', [
-            'jadwal' => $jadwal
+            'jadwal' => $jadwal,
+            'is_past' => $is_past // Kirim status apakah jadwal sudah lewat
         ]);
     }
-    // FUNGSI BARU UNTUK MENANGANI DETAIL BERITA
+    
+    // FUNGSI UNTUK MENANGANI DETAIL BERITA (MASIH DUMMY)
     public function showBeritaDetail($id): View
     {
         $semuaBerita = $this->getSemuaDummyBerita();

@@ -9,9 +9,6 @@
         class="w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
     <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
-    ...
-    <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
-
     {{-- POSISI DIATUR OLEH CONTAINER DI DALAMNYA --}}
     <div class="absolute top-1/3 inset-x-0">
         
@@ -27,14 +24,14 @@
 
                 <div class="flex items-center gap-6 mt-8">
                     <a href="{{ route('login') }}"
-                       class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
-                              hover:bg-yellow-500 transition-all duration-300 ease-in-out
-                              transform hover:scale-105">
+                        class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
+                             hover:bg-yellow-500 transition-all duration-300 ease-in-out
+                             transform hover:scale-105">
                         Daftar
                     </a>
                     <a href="#skema-sertifikasi"
-                       class="text-black font-semibold text-lg flex items-center gap-2
-                              hover:gap-3 transition-all duration-300 ease-in-out group">
+                        class="text-black font-semibold text-lg flex items-center gap-2
+                             hover:gap-3 transition-all duration-300 ease-in-out group">
                         Eksplore Skema
                         <span class="font-bold text-xl transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
                     </a>
@@ -236,6 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gridSlides.style.transform = `translateX(-${currentIndex * 100}%)`;
         
         // Update status tombol navigasi
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
         if (prevBtn && nextBtn) {
             prevBtn.disabled = currentIndex === 0;
             nextBtn.disabled = currentIndex === totalSlides - 1;
@@ -255,6 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let visibleCardCount = 0;
             setActiveButton(button);
             isFilterActive = (selectedCategory !== 'Semua');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
 
             if (isFilterActive) {
                 // Mode Filter: Sembunyikan navigasi, reset slide, dan sembunyikan semua slide di awal
@@ -328,15 +329,20 @@ if (scrollContainer) {
             <div class="card bg-white shadow-lg rounded-2xl">
                 <div class="card-body flex flex-col p-8">
                     <p class="text-base mb-1 font-bold text-left">Sertifikasi:</p>
-                    <p class="text-base mb-3 text-left">{{ $jadwal->nama_skema }}</p>
+                    {{-- FIX: Gunakan relasi skema --}}
+                    <p class="text-base mb-3 text-left">{{ $jadwal->skema->nama_skema ?? 'Skema Tidak Ditemukan' }}</p>
 
                     <p class="text-base mb-1 font-bold text-left">TUK:</p>
-                    <p class="text-base mb-3 text-left">{{ $jadwal->tuk }}</p>
+                    {{-- FIX: Gunakan relasi masterTuk --}}
+                    <p class="text-base mb-3 text-left">{{ $jadwal->masterTuk->nama_tuk ?? 'TUK Tidak Ditemukan' }}</p>
 
                     <p class="text-base mb-1 font-bold text-left">Tanggal:</p>
-                    <p class="text-base mb-6 text-left">{{ $jadwal->tanggal ? $jadwal->tanggal->format('d F Y') : 'Tanggal belum diatur' }}</p>
+                    {{-- FIX: Gunakan field tanggal_pelaksanaan dan cek null --}}
+                    <p class="text-base mb-6 text-left">{{ $jadwal->tanggal_pelaksanaan ? $jadwal->tanggal_pelaksanaan->format('d F Y') : 'Tanggal belum diatur' }}</p>
 
-                    <a href="{{ route('jadwal.detail', ['id' => $jadwal->id]) }}" class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">Detail</a>
+                    {{-- FIX KRUSIAL: Ubah ke route 'detail_jadwal' dan berikan ID tanpa array --}}
+                    <a href="{{ route('detail_jadwal', $jadwal->id_jadwal) }}" 
+                       class="btn bg-yellow-400 text-black font-semibold border-none hover:bg-yellow-300 px-8 py-3 rounded-full text-base">Detail</a>
                 </div>
             </div>
         @empty
@@ -363,8 +369,8 @@ if (scrollContainer) {
                     
                     {{-- Gambar Berita --}}
                     <img src="{{ $berita->gambar }}" 
-                         alt="{{ $berita->judul }}" 
-                         class="w-full h-48 object-cover">
+                            alt="{{ $berita->judul }}" 
+                            class="w-full h-48 object-cover">
                     
                     <div class="p-6">
                         {{-- Tanggal Publish --}}
