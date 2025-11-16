@@ -18,6 +18,7 @@ use App\Http\Controllers\Kerahasiaan\PersetujuanKerahasiaanController;
 use App\Models\Asesi; // <-- [PENTING] Tambahin ini buat route /tracker
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
+use App\Http\Controllers\TrackerController; // <-- [PERUBAHAN DITAMBAHKAN]
 
 /*
 |--------------------------------------------------------------------------
@@ -110,22 +111,18 @@ Route::get('/verifikasi_tuk', function () { return view('verifikasi_tuk'); });
 // ====================================================
 
 // --- Tracker (FIXED) ---
-// PERHATIAN: URL-nya sekarang jadi /tracker/{id_asesi}
-Route::get('/tracker/{id_asesi}', function ($id_asesi) {
-    try {
-        // Ambil data asesi + relasi 'skema'
-        $asesi = Asesi::with('skema')->findOrFail($id_asesi); 
+// [PERUBAHAN INTI]
+// Rute ini diubah untuk menggunakan TrackerController dan Auth.
+// Tidak lagi perlu {id_asesi} di URL karena data diambil dari user yang login.
+Route::get('/tracker', [TrackerController::class, 'index'])
+        ->middleware('auth') // Wajibkan login untuk mengakses halaman ini
+        ->name('tracker');
 
-        // Kirim data asesi ke view tracker
-        return view('tracker', [
-            'asesi' => $asesi
-        ]);
-
-    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        // Jika Asesi dengan ID tsb tidak ada, kembali ke home
-        return redirect('/')->with('error', 'Data Asesi tidak ditemukan.');
-    }
-})->name('tracker');
+// [RUTE API BARU - DITAMBAHKAN]
+// Rute ini akan dipanggil oleh JavaScript untuk mendaftarkan jadwal
+Route::post('/api/jadwal/daftar', [TrackerController::class, 'daftarJadwal'])
+        ->middleware('auth') // Wajibkan login
+        ->name('api.jadwal.daftar');
 
 // --- Tanda Tangan (Web View Only) ---
 Route::get('/halaman-tanda-tangan/{id_asesi}', [TandaTanganController::class, 'showSignaturePage'])
@@ -151,7 +148,7 @@ Route::get('/kerahasiaan/fr-ak01/{id_asesi}', [PersetujuanKerahasiaanController:
 Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');
 
 Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])
-      ->name('pembayaran_diproses'); // <-- INI YANG MEMPERBAIKI ERROR
+       ->name('pembayaran_diproses'); // <-- INI YANG MEMPERBAIKI ERROR
 
 // --- PDF ---
 Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])->name('apl01.download');
