@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Skema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,6 +18,10 @@ class DatabaseSeeder extends Seeder
 
             // 2. Data User & Profil (Mungkin RoleSeeder harus dijalankan dulu)
             UserSeeder::class,
+            CountrySeeder::class,
+            JenisTukSeeder::class,
+            MasterTukSeeder::class,
+            SkemaSeeder::class,
             AsesiSeeder::class,
             AsesorSeeder::class,
 

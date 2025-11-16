@@ -26,36 +26,36 @@ class JadwalController extends Controller
         // Ambil parameter dari URL (untuk Search & Sort)
         $search = $request->query('search');
         $sortBy = $request->query('sort_by', 'tanggal_pelaksanaan'); // Default sort
-        $sortDir = $request->query('sort_dir', 'asc'); // Default direction (sesuai 'oldest' Anda)   
-        
+        $sortDir = $request->query('sort_dir', 'asc'); // Default direction (sesuai 'oldest' Anda)
+
         $filterSesi = $request->query('filter_sesi');
         $filterStatus = $request->query('filter_status');
         $filterJenisTuk = $request->query('filter_jenis_tuk');
-        $filterTanggal = $request->query('filter_tanggal');        
+        $filterTanggal = $request->query('filter_tanggal');
 
         // 3. Jika asesor tidak ditemukan, kirim data jadwal kosong
         if (!$asesor) {
             // Mengirim Paginator kosong agar method ->links() di view tidak error
             $jadwals = Jadwal::whereRaw('1 = 0')->paginate(10);
 
-            return view('frontend.jadwal', [
+            return view('frontend.jadwal-asesor', [
                 'jadwals' => $jadwals,
                 'currentSearch' => $search,
                 'currentSortBy' => $sortBy,
-                'currentSortDir' => $sortDir,  
+                'currentSortDir' => $sortDir,
                 'filter_sesi' => $filterSesi,
                 'filter_status' => $filterStatus,
                 'filter_jenis_tuk' => $filterJenisTuk,
-                'filter_tanggal' => $filterTanggal,                              
+                'filter_tanggal' => $filterTanggal,
             ]);
         }
 
-        $query = Jadwal::query() 
-                        ->where('id_asesor', $asesor->id_asesor);  
+        $query = Jadwal::query()
+                        ->where('id_asesor', $asesor->id_asesor);
 
         // --- 3. Bangun Query Utama ---
-        $relations = ['skema', 'tuk', 'jenisTuk'];      
-        
+        $relations = ['skema', 'tuk', 'jenisTuk'];
+
         // Filter Status
         $query->when($filterStatus, function ($q, $status) {
             return $q->where('Status_jadwal', $status);
@@ -73,7 +73,7 @@ class JadwalController extends Controller
         $query->when($filterTanggal, function ($q, $tanggal) {
             // Membandingkan kolom tanggal_pelaksanaan dengan tanggal yang di-input
             return $q->whereDate('tanggal_pelaksanaan', $tanggal);
-        });        
+        });
 
         // --- 4. Tambahkan Logika SEARCHING ---
         if ($search) {
@@ -90,16 +90,16 @@ class JadwalController extends Controller
                   });
             });
         }
-        
+
         // --- 5. Tambahkan Logika SORTING ---
         $sortableColumns = [
-            'tanggal_pelaksanaan', 
-            'Status_jadwal', 
-            'sesi', 
+            'tanggal_pelaksanaan',
+            'Status_jadwal',
+            'sesi',
             'waktu_mulai',
             // Ini untuk relasi
-            'nama_skema', 
-            'nama_lokasi' 
+            'nama_skema',
+            'nama_lokasi'
         ];
 
         if (in_array($sortBy, $sortableColumns)) {
@@ -111,7 +111,7 @@ class JadwalController extends Controller
 
                 // Hapus 'skema' dari $relations karena sudah di-join
                 unset($relations[array_search('skema', $relations)]);
-                      
+
             } elseif ($sortBy == 'nama_lokasi') {
                 // Join untuk sorting berdasarkan relasi
                 $query->join('master_tuk', 'jadwal.id_tuk', '=', 'tuk.id_tuk')
@@ -119,7 +119,7 @@ class JadwalController extends Controller
                       ->select('jadwal.*'); // Penting: agar tidak bentrok kolom
 
                 // Hapus 'tuk' dari $relations karena sudah di-join
-                unset($relations[array_search('tuk', $relations)]);                      
+                unset($relations[array_search('tuk', $relations)]);
             } else {
                 // Sorting untuk kolom di tabel 'jadwals'
                 $query->orderBy($sortBy, $sortDir);
@@ -133,20 +133,21 @@ class JadwalController extends Controller
         // Panggil 'with' di AKHIR, HANYA dengan relasi yang tersisa
         $jadwals = $query->with($relations)
                         ->paginate(10)
-                        ->appends($request->query());        
+                        ->appends($request->query());
 
 
         // Kirim data 'jadwals' ke view
-        return view('frontend.jadwal', [
+        return view('frontend.jadwal-asesor', [
             'jadwals' => $jadwals,
             'currentSearch' => $search,
             'currentSortBy' => $sortBy,
-            'currentSortDir' => $sortDir,   
+            'currentSortDir' => $sortDir,
             'filter_sesi' => $filterSesi,
             'filter_status' => $filterStatus,
             'filter_jenis_tuk' => $filterJenisTuk,
-            'filter_tanggal' => $filterTanggal,                     
+            'filter_tanggal' => $filterTanggal,
         ]);
+        return view('landing_page.jadwal', compact('jadwalList'));
     }
 
     public function showAsesi($id_jadwal) // <-- Variabel ini datang dari URL
@@ -154,7 +155,7 @@ class JadwalController extends Controller
         // 1. Dapatkan data jadwal (Hapus 'asesi' dari 'with')
         $jadwal = Jadwal::with(['skema', 'tuk']) // <-- Modifikasi 1: Hapus 'asesi'
                         ->findOrFail($id_jadwal);
-                        
+
         // 2. PENTING: Cek apakah asesor ini berhak melihat jadwal ini
         // (Ambil $asesor dari Auth seperti di method index)
         $asesor = Asesor::where('user_id', Auth::id())->first();
@@ -177,11 +178,11 @@ class JadwalController extends Controller
 
         // 4. Kirim data ke view 'daftar_asesi'
         //    (Struktur data yang dikirim tetap sama, jadi view tidak perlu diubah)
-        return view('frontend.daftar_asesi', [ 
+        return view('frontend.daftar_asesi', [
             'jadwal' => $jadwal,
             'asesis' => $asesis, // <-- Variabel $asesis berhasil kita buat
         ]);
-    }    
+    }
 
     /**
      * Show the form for creating a new resource.

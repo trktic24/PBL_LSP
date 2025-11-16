@@ -90,9 +90,9 @@ class Jadwal extends Model
     public function asesi()
     {
         // Sintaks: return $this->belongsToMany(ModelTujuan, 'nama_tabel_pivot', 'foreign_key_model_ini', 'foreign_key_model_tujuan');
-        
-        // Sesuaikan 'asesi_jadwal', 'id_jadwal', dan 'id_asesi' 
+
+        // Sesuaikan 'asesi_jadwal', 'id_jadwal', dan 'id_asesi'
         // dengan nama tabel pivot dan kolom Anda
         return $this->belongsToMany(Asesi::class, 'data_sertifikasi_asesi', 'id_jadwal', 'id_asesi');
-    }    
+    }
 }

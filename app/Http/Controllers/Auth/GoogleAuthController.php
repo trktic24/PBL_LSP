@@ -31,17 +31,28 @@ class GoogleAuthController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-            Auth::login($user);
+                // Khusus untuk asesor: handle status
+                if ($user->role?->nama_role === 'asesor') {
+                    $status = $user->asesor?->status_verifikasi;
 
-            return redirect()->intended('/');
-        }
+                    // GANTI BLOK INI
+                    if ($status === 'pending') {
+                        return redirect()->route('login')->with('error', 'Akun Anda sedang menunggu verifikasi Admin.');
+                    }
 
+                    if ($status === 'rejected') {
+                        return redirect()->route('login')->with('error', 'Pendaftaran Anda ditolak. Silakan hubungi Admin.');
+                    }
+                }
 
-            // 🧠 Ambil role dari sesi saat klik “Continue with Google”
+                Auth::login($user);
+                return redirect()->intended(route('dashboard'));
+            }
+            // Ambil role dari sesi saat klik “Continue with Google”
             $role = session('role_register', 'asesi'); // default asesi
             $roleModel = Role::where('nama_role', $role)->first();
 
-            // 🧩 Simpen dulu data Google di session (buat prefill form)
+            // Simpen dulu data Google di session (buat prefill form)
             session()->forget('google_register_data');
             session()->put('google_register_data', [
                 'email' => $googleUser->getEmail(),
@@ -52,7 +63,7 @@ class GoogleAuthController extends Controller
             ]);
 
 
-            // 🚀 Arahkan user ke step 2 register sesuai role
+            // Arahkan user ke step 2 register sesuai role
             return redirect()->route('register', [
                 'step' => 2,
                 'role' => $role,

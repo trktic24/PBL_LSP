@@ -36,7 +36,8 @@ class UserSeeder extends Seeder
 
         // Buat Contoh Asesor
         if ($asesorRole) {
-            User::create([
+            // Kita override role_id-nya jadi 'Asesor'
+            User::factory()->count(50)->create([
                 'role_id' => $asesorRole->id_role,
                 'email' => 'asesor@example.com',
                 'email_verified_at' => now(),

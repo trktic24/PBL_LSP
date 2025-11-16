@@ -10,6 +10,11 @@
                             <img src="{{ asset('images/Logo LSP No BG.png') }}" alt="Logo LSP Polines" class="h-20 w-auto">
                         </a>
                     </div>
+                    @if (session('error'))
+                        <div class="mb-4 font-medium text-sm text-red-600 bg-red-100 border border-red-300 rounded-md p-4" role="alert">
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
                     <x-auth-session-status class="mb-4" :status="session('status')" />
 

@@ -29,16 +29,26 @@
                 @forelse ($tuks as $tuk)
                 <tr class="hover:bg-[#fff4d6] transition">
                     <td class="px-6 py-4 text-gray-900">
-                        {{ $tuk['nama'] }} <br>
-                        <span class="text-sm text-gray-600">{{ $tuk['sub_nama'] }}</span>
+                        {{-- PERBAIKAN: Menggunakan nama_lokasi --}}
+                        {{ $tuk->nama_lokasi }} <br>
+                        {{-- Anda perlu mengecek kolom apa yang seharusnya mengisi sub_nama. Saya hapus sub_nama karena tidak ada di factory Anda --}}
+                        {{-- Jika Anda ingin menampilkan bagian dari alamat, Anda bisa menambahkan logika di sini --}}
+                        <span class="text-sm text-gray-600">Terdaftar Resmi</span>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-700">
-                        {{ $tuk['alamat'] }}<br>Tembalang, Semarang, Jawa Tengah
+                        {{-- PERBAIKAN: Menggunakan alamat_tuk --}}
+                        {{ $tuk->alamat_tuk }}
+                        {{-- Saya hapus baris statis di bawah karena alamat seharusnya sudah lengkap dari database --}}
+                        {{-- <br>Tembalang, Semarang, Jawa Tengah --}}
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ $tuk['kontak'] }}</td> 
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        {{-- PERBAIKAN: Menggunakan kontak_tuk --}}
+                        {{ $tuk->kontak_tuk }}
+                    </td>
                     <td class="px-6 py-4 text-center">
-                        <a href="{{ route('info.tuk.detail', ['id' => $tuk['id']]) }}"
-                           class="bg-yellow-400 hover:bg-yellow-500 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-sm">
+                        <a href="{{ route('info.tuk.detail', ['id' => $tuk->id_tuk]) }}"
+                        {{-- PERBAIKAN: Menggunakan id_tuk --}}
+                        class="bg-yellow-400 hover:bg-yellow-500 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-sm">
                             Detail
                         </a>
                     </td>

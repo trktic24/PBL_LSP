@@ -68,14 +68,20 @@ class DashboardController extends Controller
             // Jika data ada, format ulang agar sesuai dengan view
             $jadwal = $jadwal->map(function ($item) {
                 return (object) [
-                    'id' => $item->id_jadwal, // <-- Tambahkan ID untuk link detail
+                    'id_jadwal' => $item->id_jadwal, // <-- Tambahkan ID untuk link detail
                     'skema_nama' => $item->skema->nama_skema ?? 'Skema Tidak Ditemukan',
                     'tanggal' => $item->tanggal_mulai ? date('d F Y', strtotime($item->tanggal_mulai)) : 'N/A',
+                    'waktu_mulai' => $item->waktu_mulai,
+                    'tanggal_pelaksanaan' => $item->tanggal_pelaksanaan ? date('d F Y', strtotime($item->tanggal_pelaksanaan)) : 'N/A',
                 ];
             });
         }
 
         // Kirim ke view frontend.home (dashboard asesor)
-        return view('frontend.home', compact('profile', 'summary', 'jadwal'));
+        return view('frontend.home', [
+            'profile' => $profile,
+            'summary' => $summary,
+            'jadwals' => $jadwal  // <-- Di sini kuncinya
+        ]);
     }
 }

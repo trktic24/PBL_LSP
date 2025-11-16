@@ -1,4 +1,4 @@
-@extends('layouts.app-profil')
+@extends('layouts.app-asesor')
 @section('content')
 
 <main class="max-w-6xl mx-auto mt-8 bg-white p-8 rounded-lg shadow-md relative pb-20">

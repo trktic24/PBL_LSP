@@ -11,22 +11,25 @@ class Skema extends Model
     protected $table = 'skema';
     protected $guarded = ['id_skema'];
 
-    public function unitKompetensi()
+    protected $primaryKey = 'id_skema';
+
+    protected $fillable =[
+        'kode_unit',
+        'nama_skema',
+        'deskripsi_skema',
+        'SKKNI',
+        'gambar',
+        'harga',
+        'category_id',
+    ];
+
+    public function asesors(): HasMany
     {
         return $this->hasMany(UnitKompetensi::class, 'skema_id');
     }
-
-    // TAMBAHKAN FUNGSI INI:
-    /**
-     * Asesor yang terhubung dengan Skema ini.
-     */
-    public function asesor()
+    public function category()
     {
-        return $this->belongsToMany(
-            Asesor::class,          // Model tujuan
-            'transaksi_asesor_skema', // Nama tabel pivot
-            'id_skema',             // Foreign key di pivot untuk model ini
-            'id_asesor'             // Foreign key di pivot untuk model tujuan
-        );
+        // Satu skema milik SATU kategori
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }

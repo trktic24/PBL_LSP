@@ -29,8 +29,8 @@ class JadwalFactory extends Factory
             // Baris ini akan otomatis membuat data baru di tabel relasi
             // jika belum ada data.
             // Ganti 'Asesor::factory()' dengan variabel random tadi
-            'id_asesor' => $id_asesor, 
-            
+            'id_asesor' => $id_asesor,
+
             // Lakukan hal yang sama untuk foreign key lainnya
             'id_skema' => $id_skema,
             'id_tuk' => $id_tuk,

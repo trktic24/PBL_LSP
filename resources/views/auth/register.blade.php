@@ -67,7 +67,7 @@
                             'bg-white text-blue-600 border-b-[3px] border-blue-600': role === 'asesi',
                             'bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200': role !== 'asesi'
                         }"
-                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl focus:outline-none transition-colors duration-150">
+                        class="font-poppins flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tl-3xl focus:outline-none transition-colors duration-150">
                     Asesi
                 </button>
                 <button type="button" @click="role = 'asesor'; currentStep = 1"
@@ -75,7 +75,7 @@
                             'bg-white text-blue-600 border-b-[3px] border-blue-600': role === 'asesor',
                             'bg-gray-100 text-gray-500 border-b border-gray-300 hover:bg-gray-200': role !== 'asesor'
                         }"
-                        class="flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tr-3xl focus:outline-none transition-colors duration-150">
+                        class="font-poppins flex-1 py-4 px-6 text-center font-semibold text-lg rounded-tr-3xl focus:outline-none transition-colors duration-150">
                     Asesor
                 </button>
             </div>
@@ -95,15 +95,15 @@
                 <input type="hidden" name="email" value="{{ session('google_register_data.email') ?? old('email') }}">
 
                 @if ($errors->any())
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4" role="alert">
-        <p class="font-bold">Ada Error Validasi:</p>
-        <ul class="list-disc list-inside">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4" role="alert">
+                        <p class="font-bold">Ada Error Validasi:</p>
+                        <ul class="list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
 @if (session('error'))
     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 m-4" role="alert">
@@ -220,8 +220,8 @@
 
 
                         <div>
-                            <h1 x-show="role === 'asesi'" style="display: none;" class="text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesi</h1>
-                            <h1 x-show="role === 'asesor'" style="display: none;" class="text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesor</h1>
+                            <h1 x-show="role === 'asesi'" style="display: none;" class="font-poppins text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesi</h1>
+                            <h1 x-show="role === 'asesor'" style="display: none;" class="font-poppins text-2xl font-semibold text-gray-900 mb-1">Daftar sebagai Asesor</h1>
 
                             <p class="text-sm text-gray-500">
                                 Sudah punya akun?
@@ -253,17 +253,17 @@
                                         required
                                         autofocus
                                     />
-                                    <div x-data="{ show: false, pass :'', conf:'' }">
+                                    <div>
                                         <div class="flex flex-col md:flex-row gap-4">
                                             <x-login-form-input
                                                 id="password" name="password" type="password"
-                                                x-bind:type="show ? 'text' : 'password'" label="Password"
+                                                x-bind:type="showPass ? 'text' : 'password'" label="Password"
                                                 x-model="pass"
                                                 :error="$errors->first('password')" required autocomplete="new-password"
                                             />
                                             <x-login-form-input
                                                 id="password_confirmation" name="password_confirmation" type="password"
-                                                x-bind:type="show ? 'text' : 'password'" label="Konfirmasi Password"
+                                                x-bind:type="showPass ? 'text' : 'password'" label="Konfirmasi Password"
                                                 x-model="conf"
                                                 :error="$errors->first('password_confirmation')" required autocomplete="new-password"
                                             />
@@ -275,7 +275,7 @@
                                         </p>
                                         <div class="flex items-center mt-2">
                                             <input id="show_password_checkbox" type="checkbox"
-                                                   @click="show = !show"
+                                                   @click="showPass = !showPass"
                                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                             <label for="show_password_checkbox" class="ml-2 text-sm text-gray-600">
                                                 Tampilkan Password
@@ -320,7 +320,7 @@
                         <div class="space-y-8">
                             <div class="space-y-5">
                                 <div>
-                                    <h2 class="text-lg font-semibold text-gray-800">Data Pribadi</h2>
+                                    <h2 class="font-poppins text-lg font-semibold text-gray-800">Data Pribadi</h2>
                                     <hr class="mt-2">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
@@ -356,7 +356,7 @@
                                         ]"
                                         required
                                     />
-                                    <x-login-form-input id="asesi_kebangsaan" name="kebangsaan" label="Kebangsaan" :error="$errors->first('kebangsaan')" />
+                                    <x-autocomplete-input id="asesi_kebangsaan" name="kebangsaan" label="Kebangsaan"  :error="$errors->first('kebangsaan')" required />
                                     {{-- 'kualifikasi' di form -> 'pendidikan' di DB --}}
                                     <x-login-form-input id="asesi_kualifikasi" name="kualifikasi" label="Kualifikasi Pendidikan" :error="$errors->first('kualifikasi')" required />
                                     <x-login-form-input id="asesi_pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />
@@ -364,14 +364,14 @@
                             </div>
                             <div class="space-y-5">
                                 <div>
-                                    <h2 class="text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
+                                    <h2 class="font-poppins text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
                                     <hr class="mt-2">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-5">
                                     <div class="md:col-span-2">
                                         <x-login-form-input id="asesi_alamat_rumah" name="alamat_rumah" label="Alamat Rumah" :error="$errors->first('alamat_rumah')" required />
                                     </div>
-                                    <x-login-form-input id="asesi_kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" />
+                                    <x-login-form-input id="asesi_kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required/>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     {{-- 'kabupaten' di form -> 'kabupaten_kota' di DB --}}
@@ -383,7 +383,7 @@
                             </div>
                             <div class="space-y-5">
                                 <div>
-                                    <h2 class="text-lg font-semibold text-gray-800">Data Pekerjaan Sekarang</h2>
+                                    <h2 class="font-poppins text-lg font-semibold text-gray-800">Data Pekerjaan Sekarang</h2>
                                     <hr class="mt-2">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
@@ -393,7 +393,7 @@
                                     <x-login-form-input id="asesi_alamat_institusi" name="alamat_institusi" label="Alamat Institusi" :error="$errors->first('alamat_kantor')" required />
                                     <x-login-form-input id="asesi_jabatan" name="jabatan" label="Jabatan" :error="$errors->first('jabatan')" required />
                                     <x-login-form-input id="kode_pos_institusi" name="kode_pos_institusi" label="Kode Pos Institusi" :error="$errors->first('kode_pos_institusi')" required />
-                                    <x-login-form-input id="no_telepon_institusi" name="no_telepon_institusi" label="No Telepon Institusi" :error="$errors->first('no_telepon_institusi')"/>
+                                    <x-login-form-input id="no_telepon_institusi" name="no_telepon_institusi" label="No Telepon Institusi" :error="$errors->first('no_telepon_institusi')" required/>
                                 </div>
                             </div>
                         </div>
@@ -429,17 +429,17 @@
                         <div class="space-y-8">
 
                             <div class="space-y-5">
-                                <h2 class="text-lg font-semibold text-gray-800">Data Pribadi</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Data Pribadi</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     <x-login-form-input id="asesor_nama_lengkap" name="nama_lengkap" label="Nama Lengkap" :error="$errors->first('nama_lengkap')" required x-show="role === 'asesor'" :value="old('nama_lengkap') ?? session('google_register_data.name')"/>
-                                    <x-login-form-input id="no_registrasi_asesor" name="no_registrasi_asesor" label="No Registrasi Asesor" :error="$errors->first('no_registrasi_asesor')" required />
+                                    <x-login-form-input id="no_registrasi_asesor" name="no_registrasi_asesor" label="No Registrasi MET" :error="$errors->first('no_registrasi_asesor')" required />
                                     <x-login-form-input id="asesor_nik" name="nik" label="NIK" :error="$errors->first('nik')" required />
                                 </div>
                             </div>
 
                             <div class="space-y-5">
-                                <h2 class="text-lg font-semibold text-gray-800">Informasi Pribadi</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Informasi Pribadi</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     <x-login-form-input id="asesor_tempat_lahir" name="tempat_lahir" label="Tempat Lahir" placeholder="Kota" :error="$errors->first('tempat_lahir')" required />
@@ -464,17 +464,14 @@
                                         ]"
                                         required
                                     />
-                                    <x-login-form-input id="asesor_kebangsaan" name="asesor_kebangsaan" label="Kebangsaan" :error="$errors->first('pekerjaan')" required/>
+                                    <x-autocomplete-input id="asesor_kebangsaan" name="asesor_kebangsaan" label="Kebangsaan" :error="$errors->first('asesor_kebangsaan')" required/>
                                     <x-login-form-input id="asesor_pekerjaan" name="pekerjaan" label="Pekerjaan" :error="$errors->first('pekerjaan')" required />
-                                        <x-login-form-dropdown
+                                    <x-login-form-dropdown
                                         id="skema"
                                         name="skema"
                                         label="Pilih Skema Sertifikasi"
-                                        :options="[
-                                            ['value' => 'web_dev', 'label' => 'Web Developer'],
-                                            ['value' => 'uiux', 'label' => 'UI/UX Designer'],
-                                            ['value' => 'network', 'label' => 'Network Engineer']
-                                        ]"
+                                        placeholder="Pilih skema"
+                                        :options="$skemaOptions"  :error="$errors->first('skema')"
                                         required
                                     />
                                     </div>
@@ -482,7 +479,7 @@
                             </div>
                             {{-- Alamat & Kontak --}}
                             <div class="space-y-5">
-                                <h2 class="text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Alamat & Kontak</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-5">
                                     <div class="md:col-span-2">
@@ -501,7 +498,7 @@
                             </div>
                             {{-- Informasi Bank --}}
                             <div class="space-y-5">
-                                <h2 class="text-lg font-semibold text-gray-800">Informasi Bank</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Informasi Bank</h2>
                                 <hr class="mt-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     <x-login-form-input id="nama_bank" name="nama_bank" label="Nama Bank" :error="$errors->first('nama_bank')" required />
@@ -535,7 +532,7 @@
                     <fieldset x-show="role === 'asesor' && currentStep === 3" x-bind:disabled="role !== 'asesor'" style="display: none;">
                         <div class="space-y-8">
                             <div>
-                                <h2 class="text-lg font-semibold text-gray-800">Kelengkapan Dokumen</h2>
+                                <h2 class="font-poppins text-lg font-semibold text-gray-800">Kelengkapan Dokumen</h2>
                                 <p class="text-sm text-gray-500 mt-1">Unggah dokumen dalam format .pdf, .jpg, atau .png. Maksimal ukuran per file adalah 5MB.</p>
                         <div class="mt-6 space-y-4">
                             <x-file-input id="ktp_file" name="ktp_file" label="KTP" required x-bind:disabled="role !== 'asesor'"/>
@@ -582,6 +579,9 @@ document.addEventListener('alpine:init', () => {
         role: '{{ request('role') ?? $initialRole }}',
         currentStep: {{ request('step') ?? $initialStep }},
         nik: '{{ old('nik', '') }}',
+        showPass: false,
+        pass: '',
+        conf: '',
 
         // FUNGSI UNTUK MENJAGA SESSION TETAP HIDUP
         keepAlive() {
@@ -608,9 +608,9 @@ document.addEventListener('alpine:init', () => {
             // 🚀 PANGGIL FUNGSI KEEP-ALIVE DI SINI
             // Ini akan jalan pas halaman pertama kali dibuka
             this.keepAlive();
-            document.querySelector('form')?.addEventListener('submit', () => {
-                this.clearStorage();
-            });
+            if (this.currentStep === 1) {
+                const hasStep1Errors = {{ ($errors->has('email') || $errors->has('password')) ? 'true' : 'false' }};
+                if (!hasStep1Errors) {this.clearStorage();}}
             // 🔁 Load data dari localStorage
             const saved = localStorage.getItem('register_form');
             if (saved) {
@@ -620,8 +620,18 @@ document.addEventListener('alpine:init', () => {
                     // Kita nggak akan pernah nimpa _token
                     if (key !== '_token') {
                         let el = document.querySelector(`[name="${key}"]`);
-                        if (el) el.value = value;
-                    }
+                        if (el) {
+                            el.value = value; // 👈 KODE LAMA
+                            el.dispatchEvent(new Event('input')); }
+                        if (key === 'password') {
+                            this.pass = value;
+                        }
+                        if (key === 'password_confirmation') {
+                            this.conf = value;
+                        }
+                        if (key === 'nik') {
+                            this.nik = value;
+                    }}
                 });
             }
 

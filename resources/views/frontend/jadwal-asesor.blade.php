@@ -1,4 +1,4 @@
-@extends('layouts.app-profil')
+@extends('layouts.app-asesor')
 @section('content')
 
 <main class="container mx-auto px-6 mt-20 mb-12">
@@ -9,9 +9,9 @@
     <div class="mb-4">
         <form action="{{ url()->current() }}" method="GET" id="filterForm">
             <div class="flex justify-end items-center mb-4 space-x-2">
-                
+
                 {{-- TOMBOL TOGGLE FILTER --}}
-                <button type="button" id="toggleFilterBtn" 
+                <button type="button" id="toggleFilterBtn"
                         class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg text-sm flex items-center shadow-md transition duration-150">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                         <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414A1 1 0 0012 15.586V21h-2v-5.414a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
@@ -38,7 +38,7 @@
             <div id="filterContainer" class="bg-gray-100 p-4 rounded-lg shadow-inner mb-4 hidden">
                 <h3 class="font-bold text-gray-700 mb-3 border-b pb-2">Filter Data Jadwal</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                    
+
                     {{-- Filter Sesi --}}
                     <div>
                         <label for="filter_sesi" class="block text-sm font-medium text-gray-700">Sesi</label>
@@ -81,7 +81,7 @@
                     </div>
 
                 </div>
-                
+
                 <div class="mt-4 flex justify-end space-x-2">
                     <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-md text-sm transition duration-150">
                         Terapkan Filter
@@ -162,7 +162,7 @@
                 </tbody>
             </table>
         </div>
-        
+
         <div class="p-4 bg-amber-100 border-t border-amber-200">
             {{-- Ini akan merender link pagination (1, 2, 3, Next, Prev) --}}
             {{ $jadwals->links() }}
@@ -183,7 +183,7 @@
                 const params = new URLSearchParams(window.location.search);
                 // Cek apakah ada nilai di parameter filter yang spesifik
                 const filterParams = ['filter_sesi', 'filter_status', 'filter_jenis_tuk', 'filter_tanggal_mulai', 'filter_tanggal_akhir'];
-                
+
                 for (const param of filterParams) {
                     if (params.get(param)) {
                         return true;
@@ -202,7 +202,7 @@
                 filterContainer.classList.toggle('hidden');
             });
         }
-        
+
         // 2. SCRIPT DROPDOWN (JIKA MASIH DIGUNAKAN DI TEMPAT LAIN)
         const dropdownToggle = document.getElementById('dropdownToggle');
         const dropdownMenu = document.getElementById('dropdownMenu');

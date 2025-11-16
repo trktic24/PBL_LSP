@@ -48,7 +48,7 @@
                         <span class="font-semibold text-gray-700">Jumlah Pendaftar :</span>
                         <span class="font-bold">50 Orang</span> {{-- Asumsi statis --}}
                     </div>
-                    <a href="#" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
+                    <a href="{{ route('login') }}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
                         Daftar Sekarang
                     </a>
                     <p class="text-center text-gray-500 text-xs">
