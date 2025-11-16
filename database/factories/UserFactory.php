@@ -2,11 +2,7 @@
 
 namespace Database\Factories;
 
-<<<<<<< HEAD
-use App\Models\Role;
-=======
 use App\Models\Role; // <-- Import Role
->>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash; // <-- Import Hash
 use Illuminate\Support\Str;
@@ -16,11 +12,6 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-<<<<<<< HEAD
-    protected static ?string $password;
-
-=======
->>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
     /**
      * Define the model's default state.
      *
@@ -32,19 +23,6 @@ class UserFactory extends Factory
         $asesiRoleId = Role::where('nama_role', 'asesi')->first()->id_role ?? 1;
 
         return [
-<<<<<<< HEAD
-            // GANTI 'name' JADI 'username'
-            'username' => fake()->unique()->userName(),
-
-            'email' => fake()->unique()->safeEmail(),
-            'password' => (static::$password ??= Hash::make('password')),
-
-            // TAMBAHIN 'role_id'
-            'role_id' => $asesiRoleId,
-
-            'google_id' => null,
-            'email_verified_at' => now(),
-=======
             // Ambil role_id secara acak dari tabel roles
             // Ini ASUMSI tabel roles-nya udah keisi dulu
             'role_id' => Role::inRandomOrder()->first()->id_role,
@@ -56,7 +34,6 @@ class UserFactory extends Factory
             'password' => Hash::make('password'),
 
             'google_id' => null,
->>>>>>> 0cc37f75099885ce4dcba4e5853fccaa3b2be4af
             'remember_token' => Str::random(10),
         ];
     }

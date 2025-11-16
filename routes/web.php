@@ -30,21 +30,21 @@ use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 // ====================================================
 
 // [PERUBAHAN 2] Rute '/' Anda telah diperbaiki
-Route::get('/', function () {
+// Route::get('/', function () {
     
-    // 1. Ambil skema PERTAMA dari database beserta relasinya
-    $skema_pertama = Skema::with(['unitKompetensi', 'detailSertifikasi'])->first();
+//     // 1. Ambil skema PERTAMA dari database beserta relasinya
+//     $skema_pertama = Skema::with(['unitKompetensi', 'detailSertifikasi'])->first();
 
-    // 2. Jika database kosong, beri pesan error
-    if (!$skema_pertama) {
-        abort(404, 'Tidak ada data skema yang ditemukan di database.');
-    }
+//     // 2. Jika database kosong, beri pesan error
+//     if (!$skema_pertama) {
+//         abort(404, 'Tidak ada data skema yang ditemukan di database.');
+//     }
 
-    // 3. Kirim data skema itu ke view dengan nama variabel 'skema'
-    return view('halaman_ambil_skema', [
-        'skema' => $skema_pertama
-    ]);
-});
+//     // 3. Kirim data skema itu ke view dengan nama variabel 'skema'
+//     return view('halaman_ambil_skema', [
+//         'skema' => $skema_pertama
+//     ]);
+// });
 
 
 // --- Formulir Pendaftaran Views ---

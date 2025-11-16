@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Asesor;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 
 class User extends Authenticatable
@@ -17,8 +15,7 @@ class User extends Authenticatable
     use HasFactory,HasApiTokens, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
 
     /**
-     * Kolom yang boleh diisi secara massal.
-     * Disesuaikan dengan ERD Anda.
+     * Izinkan kolom ini diisi sama Factory
      */
     protected $table ='users';
     protected $primaryKey = 'id_user';
