@@ -7,8 +7,8 @@ use Illuminate\View\View;
 use App\Models\Skema;
 use \DateTime;
 use Illuminate\Support\Collection;
-// Tambahkan model Jadwal jika belum ada
-use App\Models\Jadwal;
+use App\Models\Jadwal; // Pastikan ini di-import
+use Illuminate\Http\RedirectResponse; // <-- [PERBAIKAN 1] DITAMBAHKAN
 
 class HomeController extends Controller
 {
@@ -58,7 +58,11 @@ class HomeController extends Controller
         return view('landing_page.home', compact('skemas', 'jadwals', 'categories'));
     }
 
-    public function show($id): View
+    /**
+     * Menampilkan halaman detail skema
+     */
+    // [PERBAIKAN 2] Mengizinkan return View ATAU RedirectResponse
+    public function show($id): View|RedirectResponse
     {
         // [MODIFIKASI 1 DARI 2]
         // Kita ambil skema, DAN juga relasi 'jadwals' (yang kita buat di Model)
@@ -111,7 +115,6 @@ class HomeController extends Controller
         // $jadwalTerkait = collect($semuaJadwal)
         //     ->firstWhere('nama_skema', $skema->nama_skema);
 
-        // [PERBAIKAN]
         // Mengarahkan ke nama view yang benar: 'landing_page.detail.detail_skema'
         return view('landing_page.detail.detail_skema', compact('skema'));
     }
@@ -131,10 +134,9 @@ class HomeController extends Controller
     public function showJadwalDetail($id): View
     {
         // ... (Fungsi Anda tidak diubah)
-        $semuaJadwal = $this->getSemuaDummyJadwal();
-        $jadwal = collect($semuaJadwal)->firstWhere('id', (int)$id);
-
-        if (!$jadwal) {
+        try {
+            $jadwal = Jadwal::with(['skema', 'tuk'])->findOrFail($id);
+        } catch (\Exception $e) {
             abort(404, 'Jadwal tidak ditemukan');
         }
 
