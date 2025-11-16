@@ -21,9 +21,8 @@ class JenisTukFactory extends Factory
         // dengan ->faker->randomElement(['Ya', 'Tidak']).
         // Saya asumsikan ini adalah string deskriptif singkat.
         return [
-            'sewaktu' => $this->faker->sentence(2),
-            'tempat_kerja' => $this->faker->sentence(2),
-            'mandiri' => $this->faker->sentence(2),
+        'jenis_tuk' => $this->faker->randomElement(['Sewaktu', 'Tempat Kerja']),
         ];
+
     }
 }
