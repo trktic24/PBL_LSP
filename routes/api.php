@@ -32,6 +32,10 @@ Route::prefix('v1')->group(function() {
 
         // 🔸 Master TUK
         Route::get('/tuk', [TukController::class, 'index']);
+        Route::get('/tuk/{id}', [TukController::class, 'show']);
+        Route::post('/tuk', [TukController::class, 'store']);
+        Route::put('/tuk/{id}', [TukController::class, 'update']);
+        Route::delete('/tuk/{id}', [TukController::class, 'destroy']);
 
         // =======================================================
         // 📘 RUTE MASTER SKEMA (CRUD Lengkap)

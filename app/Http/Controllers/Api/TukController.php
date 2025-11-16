@@ -4,32 +4,45 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Tuk; // Panggil model TUK
-use Illuminate\Support\Facades\Log;
+use App\Models\Tuk;
 
 class TukController extends Controller
 {
     /**
-     * API: Mengembalikan SEMUA data TUK.
-     * (Endpoint: GET /api/v1/tuk)
+     * GET /api/v1/tuk
+     * Mengambil semua data TUK
      */
     public function index()
     {
-        try {
-            $tuks = Tuk::all();
-            
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Data TUK berhasil diambil',
-                'data' => $tuks
-            ], 200);
+        $tuks = Tuk::all();
 
-        } catch (\Exception $e) {
-            Log::error('API Error (TUK Index): ' . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Gagal mengambil data'
-            ], 500);
-        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data TUK berhasil diambil',
+            'data' => $tuks
+        ], 200);
+    }
+
+    /**
+     * POST /api/v1/tuk
+     * Menambah data TUK baru
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_lokasi' => 'required',
+            'alamat_tuk' => 'required',
+            'kontak_tuk' => 'required',
+            'foto_tuk' => 'nullable',
+            'link_gmap' => 'nullable',
+        ]);
+
+        $tuk = Tuk::create($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data TUK berhasil ditambahkan',
+            'data' => $tuk
+        ], 201);
     }
 }

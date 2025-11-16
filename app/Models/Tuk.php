@@ -9,21 +9,15 @@ class Tuk extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang digunakan oleh model.
-     */
     protected $table = 'master_tuk';
 
-    /**
-     * Primary key yang digunakan oleh tabel.
-     */
     protected $primaryKey = 'id_tuk';
 
-    /**
-     * Izinkan semua kolom diisi.
-     */
-    protected $guarded = [];
-
-    // Kita tidak bisa membuat relasi ke jenis_tuk di sini
-    // karena tidak ada foreign key di tabel master_tuk.
+    protected $fillable = [
+        'nama_lokasi',
+        'alamat_tuk',
+        'kontak_tuk',
+        'foto_tuk',
+        'link_gmap'
+    ];
 }
