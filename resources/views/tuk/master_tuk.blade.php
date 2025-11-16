@@ -99,7 +99,7 @@
                         id="per_page" 
                         x-model="perPage" 
                         @change="changePerPage()"
-                        class="text-sm border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        class="bg-white text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="10">10</option>
                         <option value="25">25</option>
