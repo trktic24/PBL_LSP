@@ -71,6 +71,37 @@ body {
     color: white;
 }
 
+/* Tombol Navigasi Khusus Kategori */
+.category-nav-btn {
+    /* Ganti posisi relatif menjadi absolut */
+    position: absolute; 
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 30; /* Di atas scrollContainer, di bawah carousel-nav-btn */
+    background: white;
+    color: black;
+    padding: 0.5rem 0.6rem;
+    border-radius: 9999px; /* Full rounded */
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    /* Untuk tampilan yang lebih halus */
+    font-size: 1.25rem; 
+    line-height: 1;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-nav-btn:hover {
+    background: #FFD700; /* Warna kuning yang lebih gelap */
+    color: black;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
 html { scroll-behavior: smooth; }
 #scrollContainer::-webkit-scrollbar { display: none; }
 #scrollContainer { -ms-overflow-style: none; scrollbar-width: none; margin-bottom: 2rem; }
@@ -115,11 +146,17 @@ html { scroll-behavior: smooth; }
              class="py-10 text-center relative z-20 bg-white -mt-10">
     <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
     
-    <div class="relative w-full max-w-7xl mx-auto">
+    <div class="relative w-full max-w-7xl mx-auto px-4"> {{-- Tambahkan padding horizontal --}}
+        
+        {{-- Tombol Navigasi Kategori Kiri --}}
+        <button id="prevCategoryBtn" 
+                class="category-nav-btn -left-0 disabled:opacity-30 disabled:cursor-not-allowed hidden md:flex" 
+                onclick="scrollCategory(-1)">&#10094;</button>
+        
         <div id="scrollContainer" 
-             class="flex flex-row gap-4 overflow-x-scroll whitespace-nowrap justify-start py-4 px-4">
+             class="flex flex-row gap-4 overflow-x-scroll whitespace-nowrap justify-start py-4">
             
-            <div id="categoryButtons" class="inline-flex gap-4 w-fit px-4"> 
+            <div id="categoryButtons" class="inline-flex gap-4 w-fit px-4"> {{-- Hapus px-4 dan pindahkan ke parent --}}
                 @foreach($categories as $category)
                     <button data-category="{{ $category }}"
                         class="category-btn text-sm font-bold rounded-full px-4 py-2 border-none 
@@ -131,6 +168,12 @@ html { scroll-behavior: smooth; }
             </div>
 
         </div>
+        
+        {{-- Tombol Navigasi Kategori Kanan --}}
+        <button id="nextCategoryBtn" 
+                class="category-nav-btn -right-0 disabled:opacity-30 disabled:cursor-not-allowed hidden md:flex" 
+                onclick="scrollCategory(1)">&#10095;</button>
+
     </div>
 </section>
 
@@ -300,6 +343,38 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    
+    // ======================= LOGIKA SCROLL NAVIGASI KATEGORI =======================
+    const categoryScrollContainer = document.getElementById('scrollContainer');
+    const prevCategoryBtn = document.getElementById('prevCategoryBtn');
+    const nextCategoryBtn = document.getElementById('nextCategoryBtn');
+    const scrollAmount = 200; // Jumlah scroll per klik (misalnya 200px)
+
+    window.scrollCategory = function(direction) {
+        categoryScrollContainer.scrollBy({
+            left: direction * scrollAmount,
+            behavior: 'smooth'
+        });
+        
+        // Timeout untuk update status tombol setelah animasi scroll selesai
+        setTimeout(updateCategoryNavButtons, 350);
+    }
+
+    function updateCategoryNavButtons() {
+        if (!categoryScrollContainer) return;
+        
+        const { scrollLeft, scrollWidth, clientWidth } = categoryScrollContainer;
+        
+        prevCategoryBtn.disabled = scrollLeft === 0;
+        nextCategoryBtn.disabled = (scrollLeft + clientWidth) >= scrollWidth;
+    }
+    
+    // Panggil updateCategoryNavButtons saat container di-scroll secara manual
+    categoryScrollContainer.addEventListener('scroll', updateCategoryNavButtons);
+    
+    // Panggil saat DOM dimuat untuk mengatur status awal
+    updateCategoryNavButtons();
+    
 });
 
 // ======================= SCROLL DRAG KATEGORI =======================
