@@ -25,7 +25,7 @@ class TandaTanganAPIController extends Controller
 
     public function show($id_asesi)
     {
-        $asesi = Asesi::with('dataPekerjaan:id_pekerjaan,id_asesi,jabatan,nama_institusi_pekerjaan,alamat_institusi')->findOrFail($id_asesi);
-        return new AsesiTTDResource($asesi);
+        $data = Asesi::with('dataPekerjaan:id_pekerjaan,id_asesi,jabatan,nama_institusi_pekerjaan,alamat_institusi')->findOrFail($id_asesi);
+        return new AsesiTTDResource($data);
     }
 }

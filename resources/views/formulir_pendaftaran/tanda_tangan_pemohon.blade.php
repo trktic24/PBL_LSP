@@ -142,7 +142,7 @@
                             class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
                             Sebelumnya
                         </a>
-                        <a href="/tunggu_upload_dokumen"
+                        <a href="/halaman-tanda-tangan/{id_asesi}"
                             class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
                             Selanjutnya
                         </a>
@@ -156,7 +156,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            // Ambil semua elemen penting
+            // Ambil semua elemen penting (ini gak berubah)
             const fileInput = document.getElementById('signature-file-input');
             const previewContainer = document.getElementById('signature-preview-container');
             const previewImg = document.getElementById('signature-preview');
@@ -166,14 +166,12 @@
             const base64Input = document.getElementById('data-tanda-tangan-base64');
             const form = document.getElementById('signature-upload-form');
             const csrfToken = form.querySelector('input[name="_token"]').value;
-
-            // Ambil ID Asesi dari tag <form>
             const asesiId = form.dataset.asesiId;
 
             let uploadedFileBase64 = null;
 
             // ========================================================
-            // || INI KODE BARU YANG DIMINTA DOSEN LU (FETCH DATA) ||
+            // || INI KODE FETCH DATA YANG DIPERBAIKI ||
             // ========================================================
 
             // 1. Fungsi buat ngisi data ke HTML
@@ -182,21 +180,26 @@
                 document.getElementById('nama-pemohon').textContent = ': ' + (data.nama_lengkap ||
                     'Data tidak ada');
 
-                // Cek relasi 'dataPekerjaan'
-                if (data.data_pekerjaan) {
-                    document.getElementById('jabatan-pemohon').textContent = ': ' + (data.data_pekerjaan.jabatan ||
+                // [PERBAIKAN 2] Cara baca data_pekerjaan sebagai ARRAY
+                // Cek apakah data_pekerjaan ada DAN tidak kosong
+                if (data.data_pekerjaan && data.data_pekerjaan.length > 0) {
+                    // Ambil data pekerjaan PERTAMA (indeks [0])
+                    const pekerjaan = data.data_pekerjaan[0];
+
+                    document.getElementById('jabatan-pemohon').textContent = ': ' + (pekerjaan.jabatan ||
                         'Data tidak ada');
-                    document.getElementById('perusahaan-pemohon').textContent = ': ' + (data.data_pekerjaan
+                    document.getElementById('perusahaan-pemohon').textContent = ': ' + (pekerjaan
                         .nama_institusi_pekerjaan || 'Data tidak ada');
-                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + (data.data_pekerjaan
-                        .alamat_institusi || 'Data tidak ada');
+                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + (
+                        pekerjaan.alamat_institusi || 'Data tidak ada');
                 } else {
+                    // Kalo gak ada data pekerjaan
                     document.getElementById('jabatan-pemohon').textContent = ': Data tidak ada';
                     document.getElementById('perusahaan-pemohon').textContent = ': Data tidak ada';
                     document.getElementById('alamat-perusahaan-pemohon').textContent = ': Data tidak ada';
                 }
 
-                // Cek data tanda tangan (INI PENTING BUAT REFRESH)
+                // Cek data tanda tangan (ini biarin aja, buat nanti)
                 if (data.tanda_tangan) {
                     previewImg.src = `{{ asset('') }}${data.tanda_tangan}`; // Tampilin gambar
                     previewImg.classList.remove('hidden');
@@ -205,31 +208,31 @@
                     saveButton.textContent = 'Tersimpan ✔️';
                     saveButton.disabled = true;
                 } else {
-                    // Kalo gak ada TTD, pastiin placeholder-nya bener
                     previewImg.classList.add('hidden');
                     placeholder.classList.remove('hidden');
                     saveButton.textContent = 'Simpan';
-                    saveButton.disabled = true; // Disabled sampe user milih file
+                    saveButton.disabled = true;
                 }
             }
 
             // 2. Tembak API-nya pas halaman kebuka
-            fetch(`/api/get-asesi-data/${asesiId}`)
+            // [PERBAIKAN] Ganti nama rute API-mu jadi '/api/show-detail/'
+            fetch(`/api/show-detail/${asesiId}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Gagal mengambil data Asesi');
                     }
                     return response.json();
                 })
-                .then(data => {
-                    // Kalo sukses, panggil fungsi buat ngisi data
-                    populateData(data);
+                .then(responseAsesi => {
+                    // [PERBAIKAN 1] Ambil data dari BUNGKUSAN LUAR
+                    // Kirim 'responseAsesi.data' BUKAN 'responseAsesi'
+                    populateData(responseAsesi.data);
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                     alert('Gagal memuat data pemohon. Coba refresh halaman.');
                     document.getElementById('nama-pemohon').textContent = ': Gagal memuat';
-                    // ... (bisa diisi error di span lain) ...
                 });
 
             // ========================================================
@@ -278,6 +281,8 @@
             previewContainer.addEventListener('dragleave', () => previewContainer.classList.remove('is-dragover'),
                 false);
 
+            previewContainer.addEventListener('drop', handleDrop, false); // Tambahin ini
+
             function handleDrop(e) {
                 previewContainer.classList.remove('is-dragover');
                 const dt = e.dataTransfer;
@@ -290,6 +295,7 @@
 
             // 2. Logika Tombol Simpan (AJAX) (Gak berubah)
             saveButton.addEventListener('click', function() {
+                // ... (kode simpan TTD-mu biarin aja, gak usah diubah) ...
                 if (!uploadedFileBase64) {
                     alert('Mohon unggah file gambar tanda tangan terlebih dahulu.');
                     return;
@@ -329,19 +335,16 @@
                     });
             });
 
-            // 3. Logika Tombol Hapus (DIUBAH JADI PERMANEN)
+            // 3. Logika Tombol Hapus (Gak berubah)
             clearButton.addEventListener('click', function() {
-
-                // KONFIRMASI DULU!
+                // ... (kode hapus TTD-mu biarin aja, gak usah diubah) ...
                 if (!confirm('Yakin mau hapus tanda tangan ini PERMANEN? Data ini gak bisa balik lagi.')) {
                     return; // Kalo batal, stop
                 }
-
                 // Tampilkan loading di tombol Hapus
                 clearButton.textContent = 'Menghapus...';
                 clearButton.disabled = true;
                 saveButton.disabled = true; // Nonaktifkan tombol Simpan juga
-
                 // Tembak API 'deleteAjax'
                 fetch(`/api/ajax-hapus-tandatangan/${asesiId}`, {
                         method: 'POST', // Kita pake POST aja biar gampang
@@ -350,29 +353,22 @@
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json'
                         },
-                        // Gak perlu 'body', karena ID-nya hardcoded di controller
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Kalo SUKSES
                             alert(data.message); // "Berhasil dihapus!"
-
-                            // Reset tampilan (balikin ke semula)
                             fileInput.value = '';
                             uploadedFileBase64 = null;
                             previewImg.classList.add('hidden');
                             previewImg.src = '';
-                            placeholder.classList.remove('hidden');
+                            Vplaceholder.classList.remove('hidden');
                             saveButton.textContent = 'Simpan';
-                            saveButton.disabled = true; // Tetep disabled sampe milih file baru
-                            base64Input.value = ''; // Kosongin input hidden
+                            saveButton.disabled = true;
+                            base64Input.value = '';
                         } else {
-                            // Kalo GAGAL
                             alert('Error: ' + data.message);
                         }
-
-                        // Balikin tombol Hapus ke semula
                         clearButton.textContent = 'Hapus';
                         clearButton.disabled = false;
                     })

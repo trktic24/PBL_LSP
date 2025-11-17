@@ -41,7 +41,10 @@ return new class extends Migration
                 $table->string('catatan_AK05')->nullable();
                 $table->string('rekomendasi1_AK06')->nullable();
                 $table->string('rekomendasi2_AK06')->nullable();
-                $table->timestamps()->nullable(); // Dibuat nullable juga
+                
+                // INI PERBAIKANNYA:
+                // Ganti ->timestamps()->nullable() menjadi ->nullableTimestamps()
+                $table->nullableTimestamps(); 
         });
     }
 

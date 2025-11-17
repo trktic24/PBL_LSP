@@ -60,14 +60,6 @@ Route::apiResource('tuks', TukController::class);
 
 // --- GRUP 5: RUTE FORMULIR ASESI (APL/AK) ---
 
-// Tanda Tangan
-Route::get('/get-asesi-data/{id}', [TandaTanganAPIController::class, 'getAsesiDataApi'])
-        ->name('api.get.asesi');
-Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])
-        ->name('simpan.tandatangan.ajax');
-Route::post('/ajax-hapus-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'deleteAjax'])
-        ->name('hapus.tandatangan.ajax');
-
 // Data Sertifikasi
 Route::prefix('data-sertifikasi')->group(function () {
     Route::get('/{id}', [DataSertifikasiAsesiController::class, 'getDataSertifikasiAsesiApi'])
