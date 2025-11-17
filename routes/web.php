@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TandaTanganController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
 
@@ -103,10 +104,6 @@ Route::get('/pertanyaan_lisan', function () {
     return view('pertanyaan_lisan');
 });
 
-Route::get('/umpan_balik', function () {
-    return view('umpan_balik');
-});
-
 Route::get('/fr_ak01', function () {
     return view('fr_ak01');
 });
@@ -140,6 +137,9 @@ Route::get('/profil', function () {
 
 Route::post('/simpan/tandatangan', [TandaTanganController::class, 'simpanTandaTangan'])
     ->name('simpan.tandatangan'); 
+
+Route::get('/umpan_balik/{id?}', [FeedbackController::class, 'showForm']);
+Route::post('/umpan_balik/{id}/store', [FeedbackController::class, 'store']);
     
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

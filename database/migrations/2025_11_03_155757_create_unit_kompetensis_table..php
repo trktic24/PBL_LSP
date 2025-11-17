@@ -15,9 +15,13 @@ return new class extends Migration
                   ->constrained('skema', 'id_skema') // Menghubungkan ke 'id_skema' di tabel 'skema'
                   ->onDelete('cascade'); 
 
+            $table->foreignId('id_kelompok_pekerjaan')
+                  ->constrained('kelompok_pekerjaans', 'id_kelompok_pekerjaans')
+                  ->onDelete('cascade'); // atau sesuai kebutuhan
+
             $table->string('kode_unit'); 
             $table->string('judul_unit');
-            $table->string('jenis_standard')->nullable(); 
+            $table->string('jenis_standar')->nullable(); 
 
             $table->timestamps();
         });
