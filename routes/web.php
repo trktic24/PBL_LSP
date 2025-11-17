@@ -7,7 +7,7 @@ use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Asesor\FormIA07Controller;
-
+use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\Api\CountryController;
@@ -76,6 +76,8 @@ Route::get('/jadwal', [HomeController::class, 'jadwal'])->name('jadwal');
 
 // Note: Rute 'register' ini mungkin perlu GET, tapi saya biarkan sesuai file asli
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');
+// UBAH: Pastikan RegisteredUserController di-import jika Anda menggunakannya
+// use App\Http\Controllers\Auth\RegisteredUserController;
 
 
 /*
@@ -87,6 +89,12 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 |
 */
 Route::middleware('auth')->prefix('asesor')->group(function () {
+
+// Catatan: Pastikan Controller-nya ada atau di-import jika rute ini aktif
+// Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');
+
+
+Route::middleware('auth')->group(function () {
 
     /**
      * JADWAL ASESMEN (INTERNAL)
@@ -121,7 +129,7 @@ Route::middleware('auth')->prefix('asesor')->group(function () {
      * URL otomatis menjadi: /asesor/daftar-asesi/{id_jadwal}
      */
     Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])
-         ->name('daftar_asesi');
+        ->name('daftar_asesi');
 
     /**
      * TRACKER ASESMEN
@@ -136,7 +144,7 @@ Route::middleware('auth')->prefix('asesor')->group(function () {
     | FORMULIR ASESMEN (INTERNAL)
     |--------------------------------------------------------------------------
     */
-    Route::get('/fr-ia-10', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
+    Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
     Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])->name('fr-ia-02.show');
@@ -152,9 +160,58 @@ Route::middleware('auth')->prefix('asesor')->group(function () {
     Route::get('/fr-ia-06-a', fn() => view('frontend.fr_IA_06_a'))->name('fr_IA_06_a');
     Route::get('/fr-ia-06-b', fn() => view('frontend.fr_IA_06_b'))->name('fr_IA_06_b');
     Route::get('/fr-ia-07', fn() => view('frontend.FR_IA_07'))->name('FR_IA_07');
-    Route::get('/fr-ia-05-a', fn() => view('frontend.FR_IA_05_A'))->name('FR_IA_05_A');
-    Route::get('/fr-ia-05-b', fn() => view('frontend.FR_IA_05_B'))->name('FR_IA_05_B');
-    Route::get('/fr-ia-05-c', fn() => view('frontend.FR_IA_05_C'))->name('FR_IA_05_C');
+    
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMULIR IA-05 (LOGIKA BARU)
+    |--------------------------------------------------------------------------
+    */
+
+    // --- Form A: Soal (untuk Admin) & Lembar Jawab (untuk Asesi) ---
+    Route::middleware(['role:admin,asesor,asesi'])->group(function () {
+        // Admin, Asesor, Asesi bisa lihat halaman ini.
+        // TAPI, tampilannya akan berbeda-beda diatur oleh Controller & Blade.
+        Route::get('/fr-ia-05-a/{id_asesi}', [IA05Controller::class, 'showSoalForm'])->name('FR_IA_05_A');
+    });
+
+    Route::middleware(['role:admin'])->group(function () {
+        // HANYA Admin yang bisa menyimpan/mengubah SOAL.
+        Route::post('/fr-ia-05-a/store-soal', [IA05Controller::class, 'storeSoal'])->name('ia-05.store.soal');
+    });
+
+    Route::middleware(['role:asesi'])->group(function () {
+        // HANYA Asesi yang bisa menyimpan JAWABAN MEREKA.
+        Route::post('/fr-ia-05-a/store-jawaban/{id_asesi}', [IA05Controller::class, 'storeJawabanAsesi'])->name('ia-05.store.jawaban');
+    });
+
+
+    // --- Form B: Kunci Jawaban (Hanya untuk Admin & Asesor) ---
+    Route::middleware(['role:admin,asesor'])->group(function () {
+        // Admin & Asesor bisa lihat Kunci Jawaban.
+        Route::get('/fr-ia-05-b', [IA05Controller::class, 'showKunciForm'])->name('FR_IA_05_B');
+    });
+
+    Route::middleware(['role:admin'])->group(function () {
+        // HANYA Admin yang bisa menyimpan/mengubah KUNCI JAWABAN.
+        Route::post('/fr-ia-05-b', [IA05Controller::class, 'storeKunci'])->name('ia-05.store.kunci');
+    });
+
+
+    // --- Form C: Hasil Jawaban & Penilaian (Hanya untuk Admin & Asesor) ---
+    Route::middleware(['role:admin,asesor'])->group(function () {
+        // Admin & Asesor bisa lihat hasil jawaban Asesi & Penilaian.
+        Route::get('/fr-ia-05-c/{id_asesi}', [IA05Controller::class, 'showJawabanForm'])->name('FR_IA_05_C');
+    });
+
+    Route::middleware(['role:asesor'])->group(function () {
+        // HANYA Asesor yang bisa menyimpan/mengubah PENILAIAN.
+        Route::post('/fr-ia-05-c/store-penilaian/{id_asesi}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia-05.store.penilaian');
+    });
+
+    // ------------------------------------------------------------------------
+    
+    
     Route::get('/fr-ia-02', fn() => view('frontend.FR_IA_02'))->name('FR_IA_02');
 
 });
@@ -189,3 +246,4 @@ Route::get('/api/search-countries', [CountryController::class, 'search'])
 |--------------------------------------------------------------------------
 */
 // require __DIR__.'/auth.php'; // Ini duplikat, sudah ada di atas
+});
