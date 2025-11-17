@@ -24,11 +24,30 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+
         $request->authenticate();
-
         $request->session()->regenerate();
+        $user = Auth::user();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        if ($user->role?->nama_role === 'asesor') {
+            $status = $user->asesor?->status_verifikasi;
+
+            if ($status === 'pending') {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')->with('error', 'Akun Anda sedang diverifikasi oleh Admin.');
+            }
+
+            if ($status === 'rejected') {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')->with('error', 'Pendaftaran anda ditolak oleh admin.');
+            }
+        }
+
+        return redirect()->intended(route('dashboard'));
     }
 
     /**

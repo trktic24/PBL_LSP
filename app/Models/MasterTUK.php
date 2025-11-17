@@ -9,25 +9,13 @@ class MasterTuk extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang terkait dengan model.
-     *
-     * @var string
-     */
+    // Nama tabel non-konvensional (master_tuk)
     protected $table = 'master_tuk';
-
-    /**
-     * Kunci primer yang terkait dengan tabel.
-     *
-     * @var string
-     */
+    
+    // Primary key non-konvensional
     protected $primaryKey = 'id_tuk';
 
-    /**
-     * Atribut yang dapat diisi secara massal.
-     *
-     * @var array<int, string>
-     */
+    // Kolom yang dapat diisi secara massal (mass assignable)
     protected $fillable = [
         'nama_lokasi',
         'alamat_tuk',
@@ -37,10 +25,14 @@ class MasterTuk extends Model
     ];
 
     /**
-     * Mendapatkan jadwal yang terkait dengan TUK.
+     * Mendefinisikan relasi one-to-many ke model Jadwal.
+     * Foreign Key di tabel 'jadwals' adalah 'id_tuk'.
+     * Catatan: Parameter ketiga ('id_tuk') dihapus karena redundan.
      */
     public function jadwal()
     {
-        return $this->hasMany(Jadwal::class, 'id_tuk', 'id_tuk');
+        // Parameter 1: Nama Model Target (Jadwal::class)
+        // Parameter 2: Foreign Key di tabel 'jadwals' ('id_tuk')
+        return $this->hasMany(Jadwal::class, 'id_tuk');
     }
 }

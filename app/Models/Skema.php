@@ -8,25 +8,85 @@ use Illuminate\Database\Eloquent\Model;
 class Skema extends Model
 {
     use HasFactory;
-    protected $table = 'master_skema';
-    protected $guarded = ['id'];
 
-    public function unitKompetensi()
+    /**
+     * Nama tabel yang terhubung dengan model.
+     *
+     * @var string
+     */
+    protected $table = 'skema';
+
+    /**
+     * Primary key untuk model ini.
+     * Sesuai migration: $table->id('id_skema');
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id_skema';
+
+    /**
+     * Atribut yang dapat diisi secara massal (mass assignable).
+     * Disesuaikan dengan kolom di migration.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'categorie_id',
+        'id_kelompok_pekerjaan',
+        'nomor_skema',
+        'nama_skema',
+        'deskripsi_skema',
+        'harga',
+        'SKKNI',
+        'gambar',
+    ];
+
+    /**
+     * Relasi ke Categorie (Berdasarkan foreignId 'categorie_id').
+     * Menandakan bahwa Skema ini 'milik' satu Categorie.
+     */
+    public function categorie()
     {
-        return $this->hasMany(UnitKompetensi::class, 'skema_id');
+        // Model, foreign_key, owner_key
+        return $this->belongsTo(Categorie::class, 'categorie_id', 'id');
     }
 
-    // TAMBAHKAN FUNGSI INI:
     /**
-     * Asesor yang terhubung dengan Skema ini.
+     * Relasi ke KelompokPekerjaan (Berdasarkan foreignId 'id_kelompok_pekerjaan').
+     * Menandakan bahwa Skema ini 'milik' satu KelompokPekerjaan.
+     */
+    public function kelompokPekerjaan()
+    {
+        // Model, foreign_key, owner_key
+        // Key kedua ('id_kelompok_pekerjaan') dispesifikkan karena 
+        // nama kolom di tabel parent (kelompok_pekerjaan) tidak 'id'.
+        return $this->belongsTo(KelompokPekerjaan::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
+    }
+
+    // --- Relasi yang sudah ada di kode Anda (tetap valid) ---
+
+    /**
+     * Relasi ke UnitKompetensi.
+     * Skema ini 'memiliki banyak' UnitKompetensi.
+     */
+    public function unitKompetensi()
+    {
+        // Asumsi foreign key di tabel 'unit_kompetensi' adalah 'skema_id'
+        // dan primary key di 'skema' adalah 'id_skema' (sesuai $primaryKey di atas)
+        return $this->hasMany(UnitKompetensi::class, 'skema_id', 'id_skema');
+    }
+
+    /**
+     * Relasi ke Asesor (Many-to-Many).
+     * Skema ini 'memiliki dan dimiliki oleh banyak' Asesor.
      */
     public function asesor()
     {
         return $this->belongsToMany(
-            Asesor::class,          // Model tujuan
+            Asesor::class,
             'transaksi_asesor_skema', // Nama tabel pivot
-            'id_skema',             // Foreign key di pivot untuk model ini
-            'id_asesor'             // Foreign key di pivot untuk model tujuan
+            'id_skema',               // Foreign key di pivot untuk model ini (Skema)
+            'id_asesor'               // Foreign key di pivot untuk model tujuan (Asesor)
         );
     }
 }

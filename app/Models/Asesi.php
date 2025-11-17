@@ -4,18 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Asesi extends Model
 {
     use HasFactory;
 
-    // Menentukan nama tabel yang sesuai dengan migrasi
     protected $table = 'asesi';
-
-    // Menentukan primary key yang sesuai dengan migrasi (id_asesi)
     protected $primaryKey = 'id_asesi';
 
-    // Menentukan kolom yang dapat diisi (fillable) untuk operasi mass assignment
     protected $fillable = [
         'id_user',
         'nama_lengkap',
@@ -34,17 +32,19 @@ class Asesi extends Model
         'tanda_tangan',
     ];
 
-    // Menentukan tipe data untuk kolom tertentu (optional, tapi disarankan)
     protected $casts = [
         'tanggal_lahir' => 'date',
     ];
 
-    /**
-     * Relasi ke Model User (sesuai foreignId id_user)
-     */
-    public function user()
+    // Relasi ke user
+    public function user(): BelongsTo
     {
-        // Sesuaikan jika nama foreign key di model 'User' adalah 'id_user'
         return $this->belongsTo(User::class, 'id_user', 'id_user');
+    }
+
+    // Relasi ke data pekerjaan
+    public function pekerjaan(): HasOne
+    {
+        return $this->hasOne(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
     }
 }

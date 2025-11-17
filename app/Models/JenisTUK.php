@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models; // <-- Pastikan namespace-nya App\Models
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,29 +10,36 @@ class JenisTuk extends Model
     use HasFactory;
 
     /**
-     * Nama tabel yang terhubung dengan model.
+     * Nama tabel yang terkait dengan model.
+     *
+     * @var string
      */
     protected $table = 'jenis_tuk';
 
     /**
-     * Primary key kustom untuk tabel.
+     * Primary key yang terkait dengan tabel.
+     *
+     * @var string
      */
     protected $primaryKey = 'id_jenis_tuk';
 
     /**
-     * Izinkan semua kolom diisi.
+     * Kolom yang dapat diisi secara massal (mass assignable).
+     *
+     * @var array<int, string>
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'sewaktu',
+        'tempat_kerja',
+        'mandiri',
+    ];
 
     /**
-     * Beri tahu Laravel untuk tidak mengelola timestamps 
-     * (created_at & updated_at) di tabel ini.
-     * (Migrasi Anda sebelumnya tidak memilikinya)
+     * Mendefinisikan relasi one-to-many ke model Jadwal.
      */
-    public $timestamps = false; // <-- Ganti ke 'false' jika tabel Anda tidak punya timestamps
-
     public function jadwal()
     {
+        // Satu JenisTuk bisa memiliki banyak Jadwal
         return $this->hasMany(Jadwal::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
 }
