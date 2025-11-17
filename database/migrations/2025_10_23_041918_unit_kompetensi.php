@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('unit_kompetensi', function (Blueprint $table) {
             $table->id('id_unit_kompetensi');
+            $table->foreignId('id_kelompok_pekerjaan')->constrained('kelompok_pekerjaan', 'id_kelompok_pekerjaan')->onUpdate('cascade')->onDelete('cascade');
 
             // isi kolom sesuai ERD
             $table->string('kode_unit')->unique();
