@@ -8,10 +8,10 @@
     $isAsesiActive = request()->is('master/asesi*');
     $isMasterScheduleActive = request()->is('master/schedule*');
     
-    // [PERBAIKAN 1] Menggunakan 'category' (dengan 'c')
+    // [PERUBAHAN 1] Menggunakan 'category' (dengan 'c')
     $isCategoryActive = request()->is('master/category*'); 
 
-    // [PERBAIKAN 2] Menggunakan variabel baru
+    // [PERUBAHAN 2] Menggunakan variabel baru
     $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive;
     
     $isScheduleActive = request()->routeIs('schedule_admin');
@@ -48,33 +48,40 @@
                 <i :class="open ? 'fas fa-caret-up ml-2.5 text-sm' : 'fas fa-caret-down ml-2.5 text-sm'"></i>
             </button>
 
-            <div x-show="open" @click.away="open = false"
-                class="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md border border-gray-100 z-20"
+            <div 
+                x-show="open" @click.away="open = false"
+                class="absolute left-0 top-full mt-2 w-96 bg-white shadow-lg rounded-xl border border-gray-100 z-20 p-2"
                 x-transition x-cloak>
                 
-                <a href="{{ route('master_category') }}" 
-                    class="block px-4 py-2 {{ $isCategoryActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
-                    Category
-                </a>
+                <div class="grid grid-cols-2 gap-x-8">
+                    
+                    <div class="space-y-1">
+                        <a href="{{ route('master_category') }}" 
+                            class="block px-4 py-2 {{ $isCategoryActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Category
+                        </a>
+                        <a href="{{ route('master_skema') }}" 
+                            class="block px-4 py-2 {{ $isSkemaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Skema
+                        </a>
+                        <a href="{{ route('master_schedule') }}" 
+                            class="block px-4 py-2 {{ $isMasterScheduleActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Schedule
+                        </a>
+                    </div>
 
-                <a href="{{ route('master_skema') }}" 
-                    class="block px-4 py-2 {{ $isSkemaActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
-                    Skema
-                </a>
-                <a href="{{ route('master_asesor') }}" 
-                    class="block px-4 py-2 {{ $isAsesorActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
-                    Asesor
-                </a>
-                <a href="{{ route('master_asesi') }}" 
-                    class="block px-4 py-2 {{ $isAsesiActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
-                    Asesi
-                </a>
-                <a href="{{ route('master_schedule') }}" 
-                    class="block px-4 py-2 {{ $isMasterScheduleActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' }}">
-                    Schedule
-                </a>
+                    <div class="space-y-1">
+                        <a href="{{ route('master_asesor') }}" 
+                            class="block px-4 py-2 {{ $isAsesorActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Asesor
+                        </a>
+                        <a href="{{ route('master_asesi') }}" 
+                            class="block px-4 py-2 {{ $isAsesiActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Asesi
+                        </a>
+                        </div>
+                </div>
             </div>
-            
             @if ($isMasterActive)
                 <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
             @endif
