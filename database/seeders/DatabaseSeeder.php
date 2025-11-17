@@ -21,13 +21,14 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class, // Membuat role 1, 2, 3
             UserSeeder::class, // Membuat 1 user 'admin' (role_id 1)
             JenisTukSeeder::class, // Membuat 2 jenis_tukq
+            CategorySeeder::class,
         ]);
 
         
         Asesor::factory(20)->create();
         Asesi::factory(200)->create();
         Tuk::factory(20)->create();
-        Skema::factory(20)->create();
-        Schedule::factory(50)->create();
+        //Skema::factory(20)->create();
+        //Schedule::factory(50)->create();
     }
 }

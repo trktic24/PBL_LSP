@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('berita_acara', function (Blueprint $table) {
-            $table->id('id_berita_acara');
-            $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+        Schema::create('poin_potensi_AK07', function (Blueprint $table) {
+            // PK PERSIS kayak ERD
+            $table->id('id_poin_potensi_AK07');
 
-            //  isi kolom Database berita_acara
-            $table->string('keterangan');
+            // --- INI PERBAIKAN LOGIKANYA ---
+            // 5 Pilihan itu kita simpen sebagai BARIS DATA
+            $table->text('pilihan');
+            
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('poin_potensi_AK07');
     }
 };

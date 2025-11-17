@@ -8,6 +8,7 @@ use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\AsesiController; 
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\CategoryController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
@@ -42,10 +43,10 @@ Route::middleware('auth')->group(function () {
         $jumlahAsesor = Asesor::count();
         
         $jadwalTerbaru = Schedule::with('skema') // Ambil relasi skema
-                            ->where('Status_jadwal', 'Terjadwal')
-                            ->orderBy('tanggal_pelaksanaan', 'asc') // Tampilkan yang paling dekat
-                            ->take(5) // Batasi hanya 5
-                            ->get();
+                                 ->where('Status_jadwal', 'Terjadwal')
+                                 ->orderBy('tanggal_pelaksanaan', 'asc') // Tampilkan yang paling dekat
+                                 ->take(5) // Batasi hanya 5
+                                 ->get();
 
         // 4. KIRIM DATA KE VIEW
         return view('dashboard.dashboard_admin', [
@@ -144,33 +145,38 @@ Route::middleware('auth')->group(function () {
 
     // 8. TUK
     Route::controller(TukController::class)->prefix('master/tuk')->group(function () {
-        Route::get('/', 'index')->name('master_tuk');           // Read (All)
-        Route::get('/add', 'create')->name('add_tuk');          // Create (View)
-        Route::post('/add', 'store')->name('add_tuk.store');    // Create (Save)
-        Route::get('/edit/{id}', 'edit')->name('edit_tuk');       // Update (View)
-        Route::patch('/update/{id}', 'update')->name('update_tuk');   // Update (Save)
-        Route::delete('/delete/{id}', 'destroy')->name('delete_tuk'); // Delete
+        Route::get('/', 'index')->name('master_tuk');
+        Route::get('/add', 'create')->name('add_tuk');
+        Route::post('/add', 'store')->name('add_tuk.store');
+        Route::get('/edit/{id}', 'edit')->name('edit_tuk');
+        Route::patch('/update/{id}', 'update')->name('update_tuk');
+        Route::delete('/delete/{id}', 'destroy')->name('delete_tuk');
     });
 
-    // 9. Profile Asesi
+    // ==========================================================
+    // 9. Master - Kategori (RUTE BARU)
+    // ==========================================================
+    // Menggunakan {category} untuk Route Model Binding
+    Route::controller(CategoryController::class)->prefix('master/category')->group(function () {
+        Route::get('/', 'index')->name('master_category');
+        Route::get('/add', 'create')->name('add_category');
+        Route::post('/add', 'store')->name('add_category.store');
+        Route::get('/edit/{category}', 'edit')->name('edit_category');
+        Route::patch('/update/{category}', 'update')->name('update_category');
+        Route::delete('/delete/{category}', 'destroy')->name('delete_category');
+    });
+
+    // 10. Profile Asesi (sebelumnya 9)
     Route::get('/asesi_profile_settings', function () { return view('profile_asesi.asesi_profile_settings'); })->name('asesi_profile_settings');
     Route::get('/asesi_profile_form', function () { return view('profile_asesi.asesi_profile_form'); })->name('asesi_profile_form');
     Route::get('/asesi_profile_bukti', function () { return view('profile_asesi.asesi_profile_bukti'); })->name('asesi_profile_bukti');
     Route::get('/asesi_profile_tracker', function () { return view('profile_asesi.asesi_profile_tracker'); })->name('asesi_profile_tracker');
 
-    // 10. Profile Asesor
-// PERUBAHAN: Rute 'asesor_profile_bukti' lama dihapus (diberi komentar)
+    // 11. Profile Asesor (sebelumnya 10)
     // Route::get('/asesor_profile_bukti', function () { return view('profile_asesor.asesor_profile_bukti'); })->name('asesor_profile_bukti');
-    
-    // RUTE BARU: Untuk menampilkan bukti kelengkapan asesor berdasarkan ID
     Route::get('/asesor/{id_asesor}/bukti', [AsesorController::class, 'showBukti'])->name('asesor.bukti');
-    
-    // PERUBAHAN: Rute 'asesor_profile_settings' lama dihapus (diberi komentar)
     // Route::get('/asesor_profile_settings', function () { return view('profile_asesor.asesor_profile_settings'); })->name('asesor_profile_settings');
-    
-    // RUTE BARU: Untuk menampilkan profil asesor berdasarkan ID
     Route::get('/asesor/{id_asesor}/profile', [AsesorController::class, 'showProfile'])->name('asesor.profile');
-
     Route::get('/asesor_profile_tinjauan', function () { return view('profile_asesor.asesor_profile_tinjauan'); })->name('asesor_profile_tinjauan');
     Route::get('/asesor_profile_tracker', function () { return view('profile_asesor.asesor_profile_tracker'); })->name('asesor_profile_tracker');
 });
