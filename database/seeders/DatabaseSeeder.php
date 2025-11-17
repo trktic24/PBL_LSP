@@ -10,6 +10,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+
             // 1. Data Master (yang tidak bergantung satu sama lain)
             RoleSeeder::class,
             JenisTukSeeder::class,

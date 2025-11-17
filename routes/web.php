@@ -52,10 +52,13 @@ Route::get('/jawab', [SoalController::class, 'jawabIndex'])->name('jawab.index')
 
 // Menyimpan jawaban user
 Route::post('/jawab', [SoalController::class, 'jawabStore'])->name('jawab.store');
-Route::get('/ia01/{skema_id}/step/{urutan}', [Ia01Controller::class, 'showStep'])
-    ->name('ia01.show'); // Ini yang dipake 'href'
 
-Route::post('/ia01/{skema_id}/step/{urutan}', [Ia01Controller::class, 'storeStep'])
-    ->name('ia01.store'); // Ini yang dipake 'form action'
+//IA 01
+// Route Halaman Awal (Cover)
+Route::get('/ia01/{skema_id}/cover', [Ia01Controller::class, 'showCover'])->name('ia01.cover');
+Route::post('/ia01/{skema_id}/cover', [Ia01Controller::class, 'storeCover'])->name('ia01.storeCover');
+// Route Step Wizard (Unit 1, 2, dst)
+Route::get('/ia01/{skema_id}/step/{urutan}', [Ia01Controller::class, 'showStep'])->name('ia01.showStep');
+Route::post('/ia01/{skema_id}/step/{urutan}', [Ia01Controller::class, 'storeStep'])->name('ia01.storeStep');
 
 require __DIR__.'/auth.php';

@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('kelompok_pekerjaan', function (Blueprint $table) {
             $table->id('id_kelompok_pekerjaan');
             $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('cascade');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9bc4b2c3cbfda0a22adb2d09acd03862131a3a02
             // isi kolom sesuai ERD
             $table->string('nama_kelompok_pekerjaan');
             $table->timestamps();

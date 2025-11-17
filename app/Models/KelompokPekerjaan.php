@@ -29,34 +29,18 @@ class KelompokPekerjaan extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'id_unit_kompetensi',
+        'id_skema',
         'nama_kelompok_pekerjaan',
     ];
 
-    /**
-     * Relasi "belongsTo":
-     * Satu Kelompok Pekerjaan dimiliki oleh satu Unit Kompetensi.
-     */
-    public function unitKompetensi()
-    {
-        return $this->belongsTo(
-            UnitKompetensi::class,
-            'id_unit_kompetensi', // Foreign key di tabel ini
-            'id_unit_kompetensi'  // Primary key di tabel 'unit_kompetensi'
-        );
-    }
-
-    /**
-     * Relasi "hasMany":
-     * Satu Kelompok Pekerjaan bisa memiliki banyak Skema.
-     * (Ini untuk melengkapi relasi dari sisi Skema)
-     */
     public function skema()
     {
-        return $this->hasMany(
-            Skema::class,
-            'id_kelompok_pekerjaan', // Foreign key di tabel 'skema'
-            'id_kelompok_pekerjaan'  // Primary key di tabel ini
-        );
+        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+    }
+
+    // Relasi ke Anak (Unit Kompetensi)
+    public function unitKompetensis()
+    {
+        return $this->hasMany(UnitKompetensi::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
     }
 }

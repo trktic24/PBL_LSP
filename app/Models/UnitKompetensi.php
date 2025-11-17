@@ -30,20 +30,34 @@ class UnitKompetensi extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'id_kelompok_pekerjaan',
+        'urutan', // <--- Ini KUNCI Wizard (Step 1, 2, 3)
         'kode_unit',
         'judul_unit',
     ];
 
-    /**
-     * Relasi "hasMany":
-     * Satu Unit Kompetensi dapat dimiliki oleh BANYAK Kelompok Pekerjaan.
-     */
     public function kelompokPekerjaan()
     {
-        return $this->hasMany(
-            KelompokPekerjaan::class,
-            'id_unit_kompetensi', // Foreign key di tabel 'kelompok_pekerjaan'
-            'id_unit_kompetensi'  // Primary key di tabel ini
+        return $this->belongsTo(KelompokPekerjaan::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
+    }
+
+    // Relasi ke Anak Langsung (Elemen)
+    public function elemens()
+    {
+        return $this->hasMany(Elemen::class, 'id_unit_kompetensi', 'id_unit_kompetensi');
+    }
+
+    // MAGIC RELATION: Ambil KUK langsung dari Unit (melewati Elemen)
+    // Ini yang dipake di Controller: $unit->kriteriaUnjukKerja
+    public function kriteriaUnjukKerja()
+    {
+        return $this->hasManyThrough(
+            KriteriaUnjukKerja::class, // Target (KUK)
+            Elemen::class,             // Perantara (Elemen)
+            'id_unit_kompetensi',      // FK di tabel Elemen
+            'id_elemen',               // FK di tabel KUK
+            'id_unit_kompetensi',      // PK di tabel Unit
+            'id_elemen'                // PK di tabel Elemen
         );
     }
 }
