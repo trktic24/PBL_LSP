@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_kategori');
-            $table->string('slug')->unique();
+        Schema::create('kelompok_pekerjaan', function (Blueprint $table) {
+            $table->id('id_kelompok_pekerjaan');
+            $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('cascade');
+            // isi kolom sesuai ERD
+            $table->string('nama_kelompok_pekerjaan');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('kelompok_pekerjaan');
     }
 };

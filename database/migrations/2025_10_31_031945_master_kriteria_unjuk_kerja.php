@@ -14,9 +14,9 @@ return new class extends Migration {
             $table->id('id_kriteria');
             $table->foreignId('id_elemen')->constrained('master_elemen', 'id_elemen')->onUpdate('cascade')->onDelete('cascade');
 
-            // Kolom sisanya (sesuai ERD)
-            $table->string('standar_industri_kerja');
+            $table->string('no_kriteria')->default('1.1');
 
+            $table->string('standar_industri_kerja')->nullable();
             // 'kriteria' juga pakai text() buat deskripsi panjang
             $table->string('kriteria');
             $table->timestamps();

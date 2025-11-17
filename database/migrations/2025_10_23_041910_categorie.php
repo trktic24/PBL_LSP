@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('unit_kompetensi', function (Blueprint $table) {
-            $table->id('id_unit_kompetensi');
-
-            // isi kolom sesuai ERD
-            $table->string('kode_unit')->unique();
-            $table->string('judul_unit');
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_kategori');
+            $table->string('slug')->unique();
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('unit_kompetensi');
+        Schema::dropIfExists('categories');
     }
 };
