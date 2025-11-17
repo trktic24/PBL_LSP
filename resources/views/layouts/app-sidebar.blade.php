@@ -21,7 +21,7 @@
   <x-sidebar.sidebar />
 
   {{-- Konten utama --}}
-  <main class="flex-1 p-8 ml-80">
+  <main class="flex-1 p-5 ml-80">
     @yield('content')
   </main>
 

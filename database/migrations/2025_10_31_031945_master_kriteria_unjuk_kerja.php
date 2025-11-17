@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('id_elemen')->constrained('master_elemen', 'id_elemen')->onUpdate('cascade')->onDelete('cascade');
 
             $table->string('no_kriteria')->default('1.1');
-
+            $table->enum('tipe', ['aktivitas', 'demonstrasi'])->default('demonstrasi');
             $table->string('standar_industri_kerja')->nullable();
             // 'kriteria' juga pakai text() buat deskripsi panjang
             $table->string('kriteria');

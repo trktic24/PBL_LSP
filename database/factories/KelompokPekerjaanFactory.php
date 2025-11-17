@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\KelompokPekerjaan;
+use App\Models\Skema;
 use App\Models\UnitKompetensi; // <-- PENTING: Import model ini
 
 /**
@@ -26,11 +27,10 @@ class KelompokPekerjaanFactory extends Factory
     public function definition(): array
     {
         return [
+            'id_skema' => Skema::factory(),
             // Kolom 'nama_kelompok_pekerjaan'
             'nama_kelompok_pekerjaan' => fake()->jobTitle(),
 
-            // Kolom 'id_unit_kompetensi' (WAJIB ADA)
-            'id_unit_kompetensi' => UnitKompetensi::factory(),
         ];
     }
 }

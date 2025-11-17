@@ -32,7 +32,6 @@ class Skema extends Model
      */
     protected $fillable = [
         'categorie_id',
-        'id_kelompok_pekerjaan',
         'nomor_skema',
         'nama_skema',
         'deskripsi_skema',
@@ -55,12 +54,9 @@ class Skema extends Model
      * Relasi ke KelompokPekerjaan (Berdasarkan foreignId 'id_kelompok_pekerjaan').
      * Menandakan bahwa Skema ini 'milik' satu KelompokPekerjaan.
      */
-    public function kelompokPekerjaan()
+    public function kelompokPekerjaans()
     {
-        // Model, foreign_key, owner_key
-        // Key kedua ('id_kelompok_pekerjaan') dispesifikkan karena 
-        // nama kolom di tabel parent (kelompok_pekerjaan) tidak 'id'.
-        return $this->belongsTo(KelompokPekerjaan::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
+        return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
     }
 
     // --- Relasi yang sudah ada di kode Anda (tetap valid) ---

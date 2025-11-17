@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\KelompokPekerjaan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\UnitKompetensi;
 
@@ -25,6 +26,8 @@ class UnitKompetensiFactory extends Factory
     public function definition(): array
     {
         return [
+            'id_kelompok_pekerjaan' => KelompokPekerjaan::factory(),
+            'urutan' => 1,
             // Membuat kode unik, sesuai constraint migration ->unique()
             'kode_unit' => fake()->unique()->numerify('J.620100.###.##'),
 
