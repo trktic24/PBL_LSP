@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\UnitKompetensi;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class ElemenFactory extends Factory
     public function definition(): array
     {
         return [
-            'elemen' => fake()->sentence(5),
+            'id_unit_kompetensi' => UnitKompetensi::factory(),
+            'elemen' => fake()->sentence(6),
         ];
     }
 }

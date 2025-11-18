@@ -28,6 +28,7 @@ return new class extends Migration {
             // Nanti frontend yang nentuin labelnya "Ya" atau "K" berdasarkan tipe KUK-nya
             $table->boolean('pencapaian_ia01')->nullable()->comment('1=Ya/K, 0=Tidak/BK (Diisi Asesor)');
 
+            $table->string('standar_industri_ia01')->nullable()->comment('Isian manual asesor jika beda dari master');
             // 3. Penilaian Lanjut
             $table->text('penilaian_lanjut_ia01')->nullable()->comment('Catatan tambahan dari asesor');
 
