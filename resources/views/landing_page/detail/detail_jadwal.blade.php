@@ -67,7 +67,6 @@
                     <p class="text-center text-gray-500 text-xs">
                         Pendaftaran ditutup tanggal {{ $jadwal->tanggal_selesai->format('d F Y') }}
                         {{-- Menggunakan kolom tanggal_selesai (penutupan) dari Model Jadwal --}}
-                        Pendaftaran ditutup tanggal {{ $jadwal->tanggal_selesai?->format('d F Y') ?? 'TBA' }}
                     </p>
                 </div>
             </div>
