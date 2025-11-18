@@ -35,7 +35,9 @@ Route::get('/APL_01_2', function () {
 Route::get('/AK01', function () {
     return view('frontend/AK01/AK01');
 })->name('AK01');
-
+Route::get('/FR_AK_04', function () {
+    return view('frontend/FR_AK_04');
+})->name('FR_AK_04');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
