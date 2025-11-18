@@ -13,34 +13,27 @@ use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\SkemaWebController;
 use App\Http\Controllers\Asesor\DashboardController as AsesorDashboardController;
+use App\Http\Controllers\Auth\RegisteredUserController; // Pastikan ini diimport
 
 /*
 |--------------------------------------------------------------------------
-| Halaman Home & Detail Skema (PUBLIK)
+| 1. HALAMAN PUBLIK (Landing Page, Info, Jadwal Umum)
 |--------------------------------------------------------------------------
 */
-// Ini adalah 'home' untuk landing page publik
+
+// Landing Page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Route resmi untuk detail skema
+// Detail Skema
 Route::get('/skema/{id}', [HomeController::class, 'show'])->name('skema.detail');
-
-// Tetap biarkan route /detail_skema/{id} jika masih dipakai di Blade lain
 Route::get('/detail_skema/{id}', [HomeController::class, 'show'])->name('detail_skema');
 
-// Rute Detail Jadwal
+// Jadwal Publik (List & Detail)
+Route::get('/jadwal', [HomeController::class, 'jadwal'])->name('jadwal'); // <-- List Jadwal Publik
 Route::get('/detail_jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('detail_jadwal');
+Route::get('/jadwal/{id}', [HomeController::class, 'showJadwalDetailPublik'])->name('jadwal.detail'); // <-- Detail Jadwal Publik
 
-// --- DIPERBAIKI ---
-// Rute ini sekarang mengarah ke fungsi publik baru 'showJadwalDetailPublik'
-Route::get('/jadwal/{id}', [HomeController::class, 'showJadwalDetailPublik'])->name('jadwal.detail');
-
-
-/*
-|--------------------------------------------------------------------------
-| Custom Routes (Info TUK dan Alur) (PUBLIK)
-|--------------------------------------------------------------------------
-*/
+// Info TUK & Alur
 Route::get('/alur-sertifikasi', function () {
     return view('landing_page.page_info.alur-sertifikasi');
 })->name('info.alur');
@@ -48,11 +41,7 @@ Route::get('/alur-sertifikasi', function () {
 Route::get('/info-tuk', [TukController::class, 'index'])->name('info.tuk');
 Route::get('/detail-tuk/{id}', [TukController::class, 'showDetail'])->name('info.tuk.detail');
 
-/*
-|--------------------------------------------------------------------------
-| Web Profil Routes (PUBLIK)
-|--------------------------------------------------------------------------
-*/
+// Profil Web (Visi Misi, dll)
 Route::get('/visimisi', function () {
     return view('landing_page.page_profil.visimisi');
 })->name('profil.visimisi');
@@ -65,85 +54,45 @@ Route::get('/mitra', function () {
     return view('landing_page.page_profil.mitra');
 })->name('profil.mitra');
 
-/*
-|--------------------------------------------------------------------------
-| Halaman Utama & Menu Utama (PUBLIK)
-|--------------------------------------------------------------------------
-*/
-// --- DIPERBAIKI ---
-// Rute ini sekarang mengarah ke fungsi 'jadwal' di HomeController, BUKAN JadwalController
-Route::get('/jadwal', [HomeController::class, 'jadwal'])->name('jadwal');
-
-// Note: Rute 'register' ini mungkin perlu GET, tapi saya biarkan sesuai file asli
+// Register User Baru
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');
-// UBAH: Pastikan RegisteredUserController di-import jika Anda menggunakannya
-// use App\Http\Controllers\Auth\RegisteredUserController;
 
 
 /*
 |--------------------------------------------------------------------------
-| ROUTE INTERNAL APLIKASI (ASESOR)
+| 2. ROUTE INTERNAL ASESOR (Dilindungi Auth & Prefix /asesor)
 |--------------------------------------------------------------------------
-|
-| Grup ini sudah benar (menggunakan prefix 'asesor')
-|
 */
 Route::middleware('auth')->prefix('asesor')->group(function () {
 
-// Catatan: Pastikan Controller-nya ada atau di-import jika rute ini aktif
-// Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');
-
-
-Route::middleware('auth')->group(function () {
-
-    /**
-     * JADWAL ASESMEN (INTERNAL)
-     * URL otomatis menjadi: /asesor/jadwal
-     * Ini memanggil JadwalController, yang benar untuk asesor.
-     */
-    Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
+    // Dashboard Asesor (/asesor/home)
     Route::get('/home', [AsesorDashboardController::class, 'index'])->name('home.index');
 
-    /**
-     * LAPORAN ASESMEN (INTERNAL)
-     * URL otomatis menjadi: /asesor/laporan
-     */
+    // Jadwal Internal (/asesor/jadwal) - Menggunakan JadwalController
+    Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
+
+    // Laporan
     Route::get('/laporan', function () {
         return view('frontend.laporan');
     })->name('laporan');
 
-    /**
-     * PROFIL USER LOGIN (INTERNAL)
-     * URL otomatis menjadi: /asesor/myprofil, /asesor/profil, dll.
-     */
-    Route::post('/myprofil/asesor/update', [ProfileController::class, 'updateAsesorAjax'])
-     ->name('profil.asesor.update')
-     ->middleware('auth');
+    // Profil Internal (Edit Profil Asesor)
+    Route::post('/myprofil/asesor/update', [ProfileController::class, 'updateAsesorAjax'])->name('profil.asesor.update');
     Route::post('/myprofil/update', [ProfileController::class, 'update'])->name('profil.update');
     Route::get('/myprofil', [ProfileController::class, 'show'])->name('profil.show');
-    Route::get('/profil', [ProfileController::class, 'edit'])->name('profil')->middleware('auth');
+    Route::get('/profil', [ProfileController::class, 'edit'])->name('profil');
 
+    // Daftar Asesi
+    Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])->name('daftar_asesi');
 
-    /**
-     * DAFTAR ASESI (per jadwal)
-     * URL otomatis menjadi: /asesor/daftar-asesi/{id_jadwal}
-     */
-    Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])
-        ->name('daftar_asesi');
-
-    /**
-     * TRACKER ASESMEN
-     * URL otomatis menjadi: /asesor/tracker
-     */
+    // Tracker
     Route::get('/tracker', function () {
         return view('frontend.tracker');
     })->name('tracker');
 
     /*
-    |--------------------------------------------------------------------------
-    | FORMULIR ASESMEN (INTERNAL)
-    |--------------------------------------------------------------------------
-    */
+     * FORMULIR ASESMEN (IA-02, IA-10, dll)
+     */
     Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
@@ -151,76 +100,54 @@ Route::middleware('auth')->group(function () {
     Route::post('/fr-ia-02/{id}', [IA02Controller::class, 'store'])->name('fr-ia-02.store');
 
     /*
-    |--------------------------------------------------------------------------
-    | FORMULIR STATIS (INTERNAL)
-    |--------------------------------------------------------------------------
-    */
+     * FORMULIR STATIS
+     */
     Route::get('/FR-IA-10', fn() => view('frontend.FR_IA_10'))->name('FR-IA-10');
     Route::get('/fr-ia-06-c', fn() => view('frontend.fr_IA_06_c'))->name('fr_IA_06_c');
     Route::get('/fr-ia-06-a', fn() => view('frontend.fr_IA_06_a'))->name('fr_IA_06_a');
     Route::get('/fr-ia-06-b', fn() => view('frontend.fr_IA_06_b'))->name('fr_IA_06_b');
     Route::get('/fr-ia-07', fn() => view('frontend.FR_IA_07'))->name('FR_IA_07');
-    
+    Route::get('/fr-ia-02', fn() => view('frontend.FR_IA_02'))->name('FR_IA_02');
 
     /*
-    |--------------------------------------------------------------------------
-    | FORMULIR IA-05 (LOGIKA BARU)
-    |--------------------------------------------------------------------------
-    */
-
-    // --- Form A: Soal (untuk Admin) & Lembar Jawab (untuk Asesi) ---
+     * FORMULIR IA-05 (Kompleks dengan Role)
+     */
+    // Form A
     Route::middleware(['role:admin,asesor,asesi'])->group(function () {
-        // Admin, Asesor, Asesi bisa lihat halaman ini.
-        // TAPI, tampilannya akan berbeda-beda diatur oleh Controller & Blade.
         Route::get('/fr-ia-05-a/{id_asesi}', [IA05Controller::class, 'showSoalForm'])->name('FR_IA_05_A');
     });
-
     Route::middleware(['role:admin'])->group(function () {
-        // HANYA Admin yang bisa menyimpan/mengubah SOAL.
         Route::post('/fr-ia-05-a/store-soal', [IA05Controller::class, 'storeSoal'])->name('ia-05.store.soal');
     });
-
     Route::middleware(['role:asesi'])->group(function () {
-        // HANYA Asesi yang bisa menyimpan JAWABAN MEREKA.
         Route::post('/fr-ia-05-a/store-jawaban/{id_asesi}', [IA05Controller::class, 'storeJawabanAsesi'])->name('ia-05.store.jawaban');
     });
 
-
-    // --- Form B: Kunci Jawaban (Hanya untuk Admin & Asesor) ---
+    // Form B
     Route::middleware(['role:admin,asesor'])->group(function () {
-        // Admin & Asesor bisa lihat Kunci Jawaban.
         Route::get('/fr-ia-05-b', [IA05Controller::class, 'showKunciForm'])->name('FR_IA_05_B');
     });
-
     Route::middleware(['role:admin'])->group(function () {
-        // HANYA Admin yang bisa menyimpan/mengubah KUNCI JAWABAN.
         Route::post('/fr-ia-05-b', [IA05Controller::class, 'storeKunci'])->name('ia-05.store.kunci');
     });
 
-
-    // --- Form C: Hasil Jawaban & Penilaian (Hanya untuk Admin & Asesor) ---
+    // Form C
     Route::middleware(['role:admin,asesor'])->group(function () {
-        // Admin & Asesor bisa lihat hasil jawaban Asesi & Penilaian.
         Route::get('/fr-ia-05-c/{id_asesi}', [IA05Controller::class, 'showJawabanForm'])->name('FR_IA_05_C');
     });
-
     Route::middleware(['role:asesor'])->group(function () {
-        // HANYA Asesor yang bisa menyimpan/mengubah PENILAIAN.
         Route::post('/fr-ia-05-c/store-penilaian/{id_asesi}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia-05.store.penilaian');
     });
 
-    // ------------------------------------------------------------------------
-    
-    
-    Route::get('/fr-ia-02', fn() => view('frontend.FR_IA_02'))->name('FR_IA_02');
-
-});
+}); // <--- ⛔ PENTING: Penutup grup Asesor harus DI SINI, sebelum auth.php
 
 /*
 |--------------------------------------------------------------------------
-| ROUTE AUTENTIKASI (LOGIN, REGISTER, LOGOUT)
+| 3. ROUTE AUTH & LAINNYA (Harus di luar grup asesor)
 |--------------------------------------------------------------------------
 */
+
+// Rute Auth (Login, Logout, Register)
 require __DIR__ . '/auth.php';
 
 Route::get('/sertifikasi', function () {
@@ -230,20 +157,10 @@ Route::get('/sertifikasi', function () {
 Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
 
 /*
-|--------------------------------------------------------------------------
 | API & Keep Alive
-|--------------------------------------------------------------------------
 */
 Route::get('/keep-alive', function () {
     return response()->json(['status' => 'session_refreshed']);
 });
 Route::get('/api/search-countries', [CountryController::class, 'search'])
     ->name('api.countries.search');
-
-/*
-|--------------------------------------------------------------------------
-| Auth Routes
-|--------------------------------------------------------------------------
-*/
-// require __DIR__.'/auth.php'; // Ini duplikat, sudah ada di atas
-});

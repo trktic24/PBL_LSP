@@ -1,4 +1,4 @@
-@extends('layouts.app-asesor')
+@extends('layouts.app-profil')
 @section('content')
 
 <main class="container mx-auto px-6 mt-20 mb-12">
