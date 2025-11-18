@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('berita_acara', function (Blueprint $table) {
-            $table->id('id_berita_acara');
+        Schema::create('ia10', function (Blueprint $table) {
+            $table->id('id_ia10');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-<<<<<<< HEAD
 
-            //  isi kolom Database berita_acara
-=======
->>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
-            $table->string('keterangan');
+            // isi dari database ia10
+            $table->text('pertanyaan');
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('ia10');
     }
 };

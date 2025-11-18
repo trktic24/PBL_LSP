@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('berita_acara', function (Blueprint $table) {
-            $table->id('id_berita_acara');
+        Schema::create('kunci_ia06', function (Blueprint $table) {
+            $table->id('id_kunci_ia06');
+            $table->foreignId('id_soal_ia06')->constrained('soal_ia06', 'id_soal_ia06')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-<<<<<<< HEAD
 
-            //  isi kolom Database berita_acara
-=======
->>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
-            $table->string('keterangan');
+            // isi dari database kunci_ia06
+            $table->text('teks_jawaban_ia06');
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('kunci_ia06');
     }
 };

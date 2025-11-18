@@ -17,14 +17,18 @@ return new class extends Migration
 
             // Sesuai ERD: id_user (FK)
             // Ini akan membuat foreign key ke kolom 'id' di tabel 'users'
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('cascade');
 
             // Data Pribadi Asesi
             $table->string('nama_lengkap');            
             $table->string('nik', 16)->unique(); // (int) -> Diubah ke string
             $table->string('tempat_lahir', 100);
             $table->date('tanggal_lahir');
+<<<<<<< HEAD
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
+=======
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan', 'Lainnya', 'Tidak diketahui'])->comment('Pilih jenis kelamin anda');
+>>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
             $table->string('kebangsaan', 100)->nullable();
             $table->string('pendidikan');
             $table->string('pekerjaan');
