@@ -92,23 +92,7 @@
 
         <div class="space-y-6">
           
-          {{-- PERBAIKAN: Komentar diubah ke Blade comment agar tidak error --}}
-          {{-- PERUBAHAN: Blok @php dinamis berdasarkan data $asesor --}}
-          {{-- @php
-            $documents = [
-                ['key' => 'ktp', 'title' => 'KTP', 'subtitle' => 'Kartu Tanda Penduduk', 'file_path' => $asesor->ktp],
-                ['key' => 'pas_foto', 'title' => 'Foto', 'subtitle' => 'Pas Foto 3x4', 'file_path' => $asesor->pas_foto],
-                ['key' => 'NPWP_foto', 'title' => 'NPWP', 'subtitle' => 'Kartu NPWP', 'file_path' => $asesor->NPWP_foto],
-                ['key' => 'rekening_foto', 'title' => 'Rekening', 'subtitle' => 'Buku Rekening Bank', 'file_path' => $asesor->rekening_foto],
-                ['key' => 'CV', 'title' => 'Curiculum Vitae (CV)', 'subtitle' => 'CV terbaru', 'file_path' => $asesor->CV],
-                ['key' => 'ijazah', 'title' => 'Ijazah Pendidikan', 'subtitle' => 'Ijazah pendidikan terakhir', 'file_path' => $asesor->ijazah],
-                ['key' => 'sertifikat_asesor', 'title' => 'Sertifikat Asesor Kompetensi', 'subtitle' => 'Sertifikat kompetensi sebagai asesor', 'file_path' => $asesor->sertifikat_asesor],
-                ['key' => 'sertifikasi_kompetensi', 'title' => 'Sertifikasi Kompetensi', 'subtitle' => 'Sertifikat teknis/pendukung', 'file_path' => $asesor->sertifikasi_kompetensi],
-            ];
-          @endphp --}}
-          {{-- PERUBAHAN: Blok @php di atas (baris 90-100) telah dihapus/dikomentari. --}}
-          {{-- Logika ini dipindahkan ke AsesorController. --}}
-
+          {{-- File ini mengharapkan variabel $documents dari controller --}}
 
           {{-- Loop dimulai di sini --}}
           @foreach ($documents as $doc)
@@ -166,9 +150,6 @@
               @endif
             </div>
           </div>
-          {{-- ========================================================= --}}
-          {{-- PERBAIKAN: Menambahkan @endforeach untuk menutup loop      --}}
-          {{-- ========================================================= --}}
           @endforeach
 
         </div>

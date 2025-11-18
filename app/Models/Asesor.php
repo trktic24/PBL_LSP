@@ -28,7 +28,7 @@ class Asesor extends Model
 
     /**
      * Atribut yang dapat diisi secara massal.
-     *
+     * (Ini sudah sesuai dengan migrasi 2025_10_23_041924_data_asesor.php)
      * @var array
      */
     protected $fillable = [
@@ -63,6 +63,7 @@ class Asesor extends Model
 
     /**
      * Relasi one-to-one ke model User.
+     * (Relasi ini sudah benar)
      */
     public function user()
     {
@@ -71,7 +72,7 @@ class Asesor extends Model
 
     /**
      * Relasi many-to-many ke model Skema.
-     * Ini adalah perbaikan utamanya.
+     * (Relasi ini sudah benar, sesuai migrasi 2025_10_30_080349_transaksi_asesor_skema.php)
      */
     public function skemas()
     {

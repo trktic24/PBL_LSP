@@ -94,12 +94,11 @@
     {{-- KONTEN UTAMA DINAMIS                                    --}}
     {{-- ========================================================= --}}
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">
-      {{-- PERBAIKAN: Struktur HTML diperbaiki, div yang rusak dihapus --}}
       <div class="bg-white rounded-2xl shadow-xl p-10">
         
         <div class="flex flex-col items-center text-center mb-10">
           <h1 class="text-3xl font-bold text-gray-800 mb-3">Profile Settings</h1>
-          <div class="mt-10 w-auto h-60 rounded-full overflow-hidden border-4 border-gray-300 shadow-md">
+          <div class="mt-10 w-60 h-60 rounded-full overflow-hidden border-4 border-gray-300 shadow-md">
             {{-- Foto dinamis --}}
             <img src="{{ $asesor->pas_foto ? Storage::url($asesor->pas_foto) : asset('images/asesi.jpg') }}" class="w-full h-full object-cover">
           </div>
@@ -122,7 +121,10 @@
             <div><label class="font-medium">Nomor Telepon Rumah</label><input type="text" value="-" class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1" readonly></div>
             <div><label class="font-medium">Kualifikasi Pendidikan</label><input type="text" value="-" class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1" readonly></div>
             <div><label class="font-medium">Pekerjaan</label><input type="text" value="{{ $asesor->pekerjaan }}" class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1" readonly></div>
-            <div><label class="font-medium">Jenis Kelamin</label><input type="text" value="{{ $asesor->jenis_kelamin == 1 ? 'Laki-laki' : 'Perempuan' }}" class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1" readonly></div>
+            
+            {{-- PERBAIKAN: Logika disesuaikan dengan migrasi (String, bukan angka 1) --}}
+            <div><label class="font-medium">Jenis Kelamin</label><input type="text" value="{{ $asesor->jenis_kelamin }}" class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1" readonly></div>
+            
             <div><label class="font-medium">Kebangsaan</label><input type="text" value="{{ $asesor->kebangsaan }}" class="w-full border border-gray-300 rounded-md px-3 py-2 mt-1" readonly></div>
           </div>
         </section>

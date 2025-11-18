@@ -46,7 +46,7 @@ class AsesorFactory extends Factory
             'sertifikasi_kompetensi' => 'dummy/sert_kompetensi.pdf',
             'tanda_tangan' => 'dummy/ttd.png',
             
-            'is_verified' => true,
+            'is_verified' => false,
         ];
     }
 
@@ -55,17 +55,17 @@ class AsesorFactory extends Factory
      *
      * @return $this
      */
-    public function configure()
-    {
-        return $this->afterCreating(function (Asesor $asesor) {
-            // 1. Ambil 1 atau 2 skema secara acak
-            $skemas = Skema::inRandomOrder()->limit(rand(1, 2))->get();
-
-            // 2. Hubungkan skema tersebut ke asesor yang baru dibuat
-            // Ini akan membuat data di tabel 'Transaksi_asesor_skema'
-            if ($skemas->isNotEmpty()) {
-                $asesor->skemas()->attach($skemas);
-            }
-        });
-    }
+    // public function configure()
+    // {
+    //     return $this->afterCreating(function (Asesor $asesor) {
+    //         // 1. Ambil 1 atau 2 skema secara acak
+    //         $skemas = Skema::inRandomOrder()->limit(rand(1, 2))->get();
+    //
+    //         // 2. Hubungkan skema tersebut ke asesor yang baru dibuat
+    //         // Ini akan membuat data di tabel 'Transaksi_asesor_skema'
+    //         if ($skemas->isNotEmpty()) {
+    //             $asesor->skemas()->attach($skemas);
+    //         }
+    //     });
+    // }
 }
