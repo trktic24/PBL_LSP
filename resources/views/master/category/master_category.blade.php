@@ -137,7 +137,7 @@
 
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
 
-                    <thead class="bg-gray-50 text-gray-600 uppercase text-sm">
+                    <thead class="bg-gray-100 text-gray-600 uppercase text-sm">
                         <tr>
                             @php
                                 $baseParams = ['search' => request('search'), 'per_page' => request('per_page')];

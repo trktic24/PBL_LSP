@@ -39,4 +39,5 @@ class Asesi extends Model
         // Terhubung ke model User, menggunakan 'id_user' sebagai foreign key
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
+    
 }

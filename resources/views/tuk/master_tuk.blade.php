@@ -109,7 +109,7 @@
                     <span class="text-sm text-gray-600">entries</span>
                 </div>
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+                    <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
                         <tr>
                             <th class="px-6 py-3 text-left font-semibold">
                                 @php

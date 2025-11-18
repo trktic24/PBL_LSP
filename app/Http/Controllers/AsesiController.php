@@ -13,27 +13,92 @@ use Illuminate\Validation\Rules\Password;
 class AsesiController extends Controller
 {
     /**
-     * Menampilkan halaman daftar Asesi.
+     * Menampilkan daftar Asesi dengan Paginasi, Sort, dan Filter.
      */
     public function index(Request $request)
     {
-        $query = Asesi::with('user'); 
+        // 1. Ambil input sort dan direction
+        $sortColumn = $request->input('sort', 'id_asesi');
+        $sortDirection = $request->input('direction', 'asc');
+
+        // 2. Daftar kolom yang BOLEH di-sort
+        $allowedColumns = [
+            'id_asesi', 'nama_lengkap', 'nik', 'tempat_lahir', 
+            'tanggal_lahir', 'jenis_kelamin', 'pendidikan', 'pekerjaan',
+            'kabupaten_kota', 'provinsi', 'email', 'nomor_hp'
+        ];
+        
+        if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'id_asesi';
+        if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
+
+        // 3. Mulai query dengan Eager Loading
+        $query = Asesi::with('user');
+
+        // 4. Terapkan 'search' (Filter)
         if ($request->has('search') && $request->input('search') != '') {
             $searchTerm = $request->input('search');
             $query->where(function($q) use ($searchTerm) {
-                $q->where('nama_lengkap', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('nik', 'like', '%' . $searchTerm . '%')
-                  ->orWhereHas('user', function($userQuery) use ($searchTerm) {
-                      $userQuery->where('email', 'like', '%' . $searchTerm . '%');
-                  });
+                $q->where('id_asesi', 'like', '%' . $searchTerm . '%')
+                ->orWhere('nama_lengkap', 'like', '%' . $searchTerm . '%')
+                ->orWhere('nik', 'like', '%' . $searchTerm . '%')
+                ->orWhere('nomor_hp', 'like', '%' . $searchTerm . '%')
+                ->orWhere('jenis_kelamin', 'like', '%' . $searchTerm . '%')
+                ->orWhere('pendidikan', 'like', '%' . $searchTerm . '%')
+                ->orWhere('pekerjaan', 'like', '%' . $searchTerm . '%')
+                ->orWhereHas('user', function($userQuery) use ($searchTerm) {
+                    $userQuery->where('email', 'like', '%' . $searchTerm . '%');
+                });
             });
         }
-        $asesis = $query->get();
-        return view('master.asesi.master_asesi', ['asesis' => $asesis]);
+        
+        // 5. [PERUBAHAN] Terapkan Filter Tambahan (Gender)
+        $filterGender = $request->input('filter_gender');
+        if ($filterGender && in_array($filterGender, ['Laki-laki', 'Perempuan'])) {
+            $query->where('jenis_kelamin', $filterGender);
+        }
+        // === [AKHIR PERUBAHAN] ===
+
+
+        // 6. Logika Sorting (Termasuk relasi)
+        $query->select('asesi.*'); // WAJIB untuk 'select' saat join
+
+        if ($sortColumn == 'email') {
+            $query->join('users', 'asesi.id_user', '=', 'users.id_user')
+                  ->orderBy('users.email', $sortDirection);
+        } else {
+            // Urutkan berdasarkan kolom di tabel 'asesi'
+            $query->orderBy($sortColumn, $sortDirection);
+        }
+
+        // 7. Ambil 'per_page' (Paginate Dinamis)
+        $allowedPerpage = [10, 25, 50, 100]; 
+        $perPage = $request->input('per_page', 10);
+        if (!in_array($perPage, $allowedPerpage)) {
+            $perPage = 10;
+        }
+
+        // 8. Ganti ->get() menjadi ->paginate()
+        $asesis = $query->paginate($perPage)->onEachSide(0.5);
+        
+        // 9. [PERUBAHAN] (WAJIB) Sertakan semua parameter di link paginasi
+        $asesis->appends($request->only([
+            'sort', 'direction', 'search', 'per_page',
+            'filter_gender' // <-- DITAMBAHKAN
+        ]));
+
+        
+        // 10. [PERUBAHAN] Kirim data lengkap ke view
+        return view('master.asesi.master_asesi', [
+            'asesis' => $asesis,
+            'perPage' => $perPage,
+            'sortColumn' => $sortColumn,
+            'sortDirection' => $sortDirection,
+            'filterGender' => $filterGender // <-- DITAMBAHKAN
+        ]);
     }
 
     /**
-     * Menampilkan formulir tambah Asesi (satu halaman).
+     * Menampilkan formulir tambah Asesi.
      */
     public function create()
     {
@@ -41,11 +106,10 @@ class AsesiController extends Controller
     }
 
     /**
-     * Menyimpan Asesi baru dan Akun User baru dari satu form.
+     * Menyimpan Asesi baru dan Akun User baru.
      */
     public function store(Request $request)
     {
-        // Validasi semua data sekaligus
         $validatedData = $request->validate([
             // Data User
             'email' => 'required|email|unique:users,email',
@@ -66,12 +130,19 @@ class AsesiController extends Controller
             'provinsi' => 'required|string|max:255',
             'nomor_hp' => 'required|string|max:16',
             'tanda_tangan' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
+        ], [
+            // [SARAN] Tambahkan pesan kustom B. Indonesia
+            'email.unique' => 'Email ini sudah terdaftar.',
+            'nik.unique' => 'NIK ini sudah terdaftar.',
+            'nik.size' => 'NIK harus 16 digit.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.'
         ]);
 
         DB::beginTransaction();
         try {
             $ttdPath = null;
             if ($request->hasFile('tanda_tangan')) {
+                // Simpan file dan dapatkan path (cth: public/ttd_asesi/namafile.png)
                 $ttdPath = $request->file('tanda_tangan')->store('public/ttd_asesi');
             }
 
@@ -80,10 +151,11 @@ class AsesiController extends Controller
                 'email' => $validatedData['email'],
                 'password' => Hash::make($validatedData['password']),
                 'role_id' => 3, 
+                'username' => $validatedData['nik'], // [ASUMSI] Username adalah NIK
             ]);
 
             // Buat Asesi baru
-            Asesi::create([
+            $asesi = Asesi::create([
                 'id_user' => $user->id_user, 
                 'nama_lengkap' => $validatedData['nama_lengkap'],
                 'nik' => $validatedData['nik'],
@@ -103,14 +175,14 @@ class AsesiController extends Controller
 
             DB::commit();
 
-            return redirect()->route('master_asesi')->with('success', "Asesi '{$validatedData['nama_lengkap']}' berhasil ditambahkan.");
+            return redirect()->route('master_asesi')->with('success', "Asesi '{$asesi->nama_lengkap}' (ID: {$asesi->id_asesi}) berhasil ditambahkan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
             if (isset($ttdPath)) {
                 Storage::delete($ttdPath);
             }
-            return back()->with('error', 'Gagal menyimpan Asesi: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menyimpan Asesi: '. $e->getMessage())->withInput();
         }
     }
 
@@ -124,7 +196,7 @@ class AsesiController extends Controller
     }
 
     /**
-     * Memperbarui data Asesi dan Akun User.
+     * Memperbarui data Asesi dan Akun User (dengan Transaction).
      */
     public function update(Request $request, $id_asesi)
     {
@@ -132,9 +204,11 @@ class AsesiController extends Controller
         $user = $asesi->user;
 
         $validatedData = $request->validate([
+            // Validasi data User
             'email' => 'required|email|unique:users,email,' . $user->id_user . ',id_user',
             'password' => ['nullable', 'confirmed', Password::min(8)->mixedCase()->numbers()], // Password boleh kosong
             
+            // Validasi data Asesi
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|size:16|unique:asesi,nik,' . $asesi->id_asesi . ',id_asesi',
             'tempat_lahir' => 'required|string|max:100',
@@ -149,6 +223,12 @@ class AsesiController extends Controller
             'provinsi' => 'required|string|max:255',
             'nomor_hp' => 'required|string|max:16',
             'tanda_tangan' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
+        ],[
+            // [SARAN] Tambahkan pesan kustom B. Indonesia
+            'email.unique' => 'Email ini sudah terdaftar.',
+            'nik.unique' => 'NIK ini sudah terdaftar.',
+            'nik.size' => 'NIK harus 16 digit.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.'
         ]);
 
         DB::beginTransaction();
@@ -161,12 +241,14 @@ class AsesiController extends Controller
                 $ttdPath = $request->file('tanda_tangan')->store('public/ttd_asesi');
             }
 
+            // Update User
             $user->email = $validatedData['email'];
             if ($request->filled('password')) {
                 $user->password = Hash::make($validatedData['password']);
             }
             $user->save();
 
+            // Update Asesi
             $asesi->update([
                 'nama_lengkap' => $validatedData['nama_lengkap'],
                 'nik' => $validatedData['nik'],
@@ -186,11 +268,11 @@ class AsesiController extends Controller
 
             DB::commit();
 
-            return redirect()->route('master_asesi')->with('success', "Asesi '{$validatedData['nama_lengkap']}' berhasil diperbarui.");
+            return redirect()->route('master_asesi')->with('success', "Asesi '{$asesi->nama_lengkap}' (ID: {$asesi->id_asesi}) berhasil diperbarui.");
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal memperbarui Asesi: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui Asesi: '. $e->getMessage())->withInput();
         }
     }
 
@@ -199,15 +281,30 @@ class AsesiController extends Controller
      */
     public function destroy($id_asesi)
     {
+        DB::beginTransaction();
         try {
             $asesi = Asesi::with('user')->findOrFail($id_asesi);
+            
             $nama = $asesi->nama_lengkap;
+            $id = $asesi->id_asesi;
+            $user = $asesi->user; 
+
             if ($asesi->tanda_tangan) {
                 Storage::delete(str_replace('public/', '', $asesi->tanda_tangan));
             }
-            $asesi->user->delete(); 
-            return redirect()->route('master_asesi')->with('success', "Asesi '{$nama}' dan akun user terkait berhasil dihapus.");
+            
+            if ($user) {
+                $user->delete();
+            } else {
+                $asesi->delete();
+            }
+            
+            DB::commit();
+
+            return redirect()->route('master_asesi')->with('success', "Asesi '{$nama}' (ID: {$id}) dan akun user terkait berhasil dihapus.");
+        
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('error', 'Gagal menghapus Asesi: ' . $e->getMessage());
         }
     }
