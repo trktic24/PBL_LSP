@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\TukController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\BeritaController;
+use App\Http\Controllers\Api\StrukturOrganisasiController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
@@ -42,6 +43,11 @@ Route::get('/asesor', [AsesorTableApiController::class, 'index']);
 
 //Api Berita
 Route::apiResource('berita', BeritaController::class);
-Route::middleware('auts:sanctum')->get('user', function (Request $request) {
+// Ditaruh di luar, sejajar dengan 'tuks' dan 'berita'
+Route::apiResource('struktur', StrukturOrganisasiController::class); 
+
+
+// Route user biarkan sendiri
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
