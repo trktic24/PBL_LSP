@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('admin', function (Blueprint $table) {
+            
             $table->id('id_admin');
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('cascade');
+
+            // isi dari database admin
             $table->string('nama_admin');
             $table->string('tanda_tangan_admin')->nullable()->comment('Path ke file tanda tangan admin');
             $table->timestamps();

@@ -20,23 +20,15 @@ return new class extends Migration
             // Jika tabel asesi Anda belum ada, Anda harus membuatnya terlebih dahulu.
             $table->foreignId('id_asesi')->constrained(
                 table: 'asesi', column: 'id_asesi'
-            )->onUpdate('cascade')->onDelete('restrict');
+            )->onUpdate('cascade')->onDelete('cascade');
 
-            // Nama institusi/perusahaan (str)
-            $table->string('nama_institusi_perusahaan')->nullable();
-
-            // Jabatan (str)
-            $table->string('jabatan')->nullable();
-
-            // Alamat Kantor (str) -> Diubah ke text
-            $table->text('alamat_kantor')->nullable();
-
-            // Kode Pos (int) -> Diubah ke string
-            $table->string('kode_pos', 10)->nullable();
-
-            // No. telepon Kantor (int) -> Diubah ke string
-            $table->string('no_telepon_kantor', 20)->nullable();
-
+            // Data Pekerjaan Sekarang
+            $table->string('nama_institusi_pekerjaan');
+            $table->text('alamat_institusi');
+            $table->string('jabatan');
+            $table->string('kode_pos_institusi', 10)->nullable(); // (int) -> Diubah ke string
+            $table->string('no_telepon_institusi', 16);
+            
             // Standar timestamp
             $table->timestamps();
         });
