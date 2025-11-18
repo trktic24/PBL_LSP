@@ -20,7 +20,11 @@ return new class extends Migration {
 
             // --- KUNCI 3: Sambung ke 'kelompok_pekerjaans' ---
             // (Ingat, nama tabel lu pake 's' di migrasi sebelumnya)
+<<<<<<< HEAD
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+=======
+            $table->foreignId('id_kelompok_pekerjaan')->constrained('kelompok_pekerjaans', 'id_kelompok_pekerjaan')->onUpdate('cascade')->onDelete('cascade');
+>>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
 
             // Kolom sisanya (sesuai ERD)
             $table->date('tanggal_validasi'); // Cukup 'date' kalo cuma tanggal

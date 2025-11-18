@@ -14,11 +14,19 @@ return new class extends Migration {
             $table->id('id_kriteria');
             $table->foreignId('id_elemen')->constrained('master_elemen', 'id_elemen')->onUpdate('cascade')->onDelete('cascade');
 
+<<<<<<< HEAD
             $table->string('no_kriteria')->default('1.1');
             $table->enum('tipe', ['aktivitas', 'demonstrasi'])->default('demonstrasi');
             $table->string('standar_industri_kerja')->nullable();
             // 'kriteria' juga pakai text() buat deskripsi panjang
             $table->string('kriteria');
+=======
+            // Kolom sisanya (sesuai ERD)
+            $table->string('no_kriteria');
+
+            // 'kriteria' juga pakai text() buat deskripsi panjang
+            $table->text('kriteria');
+>>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
             $table->timestamps();
         });
     }

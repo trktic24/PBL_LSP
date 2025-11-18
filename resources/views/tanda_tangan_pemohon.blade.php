@@ -6,7 +6,6 @@
     <title>Tanda Tangan Pemohon</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     
     <style>
@@ -43,29 +42,31 @@
                 
                 <div class="space-y-4 text-sm mb-6">
                     <p class="text-base text-gray-800">Saya yang bertanda tangan di bawah ini</p>
+                    
                     <div class="flex">
                         <label class="w-48 text-gray-600">Nama</label>
-                        <span class="text-gray-900 font-medium" id="nama-pemohon">: </span>
+                        <span class="text-gray-900 font-medium" id="nama-pemohon">: {{ $asesi->nama_lengkap ?? 'Data Tidak Ditemukan' }}</span>
                     </div>
                     <div class="flex">
                         <label class="w-48 text-gray-600">Jabatan</label>
-                        <span class="text-gray-900 font-medium" id="jabatan-pemohon">: </span>
+                        <span class="text-gray-900 font-medium" id="jabatan-pemohon">: {{ $asesi->pekerjaan ?? 'Data Tidak Ditemukan' }}</span>
                     </div>
                     <div class="flex">
                         <label class="w-48 text-gray-600">Perusahaan</label>
-                        <span class="text-gray-900 font-medium" id="perusahaan-pemohon">: </span>
+                        <span class="text-gray-900 font-medium" id="perusahaan-pemohon">: {{ $asesi->kebangsaan ?? 'Data Tidak Ditemukan' }}</span>
                     </div>
                     <div class="flex">
                         <label class="w-48 text-gray-600">Alamat Perusahaan</label>
-                        <span class="text-gray-900 font-medium" id="alamat-perusahaan-pemohon">: </span>
+                        <span class="text-gray-900 font-medium" id="alamat-perusahaan-pemohon">: {{ $asesi->alamat_rumah ?? 'Data Tidak Ditemukan' }}</span>
                     </div>
-
                     <p class="pt-4 text-gray-700 text-sm leading-relaxed">
                         Dengan ini saya menyatakan mengisi data dengan sebenarnya untuk dapat digunakan sebagai bukti pemenuhan syarat Sertifikasi Lorem Ipsum Dolor Sit Amet.
                     </p>
                 </div>
 
-                <form id="signature-upload-form">
+                <form id="signature-upload-form" method="POST" action="{{ route('simpan.tandatangan') }}">
+                    @csrf 
+                    
                     <div class="mt-6">
                         
                         <div id="signature-preview-container" class="drag-drop-area w-full h-48 border border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-gray-50 mb-4 transition-all duration-300">
@@ -80,9 +81,9 @@
                                 </label>
                                 <input type="file" id="signature-file-input" accept="image/png, image/jpeg"/>
                             </div>
-                            </div>
+                        </div>
 
-                        <input type="hidden" name="signature_data_base64" id="signature-data-base64">
+                        <input type="hidden" name="data_tanda_tangan" id="data-tanda-tangan-base64">
                         
                         <div class="flex justify-end items-center mt-4 space-x-3">
                             <button type="button" class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors" id="clear-signature">
@@ -95,11 +96,10 @@
                     </div>
 
                     <div class="flex justify-between items-center mt-12">
-                        <button type="button" class="btn-previous px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
+                        <a href="{{ url('/bukti_pemohon') }}" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
                             Sebelumnya
-                        </button>
-                        
-                        <button type="submit" class="btn-next px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
+                        </a>
+                        <button type="submit" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
                             Selanjutnya
                         </button>
                     </div>
@@ -119,14 +119,13 @@
             const placeholder = document.getElementById('upload-placeholder');
             const saveButton = document.getElementById('save-signature');
             const clearButton = document.getElementById('clear-signature');
-            const base64Input = document.getElementById('signature-data-base64');
+            const base64Input = document.getElementById('data-tanda-tangan-base64'); 
             const form = document.getElementById('signature-upload-form');
 
             let uploadedFileBase64 = null; // Menyimpan Base64 sementara
 
             // Fungsi untuk memproses file dan menampilkan preview
             function processFile(file) {
-                // Hanya izinkan gambar
                 if (!file.type.startsWith('image/')) {
                     alert("Format file tidak didukung. Mohon unggah file gambar (PNG/JPG).");
                     return;
@@ -164,7 +163,6 @@
 
             // B. Drag & Drop Handlers
             
-            // Cegah default browser behavior untuk drag events
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 previewContainer.addEventListener(eventName, preventDefaults, false)
             });
@@ -174,14 +172,9 @@
                 e.stopPropagation()
             }
 
-            // Highlight area saat file di-drag di atasnya
             previewContainer.addEventListener('dragenter', () => previewContainer.classList.add('is-dragover'), false);
             previewContainer.addEventListener('dragover', () => previewContainer.classList.add('is-dragover'), false);
-
-            // Hilangkan highlight saat file keluar dari area
             previewContainer.addEventListener('dragleave', () => previewContainer.classList.remove('is-dragover'), false);
-            
-            // Proses file saat di-drop
             previewContainer.addEventListener('drop', handleDrop, false);
 
             function handleDrop(e) {
@@ -190,7 +183,6 @@
                 const files = dt.files;
 
                 if (files.length > 0) {
-                    // Hanya proses file pertama jika ada banyak file
                     processFile(files[0]);
                     fileInput.files = files; // Sinkronkan ke input file
                 }
@@ -203,10 +195,7 @@
 
             saveButton.addEventListener('click', function() {
                 if (uploadedFileBase64) {
-                    // Menyimpan Base64 akhir ke input hidden
                     base64Input.value = uploadedFileBase64;
-                    
-                    // Menandai sebagai 'tersimpan'
                     this.textContent = 'Tersimpan ✔️';
                     this.disabled = true;
 
@@ -218,16 +207,11 @@
             });
 
             clearButton.addEventListener('click', function() {
-                // Hapus file dari input
                 fileInput.value = ''; 
                 uploadedFileBase64 = null;
-                
-                // Hapus preview
                 previewImg.classList.add('hidden');
                 previewImg.src = '';
                 placeholder.classList.remove('hidden');
-
-                // Reset tombol dan input hidden
                 saveButton.textContent = 'Simpan';
                 saveButton.disabled = true;
                 base64Input.value = '';
@@ -237,48 +221,22 @@
 
 
             // ----------------------------------------------------
-            // 3. Logika Submit Form (Selanjutnya)
+            // 3. Logika Submit Form (Validasi)
             // ----------------------------------------------------
             form.addEventListener('submit', function(event) {
-                
-                // Validasi apakah data sudah disimpan ke input hidden
                 if (!base64Input.value) {
                     event.preventDefault(); // Menghentikan submit
-                    
                     alert("⚠️ Mohon unggah file dan tekan tombol 'Simpan' tanda tangan Anda terlebih dahulu sebelum melanjutkan.");
                     return;
                 }
-
                 console.log("Data Base64 Tanda Tangan siap dikirim ke backend.");
-                // Lanjutkan submit form ke endpoint server Anda
             });
             
 
             // ----------------------------------------------------
-            // 4. Pengambilan Data Otomatis (Simulasi LocalStorage)
+            // 4. PENGAMBILAN DATA OTOMATIS (LOGIC LAMA DIHAPUS)
             // ----------------------------------------------------
-            const namaPemohon = document.getElementById('nama-pemohon');
-            const jabatanPemohon = document.getElementById('jabatan-pemohon');
-            const perusahaanPemohon = document.getElementById('perusahaan-pemohon');
-            const alamatPerusahaanPemohon = document.getElementById('alamat-perusahaan-pemohon');
-
-            // Baris ini HANYA untuk simulasi
-            try {
-                const userDataFromPreviousPage = JSON.parse(localStorage.getItem('userData')) || {};
-                
-                // Mengisi data (jika ada)
-                namaPemohon.textContent = ': ' + (userDataFromPreviousPage.nama || 'Nama Peserta (Otomatis)');
-                jabatanPemohon.textContent = ': ' + (userDataFromPreviousPage.jabatan || 'Mahasiswa (Otomatis)');
-                perusahaanPemohon.textContent = ': ' + (userDataFromPreviousPage.perusahaan || 'Politeknik Negeri Semarang (Otomatis)');
-                alamatPerusahaanPemohon.textContent = ': ' + (userDataFromPreviousPage.alamat || 'Jl. Prof. Sudarto, Tembalang (Otomatis)');
-
-            } catch (e) {
-                // Fallback jika localStorage tidak ada
-                namaPemohon.textContent = ': Nama Peserta (Otomatis)';
-                jabatanPemohon.textContent = ': Mahasiswa (Otomatis)';
-                perusahaanPemohon.textContent = ': Politeknik Negeri Semarang (Otomatis)';
-                alamatPerusahaanPemohon.textContent = ': Jl. Prof. Sudarto, Tembalang (Otomatis)';
-            }
+            // Logic ini sudah dipindahkan ke Controller/Blade.
         });
     </script>
 

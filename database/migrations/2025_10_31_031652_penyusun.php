@@ -16,7 +16,11 @@ return new class extends Migration {
             $table->string('no_MET_penyusun');
 
             // 'ttd' (tanda tangan) kemungkinan path ke file, jadi bisa null
+<<<<<<< HEAD
             $table->string('ttd')->nullable()->comment('Path ke file tanda tangan penyusun');
+=======
+            $table->string('ttd')->nullable();
+>>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
             $table->timestamps();
         });
     }

@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('berita_acara', function (Blueprint $table) {
             $table->id('id_berita_acara');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+<<<<<<< HEAD
 
             //  isi kolom Database berita_acara
+=======
+>>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
             $table->string('keterangan');
             $table->timestamps();
         });

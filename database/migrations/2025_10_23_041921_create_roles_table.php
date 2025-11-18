@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             // Sesuai ERD (id_role)
-            $table->id(); 
+            $table->id('id_role'); 
             
             // Sesuai ERD (nama_role)
-            $table->string('nama_role')->unique();
-            
+            $table->string('nama_role')->unique();            
             $table->timestamps();
         });
     }

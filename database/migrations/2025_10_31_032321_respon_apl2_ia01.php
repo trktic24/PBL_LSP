@@ -10,6 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+<<<<<<< HEAD
         Schema::create('respon_apl02_ia01', function (Blueprint $table) {
             $table->id('id_respon_apl02'); // Sesuai ERD primary key-nya ini
 
@@ -31,6 +32,29 @@ return new class extends Migration {
             // 3. Penilaian Lanjut
             $table->text('penilaian_lanjut_ia01')->nullable()->comment('Catatan tambahan dari asesor');
 
+=======
+        Schema::create('respon_apl2_ia01', function (Blueprint $table) {
+            $table->id('id_respon_apl2');
+
+            // --- KUNCI 1 ---
+            // Bikin FK 'id_data_sertifikasi_asesi'
+            // Asumsi: Nyambung ke tabel 'data_sertifikasi_asesi' dengan PK 'id_data_sertifikasi_asesi'
+            // $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+
+            // --- KUNCI 2 ---
+            // Bikin FK 'id_kriteria' yang nyambung ke:
+            // Tabel: 'master_kriteria_unjuk_kerja' (dari file migrasi sebelumnya)
+            // Kolom: 'id_kriteria'
+            $table->foreignId('id_kriteria')->constrained('master_kriteria_unjuk_kerja', 'id_kriteria')->onUpdate('cascade')->onDelete('cascade');
+
+            // Kolom sisanya (sesuai ERD)
+            // Ini semua diisi nanti sama asesi/asesor, jadi kita buat 'nullable()'
+
+            $table->text('respon_asesi_apl02')->nullable();
+            $table->text('bukti_asesi_apl02')->nullable();
+            $table->boolean('pencapaian_ia01')->nullable(); // K/BK
+            $table->boolean('penilaian_lanjut_ia01')->nullable(); // V/A/T
+>>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
             $table->timestamps();
         });
     }
