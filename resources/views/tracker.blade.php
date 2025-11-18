@@ -114,7 +114,7 @@
                                 {!! renderCheckmark() !!}
                             </div>
                             <div class="flex-1">
-                                <a href="{{ route('data.sertifikasi', ['id_asesi' => $sertifikasi->id_asesi]) }}"
+                                <a href="{{ route('data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                     class="text-lg font-semibold text-gray-900">Formulir Pendaftaran
                                     Sertifikasi</a>
                                 <p class="text-sm text-gray-500">{{ $sertifikasi->tanggal_daftar->format('l, d F Y') }}

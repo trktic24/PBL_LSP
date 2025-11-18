@@ -62,12 +62,16 @@ Route::apiResource('tuks', TukController::class);
 
 // Data Sertifikasi
 Route::prefix('data-sertifikasi')->group(function () {
+    Route::get('/detail/{id}', [DataSertifikasiAsesiController::class, 'getDetailSertifikasiApi'])
+        ->name('api.sertifikasi.detail');
     Route::get('/{id}', [DataSertifikasiAsesiController::class, 'getDataSertifikasiAsesiApi'])
         ->name('api.data_sertifikasi.get');
     Route::post('/', [DataSertifikasiAsesiController::class, 'storeAjax'])
         ->name('api.data_sertifikasi.store');
     Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
         ->name('api.data_sertifikasi.delete');
+    Route::get('/get-sertifikasi-detail/{id}', [DataSertifikasiAsesiController::class, 'getDetailSertifikasiApi'])
+        ->name('api.sertifikasi.detail');
 });
 
 // Bukti Kelengkapan

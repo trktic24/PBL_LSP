@@ -13,7 +13,7 @@
 
     <div class="flex min-h-screen">
         <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
-        <main class="flex-1 p-12 bg-white overflow-y-auto">
+        <main class="flex-1 p-12 bg-white overflow-y-auto" data-sertifikasi-id="{{ $id_sertifikasi_untuk_js }}">
             <div class="max-w-4xl mx-auto">
 
                 <!-- ... (Kode progress bar Anda tetap sama) ... -->
@@ -48,10 +48,10 @@
                     <h3 class="text-sm font-semibold text-gray-800 mb-4">Skema Sertifikasi / Klaster Asesmen</h3>
                     <div class="grid grid-cols-3 gap-4">
                         <div class="col-span-1 text-sm font-medium text-gray-600">Judul</div>
-                        <div class="col-span-2 text-sm text-gray-900">: Lorem ipsum Dolor Sit Amet</div>
+                        <div class="col-span-2 text-sm text-gray-900" id="skema-judul">: ...Memuat data...</div>
 
                         <div class="col-span-1 text-sm font-medium text-gray-600">Nomor</div>
-                        <div class="col-span-2 text-sm text-gray-900">: SKM12XXXXXX</div>
+                        <div class="col-span-2 text-sm text-gray-900" id="skema-nomor">: ...Memuat data...</div>
                     </div>
                 </div>
 
@@ -186,8 +186,70 @@
 
     {{-- SCRIPT LENGKAP: (1) Logika "Pilih Satu" + (2) Logika "Keterangan Lainnya" + (3) Logika Tombol Simpan/Edit --}}
     <script>
-        // Pastikan semua script berjalan setelah halaman dimuat
         document.addEventListener('DOMContentLoaded', function() {
+
+            // ==========================================================
+            // BAGIAN 1: KODE BARU UNTUK FETCH DATA SKEMA (DARI API)
+            // ==========================================================
+
+            // 1. Ambil ID Sertifikasi dari tag <main>
+            const mainElement = document.querySelector('main[data-sertifikasi-id]');
+
+            // 2. Cek dulu ID-nya ada atau tidak
+            if (mainElement && mainElement.dataset.sertifikasiId) {
+
+                const sertifikasiId = mainElement.dataset.sertifikasiId;
+                console.log('Berhasil dapet ID Sertifikasi:', sertifikasiId); // Cek di console (F12)
+
+                // 3. Tembak API detail sertifikasi
+                fetch(`/api/data-sertifikasi/detail/${sertifikasiId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Gagal memuat data skema (Status: ${response.status})`);
+                        }
+                        return response.json();
+                    })
+                    .then(apiResponse => {
+                        // Cek di console (F12) -> Tab "Console"
+                        console.log('Data API diterima:', apiResponse);
+
+                        if (apiResponse.success && apiResponse.data) {
+                            const data = apiResponse.data;
+
+                            // 4. Isi data ke HTML
+                            if (data.jadwal && data.jadwal.skema) {
+                                document.getElementById('skema-judul').textContent = ': ' + data.jadwal.skema
+                                    .nama_skema;
+                                document.getElementById('skema-nomor').textContent = ': ' + data.jadwal.skema
+                                    .kode_unit;
+                            } else {
+                                document.getElementById('skema-judul').textContent =
+                                    ': Data Skema Tidak Ditemukan';
+                                document.getElementById('skema-nomor').textContent = ': -';
+                                console.warn('API sukses tapi data skema/jadwal tidak ada di JSON');
+                            }
+                        } else {
+                            throw new Error(apiResponse.message || 'API merespon tapi tidak sukses');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error Fetch API:', error);
+                        document.getElementById('skema-judul').textContent = ': Gagal memuat data';
+                        document.getElementById('skema-nomor').textContent = ': -';
+                    });
+
+            } else {
+                // Ini kalau `data-sertifikasi-id` tidak ditemukan di tag <main>
+                console.error('FATAL: Tidak bisa menemukan "data-sertifikasi-id" di tag <main>.');
+                alert('Terjadi error. ID Sertifikasi tidak ditemukan di halaman.');
+                document.getElementById('skema-judul').textContent = ': Error! ID tidak ada.';
+                document.getElementById('skema-nomor').textContent = ': -';
+            }
+
+
+            // ==========================================================
+            // BAGIAN 2: KODE LAMA KAMU (CHECKBOX & TOMBOL LAINNYA)
+            // ==========================================================
 
             // --- Variabel Elemen ---
             const tujuanCheckboxes = document.querySelectorAll('.tujuan-checkbox');
@@ -237,11 +299,9 @@
                     // Aktifkan tombol Edit
                     editButton.disabled = false;
 
-                    // Anda bisa ganti alert ini dengan notifikasi yang lebih cantik nanti
                     alert('Keterangan berhasil disimpan!');
 
                 } else {
-                    // Tidak ada teks, beri peringatan
                     alert('Harap isi keterangan terlebih dahulu.');
                 }
             });
@@ -262,7 +322,7 @@
                 keteranganInput.focus();
             });
 
-        });
+        }); // <-- Ini adalah penutup WAJIB dari 'DOMContentLoaded'
     </script>
 
 </body>

@@ -118,4 +118,24 @@ class DataSertifikasiAsesiController extends Controller
             return response()->json(['success' => false, 'message' => 'Gagal menghapus data sertifikasi.'], 500);
         }
     }
+    public function getDetailSertifikasiApi($id)
+    {
+        Log::info("API: Mengambil detail sertifikasi ID $id...");
+
+        try {
+            // Ambil data sertifikasi, DAN ambil relasi jadwal & skema-nya
+            // Ini adalah 'data_sertifikasi_asesi -> jadwal -> skema'
+            $data = DataSertifikasiAsesi::with(['jadwal.skema'])
+                                        ->findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error("API: Gagal ambil detail sertifikasi - " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
+        }
+    }
 }
