@@ -18,6 +18,7 @@ class ResponApl02Ia01 extends Model
         'respon_asesi_apl02', // Boolean (0/1)
         'bukti_asesi_apl02',
         'pencapaian_ia01',    // Boolean (0/1) -> Hasil IA.01
+        'standar_industri_ia01',
         'penilaian_lanjut_ia01', // Text area
     ];
 
