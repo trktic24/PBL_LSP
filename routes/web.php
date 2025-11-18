@@ -26,6 +26,9 @@ Route::get('/tracker', function () {
 Route::get('/FR-MAPA-02', function () {
     return view('frontend/FR_MAPA_02');
 })->name('MAPA-02');
+Route::get('/APL_01_1', function () {
+    return view('frontend/APL_01/APL_01_1');
+})->name('APL_01_1');
 
 
 Route::middleware('auth')->group(function () {
