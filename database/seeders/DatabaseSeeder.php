@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         // GANTI DI SINI:
         $this->call(RoleSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(JenisTukSeeder::class);
         
         // Baris ini udah bener
         \App\Models\Asesi::factory(20)->create();
@@ -22,7 +24,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\Elemen::factory(26)->create();
         \App\Models\KriteriaUnjukKerja::factory(20)->create();
         \App\Models\ResponApl2Ia01::factory(20)->create();
-        \App\Models\JenisTuk::factory(20)->create();
         \App\Models\BuktiKelengkapan::factory(20)->create();
         \App\Models\DataSertifikasiAsesi::factory(20)->create();
         \App\Models\Asesor::factory(20)->create();

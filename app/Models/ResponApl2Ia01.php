@@ -15,14 +15,14 @@ class ResponApl2Ia01 extends Model
      *
      * @var string
      */
-    protected $table = 'respon_apl2_ia01';
+    protected $table = 'respon_apl02_ia01';
 
     /**
      * Primary key yang digunakan oleh tabel.
      *
      * @var string
      */
-    protected $primaryKey = 'id_respon_apl2';
+    protected $primaryKey = 'id_respon_apl02';
 
     /**
      * Menunjukkan apakah model harus memiliki timestamp (created_at & updated_at).

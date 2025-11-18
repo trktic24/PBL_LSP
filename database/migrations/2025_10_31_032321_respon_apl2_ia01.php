@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('respon_apl02_ia01', function (Blueprint $table) {
             $table->id('id_respon_apl02'); // Sesuai ERD primary key-nya ini
-
-            // --- Foreign Keys ---
+//
+            // --- Foreign Keys --- 
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_kriteria')->constrained('master_kriteria_unjuk_kerja', 'id_kriteria')->onUpdate('cascade')->onDelete('cascade');
 

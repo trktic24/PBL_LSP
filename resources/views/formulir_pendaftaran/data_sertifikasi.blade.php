@@ -54,137 +54,137 @@
                         <div class="col-span-2 text-sm text-gray-900" id="skema-nomor">: ...Memuat data...</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Pilih Tujuan Asesmen</h3>
-                    {{--
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Pilih Tujuan Asesmen</h3>
+                {{--
                         PERBAIKAN: Tambahkan 'sm:auto-rows-fr'
                         Ini memaksa semua barIS grid (di layar 'sm' ke atas)
                         untuk memiliki tinggi yang sama.
                     --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:auto-rows-fr">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:auto-rows-fr">
 
-                        {{-- 1. Sertifikasi --}}
-                        <label
-                            class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
-                            <input type="checkbox" name="tujuan_asesmen" value="Sertifikasi"
-                                class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
-                            <span class="ml-3 text-sm font-medium text-gray-700">Sertifikasi</span>
-                        </label>
+                    {{-- 1. Sertifikasi --}}
+                    <label
+                        class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
+                        <input type="checkbox" name="tujuan_asesmen" value="Sertifikasi"
+                            class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
+                        <span class="ml-3 text-sm font-medium text-gray-700">Sertifikasi</span>
+                    </label>
 
-                        {{-- 2. Sertifikasi Ulang --}}
-                        <label
-                            class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
-                            <input type="checkbox" name="tujuan_asesmen" value="Sertifikasi Ulang"
-                                class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
-                            <span class="ml-3 text-sm font-medium text-gray-700">Sertifikasi Ulang</span>
-                        </label>
+                    {{-- 2. Sertifikasi Ulang --}}
+                    <label
+                        class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
+                        <input type="checkbox" name="tujuan_asesmen" value="Sertifikasi Ulang"
+                            class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
+                        <span class="ml-3 text-sm font-medium text-gray-700">Sertifikasi Ulang</span>
+                    </label>
 
-                        {{-- 3. PKT --}}
-                        <label
-                            class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
-                            <input type="checkbox" name="tujuan_asesmen" value="PKT"
-                                class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
-                            <span class="ml-3 text-sm font-medium text-gray-700">Pengakuan Kompetensi Terkini
-                                (PKT)</span>
-                        </label>
+                    {{-- 3. PKT --}}
+                    <label
+                        class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
+                        <input type="checkbox" name="tujuan_asesmen" value="PKT"
+                            class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
+                        <span class="ml-3 text-sm font-medium text-gray-700">Pengakuan Kompetensi Terkini
+                            (PKT)</span>
+                    </label>
 
-                        {{-- 4. RPL --}}
-                        <label
-                            class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
-                            <input type="checkbox" name="tujuan_asesmen" value="RPL"
-                                class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
-                            <span class="ml-3 text-sm font-medium text-gray-700">Rekognisi Pembelajaran Lampau</span>
-                        </label>
+                    {{-- 4. RPL --}}
+                    <label
+                        class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
+                        <input type="checkbox" name="tujuan_asesmen" value="RPL"
+                            class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
+                        <span class="ml-3 text-sm font-medium text-gray-700">Rekognisi Pembelajaran Lampau</span>
+                    </label>
 
-                        {{-- 5. Lainnya (Dengan ID untuk Javascript) --}}
-                        <label
-                            class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
-                            <input type="checkbox" name="tujuan_asesmen" value="Lainnya"
-                                class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox"
-                                id="checkbox-lainnya">
-                            <span class="ml-3 text-sm font-medium text-gray-700">Lainnya</span>
-                        </label>
-                    </div>
+                    {{-- 5. Lainnya (Dengan ID untuk Javascript) --}}
+                    <label
+                        class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full">
+                        <input type="checkbox" name="tujuan_asesmen" value="Lainnya"
+                            class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox"
+                            id="checkbox-lainnya">
+                        <span class="ml-3 text-sm font-medium text-gray-700">Lainnya</span>
+                    </label>
+                </div>
 
-                    {{-- TAMBAHAN: Input Keterangan 'Lainnya', disembunyikan by default --}}
-                    <div>
-                        <div id="keterangan-lainnya-wrapper" class="hidden mt-4">
-                            <label for="keterangan-lainnya-input"
-                                class="block text-sm font-medium text-gray-700 mb-1">Keterangan Lainnya:</label>
-                            <input type="text" name="keterangan_lainnya" id="keterangan-lainnya-input"
-                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Tuliskan keterangan..">
+                {{-- TAMBAHAN: Input Keterangan 'Lainnya', disembunyikan by default --}}
+                <div>
+                    <div id="keterangan-lainnya-wrapper" class="hidden mt-4">
+                        <label for="keterangan-lainnya-input"
+                            class="block text-sm font-medium text-gray-700 mb-1">Keterangan Lainnya:</label>
+                        <input type="text" name="keterangan_lainnya" id="keterangan-lainnya-input"
+                            class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Tuliskan keterangan..">
 
-                            {{-- Tombol Edit dan Simpan --}}
-                            <div class="flex justify-end items-center mt-4 space-x-3">
-                                <button type="button"
-                                    class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors disabled:bg-gray-300 disabled:opacity-70"
-                                    id="edit-keterangan-lainnya" disabled>
-                                    Edit
-                                </button>
-                                <button type="button"
-                                    class="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 shadow-md transition-colors disabled:bg-blue-300 disabled:opacity-70"
-                                    id="save-keterangan-lainnya">
-                                    Simpan
-                                </button>
-                            </div>
+                        {{-- Tombol Edit dan Simpan --}}
+                        <div class="flex justify-end items-center mt-4 space-x-3">
+                            <button type="button"
+                                class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors disabled:bg-gray-300 disabled:opacity-70"
+                                id="edit-keterangan-lainnya" disabled>
+                                Edit
+                            </button>
+                            <button type="button"
+                                class="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 shadow-md transition-colors disabled:bg-blue-300 disabled:opacity-70"
+                                id="save-keterangan-lainnya">
+                                Simpan
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <!-- ... (Sisa kode tabel Anda tetap sama) ... -->
-                <div class="mb-10">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Daftar Unit Kompetensi</h3>
-                    <div class="overflow-x-auto border border-gray-200 rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        No</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Kode Unit</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Judul Unit</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                        Jenis Standard</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @for ($i = 1; $i <= 7; $i++)
-                                    <tr class="{{ $i % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {{ $i }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">J.XXXXXXXX.XXX.XX
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Lorem ipsum Dolor
-                                            Sit Amet</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">SKKNI No xxx tahun
-                                            20xx</td>
-                                    </tr>
-                                @endfor
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- ... (Sisa kode tombol Anda tetap sama) ... -->
-                <div class="flex justify-end items-center">
-                    <a href="{{ route('bukti.pemohon', ['id_asesi' => $asesi->id_asesi]) }}"
-                        class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
-                        Selanjutnya
-                    </a>
-                </div>
-
             </div>
-        </main>
+
+            <!-- ... (Sisa kode tabel Anda tetap sama) ... -->
+            <div class="mb-10">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Daftar Unit Kompetensi</h3>
+                <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    No</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    Kode Unit</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    Judul Unit</th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    Jenis Standard</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @for ($i = 1; $i <= 7; $i++)
+                                <tr class="{{ $i % 2 == 0 ? 'bg-gray-50' : 'bg-white' }}">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ $i }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">J.XXXXXXXX.XXX.XX
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Lorem ipsum Dolor
+                                        Sit Amet</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">SKKNI No xxx tahun
+                                        20xx</td>
+                                </tr>
+                            @endfor
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- ... (Sisa kode tombol Anda tetap sama) ... -->
+            <div class="flex justify-end items-center">
+                <a href="{{ route('bukti.pemohon', ['id_asesi' => $asesi->id_asesi]) }}"
+                    class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
+                    Selanjutnya
+                </a>
+            </div>
+
+    </div>
+    </main>
 
     </div>
 
-    {{-- SCRIPT LENGKAP: (1) Logika "Pilih Satu" + (2) Logika "Keterangan Lainnya" + (3) Logika Tombol Simpan/Edit --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -256,25 +256,54 @@
             const keteranganWrapper = document.getElementById('keterangan-lainnya-wrapper');
             const checkboxLainnya = document.getElementById('checkbox-lainnya');
 
-            // Variabel untuk tombol
             const keteranganInput = document.getElementById('keterangan-lainnya-input');
             const saveButton = document.getElementById('save-keterangan-lainnya');
             const editButton = document.getElementById('edit-keterangan-lainnya');
 
+            const idAsesi = {{ $asesi->id_asesi }};
 
-            // --- Event Listener untuk Checkbox ---
-            tujuanCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('click', (e) => {
-                    const clickedCheckbox = e.target;
+            // =============================
+            // 1. GET DATA DARI API
+            // =============================
+            try {
+                const response = await fetch(`/api/data-sertifikasi/${idAsesi}`);
+                const data = await response.json();
 
-                    // 1. LOGIKA PILIH SATU
+                // Prefill Judul & Nomor Skema
+                document.getElementById('judul-skema').innerHTML = ": " + data.skema.nama_skema;
+                document.getElementById('nomor-skema').innerHTML = ": " + data.skema.nomor_skema;
+
+                // Prefill Tujuan Asesmen
+                if (data.asesi.tujuan_asesmen) {
+                    const tujuan = data.asesi.tujuan_asesmen;
+
                     tujuanCheckboxes.forEach(cb => {
-                        if (cb !== clickedCheckbox) {
-                            cb.checked = false;
-                        }
+                        if (cb.value === tujuan) cb.checked = true;
                     });
 
-                    // 2. LOGIKA KETERANGAN LAINNYA
+                    // Jika "lainnya"
+                    if (tujuan === "Lainnya") {
+                        checkboxLainnya.checked = true;
+                        keteranganWrapper.classList.remove('hidden');
+
+                        keteranganInput.value = data.asesi.keterangan_lainnya ?? "";
+                    }
+                }
+
+            } catch (err) {
+                console.error("Gagal load API", err);
+            }
+
+
+            // =============================
+            // 2. LOGIKA PILIH SATU CHECKBOX
+            // =============================
+            tujuanCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', () => {
+                    tujuanCheckboxes.forEach(cb => {
+                        if (cb !== checkbox) cb.checked = false;
+                    });
+
                     if (checkboxLainnya.checked) {
                         keteranganWrapper.classList.remove('hidden');
                     } else {
@@ -284,13 +313,13 @@
             });
 
 
-            // --- Event Listener untuk Tombol Simpan ---
-            saveButton.addEventListener('click', function() {
-                const inputText = keteranganInput.value.trim(); // Ambil teks & hapus spasi
+            // =============================
+            // 3. SIMPAN KE DATABASE (POST API)
+            // =============================
+            saveButton.addEventListener('click', async () => {
 
-                if (inputText) {
-                    // Ada teks, kunci inputnya
-                    keteranganInput.disabled = true;
+                const tujuanDipilih = [...tujuanCheckboxes]
+                    .find(cb => cb.checked)?.value;
 
                     // Ubah tombol Simpan
                     this.textContent = 'Tersimpan';
@@ -304,26 +333,44 @@
                 } else {
                     alert('Harap isi keterangan terlebih dahulu.');
                 }
-            });
 
-            // --- Event Listener untuk Tombol Edit ---
-            editButton.addEventListener('click', function() {
-                // Aktifkan kembali input
-                keteranganInput.disabled = false;
+                let keterangan = "";
+                if (tujuanDipilih === "Lainnya") {
+                    keterangan = keteranganInput.value.trim();
+                    if (!keterangan) {
+                        alert("Isi keterangan lainnya!");
+                        return;
+                    }
+                }
 
-                // Kembalikan tombol Simpan
-                saveButton.textContent = 'Simpan';
-                saveButton.disabled = false;
+                try {
+                    const response = await fetch('/api/data-sertifikasi/save', {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            id_asesi: idAsesi,
+                            tujuan_asesmen: tujuanDipilih,
+                            keterangan_lainnya: keterangan
+                        })
+                    });
 
-                // Nonaktifkan tombol Edit
-                this.disabled = true;
+                    const result = await response.json();
 
-                // Beri fokus ke input agar user bisa langsung mengetik
-                keteranganInput.focus();
+                    if (result.status === "success") {
+                        alert("Data berhasil disimpan!");
+                    }
+
+                } catch (e) {
+                    alert("Gagal menyimpan data!");
+                    console.error(e);
+                }
             });
 
         }); // <-- Ini adalah penutup WAJIB dari 'DOMContentLoaded'
     </script>
+
 
 </body>
 

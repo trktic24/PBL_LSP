@@ -30,6 +30,8 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
 
+            'username' => $this->faker->unique()->userName(),
+
             // Password default-nya adalah 'password'
             'password' => Hash::make('password'),
 
