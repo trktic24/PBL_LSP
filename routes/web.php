@@ -32,6 +32,9 @@ Route::get('/APL_01_1', function () {
 Route::get('/APL_01_2', function () {
     return view('frontend/APL_01/APL_01_2');
 })->name('APL_01_2');
+Route::get('/AK01', function () {
+    return view('frontend/AK01/AK01');
+})->name('AK01');
 
 
 Route::middleware('auth')->group(function () {
