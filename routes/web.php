@@ -122,14 +122,20 @@ Route::get('/data_sertifikasi/{id_sertifikasi}', function ($id_sertifikasi) {
 
 
 // --- Formulir APL-02: Bukti Kelengkapan ---
-Route::get('/bukti_pemohon/{id_asesi}', function ($id_asesi) {
+// --- Formulir APL-02: Bukti Kelengkapan ---
+Route::get('/bukti_pemohon/{id_sertifikasi}', function ($id_sertifikasi) {
     try {
-        $asesi = Asesi::findOrFail($id_asesi); 
+        // [PERBAIKAN] Ambil data berdasarkan ID Sertifikasi (Pendaftaran), bukan ID Asesi
+        // Kita juga load 'asesi'-nya biar sidebar tetep jalan
+        $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
+        
         return view('formulir_pendaftaran/bukti_pemohon', [
-            'asesi' => $asesi
+            'sertifikasi' => $sertifikasi,    // Kirim data pendaftaran lengkap
+            'asesi'       => $sertifikasi->asesi // Kirim data orangnya buat sidebar
         ]);
+
     } catch (\Exception $e) {
-        return redirect('/')->with('error', 'Data Asesi tidak ditemukan.');
+        return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
     }
 })->name('bukti.pemohon'); // Kita kasih nama route-nya
 

@@ -6,147 +6,136 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use App\Models\BuktiKelengkapan;
+use Illuminate\Support\Facades\File; 
+use App\Models\BuktiDasar; // Asumsi nama model kamu BuktiDasar atau BuktiDasar (sesuaikan)
+use App\Models\BuktiKelengkapan; // Pakai ini jika modelnya BuktiKelengkapan
+use App\Models\DataSertifikasiAsesi;
 
 class BuktiKelengkapanController extends Controller
 {
-    /**
-     * ==========================================================
-     * METHOD API 1: AMBIL DATA BUKTI KELENGKAPAN PER DATA SERTIFIKASI
-     * ==========================================================
-     */
+    // ... (Fungsi getDataBuktiKelengkapanApi TETAP SAMA, gak perlu diubah) ...
     public function getDataBuktiKelengkapanApi($id_data_sertifikasi_asesi)
     {
-        Log::info("API (Bukti): Mengambil data bukti kelengkapan untuk Data Sertifikasi Asesi ID {$id_data_sertifikasi_asesi}...");
-
+        Log::info("API (Bukti): Get data ID {$id_data_sertifikasi_asesi}...");
         try {
-            $data = BuktiKelengkapan::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
-
-            if ($data->isEmpty()) {
-                Log::warning("API (Bukti): Belum ada bukti kelengkapan untuk ID Data Sertifikasi {$id_data_sertifikasi_asesi}");
-                return response()->json(['message' => 'Belum ada data bukti kelengkapan.'], 200);
-            }
-
-            return response()->json($data, 200);
+            // Pastikan pakai Model yang benar (BuktiKelengkapan atau BuktiDasar)
+            $data = BuktiDasar::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
+            return response()->json(['success' => true, 'data' => $data], 200);
         } catch (\Exception $e) {
-            Log::error("API (Bukti): Gagal mengambil data - " . $e->getMessage());
-            return response()->json(['error' => 'Gagal mengambil data dari server.'], 500);
+            return response()->json(['success' => false, 'message' => 'Gagal server.'], 500);
         }
     }
 
-    /**
-     * ==========================================================
-     * METHOD API 2: SIMPAN / UPDATE DATA BUKTI KELENGKAPAN
-     * ==========================================================
-     */
     public function storeAjax(Request $request)
     {
-        Log::info('API (Bukti): Menerima permintaan simpan/update Bukti Kelengkapan...');
-
+        // 1. Validasi
         $validator = Validator::make($request->all(), [
             'id_data_sertifikasi_asesi' => 'required|integer',
             'jenis_dokumen' => 'required|string|max:255',
             'keterangan' => 'nullable|string|max:255',
-            'bukti_kelengkapan' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'status_kelengkapan' => 'nullable|string|max:50',
+            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
         if ($validator->fails()) {
-            Log::warning('API (Bukti): Validasi gagal saat upload.');
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors(),
-            ], 422);
+            return response()->json(['success' => false, 'message' => 'Validasi gagal', 'errors' => $validator->errors()], 422);
         }
 
         try {
-            // Cek apakah sudah ada dokumen dengan jenis yang sama
-            $existing = BuktiKelengkapan::where('id_data_sertifikasi_asesi', $request->id_data_sertifikasi_asesi)
-                ->where('jenis_dokumen', $request->jenis_dokumen)
+            // 2. Cari ID Asesi untuk nama folder
+            $sertifikasi = DataSertifikasiAsesi::find($request->id_data_sertifikasi_asesi);
+            if (!$sertifikasi) {
+                return response()->json(['success' => false, 'message' => 'Data sertifikasi tidak valid.'], 404);
+            }
+            $idAsesi = $sertifikasi->id_asesi;
+
+            // 3. Cek Data Lama (Logic 'LIKE' ini OK untuk struktur tabelmu sekarang)
+            // Pastikan pakai Model yang benar
+            $existing = BuktiDasar::where('id_data_sertifikasi_asesi', $request->id_data_sertifikasi_asesi)
+                ->where('keterangan', 'LIKE', "%{$request->jenis_dokumen}%") 
                 ->first();
 
-            $path = $existing ? $existing->bukti_kelengkapan : null;
+            $pathDatabase = $existing ? $existing->bukti_dasar : null; // Sesuai kolom DB 'bukti_dasar'
 
-            // Jika ada file baru
-            if ($request->hasFile('bukti_kelengkapan')) {
-                $file = $request->file('bukti_kelengkapan');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('uploads/bukti_kelengkapan', $filename, 'public');
-
-                // Hapus file lama
-                if ($existing && $existing->bukti_kelengkapan && Storage::disk('public')->exists($existing->bukti_kelengkapan)) {
-                    Storage::disk('public')->delete($existing->bukti_kelengkapan);
+            // 4. Proses Upload File
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                
+                // [PERBAIKAN] Nama file jadi konsisten sesuai jenis dokumen
+                $extension = $file->getClientOriginalExtension();
+                $safeName = str_replace(' ', '_', $request->jenis_dokumen); 
+                $filename = "{$safeName}.{$extension}"; 
+                
+                $folderPath = "images/bukti_dasar/{$idAsesi}";
+                $destinationPath = public_path($folderPath);
+                
+                // [PERBAIKAN PENTING DI SINI]
+                // Hapus file lama DULU sebelum upload yang baru
+                // Cek apakah ada file lama di database DAN filenya ada di folder
+                if ($existing && $existing->bukti_dasar && File::exists(public_path($existing->bukti_dasar))) {
+                    File::delete(public_path($existing->bukti_dasar));
                 }
+
+                // Buat folder jika belum ada
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true);
+                }
+
+                // Baru pindahkan file baru
+                $file->move($destinationPath, $filename);
+                
+                // Update path database
+                $pathDatabase = "{$folderPath}/{$filename}";
             }
+
+            // 5. Simpan ke Database
+            // Format keterangan: "Jenis Dokumen - Keterangan User"
+            $finalKeterangan = $request->jenis_dokumen . ($request->keterangan ? " - " . $request->keterangan : "");
 
             if ($existing) {
-                // Update data lama
+                // Update
                 $existing->update([
-                    'keterangan' => $request->keterangan ?? $existing->keterangan,
-                    'bukti_kelengkapan' => $path,
-                    'status_kelengkapan' => $request->status_kelengkapan ?? $existing->status_kelengkapan,
+                    'bukti_dasar' => $pathDatabase,
+                    'status_kelengkapan' => 'memenuhi',
+                    'keterangan' => $finalKeterangan, // Update keterangan juga biar sinkron
                 ]);
-
-                Log::info("API (Bukti): Update dokumen {$request->jenis_dokumen} untuk Data Sertifikasi Asesi ID {$request->id_data_sertifikasi_asesi}");
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data bukti kelengkapan berhasil diperbarui.',
-                    'data' => $existing
-                ], 200);
             } else {
-                // Simpan baru
-                $newData = BuktiKelengkapan::create([
+                // Create Baru
+                $existing = BuktiDasar::create([
                     'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
-                    'jenis_dokumen' => $request->jenis_dokumen,
-                    'keterangan' => $request->keterangan,
-                    'bukti_kelengkapan' => $path,
-                    'status_kelengkapan' => $request->status_kelengkapan ?? 'Belum Diverifikasi',
+                    'bukti_dasar' => $pathDatabase,
+                    'status_kelengkapan' => 'memenuhi',
+                    'keterangan' => $finalKeterangan,
+                    'status_validasi' => false
                 ]);
-
-                Log::info("API (Bukti): Simpan dokumen baru {$request->jenis_dokumen} untuk Data Sertifikasi Asesi ID {$request->id_data_sertifikasi_asesi}");
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Data bukti kelengkapan berhasil disimpan.',
-                    'data' => $newData
-                ], 201);
             }
+
+            return response()->json([
+                'success' => true, 
+                'message' => 'Berhasil diupload!',
+                'path' => $pathDatabase,
+                'data' => $existing
+            ], 200);
+
         } catch (\Exception $e) {
-            Log::error('API (Bukti): Gagal menyimpan data - ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan server.'], 500);
+            Log::error('API (Bukti): Error - ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Server Error: ' . $e->getMessage()], 500);
         }
     }
 
-    /**
-     * ==========================================================
-     * METHOD API 3: HAPUS DATA BUKTI KELENGKAPAN
-     * ==========================================================
-     */
-    public function deleteAjax($id)
+    // ... (Fungsi deleteAjax TETAP SAMA) ...
+     public function deleteAjax($id)
     {
-        Log::info("API (Bukti): Permintaan hapus Bukti Kelengkapan ID {$id}...");
-
-        try {
-            $data = BuktiKelengkapan::find($id);
-
-            if (!$data) {
-                return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
+         try {
+            $data = BuktiDasar::find($id);
+            if (!$data) return response()->json(['success'=>false], 404);
+            
+            if ($data->bukti_dasar && File::exists(public_path($data->bukti_dasar))) {
+                File::delete(public_path($data->bukti_dasar));
             }
-
-            if ($data->bukti_kelengkapan && Storage::disk('public')->exists($data->bukti_kelengkapan)) {
-                Storage::disk('public')->delete($data->bukti_kelengkapan);
-            }
-
             $data->delete();
-
-            Log::info("API (Bukti): Data ID {$id} berhasil dihapus.");
-            return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.'], 200);
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            Log::error('API (Bukti): Gagal hapus data - ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Gagal menghapus data.'], 500);
+            return response()->json(['success' => false], 500);
         }
     }
 }

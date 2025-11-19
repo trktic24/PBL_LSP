@@ -37,7 +37,14 @@ class SkemaFactory extends Factory
             'nomor_skema' => $this->faker->unique()->bothify('J.620100.###.##'),
 
             // 'nama_skema' -> Membuat nama skema palsu
-            'nama_skema' => 'Skema Sertifikasi ' . $this->faker->words(3, true),
+            'nama_skema' => fake()->randomElement([
+                'Junior Web Developer',
+                'Ahli Digital Marketing',
+                'Operator Komputer Madya',
+                'Desainer Grafis Muda',
+                'Network Administrator',
+                'Data Analyst',
+            ]),
 
             // 'deskripsi_skema' -> Membuat 2 paragraf deskripsi
             'deskripsi_skema' => $this->faker->paragraphs(2, true),
