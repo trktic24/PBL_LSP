@@ -52,6 +52,9 @@ Route::get('/FR_AK_04', function () {
 Route::get('/IA_07', function () {
     return view('frontend/IA_07/IA_07');
 })->name('IA07');
+Route::get('/IA_08', function () {
+    return view('frontend/IA_08/IA_08');
+})->name('IA08');
 
 
 Route::middleware('auth')->group(function () {
