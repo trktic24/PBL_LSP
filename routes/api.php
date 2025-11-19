@@ -100,6 +100,8 @@ Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIControll
 // Tanda Tangan Asesi
 Route::get('/show-all',[TandaTanganAPIController::class, 'index']);
 Route::get('/show-detail/{id_asesi}',[TandaTanganAPIController::class, 'show']);
+Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])
+    ->name('simpan.tandatangan.ajax');
 
 // inih
 Route::apiResource('test', Test::class);

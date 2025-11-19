@@ -137,11 +137,24 @@ Route::get('/bukti_pemohon/{id_sertifikasi}', function ($id_sertifikasi) {
     } catch (\Exception $e) {
         return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
     }
-})->name('bukti.pemohon'); // Kita kasih nama route-nya
+})->name('bukti.pemohon'); 
 
-// --- Formulir APL-01: Tanda Tangan ---
-Route::get('/halaman-tanda-tangan/{id_asesi}', [TandaTanganController::class, 'showSignaturePage'])
-       ->name('show.tandatangan');
+Route::get('/halaman-tanda-tangan/{id_sertifikasi}', function ($id_sertifikasi) {
+    try {
+        // 1. Cari Data Pendaftaran berdasarkan ID Pendaftaran (BUKAN ID Asesi)
+        $sertifikasi = DataSertifikasiAsesi::with('asesi.dataPekerjaan')->findOrFail($id_sertifikasi);
+
+        return view('formulir_pendaftaran/tanda_tangan_pemohon', [
+            'sertifikasi' => $sertifikasi,
+            'asesi'       => $sertifikasi->asesi 
+        ]);
+    } catch (\Exception $e) {
+        // 2. INI YANG BIKIN KAMU MENTAL.
+        // Kalau ID Sertifikasi salah kirim (misal kirim ID Asesi padahal butuh ID Sertifikasi),
+        // findOrFail akan gagal dan masuk ke sini.
+        return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
+    }
+})->name('show.tandatangan');
 
 // --- Formulir AK-01: Kerahasiaan ---
 Route::get('/kerahasiaan/fr-ak01/{id_asesi}', [PersetujuanKerahasiaanController::class, 'showFrAk01'])

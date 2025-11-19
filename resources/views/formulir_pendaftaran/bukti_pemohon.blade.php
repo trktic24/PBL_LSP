@@ -299,12 +299,12 @@
 
                 {{-- Navigation --}}
                 <div class="flex justify-between items-center mt-10">
-                    <a href="/tracker"
-                        class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300">
-                        Kembali ke Tracker
+                    <a href="{{ route('data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                        class="w-48 text-center px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-all shadow-sm">
+                        Kembali
                     </a>
-                    <a href="/pembayaran"
-                        class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md">
+                    <a href="{{ route('show.tandatangan', ['id_sertifikasi' => $idSertifikasi]) }}"
+                        class="w-48 text-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md transition-all">
                         Selanjutnya
                     </a>
                 </div>
