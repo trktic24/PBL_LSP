@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use App\Models\KelompokPekerjaan;
 use App\Models\UnitKompetensi;
 use App\Models\ResponApl02Ia01;
+use App\Models\Skema;
 use Illuminate\Support\Facades\Auth;
 
 class IA01Controller extends Controller
@@ -17,11 +18,15 @@ class IA01Controller extends Controller
      */
     public function showCover(Request $request, $skema_id)
     {
-        $kelompok = KelompokPekerjaan::findOrFail($skema_id);
-        $data_sesi = $request->session()->get("ia01.skema_{$skema_id}", []);
+        $skema = Skema::with('kelompokPekerjaans.unitKompetensis')->findOrFail($skema_id);
+        $kelompok = $skema->kelompokPekerjaans->first();
+        if (!$kelompok) {
+        return back()->with('error', 'Skema ini belum memiliki Kelompok Pekerjaan.');
+        }
         $unitKompetensi = $kelompok->unitKompetensis()->orderBy('urutan')->first();
+        $data_sesi = $request->session()->get("ia01.skema_{$skema_id}", []);
 
-        return view('frontend.IA_01.tampilan_awal', compact('kelompok', 'unitKompetensi', 'data_sesi'));
+        return view('frontend.IA_01.tampilan_awal', compact('kelompok','skema', 'unitKompetensi', 'data_sesi'));
     }
 
     /**
@@ -55,11 +60,15 @@ class IA01Controller extends Controller
      */
     public function showStep(Request $request, $skema_id, $urutan)
     {
-        $kelompok = KelompokPekerjaan::findOrFail($skema_id);
+        $skema = Skema::with('kelompokPekerjaans')->findOrFail($skema_id);
+        $kelompok = $skema->kelompokPekerjaans->first();
+        if (!$kelompok) {
+        return back()->with('error', 'Kelompok Pekerjaan tidak ditemukan untuk Skema ini.');
+        }
         $unitKompetensi = UnitKompetensi::with(['elemens.kriteriaUnjukKerja'])
-                                        ->where('id_kelompok_pekerjaan', $skema_id)
-                                        ->where('urutan', $urutan)
-                                        ->firstOrFail();
+                                    ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan) // <-- INI YG BENER
+                                    ->where('urutan', $urutan)
+                                    ->firstOrFail();
 
         $kuks = $unitKompetensi->kriteriaUnjukKerja()->orderBy('no_kriteria')->get();
         $totalSteps = $kelompok->unitKompetensis()->count();
@@ -67,11 +76,11 @@ class IA01Controller extends Controller
 
         // Cek tipe form dari KUK pertama (aktivitas/demonstrasi)
         // Biar view tau mau nampilin header 'Ya/Tidak' atau 'K/BK'
-        $formType = $kuks->first()->tipe ?? 'demonstrasi';
+        $formType = $kuks->first()->tipe ?? 'aktivitas';
 
         // Kita pake SATU VIEW AJA 'IA_01' tapi nanti tabelnya dinamis
         return view('frontend.IA_01.IA_01', compact(
-            'unitKompetensi', 'kuks', 'data_sesi', 'totalSteps', 'formType'
+            'unitKompetensi', 'kuks','skema', 'data_sesi', 'totalSteps', 'formType'
         ));
     }
 
@@ -80,10 +89,11 @@ class IA01Controller extends Controller
      */
     public function storeStep(Request $request, $skema_id, $urutan)
     {
-        $kelompok = KelompokPekerjaan::findOrFail($skema_id);
-        $unitKompetensi = UnitKompetensi::where('id_kelompok_pekerjaan', $skema_id)
-                                        ->where('urutan', $urutan)
-                                        ->firstOrFail();
+        $skema = \App\Models\Skema::with('kelompokPekerjaans')->findOrFail($skema_id);
+        $kelompok = $skema->kelompokPekerjaans->firstOrFail();
+        $unitKompetensi = UnitKompetensi::where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
+                                    ->where('urutan', $urutan)
+                                    ->firstOrFail();
 
         // Ambil semua ID KUK di unit ini buat validasi
         // Pake kriteriaUnjukKerja() (HasManyThrough) biar ringkas

@@ -18,7 +18,8 @@
         </div>
     @endif
 
-    <form action="{{ route('ia01.storeCover', ['skema_id' => $unitKompetensi->id_kelompok_pekerjaan, 'urutan' => $unitKompetensi->urutan]) }}" method="POST">
+    {{-- FORM ACTION: Pake ID Skema --}}
+    <form action="{{ route('ia01.storeCover', ['skema_id' => $skema->id_skema]) }}" method="POST">
         @csrf
 
         {{-- 1. HEADER: Logo & Judul --}}
@@ -31,8 +32,7 @@
             </h1>
         </div>
 
-        {{-- 2. DATA UTAMA (SKEMA & INPUT FORM) --}}
-        {{-- Kita gabung dalam satu container visual biar rapi --}}
+        {{-- 2. DATA UTAMA --}}
         <div class="mb-8 space-y-6">
 
             {{-- A. Info Skema --}}
@@ -44,7 +44,8 @@
                     <div class="flex-1 bg-white">
                         <div class="flex border-b-2 border-gray-800">
                             <div class="w-24 p-2 pl-4 text-sm font-semibold text-gray-600">Judul</div>
-                            <div class="p-2 text-gray-800 font-medium">: {{ $unitKompetensi->kelompokPekerjaan->nama_kelompok_pekerjaan ?? 'Junior Web Developer' }}</div>
+                            {{-- FIX: Ambil Nama Kelompok langsung dari variable $kelompok --}}
+                            <div class="p-2 text-gray-800 font-medium">: {{ $kelompok->nama_kelompok_pekerjaan ?? '-' }}</div>
                         </div>
                         <div class="flex">
                             <div class="w-24 p-2 pl-4 text-sm font-semibold text-gray-600">Tanggal</div>
@@ -54,27 +55,41 @@
                 </div>
             </div>
 
-            {{-- B. Input Form (TUK, Asesor, Asesi, Tanggal) --}}
-            {{-- Pindah ke sini sesuai request --}}
+            {{-- B. Input Form --}}
             <div class="space-y-4 text-gray-800 pl-1">
 
-                {{-- Baris TUK --}}
-                <div class="grid grid-cols-1 md:grid-cols-[200px_20px_1fr] items-center">
+                {{-- Baris TUK (CHECKBOX STYLE) --}}
+                <div class="grid grid-cols-1 md:grid-cols-[200px_20px_1fr] items-start md:items-center">
                     <label class="font-bold">TUK</label>
                     <div class="hidden md:block font-bold">:</div>
                     <div class="flex flex-wrap gap-6">
                         @php $tuk_value = old('tuk', $data_sesi['tuk'] ?? ''); @endphp
-                        <label class="inline-flex items-center cursor-pointer">
-                            <span class="mr-2 text-sm">Sewaktu</span>
-                            <input type="radio" name="tuk" value="sewaktu" class="form-radio h-5 w-5 text-gray-800 border-gray-400 focus:ring-gray-500" {{ $tuk_value == 'sewaktu' ? 'checked' : '' }}>
+
+                        {{-- Checkbox Sewaktu --}}
+                        <label class="inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" name="tuk" value="sewaktu"
+                                   class="tuk-checkbox form-checkbox h-5 w-5 text-gray-800 border-gray-400 rounded focus:ring-gray-500 transition"
+                                   onclick="selectOnlyThis(this)"
+                                   {{ $tuk_value == 'sewaktu' ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm group-hover:text-blue-600 transition">Sewaktu</span>
                         </label>
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="radio" name="tuk" value="tempat_kerja" class="form-radio h-5 w-5 text-gray-800 border-gray-400 focus:ring-gray-500" {{ $tuk_value == 'tempat_kerja' ? 'checked' : '' }}>
-                            <span class="ml-2 text-sm">Tempat Kerja</span>
+
+                        {{-- Checkbox Tempat Kerja --}}
+                        <label class="inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" name="tuk" value="tempat_kerja"
+                                   class="tuk-checkbox form-checkbox h-5 w-5 text-gray-800 border-gray-400 rounded focus:ring-gray-500 transition"
+                                   onclick="selectOnlyThis(this)"
+                                   {{ $tuk_value == 'tempat_kerja' ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm group-hover:text-blue-600 transition">Tempat Kerja</span>
                         </label>
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="radio" name="tuk" value="mandiri" class="form-radio h-5 w-5 text-gray-800 border-gray-400 focus:ring-gray-500" {{ $tuk_value == 'mandiri' ? 'checked' : '' }}>
-                            <span class="ml-2 text-sm">Mandiri</span>
+
+                        {{-- Checkbox Mandiri --}}
+                        <label class="inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" name="tuk" value="mandiri"
+                                   class="tuk-checkbox form-checkbox h-5 w-5 text-gray-800 border-gray-400 rounded focus:ring-gray-500 transition"
+                                   onclick="selectOnlyThis(this)"
+                                   {{ $tuk_value == 'mandiri' ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm group-hover:text-blue-600 transition">Mandiri</span>
                         </label>
                     </div>
                 </div>
@@ -110,7 +125,7 @@
             </div>
         </div>
 
-        {{-- 3. PANDUAN BAGI ASESOR --}}
+        {{-- 3. PANDUAN --}}
         <div class="mb-6 border-2 border-gray-800 text-gray-900 text-sm">
             <div class="p-2 font-bold border-b-2 border-gray-800 bg-gray-50">
                 PANDUAN BAGI ASESOR
@@ -139,10 +154,11 @@
                 </thead>
                 <tbody class="align-top">
                     @php
-                        // Pastikan mengganti ini dengan data relasi asli lu
-                        $units = $unitKompetensi->kelompokPekerjaan->units ?? [];
+                        // FIX: Ambil units langsung dari $kelompok (bukan dari $unitKompetensi)
+                        // Pake nama relasi 'unitKompetensis' sesuai model
+                        $units = $kelompok->unitKompetensis ?? [];
                         $totalUnits = count($units) > 0 ? count($units) : 1;
-                        $skemaTitle = $unitKompetensi->kelompokPekerjaan->nama_kelompok_pekerjaan ?? 'Junior Web Developer';
+                        $skemaTitle = $kelompok->nama_kelompok_pekerjaan ?? '-';
                     @endphp
 
                     @forelse ($units as $index => $unit)
@@ -157,7 +173,6 @@
                             <td class="p-2">{{ $unit->judul_unit }}</td>
                         </tr>
                     @empty
-                        {{-- Fallback kalau data kosong biar tabel gak rusak --}}
                         <tr class="border-b border-gray-800">
                             <td class="p-4 border-r-2 border-gray-800 font-bold align-middle bg-white">{{ $skemaTitle }}</td>
                             <td class="p-2 border-r border-gray-800 text-center">-</td>
@@ -177,4 +192,14 @@
             </button>
         </div>
     </form>
+
+    <script>
+        function selectOnlyThis(checkbox) {
+            var checkboxes = document.getElementsByClassName('tuk-checkbox');
+            Array.prototype.forEach.call(checkboxes, function(item) {
+                if (item !== checkbox) item.checked = false;
+            });
+        }
+    </script>
+
 @endsection

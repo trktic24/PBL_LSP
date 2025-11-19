@@ -21,7 +21,8 @@
         </div>
     @endif
 
-    <form action="{{ route('ia01.storeStep', ['skema_id' => $unitKompetensi->id_kelompok_pekerjaan, 'urutan' => $unitKompetensi->urutan]) }}" method="POST">
+    {{-- FIX CRITICAL: Action harus pakai $skema->id_skema, JANGAN id_kelompok_pekerjaan --}}
+    <form action="{{ route('ia01.storeStep', ['skema_id' => $skema->id_skema, 'urutan' => $unitKompetensi->urutan]) }}" method="POST">
         @csrf
 
         {{-- HEADER UNIT KOMPETENSI --}}
@@ -40,7 +41,6 @@
                     </div>
                 </div>
             </div>
-            {{-- Logo BNSP opsional di sini, biar gak penuh --}}
         </div>
 
         {{-- TABEL CEKLIS OBSERVASI --}}
@@ -50,10 +50,7 @@
                     <tr>
                         <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/4 text-center">Elemen</th>
                         <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/3 text-center">Kriteria Unjuk Kerja</th>
-                        <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/6 text-center">
-                            Standar Industri
-                        </th>
-                        {{-- Header Pencapaian digabung --}}
+                        <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/6 text-center">Standar Industri</th>
                         <th class="p-0 border-r border-gray-800 w-1/6">
                             <div class="border-b border-gray-800 p-1 text-center text-sm font-bold bg-gray-200">Pencapaian</div>
                             <div class="flex">
@@ -66,28 +63,20 @@
                 </thead>
 
                 <tbody class="text-gray-800 bg-white">
-                    {{--
-                        LOGIC LOOPING:
-                        1. Loop Elemen
-                        2. Di dalam Elemen, Loop KUK
-                        3. Pakai rowspan di iterasi KUK pertama
-                    --}}
-
                     @forelse ($unitKompetensi->elemens as $elemen)
                         @php
-                            // Hitung jumlah KUK per elemen buat Rowspan
                             $totalKuk = $elemen->kriteriaUnjukKerja->count();
                         @endphp
 
                         @foreach ($elemen->kriteriaUnjukKerja as $index => $kuk)
                             <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition-colors">
 
-                                {{-- KOLOM 1: ELEMEN (Pakai Rowspan) --}}
+                                {{-- KOLOM 1: ELEMEN (Rowspan) --}}
                                 @if ($index === 0)
                                     <td rowspan="{{ $totalKuk }}" class="p-3 border-r border-gray-800 align-top bg-white">
                                         <div class="text-sm font-semibold">
-                                            {{-- Nomor Elemen (misal: 1.) --}}
                                             <span class="font-bold mr-1">{{ $loop->parent->iteration }}.</span>
+                                            {{-- Pastikan kolom di DB 'elemen' atau 'nama_elemen' --}}
                                             {{ $elemen->elemen }}
                                         </div>
                                     </td>
@@ -95,43 +84,53 @@
 
                                 {{-- KOLOM 2: KUK --}}
                                 <td class="p-3 border-r border-gray-800 align-top text-sm leading-relaxed">
-                                    {{-- Nomor KUK (misal: 1.1) --}}
                                     <span class="font-bold mr-1">{{ $loop->parent->iteration }}.{{ $loop->iteration }}</span>
                                     {{ $kuk->kriteria }}
                                 </td>
 
                                 {{-- KOLOM 3: STANDAR INDUSTRI --}}
                                 <td class="p-2 border-r border-gray-800 align-top">
-                                    {{-- Bisa input manual atau text statis --}}
-                                    <textarea name="standar_industri[{{ $kuk->id }}]" rows="3"
+                                    <textarea name="standar_industri[{{ $kuk->id_kriteria }}]" rows="3"
                                         class="w-full text-xs border-gray-300 rounded focus:border-blue-500 focus:ring-0 bg-gray-50 resize-none"
-                                        placeholder="Isi jika ada...">{{ old("standar_industri.{$kuk->id}") }}</textarea>
+                                        placeholder="Isi jika ada...">{{ old("standar_industri.{$kuk->id_kriteria}") }}</textarea>
                                 </td>
 
-                                {{-- KOLOM 4 & 5: CHECKBOX YA/TIDAK --}}
+                                {{-- KOLOM 4: CHECKBOX (YA/TIDAK) --}}
                                 <td class="p-0 border-r border-gray-800 align-top">
-                                    <div class="flex h-full">
-                                        {{-- Opsi YA --}}
-                                        <label class="w-1/2 border-r border-gray-300 cursor-pointer hover:bg-green-100 flex items-center justify-center py-4 transition">
-                                            <input type="radio" name="hasil[{{ $kuk->id }}]" value="kompeten"
-                                                class="w-5 h-5 text-green-600 focus:ring-green-500 border-gray-400"
-                                                {{ old("hasil.{$kuk->id}") == 'kompeten' ? 'checked' : '' }} required>
-                                        </label>
+                                    <div class="flex h-full items-center">
+                                        {{-- Checkbox YA --}}
+                                        <div class="w-1/2 flex justify-center items-center border-r border-gray-300 h-full py-4 hover:bg-green-50 cursor-pointer"
+                                             onclick="triggerCheck('{{ $kuk->id_kriteria }}', 'kompeten')">
 
-                                        {{-- Opsi TIDAK --}}
-                                        <label class="w-1/2 cursor-pointer hover:bg-red-100 flex items-center justify-center py-4 transition">
-                                            <input type="radio" name="hasil[{{ $kuk->id }}]" value="belum_kompeten"
-                                                class="w-5 h-5 text-red-600 focus:ring-red-500 border-gray-400"
-                                                {{ old("hasil.{$kuk->id}") == 'belum_kompeten' ? 'checked' : '' }}>
-                                        </label>
+                                            <input type="checkbox"
+                                                   id="cb_ya_{{ $kuk->id_kriteria }}"
+                                                   name="hasil[{{ $kuk->id_kriteria }}]"
+                                                   value="kompeten"
+                                                   class="kuk-check-{{ $kuk->id_kriteria }} w-5 h-5 text-green-600 rounded focus:ring-green-500 border-gray-400 cursor-pointer"
+                                                   onclick="handleExclusiveCheckbox(this, '{{ $kuk->id_kriteria }}')"
+                                                   {{ old("hasil.{$kuk->id_kriteria}") == 'kompeten' ? 'checked' : '' }}>
+                                        </div>
+
+                                        {{-- Checkbox TIDAK --}}
+                                        <div class="w-1/2 flex justify-center items-center h-full py-4 hover:bg-red-50 cursor-pointer"
+                                             onclick="triggerCheck('{{ $kuk->id_kriteria }}', 'belum_kompeten')">
+
+                                            <input type="checkbox"
+                                                   id="cb_tidak_{{ $kuk->id_kriteria }}"
+                                                   name="hasil[{{ $kuk->id_kriteria }}]"
+                                                   value="belum_kompeten"
+                                                   class="kuk-check-{{ $kuk->id_kriteria }} w-5 h-5 text-red-600 rounded focus:ring-red-500 border-gray-400 cursor-pointer"
+                                                   onclick="handleExclusiveCheckbox(this, '{{ $kuk->id_kriteria }}')"
+                                                   {{ old("hasil.{$kuk->id_kriteria}") == 'belum_kompeten' ? 'checked' : '' }}>
+                                        </div>
                                     </div>
                                 </td>
 
-                                {{-- KOLOM 6: PENILAIAN LANJUT --}}
+                                {{-- KOLOM 5: PENILAIAN LANJUT --}}
                                 <td class="p-2 align-top">
-                                    <textarea name="penilaian_lanjut[{{ $kuk->id }}]" rows="3"
+                                    <textarea name="penilaian_lanjut[{{ $kuk->id_kriteria }}]" rows="3"
                                         class="w-full text-xs rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 placeholder-gray-400"
-                                        placeholder="Catatan...">{{ old("penilaian_lanjut.{$kuk->id}") }}</textarea>
+                                        placeholder="Catatan...">{{ old("penilaian_lanjut.{$kuk->id_kriteria}") }}</textarea>
                                 </td>
                             </tr>
                         @endforeach
@@ -146,20 +145,18 @@
 
         {{-- FOOTER NAVIGASI --}}
         <div class="flex justify-between items-center mt-10 pb-10">
-            {{-- Tombol Back --}}
             @if ($unitKompetensi->urutan == 1)
-                <a href="{{ route('ia01.cover', ['skema_id' => $unitKompetensi->id_kelompok_pekerjaan]) }}"
+                <a href="{{ route('ia01.cover', ['skema_id' => $skema->id_skema]) }}"
                    class="flex items-center px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full shadow-sm transition">
                     ← Data Diri
                 </a>
             @else
-                <a href="{{ route('ia01.showStep', ['skema_id' => $unitKompetensi->id_kelompok_pekerjaan, 'urutan' => $unitKompetensi->urutan - 1]) }}"
+                <a href="{{ route('ia01.showStep', ['skema_id' => $skema->id_skema, 'urutan' => $unitKompetensi->urutan - 1]) }}"
                    class="flex items-center px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full shadow-sm transition">
                     ← Unit Sebelumnya
                 </a>
             @endif
 
-            {{-- Tombol Next/Finish --}}
             @if ($unitKompetensi->urutan == $totalSteps)
                 <button type="submit" class="flex items-center px-8 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full shadow-lg transition transform hover:-translate-y-0.5">
                     Simpan & Selesai ✓
@@ -171,4 +168,33 @@
             @endif
         </div>
     </form>
+
+    {{-- SCRIPT UNTUK CHECKBOX EKSKLUSIF (Pilih satu doang per baris) --}}
+    <script>
+        // Fungsi biar bisa klik area TD (kotak) gak cuma pas di checkbox kecilnya
+        function triggerCheck(id, value) {
+            // Cari checkbox yang sesuai
+            let targetId = (value === 'kompeten') ? 'cb_ya_' + id : 'cb_tidak_' + id;
+            let checkbox = document.getElementById(targetId);
+
+            // Kalo user klik pas di inputnya, jangan trigger lagi (biar ga double)
+            if (event.target.type !== 'checkbox') {
+                checkbox.checked = !checkbox.checked;
+                handleExclusiveCheckbox(checkbox, id);
+            }
+        }
+
+        // Logic biar kalo pilih YA, yang TIDAK mati (dan sebaliknya)
+        function handleExclusiveCheckbox(checkbox, id) {
+            if (checkbox.checked) {
+                // Ambil semua checkbox dengan class kuk-check-{id}
+                let boxes = document.getElementsByClassName('kuk-check-' + id);
+                Array.from(boxes).forEach((box) => {
+                    if (box !== checkbox) {
+                        box.checked = false;
+                    }
+                });
+            }
+        }
+    </script>
 @endsection
