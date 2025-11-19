@@ -102,7 +102,7 @@
               </div>
               <div>
                 <label for="kebangsaan" class="block text-sm font-medium text-gray-700 mb-1">Kebangsaan</label>
-                <input type="text" id="kebangsaan" name="kebangsaan" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cth: Indonesia" value="{{ old('kebangsaan', 'Indonesia') }}">
+                <input type="text" id="kebangsaan" name="kebangsaan" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cth: Indonesia" value="{{ old('kebangsaan') }}">
               </div>
               <div>
                 <label for="pendidikan" class="block text-sm font-medium text-gray-700 mb-1">Kualifikasi Pendidikan <span class="text-red-500">*</span></label>
