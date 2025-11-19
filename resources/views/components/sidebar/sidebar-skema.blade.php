@@ -1,6 +1,6 @@
 @props(['jadwal'])
 
-<aside class="fixed top-0 left-0 h-screen w-80 bg-[linear-gradient(135deg,#4F46E5,#0EA5E9)] text-white p-8 flex flex-col flex-shrink-0 shadow-lg">
+<aside class="fixed top-0 left-0 h-screen w-80 bg-[linear-gradient(135deg,#4F46E5,#0EA5E9)] text-white p-8 hidden lg:block">
     <!-- Tombol Kembali -->
     <a href="{{ route('home.index') }}"
        class="flex items-center space-x-2 text-sm font-medium opacity-80 hover:opacity-100 mb-10 transition">
