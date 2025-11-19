@@ -6,7 +6,6 @@ use App\Http\Controllers\TukController;
 use App\Http\Controllers\JadwalController; 
 use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\Api\CountryController;
-use App\Http\Controllers\IA09Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,19 +77,6 @@ Route::get('/sertifikasi', function () {
 })->name('sertifikasi');
 
 Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
-
-// ---
-// FORM ASESMEN FR.IA.09 (Pertanyaan Wawancara)
-// Route::view() digunakan untuk memuat view Blade sederhana.
-// View path: resources/views/IA09/IA09_role.blade.php
-// ---
-Route::prefix('ia09')->group(function () {
-    Route::get('/asesi/{id}', [IA09Controller::class, 'showAsesi'])->name('ia09.asesi');
-    Route::get('/asesor/{id}', [IA09Controller::class, 'showAsesor'])->name('ia09.asesor');
-    Route::get('/admin/{id}', [IA09Controller::class, 'showAdmin'])->name('ia09.admin');
-
-    Route::put('/asesor/{id}', [IA09Controller::class, 'updateAsesor'])->name('ia09.asesor.update');
-});
 
 /*
 |--------------------------------------------------------------------------
