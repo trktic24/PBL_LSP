@@ -9,87 +9,182 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     body { font-family: 'Poppins', sans-serif; }
+
+    .pixel-block {
+      position: absolute;
+      width: 300px;
+      height: 260px;
+      pointer-events: none;
+      opacity: 0.75;
+      --size: 6px;
+      --step: 14px;
+      background-image:
+        linear-gradient(90deg, #1a1a1a 0, #1a1a1a var(--size), transparent var(--size)),
+        linear-gradient(#1a1a1a 0, #1a1a1a var(--size), transparent var(--size));
+      background-size: var(--step) var(--step);
+    }
+
+    .pixel-top {
+      top: 26px;
+      right: 26px;
+      mask-image: radial-gradient(circle at 100% 0%, rgba(0,0,0,1) 38%, rgba(0,0,0,0) 75%);
+    }
+
+    .pixel-bottom {
+      bottom: 0;
+      left: 0;
+      width: 300px;
+      height: 260px;
+      mask-image: radial-gradient(circle at 0% 100%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 80%);
+    }
+
+    .form-container {
+      border: 2px solid #0D63F3;
+      border-radius: 22px;
+      padding: 50px;
+      width: 520px;
+      background: white;
+      box-shadow: -14px 0px 34px rgba(0,0,0,0.13);
+    }
+
+    /* Fade animation */
+    .fade {
+      transition: opacity 0.6s ease;
+    }
   </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gradient-to-br from-[#e6ebf1] to-[#dce4f7]">
 
-  <!-- HEADER -->
-  <header class="fixed top-0 left-0 w-full bg-white shadow-md z-10 flex justify-center items-center h-20">
-    <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16">
-  </header>
+<body class="bg-white overflow-hidden">
 
-  <!-- MAIN CONTENT -->
-  <main class="flex flex-1 mt-20">
-    
-    <!-- LEFT: Login Form -->
-    <div class="w-1/2 flex justify-center items-center bg-gradient-to-br from-[#f5f8ff] to-[#eaf0ff] px-10">
-      <div class="w-full max-w-md">
-        <h2 class="text-3xl font-bold text-gray-900 mb-2">Kamu Admin LSP Polines?</h2>
-        <p class="text-sm text-gray-500 mb-8 text-center">Masukkan username dan password untuk mengakses akunmu.</p>
+  <main class="flex h-screen w-full">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="w-[43%] h-full bg-white flex flex-col justify-center px-20 relative select-none">
+
+      <div class="pixel-block pixel-top scale-[1.3]"></div>
+
+      <div class="absolute top-6 left-10">
+        <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" class="w-24 drop-shadow">
+      </div>
+
+      <div class="form-container mx-auto -mt-10">
+        <h2 class="text-[22px] font-semibold mb-6 tracking-wide">Masukan akun Anda!</h2>
 
         <form action="{{ url('/login') }}" method="POST" class="space-y-6">
           @csrf
 
-          <!-- Username -->
-          <div>
-            <label for="username" class="block text-gray-700 font-semibold mb-2">Username</label>
-            <input id="username" type="text" name="username" placeholder="Username"
-                   class="w-full border border-gray-300 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-            
-           @error('username')
-              <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-            @enderror
+          <div class="flex flex-col w-full">
+            <label class="text-sm font-medium">Username</label>
+            <input type="text" name="username" class="mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 outline-none" placeholder="Masukkan username">
           </div>
 
-          <!-- Password -->
-          <div>
-            <label for="password" class="block text-gray-700 font-semibold mb-2">Password</label>
-            <input id="password" type="password" name="password" placeholder="Password"
-                   class="w-full border border-gray-300 rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-            
-            @error('password')
-              <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-            @enderror
+          <div class="flex flex-col w-full">
+            <label class="text-sm font-medium">Password</label>
+            <input id="password" type="password" name="password" class="mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 outline-none" placeholder="Masukkan password">
           </div>
 
-          <!-- Forgot -->
-          <div class="text-sm text-gray-600 text-right">
-            <a href="#" class="text-blue-600 font-semibold hover:underline">Forgot your password?</a>
+          <div class="flex justify-between items-center text-sm -mt-2">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" onclick="togglePass()" class="w-4 h-4">
+              Tampilkan Password
+            </label>
+
+            <a href="#" class="text-gray-600">Forgot your <span class="font-semibold">Password?</span></a>
           </div>
 
-          <!-- Button -->
-          <button type="submit"
-                  class="w-full py-3 font-bold text-gray-800 rounded-xl transition
-                         bg-gradient-to-r from-[#b4e1ff] to-[#d7f89c]
-                         shadow-[inset_2px_2px_5px_rgba(255,255,255,0.6),inset_-3px_-3px_6px_rgba(0,0,0,0.15),0_4px_10px_rgba(0,0,0,0.1)]
-                         hover:from-[#a6d5ff] hover:to-[#c9f588]">
-            LOGIN
+          <button type="submit" class="w-full bg-[#0D63F3] text-white py-2.5 rounded-full text-[15px] font-medium shadow-md hover:shadow-lg active:scale-[0.97] transition">
+            Masuk ke Akun
           </button>
-
-          @if(session('error'))
-            <p class="text-red-500 text-sm text-center mt-2">{{ session('error') }}</p>
-          @endif
         </form>
       </div>
+
+      <div class="pixel-block pixel-bottom"></div>
+
     </div>
 
-    <!-- RIGHT: Image -->
-    <div class="w-1/2 bg-cover bg-center"
+    <!-- RIGHT PANEL -->
+    <div class="w-[57%] h-full relative bg-cover bg-center select-none"
          style="background-image: url('{{ asset('images/gedung_gkt.jpg') }}');">
+
+      <div class="absolute inset-0 bg-black/45"></div>
+
+      <div class="relative text-white px-14 mt-20">
+        <h1 class="text-[70px] font-bold leading-tight drop-shadow-lg">
+          Welcome to Admin LSP<br>
+          Politeknik Negeri<br>
+          Semarang!
+        </h1>
+      </div>
+
+      <!-- SLIDESHOW TEXT -->
+      <div class="absolute bottom-16 left-1/2 -translate-x-1/2 w-[80%] flex items-center justify-center gap-6 text-white text-2xl">
+
+        <!-- Tombol kiri -->
+        <span class="text-3xl cursor-pointer select-none" id="prevBtn">◀</span>
+
+        <!-- Tempat Teks -->
+        <p id="slideText" class="leading-relaxed text-center fade opacity-100">
+          Pusat kendali operasional yang mengamankan integritas data asesi dan memastikan kelancaran alur uji kompetensi.
+        </p>
+
+        <!-- Tombol kanan -->
+        <span class="text-3xl cursor-pointer select-none" id="nextBtn">▶</span>
+
+      </div>
+
     </div>
+
   </main>
 
-  <!-- RESPONSIVE STACK -->
-  <style>
-    @media (max-width: 1024px) {
-      main { flex-direction: column; }
-      main > div { width: 100%; height: 50vh; }
+  <script>
+    function togglePass() {
+      let p = document.getElementById("password");
+      p.type = p.type === "password" ? "text" : "password";
     }
-  </style>
+
+    /* -----------------------------
+       SLIDESHOW TEKS OTOMATIS + MANUAL
+    ----------------------------- */
+
+    const texts = [
+      "Pusat kendali operasional yang mengamankan integritas data asesi dan memastikan kelancaran alur uji kompetensi.",
+      "Pengelola administrasi yang menjamin ketepatan data dan memenuhi standar BNSP dalam setiap pelaksanaan uji sertifikasi.",
+      "Fasilitator utama yang mengorganisir komunikasi antara asesi dan asesor, serta mengelola alur kerja sertifikasi secara efisien."
+    ];
+
+    let index = 0; 
+    const textElement = document.getElementById("slideText");
+
+    function updateText() {
+      textElement.style.opacity = 0;
+
+      setTimeout(() => {
+        textElement.textContent = texts[index];
+        textElement.style.opacity = 1;
+      }, 300);
+    }
+
+    document.getElementById("nextBtn").onclick = () => {
+      index = (index + 1) % texts.length;
+      updateText();
+    };
+
+    document.getElementById("prevBtn").onclick = () => {
+      index = (index - 1 + texts.length) % texts.length;
+      updateText();
+    };
+
+    // Auto slide setiap 5 detik
+    setInterval(() => {
+      index = (index + 1) % texts.length;
+      updateText();
+    }, 5000);
+
+  </script>
 
 </body>
 </html>
