@@ -3,7 +3,7 @@
 @section('title', 'Struktur Organisasi')
 
 @section('content')
-<section id="struktur" class="pt-14 pb-0 bg-white">
+<section id="struktur" class="pt-60 pb-0 bg-white">
     <div class="container mx-auto px-4 text-center">
         <h2 class="text-4xl font-bold mb-12">Struktur Organisasi</h2>
 
