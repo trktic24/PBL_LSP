@@ -1,30 +1,36 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>LSP Polines - @yield('title', 'Halaman Form')</title>
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
-  @stack('css')
+    <meta charset="UTF-8">
+    <title>LSP Polines - @yield('title', 'Halaman Form')</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Google Fonts Poppins -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('css')
 
-  <style>
-      body, input, textarea, select, button {
-          font-family: 'Poppins', sans-serif;
-      }
-  </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body, input, textarea, select, button {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+
 </head>
-<body class="bg-gray-50 flex min-h-screen">
-
-  {{-- Sidebar --}}
+<body x-data class="bg-gray-50 min-h-screen flex">
   <x-sidebar.sidebar />
 
   {{-- Konten utama --}}
-  <main class="flex-1 p-5 ml-80">
-    @yield('content')
+  <main class="flex-1 py-6 transition-all duration-300">
+      <button
+          class="lg:hidden fixed top-4 left-4 bg-blue-600 text-white p-3 rounded-full shadow-lg z-40"
+          @click="$store.sidebar.open = true"
+      >
+          ☰
+      </button>
+
+      @yield('content')
   </main>
 
-  @stack('js')
 </body>
 </html>

@@ -86,5 +86,10 @@ Route::post('/ia01/{skema_id}/cover', [Ia01Controller::class, 'storeCover'])->na
 // Route Step Wizard (Unit 1, 2, dst)
 Route::get('/ia01/{skema_id}/step/{urutan}', [Ia01Controller::class, 'showStep'])->name('ia01.showStep');
 Route::post('/ia01/{skema_id}/step/{urutan}', [Ia01Controller::class, 'storeStep'])->name('ia01.storeStep');
-
+Route::get('/ia01/{skema_id}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
+Route::post('/ia01/{skema_id}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+// Route Halaman Sukses (Image 2)
+Route::get('/ia01/success', function() {
+    return view('frontend.IA_01.success');
+})->name('ia01.success_page');
 require __DIR__.'/auth.php';
