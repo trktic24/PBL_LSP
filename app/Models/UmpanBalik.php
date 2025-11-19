@@ -2,34 +2,29 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-
-class Feedback extends Model
+class UmpanBalik extends Model
 {
     use HasFactory;
 
+    protected $table = 'respon_ak04';
+    protected $primaryKey = 'id_respon_ak04';
 
-    protected $table = 'feedback';
-    protected $fillable = ['id_asesi', 'id_asesor', 'tuk', 'catatan_tambahan'];
+    protected $fillable = [
+        'id_data_sertifikasi_asesi',
+        'penjelasan_banding',
+        'diskusi_dengan_asesor',
+        'melibatkan_orang_lain',
+        'alasan_banding',
+    ];
 
-
-    public function items()
+    /**
+     * Relasi ke tabel data_sertifikasi_asesi (FK)
+     */
+    public function dataSertifikasiAsesi()
     {
-        return $this->hasMany(FeedbackItem::class);
-    }
-
-
-    public function asesi()
-    {
-        return $this->belongsTo(Asesi::class, 'id_asesi');
-    }
-
-
-    public function asesor()
-    {
-        return $this->belongsTo(Asesor::class, 'id_asesor');
+        return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }
