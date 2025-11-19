@@ -5,22 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Tuk;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File; // [PENTING] Pakai File Facade, bukan Storage
 use Illuminate\Database\QueryException; 
 
 class TukController extends Controller
 {
     /**
      * Menampilkan halaman list TUK (Read).
-     * LOGIKA DIPERBARUI UNTUK PAGINASI
      */
     public function index(Request $request)
     {
-        // 1. Ambil input sort dan direction, beri nilai default
+        // 1. Ambil input sort dan direction
         $sortColumn = $request->input('sort', 'id_tuk');
         $sortDirection = $request->input('direction', 'asc');
 
-        // 2. Daftar kolom yang BOLEH di-sort (untuk keamanan)
+        // 2. Daftar kolom yang BOLEH di-sort
         $allowedColumns = ['id_tuk', 'nama_lokasi', 'alamat_tuk', 'kontak_tuk'];
         
         if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'id_tuk';
@@ -29,7 +28,7 @@ class TukController extends Controller
         // 3. Mulai query
         $query = Tuk::query();
 
-        // 4. Terapkan 'search' (Filter)
+        // 4. Terapkan 'search'
         if ($request->has('search') && $request->input('search') != '') {
             $searchTerm = $request->input('search');
             $query->where(function($q) use ($searchTerm) {
@@ -41,35 +40,29 @@ class TukController extends Controller
             });
         }
 
-        // 5. Terapkan 'orderBy' (Sorting)
+        // 5. Sorting
         $query->orderBy($sortColumn, $sortDirection);
 
-        // 6. === PERUBAHAN: Paginate Dinamis ===
-        
-        // 6a. Daftar 'per_page' yang valid (untuk keamanan)
+        // 6. Pagination Dinamis
         $allowedPerpage = [10, 25, 50, 100]; 
-        
-        // 6b. Ambil 'per_page' dari request, default-nya 10
         $perPage = $request->input('per_page', 10);
         if (!in_array($perPage, $allowedPerpage)) {
-            $perPage = 10; // Reset jika nilainya tidak valid
+            $perPage = 10;
         }
 
-        // 6c. Gunakan $perPage di paginate()
         $tuks = $query->paginate($perPage)->onEachSide(0.5);
         
-        // 7. (WAJIB) Tambahkan 'per_page' ke appends()
-        $tuks->appends($request->only(['sort', 'direction', 'search', 'per_page'])); // <-- 'per_page' DITAMBAHKAN
+        // 7. Appends parameter ke link pagination
+        $tuks->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
-        // 8. Kirim data TUK dan $perPage ke view
         return view('tuk.master_tuk', [
             'tuks' => $tuks,
-            'perPage' => $perPage // <-- DATA INI DIKIRIM KE VIEW
+            'perPage' => $perPage 
         ]);
     }
 
     /**
-     * Menampilkan formulir add TUK (Create - view).
+     * Menampilkan formulir tambah TUK.
      */
     public function create()
     {
@@ -77,7 +70,7 @@ class TukController extends Controller
     }
 
     /**
-     * Menyimpan data TUK baru ke database (Create - logic).
+     * Menyimpan data TUK baru (Langsung ke public/images/foto_tuk).
      */
     public function store(Request $request)
     {
@@ -89,27 +82,38 @@ class TukController extends Controller
             'link_gmap'   => 'required|url',
         ]);
 
-        $path = $request->file('foto_tuk')->store('photos/tuk', 'public');
-        $validatedData['foto_tuk'] = $path; 
+        // 1. Ambil file
+        $file = $request->file('foto_tuk');
+        
+        // 2. Generate nama unik
+        $filename = time() . '_' . $file->getClientOriginalName();
+        
+        // 3. Tentukan tujuan: public/images/foto_tuk
+        $destinationPath = public_path('images/foto_tuk');
+        
+        // 4. Pindahkan file
+        $file->move($destinationPath, $filename);
+        
+        // 5. Simpan path relatif ke database
+        $validatedData['foto_tuk'] = 'images/foto_tuk/' . $filename; 
 
         $tuk = Tuk::create($validatedData); 
 
-        return redirect()->route('master_tuk')->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil ditambahkan!");
+        return redirect()->route('master_tuk')
+                         ->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil ditambahkan!");
     }
 
     /**
-     * Menampilkan form 'edit_tuk' (Update - view).
+     * Menampilkan form edit TUK.
      */
     public function edit($id)
     {
         $tuk = Tuk::findOrFail($id);
-        return view('tuk.edit_tuk', [
-            'tuk' => $tuk
-        ]);
+        return view('tuk.edit_tuk', ['tuk' => $tuk]);
     }
 
     /**
-     * Memperbarui data TUK di database (Update - logic).
+     * Memperbarui data TUK (Hapus foto lama di public, upload baru).
      */
     public function update(Request $request, $id)
     {
@@ -124,20 +128,29 @@ class TukController extends Controller
         ]);
 
         if ($request->hasFile('foto_tuk')) {
-            if ($tuk->foto_tuk) {
-                Storage::disk('public')->delete($tuk->foto_tuk);
+            // 1. Hapus foto lama jika ada di public folder
+            if ($tuk->foto_tuk && File::exists(public_path($tuk->foto_tuk))) {
+                File::delete(public_path($tuk->foto_tuk));
             }
-            $path = $request->file('foto_tuk')->store('photos/tuk', 'public');
-            $validatedData['foto_tuk'] = $path;
+
+            // 2. Proses upload foto baru
+            $file = $request->file('foto_tuk');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $destinationPath = public_path('images/foto_tuk');
+            
+            $file->move($destinationPath, $filename);
+            
+            $validatedData['foto_tuk'] = 'images/foto_tuk/' . $filename;
         }
 
         $tuk->update($validatedData);
 
-        return redirect()->route('master_tuk')->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil diperbarui!");
+        return redirect()->route('master_tuk')
+                         ->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil diperbarui!");
     }
 
     /**
-     * Menghapus data TUK dari database (Delete - logic).
+     * Menghapus data TUK (Hapus file dari public folder).
      */
     public function destroy($id)
     {
@@ -145,6 +158,7 @@ class TukController extends Controller
         $id_tuk = $tuk->id_tuk;
         $nama_lokasi = $tuk->nama_lokasi;
 
+        // Cek relasi ke jadwal
         $conflictingSchedule = Schedule::where('id_tuk', $id_tuk)->first();
 
         if ($conflictingSchedule) {
@@ -154,13 +168,15 @@ class TukController extends Controller
         }
 
         try {
-            if ($tuk->foto_tuk) {
-                Storage::disk('public')->delete($tuk->foto_tuk);
+            // Hapus file fisik dari public folder
+            if ($tuk->foto_tuk && File::exists(public_path($tuk->foto_tuk))) {
+                File::delete(public_path($tuk->foto_tuk));
             }
 
             $tuk->delete();
 
-            return redirect()->route('master_tuk')->with('success', "TUK (ID: {$id_tuk}) {$nama_lokasi} Berhasil dihapus!");
+            return redirect()->route('master_tuk')
+                             ->with('success', "TUK (ID: {$id_tuk}) {$nama_lokasi} Berhasil dihapus!");
 
         } catch (QueryException $e) {
             return back()->with('error', 'Terjadi kesalahan database: ' . $e->getMessage());

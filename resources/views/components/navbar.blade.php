@@ -58,7 +58,7 @@
                     <div class="space-y-1">
                         <a href="{{ route('master_category') }}" 
                             class="block px-4 py-2 {{ $isCategoryActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
-                            Category
+                            Categories
                         </a>
                         <a href="{{ route('master_skema') }}" 
                             class="block px-4 py-2 {{ $isSkemaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
