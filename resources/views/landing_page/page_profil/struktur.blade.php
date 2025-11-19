@@ -3,7 +3,7 @@
 @section('title', 'Struktur Organisasi')
 
 @section('content')
-<section id="struktur" class="pt-24 pb-2 bg-white">
+<section id="struktur" class="pt-14 pb-0 bg-white">
     <div class="container mx-auto px-4 text-center">
         <h2 class="text-4xl font-bold mb-12">Struktur Organisasi</h2>
 
@@ -37,40 +37,35 @@
             {{-- ================= LEVEL 1: DEWAN PENGARAH ================= --}}
             <div class="relative z-50">
                 <div onclick="openOrgModal('{{ $dewan->nama }}', '{{ $dewan->jabatan }}', '{{ $dewan->gambar }}')" 
-                     class="cursor-pointer bg-white border-[2px] border-black hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 font-bold py-4 px-4 md:px-10 w-64 md:w-80 shadow-sm mx-auto relative z-50">
+                     class="cursor-pointer bg-blue-800 text-white border-4 border-yellow-400 rounded-2xl hover:bg-blue-700 transition-all duration-300 font-bold py-4 px-4 md:px-10 w-64 md:w-80 shadow-sm mx-auto relative z-50">
                     {{ strtoupper($dewan->jabatan) }}
                 </div>
             </div>
 
-            {{-- Garis Vertikal 1 --}}
-            <div class="h-10 w-[2px] bg-black relative z-0"></div>
+            <div class="h-10 w-[2px] bg-black"></div>
 
             {{-- ================= LEVEL 2: KETUA LSP & KOMITE ================= --}}
             <div class="relative w-full flex flex-col items-center lg:block lg:h-32 mb-0 z-40">
-                
-                {{-- Box Ketua LSP --}}
+
+                {{-- Ketua LSP --}}
                 <div class="relative z-50 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-0">
                     <div onclick="openOrgModal('{{ $ketua_lsp->nama }}', '{{ $ketua_lsp->jabatan }}', '{{ $ketua_lsp->gambar }}')" 
-                         class="cursor-pointer bg-white border-[2px] border-black hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 font-bold py-4 px-4 md:px-10 w-64 md:w-80 shadow-sm mx-auto relative z-50">
+                         class="cursor-pointer bg-blue-800 text-white border-4 border-yellow-400 rounded-2xl hover:bg-blue-700 transition-all duration-300 font-bold py-4 px-4 md:px-10 w-64 md:w-80 shadow-sm mx-auto relative z-50">
                         {{ strtoupper($ketua_lsp->jabatan) }}
                     </div>
                 </div>
 
-                {{-- Konektor Komite (Garis Putus) --}}
-                {{-- Diberi pointer-events-none agar tidak menghalangi klik --}}
                 <div class="block lg:hidden h-8 w-[2px] bg-black mx-auto"></div> 
-                <div class="hidden lg:block absolute top-1/2 left-1/2 w-80 h-[2px] border-t-[2px] border-dashed border-black pointer-events-none z-0"></div> 
+                <div class="hidden lg:block absolute top-1/2 left-1/2 w-80 h-[2px] border-t-4 border-dashed border-black pointer-events-none z-0"></div> 
 
-                {{-- Box Komite Skema --}}
-                {{-- Tambahkan z-[60] untuk memastikan dia di atas segalanya secara fisik --}}
+                {{-- Komite Skema --}}
+                @php
+                    $clean = function($str) {
+                        return str_replace(["'", "\r", "\n"], ["`", "", ""], $str);
+                    };
+                @endphp
+
                 <div class="relative z-[60] lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-1/2 lg:ml-80">
-                    @php
-                        // Fungsi pembersih data agar tidak merusak JavaScript
-                        // Menghapus tanda kutip tunggal (') dan enter agar tidak error
-                        $clean = function($str) {
-                            return str_replace(["'", "\r", "\n"], ["`", "", ""], $str);
-                        };
-                    @endphp
 
                     <div onclick="openOrgModal(
                             '{{ $clean($ketua_komite->nama) }}', 
@@ -80,30 +75,24 @@
                             '{{ $clean($anggota_komite->jabatan) }}', 
                             '{{ $anggota_komite->gambar }}'
                         )" 
-                        class="cursor-pointer bg-white border-[2px] border-black hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 font-bold py-3 px-4 w-56 text-sm shadow-sm mx-auto flex flex-col items-center justify-center h-24 relative z-[60]">
+                        class="cursor-pointer bg-blue-800 text-white border-4 border-yellow-400 rounded-2xl hover:bg-blue-700 transition-all duration-300 font-bold py-3 px-4 w-56 text-sm shadow-sm mx-auto flex flex-col items-center justify-center h-24 relative z-[60]">
                         
                         <span>KOMITE SKEMA</span>
                         
                         @if($anggota_komite->nama !== 'Belum Terisi')
-                            <span class="text-xs font-normal mt-1 text-gray-500">(Ketua & Anggota)</span>
+                            <span class="text-xs font-normal mt-1 text-gray-300">(Ketua & Anggota)</span>
                         @endif
                     </div>
                 </div>
 
-                {{-- Garis Vertikal Turun --}}
                 <div class="hidden lg:block h-1/2 w-[2px] bg-black absolute left-1/2 -translate-x-1/2 top-1/2 pointer-events-none z-0"></div>
             </div>
 
-            {{-- Jembatan Fisik --}}
-            <div class="hidden lg:block h-12 w-[2px] bg-black relative z-0"></div>
+            <div class="hidden lg:block h-4 w-[2px] bg-black relative z-0"></div>
             <div class="block lg:hidden h-8 w-[2px] bg-black"></div>
 
-
             {{-- ================= LEVEL 3: 4 BIDANG ================= --}}
-            
-            {{-- Garis Cabang 4 (Desktop) --}}
-            {{-- PENTING: pointer-events-none dan z-0 agar ada di belakang kartu --}}
-            <div class="hidden lg:block relative w-[1000px] h-8 z-0 pointer-events-none">
+            <div class="hidden lg:block relative w-[1000px] h-3 z-0 pointer-events-none">
                 <div class="absolute top-0 border-t-[2px] border-black left-[125px] right-[125px]"></div>
                 <div class="absolute top-0 left-[125px] h-8 w-[2px] bg-black"></div>
                 <div class="absolute top-0 left-[375px] h-8 w-[2px] bg-black"></div>
@@ -111,59 +100,54 @@
                 <div class="absolute top-0 right-[125px] h-8 w-[2px] bg-black"></div>
             </div>
 
-            {{-- Container Bidang --}}
             <div class="grid grid-cols-1 gap-6 lg:flex lg:justify-center lg:gap-6 w-full lg:w-auto relative z-50">
                 
-                {{-- 1. MANAJEMEN MUTU --}}
+                {{-- 1. Mutu --}}
                 <div class="flex flex-col items-center relative z-50">
-                    <div class="block lg:hidden h-4 w-[2px] bg-black mb-0"></div>
                     <div onclick="openOrgModal(
                             '{{ $ketua_mutu->nama }}', '{{ $ketua_mutu->jabatan }}', '{{ $ketua_mutu->gambar }}',
                             '{{ $anggota_mutu->nama }}', '{{ $anggota_mutu->jabatan }}', '{{ $anggota_mutu->gambar }}'
                          )" 
-                         class="cursor-pointer bg-white border-[2px] border-black hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 font-bold py-3 px-2 w-64 lg:w-56 h-24 flex flex-col items-center justify-center shadow-sm relative z-50">
+                         class="cursor-pointer bg-blue-800 text-white border-4 border-yellow-400 rounded-2xl hover:bg-blue-700 transition-all duration-300 font-bold py-3 px-2 w-64 lg:w-56 h-24 shadow-sm flex flex-col items-center justify-center relative z-50">
                         <span class="text-center">BIDANG<br>MANAJEMEN MUTU</span>
                         @if($anggota_mutu->nama !== 'Belum Terisi')
-                            <span class="text-xs font-normal mt-1 text-gray-500">(Ketua & Anggota)</span>
+                            <span class="text-xs font-normal mt-1 text-gray-300">(Ketua & Anggota)</span>
                         @endif
                     </div>
                 </div>
 
-                {{-- 2. SERTIFIKASI --}}
+                {{-- 2. Sertifikasi --}}
                 <div class="flex flex-col items-center relative z-50">
-                    <div class="block lg:hidden h-4 w-[2px] bg-black mb-0"></div>
                     <div onclick="openOrgModal(
                             '{{ $ketua_sertif->nama }}', '{{ $ketua_sertif->jabatan }}', '{{ $ketua_sertif->gambar }}',
                             '{{ $anggota_sertif->nama }}', '{{ $anggota_sertif->jabatan }}', '{{ $anggota_sertif->gambar }}'
                          )" 
-                         class="cursor-pointer bg-white border-[2px] border-black hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 font-bold py-3 px-2 w-64 lg:w-56 h-24 flex flex-col items-center justify-center shadow-sm relative z-50">
+                         class="cursor-pointer bg-blue-800 text-white border-4 border-yellow-400 rounded-2xl hover:bg-blue-700 transition-all duration-300 font-bold py-3 px-2 w-64 lg:w-56 h-24 shadow-sm flex flex-col items-center justify-center relative z-50">
                         <span class="text-center">BIDANG<br>SERTIFIKASI</span>
                         @if($anggota_sertif->nama !== 'Belum Terisi')
-                            <span class="text-xs font-normal mt-1 text-gray-500">(Ketua & Anggota)</span>
+                            <span class="text-xs font-normal mt-1 text-gray-300">(Ketua & Anggota)</span>
                         @endif
                     </div>
                 </div>
 
-                {{-- 3. KERJASAMA --}}
+                {{-- 3. Kerjasama --}}
                 <div class="flex flex-col items-center relative z-50">
-                    <div class="block lg:hidden h-4 w-[2px] bg-black mb-0"></div>
                     <div onclick="openOrgModal('{{ $ketua_kerjasama->nama }}', '{{ $ketua_kerjasama->jabatan }}', '{{ $ketua_kerjasama->gambar }}')" 
-                         class="cursor-pointer bg-white border-[2px] border-black hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 font-bold py-3 px-2 w-64 lg:w-56 h-24 flex items-center justify-center shadow-sm relative z-50">
+                         class="cursor-pointer bg-blue-800 text-white border-4 border-yellow-400 rounded-2xl hover:bg-blue-700 transition-all duration-300 font-bold py-3 px-2 w-64 lg:w-56 h-24 shadow-sm flex items-center justify-center relative z-50">
                         <span class="text-center">BIDANG<br>KERJASAMA</span>
                     </div>
                 </div>
 
-                {{-- 4. ADMINISTRASI --}}
+                {{-- 4. Administrasi --}}
                 <div class="flex flex-col items-center relative z-50">
-                    <div class="block lg:hidden h-4 w-[2px] bg-black mb-0"></div>
                     <div onclick="openOrgModal(
                             '{{ $ketua_admin->nama }}', '{{ $ketua_admin->jabatan }}', '{{ $ketua_admin->gambar }}',
                             '{{ $anggota_admin->nama }}', '{{ $anggota_admin->jabatan }}', '{{ $anggota_admin->gambar }}'
                          )" 
-                         class="cursor-pointer bg-white border-[2px] border-black hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 font-bold py-3 px-2 w-64 lg:w-56 h-24 flex flex-col items-center justify-center shadow-sm relative z-50">
+                         class="cursor-pointer bg-blue-800 text-white border-4 border-yellow-400 rounded-2xl hover:bg-blue-700 transition-all duration-300 font-bold py-3 px-2 w-64 lg:w-56 h-24 shadow-sm flex flex-col items-center justify-center relative z-50">
                         <span class="text-center">BIDANG<br>ADMINISTRASI</span>
                         @if($anggota_admin->nama !== 'Belum Terisi')
-                            <span class="text-xs font-normal mt-1 text-gray-500">(Ketua & Anggota)</span>
+                            <span class="text-xs font-normal mt-1 text-gray-300">(Ketua & Anggota)</span>
                         @endif
                     </div>
                 </div>
@@ -172,7 +156,7 @@
         </div>
     </div>
 
-    {{-- ================= MODAL POPUP ================= --}}
+    {{-- ================= MODAL ================= --}}
     <div id="orgModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity backdrop-blur-sm" onclick="closeOrgModal()"></div>
 
@@ -207,11 +191,6 @@
                     </div>
                 </div>
 
-                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    <button type="button" onclick="closeOrgModal()" class="inline-flex w-full justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:w-auto transition-colors">
-                        Tutup
-                    </button>
-                </div>
             </div>
         </div>
     </div>
