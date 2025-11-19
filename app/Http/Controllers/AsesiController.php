@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Asesi;
 use App\Models\User;
+use App\Models\DataPekerjaanAsesi; // [PENTING] Import Model Baru
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -51,22 +52,19 @@ class AsesiController extends Controller
             });
         }
         
-        // 5. [PERUBAHAN] Terapkan Filter Tambahan (Gender)
+        // 5. Terapkan Filter Tambahan (Gender)
         $filterGender = $request->input('filter_gender');
         if ($filterGender && in_array($filterGender, ['Laki-laki', 'Perempuan'])) {
             $query->where('jenis_kelamin', $filterGender);
         }
-        // === [AKHIR PERUBAHAN] ===
-
 
         // 6. Logika Sorting (Termasuk relasi)
-        $query->select('asesi.*'); // WAJIB untuk 'select' saat join
+        $query->select('asesi.*'); 
 
         if ($sortColumn == 'email') {
             $query->join('users', 'asesi.id_user', '=', 'users.id_user')
                   ->orderBy('users.email', $sortDirection);
         } else {
-            // Urutkan berdasarkan kolom di tabel 'asesi'
             $query->orderBy($sortColumn, $sortDirection);
         }
 
@@ -80,42 +78,38 @@ class AsesiController extends Controller
         // 8. Ganti ->get() menjadi ->paginate()
         $asesis = $query->paginate($perPage)->onEachSide(0.5);
         
-        // 9. [PERUBAHAN] (WAJIB) Sertakan semua parameter di link paginasi
+        // 9. Sertakan semua parameter di link paginasi
         $asesis->appends($request->only([
             'sort', 'direction', 'search', 'per_page',
-            'filter_gender' // <-- DITAMBAHKAN
+            'filter_gender'
         ]));
-
         
-        // 10. [PERUBAHAN] Kirim data lengkap ke view
+        // 10. Kirim data lengkap ke view
         return view('master.asesi.master_asesi', [
             'asesis' => $asesis,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
             'sortDirection' => $sortDirection,
-            'filterGender' => $filterGender // <-- DITAMBAHKAN
+            'filterGender' => $filterGender
         ]);
     }
 
-    /**
-     * Menampilkan formulir tambah Asesi.
-     */
     public function create()
     {
         return view('master.asesi.add_asesi');
     }
 
     /**
-     * Menyimpan Asesi baru dan Akun User baru.
+     * Menyimpan Asesi baru, Akun User, DAN Data Pekerjaan.
      */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            // Data User
+            // 1. Data User
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()],
             
-            // Data Asesi
+            // 2. Data Asesi
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|size:16|unique:asesi,nik',
             'tempat_lahir' => 'required|string|max:100',
@@ -123,15 +117,21 @@ class AsesiController extends Controller
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'kebangsaan' => 'nullable|string|max:100',
             'pendidikan' => 'required|string|max:255',
-            'pekerjaan' => 'required|string|max:255',
+            'pekerjaan' => 'required|string|max:255', // Pekerjaan umum
             'alamat_rumah' => 'required|string',
             'kode_pos' => 'nullable|string|max:10',
             'kabupaten_kota' => 'required|string|max:255',
             'provinsi' => 'required|string|max:255',
             'nomor_hp' => 'required|string|max:16',
             'tanda_tangan' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
+
+            // 3. Data Pekerjaan Asesi (Detail) - [BARU]
+            'nama_institusi_pekerjaan' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+            'no_telepon_institusi' => 'required|string|max:16',
+            'kode_pos_institusi' => 'nullable|string|max:10',
+            'alamat_institusi' => 'required|string',
         ], [
-            // [SARAN] Tambahkan pesan kustom B. Indonesia
             'email.unique' => 'Email ini sudah terdaftar.',
             'nik.unique' => 'NIK ini sudah terdaftar.',
             'nik.size' => 'NIK harus 16 digit.',
@@ -142,19 +142,18 @@ class AsesiController extends Controller
         try {
             $ttdPath = null;
             if ($request->hasFile('tanda_tangan')) {
-                // Simpan file dan dapatkan path (cth: public/ttd_asesi/namafile.png)
                 $ttdPath = $request->file('tanda_tangan')->store('public/ttd_asesi');
             }
 
-            // Buat User baru (role_id 3 = Asesi)
+            // A. Buat User
             $user = User::create([
                 'email' => $validatedData['email'],
                 'password' => Hash::make($validatedData['password']),
                 'role_id' => 3, 
-                'username' => $validatedData['nik'], // [ASUMSI] Username adalah NIK
+                'username' => $validatedData['nik'],
             ]);
 
-            // Buat Asesi baru
+            // B. Buat Asesi
             $asesi = Asesi::create([
                 'id_user' => $user->id_user, 
                 'nama_lengkap' => $validatedData['nama_lengkap'],
@@ -173,6 +172,16 @@ class AsesiController extends Controller
                 'tanda_tangan' => $ttdPath,
             ]);
 
+            // C. Buat Data Pekerjaan [BARU]
+            DataPekerjaanAsesi::create([
+                'id_asesi' => $asesi->id_asesi,
+                'nama_institusi_pekerjaan' => $validatedData['nama_institusi_pekerjaan'],
+                'jabatan' => $validatedData['jabatan'],
+                'no_telepon_institusi' => $validatedData['no_telepon_institusi'],
+                'kode_pos_institusi' => $validatedData['kode_pos_institusi'],
+                'alamat_institusi' => $validatedData['alamat_institusi'],
+            ]);
+
             DB::commit();
 
             return redirect()->route('master_asesi')->with('success', "Asesi '{$asesi->nama_lengkap}' (ID: {$asesi->id_asesi}) berhasil ditambahkan.");
@@ -186,29 +195,27 @@ class AsesiController extends Controller
         }
     }
 
-    /**
-     * Menampilkan formulir edit Asesi.
-     */
     public function edit($id_asesi)
     {
-        $asesi = Asesi::with('user')->findOrFail($id_asesi);
+        // Load relasi user DAN dataPekerjaan
+        $asesi = Asesi::with(['user', 'dataPekerjaan'])->findOrFail($id_asesi);
         return view('master.asesi.edit_asesi', ['asesi' => $asesi]);
     }
 
     /**
-     * Memperbarui data Asesi dan Akun User (dengan Transaction).
+     * Memperbarui data Asesi, User, dan Data Pekerjaan.
      */
     public function update(Request $request, $id_asesi)
     {
-        $asesi = Asesi::with('user')->findOrFail($id_asesi);
+        $asesi = Asesi::with(['user', 'dataPekerjaan'])->findOrFail($id_asesi);
         $user = $asesi->user;
 
         $validatedData = $request->validate([
-            // Validasi data User
+            // 1. Validasi User
             'email' => 'required|email|unique:users,email,' . $user->id_user . ',id_user',
-            'password' => ['nullable', 'confirmed', Password::min(8)->mixedCase()->numbers()], // Password boleh kosong
+            'password' => ['nullable', 'confirmed', Password::min(8)->mixedCase()->numbers()],
             
-            // Validasi data Asesi
+            // 2. Validasi Asesi
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|size:16|unique:asesi,nik,' . $asesi->id_asesi . ',id_asesi',
             'tempat_lahir' => 'required|string|max:100',
@@ -223,8 +230,14 @@ class AsesiController extends Controller
             'provinsi' => 'required|string|max:255',
             'nomor_hp' => 'required|string|max:16',
             'tanda_tangan' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
+
+            // 3. Validasi Data Pekerjaan [BARU]
+            'nama_institusi_pekerjaan' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+            'no_telepon_institusi' => 'required|string|max:16',
+            'kode_pos_institusi' => 'nullable|string|max:10',
+            'alamat_institusi' => 'required|string',
         ],[
-            // [SARAN] Tambahkan pesan kustom B. Indonesia
             'email.unique' => 'Email ini sudah terdaftar.',
             'nik.unique' => 'NIK ini sudah terdaftar.',
             'nik.size' => 'NIK harus 16 digit.',
@@ -233,6 +246,7 @@ class AsesiController extends Controller
 
         DB::beginTransaction();
         try {
+            // A. Update File TTD
             $ttdPath = $asesi->tanda_tangan;
             if ($request->hasFile('tanda_tangan')) {
                 if ($asesi->tanda_tangan) {
@@ -241,14 +255,14 @@ class AsesiController extends Controller
                 $ttdPath = $request->file('tanda_tangan')->store('public/ttd_asesi');
             }
 
-            // Update User
+            // B. Update User
             $user->email = $validatedData['email'];
             if ($request->filled('password')) {
                 $user->password = Hash::make($validatedData['password']);
             }
             $user->save();
 
-            // Update Asesi
+            // C. Update Asesi
             $asesi->update([
                 'nama_lengkap' => $validatedData['nama_lengkap'],
                 'nik' => $validatedData['nik'],
@@ -266,6 +280,19 @@ class AsesiController extends Controller
                 'tanda_tangan' => $ttdPath,
             ]);
 
+            // D. Update Data Pekerjaan [BARU]
+            // Gunakan updateOrCreate untuk menangani jika data lama belum ada
+            $asesi->dataPekerjaan()->updateOrCreate(
+                ['id_asesi' => $asesi->id_asesi], // Kondisi pencarian
+                [
+                    'nama_institusi_pekerjaan' => $validatedData['nama_institusi_pekerjaan'],
+                    'jabatan' => $validatedData['jabatan'],
+                    'no_telepon_institusi' => $validatedData['no_telepon_institusi'],
+                    'kode_pos_institusi' => $validatedData['kode_pos_institusi'],
+                    'alamat_institusi' => $validatedData['alamat_institusi'],
+                ]
+            );
+
             DB::commit();
 
             return redirect()->route('master_asesi')->with('success', "Asesi '{$asesi->nama_lengkap}' (ID: {$asesi->id_asesi}) berhasil diperbarui.");
@@ -276,9 +303,6 @@ class AsesiController extends Controller
         }
     }
 
-    /**
-     * Menghapus Asesi DAN Akun User terkait.
-     */
     public function destroy($id_asesi)
     {
         DB::beginTransaction();
@@ -293,6 +317,7 @@ class AsesiController extends Controller
                 Storage::delete(str_replace('public/', '', $asesi->tanda_tangan));
             }
             
+            // Hapus User akan meng-cascade delete Asesi dan DataPekerjaanAsesi
             if ($user) {
                 $user->delete();
             } else {

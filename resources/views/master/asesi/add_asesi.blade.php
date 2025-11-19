@@ -109,7 +109,7 @@
                 <input type="text" id="pendidikan" name="pendidikan" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Pendidikan Terakhir" value="{{ old('pendidikan') }}" required>
               </div>
               <div>
-                <label for="pekerjaan" class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan <span class="text-red-500">*</span></label>
+                <label for="pekerjaan" class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan (Umum) <span class="text-red-500">*</span></label>
                 <input type="text" id="pekerjaan" name="pekerjaan" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Pekerjaan Saat Ini" value="{{ old('pekerjaan') }}" required>
               </div>
             </div>
@@ -142,6 +142,32 @@
           </section>
 
           <section>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">Data Pekerjaan Sekarang</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label for="nama_institusi_pekerjaan" class="block text-sm font-medium text-gray-700 mb-1">Nama Institusi/Perusahaan <span class="text-red-500">*</span></label>
+                <input type="text" id="nama_institusi_pekerjaan" name="nama_institusi_pekerjaan" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cth: PT. Teknologi Maju" value="{{ old('nama_institusi_pekerjaan') }}" required>
+              </div>
+              <div>
+                <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-1">Jabatan <span class="text-red-500">*</span></label>
+                <input type="text" id="jabatan" name="jabatan" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cth: Staff IT" value="{{ old('jabatan') }}" required>
+              </div>
+              <div>
+                <label for="no_telepon_institusi" class="block text-sm font-medium text-gray-700 mb-1">No. Telp Institusi <span class="text-red-500">*</span></label>
+                <input type="tel" id="no_telepon_institusi" name="no_telepon_institusi" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cth: 024-123456" value="{{ old('no_telepon_institusi') }}" required>
+              </div>
+              <div>
+                <label for="kode_pos_institusi" class="block text-sm font-medium text-gray-700 mb-1">Kode Pos Institusi</label>
+                <input type="text" id="kode_pos_institusi" name="kode_pos_institusi" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cth: 50123" value="{{ old('kode_pos_institusi') }}">
+              </div>
+              <div class="md:col-span-2">
+                <label for="alamat_institusi" class="block text-sm font-medium text-gray-700 mb-1">Alamat Institusi <span class="text-red-500">*</span></label>
+                <textarea id="alamat_institusi" name="alamat_institusi" rows="3" class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Masukkan alamat lengkap institusi" required>{{ old('alamat_institusi') }}</textarea>
+              </div>
+            </div>
+          </section>
+
+          <section>
             <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">Tanda Tangan</h3>
             <div x-data="{ fileName: '' }">
               <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -156,7 +182,6 @@
           </section>
 
           <div class="flex justify-end items-center pt-6 border-t mt-10">
-            {{-- INI PERBAIKANNYA --}}
             <button type="submit" class="w-full px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm shadow-md transition">
               Tambah
             </button>

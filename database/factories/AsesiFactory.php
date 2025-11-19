@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Asesi;
 use App\Models\User;
+use App\Models\DataPekerjaanAsesi;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AsesiFactory extends Factory
@@ -36,4 +37,19 @@ class AsesiFactory extends Factory
             'tanda_tangan'   => 'dummy/ttd.png',
         ];
     }
+
+    /**
+     * Konfigurasi factory hook.
+     * Method ini akan dijalankan SETELAH Asesi berhasil dibuat.
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (Asesi $asesi) {
+            // Buat 1 data pekerjaan untuk asesi ini
+            DataPekerjaanAsesi::factory()->create([
+                'id_asesi' => $asesi->id_asesi,
+            ]);
+        });
+    }
+
 }
