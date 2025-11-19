@@ -37,10 +37,11 @@
     .form-container {
       border: 2px solid #0D63F3;
       border-radius: 22px;
-      padding: 50px;
-      width: 800px;
+      padding: 30px;
+      height: 400px;
+      width:500px;
       background: white;
-      box-shadow: -14px 0px 34px rgba(0,0,0,0.13);
+      box-shadow: -15px 8px 5px rgba(0,0,0,0.13);
     }
 
     .fade { transition: opacity 0.6s ease; }
@@ -59,35 +60,35 @@
         src="{{ asset('images/pixel.png') }}" 
         class="pixel1"
         style="
-          --px-size: 500px;        /* ubah ukuran sesuka kamu */
-          --px-top: -100px;           /* posisi Y */
-          --px-right: -30px;         /* posisi X */
+          --px-size: 250px;        /* ubah ukuran sesuka kamu */
+          --px-top: -50px;           /* posisi Y */
+          --px-right: -15px;         /* posisi X */
         "
       >
 
       <!-- Logo kiri atas -->
-      <div class="absolute top-6 left-10">
+      <div class="absolute top-2 left-4">
         <img 
           src="{{ asset('images/Logo_LSP_No_BG.png') }}" 
           class="w-24 drop-shadow"
-          style="width: 150px;"     >
+          style="width: 80px;"     >
       </div>
 
       <!-- FORM LOGIN -->
-      <div class="form-container mx-auto -mt-10" shadow-2xl>
+      <div class="form-container mx-auto -mt-15" shadow-2xl>
         <h2 class="text-[22px] font-semibold mb-6 tracking-wide">Masukan akun Anda!</h2>
 
         <form action="{{ url('/login') }}" method="POST" class="space-y-6">
           @csrf
 
           <div class="flex flex-col w-full">
-            <label class="text-sm font-medium">Username</label>
-            <input type="text" name="username" class="mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 outline-none" placeholder="Masukkan username">
+            <label class="text-sm font-small">Username</label>
+            <input type="text" name="username" class="mt-1 px-2 py-1 border rounded-lg shadow-sm focus:ring-2 outline-none" placeholder="Masukkan username">
           </div>
 
           <div class="flex flex-col w-full">
             <label class="text-sm font-medium">Password</label>
-            <input id="password" type="password" name="password" class="mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 outline-none" placeholder="Masukkan password">
+            <input id="password" type="password" name="password" class="mt-1 px-2 py-1 border rounded-lg shadow-sm focus:ring-2 outline-none" placeholder="Masukkan password">
           </div>
 
           <div class="flex justify-between items-center text-sm -mt-2">
@@ -110,9 +111,9 @@
         src="{{ asset('images/pixel2.png') }}" 
         class="pixel2"
         style="
-          --px-size: 500px;       /* ubah ukuran */
-          --px-bottom: -100px;       /* posisi Y */
-          --px-left: -30px;         /* posisi X */
+          --px-size: 250px;       /* ubah ukuran */
+          --px-bottom: -50px;       /* posisi Y */
+          --px-left: -15px;         /* posisi X */
         "
       >
 
@@ -124,8 +125,8 @@
 
       <div class="absolute inset-0 bg-black/45"></div>
 
-      <div class="relative text-white px-14 mt-4">
-        <h1 class="text-[70px] font-bold leading-tight drop-shadow-lg">
+      <div class="relative text-white px-6 mt-2">
+        <h1 class="text-[40px] font-bold leading-tight drop-shadow-lg">
           Welcome to Admin LSP<br>
           Politeknik Negeri<br>
           Semarang!
@@ -133,14 +134,14 @@
       </div>
 
       <!-- SLIDE TEKS -->
-      <div class="absolute bottom-16 left-1/2 -translate-x-1/2 w-[80%] flex items-center justify-center gap-6 text-white text-2xl">
+      <div class="absolute bottom-16 left-1/2 -translate-x-1/2 w-[80%] flex items-center justify-center gap-6 text-white text-1xl">
         <span class="text-3xl cursor-pointer select-none" id="prevBtn">◀</span>
 
         <p id="slideText" class="leading-relaxed text-center fade opacity-100">
           Pusat kendali operasional yang mengamankan integritas data asesi dan memastikan kelancaran alur uji kompetensi.
         </p>
 
-        <span class="text-3xl cursor-pointer select-none" id="nextBtn">▶</span>
+        <span class="text-2xl cursor-pointer select-none" id="nextBtn">▶</span>
       </div>
 
     </div>
