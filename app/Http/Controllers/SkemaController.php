@@ -61,7 +61,7 @@ class SkemaController extends Controller
      */
     public function create()
     {
-        return view('master.skema.add_skema');
+        return view('master.skema.add_skema1');
     }
 
     /**
