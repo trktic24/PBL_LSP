@@ -130,7 +130,7 @@
                                 </a>
                             </th>
 
-                            <th class="px-6 py-3 text-left font-semibold w-24">Foto</th>
+                            <th class="px-6 py-3 text-left font-semibold w-24">Foto TUK</th>
 
                             <th class="px-6 py-3 text-left font-semibold">
                                 @php
