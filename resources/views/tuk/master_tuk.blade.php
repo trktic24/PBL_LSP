@@ -40,7 +40,7 @@
                 
                 <form action="{{ route('master_tuk') }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
                     <div class="relative">
-                        <input type="text" name="search" x-model="search" placeholder="Cari TUK..."
+                        <input type="text" name="search" x-model="search" placeholder="Search..."
                             class="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         <button type="submit" class="absolute left-3 top-0 h-full text-gray-400 hover:text-gray-600">
                             <i class="fas fa-search"></i>
