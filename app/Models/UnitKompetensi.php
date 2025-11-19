@@ -31,7 +31,7 @@ class UnitKompetensi extends Model
      */
     protected $fillable = [
         'id_kelompok_pekerjaan',
-        'urutan', // <--- Ini KUNCI Wizard (Step 1, 2, 3)
+        'urutan',
         'kode_unit',
         'judul_unit',
     ];

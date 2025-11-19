@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
             UnitKompetensiSeeder::class,
             KelompokPekerjaanSeeder::class,
             SkemaSeeder::class,
+            JuniorWebDevSeeder::class
         ]);
     }
 }

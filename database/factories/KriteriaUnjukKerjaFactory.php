@@ -17,9 +17,11 @@ class KriteriaUnjukKerjaFactory extends Factory
     public function definition(): array
     {
         return [
+            'id_elemen' => ElemenFactory::factory(),
             'no_kriteria' => fake()->numerify('#.#'),
             'kriteria' => fake()->sentence(8),
             'tipe' => 'demonstrasi',
+            'standar_industri_kerja' => null,
         ];
     }
 }

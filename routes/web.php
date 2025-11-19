@@ -23,9 +23,35 @@ return view('frontend/daftar_asesi');
 Route::get('/tracker', function () {
     return view('frontend/tracker');
 })->name('tracker');
+
+//APL
+Route::get('/APL_01_1', function () {
+    return view('frontend/APL_01/APL_01_1');
+})->name('APL_01_1');
+Route::get('/APL_01_2', function () {
+    return view('frontend/APL_01/APL_01_2');
+})->name('APL_01_2');
+Route::get('/APL_02', function () {
+    return view('frontend/APL_02/APL_02');
+})->name('APL_02');
+
+// MAPA
 Route::get('/FR-MAPA-02', function () {
     return view('frontend/FR_MAPA_02');
 })->name('MAPA-02');
+
+//AK
+Route::get('/FR_AK_01', function () {
+    return view('frontend/FR_AK_01');
+})->name('FR_AK_01');
+Route::get('/FR_AK_04', function () {
+    return view('frontend/FR_AK_04');
+})->name('FR_AK_04');
+
+//IA
+Route::get('/IA_07', function () {
+    return view('frontend/IA_07/IA_07');
+})->name('IA07');
 
 
 Route::middleware('auth')->group(function () {
@@ -60,5 +86,10 @@ Route::post('/ia01/{skema_id}/cover', [Ia01Controller::class, 'storeCover'])->na
 // Route Step Wizard (Unit 1, 2, dst)
 Route::get('/ia01/{skema_id}/step/{urutan}', [Ia01Controller::class, 'showStep'])->name('ia01.showStep');
 Route::post('/ia01/{skema_id}/step/{urutan}', [Ia01Controller::class, 'storeStep'])->name('ia01.storeStep');
-
+Route::get('/ia01/{skema_id}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
+Route::post('/ia01/{skema_id}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+// Route Halaman Sukses (Image 2)
+Route::get('/ia01/success', function() {
+    return view('frontend.IA_01.success');
+})->name('ia01.success_page');
 require __DIR__.'/auth.php';
