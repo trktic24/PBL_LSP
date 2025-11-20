@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use App\Models\KelompokPekerjaan;
 use App\Models\UnitKompetensi;
 use App\Models\ResponApl02Ia01;
+use App\Models\Skema;
 use Illuminate\Support\Facades\Auth;
 
 class IA01Controller extends Controller
@@ -17,11 +18,15 @@ class IA01Controller extends Controller
      */
     public function showCover(Request $request, $skema_id)
     {
-        $kelompok = KelompokPekerjaan::findOrFail($skema_id);
-        $data_sesi = $request->session()->get("ia01.skema_{$skema_id}", []);
+        $skema = Skema::with('kelompokPekerjaans.unitKompetensis')->findOrFail($skema_id);
+        $kelompok = $skema->kelompokPekerjaans->first();
+        if (!$kelompok) {
+        return back()->with('error', 'Skema ini belum memiliki Kelompok Pekerjaan.');
+        }
         $unitKompetensi = $kelompok->unitKompetensis()->orderBy('urutan')->first();
+        $data_sesi = $request->session()->get("ia01.skema_{$skema_id}", []);
 
-        return view('frontend.IA_01.tampilan_awal', compact('kelompok', 'unitKompetensi', 'data_sesi'));
+        return view('frontend.IA_01.tampilan_awal', compact('kelompok','skema', 'unitKompetensi', 'data_sesi'));
     }
 
     /**
@@ -55,11 +60,15 @@ class IA01Controller extends Controller
      */
     public function showStep(Request $request, $skema_id, $urutan)
     {
-        $kelompok = KelompokPekerjaan::findOrFail($skema_id);
+        $skema = Skema::with('kelompokPekerjaans')->findOrFail($skema_id);
+        $kelompok = $skema->kelompokPekerjaans->first();
+        if (!$kelompok) {
+        return back()->with('error', 'Kelompok Pekerjaan tidak ditemukan untuk Skema ini.');
+        }
         $unitKompetensi = UnitKompetensi::with(['elemens.kriteriaUnjukKerja'])
-                                        ->where('id_kelompok_pekerjaan', $skema_id)
-                                        ->where('urutan', $urutan)
-                                        ->firstOrFail();
+                                    ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan) // <-- INI YG BENER
+                                    ->where('urutan', $urutan)
+                                    ->firstOrFail();
 
         $kuks = $unitKompetensi->kriteriaUnjukKerja()->orderBy('no_kriteria')->get();
         $totalSteps = $kelompok->unitKompetensis()->count();
@@ -67,11 +76,11 @@ class IA01Controller extends Controller
 
         // Cek tipe form dari KUK pertama (aktivitas/demonstrasi)
         // Biar view tau mau nampilin header 'Ya/Tidak' atau 'K/BK'
-        $formType = $kuks->first()->tipe ?? 'demonstrasi';
+        $formType = $kuks->first()->tipe ?? 'aktivitas';
 
         // Kita pake SATU VIEW AJA 'IA_01' tapi nanti tabelnya dinamis
         return view('frontend.IA_01.IA_01', compact(
-            'unitKompetensi', 'kuks', 'data_sesi', 'totalSteps', 'formType'
+            'unitKompetensi', 'kuks','skema', 'data_sesi', 'totalSteps', 'formType'
         ));
     }
 
@@ -80,10 +89,11 @@ class IA01Controller extends Controller
      */
     public function storeStep(Request $request, $skema_id, $urutan)
     {
-        $kelompok = KelompokPekerjaan::findOrFail($skema_id);
-        $unitKompetensi = UnitKompetensi::where('id_kelompok_pekerjaan', $skema_id)
-                                        ->where('urutan', $urutan)
-                                        ->firstOrFail();
+        $skema = Skema::with('kelompokPekerjaans')->findOrFail($skema_id);
+        $kelompok = $skema->kelompokPekerjaans->firstOrFail();
+        $unitKompetensi = UnitKompetensi::where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
+                                    ->where('urutan', $urutan)
+                                    ->firstOrFail();
 
         // Ambil semua ID KUK di unit ini buat validasi
         // Pake kriteriaUnjukKerja() (HasManyThrough) biar ringkas
@@ -131,8 +141,81 @@ class IA01Controller extends Controller
         if ($urutan < $totalSteps) {
             return redirect()->route('ia01.showStep', ['skema_id' => $skema_id, 'urutan' => $urutan + 1]);
         } else {
-            // --- FINAL SAVE KE DATABASE ---
-            return $this->finalSaveToDatabase($request, $sessionKey);
+            return redirect()->route('ia01.finish', ['skema_id' => $skema_id]);
+        }
+    }
+    public function showFinish(Request $request, $skema_id)
+{
+    $skema = Skema::with('kelompokPekerjaans')->findOrFail($skema_id);
+    $kelompok = $skema->kelompokPekerjaans->first();
+
+    $sessionKey = "ia01.skema_{$skema_id}";
+    $data_sesi = $request->session()->get($sessionKey, []);
+
+    $adaBK = in_array('belum_kompeten', $data_sesi['hasil'] ?? []);
+    $rekomendasiSistem = $adaBK ? 'belum_kompeten' : 'kompeten';
+
+    // === PERBAIKAN DISINI (ANTI NULL) ===
+
+    // 1. Ambil Asesi (Cari user pertama di DB, kalau kosong bikin object dummy)
+    // Kita pake first() biar aman kalau ID 1 udah kehapus pas reset DB
+    $asesi = \App\Models\User::first() ?? new \App\Models\User([
+        'name' => 'Data Asesi Kosong (Cek Seeder)',
+        'ttd_path' => null
+    ]);
+
+    // 2. Ambil Asesor (Cek Auth, kalau gak login pake object dummy)
+    $asesor = Auth::user() ?? new \App\Models\User([
+        'name' => 'Asesor (Guest/Belum Login)',
+        'ttd_path' => null
+    ]);
+
+    return view('frontend.IA_01.finish', compact('skema', 'kelompok', 'rekomendasiSistem', 'asesi', 'asesor', 'data_sesi'));
+}
+    public function storeFinish(Request $request, $skema_id)
+    {
+        // Validasi input halaman finish
+        $request->validate([
+            'rekomendasi' => 'required|in:kompeten,belum_kompeten',
+            'umpan_balik' => 'nullable|string',
+            'tanda_tangan_asesor' => 'nullable', // Nanti divalidasi kalo wajib
+        ]);
+
+        $sessionKey = "ia01.skema_{$skema_id}";
+        $finalData = $request->session()->get($sessionKey);
+
+        // ID Asesi (Hardcode dulu / ambil dari session cover)
+        $idDataSertifikasi = 1;
+
+        try {
+            // 1. SIMPAN HASIL PER KUK
+            if (!empty($finalData['hasil'])) {
+                foreach ($finalData['hasil'] as $kukId => $status) {
+                    $isKompeten = ($status === 'kompeten') ? 1 : 0;
+                    ResponApl02Ia01::updateOrCreate(
+                        ['id_data_sertifikasi_asesi' => $idDataSertifikasi, 'id_kriteria' => $kukId],
+                        [
+                            'pencapaian_ia01' => $isKompeten,
+                            'standar_industri_ia01' => $finalData['standar_industri'][$kukId] ?? null,
+                            'penilaian_lanjut_ia01' => $finalData['penilaian_lanjut'][$kukId] ?? null,
+                        ]
+                    );
+                }
+            }
+
+            // 2. SIMPAN DATA REKOMENDASI & UMPAN BALIK GLOBAL
+            // Karena tabel respon_apl02_ia01 itu per KUK, biasanya data global ini
+            // masuk ke tabel transaksi_asesmen atau update status di data_sertifikasi.
+            // SEMENTARA: Kita anggap sukses dulu aja logic-nya.
+
+            // Bersihkan Session
+            $request->session()->forget($sessionKey);
+
+            // Redirect ke Halaman Sukses
+            return redirect()->route('ia01.success_page');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
     }
 

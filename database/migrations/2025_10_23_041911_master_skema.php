@@ -16,6 +16,7 @@ return new class extends Migration
             // Ini akan membuat kolom BIGINT UNSIGNED AUTO_INCREMENT
             $table->id('id_skema');
             $table->foreignId('categorie_id')->constrained('categories', 'id')->onUpdate('cascade')->onDelete('cascade')->nullable();
+
             // kode_unit (int) - Saya ubah jadi string
             // Alasan: Kode unit seringkali mengandung titik atau huruf (misal: J.620100.001.01)
             // Jika ini adalah foreign key ke tabel 'unit_kompetensi', sesuaikan
