@@ -123,7 +123,7 @@
                     </button>
 
                     <div id="skemaBox" class="submenu">
-                        <input class="w-full p-2 border rounded-lg mb-2" placeholder="Cari..." 
+                        <input class="w-full p-2 border rounded-lg mb-2" placeholder="Cari..."
                                onkeyup="filterCheckbox('skemaBox', this.value)">
 
                         @foreach($listSkema as $skema)
@@ -144,7 +144,7 @@
                     </button>
 
                     <div id="tukBox" class="submenu">
-                        <input class="w-full p-2 border rounded-lg mb-2" placeholder="Cari..." 
+                        <input class="w-full p-2 border rounded-lg mb-2" placeholder="Cari..."
                                onkeyup="filterCheckbox('tukBox', this.value)">
 
                         @foreach($listTuk as $tuk)
@@ -270,7 +270,7 @@
 
             <div class="text-center">
                 @if($item->Status_jadwal === 'Terjadwal')
-                    <a href="{{ route('jadwal.show', $item->id_jadwal) }}"
+                    <a href="{{ route('jadwal.detail', $item->id_jadwal) }}"
                         class="px-3 py-1 rounded-full text-xs font-medium {{ $statusClass }}">
                         Lihat Detail
                     </a>
