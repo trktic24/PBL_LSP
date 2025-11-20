@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TandaTanganController;
+use App\Http\Controllers\UmpanBalikController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
 
@@ -103,10 +104,6 @@ Route::get('/pertanyaan_lisan', function () {
     return view('pertanyaan_lisan');
 });
 
-Route::get('/umpan_balik', function () {
-    return view('umpan_balik');
-});
-
 Route::get('/fr_ak01', function () {
     return view('fr_ak01');
 });
@@ -140,6 +137,13 @@ Route::get('/profil', function () {
 
 Route::post('/simpan/tandatangan', [TandaTanganController::class, 'simpanTandaTangan'])
     ->name('simpan.tandatangan'); 
+
+Route::post('/umpan_balik/store', [UmpanBalikController::class, 'store']);
+Route::get('/umpan_balik', [UmpanBalikController::class, 'index']);
+Route::get('/umpan_balik/{id}', [UmpanBalikController::class, 'show']);
+Route::put('/umpan_balik/{id}', [UmpanBalikController::class, 'update']);
+Route::delete('/umpan_balik/{id}', [UmpanBalikController::class, 'destroy']);
+
     
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

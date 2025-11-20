@@ -11,16 +11,21 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('master_unit_kompetensi', function (Blueprint $table) {
-            $table->id('id_unit_kompetensi');
+            $table->id('id_unit_kompetensi'); // bigint unsigned
 
-            $table->foreignId('id_kelompok_pekerjaan')->constrained('kelompok_pekerjaans', 'id_kelompok_pekerjaan')->onUpdate('cascade')->onDelete('cascade');
+            $table->unsignedBigInteger('id_kelompok_pekerjaan'); // harus unsigned bigint
+            $table->foreign('id_kelompok_pekerjaan')
+                ->references('id_kelompok_pekerjaan')
+                ->on('kelompok_pekerjaans')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
-            // Kolom sisanya (sesuai ERD)
             $table->string('kode_unit');
             $table->string('judul_unit');
             $table->string('jenis_standar');
             $table->timestamps();
         });
+
     }
 
     /**

@@ -11,13 +11,17 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('kelompok_pekerjaans', function (Blueprint $table) {
-            $table->id('id_kelompok_pekerjaan');
-            $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('cascade');
-
-            $table->string('kode_unit');
+            $table->id('id_kelompok_pekerjaan'); // bigint unsigned primary key
+            $table->foreignId('id_skema')
+                ->constrained('skema', 'id_skema')
+                ->onDelete('cascade');
+            $table->string('kode_unit'); 
             $table->string('judul_unit');
+            $table->string('jenis_standar')->nullable(); 
             $table->timestamps();
         });
+
+
     }
 
     /**
