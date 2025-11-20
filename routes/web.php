@@ -1,34 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Models\Asesi;
 
 // ====================================================
 // KUMPULAN SEMUA CONTROLLER & MODEL
 // ====================================================
 use App\Models\Skema;
-use App\Models\Asesi;
 use App\Models\Asesor;
-use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TukController;
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\TukController;
-use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Apl01PdfController;
 use App\Http\Controllers\TrackerController;
+use App\Http\Controllers\Apl01PdfController;
 use App\Http\Controllers\SkemaWebController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Asesor\AsesorTableController;
-use App\Http\Controllers\Kerahasiaan\PersetujuanKerahasiaanController;
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
-use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
+use App\Http\Controllers\Kerahasiaan\PersetujuanKerahasiaanController;
 use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
-// use App\Http\Controllers\TrackerController; // <-- [PERUBAHAN DITAMBAHKAN]
-use App\Http\Controllers\Apl02\PraasesmenController; // WAJIB panggil Controller Anda di sini!
-
+use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
+use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -174,13 +171,6 @@ Route::get('/formulir-selesai', function () {
 // GRUP 5: ASESMEN & PEMBAYARAN
 // ====================================================
 
-// --- Pembayaran ---
-Route::get('/pembayaran', function () { return view('pembayaran/pembayaran'); });
-Route::get('/upload_bukti_pembayaran', function () { return view('upload_bukti_pembayaran'); });
-Route::get('/tunggu_pembayaran', function () { return view('tunggu_pembayaran'); });
-Route::get('/bayar', [PaymentController::class, 'createTransaction'])->name('payment.create');
-Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])->name('pembayaran_diproses');
-
 // Route::get('/praasesmen', [PraasesmenController::class, 'index']);
 
 // OPSI 2: Menggunakan URL spesifik (Direkomendasikan)
@@ -223,3 +213,13 @@ Route::get('/keep-alive', function () {
 });
 Route::get('/api/search-countries', [CountryController::class, 'search'])
     ->name('api.countries.search');
+
+// Route Pembayaran
+// Saat tombol "Bayar" di Tracker diklik, lari ke sini
+Route::get('/bayar', [PaymentController::class, 'createTransaction'])
+    ->middleware('auth')
+    ->name('payment.create');
+
+// Halaman "Terima Kasih / Diproses" setelah dari Midtrans
+Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])
+    ->name('pembayaran_diproses');

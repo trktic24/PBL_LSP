@@ -46,7 +46,7 @@ return new class extends Migration
             
             // Kolom status ini sudah punya default, tapi kita buat nullable juga
             // agar bisa diisi null secara eksplisit jika diperlukan.
-            $table->string('status_sertifikasi', 50)->default('pendaftaran_selesai')->nullable();
+            $table->string('status_sertifikasi', 50)->default('sedang_mendaftar')->nullable();
             
             $table->timestamps();
         });

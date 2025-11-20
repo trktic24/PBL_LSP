@@ -58,8 +58,11 @@ class Test extends Controller
                 'message' => 'Data Asesi Tidak Ditemukan',
             ], 404);
         }
+        else {
+            return view('test', compact('asesi_show'));
+        }
 
-        return view('test', compact('asesi_show'));
+
     }
 
     public function update(Request $request, string $id)

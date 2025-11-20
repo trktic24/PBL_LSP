@@ -53,6 +53,7 @@ class DataSertifikasiAsesi extends Model
     ];
 
     // Tahap Pendaftaran & Bayar (Asesi)
+    public const STATUS_SEDANG_MENDAFTAR = 'sedang_mendaftar';
     public const STATUS_PENDAFTARAN_SELESAI = 'pendaftaran_selesai';
     public const STATUS_TUNGGU_VERIFIKASI_BAYAR = 'menunggu_verifikasi_bayar';
     public const STATUS_PEMBAYARAN_LUNAS = 'pembayaran_lunas';
@@ -83,6 +84,7 @@ class DataSertifikasiAsesi extends Model
     public function getProgresLevelAttribute(): int
     {
         return match ($this->status_sertifikasi) {
+            self::STATUS_SEDANG_MENDAFTAR          => 5,
             self::STATUS_PENDAFTARAN_SELESAI       => 10,
             self::STATUS_TUNGGU_VERIFIKASI_BAYAR => 20,
             self::STATUS_PEMBAYARAN_LUNAS          => 30,

@@ -454,7 +454,7 @@
 
             // --- AUTO LOAD DATA ---
             if (idDataSertifikasi) {
-                fetch(`/api/bukti-kelengkapan/list/${idDataSertifikasi}`)
+                fetch(`/api/v1/bukti-kelengkapan/list/${idDataSertifikasi}`)
                     .then(res => res.json())
                     .then(response => {
                         if (response.success && response.data.length > 0) {
@@ -550,7 +550,7 @@
                     }
 
                     try {
-                        const response = await fetch('/api/bukti-kelengkapan/store', {
+                        const response = await fetch('/api/v1/bukti-kelengkapan/store', {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
