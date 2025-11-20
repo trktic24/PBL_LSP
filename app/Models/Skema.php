@@ -5,48 +5,44 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-// (Kita mungkin perlu menambahkan 'use' untuk model lain, tapi ini sudah cukup)
+// [PERBAIKAN] Model yang di-use sudah dirapikan
+use App\Models\Jadwal;
+use App\Models\Category; // <-- [PENTING] Ganti dari 'categorie' ke 'category'
+use App\Models\KelompokPekerjaan;
+use App\Models\UnitKompetensi; // <-- [ASUMSI] Nama modelmu ini
 
 class Skema extends Model
 {
-    // 1. WAJIB: Biar bisa nyambung ke SkemaFactory
     use HasFactory;
-
-    // 2. WAJIB: Kasih tau nama tabelnya (karena bukan 'skemas')
+    
     protected $table = 'skema';
-
-    // 3. WAJIB: Kasih tau nama Primary Key-nya (karena bukan 'id')
     protected $primaryKey = 'id_skema';
 
-    // 4. WAJIB: Biar Factory bisa ngisi semua kolom (Hanya satu)
+    /**
+     * [PERBAIKAN]
+     * Pilih salah satu: $fillable atau $guarded.
+     * $guarded = [] artinya semua kolom boleh diisi (mass assignable).
+     * Ini lebih simpel daripada nulis $fillable satu per satu.
+     */
     protected $guarded = [];
 
-    protected $fillable = [
-        'kode_unit',
-        'nama_skema',
-        'deskripsi_skema',
-        'SKKNI',
-        'gambar'
-    ];
+    // [DIHAPUS] $fillable tidak perlu jika sudah pakai $guarded = []
+    // protected $fillable = [
+    //     'kode_unit', 'nama_skema', 'deskripsi_skema', 'SKKNI', 'gambar'
+    // ];
 
-    // --- SEMUA FUNGSI RELASI HARUS ADA DI DALAM SINI ---
+
+    // --- FUNGSI RELASI ---
 
     /**
-     * Relasi: 1 Skema punya BANYAK UnitKompetensi (untuk SKKNI)
+     * Relasi: 1 Skema punya BANYAK Jadwal
      */
-    public function unitKompetensi()
+    public function jadwals(): HasMany
     {
-        // 'id_skema' (foreign key), 'id_skema' (local key)
-        return $this->hasMany(UnitKompetensi::class, 'id_skema', 'id_skema');
-    }
-
-    /**
-     * Relasi: 1 Skema punya BANYAK DetailSertifikasi
-     */
-    public function detailSertifikasi()
-    {
-        return $this->hasMany(DetailSertifikasi::class, 'id_skema', 'id_skema');
+        return $this->hasMany(Jadwal::class, 'id_skema', 'id_skema');
     }
 
     /**
@@ -54,7 +50,34 @@ class Skema extends Model
      */
     public function kelompokPekerjaans(): HasMany
     {
-        // Model tujuan, Foreign Key, Local Key (PK di tabel ini)
         return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
     }
-} // <-- INI ADALAH PENUTUP CLASS YANG BENAR (Hanya satu)
+
+    /**
+     * [PERBAIKAN]
+     * Relasi: 1 Skema DIMILIKI OLEH 1 Category
+     */
+    public function category(): BelongsTo // <-- Nama fungsi dibenerin (singular)
+    {
+        // Relasi BelongsTo: (Model, foreign_key, owner_key)
+        // 'categorie_id' -> FK di tabel 'skema' (sesuai migrasi typo-mu)
+        // 'id'           -> PK di tabel 'categories'
+        return $this->belongsTo(Category::class, 'categorie_id', 'id');
+    }
+    
+    /**
+     * Relasi "Jalan Pintas" (HasManyThrough)
+     * Skema -> (lewat KelompokPekerjaan) -> UnitKompetensi
+     */
+    public function unitKompetensi()
+    {
+        return $this->hasManyThrough(
+            UnitKompetensi::class,      // 1. Model Tujuan (Unit)
+            KelompokPekerjaan::class,   // 2. Model Perantara (Kelompok)
+            'id_skema',                 // 3. FK di tabel perantara (kelompok_pekerjaan)
+            'id_kelompok_pekerjaan',    // 4. FK di tabel tujuan (unit_kompetensi)
+            'id_skema',                 // 5. PK di tabel ini (skema)
+            'id_kelompok_pekerjaan'     // 6. PK di tabel perantara (kelompok_pekerjaan)
+        );
+    }
+}

@@ -82,7 +82,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Route untuk file auth.php
-require _DIR_.'/auth.php';
+require __DIR__.'/auth.php';
 
 
 // ====================================================

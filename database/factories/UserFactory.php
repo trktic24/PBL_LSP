@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Role;
+use App\Models\Role; // <-- Import Role
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Hash; // <-- Import Hash
 use Illuminate\Support\Str;
 
 /**
@@ -12,8 +12,6 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-    protected static ?string $password;
-
     /**
      * Define the model's default state.
      *
@@ -21,30 +19,29 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        // Ambil ID role 'asesi' dari DB (ini butuh RoleSeeder udah jalan)
-        $asesiRoleId = Role::where('nama_role', 'asesi')->first()->id_role ?? 1;
-
         return [
-            // GANTI 'name' JADI 'username'
-            'username' => fake()->unique()->userName(),
+            // Ambil role_id secara acak dari tabel roles
+            // Ini ASUMSI tabel roles-nya udah keisi dulu
+            'role_id' => Role::inRandomOrder()->first()->id_role,
 
-            'email' => fake()->unique()->safeEmail(),
-            'password' => (static::$password ??= Hash::make('password')),
+            'email' => $this->faker->unique()->safeEmail(),
+            'email_verified_at' => now(),
 
-            // TAMBAHIN 'role_id'
-            'role_id' => $asesiRoleId,
+            // Password default-nya adalah 'password'
+            'password' => Hash::make('password'),
 
             'google_id' => null,
-            'email_verified_at' => now(),
             'remember_token' => Str::random(10),
         ];
     }
+
+    /**
+     * Indicate that the model's email address should be unverified.
+     */
     public function unverified(): static
     {
-        return $this->state(
-            fn(array $attributes) => [
-                'email_verified_at' => null,
-            ],
-        );
+        return $this->state(fn (array $attributes) => [
+            'email_verified_at' => null,
+        ]);
     }
 }

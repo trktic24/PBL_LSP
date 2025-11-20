@@ -20,7 +20,7 @@ return new class extends Migration
             // Jika tabel asesi Anda belum ada, Anda harus membuatnya terlebih dahulu.
             $table->foreignId('id_asesi')->constrained(
                 table: 'asesi', column: 'id_asesi'
-            )->onUpdate('cascade')->onDelete('restrict');
+            )->onUpdate('cascade')->onDelete('cascade');
 
             // Data Pekerjaan Sekarang
             $table->string('nama_institusi_pekerjaan');

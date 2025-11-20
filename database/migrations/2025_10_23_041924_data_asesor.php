@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('asesor', function (Blueprint $table) {
             // Sesuai permintaan: id_asesor (primary) (bigint)
-            $table->id('id_asesor'); 
-            
-            // Sesuai permintaan: id_skema (Foreign) (bigint) & id_user (Foreign) (bigint)
-            // Ini adalah cara modern Laravel untuk membuat foreign key (unsignedBigInteger + constraint)
-            // Pastikan Anda sudah memiliki tabel 'skema' dan 'users'
-            $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onUpdate('cascade')->onDelete('restrict');
+            $table->id('id_asesor');
+            $table->foreignId('user_id')
+                  ->constrained('users', 'id_user') // <-- Tambahkan 'id_user' di sini
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
 
             // Data Pribadi Asesor
             $table->string('nomor_regis', 50)->unique();
@@ -29,7 +27,7 @@ return new class extends Migration
             // Informasi Pribadi Lainnya
             $table->string('tempat_lahir', 100);
             $table->date('tanggal_lahir');
-            $table->boolean('jenis_kelamin')->comment('1 untuk Laki-laki, 0 untuk Perempuan');
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
             $table->string('kebangsaan', 100);
             $table->string('pekerjaan');
 
@@ -58,7 +56,7 @@ return new class extends Migration
             $table->boolean('is_verified')->default(false)->comment('Status verifikasi asesor');
 
             // Standar timestamp seperti di tabel users
-            $table->timestamps(); 
+            $table->timestamps();
         });
     }
 

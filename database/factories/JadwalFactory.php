@@ -22,7 +22,7 @@ class JadwalFactory extends Factory
 
         return [
             // Panggil semua factory dependensi
-            'id_jenis_tuk' => JenisTuk::factory(), // Kamu sudah punya
+            'id_jenis_tuk' => JenisTuk::inRandomOrder()->first()->id_jenis_tuk, // Kamu sudah punya
             'id_tuk' => MasterTuk::factory(),       // Baru kita buat
             'id_skema' => Skema::factory(),       // Kamu sudah punya
             'id_asesor' => Asesor::factory(),    // Baru kita buat
@@ -33,6 +33,8 @@ class JadwalFactory extends Factory
             'tanggal_selesai' => $selesai,
             'tanggal_pelaksanaan' => $pelaksanaan,
             'Status_jadwal' => 'Terjadwal',
+            'kuota_maksimal' => 40,
+            'waktu_mulai' => fake()->time('H:i:s')
         ];
     }
 }

@@ -31,7 +31,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
             
             // Siapin data dummy TUK & Bukti
             $data_asesmen = [
-                'tuk' => 'Mandiri', 
+                'tuk' => 'Sewaktu', 
                 'bukti_dikumpulkan' => [
                     'Verifikasi Portofolio', 'Hasil Test Tulis', 'Hasil Wawancara',
                 ],

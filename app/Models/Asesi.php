@@ -2,14 +2,15 @@
 
 namespace App\Models; // <-- PASTIKAN INI ADALAH 'App\Models'
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Skema;                // Untuk relasi skema
-use App\Models\User;                 // Untuk relasi user (jika Anda punya model User di App\Models)
 use App\Models\DataPekerjaanAsesi;   // Untuk relasi dataPekerjaan
 use App\Models\DataSertifikasiAsesi; // Untuk relasi dataSertifikasi
+use App\Models\User;                 // Untuk relasi user (jika Anda punya model User di App\Models)
 
 class Asesi extends Model
 {
@@ -48,9 +49,9 @@ class Asesi extends Model
     /**
      * Relasi ke DataPekerjaan
      */
-    public function dataPekerjaan(): HasOne
+    public function dataPekerjaan(): HasMany
     {
-        return $this->hasOne(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
+        return $this->hasMany(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
     }
 
     /**
@@ -61,4 +62,5 @@ class Asesi extends Model
         return $this->hasOne(DataSertifikasiAsesi::class, 'id_asesi', 'id_asesi');
     }
 
-} // <-- Kurung kurawal penutup class
+}
+

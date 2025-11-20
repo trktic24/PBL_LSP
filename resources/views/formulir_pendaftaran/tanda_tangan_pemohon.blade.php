@@ -1,3 +1,9 @@
+@php
+    // Kita ambil data pekerjaan pertama biar kodenya pendek
+    // Tanda '?' (optional chaining) biar gak error kalau datanya kosong
+    $pekerjaan = $asesi->dataPekerjaan->first();
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -6,148 +12,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tanda Tangan Pemohon</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    {{-- Library Signature Pad --}}
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
-        .file-input-wrapper input[type="file"] {
-            display: none;
-        }
-
-        .drag-drop-area.is-dragover {
-            border-color: #2563eb;
-            background-color: #eff6ff;
+        canvas {
+            touch-action: none;
+            /* Biar gak scroll pas tanda tangan di HP */
         }
     </style>
 </head>
 
 <body class="bg-gray-100">
+
     <div class="flex min-h-screen">
+        {{-- Sidebar --}}
+        <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
 
-        <x-sidebar :idAsesi="$id_asesi_untuk_js"></x-sidebar>
-
+        {{-- Main Content --}}
         <main class="flex-1 p-12 bg-white overflow-y-auto">
             <div class="max-w-3xl mx-auto">
 
+                {{-- Stepper Progress --}}
                 <div class="flex items-center justify-center mb-12">
-                    <div
-                        class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                        1</div>
-                    <div class="w-24 h-1 bg-yellow-400"></div>
-                    <div
-                        class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                        2</div>
-                    <div class="w-24 h-1 bg-yellow-400"></div>
-                    <div
-                        class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                        3</div>
+                    {{-- Step 1 --}}
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            1
+                        </div>
+                    </div>
+                    
+                    {{-- Garis 1-2 --}}
+                    <div class="w-24 h-0.5 bg-yellow-400 mx-4"></div>
+                    
+                    {{-- Step 2 --}}
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            2
+                        </div>
+                    </div>
+                    
+                    {{-- Garis 2-3 --}}
+                    <div class="w-24 h-0.5 bg-yellow-400 mx-4"></div>
+                    
+                    {{-- Step 3 (Aktif) --}}
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            3
+                        </div>
+                    </div>
                 </div>
 
                 <h1 class="text-4xl font-bold text-gray-900 mb-8">Tanda Tangan Pemohon</h1>
 
-                @if ($errors->any())
-                    <div class="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700" role="alert">
-                        <strong>Oops! Ada yang salah:</strong>
-                        <ul class="mt-1 list-disc list-inside">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                @if (session('error'))
-                    <div class="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700" role="alert">
-                        <strong>Oops! Gagal:</strong> {{ session('error') }}
-                    </div>
-                @endif
+                {{-- Info Pemohon --}}
+                <div class="space-y-4 text-sm mb-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <p class="text-base text-gray-800 font-semibold mb-4">Saya yang bertanda tangan di bawah ini:</p>
 
-                <div class="space-y-4 text-sm mb-6">
-                    <p class="text-base text-gray-800">Saya yang bertanda tangan di bawah ini</p>
-                    <div class="flex">
-                        <label class="w-48 text-gray-600">Nama</label>
-                        <span class="text-gray-900 font-medium" id="nama-pemohon">:
-                            {{ isset($asesi) ? $asesi->nama_lengkap : 'Data tidak ada' }}</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-gray-500 block">Nama Lengkap</label>
+                            <p class="text-gray-900 font-medium text-lg">{{ $asesi->nama_lengkap ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 block">Jabatan</label>
+                            <p class="text-gray-900 font-medium text-lg">{{ $pekerjaan?->jabatan ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 block">Perusahaan</label>
+                            <p class="text-gray-900 font-medium text-lg">
+                                {{ $pekerjaan?->nama_institusi_pekerjaan ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="text-gray-500 block">Alamat Perusahaan</label>
+                            <p class="text-gray-900 font-medium text-lg">{{ $pekerjaan?->alamat_institusi ?? '-' }}</p>
+                        </div>
                     </div>
-                    <div class="flex">
-                        <label class="w-48 text-gray-600">Jabatan</label>
-                        <span class="text-gray-900 font-medium" id="jabatan-pemohon">:
-                            {{ isset($asesi->dataPekerjaan) ? $asesi->dataPekerjaan->jabatan : 'Data tidak ada' }}</span>
+
+                    <div class="mt-4 pt-4 border-t border-gray-200 text-gray-600 text-xs leading-relaxed">
+                        Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan saya setuju untuk
+                        mengikuti proses sertifikasi sesuai dengan prosedur yang berlaku.
                     </div>
-                    <div class="flex">
-                        <label class="w-48 text-gray-600">Perusahaan</label>
-                        <span class="text-gray-900 font-medium" id="perusahaan-pemohon">:
-                            {{ isset($asesi->dataPekerjaan) ? $asesi->dataPekerjaan->nama_institusi_pekerjaan : 'Data tidak ada' }}</span>
-                    </div>
-                    <div class="flex">
-                        <label class="w-48 text-gray-600">Alamat Perusahaan</label>
-                        <span class="text-gray-900 font-medium" id="alamat-perusahaan-pemohon">:
-                            {{ isset($asesi->dataPekerjaan) ? $asesi->dataPekerjaan->alamat_institusi : 'Data tidak ada' }}</span>
-                    </div>
-                    <p class="pt-4 text-gray-700 text-sm leading-relaxed">
-                        Dengan ini saya menyatakan mengisi data dengan sebenarnya...
-                    </p>
                 </div>
-                <form id="signature-upload-form" data-asesi-id="{{ $id_asesi_untuk_js }}">
-                    @csrf
 
-                    <div class="mt-6">
-                        <div id="signature-preview-container"
-                            class="drag-drop-area w-full h-48 border border-dashed border-gray-400 rounded-lg flex items-center justify-center bg-gray-50 mb-4 transition-all duration-300">
-                            @if (isset($asesi) && $asesi->tanda_tangan)
-                                <img id="signature-preview" class="max-h-full max-w-full object-contain"
-                                    src="{{ asset($asesi->tanda_tangan) }}" alt="Tanda Tangan Tersimpan">
-                                <span id="upload-placeholder" class="text-gray-500 text-sm hidden">Upload File...</span>
-                            @else
-                                <img id="signature-preview" class="max-h-full max-w-full object-contain hidden"
-                                    alt="Tanda Tangan Preview">
-                                <span id="upload-placeholder" class="text-gray-500 text-sm">Upload File Tanda Tangan
-                                    Anda di sini...</span>
-                            @endif
+                {{-- Area Tanda Tangan --}}
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanda Tangan Digital</label>
+
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg bg-white relative overflow-hidden">
+
+                        {{-- 1. Wadah Gambar Jadi (Preview) --}}
+                        {{-- Kita kasih ID biar bisa diatur JS --}}
+                        <div id="signature-image-container"
+                            class="w-full h-64 flex items-center justify-center {{ $asesi->tanda_tangan ? '' : 'hidden' }}">
+                            <img id="signature-image-display" {{-- Perhatikan fungsi asset() ini --}}
+                                src="{{ $asesi->tanda_tangan ? asset($asesi->tanda_tangan) : '' }}"
+                                class="max-h-full max-w-full object-contain" alt="Tanda Tangan">
                         </div>
 
-                        <div class="flex justify-between items-center mt-4 mb-4">
-                            <div class="file-input-wrapper">
-                                <label for="signature-file-input"
-                                    class="cursor-pointer px-4 py-2 bg-blue-100 text-blue-700 font-medium rounded-lg hover:bg-blue-200 transition-colors">
-                                    Choose File
-                                </label>
-                                <input type="file" id="signature-file-input" accept="image/png, image/jpeg" />
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <button type="button"
-                                    class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors"
-                                    id="clear-signature">
-                                    Hapus
-                                </button>
-                                <button type="button"
-                                    class="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 shadow-md transition-colors disabled:bg-blue-300"
-                                    id="save-signature"
-                                    @if (isset($asesi) && $asesi->tanda_tangan) disabled
-                                    @else
-                                    disabled @endif>
-                                    @if (isset($asesi) && $asesi->tanda_tangan)
-                                        Tersimpan ✔️
-                                    @else
-                                        Simpan
-                                    @endif
-                                </button>
+                        {{-- 2. Wadah Canvas (Untuk Nulis) --}}
+                        {{-- Kalau udah ada tanda tangan, canvas kita sembunyiin dulu --}}
+                        <div id="signature-canvas-container"
+                            class="w-full h-full {{ $asesi->tanda_tangan ? 'hidden' : '' }}">
+                            <canvas id="signature-pad" class="w-full h-64 rounded-lg cursor-crosshair block"></canvas>
+
+                            {{-- Placeholder text --}}
+                            <div id="signature-placeholder"
+                                class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <span class="text-gray-400 text-sm">Tanda tangan di sini</span>
                             </div>
                         </div>
 
-                        <input type="hidden" name="data_tanda_tangan" id="data-tanda-tangan-base64"
-                            value="{{ isset($asesi) && $asesi->tanda_tangan ? $asesi->tanda_tangan : '' }}">
-
                     </div>
 
-                    <div class="flex justify-between items-center mt-12">
-                        <a href="{{ route('bukti.pemohon', ['id_asesi' => $id_asesi_untuk_js]) }}"
-                            class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
-                            Sebelumnya
-                        </a>
-                        <a href="/tunggu_upload_dokumen"
-                            class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
-                            Selanjutnya
-                        </a>
+                    {{-- Tombol Aksi --}}
+                    <div class="flex justify-between items-center mt-2">
+                        <button type="button" id="clear-signature"
+                            class="text-sm text-red-600 hover:text-red-800 font-medium">
+                            Hapus & Ulangi
+                        </button>
+                        <p class="text-xs text-gray-500">Gunakan mouse atau jari (touchscreen)</p>
                     </div>
-                </form>
+                </div>
+
+                {{-- Tombol Navigasi --}}
+                <div class="flex justify-between items-center mt-12 pt-6 border-t border-gray-100">
+                    <a href="{{ route('bukti.pemohon', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                        class="w-48 text-center px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-all shadow-sm">
+                        Kembali
+                    </a>
+
+                    <button type="button" id="save-submit-btn"
+                        class="w-48 text-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        Selanjutnya 
+                    </button>
+                </div>
 
             </div>
         </main>
@@ -156,236 +155,146 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            // Ambil semua elemen penting
-            const fileInput = document.getElementById('signature-file-input');
-            const previewContainer = document.getElementById('signature-preview-container');
-            const previewImg = document.getElementById('signature-preview');
-            const placeholder = document.getElementById('upload-placeholder');
-            const saveButton = document.getElementById('save-signature');
-            const clearButton = document.getElementById('clear-signature');
-            const base64Input = document.getElementById('data-tanda-tangan-base64');
-            const form = document.getElementById('signature-upload-form');
-            const csrfToken = form.querySelector('input[name="_token"]').value;
+            // --- ELEMEN DOM ---
+            const canvas = document.getElementById('signature-pad');
+            const placeholder = document.getElementById('signature-placeholder');
 
-            // Ambil ID Asesi dari tag <form>
-            const asesiId = form.dataset.asesiId;
+            // Container
+            const imgContainer = document.getElementById('signature-image-container');
+            const canvasContainer = document.getElementById('signature-canvas-container');
 
-            let uploadedFileBase64 = null;
+            // Elemen Gambar & Tombol
+            const imgDisplay = document.getElementById('signature-image-display');
+            const btnHapus = document.getElementById('clear-signature');
+            const btnSimpan = document.getElementById('save-submit-btn');
 
-            // ========================================================
-            // || INI KODE BARU YANG DIMINTA DOSEN LU (FETCH DATA) ||
-            // ========================================================
+            // Data dari Blade
+            const idAsesi = "{{ $asesi->id_asesi }}";
+            // Cek apakah user punya ttd saat halaman dimuat
+            let hasSignature = {{ $asesi->tanda_tangan ? 'true' : 'false' }};
 
-            // 1. Fungsi buat ngisi data ke HTML
-            function populateData(data) {
-                // Isi data pemohon
-                document.getElementById('nama-pemohon').textContent = ': ' + (data.nama_lengkap ||
-                    'Data tidak ada');
-
-                // Cek relasi 'dataPekerjaan'
-                if (data.data_pekerjaan) {
-                    document.getElementById('jabatan-pemohon').textContent = ': ' + (data.data_pekerjaan.jabatan ||
-                        'Data tidak ada');
-                    document.getElementById('perusahaan-pemohon').textContent = ': ' + (data.data_pekerjaan
-                        .nama_institusi_pekerjaan || 'Data tidak ada');
-                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + (data.data_pekerjaan
-                        .alamat_institusi || 'Data tidak ada');
-                } else {
-                    document.getElementById('jabatan-pemohon').textContent = ': Data tidak ada';
-                    document.getElementById('perusahaan-pemohon').textContent = ': Data tidak ada';
-                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': Data tidak ada';
-                }
-
-                // Cek data tanda tangan (INI PENTING BUAT REFRESH)
-                if (data.tanda_tangan) {
-                    previewImg.src = `{{ asset('') }}${data.tanda_tangan}`; // Tampilin gambar
-                    previewImg.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                    base64Input.value = data.tanda_tangan; // Isi input hidden
-                    saveButton.textContent = 'Tersimpan ✔️';
-                    saveButton.disabled = true;
-                } else {
-                    // Kalo gak ada TTD, pastiin placeholder-nya bener
-                    previewImg.classList.add('hidden');
-                    placeholder.classList.remove('hidden');
-                    saveButton.textContent = 'Simpan';
-                    saveButton.disabled = true; // Disabled sampe user milih file
-                }
-            }
-
-            // 2. Tembak API-nya pas halaman kebuka
-            fetch(`/api/get-asesi-data/${asesiId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Gagal mengambil data Asesi');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Kalo sukses, panggil fungsi buat ngisi data
-                    populateData(data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    alert('Gagal memuat data pemohon. Coba refresh halaman.');
-                    document.getElementById('nama-pemohon').textContent = ': Gagal memuat';
-                    // ... (bisa diisi error di span lain) ...
-                });
-
-            // ========================================================
-            // || KODE LAMA LU (UPLOAD/SIMPAN) TETAP DI SINI ||
-            // ========================================================
-
-            // Fungsi processFile (Gak berubah, udah bener)
-            function processFile(file) {
-                if (!file.type.startsWith('image/')) {
-                    alert("Format file tidak didukung...");
-                    return;
-                }
-                uploadedFileBase64 = null;
-                saveButton.textContent = 'Simpan';
-                saveButton.disabled = true;
-                base64Input.value = '';
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    previewImg.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                    uploadedFileBase64 = e.target.result;
-                    saveButton.disabled = false;
-                };
-                reader.readAsDataURL(file);
-            }
-
-            // 1. Logika Upload File & Drag/Drop (Gak berubah)
-            fileInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    processFile(this.files[0]);
-                }
-            });
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                previewContainer.addEventListener(eventName, preventDefaults, false)
+            // --- 1. SETUP SIGNATURE PAD ---
+            let signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgba(255, 255, 255, 0)'
             });
 
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation()
-            }
-            previewContainer.addEventListener('dragenter', () => previewContainer.classList.add('is-dragover'),
-                false);
-            previewContainer.addEventListener('dragover', () => previewContainer.classList.add('is-dragover'),
-                false);
-            previewContainer.addEventListener('dragleave', () => previewContainer.classList.remove('is-dragover'),
-                false);
+            function resizeCanvas() {
+                // Hanya resize jika canvas sedang terlihat
+                if (canvasContainer.classList.contains('hidden')) return;
 
-            function handleDrop(e) {
-                previewContainer.classList.remove('is-dragover');
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files.length > 0) {
-                    processFile(files[0]);
-                    fileInput.files = files;
-                }
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+
+                // Note: Resize akan menghapus coretan yang belum disave
+                // signaturePad.clear(); 
+            }
+            window.addEventListener("resize", resizeCanvas);
+
+            // Inisialisasi awal canvas (jika belum ada ttd)
+            if (!hasSignature) {
+                resizeCanvas();
             }
 
-            // 2. Logika Tombol Simpan (AJAX) (Gak berubah)
-            saveButton.addEventListener('click', function() {
-                if (!uploadedFileBase64) {
-                    alert('Mohon unggah file gambar tanda tangan terlebih dahulu.');
+            // Hilangkan tulisan "Tanda tangan di sini" saat mulai nulis
+            signaturePad.addEventListener("beginStroke", () => {
+                placeholder.classList.add('hidden');
+            });
+
+            // --- 2. TOMBOL HAPUS / ULANGI ---
+            btnHapus.addEventListener('click', () => {
+                // Sembunyikan Gambar Preview
+                imgContainer.classList.add('hidden');
+
+                // Tampilkan Canvas
+                canvasContainer.classList.remove('hidden');
+
+                // Reset Canvas
+                resizeCanvas();
+                signaturePad.clear();
+                placeholder.classList.remove('hidden');
+
+                // Set status jadi 'sedang mengedit'
+                hasSignature = false;
+            });
+
+            // --- 3. TOMBOL SIMPAN ---
+            btnSimpan.addEventListener('click', async () => {
+
+                // Skenario 1: User tidak melakukan perubahan (Gambar lama masih tampil)
+                // Langsung lanjut aja ke halaman selesai
+                if (hasSignature && !imgContainer.classList.contains('hidden')) {
+                    window.location.href = '/form-selesai';
                     return;
                 }
-                this.textContent = 'Menyimpan...';
-                this.disabled = true;
-                fetch(`/api/ajax-simpan-tandatangan/${asesiId}`, {
+
+                // Skenario 2: User mau simpan tanda tangan baru, tapi kanvas kosong
+                if (signaturePad.isEmpty()) {
+                    alert("Harap tanda tangan terlebih dahulu!");
+                    return;
+                }
+
+                // Skenario 3: Proses Simpan Baru / Update
+                const originalText = btnSimpan.innerText;
+                btnSimpan.innerText = 'Menyimpan...';
+                btnSimpan.disabled = true;
+
+                const dataUrl = signaturePad.toDataURL('image/png');
+
+                try {
+                    const response = await fetch(`/api/ajax-simpan-tandatangan/${idAsesi}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .content,
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify({
-                            data_tanda_tangan: uploadedFileBase64
+                            data_tanda_tangan: dataUrl
                         })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            saveButton.textContent = 'Tersimpan ✔️';
-                            saveButton.disabled = true;
-                            base64Input.value = data.path;
-                            uploadedFileBase64 = null;
-                            alert(data.message);
-                        } else {
-                            alert('Error: ' + data.message);
-                            saveButton.textContent = 'Simpan';
-                            saveButton.disabled = false;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Gagal terhubung ke server. Coba lagi.');
-                        saveButton.textContent = 'Simpan';
-                        saveButton.disabled = false;
                     });
-            });
 
-            // 3. Logika Tombol Hapus (DIUBAH JADI PERMANEN)
-            clearButton.addEventListener('click', function() {
+                    const result = await response.json();
 
-                // KONFIRMASI DULU!
-                if (!confirm('Yakin mau hapus tanda tangan ini PERMANEN? Data ini gak bisa balik lagi.')) {
-                    return; // Kalo batal, stop
+                    if (response.ok && result.success) {
+                        alert('Tanda tangan berhasil diperbarui!');
+
+                        // --- LOGIKA AUTO-UPDATE TAMPILAN ---
+                        // 1. Update src gambar dengan path baru dari API
+                        // 2. Tambahkan timestamp (?t=...) biar browser download gambar baru (bukan cache lama)
+                        imgDisplay.src = `/${result.path}?t=${new Date().getTime()}`;
+
+                        // 3. Tampilkan container gambar, sembunyikan canvas
+                        imgContainer.classList.remove('hidden');
+                        canvasContainer.classList.add('hidden');
+
+                        // 4. Set status
+                        hasSignature = true;
+
+                        // 5. Reset tombol
+                        btnSimpan.innerText = 'Simpan & Selesai';
+                        btnSimpan.disabled = false;
+
+                        // Opsional: Langsung pindah halaman kalau mau
+                        window.location.href = '/form-selesai';
+
+                    } else {
+                        throw new Error(result.message || 'Gagal menyimpan');
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    alert('Terjadi kesalahan: ' + error.message);
+                    btnSimpan.innerText = originalText;
+                    btnSimpan.disabled = false;
                 }
-
-                // Tampilkan loading di tombol Hapus
-                clearButton.textContent = 'Menghapus...';
-                clearButton.disabled = true;
-                saveButton.disabled = true; // Nonaktifkan tombol Simpan juga
-
-                // Tembak API 'deleteAjax'
-                fetch(`/api/ajax-hapus-tandatangan/${asesiId}`, {
-                        method: 'POST', // Kita pake POST aja biar gampang
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        // Gak perlu 'body', karena ID-nya hardcoded di controller
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Kalo SUKSES
-                            alert(data.message); // "Berhasil dihapus!"
-
-                            // Reset tampilan (balikin ke semula)
-                            fileInput.value = '';
-                            uploadedFileBase64 = null;
-                            previewImg.classList.add('hidden');
-                            previewImg.src = '';
-                            placeholder.classList.remove('hidden');
-                            saveButton.textContent = 'Simpan';
-                            saveButton.disabled = true; // Tetep disabled sampe milih file baru
-                            base64Input.value = ''; // Kosongin input hidden
-                        } else {
-                            // Kalo GAGAL
-                            alert('Error: ' + data.message);
-                        }
-
-                        // Balikin tombol Hapus ke semula
-                        clearButton.textContent = 'Hapus';
-                        clearButton.disabled = false;
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Gagal terhubung ke server. Coba lagi.');
-                        clearButton.textContent = 'Hapus';
-                        clearButton.disabled = false;
-                    });
             });
 
         });
     </script>
+
 </body>
 
 </html>

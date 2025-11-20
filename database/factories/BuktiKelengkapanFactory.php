@@ -25,8 +25,8 @@ class BuktiKelengkapanFactory extends Factory
 
         return [
             'id_data_sertifikasi_asesi' => DataSertifikasiAsesi::factory(),
-            'jenis_dokumen' => $this->faker->randomElement($jenisDokumen),
-            'keterangan' => $this->faker->sentence(3),
+            // 'jenis_dokumen' => $this->faker->randomElement($jenisDokumen),
+            // 'keterangan' => $this->faker->sentence(3),
             'bukti_kelengkapan' => 'dokumen/dummy/' . $this->faker->word . '.pdf',
             'status_kelengkapan' => $this->faker->randomElement(['memenuhi', 'tidak_memenuhi', 'tidak_ada']),
         ];

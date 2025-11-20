@@ -1,39 +1,58 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
-        @csrf
+<x-register-layout> {{-- Ganti ini pake layout lu --}}
+    <div class="w-full max-w-md bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)]">
+        <div class="p-10 md:p-12">
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+        <form method="POST" action="{{ route('password.store') }}">
+            @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+            <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+            <h1 class="text-2xl font-semibold">Buat Password Baru</h1>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <div class="mt-4">
+                <x-login-form-input
+                    id="email"
+                    name="email"
+                    type="email"
+                    label="Alamat Email"
+                    value="{{ old('email', $request->email) }}"
+                    error="{{ $errors->first('email') }}"
+                    required
+                    autofocus
+                    readonly {{-- Bikin readonly aja biar aman --}}
+                />
+            </div>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
+            <div class="mt-4">
+                <x-login-form-input
+                    id="password"
+                    name="password"
+                    type="password"
+                    label="Password Baru"
+                    error="{{ $errors->first('password') }}"
+                    required
+                />
+            </div>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+            <div class="mt-4">
+                <x-login-form-input
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    type="password"
+                    label="Konfirmasi Password Baru"
+                    error="{{ $errors->first('password_confirmation') }}"
+                    required
+                />
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+            <div class="flex items-center justify-end mt-4">
+                <x-login-button-biru type="submit" class="w-full">
+                    Reset Password
+                </x-login-button-biru>
+            </div>
+        </form>
+            </div>
+    </div>
+
+
+</x-register-layout>
