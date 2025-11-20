@@ -98,11 +98,10 @@ Route::prefix('v1')->group(function () {
     // D. Tanda Tangan
     Route::get('/show-all', [TandaTanganAPIController::class, 'index']);
     Route::get('/show-detail/{id_asesi}', [TandaTanganAPIController::class, 'show']);
-    
-    // Simpan Tanda Tangan
     Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])
         ->name('api.v1.simpan.tandatangan');
 
+    // --- 6. MIDTRANS PAYMENT CALLBACK ---
     Route::post('/midtrans-callback', [PaymentCallbackController::class, 'receive']);
 
 });

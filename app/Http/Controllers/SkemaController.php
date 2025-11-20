@@ -29,8 +29,16 @@ class SkemaController extends Controller
 
         // 2. Kirim variabel $skema yang sudah ditemukan
         //    ke view 'halaman_ambil_skema.blade.php'
-        return view('halaman_ambil_skema', [
-            'skema' => $skema
+        
+    }
+
+    public function index()
+    {
+        $skemas = Skema::all();
+        return response()->json([
+            'success' => true,
+            'message' => 'List of Skemas',
+            'data' => $skemas
         ]);
     }
 

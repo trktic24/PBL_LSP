@@ -27,7 +27,6 @@ use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -172,6 +171,24 @@ Route::get('/formulir-selesai', function () {
 // GRUP 5: ASESMEN & PEMBAYARAN
 // ====================================================
 
+// Route::get('/praasesmen', [PraasesmenController::class, 'index']);
+
+// OPSI 2: Menggunakan URL spesifik (Direkomendasikan)
+// Ini lebih aman dan rapi, biasanya untuk formulir atau fitur tertentu.
+// Contoh: Mengakses formulir di domainanda.com/asesmen/pra
+// Route::get('/asesmen/pra', [PraAsesmenController::class, 'index']);
+
+// // --- Pra-Asesmen Views ---
+Route::get('/praasesmen1', function () { return view('pra-assesmen.praasesmen1'); });
+Route::get('/praasesmen2', function () { return view('pra-assesmen.praasesmen2'); });
+Route::get('/praasesmen3', function () { return view('pra-assesmen.praasesmen3'); });
+Route::get('/praasesmen4', function () { return view('pra-assesmen.praasesmen4'); });
+Route::get('/praasesmen5', function () { return view('pra-assesmen.praasesmen5'); });
+Route::get('/praasesmen6', function () { return view('pra-assesmen.praasesmen6'); });
+Route::get('/praasesmen7', function () { return view('pra-assesmen.praasesmen7'); });
+Route::get('/praasesmen8', function () { return view('pra-assesmen.praasesmen8'); });
+
+// --- Asesmen Lainnya Views ---
 // --- PDF Download ---
 Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])->name('apl01.download');
 Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])->name('apl01.preview');
