@@ -19,84 +19,104 @@ class RegisterController extends Controller
      */
 
     public function registerAsesi(Request $request)
-    {
+{
+    $validated = $request->validate([
+        'email' => ['required', 'email', 'unique:users,email'],
+        'password' => ['required', 'min:8'],
 
-        $validated = $request->validate([
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'min:8'],
-            'nama_lengkap' => 'required|string|max:255',
-            'nik' => 'required|string|size:16|unique:asesi,nik',
-            'tanggal_lahir' => 'required|date_format:Y-m-d',
-            'jenis_kelamin' => 'required|string',
-            'pekerjaan' => 'required|string',
-            'alamat_rumah' => 'required|string',
-            'kabupaten' => 'required|string',
-            'provinsi' => 'required|string',
-            'nama_institusi_pekerjaan' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:100',
-            'alamat_institusi' => 'required|string|max:255',
-            'kode_pos_institusi' => 'required|string|max:10',
-            'no_telepon_institusi' => 'required|string|max:20',
+        'nama_lengkap' => 'required|string|max:255',
+        'nik' => 'required|string|size:16|unique:asesi,nik',
+
+        'tempat_lahir' => 'required|string|max:255',
+        'tanggal_lahir' => 'required|date_format:Y-m-d',
+        'jenis_kelamin' => 'required|string',
+
+        'kebangsaan' => 'required|string',
+        'pendidikan' => 'required|string',
+
+        'pekerjaan' => 'required|string',
+        'alamat_rumah' => 'required|string',
+        'kode_pos' => 'required|string|max:10',
+
+        'kabupaten' => 'required|string',
+        'provinsi' => 'required|string',
+        'nomor_hp' => 'required|string|max:20',
+
+        'nama_institusi_pekerjaan' => 'required|string|max:255',
+        'jabatan' => 'required|string|max:100',
+        'alamat_institusi' => 'required|string|max:255',
+        'kode_pos_institusi' => 'required|string|max:10',
+        'no_telepon_institusi' => 'required|string|max:20',
+    ]);
+
+    DB::beginTransaction();
+    try {
+
+        $role = Role::where('nama_role', 'asesi')->firstOrFail();
+
+        $user = User::create([
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'google_id' => null,
+            'role_id' => $role->id_role,
         ]);
 
-        DB::beginTransaction();
-        try {
-            $role = Role::where('nama_role', 'asesi')->firstOrFail();
+        $asesi = Asesi::create([
+            'id_user' => $user->id_user,
+            'nama_lengkap' => $validated['nama_lengkap'],
+            'nik' => $validated['nik'],
 
-            // buat user
-            $user = User::create([
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'google_id' => null,
-                'role_id' => $role->id_role,
-            ]);
+            'tempat_lahir' => $validated['tempat_lahir'],
+            'tanggal_lahir' => $validated['tanggal_lahir'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
 
-            // buat data asesi
-            $asesi = Asesi::create([
-                'id_user' => $user->id_user,
-                'nama_lengkap' => $validated['nama_lengkap'],
-                'nik' => $validated['nik'],
-                'tanggal_lahir' => $validated['tanggal_lahir'],
-                'jenis_kelamin' => $validated['jenis_kelamin'],
-                'pekerjaan' => $validated['pekerjaan'],
-                'alamat_rumah' => $validated['alamat_rumah'],
-                'kabupaten_kota' => $validated['kabupaten'],
-                'provinsi' => $validated['provinsi'],
-            ]);
+            'kebangsaan' => $validated['kebangsaan'],
+            'pendidikan' => $validated['pendidikan'],
 
-            // buat data pekerjaan asesi
-            DataPekerjaanAsesi::create([
-                'id_asesi' => $asesi->id_asesi,
-                'nama_institusi_pekerjaan' => $validated['nama_institusi_pekerjaan'],
-                'jabatan' => $validated['jabatan'],
-                'alamat_institusi' => $validated['alamat_institusi'],
-                'kode_pos_institusi' => $validated['kode_pos_institusi'],
-                'no_telepon_institusi' => $validated['no_telepon_institusi'],
-            ]);
+            'pekerjaan' => $validated['pekerjaan'],
+            'alamat_rumah' => $validated['alamat_rumah'],
+            'kode_pos' => $validated['kode_pos'],
 
+            'kabupaten_kota' => $validated['kabupaten'],
+            'provinsi' => $validated['provinsi'],
+            'nomor_hp' => $validated['nomor_hp'],
+        ]);
 
-            DB::commit();
+        DataPekerjaanAsesi::create([
+            'id_asesi' => $asesi->id_asesi,
+            'nama_institusi_pekerjaan' => $validated['nama_institusi_pekerjaan'],
+            'jabatan' => $validated['jabatan'],
+            'alamat_institusi' => $validated['alamat_institusi'],
+            'kode_pos_institusi' => $validated['kode_pos_institusi'],
+            'no_telepon_institusi' => $validated['no_telepon_institusi'],
+        ]);
 
-            $token = $user->createToken('api_token')->plainTextToken;
+        DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Asesi registered successfully',
-                'data' => [
-                    'user' => $user,
-                    'token' => $token,
-                ],
-            ], 201);
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Registration failed',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        // 🔥 Generate token seperti asesor
+        $token = $user->createToken('api_token')->plainTextToken;
 
+        return response()->json([
+            'success' => true,
+            'message' => 'Asesi registered successfully',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+            ],
+        ], 201);
+
+    } catch (\Throwable $e) {
+        DB::rollBack();
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Registration failed',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
+
+
 
     /**
      * REGISTER ASESOR
@@ -115,6 +135,14 @@ class RegisterController extends Controller
             'npwp' => 'required|string|max:25',
             'nama_bank' => 'required|string',
             'nomor_rekening' => 'required|string',
+            'tempat_lahir' => 'required|string|max:100',
+            'kebangsaan' => 'required|string|max:100',
+            'alamat_rumah' => 'required|string',
+            'kode_pos' => 'required|string|max:10',
+            'kabupaten_kota' => 'required|string',
+            'provinsi' => 'required|string',
+            'nomor_hp' => 'required|string|max:14',
+
         ]);
 
         DB::beginTransaction();
@@ -133,13 +161,27 @@ class RegisterController extends Controller
                 'nama_lengkap' => $validated['nama_lengkap'],
                 'nomor_regis' => $validated['no_registrasi_asesor'],
                 'nik' => $validated['nik'],
+
+                // Wajib karena migration mewajibkan
+                'tempat_lahir' => $validated['tempat_lahir'],
                 'tanggal_lahir' => $validated['tanggal_lahir'],
                 'jenis_kelamin' => $validated['jenis_kelamin'],
+                'kebangsaan' => $validated['kebangsaan'],
                 'pekerjaan' => $validated['pekerjaan'],
+
+                // Alamat wajib
+                'alamat_rumah' => $validated['alamat_rumah'],
+                'kode_pos' => $validated['kode_pos'],
+                'kabupaten_kota' => $validated['kabupaten_kota'],
+                'provinsi' => $validated['provinsi'],
+                'nomor_hp' => $validated['nomor_hp'],
+
+                // Lainnya
                 'NPWP' => $validated['npwp'],
                 'nama_bank' => $validated['nama_bank'],
                 'norek' => $validated['nomor_rekening'],
             ]);
+
 
             DB::commit();
 
