@@ -3,97 +3,141 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Midtrans\Config; // <-- Import class Config Midtrans
-use Midtrans\Snap;   // <-- Import class Snap Midtrans
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Midtrans\Config;
+use Midtrans\Snap;
+use App\Models\Pembayaran; // <-- Model Pembayaran yang baru kita buat
+use App\Models\DataSertifikasiAsesi;
 
 class PaymentController extends Controller
 {
+    public function __construct()
+    {
+        // Set konfigurasi Midtrans di construct biar rapi
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+    }
+
     /**
      * Method untuk membuat transaksi Midtrans.
      */
     public function createTransaction(Request $request)
     {
-        // 1. SET KONFIGURASI MIDTRANS
-        // (Kode Anda yang lain di sini)
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
+        $user = Auth::user();
+        
+        if (!$user->asesi) {
+            return redirect()->back()->with('error', 'Data Asesi tidak ditemukan.');
+        }
 
+        // 1. Cari Data Sertifikasi
+        $sertifikasi = DataSertifikasiAsesi::where('id_asesi', $user->asesi->id_asesi)
+            ->whereIn('status_sertifikasi', [
+                DataSertifikasiAsesi::STATUS_PENDAFTARAN_SELESAI,
+                DataSertifikasiAsesi::STATUS_TUNGGU_VERIFIKASI_BAYAR
+            ])
+            ->with(['jadwal.skema']) 
+            ->latest()
+            ->first();
 
-        // 2. SIAPKAN DATA TRANSAKSI (CONTOH)
-        // (Kode Anda yang lain di sini)
+        if (!$sertifikasi) {
+            return redirect('/tracker')->with('error', 'Tidak ada tagihan pembayaran aktif.');
+        }
+
+        // 2. Siapkan Data Harga & Item
+        $skema = $sertifikasi->jadwal->skema;
+        $harga = $skema->harga ?? 0;
+        
+        if ($harga <= 0) {
+            return redirect('/tracker')->with('error', 'Harga skema belum diatur.');
+        }
+
+        // 3. GENRATE ORDER ID BARU (Wajib Unik setiap kali klik bayar)
+        // Kita pakai timestamp biar kalau user klik ulang, ID-nya beda
+        $newOrderId = 'LSP-' . $sertifikasi->id_data_sertifikasi_asesi . '-' . time(); 
+
         $transaction_details = [
-            'order_id' => 'LSP-' . uniqid(), // ID Invoice/Order (WAJIB UNIK)
-            'gross_amount' => 150000, // Total harga (contoh: Rp 150.000)
+            'order_id' => $newOrderId,
+            'gross_amount' => (int) $harga,
         ];
 
-        // 3. (OPSIONAL) SIAPKAN DATA CUSTOMER
-        // (Kode Anda yang lain di sini)
         $customer_details = [
-            'first_name'    => "Budi",
-            'last_name'     => "Utomo",
-            'email'         => "budi.utomo@contoh.com",
-            'phone'         => "081234567890",
+            'first_name'    => $user->asesi->nama_lengkap,
+            'email'         => $user->email,
+            'phone'         => $user->asesi->nomor_hp ?? '08123456789',
         ];
 
-        // 4. (OPSIONAL) SIAPKAN DATA ITEM/PRODUK
-        // (Kode Anda yang lain di sini)
         $item_details = [
             [
-                'id'       => 'SERTIFIKASI-01', // ID produk/sertifikasi
-                'price'    => 150000,
+                'id'       => 'SKEMA-' . $skema->id_skema,
+                'price'    => (int) $harga,
                 'quantity' => 1,
-                'name'     => 'Biaya Sertifikasi Skema A'
+                'name'     => substr($skema->nama_skema, 0, 50) 
             ]
         ];
 
-        // 5. GABUNGKAN SEMUA DATA UNTUK DIKIRIM KE MIDTRANS
         $params = [
             'transaction_details' => $transaction_details,
             'customer_details'    => $customer_details,
             'item_details'        => $item_details,
-            // 'enabled_payments' => ['gopay', 'shopeepay', 'bca_va'],
-
-            // ▼▼▼ BLOK TAMBAHAN UNTUK FIX REDIRECT ▼▼▼
             'callbacks' => [
-                // URL untuk tombol "Back to Merchant" (Selesai Bayar)
                 'finish' => route('pembayaran_diproses'),
-                
-                // URL untuk tombol "Keluar halaman ini" (Batal/Unfinish)
-                'unfinish' => route('pembayaran_diproses'),
             ]
-            // ▲▲▲ SELESAI ▲▲▲
         ];
 
-
         try {
-            // 6. MINTA PAYMENT URL DARI MIDTRANS
-            // (Kode Anda yang lain di sini)
-            $paymentUrl = Snap::getSnapUrl($params);
+            // 4. Minta Token BARU ke Midtrans
+            $snapToken = Snap::getSnapToken($params);
+            
+            // 5. CEK APAKAH SUDAH ADA DATA DI TABEL PEMBAYARAN?
+            $existingPayment = Pembayaran::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
+                ->where('status_transaksi', 'pending') // Cari yang masih pending
+                ->first();
 
-            // 7. ARAHKAN USER KE HALAMAN PEMBAYARAN
-            // (Kode Anda yang lain di sini)
-            return redirect($paymentUrl);
+            if ($existingPayment) {
+                // [LOGIKA BARU]: UPDATE data lama dengan Order ID & Token BARU
+                // Jadi kalau yang lama expired, kita timpa aja biar user bisa bayar ulang.
+                $existingPayment->update([
+                    'order_id'   => $newOrderId,
+                    'snap_token' => $snapToken,
+                    'amount'     => $harga
+                ]);
+            } else {
+                // Kalau belum ada, bikin baru
+                Pembayaran::create([
+                    'id_data_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi,
+                    'order_id'         => $newOrderId,
+                    'amount'           => $harga,
+                    'status_transaksi' => 'pending',
+                    'snap_token'       => $snapToken,
+                    'jenis_pembayaran' => 'midtrans_snap'
+                ]);
+            }
+
+            // 6. Pastikan Status Asesi = Menunggu Bayar
+            if($sertifikasi->status_sertifikasi != DataSertifikasiAsesi::STATUS_TUNGGU_VERIFIKASI_BAYAR){
+                $sertifikasi->status_sertifikasi = DataSertifikasiAsesi::STATUS_TUNGGU_VERIFIKASI_BAYAR;
+                $sertifikasi->save();
+            }
+
+            // 7. Redirect ke Halaman Bayar (Token Baru)
+            return redirect("https://app.sandbox.midtrans.com/snap/v2/vtweb/" . $snapToken);
 
         } catch (\Exception $e) {
-            // Tangani error jika terjadi
-            return "Error: " . $e->getMessage();
+            Log::error('Midtrans Error: ' . $e->getMessage());
+            return redirect('/tracker')->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }
     }
 
-    // Pastikan Anda juga memiliki method processed() dan success()
-    // yang sudah kita bahas sebelumnya
+    // Halaman setelah user bayar / close popup
     public function processed(Request $request)
     {
-        $orderId = $request->query('order_id');
-        $status = $request->query('transaction_status');
-        $statusCode = $request->query('status_code');
-
         return view('pembayaran/pembayaran_diproses', [
-            'order_id' => $orderId,
-            'status' => $status,
-            'status_code' => $statusCode
+            'order_id' => $request->query('order_id'),
+            'status' => $request->query('transaction_status'),
+            'status_code' => $request->query('status_code')
         ]);
     }
 }

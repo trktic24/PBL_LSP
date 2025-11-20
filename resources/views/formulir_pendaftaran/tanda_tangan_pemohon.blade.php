@@ -37,27 +37,30 @@
                 <div class="flex items-center justify-center mb-12">
                     {{-- Step 1 --}}
                     <div class="flex flex-col items-center">
-                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        <div
+                            class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
                             1
                         </div>
                     </div>
-                    
+
                     {{-- Garis 1-2 --}}
                     <div class="w-24 h-0.5 bg-yellow-400 mx-4"></div>
-                    
+
                     {{-- Step 2 --}}
                     <div class="flex flex-col items-center">
-                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        <div
+                            class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
                             2
                         </div>
                     </div>
-                    
+
                     {{-- Garis 2-3 --}}
                     <div class="w-24 h-0.5 bg-yellow-400 mx-4"></div>
-                    
+
                     {{-- Step 3 (Aktif) --}}
                     <div class="flex flex-col items-center">
-                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        <div
+                            class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
                             3
                         </div>
                     </div>
@@ -144,7 +147,7 @@
 
                     <button type="button" id="save-submit-btn"
                         class="w-48 text-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                        Selanjutnya 
+                        Selanjutnya
                     </button>
                 </div>
 
@@ -155,7 +158,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            // --- ELEMEN DOM ---
+            // --- 1. VARIABEL & ELEMEN DOM ---
             const canvas = document.getElementById('signature-pad');
             const placeholder = document.getElementById('signature-placeholder');
 
@@ -168,33 +171,51 @@
             const btnHapus = document.getElementById('clear-signature');
             const btnSimpan = document.getElementById('save-submit-btn');
 
-            // Data dari Blade
-            const idAsesi = "{{ $asesi->id_asesi }}";
-            // Cek apakah user punya ttd saat halaman dimuat
-            let hasSignature = {{ $asesi->tanda_tangan ? 'true' : 'false' }};
+            // --- AMBIL DATA DARI BLADE DENGAN AMAN ---
+            // Kita pakai null coalescing operator (??) di blade biar gak error kalau data kosong
+            const idAsesi = "{{ $asesi->id_asesi ?? '' }}";
+            const idSertifikasi = "{{ $sertifikasi->id_data_sertifikasi_asesi ?? '' }}";
 
-            // --- 1. SETUP SIGNATURE PAD ---
+            // Cek apakah user punya ttd saat halaman dimuat
+            // Perhatikan kutipnya, ini penting biar jadi string 'true'/'false' atau boolean
+            let hasSignature = {{ isset($asesi) && $asesi->tanda_tangan ? 'true' : 'false' }};
+
+            // Validasi Awal: Kalau ID gak ada, jangan jalankan script (biar gak error console)
+            if (!idAsesi || !idSertifikasi) {
+                console.error("ID Asesi atau ID Sertifikasi tidak ditemukan.");
+                return;
+            }
+
+
+            // --- 2. SETUP SIGNATURE PAD ---
+            // Inisialisasi SignaturePad
             let signaturePad = new SignaturePad(canvas, {
-                backgroundColor: 'rgba(255, 255, 255, 0)'
+                backgroundColor: 'rgba(255, 255, 255, 0)' // Transparan
             });
 
+            // Fungsi Resize Canvas (Responsive)
             function resizeCanvas() {
-                // Hanya resize jika canvas sedang terlihat
+                // Hanya resize jika canvas sedang terlihat (biar gak error layout/hidden element)
                 if (canvasContainer.classList.contains('hidden')) return;
 
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
+
+                // Simpan data lama sebelum resize (karena resize akan menghapus canvas)
+                // Tapi untuk kasus ini kita biarkan kosong saat resize agar bersih
                 canvas.width = canvas.offsetWidth * ratio;
                 canvas.height = canvas.offsetHeight * ratio;
                 canvas.getContext("2d").scale(ratio, ratio);
 
-                // Note: Resize akan menghapus coretan yang belum disave
-                // signaturePad.clear(); 
+                // signaturePad.clear(); // Opsional: Bersihkan setelah resize
             }
+
+            // Panggil resize saat window diubah ukurannya
             window.addEventListener("resize", resizeCanvas);
 
             // Inisialisasi awal canvas (jika belum ada ttd)
             if (!hasSignature) {
-                resizeCanvas();
+                // Sedikit delay biar element HTML benar-benar render dulu
+                setTimeout(resizeCanvas, 100);
             }
 
             // Hilangkan tulisan "Tanda tangan di sini" saat mulai nulis
@@ -202,7 +223,8 @@
                 placeholder.classList.add('hidden');
             });
 
-            // --- 2. TOMBOL HAPUS / ULANGI ---
+
+            // --- 3. TOMBOL HAPUS / ULANGI ---
             btnHapus.addEventListener('click', () => {
                 // Sembunyikan Gambar Preview
                 imgContainer.classList.add('hidden');
@@ -211,21 +233,24 @@
                 canvasContainer.classList.remove('hidden');
 
                 // Reset Canvas
+                placeholder.classList.remove('hidden');
+                hasSignature = false;
+
+                // Wajib resize ulang saat ditampilkan kembali agar ukurannya pas
                 resizeCanvas();
                 signaturePad.clear();
-                placeholder.classList.remove('hidden');
-
-                // Set status jadi 'sedang mengedit'
-                hasSignature = false;
             });
 
-            // --- 3. TOMBOL SIMPAN ---
+
+            // --- 4. TOMBOL SIMPAN ---
             btnSimpan.addEventListener('click', async () => {
 
                 // Skenario 1: User tidak melakukan perubahan (Gambar lama masih tampil)
-                // Langsung lanjut aja ke halaman selesai
+                // Langsung lanjut aja ke halaman selesai (Tracker)
                 if (hasSignature && !imgContainer.classList.contains('hidden')) {
-                    window.location.href = '/form-selesai';
+                    // Opsional: Tampilkan pesan konfirmasi
+                    // alert('Menggunakan tanda tangan yang sudah ada.');
+                    window.location.href = '/tracker';
                     return;
                 }
 
@@ -240,45 +265,45 @@
                 btnSimpan.innerText = 'Menyimpan...';
                 btnSimpan.disabled = true;
 
+                // Ambil data gambar (Base64 PNG)
                 const dataUrl = signaturePad.toDataURL('image/png');
 
                 try {
-                    const response = await fetch(`/api/ajax-simpan-tandatangan/${idAsesi}`, {
+                    // Ambil CSRF Token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+                    const response = await fetch(`/api/v1/ajax-simpan-tandatangan/${idAsesi}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .content,
+                            'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify({
-                            data_tanda_tangan: dataUrl
+                            data_tanda_tangan: dataUrl,
+                            id_data_sertifikasi_asesi: idSertifikasi // Kirim ID ini untuk update status
                         })
                     });
 
                     const result = await response.json();
 
                     if (response.ok && result.success) {
-                        alert('Tanda tangan berhasil diperbarui!');
+                        alert('Tanda tangan berhasil disimpan & Pendaftaran Selesai!');
 
-                        // --- LOGIKA AUTO-UPDATE TAMPILAN ---
-                        // 1. Update src gambar dengan path baru dari API
-                        // 2. Tambahkan timestamp (?t=...) biar browser download gambar baru (bukan cache lama)
-                        imgDisplay.src = `/${result.path}?t=${new Date().getTime()}`;
-
-                        // 3. Tampilkan container gambar, sembunyikan canvas
+                        // --- LOGIKA AUTO-UPDATE TAMPILAN (Opsional) ---
+                        // Jika kita mau update gambar tanpa reload (kalau gak langsung redirect)
+                        /*
+                        if (imgDisplay) {
+                            // Tambahkan timestamp biar gak kena cache browser
+                            imgDisplay.src = `/${result.path}?t=${new Date().getTime()}`;
+                        }
                         imgContainer.classList.remove('hidden');
                         canvasContainer.classList.add('hidden');
-
-                        // 4. Set status
                         hasSignature = true;
+                        */
 
-                        // 5. Reset tombol
-                        btnSimpan.innerText = 'Simpan & Selesai';
-                        btnSimpan.disabled = false;
-
-                        // Opsional: Langsung pindah halaman kalau mau
-                        window.location.href = '/form-selesai';
+                        // REDIRECT KE TRACKER (Biar user bisa download APL-01)
+                        window.location.href = '/tracker';
 
                     } else {
                         throw new Error(result.message || 'Gagal menyimpan');

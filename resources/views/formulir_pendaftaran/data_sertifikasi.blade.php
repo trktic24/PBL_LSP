@@ -148,7 +148,7 @@
             }
 
             // 2. LOAD DATA DARI DATABASE (GET)
-            fetch(`/api/data-sertifikasi/detail/${sertifikasiId}`)
+            fetch(`/api/v1/data-sertifikasi/detail/${sertifikasiId}`)
                 .then(res => res.json())
                 .then(response => {
                     if (response.success && response.data) {
@@ -216,7 +216,7 @@
                     // Ambil CSRF Token
                     const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
 
-                    const response = await fetch('/api/data-sertifikasi', {
+                    const response = await fetch('/api/v1/data-sertifikasi', {
                         method: 'POST', // Sesuai route API kamu
                         headers: {
                             'Content-Type': 'application/json',

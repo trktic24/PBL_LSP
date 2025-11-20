@@ -5,7 +5,7 @@
     @endforeach --}}
 
     {{-- method show --}}
-    {{-- <p>{{ $asesi_show['nama_lengkap'] }}</p> --}}
+    <p>{{ $asesi_show['nama_lengkap'] }}</p>
 
     {{-- method create --}}
     
