@@ -19,6 +19,7 @@ use App\Models\Asesi; // <-- [PENTING] Tambahin ini buat route /tracker
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 use App\Http\Controllers\TrackerController; // <-- [PERUBAHAN DITAMBAHKAN]
+use App\Http\Controllers\Apl02\PraasesmenController; // WAJIB panggil Controller Anda di sini!
 
 /*
 |--------------------------------------------------------------------------
@@ -88,15 +89,22 @@ Route::get('/pembayaran', function () { return view('pembayaran/pembayaran'); })
 Route::get('/upload_bukti_pembayaran', function () { return view('upload_bukti_pembayaran'); });
 Route::get('/tunggu_pembayaran', function () { return view('tunggu_pembayaran'); });
 
-// --- Pra-Asesmen Views ---
-Route::get('/praasesmen1', function () { return view('pra-assesmen.praasesmen1'); });
-Route::get('/praasesmen2', function () { return view('pra-assesmen.praasesmen2'); });
-Route::get('/praasesmen3', function () { return view('pra-assesmen.praasesmen3'); });
-Route::get('/praasesmen4', function () { return view('pra-assesmen.praasesmen4'); });
-Route::get('/praasesmen5', function () { return view('pra-assesmen.praasesmen5'); });
-Route::get('/praasesmen6', function () { return view('pra-assesmen.praasesmen6'); });
-Route::get('/praasesmen7', function () { return view('pra-assesmen.praasesmen7'); });
-Route::get('/praasesmen8', function () { return view('pra-assesmen.praasesmen8'); });
+// Route::get('/praasesmen', [PraasesmenController::class, 'index']);
+
+// OPSI 2: Menggunakan URL spesifik (Direkomendasikan)
+// Ini lebih aman dan rapi, biasanya untuk formulir atau fitur tertentu.
+// Contoh: Mengakses formulir di domainanda.com/asesmen/pra
+// Route::get('/asesmen/pra', [PraAsesmenController::class, 'index']);
+
+// // --- Pra-Asesmen Views ---
+// Route::get('/praasesmen1', function () { return view('pra-assesmen.praasesmen1'); });
+// Route::get('/praasesmen2', function () { return view('pra-assesmen.praasesmen2'); });
+// Route::get('/praasesmen3', function () { return view('pra-assesmen.praasesmen3'); });
+// Route::get('/praasesmen4', function () { return view('pra-assesmen.praasesmen4'); });
+// Route::get('/praasesmen5', function () { return view('pra-assesmen.praasesmen5'); });
+// Route::get('/praasesmen6', function () { return view('pra-assesmen.praasesmen6'); });
+// Route::get('/praasesmen7', function () { return view('pra-assesmen.praasesmen7'); });
+// Route::get('/praasesmen8', function () { return view('pra-assesmen.praasesmen8'); });
 
 // --- Asesmen Lainnya Views ---
 Route::get('/belum_lulus', function () { return view('belum_lulus'); });
