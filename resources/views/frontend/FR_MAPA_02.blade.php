@@ -4,7 +4,7 @@
 @section('content')
 <div class="p-8">
     {{-- 1. Menggunakan Komponen Header Form --}}
-    <x-header_form.header_form title="FR.MAPA.02. PETA INSTRUMEN ASESSMEN" />
+    <x-header_form.header_form title="FR.MAPA.02 - PETA INSTRUMEN ASESSMEN" />
     
     {{-- 2. Menggunakan Komponen Identitas Skema --}}
     {{-- Komponen ini akan menampilkan data statis (placeholder) skema, asesor, asesi, TUK, dll --}}

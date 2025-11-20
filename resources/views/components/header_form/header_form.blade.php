@@ -5,7 +5,7 @@
       Ukurannya h-10 di mobile, 
       dan h-12 di layar medium (md) ke atas
     --}}
-    <img src="{{ asset('images/logo_bnsp.png') }}" alt="Logo BNSP" class="h-10 md:h-12 w-auto">
+    <img src="{{ asset('images/logo_bnsp.png') }}" alt="Logo BNSP" class="h-15 md:h-20 w-auto">
     
     {{-- 
       Margin atas 4 di mobile, 

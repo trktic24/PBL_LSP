@@ -1,100 +1,74 @@
 <?php
 
-namespace App\Http\Controllers\Asesor;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\ia02;
-use App\Models\SkenarioIa02;
-// Ann-Note: Pastikan Anda meng-import model DataSertifikasiAsesi Anda
-// use App\Models\DataSertifikasiAsesi; 
+use App\Models\IA02;
+use App\Models\DataSertifikasiAsesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class IA02Controller extends Controller
 {
     /**
-     * Menampilkan form FR.IA.02 yang sudah terisi data
-     * (Tahap 4 - Menghubungkan ke View)
-     *
-     * @param string $id (id_data_sertifikasi_asesi)
-     * @return View
+     * Menampilkan halaman FR IA.02
      */
-    public function show(string $id): View
+    public function show(string $id_data_sertifikasi_asesi)
     {
-        // Ann-Note: Asumsi $id adalah 'id_data_sertifikasi_asesi'
-        // dan model 'DataSertifikasiAsesi' Anda sudah memiliki relasi
-        // ke 'asesi', 'asesor', dan 'skema'.
-
-        /*
-        // --- CONTOH PENGAMBILAN DATA ---
-        // 1. Cari data sertifikasi utama berdasarkan ID
+        // Ambil data sertifikasi beserta relasinya
         $sertifikasi = DataSertifikasiAsesi::with([
-                            'asesi', 
-                            'asesor', 
-                            'skema', 
-                            'skema.unitKompetensis' // Asumsi ada relasi ini
-                        ])
-                        ->findOrFail($id);
+            'asesi',
+            'jadwal.tuk',
+            'jadwal.skema',
+            'jadwal.skema.asesor',
+            'jadwal.skema.kelompokPekerjaans.UnitKompetensis'
+        ])->find($id_data_sertifikasi_asesi);
 
-        // 2. Cek apakah asesor yang login berhak mengakses
-        // (Tambahkan logika keamanan ini nanti)
-        // if ($sertifikasi->asesor->user_id !== Auth::id()) {
-        //     abort(403, 'Tidak diizinkan');
-        // }
+        if (!$sertifikasi) {
+            return redirect()
+                ->route('daftar_asesi')
+                ->with('error', 'Data Sertifikasi tidak ditemukan.');
+        }
 
-        // 3. Cari data skenario IA.02 yang sudah ada, atau buat objek baru jika belum
-        $skenario = SkenarioIa02::firstOrNew([
-            'id_data_sertifikasi_asesi' => $id
-        ]);
+        // Ambil data IA02 untuk sertifikasi ini (jika sudah ada)
+        $ia02 = IA02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->first();
 
-        // 4. Kirim semua data ke View
-        return view('asesor.fr_ia_02', [
+        // Role: yang boleh input adalah admin (1) & superadmin (4)
+        $isAdmin = in_array(Auth::user()->role_id, [1, 4]);
+
+        return view('frontend.FR_IA_02', [
             'sertifikasi' => $sertifikasi,
-            'skenario' => $skenario,
-            // 'unitKompetensis' => $sertifikasi->skema->unitKompetensis, // Untuk tabel Kelompok Pekerjaan
+            'ia02'        => $ia02,
+            'isAdmin'     => $isAdmin,
         ]);
-        */
-        
-        // --- UNTUK SEKARANG (STATIC VIEW) ---
-        // Karena kita belum punya model DataSertifikasiAsesi,
-        // kita akan tampilkan view statis seperti yang sudah Anda buat.
-        // Hapus komentar di atas dan hapus baris di bawah ini jika model Anda sudah siap.
-        return view('asesor.fr_ia_02');
     }
 
     /**
-     * Menyimpan data dari form FR.IA.02
-     *
-     * @param Request $request
-     * @param string $id (id_data_sertifikasi_asesi)
-     * @return RedirectResponse
+     * Menyimpan atau mengupdate data IA.02
      */
-    public function store(Request $request, string $id): RedirectResponse
+    public function store(Request $request, string $id_sertifikasi)
     {
-        // 1. Validasi data yang masuk dari form
+        // Hanya admin (1) atau superadmin (4)
+        if (! in_array(Auth::user()->role_id, [1, 4])) {
+            abort(403, 'ANDA TIDAK MEMILIKI AKSES UNTUK MENGUBAH DATA INI.');
+        }
+
         $validated = $request->validate([
-            'skenario' => 'required|string',
+            'skenario'  => 'required|string',
             'peralatan' => 'required|string',
-            'waktu' => 'required|string|max:100',
-            // Tambahkan validasi untuk tabel Kelompok Pekerjaan jika perlu
+            'waktu'     => 'required|string|max:100',
         ]);
 
-        // 2. Gunakan updateOrCreate()
-        // - Jika data dengan id_data_sertifikasi_asesi = $id sudah ada, data akan di-update.
-        // - Jika belum ada, data baru akan dibuat.
-        ia02::updateOrCreate(
-            ['id_data_sertifikasi_asesi' => $id], // Kunci pencarian
+        IA02::updateOrCreate(
+            ['id_data_sertifikasi_asesi' => $id_sertifikasi],
             [
-                'skenario' => $validated['skenario'],
+                'skenario'  => $validated['skenario'],
                 'peralatan' => $validated['peralatan'],
-                'waktu' => $validated['waktu'],
-            ] // Data yang akan di-update atau di-create
+                'waktu'     => $validated['waktu'],
+            ]
         );
 
-        // 3. Kembalikan ke halaman sebelumnya dengan pesan sukses
-        return redirect()->back()
-                         ->with('success', 'Data Skenario FR.IA.02 berhasil disimpan!');
+        return redirect()
+            ->back()
+            ->with('success', 'Data Instruksi Demonstrasi berhasil disimpan.');
     }
 }

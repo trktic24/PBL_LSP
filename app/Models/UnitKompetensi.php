@@ -36,6 +36,11 @@ class UnitKompetensi extends Model
         'judul_unit',
     ];
 
+    public function skema()
+    {
+        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+    }
+
     public function kelompokPekerjaan()
     {
         return $this->belongsTo(KelompokPekerjaan::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');

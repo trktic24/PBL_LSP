@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SoalController;
 use App\Http\Controllers\IA01Controller;
+use App\Http\Controllers\IA02Controller;
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -64,6 +65,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/ia02-test', function() {
+        return "Route IA02 Terhubung! Silakan akses dengan ID, misal: /ia02/1";
+    });
+
+    // Route Utama (Memerlukan ID)
+    Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');
+    Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
 });
 
 Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');

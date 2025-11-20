@@ -94,4 +94,10 @@ class DataSertifikasiAsesi extends Model
         // Tentukan foreign key dan local key karena tidak standar
         return $this->hasMany(Ia07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+
+    public function ia02(): HasMany
+    {
+        // Tentukan foreign key dan local key karena tidak standar
+        return $this->hasMany(ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
 }

@@ -65,7 +65,7 @@ class Skema extends Model
      * Relasi ke UnitKompetensi.
      * Skema ini 'memiliki banyak' UnitKompetensi.
      */
-    public function unitKompetensi()
+    public function unitKompetensis()
     {
         // Asumsi foreign key di tabel 'unit_kompetensi' adalah 'skema_id'
         // dan primary key di 'skema' adalah 'id_skema' (sesuai $primaryKey di atas)
