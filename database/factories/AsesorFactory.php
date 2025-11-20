@@ -14,8 +14,7 @@ class AsesorFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_skema' => Skema::factory(), // Kamu sudah punya factory ini
-            'id_user' => User::factory(),  // Ini factory bawaan Laravel
+            'user_id' => User::factory(),  // Ini factory bawaan Laravel
             'nomor_regis' => 'MET.' . $this->faker->unique()->numerify('#########'),
             'nama_lengkap' => $this->faker->name(),
             'nik' => $this->faker->unique()->numerify('################'),

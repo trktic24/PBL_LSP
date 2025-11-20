@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Test;
 
 // --- KUMPULAN SEMUA CONTROLLER (JADI SATU DI ATAS) ---
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TukController;
 use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\Auth\LoginController;
@@ -60,31 +61,33 @@ Route::apiResource('tuks', TukController::class);
 
 // --- GRUP 5: RUTE FORMULIR ASESI (APL/AK) ---
 
-// Tanda Tangan
-Route::get('/get-asesi-data/{id}', [TandaTanganAPIController::class, 'getAsesiDataApi'])
-        ->name('api.get.asesi');
-Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])
-        ->name('simpan.tandatangan.ajax');
-Route::post('/ajax-hapus-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'deleteAjax'])
-        ->name('hapus.tandatangan.ajax');
-
 // Data Sertifikasi
 Route::prefix('data-sertifikasi')->group(function () {
+    Route::get('/detail/{id}', [DataSertifikasiAsesiController::class, 'getDetailSertifikasiApi'])
+        ->name('api.sertifikasi.detail');
     Route::get('/{id}', [DataSertifikasiAsesiController::class, 'getDataSertifikasiAsesiApi'])
         ->name('api.data_sertifikasi.get');
     Route::post('/', [DataSertifikasiAsesiController::class, 'storeAjax'])
         ->name('api.data_sertifikasi.store');
-    Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
-        ->name('api.data_sertifikasi.delete');
+    Route::get('/get-sertifikasi-detail/{id}', [DataSertifikasiAsesiController::class, 'getDetailSertifikasiApi'])
+        ->name('api.sertifikasi.detail');
 });
 
-// Bukti Kelengkapan
 Route::prefix('bukti-kelengkapan')->group(function () {
-    Route::get('/{id_data_sertifikasi_asesi}', [BuktiKelengkapanController::class, 'getDataBuktiKelengkapanApi'])
+    
+    // 1. GET Data: Mengambil daftar bukti berdasarkan ID Data Sertifikasi
+    // URL: /api/bukti-kelengkapan/list/{id_data_sertifikasi_asesi}
+    Route::get('/list/{id_data_sertifikasi_asesi}', [BuktiKelengkapanController::class, 'getDataBuktiKelengkapanApi'])
         ->name('api.bukti_kelengkapan.get');
-    Route::post('/', [BuktiKelengkapanController::class, 'storeAjax'])
+
+    // 2. POST Data: Simpan atau Update bukti (Upload File)
+    // URL: /api/bukti-kelengkapan/store
+    Route::post('/store', [BuktiKelengkapanController::class, 'storeAjax'])
         ->name('api.bukti_kelengkapan.store');
-    Route::delete('/{id}', [BuktiKelengkapanController::class, 'deleteAjax'])
+
+    // 3. DELETE Data: Hapus bukti berdasarkan ID Bukti Dasar
+    // URL: /api/bukti-kelengkapan/delete/{id}
+    Route::delete('/delete/{id}', [BuktiKelengkapanController::class, 'deleteAjax'])
         ->name('api.bukti_kelengkapan.delete');
 });
 
@@ -97,3 +100,8 @@ Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIControll
 // Tanda Tangan Asesi
 Route::get('/show-all',[TandaTanganAPIController::class, 'index']);
 Route::get('/show-detail/{id_asesi}',[TandaTanganAPIController::class, 'show']);
+Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])
+    ->name('simpan.tandatangan.ajax');
+
+// inih
+Route::apiResource('test', Test::class);

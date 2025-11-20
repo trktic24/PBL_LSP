@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\UnitKompetensi;     // <-- 1. Panggil Model-nya
-use App\Models\KelompokPekerjaan; // <-- 2. Panggil Model KelompokPekerjaan (buat FK)
+// [1] Panggil Model-model yang diperlukan
+use App\Models\UnitKompetensi;  // <-- Model kamu
+use App\Models\KelompokPekerjaan; // <-- Model Induk (Parent)
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -12,12 +13,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class UnitKompetensiFactory extends Factory
 {
     /**
-     * 3. WAJIB: Tentukan Model yang dipake
+     * Tentukan model yang sesuai dengan factory ini.
+     * [ASUMSI]: Model-mu 'UnitKompetensi' nembak ke tabel 'master_unit_kompetensi'
      */
     protected $model = UnitKompetensi::class;
 
     /**
-     * 4. Definisikan data palsunya
+     * Definisikan data palsunya.
      *
      * @return array<string, mixed>
      */
@@ -25,14 +27,19 @@ class UnitKompetensiFactory extends Factory
     {
         return [
             // --- INI KUNCINYA ---
-            // Ambil 'id_kelompok_pekerjaan' SECARA ACAK dari tabel 'kelompok_pekerjaans'
-            // Ini WAJIB dijalanin SETELAH KelompokPekerjaanFactory
-            'id_kelompok_pekerjaan' => KelompokPekerjaan::all()->random()->id_kelompok_pekerjaan,
+            // Panggil factory induknya.
+            // Ini akan OTOMATIS membuat 1 KelompokPekerjaan baru
+            // lalu pakai ID-nya untuk 'id_kelompok_pekerjaan'.
+            'id_kelompok_pekerjaan' => KelompokPekerjaan::factory(),
             
-            // Bikin data palsu sesuai migrasi lu
-            'kode_unit' => 'M.' . fake()->numerify('700200.0##.0#'),
-            'judul_unit' => 'Mengembangkan ' . fake()->words(3, true),
-            'jenis_standar' => fake()->randomElement(['SKKNI', 'Standar Internasional', 'Standar Khusus']),
+            // --- Mengisi kolom sesuai migrasi 'master_unit_kompetensi' ---
+            
+            'kode_unit' => $this->faker->unique()->bothify('J.620100.###.##'),
+            
+            'judul_unit' => 'Mengembangkan ' . $this->faker->words(3, true),
+
+            // [FIX] 'jenis_standar' SEKARANG ADA
+            'jenis_standar' => $this->faker->randomElement(['SKKNI', 'Standar Internasional', 'Standar Khusus']),
         ];
     }
 }

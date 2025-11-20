@@ -19,9 +19,6 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        // Ambil ID role 'asesi' dari DB (ini butuh RoleSeeder udah jalan)
-        $asesiRoleId = Role::where('nama_role', 'asesi')->first()->id_role ?? 1;
-
         return [
             // Ambil role_id secara acak dari tabel roles
             // Ini ASUMSI tabel roles-nya udah keisi dulu
@@ -37,12 +34,14 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
+
+    /**
+     * Indicate that the model's email address should be unverified.
+     */
     public function unverified(): static
     {
-        return $this->state(
-            fn(array $attributes) => [
-                'email_verified_at' => null,
-            ],
-        );
+        return $this->state(fn (array $attributes) => [
+            'email_verified_at' => null,
+        ]);
     }
 }

@@ -12,27 +12,30 @@ class TrackerController extends Controller
 {
     /**
      * Menampilkan halaman tracker untuk user yang sedang login.
+     * [PERUBAHAN] Menerima parameter opsional $jadwal_id
      */
-    public function index()
+    public function index($jadwal_id = null) // [PERUBAHAN] Tambahkan parameter opsional
     {
         $user = Auth::user();
-        
-        // 1. Dapatkan asesi dari user
         $asesi = $user->asesi; 
-        
-        // 2. Siapkan variabel $sertifikasi
         $sertifikasi = null; 
 
         if ($asesi) {
-            // 3. Jika asesi ada, ambil pendaftarannya (HasOne)
-            // Kita Eager Load relasi jadwal dan skema-nya
-            $sertifikasi = $asesi->dataSertifikasi() // Menggunakan relasi HasOne
-                                ->with('jadwal.skema') 
-                                ->first(); 
+            // Siapkan query dasar
+            $query = $asesi->dataSertifikasi()->with('jadwal.skema');
+            
+            // [PERUBAHAN] Tambahkan logika if/else
+            if ($jadwal_id) {
+                // Jika ada id_jadwal, cari berdasarkan ID itu
+                $sertifikasi = $query->where('id_jadwal', $jadwal_id)->first();
+            } else {
+                // Jika tidak ada, ambil pendaftaran pertama (perilaku lama)
+                $sertifikasi = $query->first(); 
+            }
+            // [AKHIR PERUBAHAN]
         }
         
         // 4. Kirim data (bisa jadi $sertifikasi itu null) ke view
-        // Pastikan view Anda ada di 'resources/views/tracker.blade.php'
         return view('tracker', [
             'sertifikasi' => $sertifikasi
         ]);
@@ -47,7 +50,7 @@ class TrackerController extends Controller
     {
         $user = Auth::user();
         
-        // 1. Validasi input (pastikan id_jadwal dikirim)
+        // 1. Validasi input
         $request->validate([
             'id_jadwal' => 'required|integer|exists:jadwal,id_jadwal',
         ]);
@@ -63,20 +66,24 @@ class TrackerController extends Controller
             ], 404);
         }
 
-        // 3. Cek apakah user sudah mendaftar (Hanya 1 pendaftaran, sesuai HasOne)
-        $existing = DataSertifikasiAsesi::where('id_asesi', $asesi->id_asesi)->exists();
+        // 3. Cek apakah user sudah mendaftar
+        // [PERUBAHAN] Ganti exists() menjadi first() agar kita bisa dapatkan datanya
+        $existing = DataSertifikasiAsesi::where('id_asesi', $asesi->id_asesi)
+                                ->where('id_jadwal', $id_jadwal)
+                                ->first(); 
+        
         if ($existing) {
             return response()->json([
                 'success' => false,
-                'redirect_url' => route('tracker'), // <-- [PERBAIKAN] Diubah dari tracker.index
-                'message' => 'Anda sudah memiliki pendaftaran aktif. Selesaikan dulu sebelum mendaftar lagi.'
+                // [PERUBAHAN] Arahkan ke tracker yang SUDAH ADA datanya
+                'redirect_url' => route('tracker', ['jadwal_id' => $existing->id_jadwal]), 
+                'message' => 'Anda sudah memiliki pendaftaran aktif. Mengarahkan ke data Anda...'
             ], 409); // 409 Conflict
         }
 
         try {
             // 4. Buat pendaftaran baru
-            // (Anda bisa menambahkan nilai default untuk kolom lain di sini jika perlu)
-            DataSertifikasiAsesi::create([
+            $newSertifikasi = DataSertifikasiAsesi::create([
                 'id_asesi' => $asesi->id_asesi,
                 'id_jadwal' => $id_jadwal,
                 'tujuan_asesmen' => 'Sertifikasi', // Default
@@ -86,7 +93,8 @@ class TrackerController extends Controller
             // 5. Kirim respons sukses
             return response()->json([
                 'success' => true,
-                'redirect_url' => route('tracker'), // <-- [PERBAIKAN] Diubah dari tracker.index
+                // [PERUBAHAN] Arahkan ke tracker dengan ID JADWAL YANG BARU DIBUAT
+                'redirect_url' => route('tracker', ['jadwal_id' => $newSertifikasi->id_jadwal]), 
                 'message' => 'Berhasil mendaftar! Mengarahkan Anda ke Tracker...'
             ]);
 
