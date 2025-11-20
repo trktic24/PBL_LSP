@@ -12,6 +12,7 @@ class ResponIa10 extends Model
     // Tentukan nama tabel & primary key
     protected $table = 'respon_ia10';
     protected $primaryKey = 'id_respon_ia10';
+    protected $guarded = [];
 
     // Izinkan kolom-kolom ini diisi saat 'create'
     protected $fillable = [

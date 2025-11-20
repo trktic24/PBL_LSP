@@ -9,6 +9,7 @@ use App\Models\SoalIA05;
 use App\Models\KunciJawabanIA05;
 use App\Models\LembarJawabIA05;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\Skema;
 
 class IA05Controller extends Controller
 {
@@ -24,7 +25,7 @@ class IA05Controller extends Controller
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $data_jawaban_asesi = collect();
-        if ($user->role == 'asesi' || $user->role == 'asesor') {
+        if ($user->role_id == 2 || $user->role_id == 3) {
             // UBAH: Ambil 'teks_jawaban_asesi_ia05'
             $data_jawaban_asesi = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
                                             ->pluck('teks_jawaban_asesi_ia05', 'id_soal_ia05');
@@ -110,11 +111,13 @@ class IA05Controller extends Controller
         
         // UBAH: Ambil 'teks_kunci_jawaban_ia05'
         $kunci_jawaban = KunciJawabanIA05::pluck('teks_kunci_jawaban_ia05', 'id_soal_ia05'); 
+        $skema_info = Skema::first();
 
         return view('frontend.fr_IA_05_B', [
             'user' => $user,
             'semua_soal' => $semua_soal,
             'kunci_jawaban' => $kunci_jawaban,
+            'skema_info' => $skema_info,
         ]);
     }
 

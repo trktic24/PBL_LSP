@@ -10,9 +10,9 @@
                 skema="Junior Web Developer"
                 nomorSkema="SKK.XXXXX.XXXX"
                 tuk="Tempat Kerja" 
-                namaAsesor="{{ $asesor->name ?? 'Nama Asesor' }}" {{-- DINAMIS --}}
-                namaAsesi="{{ $asesi->nama_asesi ?? 'Nama Asesi' }}" {{-- DINAMIS --}}
-                tanggal="{{ now()->format('d F Y') }}" {{-- DINAMIS --}}
+                namaAsesor="{{ $asesor->name ?? 'Nama Asesor' }}" 
+                namaAsesi="{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}" 
+                tanggal="{{ now()->format('d F Y') }}" 
             />
 
             {{-- Notifikasi Sukses/Error --}}
@@ -30,15 +30,22 @@
             <form class="form-body mt-10" method="POST" action="{{ route('fr-ia-10.store') }}">
             @csrf
 
-                {{-- Input tersembunyi untuk data Asesi & Asesor --}}
-                <input type="hidden" name="nama_asesi" value="{{ $asesi->nama_asesi ?? 'Nama Asesi' }}">
+                {{-- WAJIB ADA: ID Asesi untuk disimpan ke database --}}
+                <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $asesi->id_data_sertifikasi_asesi }}">
+
+                {{-- Input tersembunyi pelengkap (opsional visual) --}}
+                <input type="hidden" name="nama_asesi" value="{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}">
                 <input type="hidden" name="nama_asesor" value="{{ $asesor->name ?? 'Nama Asesor' }}">
 
                 <div class="guide-box bg-gray-100 border-gray-100 p-6 rounded-md shadow-sm my-8">
-                    {{-- ... (Panduan Asesor, tidak perlu diubah) ... --}}
+                     <p><strong>Panduan bagi Asesor:</strong></p>
+                     <ul class="list-disc pl-5 mt-2">
+                        <li>Lengkapi formulir ini untuk memverifikasi bukti pihak ketiga yang diajukan oleh asesi.</li>
+                        <li>Pastikan setiap pertanyaan dijawab dengan jujur berdasarkan pengamatan atau pengalaman kerja dengan asesi.</li>
+                     </ul>
                 </div> 
                 
-                {{-- Data Pihak Ketiga (NAME disesuaikan dengan screenshot) --}}
+                {{-- Data Pihak Ketiga --}}
                 <div class="form-section my-8">
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Data Pihak Ketiga</h2>
 
@@ -67,7 +74,7 @@
                     ]) 
                 </div>
 
-                {{-- TABEL PERTANYAAN (STATIS, TAPI NAME DIPERBAIKI) --}}
+                {{-- TABEL PERTANYAAN (DINAMIS SEKARANG) --}}
                 <div class="form-section my-8">
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Daftar Pertanyaan</h2>
                     <div class="overflow-x-auto border border-gray-900 shadow-md">
@@ -80,47 +87,48 @@
                                 </tr>
                             </x-slot>
                             
-                            {{-- Pertanyaan 1 --}}
-                            <tr>
-                                <td class="border border-gray-900 p-2 text-sm">"Apakah asesi bekerja dengan mempertimbangkan Kesehatan, Keamanan dan Keselamatan Kerja?"</td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q1" value="ya" class="form-radio h-4 w-4 text-blue-600" required></td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q1" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
-                            </tr>
-                            {{-- Pertanyaan 2 --}}
-                            <tr>
-                                <td class="border border-gray-900 p-2 text-sm">Apakah asesi berinteraksi dengan harmonis didalam kelompoknya?</td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q2" value="ya" class="form-radio h-4 w-4 text-blue-600" required></td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q2" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
-                            </tr>
-                            {{-- Pertanyaan 3 --}}
-                            <tr>
-                                <td class="border border-gray-900 p-2 text-sm">Apakah asesi dapat mengelola tugas-tugas secara bersamaan?</td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q3" value="ya" class="form-radio h-4 w-4 text-blue-600" required></td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q3" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
-                            </tr>
-                            {{-- Pertanyaan 4 --}}
-                            <tr>
-                                <td class="border border-gray-900 p-2 text-sm">Apakah asesi dapat dengan cepat beradaptasi dengan peralatan dan lingkungan yang baru?</td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q4" value="ya" class="form-radio h-4 w-4 text-blue-600" required></td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q4" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
-                            </tr>
-                            {{-- Pertanyaan 5 --}}
-                            <tr>
-                                <td class="border border-gray-900 p-2 text-sm">Apakah asesi dapat merespon dengan cepat masalah-masalah yang ada di tempat kerjanya?</td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q5" value="ya" class="form-radio h-4 w-4 text-blue-600" required></td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q5" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
-                            </tr>
-                            {{-- Pertanyaan 6 --}}
-                            <tr>
-                                <td class="border border-gray-900 p-2 text-sm">Apakah Anda bersedia dihubungi jika verifikasi lebih lanjut dari pernyataan ini diperlukan?</td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q6" value="ya" class="form-radio h-4 w-4 text-blue-600" required></td>
-                                <td class="border border-gray-900 p-2 text-sm text-center"><input type="radio" name="q6" value="tidak" class="form-radio h-4 w-4 text-blue-600"></td>
-                            </tr>
+                            {{-- LOOPING SOAL DARI DATABASE --}}
+                            @forelse($daftar_soal as $index => $soal)
+                                <tr>
+                                    <td class="border border-gray-900 p-2 text-sm">
+                                        {{-- Menampilkan Teks Pertanyaan --}}
+                                        {{ $soal->pertanyaan }}
+                                    </td>
+                                    
+                                    {{-- Opsi YA --}}
+                                    <td class="border border-gray-900 p-2 text-sm text-center">
+                                        <input type="radio" 
+                                               name="jawaban[{{ $soal->id_ia10 }}]" 
+                                               value="ya" 
+                                               class="form-radio h-4 w-4 text-blue-600"
+                                               {{-- Cek jika sudah ada jawaban YA di database --}}
+                                               {{ (isset($jawaban_map[$soal->id_ia10]) && $jawaban_map[$soal->id_ia10] == 'ya') ? 'checked' : '' }}
+                                               required>
+                                    </td>
+
+                                    {{-- Opsi TIDAK --}}
+                                    <td class="border border-gray-900 p-2 text-sm text-center">
+                                        <input type="radio" 
+                                               name="jawaban[{{ $soal->id_ia10 }}]" 
+                                               value="tidak" 
+                                               class="form-radio h-4 w-4 text-blue-600"
+                                               {{-- Cek jika sudah ada jawaban TIDAK di database --}}
+                                               {{ (isset($jawaban_map[$soal->id_ia10]) && $jawaban_map[$soal->id_ia10] == 'tidak') ? 'checked' : '' }}>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="border border-gray-900 p-2 text-sm text-center text-red-500">
+                                        Data pertanyaan (IA.10) belum tersedia di Bank Soal.
+                                    </td>
+                                </tr>
+                            @endforelse
+
                         </x-table>
                     </div>
                 </div>
 
-                {{-- Detail Verifikasi (NAME disesuaikan dengan screenshot) --}}
+                {{-- Detail Verifikasi --}}
                 <div class="form-section my-8">
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Detail Verifikasi</h2>
                     @include('components.kolom_form.kolom_form', [
@@ -152,7 +160,7 @@
                     ]) 
                 </div>
 
-                {{-- Kesimpulan (NAME disesuaikan dengan screenshot) --}}
+                {{-- Kesimpulan --}}
                 <div class="form-section my-8">
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Kesimpulan</h2>
 
@@ -189,8 +197,6 @@
                     <button type="submit" class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Kirim</button>
                 </div>
                 
-                {{-- ... (Footer, tidak perlu diubah) ... --}}
-
             </form>
         </div>
     </main>

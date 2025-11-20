@@ -5,9 +5,9 @@
 
     @php
         $formAction = '#'; 
-        if ($user->role == 'admin') {
+        if ($user->role_id == 1) { // Admin
             $formAction = route('ia-05.store.soal');
-        } elseif ($user->role == 'asesi') {
+        } elseif ($user->role_id == 2) { // Asesi
             $formAction = route('ia-05.store.jawaban', ['id_asesi' => $asesi->id_data_sertifikasi_asesi]);
         }
     @endphp
@@ -15,11 +15,20 @@
     <form class="form-body mt-6" action="{{ $formAction }}" method="POST"> 
         @csrf
         <x-identitas_skema_form.identitas_skema_form
-            skema="Junior Web Developer"
-            nomorSkema="SKK.XXXXX.XXXX"
-            tuk="Tempat Kerja" 
-            namaAsesor="Ajeng Febria Hidayati"
-            namaAsesi="{{ $asesi->nama_asesi ?? 'Nama Asesi' }}"
+            {{-- Mengambil Judul Skema dari relasi: DataSertifikasi -> Jadwal -> Skema --}}
+            skema="{{ $asesi->jadwal->skema->judul_skema ?? 'Judul Skema Tidak Ditemukan' }}"
+            
+            {{-- Mengambil Kode Skema --}}
+            nomorSkema="{{ $asesi->jadwal->skema->kode_skema ?? 'Kode Tidak Ditemukan' }}"
+            
+            tuk="Tempat Kerja" {{-- (Bisa dibuat dinamis juga jika ada di tabel Jadwal) --}}
+            
+            {{-- Mengambil Nama Asesor dari relasi: DataSertifikasi -> Asesor --}}
+            namaAsesor="{{ $asesi->asesor->nama_asesor ?? 'Nama Asesor Tidak Ditemukan' }}"
+            
+            {{-- Mengambil Nama Asesi dari relasi: DataSertifikasi -> Asesi --}}
+            namaAsesi="{{ $asesi->asesi->nama_asesi ?? 'Nama Asesi Tidak Ditemukan' }}"
+            
             tanggal="{{ now()->format('d F Y') }}"
         />
 
@@ -36,8 +45,8 @@
 
         <div class="form-section my-8">
             <h3 class="mb-4 font-semibold text-lg text-gray-800">
-                @if($user->role == 'admin') Input Pertanyaan (Mode Admin):
-                @elseif($user->role == 'asesi') Lembar Jawaban Pilihan Ganda:
+                @if($user->role_id == 1) Input Pertanyaan (Mode Admin):
+                @elseif($user->role_id == 2) Lembar Jawaban Pilihan Ganda:
                 @else Formulir Pertanyaan (Read-Only untuk Asesor):
                 @endif
             </h3>

@@ -12,4 +12,5 @@ class ia10 extends Model
     // Tentukan nama tabel & primary key sesuai migrasi Anda
     protected $table = 'ia10';
     protected $primaryKey = 'id_ia10';
+    protected $guarded = [];
 }

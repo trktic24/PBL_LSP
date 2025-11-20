@@ -86,6 +86,12 @@ class DataSertifikasiAsesi extends Model
         return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
     }
 
+    // Relasi ke tabel ASESOR
+    public function asesor()
+    {
+        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
+    }
+
     /**
      * Mendapatkan semua data IA07 yang terkait dengan data sertifikasi ini.
      */
