@@ -1,7 +1,7 @@
 @extends('layouts.app-sidebar')
 
 @section('content')
-    <div class="p-3 sm:p-6 md:p-8 max-w-5xl mx-auto">
+    <div class="p-3 sm:p-6 md:p-8">
 
         {{-- 1. Menggunakan Komponen Header Form --}}
         <x-header_form.header_form title="FR.APL.01. PERMOHONAN SERTIFIKASI KOMPETENSI" /><br>

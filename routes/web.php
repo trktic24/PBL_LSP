@@ -31,6 +31,9 @@ Route::get('/APL_01_1', function () {
 Route::get('/APL_01_2', function () {
     return view('frontend/APL_01/APL_01_2');
 })->name('APL_01_2');
+Route::get('/APL_01_3', function () {
+    return view('frontend/APL_01/APL_01_3');
+})->name('APL_01_3');
 Route::get('/APL_02', function () {
     return view('frontend/APL_02/APL_02');
 })->name('APL_02');

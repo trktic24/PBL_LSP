@@ -1,7 +1,7 @@
 @extends('layouts.app-sidebar')
 
 @section('content')
-    <div class="p-3 sm:p-6 md:p-8 max-w-5xl mx-auto">
+    <div class="p-3 sm:p-6 md:p-8">
 
         {{-- Progress Bar --}}
         <div class="flex items-center justify-center mb-8 sm:mb-12">
