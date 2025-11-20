@@ -63,79 +63,65 @@ Route::middleware('auth')->group(function () {
     | PENJELASAN UNTUK KELOMPOK LAIN (ADMIN, ASESOR, ASESI)
     |--------------------------------------------------------------------------
     */
-    // ... (Komentar grup-grup role Anda tetap di sini) ...
-    // // 1. HANYA Superadmin
-    // ...
-    // // 2. HANYA Admin dan Superadmin
-    // ...
-    // // 3. HANYA Asesor
-    // ...
-    // // 4. HANYA Asesi
-    // ...
 
-
-    // --- RUTE DASHBOARD (HARUS PALING BAWAH) ---
-    // Ini "Polisi Lalu Lintas" yang ngarahin user ke dashboard-nya masing2
-    // setelah mereka login.
+    // --- RUTE DASHBOARD / HOME INTERAL ---
+    // Ini "Polisi Lalu Lintas" yang mengarahkan user setelah login.
     //
-    // *** INI ADALAH PERUBAHAN YANG ANDA MINTA ***
-    // URL diubah dari '/dashboard' menjadi '/home'
-    // Nama rute diubah dari 'dashboard' menjadi 'home.index'
-    //
-    /*Route::get('/home', function (Request $request) {
+    Route::get('/home', function (Request $request) {
         $user = Auth::user();
         $roleName = $user->role->nama_role ?? null;
 
+        // 1. JIKA ASESI
         if ($roleName === 'asesi') {
-            return app(AsesiDashboardController::class)->index($request);// Arahin ke route Asesi
-        }elseif ($roleName === 'asesor') {
+            return app(AsesiDashboardController::class)->index($request);
+        }
 
-            // Logika blokir asesor 'pending'/'rejected' tetep di sini
-            $status = $user->asesor?->status_verifikasi;
+        // 2. JIKA ASESOR
+        elseif ($roleName === 'asesor') {
 
-            if ($status === 'pending') {
+            // --- CEK STATUS VERIFIKASI ---
+            // Ambil kolom 'is_verified' (0 = Belum, 1 = Sudah)
+            $isVerified = $user->asesor?->is_verified;
+
+            // Jika data asesor belum ada ATAU belum diverifikasi (0)
+            if (!$user->asesor || $isVerified == 0) {
+
+                // TENDANG KELUAR (LOGOUT PAKSA)
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
+
                 return redirect()->route('login')
-                    ->with('error', 'Akun Anda sedang menunggu verifikasi Admin.');
-            }
-            if ($status === 'rejected') {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                return redirect()->route('login')
-                    ->with('error', 'Pendaftaran Anda ditolak. Silakan hubungi Admin.');
+                    ->with('error', 'Akun Anda belum diverifikasi oleh Admin. Silakan tunggu persetujuan.');
             }
 
-            // ✅ UDAH DIGANTI PAKE CONTROLLER LU (kalo lolos/approved)
+            // Jika lolos (is_verified == 1), masuk ke Dashboard Asesor
             return app(AsesorDashboardController::class)->index($request);
+        }
 
-        } elseif ($roleName === 'admin' || $roleName === 'superadmin') {
-            // ✅ UDAH DIGANTI PAKE CONTROLLER LU
+        // 3. JIKA ADMIN
+        elseif ($roleName === 'admin' || $roleName === 'superadmin') {
             return app(AdminDashboardController::class)->index($request);
         }
 
-        // Kalo role-nya aneh, tendang
+        // 4. JIKA ROLE TIDAK DIKENALI
         Auth::logout();
         return redirect('/login')->with('error', 'Role Anda tidak terdefinisi.');
 
-    })->name('home.index'); */
+    })->name('home.index');
 
 });
 
-
+// Halaman tunggu verifikasi (Opsional, jika Anda ingin redirect ke sini alih-alih logout)
+// Saya sesuaikan juga kolomnya jadi 'is_verified' untuk jaga-jaga.
 Route::get('/tunggu-verifikasi', function () {
     $user = Auth::user();
 
     if (!$user) return redirect()->route('login');
+    if ($user->role->nama_role !== 'asesor') return redirect()->route('home.index');
 
-    // FIX: Arahkan ke rute baru 'home.index' jika user bukan asesor
-    if ($user->role->nama_role !== 'asesor') {
-        return redirect()->route('home.index');
-    }
-    // FIX: Arahkan ke rute baru 'home.index' jika status bukan pending
-    if ($user->asesor?->status_verifikasi !== 'pending') {
+    // Cek is_verified
+    if ($user->asesor?->is_verified == 1) {
         return redirect()->route('home.index');
     }
 

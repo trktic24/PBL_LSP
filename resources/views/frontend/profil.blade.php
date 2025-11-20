@@ -1,4 +1,4 @@
-@extends('layouts.app-asesor')
+@extends('layouts.app-profil')
 @section('content')
 
 <main class="max-w-6xl mx-auto mt-8 bg-white p-8 rounded-lg shadow-md relative pb-20">
@@ -6,7 +6,7 @@
     <!-- Foto Profil -->
     <div class="flex flex-col items-center space-y-2 mb-10">
         <div class="w-32 h-32 rounded-full border-4 border-blue-500 flex items-center justify-center overflow-hidden relative group cursor-pointer">
-            <img src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}"
+            <img src="{{ Auth::user()->asesor?->url_foto ?? asset('images/profil_asesor.jpeg') }}"
                  alt="Foto Profil"
                  class="object-cover w-full h-full">
             <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

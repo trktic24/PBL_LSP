@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Jadwal;
 use App\Models\Asesor;
 use App\Models\Asesi;
+use App\Models\DataSertifikasiAsesi;
 
 class JadwalController extends Controller
 {

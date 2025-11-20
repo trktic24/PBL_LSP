@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage; // <-- PENTING: Tambahkan ini
 
 class Asesor extends Model
 {
@@ -40,5 +42,26 @@ class Asesor extends Model
     public function skemas()
     {
         return $this->hasMany(Skema::class, 'id_skema');
+    }
+
+    /**
+     * Accessor untuk mendapatkan URL Foto Profil yang aman.
+     * Cara panggil di blade: $asesor->url_foto
+     */
+    public function getUrlFotoAttribute()
+    {
+        // 1. Bersihkan path dulu (buang 'public/' jika ada)
+        $pathDiDatabase = $this->pas_foto;
+        $cleanPath = str_replace('public/', '', $pathDiDatabase);
+
+        // 2. LOGIKA BARU:
+        // Cek jika database kosong ATAU file fisiknya TIDAK ADA di storage
+        if (empty($pathDiDatabase) || !Storage::disk('public')->exists($cleanPath)) {
+            // Jika kosong atau file hilang, pakai default
+            return asset('images/profil_asesor.jpeg');
+        }
+
+        // 3. Jika file benar-benar ada, kembalikan URL aslinya
+        return asset('storage/' . $cleanPath);
     }
 }

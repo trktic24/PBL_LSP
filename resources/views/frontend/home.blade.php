@@ -1,9 +1,9 @@
-@extends('layouts.app-asesor')
+@extends('layouts.app-profil')
 @section('content')
 
 <div class="container mx-auto px-6 mt-20 mb-12">
         <div class="flex items-center space-x-5 mb-10">
-            <img src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}"
+            <img src="{{ Auth::user()->asesor?->url_foto ?? asset('images/profil_asesor.jpeg') }}"
                 alt="Foto Profil"
                 class="w-20 h-20 rounded-full object-cover border-4 border-blue-500">
             <div>
