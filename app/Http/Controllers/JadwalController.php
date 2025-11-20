@@ -5,136 +5,151 @@ namespace App\Http\Controllers;
 use App\Models\Jadwal;
 use App\Models\Skema;
 use App\Models\MasterTuk;
-use App\Models\Asesor;
-use App\Models\JenisTuk;
-use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class JadwalController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of jadwal with filters, search and pagination.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua jadwal dengan relasi skema dan masterTuk
-        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesi'])
-                        ->orderBy('tanggal_pelaksanaan', 'desc')
-                        ->get();
-        
-        // Auto-update status berdasarkan jumlah peserta & tanggal
-        foreach($jadwal as $item) {
+        $query = Jadwal::with(['skema', 'masterTuk', 'asesi']);
+
+        // Global search: cari di nama skema, nama lokasi TUK, atau Status_jadwal
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('skema', function ($q2) use ($search) {
+                    $q2->where('nama_skema', 'like', "%{$search}%");
+                })
+                ->orWhereHas('masterTuk', function ($q3) use ($search) {
+                    $q3->where('nama_lokasi', 'like', "%{$search}%");
+                })
+                ->orWhere('Status_jadwal', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter skema (by nama_skema strings passed)
+        if ($request->filled('skema')) {
+            $skemaNames = (array) $request->skema;
+            $skemaIds = Skema::whereIn('nama_skema', $skemaNames)->pluck('id_skema')->toArray();
+            if (!empty($skemaIds)) {
+                $query->whereIn('id_skema', $skemaIds);
+            }
+        }
+
+        // Filter TUK (by nama_lokasi strings passed)
+        if ($request->filled('tuk')) {
+            $tukNames = (array) $request->tuk;
+            $tukIds = MasterTuk::whereIn('nama_lokasi', $tukNames)->pluck('id_tuk')->toArray();
+            if (!empty($tukIds)) {
+                $query->whereIn('id_tuk', $tukIds);
+            }
+        }
+
+        // Filter status
+        if ($request->filled('status')) {
+            $statuses = (array) $request->status;
+            $query->whereIn('Status_jadwal', $statuses);
+        }
+
+        // Filter tanggal pelaksanaan range
+        if ($request->filled('tgl_mulai')) {
+            $query->whereDate('tanggal_pelaksanaan', '>=', $request->tgl_mulai);
+        }
+        if ($request->filled('tgl_selesai')) {
+            $query->whereDate('tanggal_pelaksanaan', '<=', $request->tgl_selesai);
+        }
+
+        // Order & paginate (20 per halaman)
+        $jadwal = $query->orderBy('tanggal_pelaksanaan', 'desc')
+                       ->paginate(20)
+                       ->appends($request->except('page'));
+
+        // Update status otomatis
+        foreach ($jadwal as $item) {
             $this->updateStatusJadwal($item);
         }
-        
-        return view('landing_page.jadwal', compact('jadwal'));
+
+        /**
+         * PERBAIKAN DI SINI
+         * ------------------
+         * Ubah dari pluck() → all() supaya hasilnya bukan string,
+         * tetapi objek model sehingga di Blade bisa pakai $sk->nama_skema
+         */
+        $listSkema = Skema::selectRaw('MIN(id_skema) as id_skema, TRIM(LOWER(nama_skema)) as nama_skema')
+            ->groupBy('nama_skema')
+            ->orderBy('nama_skema')
+            ->get();
+
+
+        $listTuk = MasterTuk::selectRaw('MIN(id_tuk) as id_tuk, TRIM(LOWER(nama_lokasi)) as nama_lokasi')
+            ->groupBy('nama_lokasi')
+            ->orderBy('nama_lokasi')
+            ->get();
+
+
+        return view('landing_page.jadwal', compact('jadwal', 'listSkema', 'listTuk'));
     }
-    
+
     /**
      * Update status jadwal otomatis berdasarkan kondisi
      */
-    private function updateStatusJadwal($jadwal)
+    private function updateStatusJadwal(Jadwal $jadwal)
     {
-        $jumlahPeserta = $jadwal->asesi->count();
-        $sekarang = Carbon::now();
-        
-        // Jika sudah lewat tanggal pelaksanaan -> SELESAI
-        if($jadwal->tanggal_pelaksanaan->isPast()) {
-            if($jadwal->Status_jadwal != 'Selesai') {
+        $tanggalPelaksanaan = $jadwal->tanggal_pelaksanaan ? Carbon::parse($jadwal->tanggal_pelaksanaan) : null;
+        $tanggalMulai = $jadwal->tanggal_mulai ? Carbon::parse($jadwal->tanggal_mulai) : null;
+        $tanggalSelesai = $jadwal->tanggal_selesai ? Carbon::parse($jadwal->tanggal_selesai) : null;
+        $jumlahPeserta = $jadwal->relationLoaded('asesi') ? $jadwal->asesi->count() : $jadwal->asesi()->count();
+
+        if ($tanggalPelaksanaan && $tanggalPelaksanaan->isPast()) {
+            if ($jadwal->Status_jadwal !== 'Selesai') {
                 $jadwal->update(['Status_jadwal' => 'Selesai']);
             }
             return;
         }
-        
-        // Jika peserta sudah 25 orang (kuota maksimal) -> FULL
-        if($jumlahPeserta >= $jadwal->kuota_maksimal) {
-            if($jadwal->Status_jadwal != 'Full') {
+
+        if (!is_null($jadwal->kuota_maksimal) && $jumlahPeserta >= $jadwal->kuota_maksimal) {
+            if ($jadwal->Status_jadwal !== 'Full') {
                 $jadwal->update(['Status_jadwal' => 'Full']);
             }
             return;
         }
-        
-        // Jika sudah lewat tanggal penutupan pendaftaran tapi peserta < 25 -> FULL
-        if($jadwal->tanggal_selesai->isPast() && $jumlahPeserta < $jadwal->kuota_maksimal) {
-            if($jadwal->Status_jadwal != 'Full') {
+
+        if ($tanggalSelesai && $tanggalSelesai->isPast() && $jumlahPeserta < ($jadwal->kuota_maksimal ?? PHP_INT_MAX)) {
+            if ($jadwal->Status_jadwal !== 'Full') {
                 $jadwal->update(['Status_jadwal' => 'Full']);
             }
             return;
         }
-        
-        // Jika masih dalam periode pendaftaran dan peserta < 25 -> DIBUKA
-        if($jadwal->tanggal_mulai->isPast() && $jadwal->tanggal_selesai->isFuture() && $jumlahPeserta < $jadwal->kuota_maksimal) {
-            if($jadwal->Status_jadwal != 'Dibuka') {
-                $jadwal->update(['Status_jadwal' => 'Dibuka']);
+
+        if ($tanggalMulai && $tanggalSelesai && $tanggalMulai->isPast() && $tanggalSelesai->isFuture() && $jumlahPeserta < ($jadwal->kuota_maksimal ?? PHP_INT_MAX)) {
+            if ($jadwal->Status_jadwal !== 'Terjadwal') {
+                $jadwal->update(['Status_jadwal' => 'Terjadwal']);
             }
             return;
         }
-        
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        // Ambil data untuk dropdown
-        $skema = Skema::all();
-        $tuk = MasterTuk::all();
-        $asesor = Asesor::all();
-        $jenisTuk = JenisTuk::all();
-        
-        return view('jadwal.create', compact('skema', 'tuk', 'asesor', 'jenisTuk'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'id_jenis_tuk' => 'required',
-            'id_tuk' => 'required',
-            'id_skema' => 'required',
-            'id_asesor' => 'required',
-            'kuota_maksimal' => 'required|integer|min:1',
-            'kuota_minimal' => 'required|integer|min:1',
-            'sesi' => 'nullable|string',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'tanggal_pelaksanaan' => 'required|date',
-            'Status_jadwal' => 'required|in:Dibuka,Full,Selesai,Akan datang',
-        ]);
-
-        Jadwal::create($validated);
-
-        return redirect()->route('jadwal.index')
-                        ->with('success', 'Jadwal berhasil ditambahkan!');
-    }
-
-    /**
-     * Display the specified resource.
-     * REDIRECT LOGIC: 
-     * - Status "Dibuka" -> ke form pendaftaran peserta
-     * - Status "Full" atau "Selesai" -> tampilkan alert tidak bisa dibuka
+     * Show single jadwal (detail/admin view)
      */
     public function show($id)
     {
-        $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor'])
+        $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor', 'asesi'])
                         ->findOrFail($id);
-        
-        // Update status dulu sebelum cek
+
         $this->updateStatusJadwal($jadwal);
-        
-        // Jika status DIBUKA -> redirect ke halaman pendaftaran
-        if($jadwal->Status_jadwal == 'Dibuka') {
+
+        if ($jadwal->Status_jadwal === 'Terjadwal') {
             return redirect()->route('jadwal.detail', $id);
         }
-        
-        
+
         return view('jadwal.show', compact('jadwal'));
     }
-    
+
     /**
      * Halaman detail jadwal untuk pendaftaran peserta
      */
@@ -142,77 +157,17 @@ class JadwalController extends Controller
     {
         $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor', 'asesi'])
                         ->findOrFail($id);
-        
-        // Cek status (logika ini sudah ada di file Anda, ini bagus)
+
         $this->updateStatusJadwal($jadwal);
-        
-        // Jika bukan status DIBUKA (atau Terjadwal), redirect kembali
-        // Sesuaikan 'Dibuka' dengan status Anda, misal 'Terjadwal'
-        if(!in_array($jadwal->Status_jadwal, ['Dibuka', 'Terjadwal'])) {
+
+        if (!in_array($jadwal->Status_jadwal, ['Terjadwal'])) {
             return redirect()->route('jadwal.index')
-                            ->with('error', 'Pendaftaran untuk jadwal ini sudah ditutup atau belum dibuka.');
+                             ->with('error', 'Pendaftaran untuk jadwal ini sudah ditutup atau belum dibuka.');
         }
-        
-        $jumlahPeserta = $jadwal->asesi->count(); // Anda menggunakan relasi 'asesi', bukan 'peserta'
+
+        $jumlahPeserta = $jadwal->asesi->count();
         $sisaKuota = $jadwal->kuota_maksimal - $jumlahPeserta;
-        
-        // 🟦 INI ADALAH PERUBAHAN UTAMA 🟦
-        // Mengarahkan ke file view yang Anda inginkan
+
         return view('landing_page.detail.detail_jadwal', compact('jadwal', 'jumlahPeserta', 'sisaKuota'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        $jadwal = Jadwal::findOrFail($id);
-        
-        // Ambil data untuk dropdown
-        $skema = Skema::all();
-        $tuk = MasterTuk::all();
-        $asesor = Asesor::all();
-        $jenisTuk = JenisTuk::all();
-        
-        return view('jadwal.edit', compact('jadwal', 'skema', 'tuk', 'asesor', 'jenisTuk'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        $jadwal = Jadwal::findOrFail($id);
-        
-        $validated = $request->validate([
-            'id_jenis_tuk' => 'required',
-            'id_tuk' => 'required',
-            'id_skema' => 'required',
-            'id_asesor' => 'required',
-            'kuota_maksimal' => 'required|integer|min:1',
-            'kuota_minimal' => 'required|integer|min:1',
-            'sesi' => 'nullable|string',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'tanggal_pelaksanaan' => 'required|date',
-            'Status_jadwal' => 'required|in:Dibuka,Full,Selesai,Akan datang',
-        ]);
-
-        $jadwal->update($validated);
-
-        return redirect()->route('jadwal.index')
-                        ->with('success', 'Jadwal berhasil diupdate!');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $jadwal = Jadwal::findOrFail($id);
-        $jadwal->delete();
-
-        return redirect()->route('jadwal.index')
-                        ->with('success', 'Jadwal berhasil dihapus!');
     }
 }

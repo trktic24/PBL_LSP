@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\TukController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\BeritaController;
+use App\Http\Controllers\Api\JadwalControllerApi;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
@@ -45,3 +46,6 @@ Route::apiResource('berita', BeritaController::class);
 Route::middleware('auts:sanctum')->get('user', function (Request $request) {
     return $request->user();
 });
+
+//api jadwal
+Route::apiResource('jadwal', JadwalControllerApi::class);
