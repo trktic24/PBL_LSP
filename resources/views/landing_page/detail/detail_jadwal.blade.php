@@ -12,10 +12,9 @@
         <div class="mb-6">
             <div class="flex flex-wrap gap-6 text-gray-900 text-sm">
                 
-                {{-- 🟦 PERBAIKAN 1: TANGGAL --}}
+                {{-- Tanggal Pelaksanaan --}}
                 <div class="flex items-center gap-2">
                     <i class="far fa-calendar"></i>
-                    {{-- Menggunakan 'tanggal_pelaksanaan' yang benar, bukan 'tanggal' --}}
                     <span>
                         {{ $jadwal->tanggal_pelaksanaan ? \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('d F Y') : 'Tanggal Belum Diatur' }}
                     </span>
@@ -24,7 +23,7 @@
                 {{-- Waktu --}}
                 <div class="flex items-center gap-2">
                     <i class="far fa-clock"></i>
-                    <span>{{ \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') }} - Selesai</span>
+                    <span>{{ $jadwal->waktu_mulai ? \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i') : '00:00' }} - Selesai</span>
                 </div>
 
                 {{-- Lokasi TUK --}}
@@ -40,23 +39,27 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2">
                 
-                {{-- 🟦 PERBAIKAN 2: DESKRIPSI --}}
+                {{-- Deskripsi Skema (Tetap Ambil dari Database) --}}
                 <div class="mb-12">
                     <h2 class="text-xl font-bold mb-3">Deskripsi Skema</h2>
-                    {{-- Menggunakan 'deskripsi_skema' sesuai Model Skema Anda --}}
-                    <p class="text-gray-600 leading-relaxed">
-                        {{ $jadwal->skema?->deskripsi_skema ?? 'Deskripsi belum tersedia.' }}
+                    <p class="text-gray-600 leading-relaxed text-justify">
+                        {{ $jadwal->skema?->deskripsi_skema ?? 'Deskripsi skema belum tersedia saat ini.' }}
                     </p>
                 </div>
 
-                {{-- PERSYARATAN (Catatan: Kolom ini tidak ada di Model Skema Anda) --}}
+                {{-- 🟦 PERBAIKAN: PERSYARATAN PESERTA (STATIS) --}}
                 <div class="mb-6">
                     <h2 class="text-xl font-bold mb-3">Persyaratan Peserta</h2>
-                    {{-- Jika Anda nanti menambahkan kolom 'persyaratan' di tabel skema, kode ini akan jalan --}}
-                    <p class="text-gray-600 leading-relaxed">
-                        {{ $jadwal->skema?->persyaratan ?? 'Persyaratan belum tersedia.' }}
-                    </p>
+                    <div class="text-gray-600 leading-relaxed">
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Kartu Tanda Pengenal(KTP/PASPOR/KTM).</li>
+                            <li>Pas foto berwarna (background merah/biru).</li>
+                            <li>Curriculum Vitae (CV) terbaru.</li>
+                            <li>Fotocopy Ijazah terakhir atau Transkrip Nilai sementara.</li>
+                        </ul>
+                    </div>
                 </div>
+
             </div>
 
             <div class="lg:col-span-1">
@@ -71,6 +74,7 @@
                     </div>
                     
                     {{-- Tombol Daftar --}}
+                    {{-- Ganti href="#" dengan route pendaftaran yang sesuai jika sudah ada --}}
                     <a href="#" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
                         Daftar Sekarang
                     </a>
