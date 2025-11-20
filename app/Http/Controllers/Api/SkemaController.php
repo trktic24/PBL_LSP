@@ -9,39 +9,39 @@ use Illuminate\Support\Facades\Storage;
 
 class SkemaController extends Controller
 {
-    // Menampilkan semua skema
+    // GET semua skema
     public function index()
     {
-        $skema = Skema::with('unitKompetensi')->get();
+        $skema = Skema::with('category')->get();
+
         return response()->json([
             'status' => 'success',
             'data' => $skema
         ]);
     }
 
-    // Menyimpan skema baru
+    // POST simpan skema baru
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'categorie_id' => 'required|exists:categories,id',
+            'nomor_skema' => 'required|string|unique:skema,nomor_skema',
             'nama_skema' => 'required|string|max:255',
             'deskripsi_skema' => 'required|string',
-            'kode_unit' => 'required|string|max:255',
-            'SKKNI' => 'required|file|mimes:pdf,doc,docx|max:2048',
-            'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'units' => 'required|array|min:1',
-            'units.*.code' => 'required|string',
+            'harga' => 'nullable|numeric',
+            'SKKNI' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $validated['SKKNI'] = $request->file('SKKNI')->store('public/skkni');
-        $validated['gambar'] = $request->file('gambar')->store('public/gambar');
+        if ($request->hasFile('SKKNI')) {
+            $validated['SKKNI'] = $request->file('SKKNI')->store('public/skkni');
+        }
 
-        $skema = Skema::create([
-            'nama_skema' => $validated['nama_skema'],
-            'deskripsi_skema' => $validated['deskripsi_skema'],
-            'kode_unit' => $validated['kode_unit'],
-            'SKKNI' => $validated['SKKNI'],
-            'gambar' => $validated['gambar'],
-        ]);
+        if ($request->hasFile('gambar')) {
+            $validated['gambar'] = $request->file('gambar')->store('public/gambar');
+        }
+
+        $skema = Skema::create($validated);
 
         return response()->json([
             'status' => 'success',
@@ -50,10 +50,10 @@ class SkemaController extends Controller
         ], 201);
     }
 
-    // Menampilkan detail skema
+    // GET detail skema
     public function show($id)
     {
-        $skema = Skema::with('unitKompetensi')->findOrFail($id);
+        $skema = Skema::with('category')->findOrFail($id);
 
         return response()->json([
             'status' => 'success',
@@ -61,38 +61,33 @@ class SkemaController extends Controller
         ]);
     }
 
-    // Mengupdate data skema
+    // PUT update skema
     public function update(Request $request, $id)
     {
         $skema = Skema::findOrFail($id);
 
         $validated = $request->validate([
+            'categorie_id' => 'required|exists:categories,id',
+            'nomor_skema' => 'required|string|unique:skema,nomor_skema,' . $id . ',id_skema',
             'nama_skema' => 'required|string|max:255',
             'deskripsi_skema' => 'required|string',
-            'kode_unit' => 'required|string|max:255',
-            'SKKNI' => 'required|file|mimes:pdf,doc,docx|max:2048',
-            'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'units' => 'required|array|min:1',
-            'units.*.code' => 'required|string',
+            'harga' => 'nullable|numeric',
+            'SKKNI' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        if ($skema->SKKNI) {
-            Storage::delete($skema->SKKNI);
-        }
-        if ($skema->gambar) {
-            Storage::delete($skema->gambar);
+        // Replace files
+        if ($request->hasFile('SKKNI')) {
+            if ($skema->SKKNI) Storage::delete($skema->SKKNI);
+            $validated['SKKNI'] = $request->file('SKKNI')->store('public/skkni');
         }
 
-        $validated['SKKNI'] = $request->file('SKKNI')->store('public/skkni');
-        $validated['gambar'] = $request->file('gambar')->store('public/gambar');
+        if ($request->hasFile('gambar')) {
+            if ($skema->gambar) Storage::delete($skema->gambar);
+            $validated['gambar'] = $request->file('gambar')->store('public/gambar');
+        }
 
-        $skema->update([
-            'nama_skema' => $validated['nama_skema'],
-            'deskripsi_skema' => $validated['deskripsi_skema'],
-            'kode_unit' => $validated['kode_unit'],
-            'SKKNI' => $validated['SKKNI'],
-            'gambar' => $validated['gambar'],
-        ]);
+        $skema->update($validated);
 
         return response()->json([
             'status' => 'success',
@@ -101,18 +96,13 @@ class SkemaController extends Controller
         ]);
     }
 
-    // Menghapus data skema
+    // DELETE skema
     public function destroy($id)
     {
         $skema = Skema::findOrFail($id);
 
-        if ($skema->SKKNI) {
-            Storage::delete($skema->SKKNI);
-        }
-
-        if ($skema->gambar) {
-            Storage::delete($skema->gambar);
-        }
+        if ($skema->SKKNI) Storage::delete($skema->SKKNI);
+        if ($skema->gambar) Storage::delete($skema->gambar);
 
         $skema->delete();
 
