@@ -72,9 +72,6 @@ Route::prefix('v1')->group(function () {
         // Simpan Pilihan Tujuan Asesmen
         Route::post('/', [DataSertifikasiAsesiController::class, 'storeAjax'])
             ->name('api.v1.data_sertifikasi.store');
-            
-        Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
-            ->name('api.v1.data_sertifikasi.delete');
     });
 
     // B. Bukti Kelengkapan (Upload File)
