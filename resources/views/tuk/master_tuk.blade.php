@@ -54,7 +54,7 @@
 
                 <a href="{{ route('add_tuk') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center">
-                    <i class="fas fa-plus mr-2"></i> Add TUK
+                    <i class="fas fa-plus mr-2"></i> Tambah TUK
                 </a>
             </div>
 
@@ -112,9 +112,9 @@
                     <span class="text-sm text-gray-600">entries</span>
                 </div>
 
-                <table class="min-w-full divide-y divide-gray-200 text-xs">
+                <table class="min-w-full divide-y divide-gray-200 text-xs border border-gray-200">
                     <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
-                        <tr>
+                        <tr class="divide-x divide-gray-200 border-b border-gray-200">
                             <th class="px-6 py-3 text-left font-semibold w-16">
                                 @php
                                     $isCurrentColumn = request('sort', 'id_tuk') == 'id_tuk';
@@ -130,7 +130,7 @@
                                 </a>
                             </th>
 
-                            <th class="px-6 py-3 text-left font-semibold w-24">Foto TUK</th>
+                            <th class="px-6 py-3 text-left font-semibold w-24">Foto</th>
 
                             <th class="px-6 py-3 text-left font-semibold">
                                 @php
@@ -183,15 +183,15 @@
                         </tr>
                     </thead>
 
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-200">
                         @forelse ($tuks as $tuk)
-                            <tr class="hover:bg-gray-50 transition">
+                            <tr class="hover:bg-gray-50 transition divide-x divide-gray-200">
                                 <td class="px-6 py-4">{{ $tuk->id_tuk }}</td>
 
                                 <td class="px-6 py-4">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50">
                                         @if($tuk->foto_tuk)
-                                            <img src="{{ asset($tuk->foto_tuk) }}"
+                                            <img src="{{ asset($tuk->foto_tuk) }}" 
                                                  alt="Foto {{ $tuk->nama_lokasi }}" 
                                                  class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
                                                  onclick="window.open(this.src, '_blank')"

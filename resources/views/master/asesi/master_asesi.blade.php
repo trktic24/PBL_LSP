@@ -43,7 +43,7 @@
                         <input 
                             type="text" 
                             name="search"
-                            placeholder="Search..."
+                            placeholder="Cari Nama, NIK, Email, No. HP..."
                             class="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             x-model="search"
                         />
@@ -106,7 +106,7 @@
                         <i class="fas fa-plus mr-2"></i> Tambah Asesi
                     </a>
                 </div>
-                </div>
+            </div>
 
             @if (session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
@@ -155,80 +155,79 @@
                     <span class="text-sm text-gray-600">entries</span>
                 </div>
 
-                
-                <table class="min-w-full text-xs text-left">
+                <table class="min-w-full text-xs text-left border border-gray-200">
                     
-                    <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
-                        <tr>
+                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+                        <tr class="divide-x divide-gray-200 border-b border-gray-200">
                             @php
                                 $baseParams = ['search' => request('search'), 'per_page' => request('per_page'), 'filter_gender' => $filterGender];
                             @endphp
                             
-                            <th class="px-4 py-3 font-semibold w-16">
+                            <th class="px-4 py-3 font-semibold w-16 whitespace-nowrap">
                                 @php $isCurrentColumn = $sortColumn == 'id_asesi'; @endphp
-                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'id_asesi', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'id_asesi', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between gap-2">
                                     <span>ID</span>
                                     <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
-                            <th class="px-6 py-3 font-semibold">
+                            <th class="px-6 py-3 font-semibold whitespace-nowrap">
                                 @php $isCurrentColumn = $sortColumn == 'nama_lengkap'; @endphp
-                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
-                                    <span>Nama Lengkap</span>
+                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between gap-2">
+                                    <span>Nama Asesi</span>
                                     <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
-                            <th class="px-6 py-3 font-semibold">
+                            <th class="px-6 py-3 font-semibold whitespace-nowrap">
                                 @php $isCurrentColumn = $sortColumn == 'nik'; @endphp
-                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'nik', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'nik', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between gap-2">
                                     <span>NIK</span>
                                     <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
-                            <th class="px-6 py-3 font-semibold">
+                            <th class="px-6 py-3 font-semibold whitespace-nowrap">
                                 @php $isCurrentColumn = $sortColumn == 'email'; @endphp
-                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'email', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'email', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between gap-2">
                                     <span>Email</span>
                                     <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
-                            <th class="px-6 py-3 font-semibold">
+                            <th class="px-6 py-3 font-semibold whitespace-nowrap">
                                 @php $isCurrentColumn = $sortColumn == 'nomor_hp'; @endphp
-                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'nomor_hp', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'nomor_hp', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between gap-2">
                                     <span>No. Telepon</span>
                                     <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
                             
-                            <th class="px-6 py-3 font-semibold">
+                            <th class="px-6 py-3 font-semibold whitespace-nowrap">
                                 @php $isCurrentColumn = $sortColumn == 'jenis_kelamin'; @endphp
-                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'jenis_kelamin', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'jenis_kelamin', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between gap-2">
                                     <span>Gender</span>
                                     <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
                             
-                            <th class="px-6 py-3 font-semibold">
+                            <th class="px-6 py-3 font-semibold whitespace-nowrap">
                                 @php $isCurrentColumn = $sortColumn == 'pekerjaan'; @endphp
-                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'pekerjaan', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'pekerjaan', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between gap-2">
                                     <span>Pekerjaan</span>
                                     <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
-                            <th class="px-6 py-3 font-semibold">
+                            <th class="px-6 py-3 font-semibold whitespace-nowrap">
                                 @php $isCurrentColumn = $sortColumn == 'pendidikan'; @endphp
-                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'pendidikan', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('master_asesi', array_merge($baseParams, ['sort' => 'pendidikan', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between gap-2">
                                     <span>Pendidikan</span>
                                     <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
-                            <th class="px-6 py-3 font-semibold w-32">Aksi</th>
+                            <th class="px-6 py-3 font-semibold text-center w-1 whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>
                     
                     <tbody class="divide-y divide-gray-200">
                         @forelse ($asesis as $asesi)
-                        <tr>
+                        <tr class="hover:bg-gray-50 transition divide-x divide-gray-200">
                             <td class="px-4 py-4">{{ $asesi->id_asesi }}</td>
                             <td class="px-6 py-4 font-medium">{{ $asesi->nama_lengkap }}</td>
                             <td class="px-6 py-4">{{ $asesi->nik }}</td>
@@ -237,21 +236,23 @@
                             <td class="px-6 py-4">{{ $asesi->jenis_kelamin }}</td>
                             <td class="px-6 py-4">{{ $asesi->pekerjaan }}</td>
                             <td class="px-6 py-4">{{ $asesi->pendidikan }}</td>
-                            <td class="px-6 py-4 flex space-x-2">
-                                <a href="{{ route('edit_asesi', $asesi->id_asesi) }}" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
-                                    <i class="fas fa-pen"></i> <span>Edit</span>
-                                </a>
-                                <form 
-                                    action="{{ route('delete_asesi', $asesi->id_asesi) }}" 
-                                    method="POST" 
-                                    onsubmit="return confirm('Anda yakin ingin menghapus asesi {{ addslashes($asesi->nama_lengkap) }} (ID: {{ $asesi->id_asesi }})? Ini akan menghapus akun login dan data pribadi asesi.');"
-                                >
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                                        <i class="fas fa-trash"></i> <span>Delete</span>
-                                    </button>
-                                </form>
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
+                                <div class="flex justify-center space-x-2">
+                                    <a href="{{ route('edit_asesi', $asesi->id_asesi) }}" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
+                                        <i class="fas fa-pen"></i> <span>Edit</span>
+                                    </a>
+                                    <form 
+                                        action="{{ route('delete_asesi', $asesi->id_asesi) }}" 
+                                        method="POST" 
+                                        onsubmit="return confirm('Anda yakin ingin menghapus asesi {{ addslashes($asesi->nama_lengkap) }} (ID: {{ $asesi->id_asesi }})? Ini akan menghapus akun login dan data pribadi asesi.');"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
+                                            <i class="fas fa-trash"></i> <span>Delete</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty

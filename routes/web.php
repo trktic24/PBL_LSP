@@ -9,27 +9,25 @@ use App\Http\Controllers\AsesiController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
 use App\Models\Schedule;
 use App\Models\Asesi;
-// UnitKompetensi tidak kita panggil lagi di sini
-// use App\Models\UnitKompetensi; 
 
 /*
 |--------------------------------------------------------------------------
 | Rute Halaman Login & Logout
 |--------------------------------------------------------------------------
 */
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+Route::get('/', [LoginController::class, 'showLoginForm'])->name('login_admin');
+Route::post('/login', [LoginController::class, 'login'])->name('login_admin.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('/forgot-password', function () {
-    return view('forgot_pass');
-});
 
+// [PERBAIKAN] Rute Forgot Password (GET & POST)
+// Menggunakan LoginController agar form bisa disubmit
+Route::get('/forgot-password', [LoginController::class, 'showForgotPassword'])->name('forgot_pass');
+Route::post('/forgot-password', [LoginController::class, 'sendResetLink'])->name('forgot_pass.send');
 
 
 /*
@@ -41,19 +39,17 @@ Route::middleware('auth')->group(function () {
 
     // 1. Dashboard
     Route::get('/dashboard', function () {
-        // 3. TAMBAHKAN LOGIKA UNTUK MENGAMBIL DATA
         $asesmenBerlangsung = Schedule::where('Status_jadwal', 'Terjadwal')->count();
         $asesmenSelesai = Schedule::where('Status_jadwal', 'Selesai')->count();
         $jumlahAsesi = Asesi::count();
         $jumlahAsesor = Asesor::count();
         
-        $jadwalTerbaru = Schedule::with('skema') // Ambil relasi skema
+        $jadwalTerbaru = Schedule::with('skema')
                                  ->where('Status_jadwal', 'Terjadwal')
-                                 ->orderBy('tanggal_pelaksanaan', 'asc') // Tampilkan yang paling dekat
-                                 ->take(5) // Batasi hanya 5
+                                 ->orderBy('tanggal_pelaksanaan', 'asc')
+                                 ->take(5)
                                  ->get();
 
-        // 4. KIRIM DATA KE VIEW
         return view('dashboard.dashboard_admin', [
             'asesmenBerlangsung' => $asesmenBerlangsung,
             'asesmenSelesai' => $asesmenSelesai,
@@ -81,37 +77,26 @@ Route::middleware('auth')->group(function () {
     });
 
     // ==========================================================
-    // 4. Master - Skema (LOGIKA DIUBAH KEMBALI)
+    // 4. Master - Skema
     // ==========================================================
     Route::controller(SkemaController::class)->prefix('master/skema')->group(function () {
-        
-        // DIPERBAIKI: Sekarang menunjuk ke 'index' (dengan logika search/sort)
         Route::get('/', 'index')->name('master_skema');
-        
-        // DIPERBAIKI: Sekarang menunjuk ke 'create'
         Route::get('/add', 'create')->name('add_skema');
-        
-        // Rute-rute ini sudah benar
         Route::post('/add', 'store')->name('add_skema.store');
         Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
         Route::patch('/update/{id_skema}', 'update')->name('update_skema');
         Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
     });
-    // ==========================================================
-    
+
     // 5. Master - Asesor
-    
-    // PERBAIKAN: Mengarahkan ke AsesorController@index agar Eager Loading, Search, dan Pagination berfungsi
     Route::get('/master_asesor', [AsesorController::class, 'index'])->name('master_asesor');
     
-    // ... (Rute Add/Edit Asesor)
     Route::get('/add_asesor1', [AsesorController::class, 'createStep1'])->name('add_asesor1');
     Route::post('/add_asesor1', [AsesorController::class, 'postStep1'])->name('add_asesor1.post');
     Route::get('/add_asesor2', [AsesorController::class, 'createStep2'])->name('add_asesor2');
     Route::post('/add_asesor2', [AsesorController::class, 'postStep2'])->name('add_asesor2.post');
     Route::get('/add_asesor3', [AsesorController::class, 'createStep3'])->name('add_asesor3');
     
-    // PERBAIKAN: Menyamakan path dengan rute yang lain agar konsisten
     Route::post('/asesor/store', [AsesorController::class, 'store'])->name('asesor.store');
     
     Route::get('/edit-asesor-step-1/{id_asesor}', [AsesorController::class, 'editStep1'])->name('edit_asesor1');
@@ -121,10 +106,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/edit-asesor-step-3/{id_asesor}', [AsesorController::class, 'editStep3'])->name('edit_asesor3');
     Route::patch('/update-asesor-step-3/{id_asesor}', [AsesorController::class, 'updateStep3'])->name('asesor.update.step3');
 
-    // ==========================================================
-    // <!-- RUTE BARU UNTUK HAPUS ASESOR -->
-    // ==========================================================
-    // Rute ini menangani permintaan DELETE ke URL /asesor/{id_asesor}
     Route::delete('/asesor/{id_asesor}', [AsesorController::class, 'destroy'])->name('asesor.destroy');
     
     // 6. Master - Asesi
@@ -158,10 +139,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete/{id}', 'destroy')->name('delete_tuk');
     });
 
-    // ==========================================================
-    // 9. Master - Kategori (RUTE BARU)
-    // ==========================================================
-    // Menggunakan {category} untuk Route Model Binding
+    // 9. Master - Category (RUTE BARU - Konsisten pakai 'category')
     Route::controller(CategoryController::class)->prefix('master/category')->group(function () {
         Route::get('/', 'index')->name('master_category');
         Route::get('/add', 'create')->name('add_category');
@@ -171,16 +149,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete/{category}', 'destroy')->name('delete_category');
     });
 
-    // 10. Profile Asesi (sebelumnya 9)
+    // 10. Profile Asesi
     Route::get('/asesi_profile_settings', function () { return view('profile_asesi.asesi_profile_settings'); })->name('asesi_profile_settings');
     Route::get('/asesi_profile_form', function () { return view('profile_asesi.asesi_profile_form'); })->name('asesi_profile_form');
     Route::get('/asesi_profile_bukti', function () { return view('profile_asesi.asesi_profile_bukti'); })->name('asesi_profile_bukti');
     Route::get('/asesi_profile_tracker', function () { return view('profile_asesi.asesi_profile_tracker'); })->name('asesi_profile_tracker');
 
-    // 11. Profile Asesor (sebelumnya 10)
-    // Route::get('/asesor_profile_bukti', function () { return view('profile_asesor.asesor_profile_bukti'); })->name('asesor_profile_bukti');
+    // 11. Profile Asesor
     Route::get('/asesor/{id_asesor}/bukti', [AsesorController::class, 'showBukti'])->name('asesor.bukti');
-    // Route::get('/asesor_profile_settings', function () { return view('profile_asesor.asesor_profile_settings'); })->name('asesor_profile_settings');
     Route::get('/asesor/{id_asesor}/profile', [AsesorController::class, 'showProfile'])->name('asesor.profile');
     Route::get('/asesor_profile_tinjauan', function () { return view('profile_asesor.asesor_profile_tinjauan'); })->name('asesor_profile_tinjauan');
     Route::get('/asesor_profile_tracker', function () { return view('profile_asesor.asesor_profile_tracker'); })->name('asesor_profile_tracker');

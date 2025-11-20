@@ -68,7 +68,7 @@
                     href="{{ route('add_category') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center"
                 >
-                    <i class="fas fa-plus mr-2"></i> Add Kategori
+                    <i class="fas fa-plus mr-2"></i> Tambah Kategori
                 </a>
             </div>
 
@@ -134,16 +134,14 @@
                     <span class="text-sm text-gray-600">entries</span>
                 </div>
 
+                <table class="min-w-full divide-y divide-gray-200 text-sm border border-gray-200">
 
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-
-                    <thead class="bg-gray-100 text-gray-600 uppercase text-sm">
-                        <tr>
+                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+                        <tr class="divide-x divide-gray-200 border-b border-gray-200">
                             @php
                                 $baseParams = ['search' => request('search'), 'per_page' => request('per_page')];
                             @endphp
 
-                            <!-- [PERBAIKAN] Lebar diubah ke w-16 (lebih sempit) -->
                             <th class="px-4 py-3 text-left font-semibold w-16">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'id';
@@ -153,7 +151,7 @@
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>ID</span>
-                                    <div class="flex flex-col -space-y-1 text-sm">
+                                    <div class="flex flex-col -space-y-1 text-xs">
                                         <i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i>
                                         <i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i>
                                     </div>
@@ -169,7 +167,7 @@
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Nama Kategori</span>
-                                    <div class="flex flex-col -space-y-1 text-sm">
+                                    <div class="flex flex-col -space-y-1 text-xs">
                                         <i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i>
                                         <i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i>
                                     </div>
@@ -185,47 +183,47 @@
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Slug</span>
-                                    <div class="flex flex-col -space-y-1 text-sm">
+                                    <div class="flex flex-col -space-y-1 text-xs">
                                         <i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i>
                                         <i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i>
                                     </div>
                                 </a>
                             </th>
                             
-                            <th class="px-4 py-3 text-center font-semibold w-36">Aksi</th>
+                            <th class="px-4 py-3 text-center font-semibold w-32">Aksi</th>
                         </tr>
                     </thead>
 
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-200">
                         @forelse ($categories as $category)
-                        <tr class="hover:bg-gray-50 transition">
+                        <tr class="hover:bg-gray-50 transition divide-x divide-gray-200">
                             <td class="px-4 py-4">{{ $category->id }}</td>
                             <td class="px-6 py-4 font-medium">{{ $category->nama_kategori }}</td>
                             <td class="px-6 py-4 text-gray-500 italic">{{ $category->slug }}</td>
-                            <td class="px-4 py-4 flex space-x-2">
-                                
-                                <!-- [PERBAIKAN] Tombol Edit yang hilang dikembalikan -->
-                                <a
-                                    href="{{ route('edit_category', $category->id) }}"
-                                    class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-sm rounded-md transition"
-                                >
-                                    <i class="fas fa-pen"></i> <span>Edit</span>
-                                </a>
-                                
-                                <form
-                                    action="{{ route('delete_category', $category->id) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('PERINGATAN: Menghapus kategori \'{{ addslashes($category->nama_kategori) }}\' juga akan MENGHAPUS SEMUA SKEMA yang terhubung dengannya. Apakah Anda yakin ingin melanjutkan?');"
-                                >
-                                    @csrf
-                                    @method('DELETE')
-                                    <button
-                                        type="submit"
-                                        class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded-md transition"
+                            
+                            <td class="px-4 py-4 text-center whitespace-nowrap">
+                                <div class="flex justify-center space-x-2">
+                                    <a
+                                        href="{{ route('edit_category', $category->id) }}"
+                                        class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition"
                                     >
-                                        <i class="fas fa-trash"></i> <span>Delete</span>
-                                    </button>
-                                </form>
+                                        <i class="fas fa-pen"></i> <span>Edit</span>
+                                    </a>
+                                    <form
+                                        action="{{ route('delete_category', $category->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('PERINGATAN: Menghapus kategori \'{{ addslashes($category->nama_kategori) }}\' juga akan MENGHAPUS SEMUA SKEMA yang terhubung dengannya. Apakah Anda yakin ingin melanjutkan?');"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+                                        <button
+                                            type="submit"
+                                            class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition"
+                                        >
+                                            <i class="fas fa-trash"></i> <span>Delete</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty

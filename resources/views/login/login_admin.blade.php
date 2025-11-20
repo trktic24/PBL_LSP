@@ -6,27 +6,20 @@
   <title>Login | Admin LSP Polines</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     body { font-family: 'Poppins', sans-serif; }
 
-    /* ================================================
-         PIXEL CONFIG — bisa kamu atur posisinya per px
-       ================================================ */
+    /* PIXEL CONFIG */
     .pixel1, .pixel2 {
       position: absolute;
       image-rendering: pixelated;
       object-fit: contain;
       opacity: 0.9;
       pointer-events: none;
-
-      /* Default ukuran (bisa diganti per-element) */
       width: var(--px-size, 340px);
       height: var(--px-size, 300px);
-
-      /* Default posisi jika tidak diset */
       top: var(--px-top, auto);
       left: var(--px-left, auto);
       right: var(--px-right, auto);
@@ -37,11 +30,10 @@
     .form-container {
       border: 2px solid #0D63F3;
       border-radius: 22px;
-      padding: 30px;
-      height: 400px;
-      width:500px;
+      padding: 40px 30px; 
+      width: 100%;
+      max-width: 450px; 
       background: white;
-      box-shadow: -15px 8px 5px rgba(0,0,0,0.13);
     }
 
     .fade { transition: opacity 0.6s ease; }
@@ -52,96 +44,87 @@
 
   <main class="flex h-screen w-full">
 
-    <!-- LEFT SIDEBAR -->
-    <div class="w-[43%] h-full bg-white flex flex-col justify-center px-20 relative select-none">
+    <div class="w-full lg:w-[43%] h-full bg-white flex flex-col justify-center px-10 lg:px-20 relative select-none z-10">
 
-      <!-- Pixel pojok kanan atas (pixel.png) -->
-      <img 
-        src="{{ asset('images/pixel.png') }}" 
-        class="pixel1"
-        style="
-          --px-size: 250px;        /* ubah ukuran sesuka kamu */
-          --px-top: -50px;           /* posisi Y */
-          --px-right: -15px;         /* posisi X */
-        "
-      >
+      <img src="{{ asset('images/pixel.png') }}" class="pixel1"
+        style="--px-size: 250px; --px-top: -50px; --px-right: -15px;">
 
-      <!-- Logo kiri atas -->
-      <div class="absolute top-2 left-4">
-        <img 
-          src="{{ asset('images/Logo_LSP_No_BG.png') }}" 
-          class="w-24 drop-shadow"
-          style="width: 80px;"     >
+      <div class="absolute top-4 left-6">
+        <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" class="w-20 drop-shadow">
       </div>
 
-      <!-- FORM LOGIN -->
-      <div class="form-container mx-auto -mt-15" shadow-2xl>
-        <h2 class="text-[22px] font-semibold mb-6 tracking-wide">Masukan akun Anda!</h2>
+      <div class="form-container mx-auto shadow-2xl relative z-20">
+        <h2 class="text-[22px] font-semibold mb-6 tracking-wide text-gray-800">Masukan akun Anda!</h2>
 
-        <form action="{{ url('/login') }}" method="POST" class="space-y-6">
+        @if(session('error'))
+            <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 text-xs rounded-lg">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form action="{{ route('login_admin.post') }}" method="POST" class="space-y-5">
           @csrf
 
           <div class="flex flex-col w-full">
-            <label class="text-sm font-small">Username</label>
-            <input type="text" name="username" class="mt-1 px-2 py-1 border rounded-lg shadow-sm focus:ring-2 outline-none" placeholder="Masukkan username">
+            <label class="text-sm font-medium text-gray-700 mb-1">Username</label>
+            <input type="text" id="username" name="username" value="{{ old('username') }}" 
+                   class="px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all @error('username') border-red-500 @enderror" 
+                   placeholder="Masukkan username" required autofocus>
+            
+            @error('username')
+                <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+            @enderror
           </div>
 
           <div class="flex flex-col w-full">
-            <label class="text-sm font-medium">Password</label>
-            <input id="password" type="password" name="password" class="mt-1 px-2 py-1 border rounded-lg shadow-sm focus:ring-2 outline-none" placeholder="Masukkan password">
+            <label class="text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input id="password" type="password" name="password" 
+                   class="px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all @error('password') border-red-500 @enderror" 
+                   placeholder="Masukkan password" required>
+            
+            @error('password')
+                <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
+            @enderror
           </div>
 
-          <div class="flex justify-between items-center text-sm -mt-2">
-            <label class="flex items-center gap-2">
-              <input type="checkbox" onclick="togglePass()" class="w-4 h-4">
-              Tampilkan Password
-            </label>
-
-            <a href="{{ route('forgot_pass') }}" class="text-gray-600">Forgot your <span class="font-semibold">Password?</span></a>
+          <div class="flex justify-end items-center text-sm">
+            <a href="{{ route('forgot_pass') }}" class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                Lupa Password?
+            </a>
           </div>
 
-          <button type="submit" class="w-full bg-[#0D63F3] text-white py-2.5 rounded-full text-[15px] font-medium shadow-md hover:shadow-lg active:scale-[0.97] transition">
+          <button type="submit" class="w-full bg-[#0D63F3] text-white py-3 rounded-xl text-[15px] font-semibold shadow-lg hover:bg-blue-700 hover:shadow-xl active:scale-[0.98] transition-all duration-200">
             Masuk ke Akun
           </button>
         </form>
       </div>
 
-      <!-- Pixel pojok kiri bawah (pixel2.png) -->
-      <img 
-        src="{{ asset('images/pixel2.png') }}" 
-        class="pixel2"
-        style="
-          --px-size: 250px;       /* ubah ukuran */
-          --px-bottom: -50px;       /* posisi Y */
-          --px-left: -15px;         /* posisi X */
-        "
-      >
+      <img src="{{ asset('images/pixel2.png') }}" class="pixel2"
+        style="--px-size: 250px; --px-bottom: -50px; --px-left: -15px;">
 
     </div>
 
-    <!-- RIGHT PANEL -->
-    <div class="w-[57%] h-full relative bg-cover bg-center select-none"
+    <div class="hidden lg:block w-[57%] h-full relative bg-cover bg-center select-none"
          style="background-image: url('{{ asset('images/gedung_gkt.jpg') }}');">
 
-      <div class="absolute inset-0 bg-black/45"></div>
+      <div class="absolute inset-0 bg-black/50 backdrop-blur-[1px]"></div>
 
-      <div class="relative text-white px-6 mt-2">
-        <h1 class="text-[40px] font-bold leading-tight drop-shadow-lg">
+      <div class="relative text-white px-10 mt-10 z-10">
+        <h1 class="text-[42px] font-bold leading-tight drop-shadow-2xl">
           Welcome to Admin LSP<br>
           Politeknik Negeri<br>
           Semarang!
         </h1>
       </div>
 
-      <!-- SLIDE TEKS -->
-      <div class="absolute bottom-16 left-1/2 -translate-x-1/2 w-[80%] flex items-center justify-center gap-6 text-white text-1xl">
-        <span class="text-3xl cursor-pointer select-none" id="prevBtn">◀</span>
+      <div class="absolute bottom-20 left-1/2 -translate-x-1/2 w-[80%] flex items-center justify-center gap-6 text-white z-10">
+        <button class="text-3xl hover:text-gray-300 transition transform hover:scale-110 focus:outline-none" id="prevBtn">◀</button>
 
-        <p id="slideText" class="leading-relaxed text-center fade opacity-100">
+        <p id="slideText" class="leading-relaxed text-center text-lg font-light fade opacity-100 h-20 flex items-center justify-center">
           Pusat kendali operasional yang mengamankan integritas data asesi dan memastikan kelancaran alur uji kompetensi.
         </p>
 
-        <span class="text-2xl cursor-pointer select-none" id="nextBtn">▶</span>
+        <button class="text-3xl hover:text-gray-300 transition transform hover:scale-110 focus:outline-none" id="nextBtn">▶</button>
       </div>
 
     </div>
@@ -149,11 +132,20 @@
   </main>
 
   <script>
-    /* Show/Hide Password */
-    function togglePass() {
-      let p = document.getElementById("password");
-      p.type = p.type === "password" ? "text" : "password";
-    }
+    /* [PERBAIKAN] Fungsi togglePass dihapus karena checkbox sudah tidak ada */
+
+    /* Script agar Enter di Username pindah ke Password */
+    document.addEventListener('DOMContentLoaded', function() {
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+
+        usernameInput.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); 
+                passwordInput.focus();  
+            }
+        });
+    });
 
     /* SLIDESHOW TEKS */
     const texts = [
@@ -166,11 +158,11 @@
     const textElement = document.getElementById("slideText");
 
     function updateText() {
-      textElement.style.opacity = 0;
+      textElement.style.opacity = 0; 
       setTimeout(() => {
         textElement.textContent = texts[index];
-        textElement.style.opacity = 1;
-      }, 300);
+        textElement.style.opacity = 1; 
+      }, 300); 
     }
 
     document.getElementById("nextBtn").onclick = () => {
@@ -183,7 +175,7 @@
       updateText();
     };
 
-    setInterval(() => {
+    let slideInterval = setInterval(() => {
       index = (index + 1) % texts.length;
       updateText();
     }, 5000);

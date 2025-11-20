@@ -9,32 +9,30 @@ class Skema extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang digunakan oleh model.
-     * (Sesuai dengan file migrasi Anda)
-     */
-    protected $table = 'skema'; // <-- DISESUAIKAN
-
-    /**
-     * Primary key yang digunakan oleh tabel.
-     */
+    protected $table = 'skema';
     protected $primaryKey = 'id_skema';
 
-    /**
-     * Izinkan semua kolom diisi.
-     */
-    protected $guarded = [];
-    public function unitkompetensi()
-    {
-         return $this->hasMany(UnitKompetensi::class, 'id_kelompok_pekerjaan', 'id_skema'); 
-        // tapi logikanya harus sesuai ERD, biasanya ini kurang tepat
-    }
-    // 🟢 Tambahan baru: fillable (opsional, untuk keamanan CRUD)
     protected $fillable = [
+        'categorie_id',
+        // 'id_kelompok_pekerjaan', <-- HAPUS INI (Sudah tidak ada di tabel skema)
+        'nomor_skema',
         'nama_skema',
         'deskripsi_skema',
-        'gambar',
+        'harga',
         'SKKNI',
-        'kode_unit',
+        'gambar',
     ];
+
+    // Relasi ke atas (Category)
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'categorie_id', 'id');
+    }
+
+    // Relasi ke bawah (Kelompok Pekerjaan)
+    // Skema SEKARANG punya BANYAK Kelompok Pekerjaan
+    public function kelompokPekerjaan()
+    {
+        return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
+    }
 }

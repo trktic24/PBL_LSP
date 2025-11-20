@@ -10,27 +10,28 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('respon_apl2_ia01', function (Blueprint $table) {
-            $table->id('id_respon_apl2_ia01');
+        Schema::create('respon_apl02_ia01', function (Blueprint $table) {
+            $table->id('id_respon_apl02'); // Sesuai ERD primary key-nya ini
 
-            // --- KUNCI 1 ---
-            // Bikin FK 'id_data_sertifikasi_asesi'
-            // Asumsi: Nyambung ke tabel 'data_sertifikasi_asesi' dengan PK 'id_data_sertifikasi_asesi'
+            // --- Foreign Keys ---
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-
-            // --- KUNCI 2 ---
-            // Bikin FK 'id_kriteria' yang nyambung ke:
-            // Tabel: 'master_kriteria_unjuk_kerja' (dari file migrasi sebelumnya)
-            // Kolom: 'id_kriteria'
             $table->foreignId('id_kriteria')->constrained('master_kriteria_unjuk_kerja', 'id_kriteria')->onUpdate('cascade')->onDelete('cascade');
 
-            // Kolom sisanya (sesuai ERD)
-            // Ini semua diisi nanti sama asesi/asesor, jadi kita buat 'nullable()'
 
-            $table->char('respon_asesi_apl02', 5)->nullable()->comment('Respon asesi untuk pertanyaan APL-02 (K/BK)');
-            $table->string('bukti_asesi_apl02')->nullable()->comment('Bukti asesi untuk pertanyaan APL-02 (PDF)');
-            $table->boolean('pencapaian_ia01')->nullable()->comment('Pencapaian IA01 (ya/tidak)');
-            $table->text('penilaian_lanjut_ia01')->nullable()->comment('Penilaian Lanjut IA01 (V/A/T)');
+            // 1. Bagian APL-02 (Asesmen Mandiri oleh Asesi)
+            // Kita pake boolean: 1 = K (Kompeten), 0 = BK (Belum Kompeten)
+            $table->boolean('respon_asesi_apl02')->nullable()->comment('1=K, 0=BK (Diisi Asesi)');
+            $table->string('bukti_asesi_apl02')->nullable()->comment('Path file bukti portofolio');
+
+            // 2. Bagian IA.01 (Observasi oleh Asesor - YANG SEDANG KITA KERJAKAN)
+            // Kita pake boolean juga: 1 = Ya/K, 0 = Tidak/BK
+            // Nanti frontend yang nentuin labelnya "Ya" atau "K" berdasarkan tipe KUK-nya
+            $table->boolean('pencapaian_ia01')->nullable()->comment('1=Ya/K, 0=Tidak/BK (Diisi Asesor)');
+
+            $table->string('standar_industri_ia01')->nullable()->comment('Isian manual asesor jika beda dari master');
+            // 3. Penilaian Lanjut
+            $table->text('penilaian_lanjut_ia01')->nullable()->comment('Catatan tambahan dari asesor');
+
             $table->timestamps();
         });
     }
