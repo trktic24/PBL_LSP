@@ -322,7 +322,7 @@ if (scrollContainer) {
     @endphp
 
     {{-- Container slider dibuat lebar penuh (px-10 dari section) agar kartu sama lebarnya --}}
-    <div class="relative">
+    <div class="max-w-7xl mx-auto relative">
         
         <div class="overflow-hidden relative rounded-2xl">
             <div class="flex transition-transform duration-500 ease-in-out" id="jadwal-track">
@@ -430,47 +430,131 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 
-{{-- ======================= BERITA TERBARU (DARI DATABASE) ======================= --}}
-<section id="berita-terbaru" class="bg-white py-12 px-10 text-center">
+{{-- ======================= BERITA TERBARU (VERSI SLIDER) ======================= --}}
+<section id="berita-terbaru" class="bg-white py-12 px-10 text-center relative">
     <h2 class="text-3xl font-bold mb-8">Berita Terbaru</h2>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        
-        @forelse ($beritas as $berita)
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] text-left">
-                
-                <a href="{{ route('berita.detail', ['id' => $berita->id]) }}"> 
-                    
-                    {{-- PERBAIKAN: Path gambar dari storage --}}
-                    <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
-                         alt="{{ $berita->judul }}" 
-                         class="w-full h-48 object-cover">
-                    
-                    <div class="p-6">
-                        {{-- PERBAIKAN: Tanggal dari created_at --}}
-                        <p class="text-sm text-gray-500 mb-2">
-                            {{ $berita->created_at->format('d F Y') }}
-                        </p>
-                        
-                        <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" style="min-height: 3.5rem;">
-                            {{ $berita->judul }}
-                        </h3>
-                        
-                        <span class="font-semibold text-blue-700 hover:underline flex items-center gap-1 group">
-                            Baca Selengkapnya
-                            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-                        </span>
-                    </div>
 
-                </a>
+    @php
+        // Membagi data berita menjadi kelompok-kelompok (3 berita per slide)
+        $beritaChunks = $beritas->chunk(3);
+    @endphp
+
+    {{-- Container slider (Sama lebarnya dengan Skema dan Jadwal) --}}
+    <div class="max-w-7xl mx-auto relative">
+        
+        <div class="overflow-hidden relative rounded-2xl">
+            <div class="flex transition-transform duration-500 ease-in-out" id="berita-track">
+
+                @forelse($beritaChunks as $chunk)
+                    {{-- Setiap Slide (berisi 3 kartu) --}}
+                    <div class="flex-none w-full grid grid-cols-1 md:grid-cols-3 gap-6 p-2">
+                        
+                        @foreach($chunk as $berita)
+                            {{-- KARTU BERITA (Dibuat h-full agar sama tinggi) --}}
+                            <div class="card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] text-left h-full flex flex-col">
+                                
+                                <a href="{{ route('berita.detail', ['id' => $berita->id]) }}" class="flex flex-col h-full"> 
+                                    
+                                    <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
+                                         alt="{{ $berita->judul }}" 
+                                         class="w-full h-48 object-cover">
+                                    
+                                    {{-- Diberi flex-grow agar 'Baca Selengkapnya' rata bawah --}}
+                                    <div class="p-6 flex flex-col flex-grow">
+                                        <p class="text-sm text-gray-500 mb-2">
+                                            {{ $berita->created_at->format('d F Y') }}
+                                        </p>
+                                        
+                                        <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" style="min-height: 3.5rem;">
+                                            {{ $berita->judul }}
+                                        </h3>
+                                        
+                                        {{-- 'mt-auto' mendorong tombol ke bawah --}}
+                                        <span class="font-semibold text-blue-700 hover:underline flex items-center gap-1 group mt-auto">
+                                            Baca Selengkapnya
+                                            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+                                        </span>
+                                    </div>
+
+                                </a>
+                            </div>
+                        @endforeach
+
+                        {{-- Placeholder untuk slide yang tidak penuh --}}
+                        @if($loop->last && $chunk->count() < 3)
+                            @for ($i = 0; $i < (3 - $chunk->count()); $i++)
+                                <div class="hidden md:block"></div> 
+                            @endfor
+                        @endif
+
+                    </div>
+                @empty
+                    <div class="w-full text-center text-gray-500 py-10">
+                        <p>Belum ada berita yang dipublikasikan.</p>
+                    </div>
+                @endforelse
+
             </div>
-        @empty
-            <div class="md:col-span-2 lg:col-span-3 text-center text-gray-500 py-16">
-                <p class="text-xl">Belum ada berita yang dipublikasikan.</p>
-            </div>
-        @endforelse
+        </div>
+
+        {{-- Tombol Navigasi Slider --}}
+        @if($beritaChunks->count() > 1)
+            <button id="berita-prev" 
+                    class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 
+                           bg-white rounded-full shadow-md w-10 h-10 flex items-center justify-center 
+                           text-gray-700 hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed z-10">
+                &larr;
+            </button>
+            <button id="berita-next" 
+                    class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 
+                           bg-white rounded-full shadow-md w-10 h-10 flex items-center justify-center 
+                           text-gray-700 hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed z-10">
+                &rarr;
+            </button>
+        @endif
 
     </div>
 </section>
+
+{{-- ======================= SCRIPT UNTUK SLIDER BERITA ======================= --}}
+{{-- (Script ini terpisah dari slider Jadwal, menggunakan ID unik) --}}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const beritaTrack = document.getElementById('berita-track');
+    const beritaPrevBtn = document.getElementById('berita-prev');
+    const beritaNextBtn = document.getElementById('berita-next');
+
+    // Cek jika elemen slider berita ada di halaman ini
+    if (beritaTrack && beritaPrevBtn && beritaNextBtn) {
+        const beritaSlides = Array.from(beritaTrack.children);
+        const totalBeritaSlides = beritaSlides.length;
+        let beritaCurrentIndex = 0;
+
+        function showBeritaSlide(index) {
+            if (!beritaTrack) return; 
+            beritaTrack.style.transform = `translateX(-${index * 100}%)`;
+            beritaPrevBtn.disabled = (index === 0);
+            beritaNextBtn.disabled = (index === totalBeritaSlides - 1);
+        }
+
+        beritaPrevBtn.addEventListener('click', () => {
+            if (beritaCurrentIndex > 0) {
+                beritaCurrentIndex--;
+                showBeritaSlide(beritaCurrentIndex);
+            }
+        });
+
+        beritaNextBtn.addEventListener('click', () => {
+            if (beritaCurrentIndex < totalBeritaSlides - 1) {
+                beritaCurrentIndex++;
+                showBeritaSlide(beritaCurrentIndex);
+            }
+        });
+
+        // Tampilkan slide pertama saat load
+        showBeritaSlide(0);
+    }
+});
+</script>
 
 @endsection

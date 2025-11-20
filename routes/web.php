@@ -3,10 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
-use App\Http\Controllers\JadwalController; 
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Asesor\AsesorTableController;
-use App\Http\Controllers\Api\CountryController;
-// SkemaWebController dihapus karena tidak digunakan dan dapat menyebabkan ClassNotFound error.
+use App\Http\Controllers\Api\V1\CountryController;
 
 /*
 |--------------------------------------------------------------------------

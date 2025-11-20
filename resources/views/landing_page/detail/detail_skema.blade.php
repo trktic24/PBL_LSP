@@ -2,8 +2,12 @@
 
 @section('content')
 
+    {{-- CATATAN PENTING: Untuk memastikan konten halaman ini sejajar sempurna
+       dengan Navbar, pastikan bagian konten di layouts/app-profil.blade.php
+       menggunakan wrapper yang SAMA, yaitu: max-w-screen-xl mx-auto px-8. --}}
+
     {{-- HERO SECTION: Menampilkan detail utama Skema --}}
-    <section class="container mx-auto px-8 mt-20">
+    <section class="max-w-screen-xl mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
             {{-- Menggunakan $skema->gambar (Menggunakan isset untuk keamanan) --}}
             <img src="{{ asset('images/skema/' . ($skema->gambar ?? 'placeholder_default.jpg')) }}"
@@ -24,7 +28,7 @@
     <div class="py-10"></div> {{-- Spacer --}}
 
     {{-- Jadwal Pelaksanaan (Menggunakan Grid/Card Horizontal) --}}
-    <section class="container mx-auto px-8 py-10">
+    <section class="max-w-screen-xl mx-auto px-8 py-10">
         <h2 class="text-3xl font-bold mb-6 text-gray-800">Jadwal Pelaksanaan</h2>
 
         @if(isset($skema->jadwal) && $skema->jadwal->isNotEmpty())
@@ -108,7 +112,7 @@
     <div class="py-5"></div> {{-- Spacer --}}
 
     {{-- Unit Kompetensi --}}
-    <section class="container mx-auto px-8 py-10">
+    <section class="max-w-screen-xl mx-auto px-8 py-10">
         <h2 class="text-3xl font-bold mb-6 text-gray-800">Unit Kompetensi</h2>
 
         <div class="space-y-4">
@@ -137,7 +141,7 @@
     <div class="py-5"></div> {{-- Spacer --}}
 
     {{-- SKKNI (Standar Kompetensi Kerja Nasional Indonesia) --}}
-    <section class="container mx-auto px-8 py-10">
+    <section class="max-w-screen-xl mx-auto px-8 py-10">
         <h2 class="text-3xl font-bold mb-6 text-gray-800">SKKNI (Standar Kompetensi Kerja Nasional Indonesia)</h2>
 
         <div class="space-y-4">
@@ -172,7 +176,7 @@
     <div class="py-5"></div> {{-- Spacer --}}
 
     {{-- Ambil Skema Button --}}
-    <section class="container mx-auto px-8 py-10 text-center">
+    <section class="max-w-screen-xl mx-auto px-8 py-10 text-center">
         <a href="{{ route('login') }}"
             class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-12 rounded-lg text-lg transition shadow-lg hover:shadow-xl transform hover:scale-[1.02] duration-300">
             Ambil Skema

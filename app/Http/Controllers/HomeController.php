@@ -88,7 +88,7 @@ class HomeController extends Controller
             ->get();
 
         // 🟦 MODIFIKASI: AMBIL BERITA DARI DATABASE 🟦
-        $beritas = Berita::latest()->take(3)->get();
+        $beritas = Berita::latest()->take(12)->get();
 
         // KIRIM DATA KE VIEW
         return view('landing_page.home', compact('skemas', 'jadwals', 'categories', 'beritas'));
