@@ -97,7 +97,7 @@
               Tampilkan Password
             </label>
 
-            <a href="#" class="text-gray-600">Forgot your <span class="font-semibold">Password?</span></a>
+            <a href="{{ route('forgot_pass') }}" class="text-gray-600">Forgot your <span class="font-semibold">Password?</span></a>
           </div>
 
           <button type="submit" class="w-full bg-[#0D63F3] text-white py-2.5 rounded-full text-[15px] font-medium shadow-md hover:shadow-lg active:scale-[0.97] transition">

@@ -9,6 +9,7 @@ use App\Http\Controllers\AsesiController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
@@ -25,6 +26,10 @@ use App\Models\Asesi;
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/forgot-password', function () {
+    return view('forgot_pass');
+});
+
 
 
 /*
