@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Berita;
@@ -45,7 +45,7 @@ class BeritaController extends Controller
             // Simpan gambar di 'storage/app/public/berita'
             // 'berita' adalah nama folder di dalam 'public'
             $path = $request->file('gambar')->store('public/berita');
-            
+
             // Simpan hanya nama filenya (setelah 'public/')
             $data['gambar'] = basename($path);
         }

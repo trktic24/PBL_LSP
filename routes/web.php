@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
-use App\Http\Controllers\JadwalController; 
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Asesor\AsesorTableController;
-use App\Http\Controllers\Api\CountryController;
+use App\Http\Controllers\Api\V1\CountryController;
 
 /*
 |--------------------------------------------------------------------------
