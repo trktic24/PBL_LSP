@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\GoogleApiController;
 
 use App\Http\Controllers\Api\V1\SkemaController;
+use App\Http\Controllers\Api\V1\DetailSkemaController; // <-- Wajib di-import
 use App\Http\Controllers\Api\V1\TukController;
 use App\Http\Controllers\Api\V1\AsesorTableApiController;
 use App\Http\Controllers\Api\V1\BeritaController;
@@ -54,8 +55,11 @@ Route::prefix('v1')->group(function () {
     // DATA RESOURCES ROUTES
     // ==========================
 
-    // Skema
+    // Skema Index
     Route::get('/skema', [SkemaController::class, 'index']);
+    
+    // Detail Skema (Pencarian Eksplisit)
+    Route::get('/skema/{id}', [DetailSkemaController::class, 'show']); // <-- ROUTE DETAIL SKEMA
 
     // Daftar Asesor
     Route::get('/asesor', [AsesorTableApiController::class, 'index']);
