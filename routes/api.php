@@ -9,11 +9,12 @@ use App\Http\Controllers\Api\V1\Auth\LogoutController;
 use App\Http\Controllers\Api\V1\Auth\GoogleApiController;
 
 use App\Http\Controllers\Api\V1\SkemaController;
-use App\Http\Controllers\Api\V1\DetailSkemaController; // <-- Wajib di-import
+use App\Http\Controllers\Api\V1\DetailSkemaController;
 use App\Http\Controllers\Api\V1\TukController;
 use App\Http\Controllers\Api\V1\AsesorTableApiController;
 use App\Http\Controllers\Api\V1\BeritaController;
 use App\Http\Controllers\Api\V1\StrukturOrganisasiController;
+use App\Http\Controllers\Api\V1\JadwalControllerAPI; // Sudah benar
 
 /*
 |--------------------------------------------------------------------------
@@ -28,49 +29,64 @@ Route::prefix('v1')->group(function () {
     // AUTHENTICATION ROUTES
     // ==========================
 
+    // Login
     Route::post('/login', [LoginController::class, 'login']);
 
-    Route::post('/register', [RegisterController::class, 'register']);
+    // Register
+    Route::prefix('register')->group(function () {
+        Route::post('/asesi', [RegisterController::class, 'registerAsesi']);
+        Route::post('/asesor', [RegisterController::class, 'registerAsesor']);
+    });
 
-    // Google Auth
+    // Google OAuth
     Route::prefix('auth/google')->group(function () {
         Route::get('redirect', [GoogleApiController::class, 'redirect']);
         Route::get('callback', [GoogleApiController::class, 'callback']);
     });
 
-    // Logout (Wajib punya token)
-    Route::middleware('auth:sanctum')->post('/logout', [LogoutController::class, 'logout']);
+    // ==========================
+    // PROTECTED ROUTES (Requires Sanctum Token)
+    // ==========================
+    Route::middleware('auth:sanctum')->group(function () {
+        
+        // User Profile Check (Dua route sebelumnya digabung menjadi satu)
+        Route::get('/user', function (Request $request) {
+            return response()->json([
+                'success' => true,
+                'message' => 'User data retrieved successfully',
+                // Mengambil user data (sama seperti return $request->user())
+                'data' => $request->user() 
+            ]);
+        });
 
-    // User Profile Check
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return response()->json([
-            'success' => true,
-            'message' => 'User data retrieved successfully',
-            'data' => $request->user()
-        ]);
+        // Logout
+        Route::post('/logout', [LogoutController::class, 'logout']);
+        
     });
 
 
     // ==========================
-    // DATA RESOURCES ROUTES
+    // DATA RESOURCES ROUTES (Public/Unprotected - Bisa diakses tanpa token)
     // ==========================
-
+    
     // Skema Index
     Route::get('/skema', [SkemaController::class, 'index']);
     
-    // Detail Skema (Pencarian Eksplisit)
-    Route::get('/skema/{id}', [DetailSkemaController::class, 'show']); // <-- ROUTE DETAIL SKEMA
+    // Detail Skema
+    Route::get('/skema/{id}', [DetailSkemaController::class, 'show']); 
 
     // Daftar Asesor
     Route::get('/asesor', [AsesorTableApiController::class, 'index']);
 
-    // TUK (Tempat Uji Kompetensi) - CRUD Lengkap
+    // TUK CRUD
     Route::apiResource('tuks', TukController::class);
 
-    // Berita - CRUD Lengkap
+    // Berita CRUD
     Route::apiResource('berita', BeritaController::class);
 
-    // Struktur Organisasi - CRUD Lengkap
+    // Struktur organisasi CRUD
     Route::apiResource('struktur', StrukturOrganisasiController::class);
 
+    // Jadwal API
+    Route::apiResource('jadwal', JadwalControllerAPI::class);
 });

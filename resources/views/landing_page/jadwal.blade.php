@@ -1,162 +1,334 @@
-
 @extends('layouts.app-profil')
 
 @section('title', 'Jadwal Asesmen')
 @section('content')
 
-    <div class="bg-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Jadwal Asesmen</h1>
-            <p class="text-gray-600">Lorem Ipsum dolor<br>sit amet</p>
-        </div>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body { font-family: 'Poppins', sans-serif !important; }
+
+    /* TABLE STYLE LIKE IMAGE */
+    .custom-table-header {
+        background: #FFF8C6;
+        color: #333;
+        font-weight: 600;
+        border-bottom: 2px solid #E5DFA3;
+    }
+    .custom-table-row {
+        background: #FFFFFF;
+        border-bottom: 1px solid #F1EEC7;
+    }
+    .custom-table-row:nth-child(even) {
+        background: #FFFDF2;
+    }
+    .custom-table-row:hover {
+        background: #F7F7F7;
+    }
+
+    /* FILTER STYLE */
+    .filter-dropdown { position: relative; display: inline-block; }
+
+    .filter-btn {
+        padding: 7px 20px;
+        font-size: 14px;
+        border: 1px solid #444;
+        border-radius: 999px;
+        background: white;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .filter-btn:hover { background: #f3f3f3; }
+
+    .filter-panel {
+        position: absolute;
+        top: 48px;
+        left: 0;
+        background: white;
+        width: 280px;
+        border-radius: 18px;
+        padding: 12px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+        border: 1px solid #ddd;
+        display: none;
+        z-index: 30;
+    }
+    .filter-panel.show { display: block; }
+
+    .dropdown-btn {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        background: #fafafa;
+        font-size: 14px;
+        cursor: pointer;
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .submenu {
+        display: none;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 10px;
+        margin-top: 6px;
+        max-height: 220px;
+        overflow-y: auto;
+    }
+    .submenu.show { display: block; }
+</style>
+
+
+<!-- TITLE -->
+<div class="bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Jadwal Asesmen</h1>
+        <p class="text-gray-600">Berikut jadwal asesmen terbaru</p>
     </div>
+</div>
 
-    <!-- Alert Messages -->
-    @if(session('success'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
-        </div>
-    @endif
 
-    @if(session('error'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('error') }}</span>
-            </div>
-        </div>
-    @endif
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- Search Box Simple -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 flex justify-end">
-        <div class="relative w-78">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-            <input type="text" 
-                   id="searchInput"
-                   placeholder="Search" 
-                   class="block w-full pl-9 pr-4 py-2 text-sm border border-gray-700 rounded-full bg-white focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-600">
-        </div>
-    </div>
+    <!-- FILTER -->
+    <div class="flex flex-col sm:flex-row justify-between mb-4 gap-4">
 
-    <!-- Table Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div class="bg-white rounded-t-3xl shadow-lg overflow-hidden border border-gray-200">
-            <!-- Table Header -->
-            <div class="bg-yellow-50 border-b-2 border-gray-900">
-                <div class="grid grid-cols-5 gap-4 px-6 py-4">
-                    <div class="text-sm font-bold text-gray-900 text-left">Skema Sertifikasi</div>
-                    <div class="text-sm font-bold text-gray-900 text-center">Pendaftaran</div>
-                    <div class="text-sm font-bold text-gray-900 text-center">Tanggal Asesmen</div>
-                    <div class="text-sm font-bold text-gray-900 text-center">TUK</div>
-                    <div class="text-sm font-bold text-gray-900 text-center">Status</div>
+        <!-- FILTER FORM -->
+        <form method="GET" id="filterForm">
+            <div class="filter-dropdown">
+
+                <button type="button" onclick="toggleFilterPanel()" class="filter-btn">
+                    <span>Filter</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                    </svg>
+                </button>
+
+                <!-- PANEL -->
+                <div id="filterPanel" class="filter-panel">
+
+                    <!-- SKEMA -->
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('skemaBox')">
+                        Skema Sertifikasi
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+
+                    <div id="skemaBox" class="submenu">
+                        <input class="w-full p-2 border rounded-lg mb-2" placeholder="Cari..."
+                               onkeyup="filterCheckbox('skemaBox', this.value)">
+
+                        @foreach($listSkema as $skema)
+                            <label class="flex items-center gap-2 text-sm mb-1">
+                                <input type="checkbox" name="skema[]" value="{{ $skema->nama_skema }}"
+                                    {{ is_array(request('skema')) && in_array($skema->nama_skema, request('skema')) ? 'checked' : '' }}>
+                                {{ $skema->nama_skema }}
+                            </label>
+                        @endforeach
+                    </div>
+
+                    <!-- TUK -->
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('tukBox')">
+                        TUK
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+
+                    <div id="tukBox" class="submenu">
+                        <input class="w-full p-2 border rounded-lg mb-2" placeholder="Cari..."
+                               onkeyup="filterCheckbox('tukBox', this.value)">
+
+                        @foreach($listTuk as $tuk)
+                            <label class="flex items-center gap-2 text-sm mb-1">
+                                <input type="checkbox" name="tuk[]" value="{{ $tuk->nama_lokasi }}"
+                                    {{ is_array(request('tuk')) && in_array($tuk->nama_lokasi, request('tuk')) ? 'checked' : '' }}>
+                                {{ $tuk->nama_lokasi }}
+                            </label>
+                        @endforeach
+                    </div>
+
+                    <!-- STATUS -->
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('statusBox')">
+                        Status
+                        <svg fill="none" stroke="currentColor" class="w-4 h-4" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+
+                    <div id="statusBox" class="submenu">
+                        @foreach(['Terjadwal','Full','Selesai','Dibatalkan'] as $status)
+                            <label class="flex items-center gap-2 text-sm mb-1">
+                                <input type="checkbox" name="status[]" value="{{ $status }}"
+                                    {{ is_array(request('status')) && in_array($status, request('status')) ? 'checked' : '' }}>
+                                {{ $status }}
+                            </label>
+                        @endforeach
+                    </div>
+
+                    <!-- TANGGAL ASESMENT (PERBAIKAN DI SINI) -->
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('tanggalBox')">
+                        Tanggal Asesmen
+                        <svg fill="none" stroke="currentColor" class="w-4 h-4" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+
+                    <div id="tanggalBox" class="submenu">
+                        <label class="text-sm mb-1">Dari:</label>
+                        <input type="date" name="tgl_mulai" value="{{ request('tgl_mulai') }}"
+                               class="w-full p-2 border rounded-lg mb-2">
+
+                        <label class="text-sm mb-1">Sampai:</label>
+                        <input type="date" name="tgl_selesai" value="{{ request('tgl_selesai') }}"
+                               class="w-full p-2 border rounded-lg">
+                    </div>
+
+                    <!-- APPLY / RESET -->
+                    <div class="flex justify-between mt-4 pt-3 border-t">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
+                            Terapkan
+                        </button>
+                        <a href="{{ url('/jadwal') }}" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">
+                            Reset
+                        </a>
+                    </div>
+
                 </div>
             </div>
+        </form>
 
-            <!-- Table Body -->
-            <div id="tableBody">
-                @forelse($jadwal as $item)
-                    @php
-                        // Tentukan warna status badge
-                        $statusClass = '';
-                        $canRegister = false;
-                        
-                        switch($item->Status_jadwal) {
-                            case 'Terjadwal':
-                                $statusClass = 'bg-teal-200 text-teal-800'; 
-                                $canRegister = true;
-                                break;
-                            case 'Full':
-                                $statusClass = 'bg-yellow-200 text-yellow-800';
-                                break;
-                            case 'Selesai':
-                                $statusClass = 'bg-gray-200 text-gray-700';
-                                break;
-                            case 'Dibatalkan':
-                                $statusClass = 'bg-blue-200 text-blue-700';
-                                break;
-                            default:
-                                $statusClass = 'bg-gray-100 text-gray-700';
-                        }
-                    @endphp
-                    
-                    <div class="jadwal-row bg-yellow-50 border-b border-gray-200 hover:bg-yellow-100 transition-colors duration-150"
-                         data-search="{{ strtolower($item->skema->nama_skema ?? '') }} {{ strtolower($item->masterTuk->nama_lokasi ?? '') }} {{ strtolower($item->Status_jadwal) }}">
-                        <div class="grid grid-cols-5 gap-4 px-6 py-4 items-center">
-                            <!-- Skema Sertifikasi -->
-                            <div class="text-sm text-gray-900 text-left">
-                                {{ $item->skema->nama_skema ?? 'N/A' }}
-                            </div>
-                            
-                            <!-- Pendaftaran -->
-                            <div class="text-sm text-gray-900 text-center">
-                                {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d') }} - 
-                                {{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d M Y') }}
-                            </div>
-                            
-                            <!-- Tanggal Asesmen -->
-                            <div class="text-sm text-gray-900 text-center">
-                                {{ \Carbon\Carbon::parse($item->tanggal_pelaksanaan)->format('d M Y') }}
-                            </div>
-                            
-                            <!-- TUK -->
-                            <div class="text-sm text-gray-900 text-center">
-                                {{ $item->masterTuk->nama_lokasi ?? 'N/A' }}
-                            </div>
-                            
-                            <!-- Status -->
-                            <div class="text-center">
-                                 @if(in_array($item->Status_jadwal, ['Terjadwal']))
-                                    <a href="{{ route('jadwal.detail', ['id' => $item->id_jadwal]) }}"
-                                        class="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold {{ $statusClass }} transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer">
-                                        {{ $item->Status_jadwal }} - Lihat Detail
-                                    </a>
-                                @else
-                                    <span class="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold {{ $statusClass }} opacity-90 cursor-not-allowed">
-                                         {{ $item->Status_jadwal }}
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="px-6 py-12 text-center">
-                        <p class="text-gray-500 text-lg">Belum ada jadwal asesmen tersedia.</p>
-                    </div>
-                @endforelse
-            </div>
+        <!-- SEARCH -->
+        <form method="GET" action="{{ url('/jadwal') }}" class="relative" id="searchForm">
+            <input type="text" id="searchInput" name="search" placeholder="Cari jadwal..."
+                   value="{{ request('search') }}"
+                   class="w-64 pl-10 pr-4 py-2 border border-gray-600 rounded-full text-sm">
 
-            <!-- No Result Message -->
-            <div id="noResult" class="px-6 py-12 text-center bg-yellow-50 hidden">
-                <p class="text-gray-500 text-lg">Tidak ada jadwal yang sesuai dengan pencarian.</p>
-            </div>
-        </div>
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600"
+                 fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </form>
+
     </div>
 
-    <!-- JavaScript untuk Search -->
-    <script>
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchValue = this.value.toLowerCase();
-            const rows = document.querySelectorAll('.jadwal-row');
-            let visibleCount = 0;
-            
-            rows.forEach(row => {
-                const searchText = row.getAttribute('data-search');
-                
-                if (searchText.includes(searchValue)) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-            
-            // Show/hide no result message
-            document.getElementById('noResult').classList.toggle('hidden', visibleCount > 0);
-        });
-    </script>
+
+
+    <!-- ========== TABEL JADWAL (WARNA SUDAH MENYERUPAI GAMBAR) ========== -->
+<div id="jadwalContainer">
+    <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm">
+            <div>Skema Sertifikasi</div>
+            <div class="text-center">Pendaftaran</div>
+            <div class="text-center">Tanggal Asesmen</div>
+            <div class="text-center">TUK</div>
+            <div class="text-center">Status</div>
+        </div>
+
+        @forelse($jadwal as $item)
+
+        @php
+            $statusClass = [
+                'Terjadwal' => 'bg-green-100 text-green-800',
+                'Full'      => 'bg-yellow-100 text-yellow-800',
+                'Selesai'   => 'bg-gray-200 text-gray-700',
+                'Dibatalkan'=> 'bg-red-100 text-red-700',
+            ][$item->Status_jadwal] ?? 'bg-gray-200 text-gray-700';
+        @endphp
+
+        <!-- ROW -->
+        <!-- ROW -->
+        <div class="jadwal-row grid grid-cols-5 px-6 py-4 custom-table-row text-sm">
+
+            <div class="flex items-center">
+                {{ $item->skema->nama_skema ?? 'N/A' }}
+            </div>
+
+            <div class="text-center">
+                {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M') }} -
+                {{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d M Y') }}
+            </div>
+
+            <div class="text-center">
+                {{ \Carbon\Carbon::parse($item->tanggal_pelaksanaan)->format('d M Y') }}
+            </div>
+
+            <div class="text-center">
+                {{ $item->masterTuk->nama_lokasi ?? 'N/A' }}
+            </div>
+
+            <div class="text-center">
+                @if($item->Status_jadwal === 'Terjadwal')
+                    <a href="{{ route('jadwal.detail', $item->id_jadwal) }}"
+                        class="px-3 py-1 rounded-full text-xs font-medium {{ $statusClass }}">
+                        Lihat Detail
+                    </a>
+                @else
+                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $statusClass }}">
+                        {{ $item->Status_jadwal }}
+                    </span>
+                @endif
+            </div>
+
+        </div>
+
+        @empty
+        <div class="py-6 text-center text-gray-500">Tidak ada jadwal ditemukan.</div>
+        @endforelse
+
+    </div>
+
+
+    {{-- PAGINATION --}}
+    @if (isset($jadwal) && method_exists($jadwal, 'links'))
+        <div class="mt-4">
+            {{ $jadwal->appends(request()->except('page'))->links() }}
+        </div>
+    @endif
+
+</div>
+
+<script>
+function toggleFilterPanel() {
+    document.getElementById("filterPanel").classList.toggle("show");
+}
+function toggleSubmenu(id) {
+    document.getElementById(id).classList.toggle("show");
+}
+document.addEventListener('click', function(e) {
+    const panel = document.getElementById("filterPanel");
+    if (!e.target.closest(".filter-dropdown")) panel.classList.remove("show");
+});
+function filterCheckbox(boxId, keyword) {
+    keyword = keyword.toLowerCase();
+    const labels = document.querySelectorAll(`#${boxId} label`);
+    labels.forEach(label => {
+        label.style.display = label.textContent.toLowerCase().includes(keyword) ? "flex" : "none";
+    });
+}
+</script>
+
+<script>
+document.getElementById('searchInput').addEventListener('input', function () {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll('.jadwal-row');
+
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+</script>
+
 @endsection
