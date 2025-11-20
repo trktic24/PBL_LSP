@@ -43,12 +43,6 @@
                         @if(($data_sesi['tuk'] ?? '') == 'tempat_kerja') <div class="w-2 h-2 bg-black"></div> @endif
                     </div> Tempat Kerja
                 </div>
-
-                <div class="flex items-center">
-                    <div class="w-4 h-4 border border-gray-400 mr-2 flex items-center justify-center">
-                        @if(($data_sesi['tuk'] ?? '') == 'mandiri') <div class="w-2 h-2 bg-black"></div> @endif
-                    </div> Mandiri
-                </div>
             </div>
         </div>
 

@@ -5,6 +5,7 @@
 @section('title', 'IA.01 - Step 1: Aktivitas')
 
 @section('wizard-content')
+    <div class="max-w-5xl mx-auto">
 
     {{-- Error Validasi --}}
     @if ($errors->any())
@@ -71,7 +72,7 @@
                         <label class="inline-flex items-center cursor-pointer group">
                             <input type="checkbox" name="tuk" value="sewaktu"
                                    onclick="selectOnlyThis(this)"
-                                   class="tuk-checkbox h-5 w-5 border-gray-400 rounded text-gray-800 focus:ring-gray-500"
+                                   class="tuk-checkbox h-5 w-5 border-gray-400 rounded text-blue-500 focus:ring-blue-500"
                                    {{ $tuk_value == 'sewaktu' ? 'checked' : '' }}>
                             <span class="ml-2 text-sm group-hover:text-blue-600">Sewaktu</span>
                         </label>
@@ -79,17 +80,9 @@
                         <label class="inline-flex items-center cursor-pointer group">
                             <input type="checkbox" name="tuk" value="tempat_kerja"
                                    onclick="selectOnlyThis(this)"
-                                   class="tuk-checkbox h-5 w-5 border-gray-400 rounded text-gray-800 focus:ring-gray-500"
+                                   class="tuk-checkbox h-5 w-5 border-gray-400 rounded text-blue-500 focus:ring-blue-500"
                                    {{ $tuk_value == 'tempat_kerja' ? 'checked' : '' }}>
                             <span class="ml-2 text-sm group-hover:text-blue-600">Tempat Kerja</span>
-                        </label>
-
-                        <label class="inline-flex items-center cursor-pointer group">
-                            <input type="checkbox" name="tuk" value="mandiri"
-                                   onclick="selectOnlyThis(this)"
-                                   class="tuk-checkbox h-5 w-5 border-gray-400 rounded text-gray-800 focus:ring-gray-500"
-                                   {{ $tuk_value == 'mandiri' ? 'checked' : '' }}>
-                            <span class="ml-2 text-sm group-hover:text-blue-600">Mandiri</span>
                         </label>
                     </div>
                 </div>
@@ -194,6 +187,7 @@
         </div>
     </form>
 
+    </div>
     <script>
         function selectOnlyThis(checkbox) {
             document.querySelectorAll('.tuk-checkbox').forEach(cb => {
