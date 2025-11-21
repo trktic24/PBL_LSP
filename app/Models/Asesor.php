@@ -44,6 +44,12 @@ class Asesor extends Model
         return $this->hasMany(Skema::class, 'id_skema');
     }
 
+    public function jadwals()
+    {
+    return $this->hasMany(Jadwal::class, 'id_asesor', 'id_asesor');
+    }
+
+
     /**
      * Accessor untuk mendapatkan URL Foto Profil yang aman.
      * Cara panggil di blade: $asesor->url_foto
