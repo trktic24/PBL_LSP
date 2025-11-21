@@ -4,81 +4,95 @@ namespace App\Http\Controllers\KerahasiaanAPI;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Asesor; 
-use App\Models\Asesi; 
 use Illuminate\Support\Facades\Log;
-// Hapus 'use File' dan 'use Validator' kalo nggak dipake di sini
+use App\Models\DataSertifikasiAsesi;
+use App\Models\BuktiAk01;
+use App\Models\ResponBuktiAk01;
 
 class PersetujuanKerahasiaanAPIController extends Controller
 {
-    /**
-     * METHOD API 1: Menyediakan data FR.AK.01 dalam format JSON.
-     */
-    public function getFrAk01Data($id_asesi)
+    // ... (Method show() buat view biarin aja) ...
+    public function show($id_sertifikasi)
     {
-        Log::info("API: Mencari data FR.AK.01 untuk Asesi ID $id_asesi...");
-        
         try {
-            // Ambil data Asesi + relasi-relasinya
-            $asesi = Asesi::with([
-                'dataPekerjaan',
-                'dataSertifikasi', 
-                'user'
-            ])->findOrFail($id_asesi);
-
-            // Ambil data Asesor (masih dummy, bisa lu ganti)
-            $asesor = Asesor::first() ?? (object)['nama_lengkap' => 'Asesor (Data Dummy)'];
-            
-            // Siapin data dummy TUK & Bukti
-            $data_asesmen = [
-                'tuk' => 'Sewaktu', 
-                'bukti_dikumpulkan' => [
-                    'Verifikasi Portofolio', 'Hasil Test Tulis', 'Hasil Wawancara',
-                ],
-            ];
-
-            // Kirim semua data sebagai JSON
-            return response()->json([
-                'asesor' => $asesor,
-                'asesi' => $asesi,
-                'data_asesmen' => $data_asesmen,
+            $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
+            return view('persetujuan_assesmen_dan_kerahasiaan.fr_ak01', [
+                'id_sertifikasi' => $id_sertifikasi,
+                'asesi'          => $sertifikasi->asesi
             ]);
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(['error' => 'Data Asesi tidak ditemukan'], 404);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Gagal mengambil data dari server'], 500);
+            return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
+        }
+    }
+
+    /**
+     * GET DATA: Tampilkan bukti yang "Wajib" (Dari database Respon/Factory)
+     */
+    public function getFrAk01Data($id_sertifikasi)
+    {
+        try {
+            // 1. Ambil Data Sertifikasi
+            $sertifikasi = DataSertifikasiAsesi::with([
+                'asesi', 
+                'jadwal.asesor',
+                'jadwal.jenisTuk'
+            ])->findOrFail($id_sertifikasi);
+
+            // 2. Ambil Master Bukti (Untuk list checkbox)
+            $masterBukti = BuktiAk01::orderBy('id_bukti_ak01', 'asc')->get();
+
+            // 3. Ambil "Settingan Bukti"
+            // Kita anggap data yang sudah ada di tabel respon (hasil factory) adalah settingan admin.
+            $responBukti = ResponBuktiAk01::where('id_data_sertifikasi_asesi', $id_sertifikasi)
+                                          ->pluck('id_bukti_ak01')
+                                          ->toArray();
+
+            $jenisTuk = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu';
+
+            return response()->json([
+                'success' => true,
+                'asesi' => $sertifikasi->asesi,
+                'asesor' => $sertifikasi->jadwal->asesor ?? (object)['nama_lengkap' => '-'],
+                'tuk' => $jenisTuk,
+                'master_bukti' => $masterBukti,
+                'respon_bukti' => $responBukti, // ID Bukti yang akan tercentang
+                'status_sekarang' => $sertifikasi->status_sertifikasi,
+                'tanda_tangan_valid' => !empty($sertifikasi->asesi->tanda_tangan)
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
     
     /**
-     * ==========================================================
-     * !!! METHOD API BARU: SIMPAN PERSETUJUAN (Update Timestamp) !!!
-     * ==========================================================
-     * Ini dipanggil saat Asesi klik "Selanjutnya/Setuju".
+     * POST: Cuma Update Status (Setuju)
      */
-    public function simpanPersetujuan($id_asesi)
+    public function simpanPersetujuan(Request $request, $id_sertifikasi)
     {
-        Log::info("API: Menyimpan persetujuan (touch timestamp) untuk Asesi ID $id_asesi...");
-
         try {
-            $asesi = Asesi::findOrFail($id_asesi);
+            $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
             
-            // 1. INI KUNCINYA: "Sentuh" model-nya
-            // Ini cuma akan ng-update kolom 'updated_at' ke waktu sekarang
-            $asesi->touch(); 
+            // Validasi Tanda Tangan
+            if (empty($sertifikasi->asesi->tanda_tangan)) {
+                return response()->json(['success' => false, 'message' => 'Tanda tangan belum ada.'], 422);
+            }
 
-            // 2. Kirim balasan sukses
+            // Update Status
+            $nextStatus = DataSertifikasiAsesi::STATUS_PERSETUJUAN_ASESMEN_OK;
+            if ($sertifikasi->status_sertifikasi != $nextStatus) {
+                $sertifikasi->status_sertifikasi = $nextStatus;
+                $sertifikasi->save();
+            }
+
             return response()->json([
                 'success' => true, 
-                'message' => 'Persetujuan berhasil disimpan.'
+                'message' => 'Persetujuan berhasil disimpan.',
+                'id_jadwal' => $sertifikasi->id_jadwal
             ]);
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(['error' => 'Data Asesi tidak ditemukan'], 404);
         } catch (\Exception $e) {
-            Log::error('API: Gagal simpan persetujuan FR.AK.01 - ' . $e->getMessage());
-            return response()->json(['error' => 'Gagal menyimpan persetujuan di server'], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }

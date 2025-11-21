@@ -29,9 +29,10 @@
                 </h2>
 
                 <div class="flex justify-center items-center mt-20 space-x-4">
-                    {{-- TOMBOL 1: KE DASHBOARD UTAMA --}}
-                    <a href="/dashboard" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
-                        Halaman Utama
+                    {{-- TOMBOL 1: KE HALAMAN SEBELUMNYA --}}
+                    <a href="{{ route('show.tandatangan', ['id_sertifikasi' => $id_sertifikasi]) }}" 
+                           class="px-12 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
+                            Kembali
                     </a>
 
                     {{-- TOMBOL 2: LANJUT (BALIK KE TRACKER JADWAL SPESIFIK) --}}

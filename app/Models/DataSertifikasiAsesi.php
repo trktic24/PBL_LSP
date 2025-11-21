@@ -129,5 +129,10 @@ class DataSertifikasiAsesi extends Model
     {
         return $this->hasMany(BuktiDasar::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+
+    public function responBuktiAk01(): HasMany
+    {
+        return $this->hasMany(ResponBuktiAk01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
     
 }

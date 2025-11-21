@@ -294,7 +294,11 @@
                                 @endif
                             </div>
                             <div class="flex-1">
-                                <h3 class="{{ $linkClassDisabled }}">Verifikasi TUK</h3>
+                                @if ($level >= $LVL_PRA_ASESMEN)
+                                    <a href="#" class="{{ $linkClassEnabled }}">Verifikasi TUK</a>
+                                @else
+                                    <span class="{{ $linkClassDisabled }}">Verifikasi TUK</span>
+                                @endif
                                 <p class="text-sm text-gray-500">Dilakukan oleh Asesor</p>
                                 @if ($level >= $LVL_PRA_ASESMEN)
                                     <p class="{{ $statusClassSelesai }}">Terverifikasi</p>
@@ -325,7 +329,7 @@
                             <div class="flex-1">
                                 {{-- Link: Bisa diklik jika sudah selesai Pra-Asesmen (level 40) --}}
                                 @if ($level >= $LVL_PRA_ASESMEN)
-                                    <a href="{{ route('kerahasiaan.fr_ak01', ['id_asesi' => $sertifikasi->id_asesi]) }}"
+                                    <a href="{{ route('kerahasiaan.fr_ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         class="{{ $linkClassEnabled }}">
                                         Persetujuan Asesmen dan Kerahasiaan
                                     </a>

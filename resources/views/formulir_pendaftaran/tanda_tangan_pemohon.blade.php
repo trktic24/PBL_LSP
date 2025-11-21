@@ -294,7 +294,7 @@
                         // Redirect ke Tracker yang benar
                         // (Pastikan variabel idJadwal sudah didefinisikan di atas script, lihat jawaban sebelumnya)
                         // Kalau belum ada variabel idJadwal, ambil dari PHP:
-                        const targetUrl = "{{ isset($sertifikasi->id_jadwal) ? '/tracker/' . $sertifikasi->id_jadwal : '/tracker' }}";
+                        const targetUrl = "{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
                         window.location.href = targetUrl;
 
                     } else {

@@ -154,27 +154,39 @@ class PaymentController extends Controller
     {
         $orderId = $request->query('order_id');
         $status = $request->query('transaction_status');
+        $statusCode = $request->query('status_code');
         
+        $user = Auth::user();
+        $asesi = $user->asesi; // Data Asesi untuk Sidebar
+        
+        // Variabel Default
         $idJadwal = null;
-        // Pakai optional() biar gak error kalau user belum login / sesi habis
-        $asesi = optional(Auth::user())->asesi; 
+        $idSertifikasi = null; // <--- INI KITA BUTUHKAN
 
+        // Cari Data Berdasarkan Order ID dari Midtrans
         if ($orderId) {
             $pembayaran = Pembayaran::where('order_id', $orderId)->first();
-            if ($pembayaran && $pembayaran->sertifikasi) {
-                $idJadwal = $pembayaran->sertifikasi->id_jadwal;
+            
+            if ($pembayaran) {
+                // Ambil ID Sertifikasi langsung dari tabel pembayaran
+                $idSertifikasi = $pembayaran->id_data_sertifikasi_asesi;
+
+                // Ambil ID Jadwal (lewat relasi sertifikasi)
+                if ($pembayaran->sertifikasi) {
+                    $idJadwal = $pembayaran->sertifikasi->id_jadwal;
+                }
             }
         }
 
-        if ($status == 'settlement' || $status == 'capture') {
-            // Pastikan file view ini ADA: resources/views/pembayaran/pembayaran_berhasil.blade.php
-            return view('pembayaran.pembayaran_berhasil', [ 
-                'id_jadwal' => $idJadwal,
-                'asesi'     => $asesi 
-            ]);
-        }
-
-        return redirect($idJadwal ? "/tracker/{$idJadwal}" : '/tracker');
+        // Kirim semua data ke View
+        return view('pembayaran.pembayaran_berhasil', [ 
+            'order_id'      => $orderId,
+            'status'        => $status,
+            'status_code'   => $statusCode,
+            'id_jadwal'     => $idJadwal,
+            'id_sertifikasi'=> $idSertifikasi, 
+            'asesi'         => $asesi
+        ]);
     }
 
     public function paymentCancel(Request $request)
