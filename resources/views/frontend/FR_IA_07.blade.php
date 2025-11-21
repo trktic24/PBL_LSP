@@ -10,59 +10,66 @@
             </div>
         </header>
 
-        <form class="form-body mt-10">
+        {{-- Menggunakan route ia07.store dan method POST --}}
+        <form action="{{ route('ia07.store') }}" method="POST" class="form-body mt-10">
+            @csrf
             
             <div class="form-row grid grid-cols-[250px_1fr] gap-x-6 gap-y-4 items-center mb-8">
                 
                 <label class="text-sm font-medium text-gray-700">Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
                 <div class="flex items-center">
                     <span>:</span>
-                    <input type="text" value="Junior Web Developer (Contoh)" 
+                    {{-- DATA DARI $skema --}}
+                    <input type="text" name="skema_sertifikasi" value="{{ $skema->nama_skema ?? 'N/A' }}" 
                         class="form-input w-full ml-2" readonly>
                 </div>
 
                 <label class="text-sm font-medium text-gray-700">Nomor</label>
                 <div class="flex items-center">
                     <span>:</span>
-                    <input type="text" value="SSK.XX.XXXX (Contoh)" 
+                    {{-- DATA DARI $skema --}}
+                    <input type="text" name="nomor_skema" value="{{ $skema->nomor_skema ?? 'N/A' }}" 
                         class="form-input w-full ml-2" readonly>
                 </div>
 
                 <label class="text-sm font-medium text-gray-700">TUK</label>
                 <div class="radio-group flex items-center space-x-4">
                     <span>:</span>
+                    {{-- LOOPING DATA JENIS TUK DARI DATABASE --}}
+                    @forelse($jenisTukOptions as $tuk)
                     <div class="flex items-center space-x-2 ml-2">
-                        <input type="radio" id="tuk_sewaktu" name="tuk_type" class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_sewaktu" class="text-sm text-gray-700">Sewaktu</label>
+                        {{-- Menggunakan id_jenis_tuk sebagai value yang akan dikirim --}}
+                        <input type="radio" id="tuk_{{ $tuk->id_jenis_tuk }}" name="id_jenis_tuk" value="{{ $tuk->id_jenis_tuk }}" 
+                            class="form-radio h-4 w-4 text-blue-600"
+                            {{ $loop->first ? 'checked' : '' }}> {{-- Auto-check yang pertama --}}
+                        <label for="tuk_{{ $tuk->id_jenis_tuk }}" class="text-sm text-gray-700">{{ $tuk->jenis_tuk }}</label>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="tuk_tempatkerja" name="tuk_type" checked class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_tempatkerja" class="text-sm text-gray-700">Tempat Kerja</label>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="radio" id="tuk_mandiri" name="tuk_type" class="form-radio h-4 w-4 text-blue-600">
-                        <label for="tuk_mandiri" class="text-sm text-gray-700">Mandiri</label>
-                    </div>
+                    @empty
+                        <p class="text-red-500 text-xs ml-2">Data Jenis TUK tidak ditemukan!</p>
+                    @endforelse
                 </div>
 
                 <label class="text-sm font-medium text-gray-700">Nama Asesor</label>
                 <div class="flex items-center">
                     <span>:</span>
-                    <input type="text" value="Ajeng Febria Hidayati (Contoh)" 
+                    {{-- DATA DARI $asesor --}}
+                    <input type="text" name="nama_asesor" value="{{ $asesor->nama_lengkap ?? 'N/A' }}" 
                         class="form-input w-full ml-2" readonly>
+                    <input type="hidden" name="nomor_regis_asesor" value="{{ $asesor->nomor_regis ?? 'N/A' }}">
                 </div>
                 
                 <label class="text-sm font-medium text-gray-700">Nama Asesi</label>
                 <div class="flex items-center">
                     <span>:</span>
-                    <input type="text" value="Tatang Sidartang (Contoh)" 
+                    {{-- DATA DARI $asesi --}}
+                    <input type="text" name="nama_asesi" value="{{ $asesi->nama_lengkap ?? 'N/A' }}" 
                         class="form-input w-full ml-2" readonly>
                 </div>
 
                 <label class="text-sm font-medium text-gray-700">Tanggal</label>
                 <div class="flex items-center">
                     <span>:</span>
-                    <input type="date" value="<?php echo date('Y-m-d'); ?>" 
+                    <input type="date" name="tanggal_pelaksanaan" value="<?php echo date('Y-m-d'); ?>" 
                         class="form-input w-full ml-2">
                 </div>
             </div>
@@ -78,7 +85,6 @@
             </div>
 
             <div class="form-section my-8">
-
                 <div class="border border-gray-900 shadow-md mb-6">
                     <div class="grid grid-cols-[100px_1fr] divide-x divide-gray-900">
                         <div class="font-bold p-2 bg-black text-white border-r border-gray-900">Instruksi:</div>
@@ -94,7 +100,7 @@
                     <table class="w-full">
                         <thead>
                             <tr class="bg-black text-white">
-                                <th class="border border-gray-900 p-2 w-36 font-semibold"></th>                            
+                                <th class="border border-gray-900 p-2 w-36 font-semibold"></th>                                    
                                 <th class="border border-gray-900 p-2 w-12 font-semibold">No.</th>
                                 <th class="border border-gray-900 p-2 w-28 font-semibold">Kode Unit</th>
                                 <th class="border border-gray-900 p-2 font-semibold">Judul Unit</th>
@@ -103,7 +109,7 @@
                         <tbody>
                             <tr>
                                 <td class="bg-black text-white border border-gray-900 p-2 h-10 text-sm align-top text-center font-bold" rowspan="3">
-                                                    Kelompok Pekerjaan ...</td>                                
+                                    Kelompok Pekerjaan ...</td>                                
                                 <td class="border border-gray-900 p-2 text-sm text-center">1.</td>
                                 <td class="border border-gray-900 p-2 text-sm"></td>
                                 <td class="border border-gray-900 p-2 text-sm"></td>
@@ -120,9 +126,11 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>           
+                </div>          
                 
-                <div class="h-6"></div> <div class="border border-gray-900 shadow-md">
+                <div class="h-6"></div> 
+                
+                <div class="border border-gray-900 shadow-md">
                     <table class="w-full border-collapse">
                         <thead>
                             <tr class="bg-black text-white">
@@ -138,17 +146,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
+                            {{-- PERTANYAAN 1 --}}
                             <tr>
-                                <td rowspan="3" class="border border-gray-900 p-2 text-center text-sm font-bold align-top">
-                                    1.
-                                </td>
+                                <td rowspan="3" class="border border-gray-900 p-2 text-center text-sm font-bold align-top">1.</td>
                                 <td class="border border-gray-900 px-3 py-1 text-sm font-medium">Pertanyaan:</td>
                                 <td class="border border-gray-900 text-center">
-                                    <input type="checkbox" name="p1_ya" value="ya" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <input type="checkbox" name="p1_status" value="ya" class="form-checkbox h-4 w-4 text-blue-600 rounded">
                                 </td>
                                 <td class="border border-gray-900 text-center">
-                                    <input type="checkbox" name="p1_tidak" value="tidak" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <input type="checkbox" name="p1_status" value="tidak" class="form-checkbox h-4 w-4 text-blue-600 rounded">
                                 </td>
                             </tr>
                             <tr>
@@ -156,20 +162,21 @@
                                 <td colspan="2" class="border border-gray-900 text-center bg-gray-50"></td>
                             </tr>
                             <tr>
-                                <td class="border border-gray-900 px-3 py-1 text-sm">Jawaban Asesi:</td>
+                                <td class="border border-gray-900 px-3 py-1 text-sm">Jawaban Asesi:
+                                    <textarea name="p1_jawaban" rows="2" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </td>
                                 <td colspan="2" class="border border-gray-900 text-center"></td>
                             </tr>
 
+                            {{-- PERTANYAAN 2 --}}
                             <tr>
-                                <td rowspan="3" class="border border-gray-900 p-2 text-center text-sm font-bold align-top">
-                                    2.
-                                </td>
+                                <td rowspan="3" class="border border-gray-900 p-2 text-center text-sm font-bold align-top">2.</td>
                                 <td class="border border-gray-900 px-3 py-1 text-sm font-medium">Pertanyaan:</td>
                                 <td class="border border-gray-900 text-center">
-                                    <input type="checkbox" name="p2_ya" value="ya" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <input type="checkbox" name="p2_status" value="ya" class="form-checkbox h-4 w-4 text-blue-600 rounded">
                                 </td>
                                 <td class="border border-gray-900 text-center">
-                                    <input type="checkbox" name="p2_tidak" value="tidak" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <input type="checkbox" name="p2_status" value="tidak" class="form-checkbox h-4 w-4 text-blue-600 rounded">
                                 </td>
                             </tr>
                             <tr>
@@ -177,20 +184,21 @@
                                 <td colspan="2" class="border border-gray-900 text-center bg-gray-50"></td>
                             </tr>
                             <tr>
-                                <td class="border border-gray-900 px-3 py-1 text-sm">Jawaban Asesi:</td>
+                                <td class="border border-gray-900 px-3 py-1 text-sm">Jawaban Asesi:
+                                    <textarea name="p2_jawaban" rows="2" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </td>
                                 <td colspan="2" class="border border-gray-900 text-center"></td>
                             </tr>
 
+                            {{-- PERTANYAAN 3 --}}
                             <tr>
-                                <td rowspan="3" class="border border-gray-900 p-2 text-center text-sm font-bold align-top">
-                                    3.
-                                </td>
+                                <td rowspan="3" class="border border-gray-900 p-2 text-center text-sm font-bold align-top">3.</td>
                                 <td class="border border-gray-900 px-3 py-1 text-sm font-medium">Pertanyaan:</td>
                                 <td class="border border-gray-900 text-center">
-                                    <input type="checkbox" name="p2_ya" value="ya" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <input type="checkbox" name="p3_status" value="ya" class="form-checkbox h-4 w-4 text-blue-600 rounded">
                                 </td>
                                 <td class="border border-gray-900 text-center">
-                                    <input type="checkbox" name="p2_tidak" value="tidak" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <input type="checkbox" name="p3_status" value="tidak" class="form-checkbox h-4 w-4 text-blue-600 rounded">
                                 </td>
                             </tr>
                             <tr>
@@ -198,101 +206,64 @@
                                 <td colspan="2" class="border border-gray-900 text-center bg-gray-50"></td>
                             </tr>
                             <tr>
-                                <td class="border border-gray-900 px-3 py-1 text-sm">Jawaban Asesi:</td>
+                                <td class="border border-gray-900 px-3 py-1 text-sm">Jawaban Asesi:
+                                    <textarea name="p3_jawaban" rows="2" class="w-full border-gray-300 rounded text-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </td>
                                 <td colspan="2" class="border border-gray-900 text-center"></td>
-                            </tr>                            
-
+                            </tr>                                    
                         </tbody>
                     </table>
                 </div>              
             </div>
 
-                <div class="border border-gray-900 shadow-md w-full max-w-4xl mx-auto">
+            <div class="border border-gray-900 shadow-md w-full max-w-4xl mx-auto mb-8">
                 <table class="w-full border-collapse">
                     <tbody>
-                    <!-- Umpan balik untuk asesi -->
-                    <tr>
-                        <td class="border border-gray-900 p-2 font-semibold w-40 bg-black text-white">Umpan balik untuk asesi</td>
-                        <td colspan="2" class="border border-gray-900 p-2">
-                        Aspek pengetahuan seluruh unit kompetensi yang diuji <br>
-                        <strong>(tercapai / belum tercapai)*</strong><br>
-                        Tuliskan Unit Kompetensi / Elemen / KUK jika belum tercapai: ....
-                        </td>                        
-                    </tr>
-
-                    <!-- ASESI -->
-                    <tr class="bg-gray-100 font-semibold">
-                        <td class="border border-gray-900 p-2 bg-black text-white" colspan="3">ASESI</td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-900 p-2 w-32">Nama</td>
-                        <td class="border border-gray-900 p-2 w-8 text-center">:</td>
-                        <td class="border border-gray-900 p-2"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-900 p-2 w-32">Tanda tangan dan Tanggal</td>
-                        <td class="border border-gray-900 p-2 w-8 text-center">:</td>
-                        <td class="border border-gray-900 p-2"></td>
-                    </tr>
-
-                    <!-- ASESOR -->
-                    <tr class="bg-gray-100 font-semibold">
-                        <td class="border border-gray-900 p-2 bg-black text-white" colspan="3">ASESOR</td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-900 p-2 w-32">Nama</td>
-                        <td class="border border-gray-900 p-2 w-8 text-center">:</td>
-                        <td class="border border-gray-900 p-2"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-900 p-2 w-32">No. Reg. MET</td>
-                        <td class="border border-gray-900 p-2 w-8 text-center">:</td>
-                        <td class="border border-gray-900 p-2"></td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-900 p-2 w-32">Tanda tangan dan Tanggal</td>
-                        <td class="border border-gray-900 p-2 w-8 text-center">:</td>
-                        <td class="border border-gray-900 p-2"></td>
-                    </tr>
+                        <tr>
+                            <td class="border border-gray-900 p-2 font-semibold w-40 bg-black text-white">Umpan balik untuk asesi</td>
+                            <td class="border border-gray-900 p-2">
+                                Aspek pengetahuan seluruh unit kompetensi yang diuji <br>
+                                <strong>(tercapai / belum tercapai)*</strong><br>
+                                <textarea name="umpan_balik_asesi" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-2" rows="2" placeholder="Tuliskan Unit Kompetensi / Elemen / KUK jika belum tercapai: ...."></textarea>
+                            </td>                        
+                        </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <div class="flex w-full gap-8 max-w-4xl mx-auto mb-10 font-sans text-black">
+                
+                <div class="w-1/2">
+                    <div class="font-bold mb-1">ASESI:</div>
+                    <div class="mb-1">
+                        Nama: {{ $asesi->nama_lengkap ?? '[Nama Asesi]' }}
+                    </div>
+                    <div class="mb-2">Tanda tangan dan Tanggal:</div>
+                    <div class="border border-gray-900 h-32 w-full bg-white">
+                        {{-- Placeholder Tanda Tangan Asesi --}}
+                    </div>
                 </div>
 
+                <div class="w-1/2">
+                    <div class="font-bold mb-1">ASESOR:</div>
+                    <div class="mb-1">
+                        Nama: {{ $asesor->nama_lengkap ?? '[Nama Asesor]' }}
+                    </div>
+                    <div class="mb-1">
+                        No. Reg.MET.: {{ $asesor->nomor_regis ?? '[Nomor Registrasi]' }}
+                    </div>
+                    <div class="mb-2">Tanda tangan dan Tanggal:</div>
+                    <div class="border border-gray-900 h-32 w-full bg-white">
+                        {{-- Placeholder Tanda Tangan Asesor --}}
+                    </div>
+                </div>
+            </div>
 
-                <h3 class="font-bold mt-6">PENYUSUN DAN VALIDATOR</h3>
-                <x-table>
-                    <!-- ttd asesi asesor -->
-                    <x-slot name="thead">
-                        <tr>
-                            <td class="border border-gray-900 p-2 font-bold text-center w-[80px] bg-black text-white">STATUS</td>
-                            <td class="border border-gray-900 p-2 font-bold text-center w-[30px] bg-black text-white">NO</td>
-                            <td class="border border-gray-900 p-2 font-bold text-center w-[200px] bg-black text-white">NAMA</td>                        
-                            <td class="border border-gray-900 p-2 font-bold text-center w-[100px] bg-black text-white">NOMOR MET</td>
-                            <td class="border border-gray-900 p-2 font-bold text-center w-[80px] bg-black text-white">TANDA TANGAN DAN TANGGAL</td>                                                
-                        </tr>
-                    </x-slot>
-
-                    <!-- penyusun -->
-                    <tr class="bg-gray-100 font-semibold">
-                        <td class="border border-gray-900 p-2 bg-black text-white">PENYUSUN</td>
-                        <td class="border border-gray-900 p-2 text-center">1</td>
-                        <td class="border border-gray-900 p-2"></td>
-                        <td class="border border-gray-900 p-2"></td>
-                        <td class="border border-gray-900 p-2 text-center"></td>
-                    </tr>
-
-                    <!-- validator -->
-                    <tr class="bg-gray-100 font-semibold">
-                        <td rowspan="2" class="border border-gray-900 p-2 bg-black text-white">VALIDATOR</td>
-                        <td class="border border-gray-900 p-2 text-center">2</td>
-                        <td class="border border-gray-900 p-2"></td>
-                        <td class="border border-gray-900 p-2"></td>
-                        <td class="border border-gray-900 p-2 "></td>                        
-                    </tr>
-                </x-table>             
-
-
-
+            <div class="flex justify-end max-w-4xl mx-auto pb-10">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-bold rounded hover:bg-blue-700">
+                    Simpan Jawaban
+                </button>
+            </div>
         
         </form>
 

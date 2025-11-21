@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SoalController;
 use App\Http\Controllers\Ia01Controller;
+use App\Http\Controllers\IA07Controller;
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -48,10 +49,14 @@ Route::get('/FR_AK_04', function () {
     return view('frontend/FR_AK_04');
 })->name('FR_AK_04');
 
-//IA
-Route::get('/IA_07', function () {
-    return view('frontend/IA_07/IA_07');
-})->name('IA07');
+// Akses untuk Asesor: http://localhost:8000/IA07_Asesor
+Route::get('/IA07_Asesor', [IA07Controller::class, 'index'])->name('ia07.asesor');
+
+// Akses untuk Asesi: http://localhost:8000/IA07_Asesi
+Route::get('/IA07_Asesi', [IA07Controller::class, 'index'])->name('ia07.asesi');
+
+// Route POST (store)
+Route::post('/ia07/store', [IA07Controller::class, 'store'])->name('ia07.store');
 
 
 Route::middleware('auth')->group(function () {
