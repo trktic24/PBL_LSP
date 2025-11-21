@@ -77,11 +77,11 @@
         style="--px-size: 250px; --px-top: -50px; --px-right: -13px;">
 
       <div class="absolute top-4 left-6">
-        <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" class="w-20 drop-shadow">
+        <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" class="w-24 drop-shadow">
       </div>
 
       <div class="form-container mx-auto shadow-2xl relative z-20">
-        <h2 class="text-[22px] font-semibold mb-6 tracking-wide text-gray-800">Masukan akun Anda!</h2>
+        <h2 class="text-[24px] font-semibold mb-6 tracking-wide text-gray-800">Masukan akun Anda!</h2>
 
         @if(session('error'))
         <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 text-xs rounded-lg">

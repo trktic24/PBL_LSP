@@ -10,15 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-        ::-webkit-scrollbar {
-            width: 0;
-        }
-        [x-cloak] {
-            display: none !important;
-        }
+        body { font-family: 'Poppins', sans-serif; }
+        ::-webkit-scrollbar { width: 0; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 
@@ -209,10 +203,10 @@
                 </div>
 
 
-                <table class="min-w-full divide-y divide-gray-200 text-xs">
+                <table class="min-w-full divide-y divide-gray-200 text-xs border border-gray-200">
 
                     <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
-                        <tr>
+                        <tr class="divide-x divide-gray-200 border-b border-gray-200">
                             @php
                                 // [PERBAIKAN] Pastikan $baseParams juga membawa filter yang aktif
                                 $baseParams = [
@@ -337,7 +331,7 @@
                                 </a>
                             </th>
                             
-                            <th class="px-4 py-3 text-left font-semibold">
+                            <th class="px-4 py-3 text-center font-semibold">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'kuota_maksimal';
                                 @endphp
@@ -353,19 +347,19 @@
                                 </a>
                             </th>
                             
-                            <th class="px-4 py-3 text-left font-semibold">Status</th>
+                            <th class="px-4 py-3 text-center font-semibold">Status</th>
                             
                             <th class="px-4 py-3 text-center font-semibold">Daftar Hadir</th>
                             
                             <th class="px-4 py-3 text-center font-semibold">Berita Acara</th>
                             
-                            <th class="px-4 py-3 text-left font-semibold">Aksi</th>
+                            <th class="px-4 py-3 text-center font-semibold">Aksi</th>
                         </tr>
                     </thead>
 
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-200">
                         @forelse ($jadwals as $jadwal)
-                        <tr class="hover:bg-gray-50 transition">
+                        <tr class="hover:bg-gray-50 transition divide-x divide-gray-200">
                             <td class="px-4 py-3">{{ $jadwal->id_jadwal }}</td>
                             <td class="px-4 py-3">{{ $jadwal->skema?->nama_skema ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $jadwal->asesor?->nama_lengkap ?? 'N/A' }}</td>
@@ -373,9 +367,9 @@
                             <td class="px-4 py-3">{{ $jadwal->tanggal_mulai?->format('d/m/Y') ?? 'N/A' }} - {{ $jadwal->tanggal_selesai?->format('d/m/Y') ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $jadwal->tanggal_pelaksanaan?->format('d/m/Y') ?? 'N/A' }} ({{ $jadwal->waktu_mulai?->format('H:i') ?? 'N/A' }})</td>
                             <td class="px-4 py-3">{{ $jadwal->jenisTuk?->jenis_tuk ?? 'N/A' }}</td>
-                            <td class="px-4 py-3">{{ $jadwal->sesi }}</td>
-                            <td class="px-4 py-3">{{ $jadwal->kuota_minimal }} / {{ $jadwal->kuota_maksimal }}</td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 text-center">{{ $jadwal->sesi }}</td>
+                            <td class="px-4 py-3 text-center">{{ $jadwal->kuota_minimal }} / {{ $jadwal->kuota_maksimal }}</td>
+                            <td class="px-4 py-3 text-center">
                                 @if($jadwal->Status_jadwal == 'Selesai')
                                 <span class="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">Selesai</span>
                                 @elseif($jadwal->Status_jadwal == 'Dibatalkan')
@@ -394,27 +388,29 @@
                                     <i class="fas fa-file-alt"></i> <span>Lihat</span>
                                 </a>
                             </td>
-                            <td class="px-4 py-3 flex space-x-2">
-                                <a
-                                    href="{{ route('edit_schedule', $jadwal->id_jadwal) }}"
-                                    class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition"
-                                >
-                                    <i class="fas fa-pen"></i> <span>Edit</span>
-                                </a>
-                                <form
-                                    action="{{ route('delete_schedule', $jadwal->id_jadwal) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Anda yakin ingin menghapus jadwal (ID: {{ $jadwal->id_jadwal }}) ini?');"
-                                >
-                                    @csrf
-                                    @method('DELETE')
-                                    <button
-                                        type="submit"
-                                        class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition"
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                                <div class="flex justify-center space-x-2">
+                                    <a
+                                        href="{{ route('edit_schedule', $jadwal->id_jadwal) }}"
+                                        class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition"
                                     >
-                                        <i class="fas fa-trash"></i> <span>Delete</span>
-                                    </button>
-                                </form>
+                                        <i class="fas fa-pen"></i> <span>Edit</span>
+                                    </a>
+                                    <form
+                                        action="{{ route('delete_schedule', $jadwal->id_jadwal) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Anda yakin ingin menghapus jadwal (ID: {{ $jadwal->id_jadwal }}) ini?');"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+                                        <button
+                                            type="submit"
+                                            class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition"
+                                        >
+                                            <i class="fas fa-trash"></i> <span>Delete</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty

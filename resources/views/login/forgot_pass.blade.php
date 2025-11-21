@@ -116,12 +116,12 @@
         style="--px-size: 250px; --px-top: -50px; --px-right: -15px;"> 
       
       <div class="absolute top-4 left-6">
-        <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" class="w-20 drop-shadow">
+        <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" class="w-24 drop-shadow">
       </div>
 
       <div class="form-container mx-auto shadow-2xl relative z-20">
         
-        <h2 class="text-[22px] font-semibold mb-2 tracking-wide text-gray-800">Recovery Akun</h2>
+        <h2 class="text-[24px] font-semibold mb-2 tracking-wide text-gray-800">Recovery Akun</h2>
         <p class="text-sm text-gray-500 mb-8 leading-relaxed">
           Masukkan username yang terdaftar untuk mereset password Anda.
         </p>
