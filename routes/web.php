@@ -214,12 +214,16 @@ Route::get('/keep-alive', function () {
 Route::get('/api/search-countries', [CountryController::class, 'search'])
     ->name('api.countries.search');
 
-// Route Pembayaran
-// Saat tombol "Bayar" di Tracker diklik, lari ke sini
-Route::get('/bayar', [PaymentController::class, 'createTransaction'])
+// 1. Route Klik Bayar
+Route::get('/bayar/{id_sertifikasi}', [PaymentController::class, 'createTransaction'])
     ->middleware('auth')
     ->name('payment.create');
 
-// Halaman "Terima Kasih / Diproses" setelah dari Midtrans
+// 2. Route Sukses/Finish (Callback Midtrans)
+// [PERBAIKAN] Nama route disesuaikan dengan config Midtrans di controller
 Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])
-    ->name('pembayaran_diproses');
+    ->name('pembayaran_diproses'); 
+
+// 3. Route Batal/Cancel
+Route::get('/pembayaran_batal', [PaymentController::class, 'paymentCancel'])
+    ->name('payment.cancel');

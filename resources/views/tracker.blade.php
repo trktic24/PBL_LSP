@@ -214,7 +214,7 @@
                             <div class="flex-1">
                                 {{-- Link: Bisa diklik jika sudah selesai daftar (level 10) --}}
                                 @if ($level >= $LVL_DAFTAR_SELESAI)
-                                    <a href="/bayar" class="{{ $linkClassEnabled }}">Pembayaran</a>
+                                    <a href="{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $linkClassEnabled }}">Pembayaran</a>
                                 @else
                                     <span class="{{ $linkClassDisabled }}">Pembayaran</span>
                                 @endif

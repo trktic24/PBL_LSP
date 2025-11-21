@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Pembayaran;
 use App\Models\DataSertifikasiAsesi;
-use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Notification;
-use Illuminate\Support\Facades\Log;
 
 class PaymentCallbackController extends Controller
 {
@@ -32,45 +32,57 @@ class PaymentCallbackController extends Controller
             $payment = Pembayaran::where('order_id', $order_id)->first();
 
             if (!$payment) {
-                return response()->json(['message' => 'Order not found'], 404);
+                return response()->json(['message' => 'Order ID not found'], 404);
             }
 
-            // 4. Logika Status Midtrans
+            // 4. Tentukan Status Baru
+            $newStatus = null;
+
             if ($transaction == 'capture') {
                 if ($type == 'credit_card') {
                     if ($fraud == 'challenge') {
-                        $payment->update(['status_transaksi' => 'challenge']);
+                        $newStatus = 'challenge';
                     } else {
-                        $payment->update(['status_transaksi' => 'settlement']);
+                        $newStatus = 'settlement'; // Sukses
                     }
                 }
             } else if ($transaction == 'settlement') {
-                // --- PEMBAYARAN SUKSES ---
-                $payment->update(['status_transaksi' => 'settlement']);
-                
-                // UPDATE STATUS SERTIFIKASI DI SINI
-                $sertifikasi = DataSertifikasiAsesi::find($payment->id_data_sertifikasi_asesi);
-                if ($sertifikasi) {
-                    // Pastikan pakai Konstanta dari Model biar aman
-                    $sertifikasi->status_sertifikasi = DataSertifikasiAsesi::STATUS_PEMBAYARAN_LUNAS;
-                    $sertifikasi->save();
-                }
-
+                $newStatus = 'settlement'; // Sukses (Transfer Bank, GoPay, dll)
             } else if ($transaction == 'pending') {
-                $payment->update(['status_transaksi' => 'pending']);
+                $newStatus = 'pending';
             } else if ($transaction == 'deny') {
-                $payment->update(['status_transaksi' => 'deny']);
+                $newStatus = 'deny';
             } else if ($transaction == 'expire') {
-                $payment->update(['status_transaksi' => 'expire']);
+                $newStatus = 'expire';
             } else if ($transaction == 'cancel') {
-                $payment->update(['status_transaksi' => 'cancel']);
+                $newStatus = 'cancel';
+            }
+
+            // 5. UPDATE DATABASE
+            if ($newStatus) {
+                // Update Tabel Pembayaran
+                $payment->update(['status_transaksi' => $newStatus]);
+
+                // Update Tabel Data Sertifikasi Asesi (HANYA JIKA SUKSES)
+                if ($newStatus == 'settlement') {
+                    $sertifikasi = DataSertifikasiAsesi::find($payment->id_data_sertifikasi_asesi);
+                    
+                    if ($sertifikasi) {
+                        // Ubah status sertifikasi agar Tracker terbuka
+                        // Gunakan string 'pembayaran_lunas' sesuai enum/const kamu
+                        $sertifikasi->status_sertifikasi = 'pembayaran_lunas'; 
+                        $sertifikasi->save();
+                        
+                        Log::info("Pembayaran Lunas: Status sertifikasi ID {$sertifikasi->id_data_sertifikasi_asesi} diperbarui.");
+                    }
+                }
             }
 
             return response()->json(['message' => 'Callback received successfully']);
 
         } catch (\Exception $e) {
             Log::error('Midtrans Callback Error: ' . $e->getMessage());
-            return response()->json(['message' => 'Error'], 500);
+            return response()->json(['message' => 'Error processing notification'], 500);
         }
     }
 }
