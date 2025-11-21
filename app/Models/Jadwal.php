@@ -74,10 +74,10 @@ class Jadwal extends Model
     /**
      * Mendapatkan asesor yang terkait dengan jadwal.
      */
-    public function asesor()
-    {
-        return $this->belongsToMany(Asesor::class, 'id_asesor', 'id_asesor');
-    }
+    // public function asesor()
+    // {
+    //     return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
+    // }
 
     public function jenisTuk()
     /**
@@ -93,6 +93,6 @@ class Jadwal extends Model
 
         // Sesuaikan 'asesi_jadwal', 'id_jadwal', dan 'id_asesi'
         // dengan nama tabel pivot dan kolom Anda
-        return $this->belongsToMany(Asesi::class, 'data_sertifikasi_asesi', 'id_jadwal', 'id_asesi');
+        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_jadwal', 'id_asesi');
     }
 }

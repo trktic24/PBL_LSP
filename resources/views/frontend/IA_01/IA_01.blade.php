@@ -44,104 +44,108 @@
         </div>
 
         {{-- TABEL CEKLIS OBSERVASI --}}
-        <div class="border-2 border-gray-800 rounded-sm overflow-hidden mb-8">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-100 text-gray-900 border-b-2 border-gray-800">
-                    <tr>
-                        <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/4 text-center">Elemen</th>
-                        <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/3 text-center">Kriteria Unjuk Kerja</th>
-                        <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/6 text-center">Standar Industri</th>
-                        <th class="p-0 border-r border-gray-800 w-1/6">
-                            <div class="border-b border-gray-800 p-1 text-center text-sm font-bold bg-gray-200">Pencapaian</div>
-                            <div class="flex">
-                                <div class="w-1/2 text-center p-1 border-r border-gray-800 text-xs font-bold bg-green-50">Ya</div>
-                                <div class="w-1/2 text-center p-1 text-xs font-bold bg-red-50">Tidak</div>
-                            </div>
-                        </th>
-                        <th class="p-3 text-sm font-bold w-1/6 text-center">Penilaian Lanjut</th>
-                    </tr>
-                </thead>
+<div class="border-2 border-gray-800 rounded-sm mb-8">
+    <div class="overflow-x-auto overflow-y-hidden">
 
-                <tbody class="text-gray-800 bg-white">
-                    @forelse ($unitKompetensi->elemens as $elemen)
-                        @php
-                            $totalKuk = $elemen->kriteriaUnjukKerja->count();
-                        @endphp
+        <table class="w-full text-left border-collapse min-w-[900px]">
+            <thead class="bg-gray-100 text-gray-900 border-b-2 border-gray-800">
+                <tr>
+                    <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/4 text-center">Elemen</th>
+                    <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/3 text-center">Kriteria Unjuk Kerja</th>
+                    <th class="p-3 text-sm font-bold border-r border-gray-800 w-1/5 text-center">Standar Industri</th>
+                    <th class="p-0 border-r border-gray-800 w-1/6 min-w-[120px]">
+                        <div class="border-b border-gray-800 p-1 text-center text-sm font-bold bg-gray-200">Pencapaian</div>
+                        <div class="flex">
+                            <div class="w-1/2 text-center p-1 border-r border-gray-800 text-xs font-bold bg-green-50">Ya</div>
+                            <div class="w-1/2 text-center p-1 text-xs font-bold bg-red-50">Tidak</div>
+                        </div>
+                    </th>
+                    <th class="p-3 text-sm font-bold text-center min-w-[260px]">Penilaian Lanjut</th>
+                </tr>
+            </thead>
 
-                        @foreach ($elemen->kriteriaUnjukKerja as $index => $kuk)
-                            <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition-colors">
+            <tbody class="text-gray-800 bg-white">
+                @forelse ($unitKompetensi->elemens as $elemen)
+                    @php $totalKuk = $elemen->kriteriaUnjukKerja->count(); @endphp
 
-                                {{-- KOLOM 1: ELEMEN (Rowspan) --}}
-                                @if ($index === 0)
-                                    <td rowspan="{{ $totalKuk }}" class="p-3 border-r border-gray-800 align-top bg-white">
-                                        <div class="text-sm font-semibold">
-                                            <span class="font-bold mr-1">{{ $loop->parent->iteration }}.</span>
-                                            {{-- Pastikan kolom di DB 'elemen' atau 'nama_elemen' --}}
-                                            {{ $elemen->elemen }}
-                                        </div>
-                                    </td>
-                                @endif
+                    @foreach ($elemen->kriteriaUnjukKerja as $index => $kuk)
+                        <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition-colors">
 
-                                {{-- KOLOM 2: KUK --}}
-                                <td class="p-3 border-r border-gray-800 align-top text-sm leading-relaxed">
-                                    <span class="font-bold mr-1">{{ $loop->parent->iteration }}.{{ $loop->iteration }}</span>
-                                    {{ $kuk->kriteria }}
-                                </td>
-
-                                {{-- KOLOM 3: STANDAR INDUSTRI --}}
-                                <td class="p-2 border-r border-gray-800 align-top">
-                                    <textarea name="standar_industri[{{ $kuk->id_kriteria }}]" rows="3"
-                                        class="w-full text-xs border-gray-300 rounded focus:border-blue-500 focus:ring-0 bg-gray-50 resize-none"
-                                        placeholder="Isi jika ada...">{{ old("standar_industri.{$kuk->id_kriteria}") }}</textarea>
-                                </td>
-
-                                {{-- KOLOM 4: CHECKBOX (YA/TIDAK) --}}
-                                <td class="p-0 border-r border-gray-800 align-top">
-                                    <div class="flex h-full items-center">
-                                        {{-- Checkbox YA --}}
-                                        <div class="w-1/2 flex justify-center items-center border-r border-gray-300 h-full py-4 hover:bg-green-50 cursor-pointer"
-                                             onclick="triggerCheck('{{ $kuk->id_kriteria }}', 'kompeten')">
-
-                                            <input type="checkbox"
-                                                   id="cb_ya_{{ $kuk->id_kriteria }}"
-                                                   name="hasil[{{ $kuk->id_kriteria }}]"
-                                                   value="kompeten"
-                                                   class="kuk-check-{{ $kuk->id_kriteria }} w-5 h-5 text-green-600 rounded focus:ring-green-500 border-gray-400 cursor-pointer"
-                                                   onclick="handleExclusiveCheckbox(this, '{{ $kuk->id_kriteria }}')"
-                                                   {{ old("hasil.{$kuk->id_kriteria}") == 'kompeten' ? 'checked' : '' }}>
-                                        </div>
-
-                                        {{-- Checkbox TIDAK --}}
-                                        <div class="w-1/2 flex justify-center items-center h-full py-4 hover:bg-red-50 cursor-pointer"
-                                             onclick="triggerCheck('{{ $kuk->id_kriteria }}', 'belum_kompeten')">
-
-                                            <input type="checkbox"
-                                                   id="cb_tidak_{{ $kuk->id_kriteria }}"
-                                                   name="hasil[{{ $kuk->id_kriteria }}]"
-                                                   value="belum_kompeten"
-                                                   class="kuk-check-{{ $kuk->id_kriteria }} w-5 h-5 text-red-600 rounded focus:ring-red-500 border-gray-400 cursor-pointer"
-                                                   onclick="handleExclusiveCheckbox(this, '{{ $kuk->id_kriteria }}')"
-                                                   {{ old("hasil.{$kuk->id_kriteria}") == 'belum_kompeten' ? 'checked' : '' }}>
-                                        </div>
+                            {{-- KOLOM 1: ELEMEN --}}
+                            @if ($index === 0)
+                                <td rowspan="{{ $totalKuk }}" class="p-3 border-r border-gray-800 align-top bg-white">
+                                    <div class="text-sm font-semibold">
+                                        <span class="font-bold mr-1">{{ $loop->parent->iteration }}.</span>
+                                        {{ $elemen->elemen }}
                                     </div>
                                 </td>
+                            @endif
 
-                                {{-- KOLOM 5: PENILAIAN LANJUT --}}
-                                <td class="p-2 align-top">
-                                    <textarea name="penilaian_lanjut[{{ $kuk->id_kriteria }}]" rows="3"
-                                        class="w-full text-xs rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 placeholder-gray-400"
-                                        placeholder="Catatan...">{{ old("penilaian_lanjut.{$kuk->id_kriteria}") }}</textarea>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @empty
-                        <tr>
-                            <td colspan="6" class="p-4 text-center text-gray-500">Belum ada data KUK untuk unit ini.</td>
+                            {{-- KOLOM 2: KUK --}}
+                            <td class="p-3 border-r border-gray-800 align-top text-sm leading-relaxed">
+                                <span class="font-bold mr-1">{{ $loop->parent->iteration }}.{{ $loop->iteration }}</span>
+                                {{ $kuk->kriteria }}
+                            </td>
+
+                            {{-- KOLOM 3: STANDAR INDUSTRI --}}
+                            <td class="p-2 border-r border-gray-800 align-top">
+                                <textarea name="standar_industri[{{ $kuk->id_kriteria }}]" rows="3"
+                                    class="w-full text-sm border-gray-300 rounded focus:border-blue-500 focus:ring-0 bg-gray-50 resize-none"
+                                    placeholder="Isi jika ada...">{{ old("standar_industri.{$kuk->id_kriteria}") }}</textarea>
+                            </td>
+
+                            {{-- KOLOM 4: CHECKBOX --}}
+                            <td class="p-0 border-r border-gray-800 align-top">
+                                <div class="flex h-full items-center">
+
+                                    {{-- YA --}}
+                                    <div class="w-1/2 flex justify-center items-center border-r border-gray-300 h-full py-4 hover:bg-green-50 cursor-pointer"
+                                        onclick="triggerCheck('{{ $kuk->id_kriteria }}', 'kompeten', event)">
+                                        <input type="checkbox"
+                                            id="cb_ya_{{ $kuk->id_kriteria }}"
+                                            name="hasil[{{ $kuk->id_kriteria }}]"
+                                            value="kompeten"
+                                            class="kuk-check-{{ $kuk->id_kriteria }} w-5 h-5 text-green-600 rounded focus:ring-green-500 border-gray-400 cursor-pointer"
+                                            onclick="handleExclusiveCheckbox(this, '{{ $kuk->id_kriteria }}')"
+                                            {{ old("hasil.{$kuk->id_kriteria}") == 'kompeten' ? 'checked' : '' }}>
+                                    </div>
+
+                                    {{-- TIDAK --}}
+                                    <div class="w-1/2 flex justify-center items-center h-full py-4 hover:bg-red-50 cursor-pointer"
+                                        onclick="triggerCheck('{{ $kuk->id_kriteria }}', 'belum_kompeten', event)">
+                                        <input type="checkbox"
+                                            id="cb_tidak_{{ $kuk->id_kriteria }}"
+                                            name="hasil[{{ $kuk->id_kriteria }}]"
+                                            value="belum_kompeten"
+                                            class="kuk-check-{{ $kuk->id_kriteria }} w-5 h-5 text-red-600 rounded focus:ring-red-500 border-gray-400 cursor-pointer"
+                                            onclick="handleExclusiveCheckbox(this, '{{ $kuk->id_kriteria }}')"
+                                            {{ old("hasil.{$kuk->id_kriteria}") == 'belum_kompeten' ? 'checked' : '' }}>
+                                    </div>
+
+                                </div>
+                            </td>
+
+                            {{-- KOLOM 5: CATATAN --}}
+                            <td class="p-2 align-top min-w-[260px]">
+                                <textarea name="penilaian_lanjut[{{ $kuk->id_kriteria }}]" rows="3"
+                                    class="w-full text-sm rounded border-gray-300 shadow-sm
+                                    focus:border-blue-500 focus:ring-blue-500 placeholder-gray-400 resize-y"
+                                    placeholder="Catatan...">{{ old("penilaian_lanjut.{$kuk->id_kriteria}") }}</textarea>
+                            </td>
+
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                    @endforeach
+                @empty
+                    <tr>
+                        <td colspan="6" class="p-4 text-center text-gray-500">Belum ada data KUK untuk unit ini.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
 
         {{-- FOOTER NAVIGASI --}}
         <div class="flex justify-between items-center mt-10 pb-10">
@@ -169,32 +173,32 @@
         </div>
     </form>
 
-    {{-- SCRIPT UNTUK CHECKBOX EKSKLUSIF (Pilih satu doang per baris) --}}
     <script>
-        // Fungsi biar bisa klik area TD (kotak) gak cuma pas di checkbox kecilnya
-        function triggerCheck(id, value) {
-            // Cari checkbox yang sesuai
-            let targetId = (value === 'kompeten') ? 'cb_ya_' + id : 'cb_tidak_' + id;
-            let checkbox = document.getElementById(targetId);
+    // Klik area luar untuk toggle checkbox
+    function triggerCheck(id, value, e) {
+        // Cegah double trigger kalau yang diklik adalah checkbox-nya
+        if (e.target.type === 'checkbox') return;
 
-            // Kalo user klik pas di inputnya, jangan trigger lagi (biar ga double)
-            if (event.target.type !== 'checkbox') {
-                checkbox.checked = !checkbox.checked;
-                handleExclusiveCheckbox(checkbox, id);
-            }
-        }
+        let targetId = value === 'kompeten'
+            ? 'cb_ya_' + id
+            : 'cb_tidak_' + id;
 
-        // Logic biar kalo pilih YA, yang TIDAK mati (dan sebaliknya)
-        function handleExclusiveCheckbox(checkbox, id) {
-            if (checkbox.checked) {
-                // Ambil semua checkbox dengan class kuk-check-{id}
-                let boxes = document.getElementsByClassName('kuk-check-' + id);
-                Array.from(boxes).forEach((box) => {
-                    if (box !== checkbox) {
-                        box.checked = false;
-                    }
-                });
-            }
-        }
+        let checkbox = document.getElementById(targetId);
+
+        checkbox.checked = !checkbox.checked;
+        handleExclusiveCheckbox(checkbox, id);
+    }
+
+    // Eksklusif: pilih YA → TIDAK mati, pilih TIDAK → YA mati
+    function handleExclusiveCheckbox(checkbox, id) {
+        if (!checkbox.checked) return;
+
+        let boxes = document.querySelectorAll('.kuk-check-' + id);
+
+        boxes.forEach((box) => {
+            if (box !== checkbox) box.checked = false;
+        });
+    }
     </script>
+
 @endsection

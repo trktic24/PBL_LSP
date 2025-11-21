@@ -1,223 +1,166 @@
-{{-- Menggunakan layout sidebar yang sama --}}
 @extends('layouts.app-sidebar')
 
 @section('content')
-<div class="p-8">
-    {{-- Judul Halaman --}}
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">FR.IA.02. TPD - TUGAS PRAKTIK DEMONSTRASI</h1>
-
-    <!-- Box Info Atas (Mengadopsi gaya dari fr_IA_06_a.blade.php) -->
-    <div class="bg-gray-50 p-6 rounded-md shadow-sm mb-6 border border-gray-200">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-
-            <!-- Kolom Kiri -->
-            <div class="space-y-3">
-                <div class="grid grid-cols-[180px,10px,1fr] gap-x-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Skema Sertifikasi (KKNI/Okupasi/Klaster)</span><span class="font-medium">:</span>
-                    <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="Junior Web Developer" placeholder="Judul Skema...">
-                </div>
-                <div class="grid grid-cols-[180px,10px,1fr] gap-x-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">TUK</span><span class="font-medium">:</span>
-                    <div class="flex gap-4">
-                        <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="radio" name="tuk_type" value="sewaktu" class="h-4 w-4 text-blue-600 focus:ring-blue-500"> Sewaktu
-                        </label>
-                        <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="radio" name="tuk_type" value="tempat_kerja" class="h-4 w-4 text-blue-600 focus:ring-blue-500" checked> Tempat Kerja
-                        </label>
-                        <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="radio" name="tuk_type" value="mandiri" class="h-4 w-4 text-blue-600 focus:ring-blue-500"> Mandiri
-                        </label>
-                    </div>
-                </div>
-                <div class="grid grid-cols-[180px,10px,1fr] gap-x-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Nama Asesor</span><span class="font-medium">:</span>
-                    <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="A-001 - John Doe" placeholder="Nama Asesor...">
-                </div>
-            </div>
-
-            <!-- Kolom Kanan -->
-            <div class="space-y-3">
-                <div class="grid grid-cols-[100px,10px,1fr] gap-x-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Nomor</span><span class="font-medium">:</span>
-                    <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="SKM.JWD.001" placeholder="Nomor Skema...">
-                </div>
-                <div class="grid grid-cols-[100px,10px,1fr] gap-x-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Nama Asesi</span><span class="font-medium">:</span>
-                    <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="Budi Santoso" placeholder="Nama Asesi...">
-                </div>
-                <div class="grid grid-cols-[100px,10px,1fr] gap-x-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Tanggal</span><span class="font-medium">:</span>
-                    <input type="date" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="{{ date('Y-m-d') }}">
-                </div>
-            </div>
-        </div>
-        <p class="text-xs text-gray-500 -mt-4 mb-6">*Coret yang tidak perlu</p>
-    </div>
-
-    <!-- Box Petunjuk (Gaya baru) -->
-    <div class="bg-blue-50 p-6 rounded-md shadow-sm mb-6 border border-blue-200">
-        <h3 class="text-lg font-bold text-blue-800 mb-3">Petunjuk</h3>
-        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700">
-            <li>Baca dan pelajari setiap instruksi kerja di bawah ini dengan cermat sebelum melaksanakan praktek.</li>
-            <li>Klarifikasi kepada asesor kompetensi apabila ada hal-hal yang belum jelas.</li>
-            <li>Laksanakan pekerjaan sesuai dengan urutan proses yang sudah ditetapkan.</li>
-            <li>Seluruh proses kerja mengacu kepada SOP/WI yang dipersyaratkan (Jika Ada).</li>
-        </ul>
-    </div>
-
-    <!-- Box Skenario Tugas -->
-    <div class="bg-white p-6 rounded-md shadow-sm mb-6 border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Skenario Tugas Praktik Demonstrasi</h3>
-
-        <!-- Tabel Kelompok Pekerjaan (Mengadopsi gaya dari FR_IA_05_B.blade.php) -->
-        <div class="overflow-x-auto border border-gray-300 rounded-md shadow-sm mb-6">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="p-3 text-left font-medium w-[25%]">Kelompok Pekerjaan ...</th>
-                        <th class="p-3 text-left font-medium w-[10%]">No.</th>
-                        <th class="p-3 text-left font-medium w-[25%]">Kode Unit</th>
-                        <th class="p-3 text-left font-medium w-[40%]">Judul Unit</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                    <tr>
-                        <td class="p-3" rowspan="3">Kelompok Pekerjaan 1: Implementasi Desain</td>
-                        <td class="p-3 text-center">1.</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md" value="J.620100.004.02"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md" value="Menggunakan Struktur Data"></td>
-                    </tr>
-                    <tr>
-                        <td class="p-3 text-center">2.</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md" value="J.620100.005.01"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md" value="Mengimplementasikan User Interface"></td>
-                    </tr>
-                    <tr>
-                        <td class="p-3 text-center">Dst.</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Kode Unit..."></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Judul Unit..."></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Skenario, Perlengkapan, Waktu -->
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Skenario Tugas Praktik Demonstrasi:</label>
-                <textarea class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="4" placeholder="Jelaskan skenario tugas di sini..."></textarea>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Perlengkapan dan Peralatan:</label>
-                <textarea class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" rows="2" placeholder="Contoh: Laptop, Teks Editor, Web Browser..."></textarea>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Waktu:</label>
-                <input type="text" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Contoh: 120 Menit">
-            </div>
-        </div>
-    </div>
-
-    <!-- Box Tanda Tangan Asesi & Asesor (Mengadopsi gaya dari fr_IA_06_c.blade.php) -->
-    <div class="bg-gray-50 p-6 rounded-md shadow-sm mb-6 border border-gray-200">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Kolom Asesi -->
-            <div class="space-y-3">
-                <h4 class="font-medium text-gray-800">ASESI</h4>
-                <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Nama</span>
-                    <span class="font-medium">:</span>
-                    <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="Budi Santoso">
-                </div>
-                <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Tanda tangan & Tanggal</span>
-                    <span class="font-medium">:</span>
-                    <div class="p-1 w-full h-16 border-b border-gray-300 bg-gray-100 rounded-t-md"></div>
-                </div>
-            </div>
-
-            <!-- Kolom Asesor -->
-            <div class="space-y-3">
-                <h4 class="font-medium text-gray-800">ASESOR</h4>
-                <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Nama</span>
-                    <span class="font-medium">:</span>
-                    <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="A-001 - John Doe">
-                </div>
-                <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">No. Reg. MET.</span>
-                    <span class="font-medium">:</span>
-                    <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="MET.000.001234.2024">
-                </div>
-                <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Tanda tangan & Tanggal</span>
-                    <span class="font-medium">:</span>
-                    <div class="p-1 w-full h-16 border-b border-gray-300 bg-gray-100 rounded-t-md"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="p-5">
     
-    <!-- Box Penyusun dan Validator (Mengadopsi gaya dari fr_IA_06_b.blade.php) -->
-    <div class="mb-6">
-        <h3 class="font-semibold text-gray-700 mb-3 text-lg">Penyusun dan Validator</h3>
-        <div class="overflow-x-auto border border-gray-300 rounded-md shadow-sm">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="p-3 text-left font-medium">Status</th>
-                        <th class="p-3 text-left font-medium w-[5%]">No</th>
-                        <th class="p-3 text-left font-medium">Nama</th>
-                        <th class="p-3 text-left font-medium">Nomor MET</th>
-                        <th class="p-3 text-left font-medium">Tanda Tangan dan Tanggal</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                    <!-- Baris Penyusun -->
-                    <tr>
-                        <td class="p-3 font-medium align-top" rowspan="2">PENYUSUN</td>
-                        <td class="p-3 align-top pt-5">1</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                    </tr>
-                    <tr>
-                        <td class="p-3 align-top pt-5">2</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                    </tr>
-                    
-                    <!-- Baris Validator -->
-                    <tr>
-                        <td class="p-3 font-medium align-top" rowspan="2">VALIDATOR</td>
-                        <td class="p-3 align-top pt-5">1</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                    </tr>
-                    <tr>
-                        <td class="p-3 align-top pt-5">2</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                    </tr>
-                </tbody>
-            </table>
+    {{-- Notifikasi Sukses/Error --}}
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong class="font-bold">Berhasil!</strong>
+            <span class="block sm:inline">{{ session('success') }}</span>
         </div>
-    </div>
+    @endif
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+    @endif
 
-    <!-- Tombol Footer (gaya Tailwind) -->
-    <div class="mt-8 flex justify-between">
-        <a href="#" {{-- URL placeholder --}}
-           class="bg-gray-200 text-gray-700 font-medium py-2 px-6 rounded-md hover:bg-gray-300">
-            Kembali
-        </a>
-        
-        <button type="submit" class="bg-blue-600 text-white font-medium py-2 px-6 rounded-md hover:bg-blue-700">
-            Simpan Form
-        </button>
-    </div>
+    {{-- FORM UTAMA --}}
+    @if($sertifikasi)
+    <form action="{{ route('ia02.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+        @csrf
+
+        {{-- KOMPONEN 1: Header Form --}}
+        {{-- Menggunakan component x-header_form --}}
+        <x-header_form.header_form title="FR.IA.02. TPD - TUGAS PRAKTIK DEMONSTRASI" />
+
+        {{-- KOMPONEN 2: Identitas Skema --}}
+        {{-- Menggunakan component x-identitas_skema_form --}}
+        {{-- Asumsi component ini menerima prop :sertifikasi --}}
+        <div class="mb-6">
+            <x-identitas_skema_form.identitas_skema_form 
+                :sertifikasi="$sertifikasi" 
+            />
+        </div>
+
+        {{-- Petunjuk (Manual karena biasanya statis per form) --}}
+        <div class="bg-blue-50 p-6 rounded-md shadow-sm mb-6 border border-blue-200">
+            <h3 class="text-lg font-bold text-blue-800 mb-3">Petunjuk</h3>
+            <ul class="list-disc list-inside space-y-2 text-sm text-gray-700">
+                <li>Baca dan pelajari setiap instruksi kerja di bawah ini dengan cermat sebelum melaksanakan praktek.</li>
+                <li>Klarifikasi kepada asesor kompetensi apabila ada hal-hal yang belum jelas.</li>
+                <li>Laksanakan pekerjaan sesuai dengan urutan proses yang sudah ditetapkan.</li>
+                <li>Seluruh proses kerja mengacu kepada SOP/WI yang dipersyaratkan (Jika Ada).</li>
+            </ul>
+        </div>
+
+        {{-- KONTEN UTAMA: SKENARIO (Belum ada component khusus, kita buat style yang senada) --}}
+        <div class="bg-white p-6 rounded-md shadow-sm mb-6 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Skenario Tugas Praktik Demonstrasi</h3>
+
+            <!-- Tabel Unit Kompetensi -->
+            <div class="overflow-x-auto border border-gray-300 rounded-md shadow-sm mb-6">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-3 text-left font-medium w-[10%] border-b">No.</th>
+                            <th class="p-3 text-left font-medium w-[25%] border-b">Kode Unit</th>
+                            <th class="p-3 text-left font-medium w-[65%] border-b">Judul Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        @forelse($sertifikasi->skema->unitKompetensis ?? [] as $index => $unit)
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-3 text-center">{{ $loop->iteration }}.</td>
+                                <td class="p-3 font-mono">{{ $unit->kode_unit }}</td>
+                                <td class="p-3">{{ $unit->judul_unit }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="p-3 text-center text-gray-500 italic">Unit Kompetensi tidak ditemukan pada skema ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Input Area dengan Logic Role -->
+            <div class="space-y-6">
+                
+                {{-- 1. SKENARIO --}}
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        Skenario Tugas Praktik Demonstrasi <span class="text-red-500">*</span>
+                    </label>
+                    @if($isAdmin)
+                        <textarea name="skenario" class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 shadow-sm transition" rows="6" placeholder="Masukkan instruksi skenario lengkap untuk Asesi di sini...">{{ old('skenario', $ia02->skenario ?? '') }}</textarea>
+                        <p class="text-xs text-gray-500 mt-1">Dapat diedit oleh Admin.</p>
+                    @else
+                        <div class="w-full p-4 bg-gray-50 border border-gray-200 rounded-md text-gray-800 whitespace-pre-line min-h-[100px]">
+                            {!! nl2br(e($ia02->skenario ?? 'Belum ada instruksi skenario dari Admin/Asesor.')) !!}
+                        </div>
+                    @endif
+                </div>
+
+                {{-- 2. PERALATAN --}}
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        Perlengkapan dan Peralatan <span class="text-red-500">*</span>
+                    </label>
+                    @if($isAdmin)
+                        <textarea name="peralatan" class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 shadow-sm transition" rows="3" placeholder="Contoh: Laptop, Teks Editor VS Code, Web Browser Chrome...">{{ old('peralatan', $ia02->peralatan ?? '') }}</textarea>
+                    @else
+                        <div class="w-full p-4 bg-gray-50 border border-gray-200 rounded-md text-gray-800 whitespace-pre-line">
+                            {!! nl2br(e($ia02->peralatan ?? '-')) !!}
+                        </div>
+                    @endif
+                </div>
+
+                {{-- 3. WAKTU --}}
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        Waktu Pengerjaan <span class="text-red-500">*</span>
+                    </label>
+                    @if($isAdmin)
+                        <input 
+                            type="time" 
+                            name="waktu"
+                            class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 shadow-sm w-1/3"
+                            value="{{ old('waktu', isset($ia02->waktu) ? \Carbon\Carbon::parse($ia02->waktu)->format('H:i') : '') }}"
+                        >
+                    @else
+                        <div class="w-full p-3 bg-gray-50 border border-gray-200 rounded-md text-gray-800 font-medium inline-block w-1/3">
+                            {{ $ia02->waktu ?? '-' }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        {{-- KOMPONEN 3: Tanda Tangan --}}
+        {{-- Menggunakan component x-kolom_ttd.asesiasesor --}}
+        <div class="mb-6">
+            <x-kolom_ttd.asesiasesor 
+                :sertifikasi="$sertifikasi" 
+                :tanggal="\Carbon\Carbon::now()"
+            />
+        </div>
+
+        {{-- Tombol Aksi --}}
+        <div class="mt-8 flex justify-end gap-4 sticky bottom-4 bg-white/80 p-4 backdrop-blur-sm rounded-lg shadow-md border border-gray-100">
+            <a href="{{ route('daftar_asesi') }}" class="bg-white text-gray-700 border border-gray-300 font-medium py-2 px-6 rounded-md hover:bg-gray-50 transition shadow-sm">
+                Kembali
+            </a>
+            
+            @if($isAdmin)
+                <button type="submit" class="bg-blue-600 text-white font-medium py-2 px-6 rounded-md hover:bg-blue-700 shadow-lg transition flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Simpan Instruksi
+                </button>
+            @endif
+        </div>
+
+    </form>
+    @else
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center" role="alert">
+            <strong class="font-bold text-lg">Data Tidak Ditemukan</strong>
+            <p class="mt-2">Silakan kembali ke halaman daftar asesi.</p>
+            <a href="{{ route('daftar_asesi') }}" class="inline-block mt-4 bg-red-200 hover:bg-red-300 text-red-800 px-4 py-2 rounded transition">Kembali</a>
+        </div>
+    @endif
 </div>
 @endsection
