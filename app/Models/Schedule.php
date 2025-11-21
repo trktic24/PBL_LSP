@@ -51,6 +51,14 @@ class Schedule extends Model
     {
         return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
+    
+    /**
+     * Relasi: Jadwal memiliki banyak Pendaftar (DataSertifikasiAsesi).
+     */
+    public function pendaftar()
+    {
+        return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
+    }
 
 
 }

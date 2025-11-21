@@ -30,5 +30,6 @@ class DatabaseSeeder extends Seeder
         Tuk::factory(20)->create();
         Skema::factory(20)->create();
         Schedule::factory(50)->create();
+        $this->call(DataSertifikasiAsesiSeeder::class);
     }
 }

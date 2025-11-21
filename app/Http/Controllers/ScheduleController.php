@@ -238,4 +238,63 @@ class ScheduleController extends Controller
             return back()->with('error', 'Gagal menghapus: Jadwal ini mungkin terhubung ke data lain.');
         }
     }
+
+    /**
+     * Menampilkan Halaman Daftar Hadir dengan Sorting Lengkap & Pagination.
+     */
+    public function showAttendance(Request $request, $id_jadwal)
+    {
+        $jadwal = Schedule::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+
+        // 1. Default Sorting
+        $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');
+        $sortDirection = $request->input('direction', 'asc');
+        
+        // 2. Base Query
+        $query = \App\Models\DataSertifikasiAsesi::query()
+                    ->with(['asesi.user', 'asesi.dataPekerjaan'])
+                    ->where('id_jadwal', $id_jadwal)
+                    ->select('data_sertifikasi_asesi.*'); // Penting agar ID tidak tertimpa saat Join
+
+        // 3. Logic Sorting Lanjutan (Join Table)
+        if (in_array($sortColumn, ['nama_lengkap', 'alamat_rumah', 'pekerjaan', 'nomor_hp'])) {
+            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
+                  ->orderBy('asesi.' . $sortColumn, $sortDirection);
+        } 
+        elseif ($sortColumn == 'institusi') {
+            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
+                  ->leftJoin('data_pekerjaan_asesi', 'asesi.id_asesi', '=', 'data_pekerjaan_asesi.id_asesi')
+                  ->orderBy('data_pekerjaan_asesi.nama_institusi_pekerjaan', $sortDirection);
+        } 
+        else {
+            // Default: Sort by ID Daftar Hadir
+            $query->orderBy('id_data_sertifikasi_asesi', $sortDirection);
+        }
+
+        // 4. Search
+        if ($request->has('search') && $request->input('search') != '') {
+            $searchTerm = $request->input('search');
+            $query->whereHas('asesi', function($q) use ($searchTerm) {
+                $q->where('nama_lengkap', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('alamat_rumah', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('nomor_hp', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('pekerjaan', 'like', '%' . $searchTerm . '%')
+                  ->orWhereHas('dataPekerjaan', function($q2) use ($searchTerm) {
+                      $q2->where('nama_institusi_pekerjaan', 'like', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+
+        // 5. Pagination
+        $perPage = $request->input('per_page', 10);
+        $pendaftar = $query->paginate($perPage)->appends($request->query());
+
+        return view('master.schedule.daftar_hadir', [
+            'jadwal' => $jadwal,
+            'pendaftar' => $pendaftar,
+            'perPage' => $perPage,
+            'sortColumn' => $sortColumn,
+            'sortDirection' => $sortDirection,
+        ]);
+    }
 }

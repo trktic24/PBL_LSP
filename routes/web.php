@@ -126,6 +126,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id_jadwal}', 'edit')->name('edit_schedule');
         Route::patch('/update/{id_jadwal}', 'update')->name('update_schedule');
         Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_schedule');
+        Route::get('/attendance/{id_jadwal}', 'showAttendance')->name('schedule.attendance');
     });
     Route::get('/schedule_admin', [ScheduleController::class, 'showCalendar'])->name('schedule_admin');
 

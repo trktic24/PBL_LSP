@@ -48,7 +48,7 @@
 
             <div class="flex items-center justify-between mb-10">
                 <a href="{{ route('dashboard') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
-                    <i class="fas fa-arrow-left mr-2"></i> Back
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali
                 </a>
                 <h2 class="text-3xl font-semibold text-gray-800 text-center flex-1">Account Settings</h2>
                 <div class="w-[80px]"></div>

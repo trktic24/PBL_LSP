@@ -189,7 +189,7 @@
                                 <td class="px-6 py-4">{{ $tuk->id_tuk }}</td>
 
                                 <td class="px-6 py-4">
-                                    <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50">
+                                    <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50 relative group">
                                         @if($tuk->foto_tuk)
                                             <img src="{{ asset($tuk->foto_tuk) }}" 
                                                  alt="Foto {{ $tuk->nama_lokasi }}" 
@@ -198,7 +198,7 @@
                                             >
                                         @else
                                             <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                                <i class="fas fa-image text-2xl"></i>
+                                                <i class="fas fa-image text-lg"></i>
                                             </div>
                                         @endif
                                     </div>
