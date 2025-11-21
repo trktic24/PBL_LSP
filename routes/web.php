@@ -60,6 +60,11 @@ Route::get('/IA_08', function () {
     return view('frontend/IA_08/IA_08');
 })->name('IA08');
 
+//porto
+Route::get('/PORTOFOLIO', function () {
+    return view('frontend/PORTOFOLIO');
+})->name('PORTOFOLIO');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
