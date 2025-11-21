@@ -13,7 +13,7 @@ use App\Models\JenisTuk;
 class IA07Controller extends Controller
 {
     /**
-     * Menampilkan halaman Form FR.IA.07 berdasarkan route yang dipanggil (Asesor atau Asesi).
+     * Menampilkan halaman Form FR.IA.07 (khusus Asesor, menggunakan view tunggal FR_IA_07.blade.php).
      */
     public function index()
     {
@@ -21,6 +21,8 @@ class IA07Controller extends Controller
         // 1. PENGAMBILAN DATA (MENGGUNAKAN MODEL NYATA)
         // ----------------------------------------------------
         
+        // Ambil data pertama sebagai contoh (Anda mungkin perlu mengubah ini 
+        // untuk mengambil data berdasarkan ID Asesi/Asesor yang sebenarnya)
         $asesi = Asesi::first();
         $asesor = Asesor::first();
         
@@ -28,13 +30,13 @@ class IA07Controller extends Controller
         if ($asesor && $asesor->skema()->exists()) {
             $skema = $asesor->skema()->first();
         } else {
-             $skema = Skema::first(); 
+            $skema = Skema::first(); 
         }
 
         // Ambil data Jenis TUK untuk radio button
         $jenisTukOptions = JenisTuk::pluck('jenis_tuk', 'id_jenis_tuk'); 
 
-        // Data Dummy Unit Kompetensi
+        // Data Dummy Unit Kompetensi (Harap ganti dengan data dinamis dari DB Anda)
         $units = [
             ['code' => 'J.620100.004.02', 'title' => 'Menggunakan Struktur Data'],
             ['code' => 'J.620100.005.02', 'title' => 'Mengimplementasikan User Interface'],
@@ -48,18 +50,11 @@ class IA07Controller extends Controller
         if (!$skema) { $skema = (object) ['nama_skema' => 'SKEMA KOSONG', 'nomor_skema' => 'N/A']; }
         
         // ----------------------------------------------------
-        // 2. LOGIKA PENENTUAN VIEW BERDASARKAN NAMA ROUTE
+        // 2. KEMBALIKAN KE VIEW TUNGGAL ASESOR
         // ----------------------------------------------------
         
-        $currentRouteName = Route::currentRouteName();
-        
-        if ($currentRouteName === 'ia07.asesi') {
-            // Jika diakses via /IA07_Asesi
-            return view('frontend.IA_07.IA07_Asesi', compact('asesi', 'asesor', 'skema', 'units', 'jenisTukOptions'));
-        } else {
-            // Jika diakses via /IA07_Asesor atau lainnya
-            return view('frontend.IA_07.IA07_Asesor', compact('asesi', 'asesor', 'skema', 'units', 'jenisTukOptions'));
-        }
+        // Mengembalikan view ke file frontend/FR_IA_07.blade.php
+        return view('frontend.FR_IA_07', compact('asesi', 'asesor', 'skema', 'units', 'jenisTukOptions'));
     }
 
     /**
@@ -67,7 +62,20 @@ class IA07Controller extends Controller
      */
     public function store(Request $request)
     {
-        // Logika penyimpanan data (assessment) akan ditaruh di sini
-        return dd($request->all()); 
+        // --- LOGIKA PENYIMPANAN DATA DIMULAI DI SINI ---
+
+        // Contoh: Ambil semua data yang disubmit
+        $data = $request->all();
+        
+        // Di sini Anda akan memasukkan logika untuk:
+        // 1. Validasi data ($request->validate([...]))
+        // 2. Memproses dan menyimpan data ke tabel database yang relevan (misalnya tabel 'IA07Assessment')
+        // 3. Mengambil ringkasan jawaban dan keputusan K/BK untuk setiap unit/pertanyaan.
+        
+        // Misalnya: menyimpan ke database, lalu redirect
+        // Assessment::create($data); 
+
+        // Untuk saat ini, kita hanya menampilkan data untuk verifikasi (dd)
+        return dd($data); 
     }
 }
