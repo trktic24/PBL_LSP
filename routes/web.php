@@ -54,6 +54,9 @@ Route::get('/FR_AK_02', function () {
 Route::get('/FR_AK_04', function () {
     return view('frontend/FR_AK_04');
 })->name('FR_AK_04');
+Route::get('/FR_AK_05', function () {
+    return view('frontend/FR_AK_05');
+})->name('FR_AK_05');
 
 //IA
 Route::get('/IA_07', function () {
