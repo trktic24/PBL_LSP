@@ -27,7 +27,7 @@
             </h1>
 
             <!-- Form -->
-            <form action="/respon_ak04/store" method="POST">
+            <form action="/umpan_balik/store" method="POST">
 
                 @csrf
 
@@ -38,7 +38,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-y-4 text-sm mb-8">
 
                     <div class="col-span-1 font-medium text-gray-800">Nama Asesi</div>
-                    <div class="col-span-3 text-gray-800">: {{ $asesi->nama_asesi ?? '-' }}</div>
+                    <div class="col-span-3 text-gray-800">: {{ $asesi->asesi->nama_lengkap ?? '-' }}</div>
 
                 </div>
 
@@ -125,12 +125,12 @@
                 </div>
 
                 <div class="flex justify-between items-center mt-12">
-                    <a href="/"
+                    <a href="/tracker"
                        class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full">
                         Sebelumnya
                     </a>
 
-                    <button class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full">
+                    <button type="submit" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full">
                         Kirim
                     </button>
                 </div>

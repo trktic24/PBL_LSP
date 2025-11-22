@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\UmpanBalik;
 use Illuminate\Http\Request;
+use App\Models\DataSertifikasiAsesi;
 
 class UmpanBalikController extends Controller
 {
     public function index()
     {
-        return response()->json(
-            UmpanBalik::with('dataSertifikasiAsesi')->get()
-        );
+    $respon = UmpanBalik::with('dataSertifikasiAsesi')->first(); // dummy data
+    $asesi  = DataSertifikasiAsesi::with('asesi')->orderBy('id_data_sertifikasi_asesi', 'desc')->first();
+
+    return view('umpan_balik', ['respon' => $respon, 'asesi'  => $asesi]);
+
     }
+
 
     public function show($id)
     {

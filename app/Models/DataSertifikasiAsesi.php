@@ -44,8 +44,14 @@ class DataSertifikasiAsesi extends Model
         'status_sertifikasi',
     ];
 
-    public function responAk04()
+    // app/Models/DataSertifikasiAsesi.php
+    public function asesi()
     {
-        return $this->hasMany(ResponAk04::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
+    }
+
+    public function UmpanBalik()
+    {
+        return $this->hasMany(UmpanBalik::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }

@@ -27,11 +27,11 @@ return new class extends Migration
             // Informasi Pribadi Lainnya
             $table->string('tempat_lahir', 100);
             $table->date('tanggal_lahir');
-<<<<<<< HEAD
+
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan'])->comment('Pilih jenis kelamin anda');
-=======
+
             $table->boolean('jenis_kelamin')->comment('1 untuk Laki-laki, 0 untuk Perempuan');
->>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
+
             $table->string('kebangsaan', 100);
             $table->string('pekerjaan');
 

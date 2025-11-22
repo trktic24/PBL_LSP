@@ -27,81 +27,95 @@ use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 // URL Jadinya: /api/v1/nama-route
 Route::prefix('v1')->group(function () {
 
-    // // --- 1. AUTHENTICATION ---
-    // Route::post('/login', [LoginController::class, 'login']);
+    // --- 1. AUTHENTICATION ---
+    Route::post('/login', [LoginController::class, 'login']);
     
-    // Route::prefix('register')->group(function () {
-    //     Route::post('/asesi', [RegisterController::class, 'registerAsesi']);
-    //     Route::post('/asesor', [RegisterController::class, 'registerAsesor']);
-    // });
+    Route::prefix('register')->group(function () {
+        Route::post('/asesi', [RegisterController::class, 'registerAsesi']);
+        Route::post('/asesor', [RegisterController::class, 'registerAsesor']);
+    });
 
-    // Route::prefix('auth/google')->group(function () {
-    //     Route::get('redirect', [GoogleApiController::class, 'redirect']);
-    //     Route::get('callback', [GoogleApiController::class, 'callback']);
-    // });
+    Route::prefix('auth/google')->group(function () {
+        Route::get('redirect', [GoogleApiController::class, 'redirect']);
+        Route::get('callback', [GoogleApiController::class, 'callback']);
+    });
 
-    // // --- 2. PROTECTED ROUTES (Sanctum) ---
-    // Route::middleware('auth:sanctum')->group(function () {
-    //     Route::get('/user', function (Request $request) {
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'User data retrieved successfully',
-    //             'data' => $request->user()
-    //         ]);
-    //     });
-    //     Route::post('/logout', [LogoutController::class, 'logout']);
-    // });
+    // --- 2. PROTECTED ROUTES (Sanctum) ---
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/user', function (Request $request) {
+            return response()->json([
+                'success' => true,
+                'message' => 'User data retrieved successfully',
+                'data' => $request->user()
+            ]);
+        });
+        Route::post('/logout', [LogoutController::class, 'logout']);
+    });
 
-    // // --- 3. PUBLIC DATA (Read Only) ---
-    // Route::get('/skema', [SkemaController::class, 'index']);
-    // Route::get('/asesor', [AsesorTableApiController::class, 'index']);
+    // --- 3. PUBLIC DATA (Read Only) ---
+    Route::get('/skema', [SkemaController::class, 'index']);
+    Route::get('/asesor', [AsesorTableApiController::class, 'index']);
 
-    // // --- 4. RESOURCES ---
-    // Route::apiResource('tuks', TukController::class);
+    // --- 4. RESOURCES ---
+    Route::apiResource('tuks', TukController::class);
 
-    // // --- 5. FORMULIR ASESI (APL/AK) ---
+    // --- 5. FORMULIR ASESI (APL/AK) ---
 
-    // // A. Data Sertifikasi & Tujuan Asesmen
-    // Route::prefix('data-sertifikasi')->group(function () {
-    //     Route::get('/detail/{id}', [DataSertifikasiAsesiController::class, 'getDetailSertifikasiApi'])
-    //         ->name('api.v1.sertifikasi.detail');
+    // A. Data Sertifikasi & Tujuan Asesmen
+    Route::prefix('data-sertifikasi')->group(function () {
+        Route::get('/detail/{id}', [DataSertifikasiAsesiController::class, 'getDetailSertifikasiApi'])
+            ->name('api.v1.sertifikasi.detail');
         
-    //     Route::get('/{id}', [DataSertifikasiAsesiController::class, 'getDataSertifikasiAsesiApi'])
-    //         ->name('api.v1.data_sertifikasi.get');
+        Route::get('/{id}', [DataSertifikasiAsesiController::class, 'getDataSertifikasiAsesiApi'])
+            ->name('api.v1.data_sertifikasi.get');
         
-    //     // Simpan Pilihan Tujuan Asesmen
-    //     Route::post('/', [DataSertifikasiAsesiController::class, 'storeAjax'])
-    //         ->name('api.v1.data_sertifikasi.store');
+        // Simpan Pilihan Tujuan Asesmen
+        Route::post('/', [DataSertifikasiAsesiController::class, 'storeAjax'])
+            ->name('api.v1.data_sertifikasi.store');
             
-    //     Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
-    //         ->name('api.v1.data_sertifikasi.delete');
-    // });
+        Route::delete('/{id}', [DataSertifikasiAsesiController::class, 'deleteAjax'])
+            ->name('api.v1.data_sertifikasi.delete');
+    });
 
-    // // B. Bukti Kelengkapan (Upload File)
-    // Route::prefix('bukti-kelengkapan')->group(function () {
-    //     Route::get('/list/{id_data_sertifikasi_asesi}', [BuktiKelengkapanController::class, 'getDataBuktiKelengkapanApi'])
-    //         ->name('api.v1.bukti_kelengkapan.get');
+    // B. Bukti Kelengkapan (Upload File)
+    Route::prefix('bukti-kelengkapan')->group(function () {
+        Route::get('/list/{id_data_sertifikasi_asesi}', [BuktiKelengkapanController::class, 'getDataBuktiKelengkapanApi'])
+            ->name('api.v1.bukti_kelengkapan.get');
 
-    //     Route::post('/store', [BuktiKelengkapanController::class, 'storeAjax'])
-    //         ->name('api.v1.bukti_kelengkapan.store');
+        Route::post('/store', [BuktiKelengkapanController::class, 'storeAjax'])
+            ->name('api.v1.bukti_kelengkapan.store');
 
-    //     Route::delete('/delete/{id}', [BuktiKelengkapanController::class, 'deleteAjax'])
-    //         ->name('api.v1.bukti_kelengkapan.delete');
-    // });
+        Route::delete('/delete/{id}', [BuktiKelengkapanController::class, 'deleteAjax'])
+            ->name('api.v1.bukti_kelengkapan.delete');
+    });
 
-    // // C. Kerahasiaan (AK-01)
-    // Route::get('/get-frak01-data/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data'])
-    //     ->name('api.v1.get.frak01');
-    // Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
-    //     ->name('api.v1.setuju.frak01');
+    // C. Kerahasiaan (AK-01)
+    Route::get('/get-frak01-data/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data'])
+        ->name('api.v1.get.frak01');
+    Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
+        ->name('api.v1.setuju.frak01');
 
-    // // D. Tanda Tangan
-    // Route::get('/show-all', [TandaTanganAPIController::class, 'index']);
-    // Route::get('/show-detail/{id_asesi}', [TandaTanganAPIController::class, 'show']);
-    // Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])
-    //     ->name('api.v1.simpan.tandatangan');
+    // D. Tanda Tangan
+    Route::get('/show-all', [TandaTanganAPIController::class, 'index']);
+    Route::get('/show-detail/{id_asesi}', [TandaTanganAPIController::class, 'show']);
+    Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])
+        ->name('api.v1.simpan.tandatangan');
 
-    // // --- 6. MIDTRANS PAYMENT CALLBACK ---
-    // Route::post('/midtrans-callback', [PaymentCallbackController::class, 'receive']);
+    // --- 6. MIDTRANS PAYMENT CALLBACK ---
+    Route::post('/midtrans-callback', [PaymentCallbackController::class, 'receive']);
+
+    // E. UMPAN BALIK (AK-04) ---
+    Route::prefix('umpan_balik')->group(function () {
+    Route::get('/', [\App\Http\Controllers\UmpanBalikController::class, 'index'])
+        ->name('api.v1.umpan_balik.index');
+    Route::get('/{id}', [\App\Http\Controllers\UmpanBalikController::class, 'show'])
+        ->name('api.v1.umpan_balik.show');
+    Route::post('/store', [\App\Http\Controllers\UmpanBalikController::class, 'store'])
+        ->name('api.v1.umpan_balik.store');
+    Route::put('/update/{id}', [\App\Http\Controllers\UmpanBalikController::class, 'update'])
+        ->name('api.v1.umpan_balik.update');
+    Route::delete('/delete/{id}', [\App\Http\Controllers\UmpanBalikController::class, 'destroy'])
+        ->name('api.v1.umpan_balik.delete');
+    });
 
 });
