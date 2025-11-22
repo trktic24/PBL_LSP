@@ -160,8 +160,10 @@ class PaymentController extends Controller
         $asesi = $user->asesi; // Data Asesi untuk Sidebar
         
         // Variabel Default
+        $sertifikasi = null;
         $idJadwal = null;
-        $idSertifikasi = null; // <--- INI KITA BUTUHKAN
+        $idSertifikasi = null; 
+        $pembayaran = null;
 
         // Cari Data Berdasarkan Order ID dari Midtrans
         if ($orderId) {
@@ -170,6 +172,8 @@ class PaymentController extends Controller
             if ($pembayaran) {
                 // Ambil ID Sertifikasi langsung dari tabel pembayaran
                 $idSertifikasi = $pembayaran->id_data_sertifikasi_asesi;
+
+                $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema'])->find($idSertifikasi);
 
                 // Ambil ID Jadwal (lewat relasi sertifikasi)
                 if ($pembayaran->sertifikasi) {
@@ -184,8 +188,10 @@ class PaymentController extends Controller
             'status'        => $status,
             'status_code'   => $statusCode,
             'id_jadwal'     => $idJadwal,
-            'id_sertifikasi'=> $idSertifikasi, 
-            'asesi'         => $asesi
+            'id_sertifikasi'=> $idSertifikasi,
+            'sertifikasi'   => $sertifikasi, 
+            'asesi'         => $asesi,
+            'pembayaran' => $pembayaran,
         ]);
     }
 

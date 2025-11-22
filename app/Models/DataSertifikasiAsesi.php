@@ -19,6 +19,7 @@ class DataSertifikasiAsesi extends Model
 
     protected $table = 'data_sertifikasi_asesi';
     protected $primaryKey = 'id_data_sertifikasi_asesi';
+    protected $guarded = [];
 
     /**
      * Atribut yang dapat diisi.

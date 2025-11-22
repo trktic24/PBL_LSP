@@ -21,6 +21,7 @@ use App\Http\Controllers\Apl01PdfController;
 use App\Http\Controllers\SkemaWebController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Asesor\AsesorTableController;
+use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
@@ -109,7 +110,8 @@ Route::get('/data_sertifikasi/{id_sertifikasi}', function ($id_sertifikasi) {
         // Kirim ID pendaftaran dan data asesi (untuk sidebar) ke Blade
         return view('formulir_pendaftaran/data_sertifikasi', [
             'id_sertifikasi_untuk_js' => $sertifikasi->id_data_sertifikasi_asesi,
-            'asesi' => $sertifikasi->asesi, // <-- Ini buat sidebar & link "Selanjutnya"
+            'asesi' => $sertifikasi->asesi,
+            'sertifikasi' => $sertifikasi,
         ]);
     } catch (\Exception $e) {
         // Kalo gak ketemu, balikin ke tracker
@@ -234,3 +236,6 @@ Route::get('/pembayaran_batal', [PaymentController::class, 'paymentCancel'])->na
 
 Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])
        ->name('kerahasiaan.fr_ak01');
+
+Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])
+    ->name('show.jadwal_tuk');

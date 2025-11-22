@@ -21,10 +21,10 @@
 
 <body class="bg-gray-100">
 
-    <div class="flex min-h-screen">
+    <div class="flex h-screen overflow-hidden">
         
         {{-- Sidebar --}}
-        <x-sidebar :idAsesi="$asesi->id_asesi ?? ''" />
+        <x-sidebar2 :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
 
         {{-- PENTING: Simpan ID Sertifikasi di sini --}}
         <main class="flex-1 p-12 bg-white overflow-y-auto" data-sertifikasi-id="{{ $id_sertifikasi }}">
@@ -95,7 +95,7 @@
                 <div class="flex justify-end items-center mt-12">
                     <button type="button" id="tombol-selanjutnya" disabled
                             class="px-8 py-3 bg-gray-400 text-white font-semibold rounded-full shadow-md cursor-not-allowed transition-all">
-                        Selanjutnya
+                        Setuju
                     </button>
                 </div>
 

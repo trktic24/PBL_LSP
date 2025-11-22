@@ -18,7 +18,8 @@ class PersetujuanKerahasiaanAPIController extends Controller
             $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
             return view('persetujuan_assesmen_dan_kerahasiaan.fr_ak01', [
                 'id_sertifikasi' => $id_sertifikasi,
-                'asesi'          => $sertifikasi->asesi
+                'asesi'          => $sertifikasi->asesi,
+                'sertifikasi'    => $sertifikasi
             ]);
         } catch (\Exception $e) {
             return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');

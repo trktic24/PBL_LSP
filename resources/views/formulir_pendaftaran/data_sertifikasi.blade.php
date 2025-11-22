@@ -14,9 +14,9 @@
 
 <body class="bg-gray-100">
 
-    <div class="flex min-h-screen">
+    <div class="flex h-screen overflow-hidden">
         {{-- Sidebar --}}
-        <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
+        <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
 
         {{-- Main Content --}}
         <main class="flex-1 p-12 bg-white overflow-y-auto" data-sertifikasi-id="{{ $id_sertifikasi_untuk_js }}">

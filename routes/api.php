@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentCallbackController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
+use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
@@ -109,8 +110,13 @@ Route::prefix('v1')->group(function () {
         
         // POST: Simpan checkbox & update status
         Route::post('/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
-            ->name('api.v1.setuju.frak01');
-            
+            ->name('api.v1.setuju.frak01');          
+    });
+    
+    // --- Jadwal & TUK ---
+    Route::prefix('jadwal-tuk')->group(function () {
+        Route::get('/{id_sertifikasi}', [JadwalTukAPIController::class, 'getJadwalData']);
+        Route::post('/konfirmasi/{id_sertifikasi}', [JadwalTukAPIController::class, 'konfirmasiJadwal']);
     });
 });
 
