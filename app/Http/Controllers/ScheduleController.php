@@ -13,7 +13,13 @@ class ScheduleController extends Controller
 {
     public function showCalendar()
     {
-        return view('master.schedule.schedule_admin');
+        $schedules = Schedule::with(['skema', 'tuk', 'asesor', 'jenisTuk'])
+                             ->orderBy('tanggal_pelaksanaan', 'asc')
+                             ->get();
+
+        return view('master.schedule.schedule_admin', [
+            'schedules' => $schedules
+        ]);
     }
 
     public function index(Request $request)

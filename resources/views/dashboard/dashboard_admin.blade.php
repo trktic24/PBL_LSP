@@ -27,7 +27,7 @@
     <x-navbar />
     <main class="p-6">
       <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
-      <h2 class="text-3xl font-bold text-gray-900 mb-6">Dashboard</h2>
+      <h2 class="text-3xl font-semibold text-gray-900 mb-6">Dashboard</h2>
 
       <div class="flex items-start justify-between mb-8">
         <div class="relative w-1/4">
