@@ -59,6 +59,10 @@ Route::get('/IA_07', function () {
 Route::get('/IA_08', function () {
     return view('frontend/IA_08/IA_08');
 })->name('IA08');
+// FR IA 11
+Route::get('/FR_IA_11', function () {
+    return view('frontend/FR_IA_11');
+})->name('FR_IA_11');
 
 //porto
 Route::get('/PORTOFOLIO', function () {
