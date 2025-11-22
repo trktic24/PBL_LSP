@@ -48,6 +48,9 @@ Route::get('/FR-MAPA-02', function () {
 Route::get('/FR_AK_01', function () {
     return view('frontend/FR_AK_01');
 })->name('FR_AK_01');
+Route::get('/FR_AK_02', function () {
+    return view('frontend/FR_AK_02');
+})->name('FR_AK_02');
 Route::get('/FR_AK_04', function () {
     return view('frontend/FR_AK_04');
 })->name('FR_AK_04');
