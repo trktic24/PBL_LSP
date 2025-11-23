@@ -5,16 +5,13 @@
 @section('title', 'IA.01 - Step 1: Aktivitas')
 
 @section('wizard-content')
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
     {{-- Error Validasi --}}
     @if ($errors->any())
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 rounded shadow-sm" role="alert">
-            <p class="font-bold">Ada yang belum diisi:</p>
-            <ul class="list-disc list-inside mt-1 text-sm">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 rounded shadow-sm">
+            <ul class="list-disc list-inside text-sm">
+                @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
             </ul>
         </div>
     @endif
@@ -23,109 +20,100 @@
         @csrf
 
         {{-- HEADER --}}
-        <div class="relative mb-10">
+        <div class="relative mb-8">
             <img src="{{ asset('images/bnsp_logo.png') }}" class="h-12 object-contain mb-4" alt="BNSP">
             <h1 class="text-2xl md:text-3xl font-bold leading-tight text-gray-900">
                 FR.IA.01 - Ceklis Observasi Aktivitas di Tempat Kerja atau Tempat Kerja Simulasi
             </h1>
         </div>
 
-        {{-- DATA UTAMA --}}
-        <div class="mb-8 space-y-6">
+        {{-- DATA UTAMA (REVISI LAYOUT: MENYATU DALAM 1 TABEL BESAR) --}}
+        <div class="mb-8 border-2 border-gray-800 rounded-sm text-sm text-gray-900">
 
-            {{-- BOX SKEMA --}}
-            <div class="border-2 border-gray-800 rounded-sm overflow-hidden">
-                <div class="flex flex-col md:flex-row">
-                    <div class="bg-white p-4 md:w-1/3 font-bold text-gray-900 flex items-center border-b md:border-b-0 md:border-r-2 border-gray-800">
-                        Skema Sertifikasi
+            {{-- BARIS 1: SKEMA SERTIFIKASI --}}
+            <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] border-b border-gray-800">
+                <div class="p-3 font-bold border-b md:border-b-0 md:border-r border-gray-800 bg-gray-50 flex items-center">
+                    Skema Sertifikasi
+                </div>
+                <div>
+                    <div class="grid grid-cols-[100px_10px_1fr] border-b border-gray-800 p-2 items-center">
+                        <div class="font-semibold text-gray-600">Judul</div>
+                        <div>:</div>
+                        <div class="font-bold uppercase">{{ $kelompok->nama_kelompok_pekerjaan ?? '-' }}</div>
                     </div>
-
-                    <div class="flex-1 bg-white">
-                        <div class="flex border-b-2 border-gray-800">
-                            <div class="w-28 p-2 pl-4 text-sm font-semibold text-gray-600">Judul</div>
-                            <div class="p-2 font-medium text-gray-800">
-                                : {{ $kelompok->nama_kelompok_pekerjaan ?? '-' }}
-                            </div>
-                        </div>
-
-                        <div class="flex">
-                            <div class="w-28 p-2 pl-4 text-sm font-semibold text-gray-600">Tanggal</div>
-                            <div class="p-2 font-medium text-gray-800">
-                                : {{ now()->format('d-m-Y') }}
-                            </div>
-                        </div>
+                    <div class="grid grid-cols-[100px_10px_1fr] p-2 items-center">
+                        <div class="font-semibold text-gray-600">Tanggal</div>
+                        <div>:</div>
+                        <div>{{ now()->format('d-m-Y') }}</div>
                     </div>
                 </div>
             </div>
 
-            {{-- FORM INPUT --}}
-            <div class="space-y-4 text-gray-800 pl-1">
-
-                {{-- TUK --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 md:[grid-template-columns:200px_20px_1fr] gap-y-2">
-                    <label class="font-bold">TUK</label>
-                    <div class="hidden md:block font-bold">:</div>
-
-                    <div class="flex flex-wrap gap-6">
-                        @php $tuk_value = old('tuk', $data_sesi['tuk'] ?? ''); @endphp
-
-                        <label class="inline-flex items-center cursor-pointer group">
-                            <input type="checkbox" name="tuk" value="sewaktu"
-                                   onclick="selectOnlyThis(this)"
-                                   class="tuk-checkbox h-5 w-5 border-gray-400 rounded text-blue-500 focus:ring-blue-500"
-                                   {{ $tuk_value == 'sewaktu' ? 'checked' : '' }}>
-                            <span class="ml-2 text-sm group-hover:text-blue-600">Sewaktu</span>
-                        </label>
-
-                        <label class="inline-flex items-center cursor-pointer group">
-                            <input type="checkbox" name="tuk" value="tempat_kerja"
-                                   onclick="selectOnlyThis(this)"
-                                   class="tuk-checkbox h-5 w-5 border-gray-400 rounded text-blue-500 focus:ring-blue-500"
-                                   {{ $tuk_value == 'tempat_kerja' ? 'checked' : '' }}>
-                            <span class="ml-2 text-sm group-hover:text-blue-600">Tempat Kerja</span>
-                        </label>
-                    </div>
+            {{-- BARIS 2: TUK --}}
+            <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] border-b border-gray-800 items-center">
+                <div class="p-3 font-bold border-b md:border-b-0 md:border-r border-gray-800 bg-gray-50">
+                    TUK
                 </div>
-
-                {{-- Nama Asesor --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 md:[grid-template-columns:200px_20px_1fr] items-center">
-                    <label for="asesor" class="font-bold">Nama Asesor</label>
-                    <div class="hidden md:block font-bold">:</div>
-                    <input type="text" id="asesor" name="nama_asesor"
-                           class="w-full max-w-md border-0 border-b border-gray-400 bg-transparent py-1 px-0 text-gray-800 focus:ring-0 focus:border-blue-500"
-                           placeholder="Masukkan nama asesor"
-                           value="{{ old('nama_asesor', $data_sesi['nama_asesor'] ?? '') }}">
+                <div class="p-2 pl-4 flex items-center gap-6">
+                    @php $tuk_value = old('tuk', $data_sesi['tuk'] ?? ''); @endphp
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="tuk" value="sewaktu" onclick="selectOnlyThis(this)"
+                               class="tuk-checkbox rounded text-blue-600 focus:ring-blue-500"
+                               {{ $tuk_value == 'sewaktu' ? 'checked' : '' }}>
+                        <span class="ml-2">Sewaktu</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="tuk" value="tempat_kerja" onclick="selectOnlyThis(this)"
+                               class="tuk-checkbox rounded text-blue-600 focus:ring-blue-500"
+                               {{ $tuk_value == 'tempat_kerja' ? 'checked' : '' }}>
+                        <span class="ml-2">Tempat Kerja</span>
+                    </label>
                 </div>
-
-                {{-- Nama Asesi --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 md:[grid-template-columns:200px_20px_1fr] items-center">
-                    <label class="font-bold">Nama Asesi</label>
-                    <div class="hidden md:block font-bold">:</div>
-                    <div class="py-1 font-medium text-gray-800">
-                        {{ auth()->user()->name ?? 'User' }}
-                    </div>
-                </div>
-
-                {{-- Tanggal --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 md:[grid-template-columns:200px_20px_1fr] items-center">
-                    <label for="tanggal" class="font-bold">Tanggal</label>
-                    <div class="hidden md:block font-bold">:</div>
-                    <input type="date" id="tanggal" name="tanggal_asesmen"
-                           class="w-full max-w-xs border-0 border-b border-gray-400 bg-gray-100 py-1 px-0 text-gray-800 cursor-not-allowed focus:ring-0"
-                           value="{{ old('tanggal_asesmen', $data_sesi['tanggal_asesmen'] ?? now()->format('Y-m-d')) }}"
-                           readonly>
-                </div>
-
             </div>
+
+            {{-- BARIS 3: NAMA ASESOR --}}
+            <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] border-b border-gray-800 items-center">
+                <div class="p-3 font-bold border-b md:border-b-0 md:border-r border-gray-800 bg-gray-50">
+                    Nama Asesor
+                </div>
+                <div class="p-2 pl-4 font-medium">
+                    {{ $sertifikasi->asesor_name }}
+                    <input type="hidden" name="nama_asesor" value="{{ $sertifikasi->asesor_name }}">
+                </div>
+            </div>
+
+            {{-- BARIS 4: NAMA ASESI --}}
+            <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] border-b border-gray-800 items-center">
+                <div class="p-3 font-bold border-b md:border-b-0 md:border-r border-gray-800 bg-gray-50">
+                    Nama Asesi
+                </div>
+                <div class="p-2 pl-4 font-medium">
+                    {{ $sertifikasi->asesi_name }}
+                </div>
+            </div>
+
+            {{-- BARIS 5: TANGGAL PELAKSANAAN --}}
+            <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] items-center">
+                <div class="p-3 font-bold border-b md:border-b-0 md:border-r border-gray-800 bg-gray-50">
+                    Tanggal
+                </div>
+                <div class="p-2 pl-4">
+                    <input type="date" name="tanggal_asesmen"
+                           class="border-0 border-b border-gray-400 focus:ring-0 p-0 text-gray-900 bg-transparent"
+                           value="{{ old('tanggal_asesmen', $data_sesi['tanggal_asesmen'] ?? now()->format('Y-m-d')) }}">
+                </div>
+            </div>
+
         </div>
+        {{-- END DATA UTAMA --}}
 
         {{-- PANDUAN --}}
-        <div class="border-2 border-gray-800 mb-6 text-gray-900 text-sm">
+        <div class="border-2 border-gray-800 mb-6 text-gray-900 text-sm rounded-sm">
             <div class="p-2 bg-gray-50 border-b-2 border-gray-800 font-bold">
                 PANDUAN BAGI ASESOR
             </div>
             <div class="p-3">
-                <ul class="list-disc list-inside space-y-1 leading-relaxed">
+                <ul class="list-disc list-inside space-y-1">
                     <li>Lengkapi nama unit kompetensi, elemen, dan kriteria unjuk kerja sesuai kolom dalam tabel.</li>
                     <li>Isilah standar industri atau tempat kerja.</li>
                     <li>Beri tanda centang (✓) pada kolom YA jika sesuai, atau Tidak bila sebaliknya.</li>
@@ -135,9 +123,9 @@
             </div>
         </div>
 
-        {{-- TABEL UNIT --}}
-        <div class="overflow-x-auto mb-10">
-            <table class="w-full border-2 border-gray-800 text-gray-900 text-sm">
+        {{-- TABEL UNIT KOMPETENSI --}}
+        <div class="overflow-x-auto mb-10 border-2 border-gray-800 rounded-sm">
+            <table class="w-full text-gray-900 text-sm">
                 <thead>
                     <tr class="bg-gray-50 border-b-2 border-gray-800 font-bold">
                         <th class="p-2 text-center border-r-2 border-gray-800 w-1/4">Kelompok Pekerjaan</th>
@@ -146,29 +134,26 @@
                         <th class="p-2 text-center">Judul Unit</th>
                     </tr>
                 </thead>
-
                 <tbody class="align-top">
                     @php
                         $units = $kelompok->unitKompetensis ?? [];
                         $totalUnits = max(count($units), 1);
-                        $skemaTitle = $kelompok->nama_kelompok_pekerjaan ?? '-';
                     @endphp
 
                     @forelse ($units as $index => $unit)
-                        <tr class="border-b border-gray-800">
+                        <tr class="border-b border-gray-800 last:border-b-0">
                             @if ($index === 0)
                                 <td rowspan="{{ $totalUnits }}" class="p-4 bg-white font-bold border-r-2 border-gray-800 align-middle">
-                                    {{ $skemaTitle }}
+                                    {{ $kelompok->nama_kelompok_pekerjaan ?? '-' }}
                                 </td>
                             @endif
-
                             <td class="p-2 text-center border-r border-gray-800">{{ $index + 1 }}</td>
                             <td class="p-2 border-r border-gray-800">{{ $unit->kode_unit }}</td>
                             <td class="p-2">{{ $unit->judul_unit }}</td>
                         </tr>
                     @empty
-                        <tr class="border-b border-gray-800">
-                            <td class="p-4 bg-white font-bold border-r-2 border-gray-800">{{ $skemaTitle }}</td>
+                        <tr>
+                            <td class="p-4 bg-white font-bold border-r-2 border-gray-800 align-middle">-</td>
                             <td class="p-2 text-center border-r border-gray-800">-</td>
                             <td class="p-2 border-r border-gray-800">-</td>
                             <td class="p-2">Belum ada unit kompetensi</td>
@@ -181,13 +166,14 @@
         {{-- TOMBOL --}}
         <div class="flex justify-end mt-12">
             <button type="submit"
-                class="bg-[#3b82f6] hover:bg-blue-600 text-white font-semibold py-2 px-10 rounded-full shadow-lg transition">
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-10 rounded-full shadow-lg transition">
                 Mulai Asesmen
             </button>
         </div>
     </form>
 
     </div>
+
     <script>
         function selectOnlyThis(checkbox) {
             document.querySelectorAll('.tuk-checkbox').forEach(cb => {
@@ -195,5 +181,4 @@
             });
         }
     </script>
-
 @endsection
