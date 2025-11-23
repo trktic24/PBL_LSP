@@ -234,11 +234,11 @@
                             <div class="flex-1">
                                 @if ($level >= $LVL_PRA_ASESMEN)
                                     <a href="{{ route('show.jadwal_tuk', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                        class="{{ $linkClassEnabled }}">Verifikasi TUK</a>
+                                        class="{{ $linkClassEnabled }}">Jadwal dan TUK</a>
                                 @else
-                                    <span class="{{ $linkClassDisabled }}">Verifikasi TUK</span>
+                                    <span class="{{ $linkClassDisabled }}">Jadwal dan TUK</span>
                                 @endif
-                                <p class="text-sm text-gray-500">Dilakukan oleh Asesor</p>
+                                <p class="text-sm text-gray-500">Dilakukan oleh Admin</p>
                                 @if ($level >= $LVL_PRA_ASESMEN)
                                     <p class="{{ $statusClassSelesai }}">Terverifikasi</p>
                                 @else
