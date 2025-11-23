@@ -10,10 +10,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .ts-control { padding: 0.75rem 1rem; border-radius: 0.5rem; border-color: #D1D5DB; }
-        .ts-control:focus-within { border-color: #2563EB; box-shadow: 0 0 0 2px #BFDBFE; }
-        .ts-dropdown .option.active { background-color: #EFF6FF; color: #1D4ED8; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            /* Sembunyikan scrollbar untuk IE, Edge, dan Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Sembunyikan scrollbar untuk Chrome, Safari and Opera */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        .ts-control {
+            padding: 0.75rem !important;
+            border-radius: 0.5rem !important;
+            border-color: #d1d5db !important;
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+            min-height: 50px;
+            background-color: #fff !important;
+            display: flex;
+            align-items: center;
+        }
+        .ts-wrapper.focus .ts-control {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 2px #3b82f6 !important;
+            outline: none !important;
+            z-index: 10;
+        }
+        .ts-dropdown {
+            border-radius: 0.5rem;
+            border-color: #d1d5db;
+            margin-top: 4px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+        .ts-dropdown .option { padding: 0.75rem 1rem; font-size: 1rem; }
+        .ts-dropdown .option.active { background-color: #eff6ff; color: #1d4ed8; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -63,8 +96,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Harga (Rp)</label>
-                            <input type="number" name="harga" value="{{ old('harga') }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cth: 500000">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Harga (Rp) <span class="text-red-500">*</span></label>
+                            <input type="number" name="harga" value="{{ old('harga') }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Cth: 500000" required>
                         </div>
                     </div>
 
@@ -75,19 +108,19 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div x-data="{ fileName: '' }">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">File SKKNI (PDF, Max 5MB)</label>
-                            <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">File SKKNI (PDF) <span class="text-red-500">*</span></label>
+                            <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
                                 <i class="fas fa-file-pdf text-red-500 mr-3"></i>
                                 <span x-text="fileName || 'Upload PDF...'" class="text-sm text-gray-600"></span>
-                                <input type="file" name="SKKNI" @change="fileName = $event.target.files[0]?.name" class="hidden" accept=".pdf">
+                                <input type="file" name="SKKNI" @change="fileName = $event.target.files[0]?.name" class="hidden" accept=".pdf" required>
                             </label>
                         </div>
                         <div x-data="{ fileName: '' }">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Skema (JPG/PNG)</label>
-                            <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Skema <span class="text-red-500">*</span></label>
+                            <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
                                 <i class="fas fa-image text-blue-500 mr-3"></i>
                                 <span x-text="fileName || 'Upload Gambar...'" class="text-sm text-gray-600"></span>
-                                <input type="file" name="gambar" @change="fileName = $event.target.files[0]?.name" class="hidden" accept="image/*">
+                                <input type="file" name="gambar" @change="fileName = $event.target.files[0]?.name" class="hidden" accept="image/*" required>
                             </label>
                         </div>
                     </div>

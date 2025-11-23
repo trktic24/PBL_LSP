@@ -150,13 +150,17 @@
                             
                             <td class="px-4 py-4 text-center whitespace-nowrap">
                                 <div class="flex justify-center space-x-2">
-                                    <a href="{{ route('detail_skema', ['id_skema' => $skema->id_skema]) }}" class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition">
+                                    
+                                    <a href="{{ route('skema.detail', $skema->id_skema) }}" class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition">
                                         <i class="fas fa-list"></i> <span>Detail</span>
                                     </a>
-                                    <a href="#" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
+                                    
+                                    <a href="{{ route('edit_skema', $skema->id_skema) }}" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
                                         <i class="fas fa-pen"></i> <span>Edit</span>
                                     </a>
-                                    <form action="#" method="POST" onsubmit="return confirm('Hapus skema ini?');">
+
+                                    <form action="{{ route('delete_skema', $skema->id_skema) }}" method="POST" 
+                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus Skema (ID: {{ $skema->id_skema }}) - {{ addslashes($skema->nama_skema) }}?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">

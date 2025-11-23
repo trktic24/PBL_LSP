@@ -36,7 +36,7 @@
       border-radius: 22px;
       padding: 40px 30px;
       width: 100%;
-      max-width: 450px;
+      max-width: 500px;
       background: white;
     }
 
@@ -114,8 +114,8 @@
             @enderror
           </div>
 
-          <div class="flex justify-end items-center text-sm">
-            <a href="{{ route('forgot_pass') }}" class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+          <div class="flex justify-end items-center text-sm ">
+            <a href="{{ route('forgot_pass') }}" class="text-blue-600 hover:text-blue-800 font-medium transition-colors mb-6">
               Lupa Password?
             </a>
           </div>

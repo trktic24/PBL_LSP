@@ -9,6 +9,7 @@ use App\Http\Controllers\AsesiController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DaftarHadirController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
@@ -86,30 +87,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
         Route::patch('/update/{id_skema}', 'update')->name('update_skema');
         Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
-        Route::controller(SkemaController::class)->prefix('master/skema')->group(function () {
-        Route::get('/', 'index')->name('master_skema');
-        Route::get('/add', 'create')->name('add_skema');
-        Route::post('/add', 'store')->name('add_skema.store');
-        
-        // Rute DETAIL BARU
-        Route::get('/{id_skema}', 'show')->name('detail_skema'); 
-        Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
-        Route::patch('/update/{id_skema}', 'update')->name('update_skema');
-        Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
-
-        //Rute DETAIL KELOMPOK PEKERJAAN
-        Route::get('/{id_skema}', 'show')->name('detail_kelompokpekerjaan'); 
-        Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
-        Route::patch('/update/{id_skema}', 'update')->name('update_skema');
-        Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
-
-        //Rute DETAIL BANK SOAL
-        Route::get('/{id_skema}', 'show')->name('detail_banksoal'); 
-        Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
-        Route::patch('/update/{id_skema}', 'update')->name('update_skema');
-        Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
     });
+    Route::controller(\App\Http\Controllers\DetailSkemaController::class)
+         ->prefix('master/skema/detail')
+         ->group(function () {
+            
+            // Tab 1: Informasi Skema (detail_skema.blade.php)
+            Route::get('/{id_skema}', 'index')->name('skema.detail');
+
+            // Tab 2: Kelompok Pekerjaan (detail_kelompokpekerjaan.blade.php)
+            Route::get('/{id_skema}/kelompok', 'kelompok')->name('skema.detail.kelompok');
+
+            // Tab 3: Bank Soal (detail_banksoal.blade.php)
+            Route::get('/{id_skema}/bank-soal', 'bankSoal')->name('skema.detail.bank_soal');
     });
+
 
     // 5. Master - Asesor
     Route::get('/master_asesor', [AsesorController::class, 'index'])->name('master_asesor');
@@ -149,7 +141,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id_jadwal}', 'edit')->name('edit_schedule');
         Route::patch('/update/{id_jadwal}', 'update')->name('update_schedule');
         Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_schedule');
-        Route::get('/attendance/{id_jadwal}', 'showAttendance')->name('schedule.attendance');
+        Route::get('/attendance/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('schedule.attendance');
     });
     Route::get('/schedule_admin', [ScheduleController::class, 'showCalendar'])->name('schedule_admin');
 

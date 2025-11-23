@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Skema;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File; // [PENTING] Pakai File Facade untuk hapus file fisik
+use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 
 class SkemaController extends Controller
@@ -17,7 +17,6 @@ class SkemaController extends Controller
     {
         $sortColumn = $request->input('sort', 'id_skema');
         $sortDirection = $request->input('direction', 'asc');
-
         $allowedColumns = ['id_skema', 'nomor_skema', 'nama_skema', 'harga', 'category_nama'];
         
         if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'id_skema';
@@ -25,7 +24,6 @@ class SkemaController extends Controller
 
         $query = Skema::with('category'); 
 
-        // Search Logic
         if ($request->has('search') && $request->input('search') != '') {
             $searchTerm = $request->input('search');
             $query->where(function($q) use ($searchTerm) {
@@ -37,7 +35,6 @@ class SkemaController extends Controller
             });
         }
 
-        // Sorting Logic
         $query->select('skema.*');
         
         if ($sortColumn == 'category_nama') {
@@ -47,7 +44,6 @@ class SkemaController extends Controller
             $query->orderBy($sortColumn, $sortDirection);
         }
 
-        // Pagination
         $allowedPerpage = [10, 25, 50, 100]; 
         $perPage = $request->input('per_page', 10);
         if (!in_array($perPage, $allowedPerpage)) $perPage = 10;
@@ -63,37 +59,6 @@ class SkemaController extends Controller
         ]);
     }
 
-    // --- METHOD BARU: UNTUK HALAMAN DETAIL SKEMA ---
-    /**
-     * Menampilkan detail Skema.
-     */
-    public function show($id_skema)
-    {
-        // Load Skema dengan relasi category, kelompokPekerjaan, dan UnitKompetensi
-        $skema = Skema::with(['category', 'kelompokPekerjaan.unitKompetensi'])
-                    ->findOrFail($id_skema);
-
-        // Data dummy untuk Form Asesmen (sesuai contoh di Blade)
-        $formAsesmen = [
-            ['kode' => 'FR.APL.01', 'warna' => 'bg-red-500 hover:bg-red-600'],
-            ['kode' => 'FR.APL.02', 'warna' => 'bg-red-500 hover:bg-red-600'],
-            ['kode' => 'FR.MAPA.01', 'warna' => 'bg-green-500 hover:bg-green-600'],
-            ['kode' => 'FR.AK.01', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
-            ['kode' => 'FR.AK.02', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
-            ['kode' => 'FR.AK.03', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
-            ['kode' => 'FR.AK.04', 'warna' => 'bg-green-500 hover:bg-green-600'],
-            ['kode' => 'FR.AK.05', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
-            ['kode' => 'FR.AK.06', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
-            ['kode' => 'FR.IA.01', 'warna' => 'bg-yellow-500 hover:bg-yellow-600'],
-            ['kode' => 'FR.IA.02', 'warna' => 'bg-yellow-500 hover:bg-yellow-600'],
-            ['kode' => 'FR.IA.05', 'warna' => 'bg-yellow-500 hover:bg-yellow-600'],
-            ['kode' => 'FR.IA.11', 'warna' => 'bg-yellow-500 hover:bg-yellow-600'],
-        ];
-
-        return view('master.skema.detail_skema', compact('skema', 'formAsesmen'));
-    }
-    // ----------------------------------------------------------------------
-    
     /**
      * Form Tambah Skema.
      */
@@ -108,20 +73,21 @@ class SkemaController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi Ketat (Semua Wajib/Required)
         $validatedData = $request->validate([
             'nomor_skema' => 'required|string|unique:skema,nomor_skema',
             'nama_skema' => 'required|string|max:255',
             'categorie_id' => 'required|exists:categories,id',
-            'harga' => 'nullable|numeric|min:0',
+            'harga' => 'required|numeric|min:0',
             'deskripsi_skema' => 'required|string',
-            'SKKNI' => 'nullable|file|mimes:pdf|max:5120', 
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
+            'SKKNI' => 'required|file|mimes:pdf|max:5120', 
+            'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048', 
         ], [
             'nomor_skema.unique' => 'Nomor skema ini sudah terdaftar.',
             'categorie_id.required' => 'Kategori wajib dipilih.',
         ]);
 
-        // [PERBAIKAN] Upload File SKKNI ke public/images/skema/skkni
+        // Upload File SKKNI
         if ($request->hasFile('SKKNI')) {
             $file = $request->file('SKKNI');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -129,7 +95,7 @@ class SkemaController extends Controller
             $validatedData['SKKNI'] = 'images/skema/skkni/' . $filename;
         }
 
-        // [PERBAIKAN] Upload Gambar ke public/images/skema/foto_skema
+        // Upload Gambar
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -139,12 +105,14 @@ class SkemaController extends Controller
 
         $skema = Skema::create($validatedData);
 
-        return redirect()->route('master_skema')
-                         ->with('success', "Skema '{$skema->nama_skema}' berhasil dibuat.");
+        // [PENTING] Redirect langsung ke halaman DETAIL (Kelompok Pekerjaan)
+        // Route 'skema.detail' ini akan ditangani oleh DetailSkemaController
+        return redirect()->route('skema.detail_skema', $skema->id_skema)
+                         ->with('success', "Skema '{$skema->nama_skema}' (ID: {$skema->id_skema}) berhasil dibuat. Silakan lengkapi Kelompok Pekerjaan.");
     }
 
     /**
-     * Form Edit Skema.
+     * Form Edit Skema (Hanya Info Dasar).
      */
     public function edit($id)
     {
@@ -164,19 +132,17 @@ class SkemaController extends Controller
             'nomor_skema' => ['required', 'string', Rule::unique('skema')->ignore($skema->id_skema, 'id_skema')],
             'nama_skema' => 'required|string|max:255',
             'categorie_id' => 'required|exists:categories,id',
-            'harga' => 'nullable|numeric|min:0',
+            'harga' => 'required|numeric|min:0',
             'deskripsi_skema' => 'required|string',
-            'SKKNI' => 'nullable|file|mimes:pdf|max:5120',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'SKKNI' => 'nullable|file|mimes:pdf|max:5120', // Nullable saat update
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Nullable saat update
         ]);
 
         // Update File SKKNI
         if ($request->hasFile('SKKNI')) {
-            // Hapus file lama
             if ($skema->SKKNI && File::exists(public_path($skema->SKKNI))) {
                 File::delete(public_path($skema->SKKNI));
             }
-            // Upload baru
             $file = $request->file('SKKNI');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('images/skema/skkni'), $filename);
@@ -185,11 +151,9 @@ class SkemaController extends Controller
 
         // Update Gambar
         if ($request->hasFile('gambar')) {
-            // Hapus file lama
             if ($skema->gambar && File::exists(public_path($skema->gambar))) {
                 File::delete(public_path($skema->gambar));
             }
-            // Upload baru
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('images/skema/foto_skema'), $filename);
@@ -199,7 +163,7 @@ class SkemaController extends Controller
         $skema->update($validatedData);
 
         return redirect()->route('master_skema')
-                         ->with('success', "Skema '{$skema->nama_skema}' berhasil diperbarui.");
+                         ->with('success', "Skema '{$skema->nama_skema}' (ID: {$skema->id_skema}) berhasil diperbarui.");
     }
 
     /**
@@ -209,13 +173,12 @@ class SkemaController extends Controller
     {
         $skema = Skema::findOrFail($id);
         $nama = $skema->nama_skema;
+        $idSkema = $skema->id_skema;
 
-        // Hapus file fisik SKKNI
         if ($skema->SKKNI && File::exists(public_path($skema->SKKNI))) {
             File::delete(public_path($skema->SKKNI));
         }
 
-        // Hapus file fisik Gambar
         if ($skema->gambar && File::exists(public_path($skema->gambar))) {
             File::delete(public_path($skema->gambar));
         }
@@ -223,6 +186,6 @@ class SkemaController extends Controller
         $skema->delete();
 
         return redirect()->route('master_skema')
-                         ->with('success', "Skema '{$nama}' berhasil dihapus.");
+                         ->with('success', "Skema '{$nama}' (ID: {$idSkema}) berhasil dihapus.");
     }
 }
