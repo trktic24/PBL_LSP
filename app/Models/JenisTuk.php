@@ -4,23 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JenisTuk extends Model
 {
     use HasFactory;
+
     protected $table = 'jenis_tuk';
-    protected $primaryKey = 'id_jenis_tuk';
-    public $timestamps=false;
-    protected $fillable = [
-        'sewaktu',
-        'tempat_kerja',
-        'mandiri'
-    ];
+    protected $primaryKey = 'id_jenis_tuk'; // PENTING: Sesuaikan PK
 
+    protected $guarded = [];
 
-    // public function jadwal(): HasMany
-    // {
-    //     return $this->hasMany(Jadwal::class, 'id_jenis_tuk', 'id_jenis_tuk');
-    // }
+    // Relasi ke Jadwal (Satu Jenis TUK bisa dipakai di banyak Jadwal)
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class, 'id_jenis_tuk', 'id_jenis_tuk');
+    }
 }

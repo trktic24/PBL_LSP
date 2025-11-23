@@ -12,30 +12,34 @@ class TrackerController extends Controller
 {
     /**
      * Menampilkan halaman tracker untuk user yang sedang login.
-     * [PERUBAHAN] Menerima parameter opsional $jadwal_id
+     * Mendukung parameter opsional $jadwal_id untuk redirect spesifik.
      */
-    public function index($jadwal_id = null) // [PERUBAHAN] Tambahkan parameter opsional
+    public function index($jadwal_id = null)
     {
         $user = Auth::user();
         $asesi = $user->asesi; 
         $sertifikasi = null; 
 
         if ($asesi) {
-            // Siapkan query dasar
-            $query = $asesi->dataSertifikasi()->with('jadwal.skema');
+            // 1. Siapkan query dasar
+            // [PENTING] Tambahkan 'jadwal.asesor' di sini agar data asesor terambil
+            $query = $asesi->dataSertifikasi()->with([
+                'jadwal.skema',
+                'jadwal.asesor' // <-- INI KUNCINYA BUAT SIDEBAR ASESOR
+            ]);
             
-            // [PERUBAHAN] Tambahkan logika if/else
+            // 2. Logika Pengambilan Data
             if ($jadwal_id) {
-                // Jika ada id_jadwal, cari berdasarkan ID itu
+                // Jika ada id_jadwal (dari redirect), cari yang spesifik itu
                 $sertifikasi = $query->where('id_jadwal', $jadwal_id)->first();
             } else {
-                // Jika tidak ada, ambil pendaftaran pertama (perilaku lama)
-                $sertifikasi = $query->first(); 
+                // Jika buka tracker biasa, ambil data TERBARU (latest)
+                // Biar user langsung liat progress terakhir mereka
+                $sertifikasi = $query->latest()->first(); 
             }
-            // [AKHIR PERUBAHAN]
         }
         
-        // 4. Kirim data (bisa jadi $sertifikasi itu null) ke view
+        // 3. Kirim ke View
         return view('tracker', [
             'sertifikasi' => $sertifikasi
         ]);
@@ -43,7 +47,7 @@ class TrackerController extends Controller
 
     /**
      * ========================================================
-     * FUNGSI API BARU: Untuk mendaftarkan user ke jadwal
+     * FUNGSI API: Untuk mendaftarkan user ke jadwal
      * ========================================================
      */
     public function daftarJadwal(Request $request)
@@ -66,34 +70,34 @@ class TrackerController extends Controller
             ], 404);
         }
 
-        // 3. Cek apakah user sudah mendaftar
-        // [PERUBAHAN] Ganti exists() menjadi first() agar kita bisa dapatkan datanya
+        // 3. Cek apakah user sudah mendaftar di jadwal ini?
         $existing = DataSertifikasiAsesi::where('id_asesi', $asesi->id_asesi)
-                                ->where('id_jadwal', $id_jadwal)
-                                ->first(); 
+                                        ->where('id_jadwal', $id_jadwal)
+                                        ->first(); 
         
         if ($existing) {
             return response()->json([
                 'success' => false,
-                // [PERUBAHAN] Arahkan ke tracker yang SUDAH ADA datanya
+                // Arahkan ke tracker jadwal tersebut
                 'redirect_url' => route('tracker', ['jadwal_id' => $existing->id_jadwal]), 
                 'message' => 'Anda sudah memiliki pendaftaran aktif. Mengarahkan ke data Anda...'
-            ], 409); // 409 Conflict
+            ], 409);
         }
 
         try {
             // 4. Buat pendaftaran baru
+            // Status default biasanya diatur di database ('sedang_mendaftar')
             $newSertifikasi = DataSertifikasiAsesi::create([
                 'id_asesi' => $asesi->id_asesi,
                 'id_jadwal' => $id_jadwal,
-                'tujuan_asesmen' => 'Sertifikasi', // Default
+                'tujuan_asesmen' => 'Sertifikasi', // Default, nanti diubah user di formulir
                 'tanggal_daftar' => Carbon::now(),
             ]);
 
             // 5. Kirim respons sukses
             return response()->json([
                 'success' => true,
-                // [PERUBAHAN] Arahkan ke tracker dengan ID JADWAL YANG BARU DIBUAT
+                // Arahkan ke tracker dengan ID JADWAL YANG BARU DIBUAT
                 'redirect_url' => route('tracker', ['jadwal_id' => $newSertifikasi->id_jadwal]), 
                 'message' => 'Berhasil mendaftar! Mengarahkan Anda ke Tracker...'
             ]);

@@ -25,9 +25,9 @@
 
 <body class="bg-gray-100">
 
-    <div class="flex min-h-screen">
+    <div class="flex h-screen overflow-hidden">
         {{-- Sidebar --}}
-        <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
+        <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
 
         {{-- Main Content --}}
         <main class="flex-1 p-12 bg-white overflow-y-auto">
@@ -175,6 +175,7 @@
             // Kita pakai null coalescing operator (??) di blade biar gak error kalau data kosong
             const idAsesi = "{{ $asesi->id_asesi ?? '' }}";
             const idSertifikasi = "{{ $sertifikasi->id_data_sertifikasi_asesi ?? '' }}";
+            const idJadwal = "{{ $sertifikasi->id_jadwal ?? '' }}";
 
             // Cek apakah user punya ttd saat halaman dimuat
             // Perhatikan kutipnya, ini penting biar jadi string 'true'/'false' atau boolean
@@ -241,69 +242,60 @@
                 signaturePad.clear();
             });
 
-
             // --- 4. TOMBOL SIMPAN ---
             btnSimpan.addEventListener('click', async () => {
 
-                // Skenario 1: User tidak melakukan perubahan (Gambar lama masih tampil)
-                // Langsung lanjut aja ke halaman selesai (Tracker)
+                let dataUrl = null;
+
+                // Skenario 1: User pakai tanda tangan lama (Gambar tampil)
                 if (hasSignature && !imgContainer.classList.contains('hidden')) {
-                    // Opsional: Tampilkan pesan konfirmasi
-                    // alert('Menggunakan tanda tangan yang sudah ada.');
-                    window.location.href = '/tracker';
-                    return;
+                    // Kirim null, biar Controller tau kita gak mau ubah gambar, 
+                    // TAPI tetep mau update status sertifikasi.
+                    dataUrl = null; 
+                } 
+                // Skenario 2: User bikin tanda tangan baru
+                else {
+                    if (signaturePad.isEmpty()) {
+                        alert("Harap tanda tangan terlebih dahulu!");
+                        return;
+                    }
+                    dataUrl = signaturePad.toDataURL('image/png');
                 }
 
-                // Skenario 2: User mau simpan tanda tangan baru, tapi kanvas kosong
-                if (signaturePad.isEmpty()) {
-                    alert("Harap tanda tangan terlebih dahulu!");
-                    return;
-                }
-
-                // Skenario 3: Proses Simpan Baru / Update
+                // --- PROSES KIRIM KE API ---
                 const originalText = btnSimpan.innerText;
                 btnSimpan.innerText = 'Menyimpan...';
                 btnSimpan.disabled = true;
 
-                // Ambil data gambar (Base64 PNG)
-                const dataUrl = signaturePad.toDataURL('image/png');
-
                 try {
-                    // Ambil CSRF Token
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-
-                    const response = await fetch(`/api/v1/ajax-simpan-tandatangan/${idAsesi}`, {
+                    const response = await fetch(`/api/v1/ajax-simpan-tandatangan/${idAsesi}`, { // Pastikan URL pake v1
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify({
-                            data_tanda_tangan: dataUrl,
-                            id_data_sertifikasi_asesi: idSertifikasi // Kirim ID ini untuk update status
+                            data_tanda_tangan: dataUrl, // Bisa isi base64 atau null
+                            id_data_sertifikasi_asesi: idSertifikasi // ID PENTING BUAT UPDATE STATUS
                         })
                     });
 
                     const result = await response.json();
 
                     if (response.ok && result.success) {
-                        alert('Tanda tangan berhasil disimpan & Pendaftaran Selesai!');
-
-                        // --- LOGIKA AUTO-UPDATE TAMPILAN (Opsional) ---
-                        // Jika kita mau update gambar tanpa reload (kalau gak langsung redirect)
-                        /*
-                        if (imgDisplay) {
-                            // Tambahkan timestamp biar gak kena cache browser
-                            imgDisplay.src = `/${result.path}?t=${new Date().getTime()}`;
+                        alert('Berhasil! Status pendaftaran diperbarui.');
+                        
+                        // Refresh gambar kalau ada update gambar baru
+                        if (dataUrl && imgDisplay) {
+                             imgDisplay.src = `/${result.path}?t=${new Date().getTime()}`;
                         }
-                        imgContainer.classList.remove('hidden');
-                        canvasContainer.classList.add('hidden');
-                        hasSignature = true;
-                        */
 
-                        // REDIRECT KE TRACKER (Biar user bisa download APL-01)
-                        window.location.href = '/tracker';
+                        // Redirect ke Tracker yang benar
+                        // (Pastikan variabel idJadwal sudah didefinisikan di atas script, lihat jawaban sebelumnya)
+                        // Kalau belum ada variabel idJadwal, ambil dari PHP:
+                        const targetUrl = "{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
+                        window.location.href = targetUrl;
 
                     } else {
                         throw new Error(result.message || 'Gagal menyimpan');

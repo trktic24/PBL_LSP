@@ -6,6 +6,7 @@ use App\Models\Asesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\DataSertifikasiAsesi;
 use Illuminate\Support\Facades\File;
 use App\Http\Resources\AsesiResource;
 use App\Http\Resources\AsesiTTDResource;
@@ -30,76 +31,79 @@ class TandaTanganAPIController extends Controller
     }
     public function storeAjax(Request $request, $id_asesi)
     {
-        // Validasi input
+        // 1. Validasi Input
         $request->validate([
-            'data_tanda_tangan' => 'required|string',
-            'id_data_sertifikasi_asesi' => 'required|integer' // Kita hapus exists dulu biar gak ribet validasinya
+            'data_tanda_tangan' => 'nullable|string', 
+            'id_data_sertifikasi_asesi' => 'required|integer'
         ]);
 
         try {
-            Log::info("API TTD: Mulai proses simpan untuk Asesi ID $id_asesi");
-
-            // 1. Simpan Tanda Tangan ke Tabel Asesi (Logic Lama)
             $asesi = Asesi::findOrFail($id_asesi);
-            
-            $image_parts = explode(";base64,", $request->data_tanda_tangan);
-            $image_type_aux = explode("image/", $image_parts[0]);
-            $image_type = $image_type_aux[1];
-            $image_base64 = base64_decode($image_parts[1]);
 
-            $fileName = 'tanda_tangan_' . $id_asesi . '.png'; 
-            $folderPath = 'images/tanda_tangan/';
-            $filePath = public_path($folderPath . $fileName);
+            // 2. Logika Simpan Gambar (Jika ada kiriman gambar baru)
+            if ($request->filled('data_tanda_tangan')) {
+                
+                $image_parts = explode(";base64,", $request->data_tanda_tangan);
+                $image_type_aux = explode("image/", $image_parts[0]);
+                $image_type = $image_type_aux[1];
+                $image_base64 = base64_decode($image_parts[1]);
 
-            if (!File::exists(public_path($folderPath))) {
-                File::makeDirectory(public_path($folderPath), 0755, true);
+                $fileName = 'tanda_tangan_' . $id_asesi . '.png'; 
+                $folderPath = 'images/tanda_tangan/';
+                $filePath = public_path($folderPath . $fileName);
+
+                if (!File::exists(public_path($folderPath))) {
+                    File::makeDirectory(public_path($folderPath), 0755, true);
+                }
+                
+                if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
+                    File::delete(public_path($asesi->tanda_tangan));
+                }
+
+                File::put($filePath, $image_base64);
+                
+                $asesi->tanda_tangan = $folderPath . $fileName;
+                $asesi->save();
+                
+            } else {
+                // Kalau gak kirim gambar, pastikan user emang udah punya TTD
+                if (empty($asesi->tanda_tangan)) {
+                    return response()->json([
+                        'success' => false, 
+                        'message' => 'Tanda tangan belum ada. Silakan tanda tangan dulu!'
+                    ], 422);
+                }
             }
-            
-            // Hapus file lama jika ada
-            if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
-                File::delete(public_path($asesi->tanda_tangan));
-            }
-
-            File::put($filePath, $image_base64);
-            
-            // Update path di tabel asesi
-            $asesi->tanda_tangan = $folderPath . $fileName;
-            $asesi->save();
-
-            Log::info("API TTD: Tanda tangan berhasil disimpan.");
 
             // ============================================================
-            // [LOGIC UPDATE STATUS]
+            // 3. [PERBAIKAN BUG] UPDATE STATUS SERTIFIKASI (DENGAN VALIDASI)
             // ============================================================
-            $sertifikasi = \App\Models\DataSertifikasiAsesi::find($request->id_data_sertifikasi_asesi);
+            $sertifikasi = DataSertifikasiAsesi::find($request->id_data_sertifikasi_asesi);
             
             if ($sertifikasi) {
-                Log::info("API TTD: Data Sertifikasi ditemukan. Status saat ini: " . $sertifikasi->status_sertifikasi);
+                // LOGIKA PENTING:
+                // Hanya update jadi 'pendaftaran_selesai' JIKA statusnya masih 'sedang_mendaftar' atau NULL.
+                // Kalau statusnya sudah 'menunggu_pembayaran', 'lunas', 'asesmen', dll -> JANGAN UBAH MUNDUR.
+                
+                $statusSekarang = $sertifikasi->status_sertifikasi;
+                $statusAwal = DataSertifikasiAsesi::STATUS_SEDANG_MENDAFTAR; // 'sedang_mendaftar'
 
-                // KITA PAKSA UPDATE jika statusnya 'sedang_mendaftar' ATAU 'null' (kosong)
-                // Pastikan kamu sudah import model DataSertifikasiAsesi di atas
-                if ($sertifikasi->status_sertifikasi == \App\Models\DataSertifikasiAsesi::STATUS_SEDANG_MENDAFTAR || 
-                    $sertifikasi->status_sertifikasi === null) {
+                if ($statusSekarang == $statusAwal || is_null($statusSekarang)) {
                     
-                    $sertifikasi->status_sertifikasi = \App\Models\DataSertifikasiAsesi::STATUS_PENDAFTARAN_SELESAI;
+                    $sertifikasi->status_sertifikasi = DataSertifikasiAsesi::STATUS_PENDAFTARAN_SELESAI;
                     $sertifikasi->save();
                     
-                    Log::info("API TTD: Status BERHASIL diubah menjadi 'pendaftaran_selesai'");
-                } else {
-                    Log::info("API TTD: Status TIDAK diubah karena status saat ini bukan 'sedang_mendaftar' atau null.");
-                }
-            } else {
-                Log::error("API TTD: Data Sertifikasi dengan ID {$request->id_data_sertifikasi_asesi} TIDAK DITEMUKAN.");
+                } 
+                // Else: Biarkan statusnya apa adanya (jangan diubah)
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tanda tangan disimpan & Status Diperbarui!',
+                'message' => 'Data berhasil diperbarui!',
                 'path' => $asesi->tanda_tangan
             ]);
 
         } catch (\Exception $e) {
-            Log::error("API TTD Error: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
