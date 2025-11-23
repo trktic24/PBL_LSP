@@ -5,8 +5,8 @@
 @section('title', 'IA.01 - Unit: ' . $unitKompetensi->kode_unit)
 
 @section('wizard-content')
-
-    {{-- Tampilkan Notifikasi Error Validasi --}}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- Tampilkan Notifikasi Error Validasi --}}
     @if ($errors->any())
         <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm" role="alert">
             <p class="font-bold flex items-center">
@@ -172,6 +172,9 @@
             @endif
         </div>
     </form>
+    </div>
+
+
 
     <script>
     // Klik area luar untuk toggle checkbox

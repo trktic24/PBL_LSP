@@ -50,14 +50,27 @@ Route::get('/FR-MAPA-02', function () {
 Route::get('/FR_AK_01', function () {
     return view('frontend/FR_AK_01');
 })->name('FR_AK_01');
+Route::get('/FR_AK_02', function () {
+    return view('frontend/FR_AK_02');
+})->name('FR_AK_02');
+Route::get('/FR_AK_03', function () {
+    return view('frontend/FR_AK_03');
+})->name('FR_AK_03');
 Route::get('/FR_AK_04', function () {
     return view('frontend/FR_AK_04');
 })->name('FR_AK_04');
+Route::get('/FR_AK_05', function () {
+    return view('frontend/FR_AK_05');
+})->name('FR_AK_05');
 
 
 Route::get('/IA_08', function () {
     return view('frontend/IA_08/IA_08');
 })->name('IA08');
+// FR IA 11
+Route::get('/FR_IA_11', function () {
+    return view('frontend/FR_IA_11');
+})->name('FR_IA_11');
 
 //porto
 Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
