@@ -1,3 +1,5 @@
+@props(['backUrl', 'asesorNama', 'asesorNoReg', 'idAsesi'])
+
 <aside
     class="w-80 min-h-screen bg-gradient-to-b from-yellow-100 via-blue-100 to-blue-300 
     p-6 
@@ -5,6 +7,7 @@
     shadow-[8px_0_20px_-5px_rgba(0,0,0,0.15)]">
 
     <!-- Tombol kembali -->
+    {{-- Variabel $idAsesi sekarang tersedia berkat @props di atas --}}
     <a href="{{ route('tracker', ['id_asesi' => $idAsesi]) }}"
         class="flex items-center text-sm font-medium text-gray-700 hover:text-black mb-8">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -32,10 +35,11 @@
             "Lorem ipsum dolor sit amet, you're the best person I've ever met"
         </p>
 
+        {{-- Menggunakan variabel yang dikirim melalui props --}}
         <div class="text-left p-5 bg-white/40 rounded-lg shadow-inner backdrop-blur-sm">
             <h3 class="text-sm font-semibold text-gray-800 mb-1">Nama Asesor</h3>
-            <p class="text-sm text-gray-700 font-medium">Jajang Sokbreker, S.T., M.T.</p>
-            <p class="text-xs text-gray-500 mt-1">No. Reg. MET00XXXXX.XXXXX</p>
+            <p class="text-sm text-gray-700 font-medium">{{ $asesorNama }}</p>
+            <p class="text-xs text-gray-500 mt-1">No. Reg. {{ $asesorNoReg }}</p>
         </div>
 
     </div>
