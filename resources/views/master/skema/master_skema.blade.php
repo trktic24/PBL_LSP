@@ -150,7 +150,7 @@
                             
                             <td class="px-4 py-4 text-center whitespace-nowrap">
                                 <div class="flex justify-center space-x-2">
-                                    <a href="#" class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition">
+                                    <a href="{{ route('detail_skema', ['id_skema' => $skema->id_skema]) }}" class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition">
                                         <i class="fas fa-list"></i> <span>Detail</span>
                                     </a>
                                     <a href="#" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">

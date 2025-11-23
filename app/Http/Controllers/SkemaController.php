@@ -63,6 +63,37 @@ class SkemaController extends Controller
         ]);
     }
 
+    // --- METHOD BARU: UNTUK HALAMAN DETAIL SKEMA ---
+    /**
+     * Menampilkan detail Skema.
+     */
+    public function show($id_skema)
+    {
+        // Load Skema dengan relasi category, kelompokPekerjaan, dan UnitKompetensi
+        $skema = Skema::with(['category', 'kelompokPekerjaan.unitKompetensi'])
+                    ->findOrFail($id_skema);
+
+        // Data dummy untuk Form Asesmen (sesuai contoh di Blade)
+        $formAsesmen = [
+            ['kode' => 'FR.APL.01', 'warna' => 'bg-red-500 hover:bg-red-600'],
+            ['kode' => 'FR.APL.02', 'warna' => 'bg-red-500 hover:bg-red-600'],
+            ['kode' => 'FR.MAPA.01', 'warna' => 'bg-green-500 hover:bg-green-600'],
+            ['kode' => 'FR.AK.01', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
+            ['kode' => 'FR.AK.02', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
+            ['kode' => 'FR.AK.03', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
+            ['kode' => 'FR.AK.04', 'warna' => 'bg-green-500 hover:bg-green-600'],
+            ['kode' => 'FR.AK.05', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
+            ['kode' => 'FR.AK.06', 'warna' => 'bg-blue-600 hover:bg-blue-700'],
+            ['kode' => 'FR.IA.01', 'warna' => 'bg-yellow-500 hover:bg-yellow-600'],
+            ['kode' => 'FR.IA.02', 'warna' => 'bg-yellow-500 hover:bg-yellow-600'],
+            ['kode' => 'FR.IA.05', 'warna' => 'bg-yellow-500 hover:bg-yellow-600'],
+            ['kode' => 'FR.IA.11', 'warna' => 'bg-yellow-500 hover:bg-yellow-600'],
+        ];
+
+        return view('master.skema.detail_skema', compact('skema', 'formAsesmen'));
+    }
+    // ----------------------------------------------------------------------
+    
     /**
      * Form Tambah Skema.
      */

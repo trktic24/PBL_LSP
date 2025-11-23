@@ -86,6 +86,29 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
         Route::patch('/update/{id_skema}', 'update')->name('update_skema');
         Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
+        Route::controller(SkemaController::class)->prefix('master/skema')->group(function () {
+        Route::get('/', 'index')->name('master_skema');
+        Route::get('/add', 'create')->name('add_skema');
+        Route::post('/add', 'store')->name('add_skema.store');
+        
+        // Rute DETAIL BARU
+        Route::get('/{id_skema}', 'show')->name('detail_skema'); 
+        Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
+        Route::patch('/update/{id_skema}', 'update')->name('update_skema');
+        Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
+
+        //Rute DETAIL KELOMPOK PEKERJAAN
+        Route::get('/{id_skema}', 'show')->name('detail_kelompokpekerjaan'); 
+        Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
+        Route::patch('/update/{id_skema}', 'update')->name('update_skema');
+        Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
+
+        //Rute DETAIL BANK SOAL
+        Route::get('/{id_skema}', 'show')->name('detail_banksoal'); 
+        Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
+        Route::patch('/update/{id_skema}', 'update')->name('update_skema');
+        Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
+    });
     });
 
     // 5. Master - Asesor
