@@ -6,6 +6,7 @@ use App\Http\Controllers\SoalController;
 use App\Http\Controllers\IA01Controller;
 use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA07Controller;
+use App\Http\Controllers\PortofolioController;
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -58,10 +59,12 @@ Route::get('/IA_08', function () {
     return view('frontend/IA_08/IA_08');
 })->name('IA08');
 
+//porto
+Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
+
 //IA07
 Route::get('/FR_IA_07', [IA07Controller::class, 'index'])->name('ia07.asesor');
 Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -105,6 +108,8 @@ Route::get('/ia01/{skema_id}/step/{urutan}', [IA01Controller::class, 'showStep']
 Route::post('/ia01/{skema_id}/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
 Route::get('/ia01/{skema_id}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
 Route::post('/ia01/{skema_id}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+
+
 // Route Halaman Sukses (Image 2)
 Route::get('/ia01/success', function() {
     return view('frontend.IA_01.success');
