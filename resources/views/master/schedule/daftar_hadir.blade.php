@@ -155,13 +155,16 @@
                     </thead>
                     
                     <tbody class="divide-y divide-gray-200">
-                        @forelse ($pendaftar as $data)
-                        <tr class="hover:bg-gray-50 transition divide-x divide-gray-200">
+                        @forelse ($pendaftar as $index => $data)
+                        
+                        <tr class="hover:bg-blue-50 transition divide-x divide-gray-200 cursor-pointer group"
+                            onclick="window.location='{{ url('asesi_profile_settings') }}'">
+                            
                             <td class="px-4 py-4 text-center font-medium text-gray-500">
                                 {{ $data->id_data_sertifikasi_asesi }}
                             </td>
                             
-                            <td class="px-6 py-4 font-medium text-gray-900">
+                            <td class="px-6 py-4 font-medium text-gray-900 group-hover:text-blue-700 transition-colors">
                                 {{ $data->asesi->nama_lengkap }}
                             </td>
                             
@@ -169,8 +172,8 @@
                                 {{ $data->asesi->dataPekerjaan->nama_institusi_pekerjaan ?? '-' }}
                             </td>
                             
-                            <td class="px-6 py-4 whitespace-normal" title="{{ $data->asesi->alamat_rumah }}">
-                                {{ $data->asesi->alamat_rumah }}
+                            <td class="px-6 py-4 truncate max-w-xs" title="{{ $data->asesi->alamat_rumah }}">
+                                {{ Str::limit($data->asesi->alamat_rumah, 30) }}
                             </td>
                             
                             <td class="px-6 py-4">
@@ -181,18 +184,17 @@
                                 {{ $data->asesi->nomor_hp }}
                             </td>
                             
-                            <td class="px-6 py-4">
-                                <div class="flex justify-center">
-                                    <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50 relative group">
+                            <td class="px-6 py-4 text-center">
+                                <div onclick="event.stopPropagation()" class="flex justify-center">
+                                    <div class="h-12 w-20 rounded-md overflow-hidden border border-gray-200 bg-white relative group-img">
                                         @if($data->asesi->tanda_tangan)
                                             <img src="{{ asset($data->asesi->tanda_tangan) }}" 
-                                                alt="TTD-{{ $data->asesi->nama_lengkap }}" 
-                                                class="w-full h-full object-contain p-1 hover:scale-110 transition-transform duration-200 cursor-pointer"
-                                                onclick="window.open(this.src, '_blank')"
-                                            >
+                                                 class="w-full h-full object-contain p-1 hover:scale-150 transition-transform duration-200 cursor-pointer" 
+                                                 alt="TTD"
+                                                 onclick="window.open(this.src, '_blank')">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                                <i class="fas fa-pen-nib text-lg"></i>
+                                            <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                                <i class="fas fa-pen-nib"></i>
                                             </div>
                                         @endif
                                     </div>
