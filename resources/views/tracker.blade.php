@@ -37,76 +37,13 @@
 
 <body class="bg-gray-100">
 
-    <div class="flex min-h-screen">
+    <div class="flex h-screen overflow-hidden">
 
         @if ($sertifikasi)
             {{-- ====================================================================== --}}
             {{-- 2. Sidebar (Tidak berubah, sudah dinamis) --}}
             {{-- ====================================================================== --}}
-            <aside
-                class="w-80 bg-gradient-to-b from-yellow-100 via-blue-100 to-blue-300 p-6 relative z-10 shadow-[8px_0_20px_-5px_rgba(0,0,0,0.15)]">
-                <div class="mb-6">
-                    <a href="/" class="flex items-center text-gray-700 hover:text-gray-900">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        <span class="font-medium">Kembali</span>
-                    </a>
-                </div>
-
-                <h1 class="text-3xl font-bold mb-2">Skema Sertifikat</h1>
-
-                <div class="flex justify-center my-6">
-                    <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-800 shadow-lg">
-                        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=400&fit=crop"
-                            alt="Coding" class="w-full h-full object-cover">
-                    </div>
-                </div>
-
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold">{{ $sertifikasi->jadwal->skema->nama_skema ?? 'Judul Skema' }}</h2>
-                    <p class="text-gray-600 text-sm mt-2">
-                        {{ $sertifikasi->jadwal->skema->nomor_skema ?? 'Nomor Skema' }}
-                    </p>
-                    <p class="text-xl font-medium text-gray-800 mt-4">
-                        {{ $sertifikasi->asesi->nama_lengkap ?? 'Nama Asesi' }}</p>
-                </div>
-
-                <p class="text-center text-sm text-gray-700 mb-8 px-4">
-                    Ini adalah halaman tracker progres sertifikasi Anda. Selesaikan setiap langkah untuk melanjutkan.
-                </p>
-
-                <div>
-                    <h3 class="font-bold text-lg mb-4">Persyaratan Utama</h3>
-                    <ul class="space-y-2">
-                        {{-- Ini bisa kamu buat dinamis juga nanti --}}
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="text-sm">Data Sertifikasi (APL-01)</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="text-sm">Bukti Kelengkapan (APL-02)</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <span class="text-sm">Bukti Pembayaran</span>
-                        </li>
-                    </ul>
-                </div>
-            </aside>
+            <x-sidebar :idAsesi="$sertifikasi->id_asesi" :sertifikasi="$sertifikasi" backUrl="/" />
 
 
             {{-- ====================================================================== --}}
@@ -214,7 +151,8 @@
                             <div class="flex-1">
                                 {{-- Link: Bisa diklik jika sudah selesai daftar (level 10) --}}
                                 @if ($level >= $LVL_DAFTAR_SELESAI)
-                                    <a href="{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $linkClassEnabled }}">Pembayaran</a>
+                                    <a href="{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        class="{{ $linkClassEnabled }}">Pembayaran</a>
                                 @else
                                     <span class="{{ $linkClassDisabled }}">Pembayaran</span>
                                 @endif
@@ -294,8 +232,13 @@
                                 @endif
                             </div>
                             <div class="flex-1">
-                                <h3 class="{{ $linkClassDisabled }}">Verifikasi TUK</h3>
-                                <p class="text-sm text-gray-500">Dilakukan oleh Asesor</p>
+                                @if ($level >= $LVL_PRA_ASESMEN)
+                                    <a href="{{ route('show.jadwal_tuk', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        class="{{ $linkClassEnabled }}">Jadwal dan TUK</a>
+                                @else
+                                    <span class="{{ $linkClassDisabled }}">Jadwal dan TUK</span>
+                                @endif
+                                <p class="text-sm text-gray-500">Dilakukan oleh Admin</p>
                                 @if ($level >= $LVL_PRA_ASESMEN)
                                     <p class="{{ $statusClassSelesai }}">Terverifikasi</p>
                                 @else
@@ -325,7 +268,7 @@
                             <div class="flex-1">
                                 {{-- Link: Bisa diklik jika sudah selesai Pra-Asesmen (level 40) --}}
                                 @if ($level >= $LVL_PRA_ASESMEN)
-                                    <a href="{{ route('kerahasiaan.fr_ak01', ['id_asesi' => $sertifikasi->id_asesi]) }}"
+                                    <a href="{{ route('kerahasiaan.fr_ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         class="{{ $linkClassEnabled }}">
                                         Persetujuan Asesmen dan Kerahasiaan
                                     </a>

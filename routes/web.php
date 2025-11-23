@@ -21,12 +21,13 @@ use App\Http\Controllers\Apl01PdfController;
 use App\Http\Controllers\SkemaWebController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Asesor\AsesorTableController;
+use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
-use App\Http\Controllers\Kerahasiaan\PersetujuanKerahasiaanController;
 use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 use App\Http\Controllers\Apl02\PraasesmenController;
+use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +45,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
 Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
 Route::get('/sertifikasi', function () {
-    return "Halaman Sertifikasi"; // Placeholder
+    return 'Halaman Sertifikasi'; // Placeholder
 })->name('sertifikasi');
 
 // Rute Detail Skema & Jadwal
@@ -70,32 +71,31 @@ Route::get('/mitra', function () {
     return view('landing_page.page_profil.mitra');
 })->name('profil.mitra');
 
-
 // ====================================================
 // GRUP 2: AUTENTIKASI & DASHBOARD
 // ====================================================
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // Route untuk file auth.php
-require __DIR__.'/auth.php';
-
+require __DIR__ . '/auth.php';
 
 // ====================================================
 // GRUP 3: TRACKER ASESI (WAJIB LOGIN)
 // ====================================================
 
 Route::get('/tracker/{jadwal_id?}', [TrackerController::class, 'index'])
-        ->middleware('auth') 
-        ->name('tracker');
+    ->middleware('auth')
+    ->name('tracker');
 
 // API (AJAX) untuk mendaftar ke jadwal
 Route::post('/api/jadwal/daftar', [TrackerController::class, 'daftarJadwal'])
-        ->middleware('auth')
-        ->name('api.jadwal.daftar');
-
+    ->middleware('auth')
+    ->name('api.jadwal.daftar');
 
 // ====================================================
 // GRUP 4: FORMULIR PENDAFTARAN (APL-01, APL-02, DLL)
@@ -106,38 +106,34 @@ Route::post('/api/jadwal/daftar', [TrackerController::class, 'daftarJadwal'])
 Route::get('/data_sertifikasi/{id_sertifikasi}', function ($id_sertifikasi) {
     try {
         // Kita cari data pendaftarannya (sertifikasi), BUKAN asesinya
-        $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi); 
+        $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
 
         // Kirim ID pendaftaran dan data asesi (untuk sidebar) ke Blade
         return view('formulir_pendaftaran/data_sertifikasi', [
             'id_sertifikasi_untuk_js' => $sertifikasi->id_data_sertifikasi_asesi,
-            'asesi' => $sertifikasi->asesi // <-- Ini buat sidebar & link "Selanjutnya"
+            'asesi' => $sertifikasi->asesi,
+            'sertifikasi' => $sertifikasi,
         ]);
-
     } catch (\Exception $e) {
         // Kalo gak ketemu, balikin ke tracker
         return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
     }
 })->name('data.sertifikasi');
 
-
-// --- Formulir APL-02: Bukti Kelengkapan ---
-// --- Formulir APL-02: Bukti Kelengkapan ---
 Route::get('/bukti_pemohon/{id_sertifikasi}', function ($id_sertifikasi) {
     try {
         // [PERBAIKAN] Ambil data berdasarkan ID Sertifikasi (Pendaftaran), bukan ID Asesi
         // Kita juga load 'asesi'-nya biar sidebar tetep jalan
         $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
-        
-        return view('formulir_pendaftaran/bukti_pemohon', [
-            'sertifikasi' => $sertifikasi,    // Kirim data pendaftaran lengkap
-            'asesi'       => $sertifikasi->asesi // Kirim data orangnya buat sidebar
-        ]);
 
+        return view('formulir_pendaftaran/bukti_pemohon', [
+            'sertifikasi' => $sertifikasi, // Kirim data pendaftaran lengkap
+            'asesi' => $sertifikasi->asesi, // Kirim data orangnya buat sidebar
+        ]);
     } catch (\Exception $e) {
         return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
     }
-})->name('bukti.pemohon'); 
+})->name('bukti.pemohon');
 
 Route::get('/halaman-tanda-tangan/{id_sertifikasi}', function ($id_sertifikasi) {
     try {
@@ -146,7 +142,7 @@ Route::get('/halaman-tanda-tangan/{id_sertifikasi}', function ($id_sertifikasi) 
 
         return view('formulir_pendaftaran/tanda_tangan_pemohon', [
             'sertifikasi' => $sertifikasi,
-            'asesi'       => $sertifikasi->asesi 
+            'asesi' => $sertifikasi->asesi,
         ]);
     } catch (\Exception $e) {
         // 2. INI YANG BIKIN KAMU MENTAL.
@@ -156,17 +152,16 @@ Route::get('/halaman-tanda-tangan/{id_sertifikasi}', function ($id_sertifikasi) 
     }
 })->name('show.tandatangan');
 
-// --- Formulir AK-01: Kerahasiaan ---
-Route::get('/kerahasiaan/fr-ak01/{id_asesi}', [PersetujuanKerahasiaanController::class, 'showFrAk01'])
-       ->name('kerahasiaan.fr_ak01');
-
 // --- Halaman Statis Formulir ---
-Route::get('/tunggu_upload_dokumen', function () { return view('formulir_pendaftaran/tunggu_upload_dokumen'); });
-Route::get('/belum_memenuhi', function () { return view('formulir_pendaftaran/dokumen_belum_memenuhi'); });
+Route::get('/tunggu_upload_dokumen', function () {
+    return view('formulir_pendaftaran/tunggu_upload_dokumen');
+});
+Route::get('/belum_memenuhi', function () {
+    return view('formulir_pendaftaran/dokumen_belum_memenuhi');
+});
 Route::get('/formulir-selesai', function () {
     return 'BERHASIL DISIMPAN! Ini halaman selanjutnya.';
 })->name('form.selesai');
-
 
 // ====================================================
 // GRUP 5: ASESMEN & PEMBAYARAN
@@ -190,6 +185,31 @@ Route::get('/formulir-selesai', function () {
 // Route::get('/praasesmen8', function () { return view('pra-assesmen.praasesmen8'); });
 // GET: /asesi/{idAsesi}/praasesmen (Menampilkan form APL-02)
 Route::get('/asesi/praasesmen/{idAsesi}', [PraasesmenController::class, 'index'])->name('praasesmen.index');
+// // --- Pra-Asesmen Views ---
+Route::get('/praasesmen1', function () {
+    return view('pra-assesmen.praasesmen1');
+});
+Route::get('/praasesmen2', function () {
+    return view('pra-assesmen.praasesmen2');
+});
+Route::get('/praasesmen3', function () {
+    return view('pra-assesmen.praasesmen3');
+});
+Route::get('/praasesmen4', function () {
+    return view('pra-assesmen.praasesmen4');
+});
+Route::get('/praasesmen5', function () {
+    return view('pra-assesmen.praasesmen5');
+});
+Route::get('/praasesmen6', function () {
+    return view('pra-assesmen.praasesmen6');
+});
+Route::get('/praasesmen7', function () {
+    return view('pra-assesmen.praasesmen7');
+});
+Route::get('/praasesmen8', function () {
+    return view('pra-assesmen.praasesmen8');
+});
 
 // POST: /asesi/sertifikasi/{idDataSertifikasi}/praasesmen/store (Menyimpan respon APL-02)
 Route::post('/asesi/sertifikasi/{idDataSertifikasi}/praasesmen/store', [PraasesmenController::class, 'store'])->name('praasesmen.store');
@@ -200,14 +220,12 @@ Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download']
 Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])->name('apl01.preview');
 
 // --- Halaman Statis Asesmen ---
-Route::get('/praasesmen1', function () { return view('pra-assesmen.praasesmen1'); });
-Route::get('/praasesmen2', function () { return view('pra-assesmen.praasesmen2'); });
-// ... (tambahkan sisanya jika perlu) ...
-Route::get('/belum_lulus', function () { return view('belum_lulus'); });
-Route::get('/banding', function () { return view('banding'); });
-Route::get('/pertanyaan_lisan', function () { return view('pertanyaan_lisan'); });
-Route::get('/umpan_balik', function () { return view('umpan_balik'); });
-Route::get('/verifikasi_tuk', function () { return view('verifikasi_tuk'); });
+Route::get('/praasesmen1', function () {
+    return view('pra-assesmen.praasesmen1');
+});
+Route::get('/praasesmen2', function () {
+    return view('pra-assesmen.praasesmen2');
+});
 
 
 // ====================================================
@@ -217,8 +235,7 @@ Route::get('/verifikasi_tuk', function () { return view('verifikasi_tuk'); });
 Route::get('/keep-alive', function () {
     return response()->json(['status' => 'session_refreshed']);
 });
-Route::get('/api/search-countries', [CountryController::class, 'search'])
-    ->name('api.countries.search');
+Route::get('/api/search-countries', [CountryController::class, 'search'])->name('api.countries.search');
 
 // 1. Route Klik Bayar
 Route::get('/bayar/{id_sertifikasi}', [PaymentController::class, 'createTransaction'])
@@ -227,9 +244,13 @@ Route::get('/bayar/{id_sertifikasi}', [PaymentController::class, 'createTransact
 
 // 2. Route Sukses/Finish (Callback Midtrans)
 // [PERBAIKAN] Nama route disesuaikan dengan config Midtrans di controller
-Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])
-    ->name('pembayaran_diproses'); 
+Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])->name('pembayaran_diproses');
 
 // 3. Route Batal/Cancel
-Route::get('/pembayaran_batal', [PaymentController::class, 'paymentCancel'])
-    ->name('payment.cancel');
+Route::get('/pembayaran_batal', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
+
+Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])
+       ->name('kerahasiaan.fr_ak01');
+
+Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])
+    ->name('show.jadwal_tuk');

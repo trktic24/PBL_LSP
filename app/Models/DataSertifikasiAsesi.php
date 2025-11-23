@@ -19,6 +19,7 @@ class DataSertifikasiAsesi extends Model
 
     protected $table = 'data_sertifikasi_asesi';
     protected $primaryKey = 'id_data_sertifikasi_asesi';
+    protected $guarded = [];
 
     /**
      * Atribut yang dapat diisi.
@@ -128,6 +129,11 @@ class DataSertifikasiAsesi extends Model
     public function buktiDasar(): HasMany
     {
         return $this->hasMany(BuktiDasar::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function responBuktiAk01(): HasMany
+    {
+        return $this->hasMany(ResponBuktiAk01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
     
 }

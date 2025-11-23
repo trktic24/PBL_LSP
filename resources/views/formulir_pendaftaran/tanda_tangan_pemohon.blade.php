@@ -25,9 +25,9 @@
 
 <body class="bg-gray-100">
 
-    <div class="flex min-h-screen">
+    <div class="flex h-screen overflow-hidden">
         {{-- Sidebar --}}
-        <x-sidebar :idAsesi="$asesi->id_asesi"></x-sidebar>
+        <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
 
         {{-- Main Content --}}
         <main class="flex-1 p-12 bg-white overflow-y-auto">
@@ -294,7 +294,7 @@
                         // Redirect ke Tracker yang benar
                         // (Pastikan variabel idJadwal sudah didefinisikan di atas script, lihat jawaban sebelumnya)
                         // Kalau belum ada variabel idJadwal, ambil dari PHP:
-                        const targetUrl = "{{ isset($sertifikasi->id_jadwal) ? '/tracker/' . $sertifikasi->id_jadwal : '/tracker' }}";
+                        const targetUrl = "{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
                         window.location.href = targetUrl;
 
                     } else {

@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentCallbackController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
+use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
@@ -110,4 +111,50 @@ Route::prefix('v1')->group(function () {
             Route::post('/store/{idDataSertifikasi}', [ApiPraasesmenController::class, 'update'])->name('api.v1.praasesmen.update');
         });
 
+    Route::prefix('kerahasiaan')->group(function () {
+    
+        // GET: Ambil data form & checkbox
+        Route::get('/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data'])
+            ->name('api.v1.get.frak01');
+        
+        // POST: Simpan checkbox & update status
+        Route::post('/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
+            ->name('api.v1.setuju.frak01');          
+    });
+    
+    // --- Jadwal & TUK ---
+    Route::prefix('jadwal-tuk')->group(function () {
+        Route::get('/{id_sertifikasi}', [JadwalTukAPIController::class, 'getJadwalData']);
+        Route::post('/konfirmasi/{id_sertifikasi}', [JadwalTukAPIController::class, 'konfirmasiJadwal']);
+    });
+});
+
+
+
+// ==============================================================
+// 🛠️ RUTE KHUSUS DEV: UPDATE STATUS MANUAL (CHEAT)
+// ==============================================================
+// HAPUS RUTE INI KALAU SUDAH PRODUCTION YA!
+Route::post('/dev/update-status', function (Illuminate\Http\Request $request) {
+    
+    // 1. Cari Data
+    $sertifikasi = \App\Models\DataSertifikasiAsesi::find($request->id);
+    
+    if (!$sertifikasi) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
+    }
+
+    // 2. Update Status Sesuai Request
+    $sertifikasi->status_sertifikasi = $request->status;
+    $sertifikasi->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Status berhasil diubah paksa!',
+        'data' => [
+            'id' => $sertifikasi->id_data_sertifikasi_asesi,
+            'status_baru' => $sertifikasi->status_sertifikasi,
+            'level_baru' => $sertifikasi->progres_level // Biar lu bisa cek levelnya juga
+        ]
+    ]);
 });

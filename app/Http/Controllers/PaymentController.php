@@ -28,7 +28,7 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'Data Asesi tidak ditemukan.');
         }
 
-        // 1. Cari Data Sertifikasi
+        // 1. Cari Data
         try {
             $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema'])->findOrFail($id_sertifikasi);
         } catch (\Exception $e) {
@@ -42,18 +42,24 @@ class PaymentController extends Controller
         }
 
         // =================================================================
-        // [PERBAIKAN LOGIKA] JIKA SUDAH LUNAS -> KE HALAMAN SUKSES
+        // [PERBAIKAN LOGIKA 1] CEK APAKAH SUDAH LUNAS ATAU LEBIH TINGGI
         // =================================================================
-        if ($sertifikasi->status_sertifikasi == DataSertifikasiAsesi::STATUS_PEMBAYARAN_LUNAS) {
+        
+        // Cek Level Status saat ini
+        $currentLevel = $sertifikasi->progres_level; // Menggunakan accessor di Model
+        $levelLunas   = 30; // Sesuai model kamu (STATUS_PEMBAYARAN_LUNAS)
+
+        // Jika status sudah LUNAS atau LEBIH TINGGI (misal sudah asesmen),
+        // Jangan biarkan dia bayar lagi. Lempar ke halaman 'Pembayaran Berhasil'
+        if ($currentLevel >= $levelLunas) {
             
-            // Cari data pembayaran yang statusnya SUKSES (settlement/capture)
+            // Cari data pembayaran yang sukses buat ditampilkan di receipt
             $successPayment = Pembayaran::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
                 ->whereIn('status_transaksi', ['settlement', 'capture'])
                 ->latest()
                 ->first();
 
             if ($successPayment) {
-                // Redirect ke halaman 'Pembayaran Berhasil' membawa Order ID
                 return redirect()->route('pembayaran_diproses', [
                     'order_id' => $successPayment->order_id,
                     'transaction_status' => $successPayment->status_transaksi,
@@ -61,11 +67,11 @@ class PaymentController extends Controller
                 ]);
             }
 
-            // Fallback kalau datanya gak ketemu (aneh sih), balikin ke tracker
-            return redirect("/tracker/{$idJadwal}")->with('success', 'Pembayaran sudah lunas.');
+            // Fallback kalau data pembayaran di DB gak ketemu tapi status sertifikasi udah lunas
+            return redirect("/tracker/{$idJadwal}")->with('success', 'Pembayaran Anda sudah lunas.');
         }
+        
         // =================================================================
-
 
         $skema = $sertifikasi->jadwal->skema;
         $harga = $skema->harga ?? 0;
@@ -74,48 +80,37 @@ class PaymentController extends Controller
             return redirect("/tracker/{$idJadwal}")->with('error', 'Harga skema belum diatur.');
         }
 
-        // ... (SISA KODE KE BAWAH TETAP SAMA, JANGAN DIUBAH) ...
-        // Dari baris '$newOrderId = ...' sampai catch Exception biarkan saja.
+        // ... (Kode Generate Order ID, Param Midtrans, Snap Token TETAP SAMA) ...
         
-        // Agar tidak copy-paste terlalu panjang dan error, 
-        // pastikan sisa kode di bawah ini tetap ada di file kamu:
-        
+        // Biar tidak kepanjangan, saya tulis singkat bagian yang tidak berubah:
+        // [START KODE LAMA]
         $newOrderId = 'LSP-' . $sertifikasi->id_data_sertifikasi_asesi . '-' . time(); 
 
-        $transaction_details = [
-            'order_id' => $newOrderId,
-            'gross_amount' => (int) $harga,
-        ];
-
-        $customer_details = [
-            'first_name'    => $user->asesi->nama_lengkap,
-            'email'         => $user->email,
-            'phone'         => $user->asesi->nomor_hp ?? '08123456789',
-        ];
-
-        $item_details = [
-            [
-                'id'       => 'SKEMA-' . $skema->id_skema,
-                'price'    => (int) $harga,
-                'quantity' => 1,
-                'name'     => substr($skema->nama_skema, 0, 50) 
-            ]
-        ];
-
         $params = [
-            'transaction_details' => $transaction_details,
-            'customer_details'    => $customer_details,
-            'item_details'        => $item_details,
+            'transaction_details' => ['order_id' => $newOrderId, 'gross_amount' => (int) $harga],
+            'customer_details' => [
+                'first_name' => $user->asesi->nama_lengkap,
+                'email' => $user->email,
+                'phone' => $user->asesi->nomor_hp ?? '08123456789',
+            ],
+            'item_details' => [[
+                'id' => 'SKEMA-' . $skema->id_skema,
+                'price' => (int) $harga,
+                'quantity' => 1,
+                'name' => substr($skema->nama_skema, 0, 50) 
+            ]],
             'callbacks' => [
                 'finish'   => route('pembayaran_diproses'),
                 'unfinish' => route('payment.cancel'),
                 'error'    => route('payment.cancel'),
             ]
         ];
+        // [END KODE LAMA]
 
         try {
             $snapToken = Snap::getSnapToken($params);
             
+            // Simpan/Update DB Pembayaran (Tetap sama)
             $existingPayment = Pembayaran::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
                 ->where('status_transaksi', 'pending')
                 ->first();
@@ -137,10 +132,17 @@ class PaymentController extends Controller
                 ]);
             }
 
-            if($sertifikasi->status_sertifikasi != DataSertifikasiAsesi::STATUS_TUNGGU_VERIFIKASI_BAYAR){
+            // =================================================================
+            // [PERBAIKAN LOGIKA 2] UPDATE STATUS HANYA JIKA BELUM LUNAS
+            // =================================================================
+            // Pastikan kita tidak menurunkan status yang sudah tinggi
+            if($sertifikasi->status_sertifikasi == DataSertifikasiAsesi::STATUS_PENDAFTARAN_SELESAI || 
+               $sertifikasi->status_sertifikasi == DataSertifikasiAsesi::STATUS_TUNGGU_VERIFIKASI_BAYAR) {
+                
                 $sertifikasi->status_sertifikasi = DataSertifikasiAsesi::STATUS_TUNGGU_VERIFIKASI_BAYAR;
                 $sertifikasi->save();
             }
+            // Jika status sudah lunas atau lebih tinggi, biarkan saja (jangan diubah jadi menunggu bayar)
 
             return redirect("https://app.sandbox.midtrans.com/snap/v2/vtweb/" . $snapToken);
 
@@ -154,27 +156,45 @@ class PaymentController extends Controller
     {
         $orderId = $request->query('order_id');
         $status = $request->query('transaction_status');
+        $statusCode = $request->query('status_code');
         
+        $user = Auth::user();
+        $asesi = $user->asesi; // Data Asesi untuk Sidebar
+        
+        // Variabel Default
+        $sertifikasi = null;
         $idJadwal = null;
-        // Pakai optional() biar gak error kalau user belum login / sesi habis
-        $asesi = optional(Auth::user())->asesi; 
+        $idSertifikasi = null; 
+        $pembayaran = null;
 
+        // Cari Data Berdasarkan Order ID dari Midtrans
         if ($orderId) {
             $pembayaran = Pembayaran::where('order_id', $orderId)->first();
-            if ($pembayaran && $pembayaran->sertifikasi) {
-                $idJadwal = $pembayaran->sertifikasi->id_jadwal;
+            
+            if ($pembayaran) {
+                // Ambil ID Sertifikasi langsung dari tabel pembayaran
+                $idSertifikasi = $pembayaran->id_data_sertifikasi_asesi;
+
+                $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema'])->find($idSertifikasi);
+
+                // Ambil ID Jadwal (lewat relasi sertifikasi)
+                if ($pembayaran->sertifikasi) {
+                    $idJadwal = $pembayaran->sertifikasi->id_jadwal;
+                }
             }
         }
 
-        if ($status == 'settlement' || $status == 'capture') {
-            // Pastikan file view ini ADA: resources/views/pembayaran/pembayaran_berhasil.blade.php
-            return view('pembayaran.pembayaran_berhasil', [ 
-                'id_jadwal' => $idJadwal,
-                'asesi'     => $asesi 
-            ]);
-        }
-
-        return redirect($idJadwal ? "/tracker/{$idJadwal}" : '/tracker');
+        // Kirim semua data ke View
+        return view('pembayaran.pembayaran_berhasil', [ 
+            'order_id'      => $orderId,
+            'status'        => $status,
+            'status_code'   => $statusCode,
+            'id_jadwal'     => $idJadwal,
+            'id_sertifikasi'=> $idSertifikasi,
+            'sertifikasi'   => $sertifikasi, 
+            'asesi'         => $asesi,
+            'pembayaran'    => $pembayaran,
+        ]);
     }
 
     public function paymentCancel(Request $request)

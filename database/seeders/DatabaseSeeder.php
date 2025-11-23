@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CategorySeeder::class);
         $this->call(JenisTukSeeder::class);
         $this->call(UserSeeder::class);
+        $this->call(BuktiAk01Seeder::class);
         
         // Baris ini udah bener
         \App\Models\Asesi::factory(20)->create();
@@ -31,5 +32,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\Jadwal::factory(20)->create();
         \App\Models\MasterTuk::factory(20)->create();
         \App\Models\DataPekerjaanAsesi::factory(20)->create();
+        \App\Models\ResponBuktiAk01::factory(20)->create();
     }
 }
