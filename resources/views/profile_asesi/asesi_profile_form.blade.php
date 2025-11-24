@@ -20,61 +20,7 @@
 
   <x-navbar />
   <main class="flex">
-    
-    <aside class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-[22%] 
-                 bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
-                 shadow-inner border-r border-gray-200 flex flex-col items-center pt-8">
-      <h2 class="text-lg font-bold text-gray-900 mb-3">Biodata</h2>
-
-      <div class="w-36 h-36 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] mb-4">
-        <img src="{{ asset('images/asesi.jpg') }}" alt="Foto Profil" class="w-full h-full object-cover">
-      </div>
-
-      <h3 class="text-lg font-semibold text-gray-900">Roihan Enrico</h3>
-      <p class="text-gray-500 text-sm mb-8">Data Scientist</p>
-
-      <div class="w-[90%] bg-white/40 backdrop-blur-md rounded-2xl p-4 shadow-[0_0_15px_rgba(0,0,0,0.15)] mb-6">
-        <div class="flex flex-col space-y-4 mt-3 mb-3">
-          
-          <a href="{{ route('asesi_profile_settings') }}" 
-             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
-                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->routeIs('asesi_profile_settings') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
-            <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
-          </a>
-
-          <a href="{{ route('asesi_profile_form') }}" 
-             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
-                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->routeIs('asesi_profile_form') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
-            <i class="fas fa-clipboard text-l mr-3"></i> Form
-          </a>
-
-          <a href="#" 
-             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
-                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    text-gray-800 hover:text-blue-600'">
-            <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
-          </a>
-
-          <a href="{{ route('asesi_profile_bukti') }}" 
-             class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
-                    bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
-                    hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ request()->routeIs('asesi_profile_bukti') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
-            <i class="fas fa-check text-l mr-3"></i> Bukti Kelengkapan
-          </a>
-        </div>
-      </div>
-
-      <div class="w-[90%] grid grid-cols-2 gap-x-5">
-        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesi</button>
-        <button class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.2)] transition-all duration-300">Asesor</button>
-      </div>
-    </aside>
+    <x-sidebar_profile_asesi />
 
     <section class="ml-[22%] flex-1 p-8 h-[calc(100vh-80px)] overflow-y-auto">
       <div x-data="{ open: false, active: null }" class="bg-white rounded-2xl shadow-xl p-10">

@@ -45,4 +45,11 @@ class Asesi extends Model
         return $this->hasOne(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
     }
     
+    /**
+     * Relasi: Asesi bisa punya banyak data sertifikasi (history).
+     */
+    public function dataSertifikasi()
+    {
+        return $this->hasMany(DataSertifikasiAsesi::class, 'id_asesi', 'id_asesi');
+    }
 }

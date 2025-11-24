@@ -108,7 +108,7 @@
         <div class="flex items-center justify-between mb-6">
              <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <i class="fas fa-list-ul text-blue-600"></i>
-                Jadwal Terdekat (Status: Terjadwal)
+                Jadwal Terdekat
             </h3>
         </div>
         

@@ -12,6 +12,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DaftarHadirController;
 use App\Http\Controllers\DetailSkemaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AsesiProfileController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
@@ -152,10 +153,12 @@ Route::middleware('auth')->group(function () {
     });
 
     // 10. Profile Asesi
-    Route::get('/asesi_profile_settings', function () { return view('profile_asesi.asesi_profile_settings'); })->name('asesi_profile_settings');
-    Route::get('/asesi_profile_form', function () { return view('profile_asesi.asesi_profile_form'); })->name('asesi_profile_form');
-    Route::get('/asesi_profile_bukti', function () { return view('profile_asesi.asesi_profile_bukti'); })->name('asesi_profile_bukti');
-    Route::get('/asesi_profile_tracker', function () { return view('profile_asesi.asesi_profile_tracker'); })->name('asesi_profile_tracker');
+    Route::controller(AsesiProfileController::class)->prefix('asesi/{id_asesi}')->group(function () {
+        Route::get('/settings', 'settings')->name('asesi.profile.settings');
+        Route::get('/form', 'form')->name('asesi.profile.form');
+        Route::get('/bukti', 'bukti')->name('asesi.profile.bukti');
+        Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
+    });
 
     // 11. Profile Asesor
     Route::get('/asesor/{id_asesor}/bukti', [AsesorController::class, 'showBukti'])->name('asesor.bukti');

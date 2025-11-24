@@ -158,7 +158,7 @@
                         @forelse ($pendaftar as $index => $data)
                         
                         <tr class="hover:bg-blue-50 transition divide-x divide-gray-200 cursor-pointer group"
-                            onclick="window.location='{{ url('asesi_profile_settings') }}'">
+                            onclick="window.location='{{ route('asesi.profile.settings', $data->asesi->id_asesi) }}'">
                             
                             <td class="px-4 py-4 text-center font-medium text-gray-500">
                                 {{ $data->id_data_sertifikasi_asesi }}
