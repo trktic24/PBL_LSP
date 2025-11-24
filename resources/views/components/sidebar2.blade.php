@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-@props(['backUrl', 'asesorNama', 'asesorNoReg', 'idAsesi'])
-
-<aside
-    class="w-80 min-h-screen bg-gradient-to-b from-yellow-100 via-blue-100 to-blue-300 
-    p-6 
-    relative z-10 
-    shadow-[8px_0_20px_-5px_rgba(0,0,0,0.15)]">
-
-    <!-- Tombol kembali -->
-    {{-- Variabel $idAsesi sekarang tersedia berkat @props di atas --}}
-    <a href="{{ route('tracker', ['id_asesi' => $idAsesi]) }}"
-        class="flex items-center text-sm font-medium text-gray-700 hover:text-black mb-8">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-            class="w-4 h-4 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-        </svg>
-        Kembali
-    </a>
-=======
 @props(['idAsesi', 'sertifikasi' => null, 'backUrl' => null])
 
 <aside class="w-80 bg-gradient-to-b from-yellow-100 via-blue-100 to-blue-300 p-6 relative z-10 shadow-[8px_0_20px_-5px_rgba(0,0,0,0.15)] h-screen overflow-y-auto flex-shrink-0 hidden md:flex md:flex-col">
     
     {{-- WRAPPER KONTEN --}}
     <div class="flex-grow flex flex-col">
->>>>>>> 2094a84510c62168398a78d52734fce62bcdb19f
 
         {{-- 1. TOMBOL KEMBALI --}}
         <div class="mb-6">
@@ -46,17 +25,6 @@
             @endif
         </h1>
 
-<<<<<<< HEAD
-        <p class="text-sm text-gray-600 italic mb-8">
-            "Lorem ipsum dolor sit amet, you're the best person I've ever met"
-        </p>
-
-        {{-- Menggunakan variabel yang dikirim melalui props --}}
-        <div class="text-left p-5 bg-white/40 rounded-lg shadow-inner backdrop-blur-sm">
-            <h3 class="text-sm font-semibold text-gray-800 mb-1">Nama Asesor</h3>
-            <p class="text-sm text-gray-700 font-medium">{{ $asesorNama }}</p>
-            <p class="text-xs text-gray-500 mt-1">No. Reg. {{ $asesorNoReg }}</p>
-=======
         {{-- 3. GAMBAR PROFIL / SKEMA --}}
         <div class="flex justify-center my-6">
             <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-800 shadow-lg border-4 border-white">
@@ -71,7 +39,6 @@
                         class="w-full h-full object-cover">
                 @endif
             </div>
->>>>>>> 2094a84510c62168398a78d52734fce62bcdb19f
         </div>
 
         {{-- 4. INFORMASI SKEMA --}}

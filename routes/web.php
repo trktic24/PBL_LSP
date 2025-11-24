@@ -17,6 +17,7 @@ use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TrackerController;
+use App\Http\Controllers\Ak03Controller;
 use App\Http\Controllers\Apl01PdfController;
 use App\Http\Controllers\SkemaWebController;
 use App\Http\Controllers\Api\CountryController;
@@ -227,6 +228,9 @@ Route::get('/praasesmen2', function () {
     return view('pra-assesmen.praasesmen2');
 });
 
+//umpan balik (ak03)
+Route::get('/umpan-balik', [Ak03Controller::class, 'index'])->name('ak03.index');
+Route::post('/umpan-balik/store', [Ak03Controller::class, 'store'])->name('ak03.store');
 
 // ====================================================
 // GRUP 6: ROUTE LAIN-LAIN (API & KEEP ALIVE)
@@ -252,5 +256,4 @@ Route::get('/pembayaran_batal', [PaymentController::class, 'paymentCancel'])->na
 Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])
        ->name('kerahasiaan.fr_ak01');
 
-Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])
-    ->name('show.jadwal_tuk');
+Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])  ->name('show.jadwal_tuk');
