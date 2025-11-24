@@ -17,6 +17,7 @@ class KelompokPekerjaan extends Model
     use HasFactory;
 
     // 2. WAJIB: Kasih tau nama Primary Key-nya (karena bukan 'id')
+    protected $table = 'kelompok_pekerjaans';
     protected $primaryKey = 'id_kelompok_pekerjaan';
 
     // 3. WAJIB: Biar Factory bisa ngisi semua kolom
@@ -36,7 +37,7 @@ class KelompokPekerjaan extends Model
      * Relasi one-to-many:
      * Satu KelompokPekerjaan PUNYA BANYAK UnitKompetensi
      */
-    public function unitKompetensis(): HasMany
+    public function unitKompetensi(): HasMany
     {
         // Model tujuan, Foreign Key, Primary Key di tabel ini
         return $this->hasMany(UnitKompetensi::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');

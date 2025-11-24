@@ -9,15 +9,17 @@ use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\PaymentCallbackController;
+use App\Http\Controllers\Apl02\PraasesmenController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
+use App\Http\Controllers\Apl02API\ApiPraasesmenController;
 use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
+use App\Http\Controllers\asesmen\AsesmenPilihanGandaController;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
-use App\Http\Controllers\Apl02API\ApiPraasesmenController;
 /*
 |--------------------------------------------------------------------------
 | API Routes (VERSION 1)
@@ -102,14 +104,14 @@ Route::prefix('v1')->group(function () {
     // --- 6. MIDTRANS PAYMENT CALLBACK ---
     Route::post('/midtrans-callback', [PaymentCallbackController::class, 'receive']);
 
-    Route::prefix('praasesmen')->group(function () {
-            // GET: /api/v1/praasesmen/{idAsesi} -> Mengambil data skema, elemen, KUK, dan respon lama
-            Route::get('/{idAsesi}', [ApiPraasesmenController::class, 'show'])->name('api.v1.praasesmen.show');
-            
-            // POST: /api/v1/praasesmen/store/{idDataSertifikasi} -> Menyimpan/memperbarui hasil APL-02
-            // Menggunakan POST/PUT ke route berbeda untuk menerima data form/file upload
-            Route::post('/store/{idDataSertifikasi}', [ApiPraasesmenController::class, 'update'])->name('api.v1.praasesmen.update');
-        });
+    Route::prefix('pra-asesmen')->group(function () {
+        
+        // Simpan Jawaban & File Bukti
+        // URL: POST /api/v1/pra-asesmen/{id_sertifikasi}
+        Route::post('/{id_sertifikasi}', [PraasesmenController::class, 'store'])
+            ->name('api.v1.apl02.store');
+
+    });
 
     Route::prefix('kerahasiaan')->group(function () {
     
@@ -127,6 +129,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/{id_sertifikasi}', [JadwalTukAPIController::class, 'getJadwalData']);
         Route::post('/konfirmasi/{id_sertifikasi}', [JadwalTukAPIController::class, 'konfirmasiJadwal']);
     });
+
+    // GET: Ambil daftar soal
+    Route::get('/asesmen-teori/{id_sertifikasi}/soal', [AsesmenPilihanGandaController::class, 'getQuestions']);
+
+    // POST: Simpan jawaban
+    Route::post('/asesmen-teori/{id_sertifikasi}/submit', [AsesmenPilihanGandaController::class, 'submitAnswers']);
 });
 
 

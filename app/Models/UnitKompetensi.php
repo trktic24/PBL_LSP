@@ -35,7 +35,7 @@ class UnitKompetensi extends Model
      * Relasi one-to-many:
      * Satu UnitKompetensi PUNYA BANYAK Elemen
      */
-    public function elemens(): HasMany
+    public function elemen(): HasMany
     {
         // Model tujuan, Foreign Key, Primary Key di tabel ini
         return $this->hasMany(Elemen::class, 'id_unit_kompetensi', 'id_unit_kompetensi');
