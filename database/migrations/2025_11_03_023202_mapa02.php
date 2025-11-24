@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('mapa02', function (Blueprint $table) {
             $table->id('id_mapa02');
             $table->foreignid('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignid('id_kelompok_pekerjaan')->constrained('kelompok_pekerjaan', 'id_kelompok_pekerjaan')->onUpdate('cascade')->onDelete('cascade');
             // isi model DB
+            $table->string('instrumen_asesmen')->comment('Dibuat berdasarkan instrumen asesmen yang digunakan');
             $table->enum('potensi_asesi', [1, 2, 3, 4, 5])->comment('Poin penilaian potensi asesi');
             $table->timestamps();
         });

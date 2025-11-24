@@ -7,6 +7,7 @@ use App\Http\Controllers\IA01Controller;
 use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\PortofolioController;
+use App\Http\Controllers\Mapa02Controller;
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -42,9 +43,10 @@ Route::get('/APL_02', function () {
 })->name('APL_02');
 
 // MAPA
-Route::get('/FR-MAPA-02', function () {
-    return view('frontend/FR_MAPA_02');
-})->name('MAPA-02');
+// MAPA
+// Route::get('/FR-MAPA-02', function () {
+//     return view('frontend/FR_MAPA_02');
+// })->name('MAPA-02');
 
 //AK
 Route::get('/FR_AK_01', function () {
@@ -91,6 +93,10 @@ Route::middleware('auth')->group(function () {
     // Route Utama (Memerlukan ID)
     Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');
     Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
+
+    // MAPA 02
+    Route::get('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');
+    Route::post('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');
 });
 
 Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
