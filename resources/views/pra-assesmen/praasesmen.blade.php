@@ -7,328 +7,420 @@
     <title>{{ $skema_title ?? 'Pra-Asesmen Mandiri' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-        body {
-            font-family: 'Poppins';
+        @layer base {
+
+            /* --- PERBAIKAN: Font yang di-set kini Poppins, diikuti fallback sans-serif --- */
+            body {
+                font-family: 'Poppins', sans-serif;
+            }
         }
 
-        /* --- Custom Logic untuk Checkbox Tailwind Murni --- */
+        /* Custom Logic untuk Checkbox Tailwind Murni */
         .peer:checked~.check-icon {
             display: block;
+
+            /* Custom style untuk radio K/BK */
+            .radio-k:checked {
+                background-color: #10B981;
+                /* Green-500 */
+            }
+
+            .radio-bk:checked {
+                background-color: #EF4444;
+                /* Red-500 */
+            }
         }
     </style>
 </head>
 
 <body class="bg-gray-100">
 
+    {{-- Mengatur agar sidebar tetap di tempatnya menggunakan kelas Tailwind sticky, top-0, dan h-screen --}}
     <div class="flex min-h-screen">
 
-        {{-- Panggil Component Sidebar --}}
-        <x-sidebar2 backUrl="/tracker" :asesorNama="$asesor['nama']" :asesorNoReg="$asesor['no_reg']":idAsesi="$idAsesi" />
+        {{-- ================================================= --}}
+        {{-- BAGIAN 1: SIDEBAR (Komponen X-Sidebar2 Asli Anda) --}}
+        <div class="sticky top-0 h-screen">
+            {{-- Pastikan data seperti $asesor dan $idAsesi dikirim dari controller --}}
+            <x-sidebar2 backUrl="/tracker" :asesorNama="$asesor['nama']" :asesorNoReg="$asesor['no_reg']" :idAsesi="$idAsesi" />
+        </div>
 
-        <main class="flex-1 p-12 bg-white overflow-y-auto">
-            <div class="max-w-4xl mx-auto">
 
-                <h1 class="text-4xl font-bold text-gray-900 mb-2">Pra - Asesmen</h1>
-                <h2 class="text-2xl font-semibold text-gray-800 mb-1">{{ $currentSkema['judul'] }}</h2>
-                <p class="text-sm text-gray-500 mb-10">Unit Kompetensi {{ $currentSkema['unit'] }} dari
-                    {{ $totalSkema }}</p>
+        {{-- ================================================= --}}
+        {{-- BAGIAN 2: KONTEN UTAMA APL-02 --}}
+        <main class="flex-1 p-8 md:p-12 bg-white overflow-y-auto">
+            <div class="max-w-6xl mx-auto">
 
-                {{-- PANDUAN ASESMEN MANDIRI --}}
-                <div class="mb-8 border border-orange-300 rounded-lg overflow-hidden shadow-md">
-                    <div class="bg-orange-400 p-3 text-white font-bold text-sm uppercase">
-                        PANDUAN ASESMEN MANDIRI
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Pra - Asesmen Mandiri (APL-02)</h1>
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-1">Skema:
+                    {{ $currentSkema['judul'] ?? 'N/A' }}</h2>
+
+                @php
+                    // PERBAIKAN: Melakukan pengecekan tipe dan isset sebelum memanggil count()
+                    $unit_kompetensi_count =
+                        (isset($currentSkema['unit']) && is_array($currentSkema['unit'])) ||
+                        $currentSkema['unit'] instanceof \Countable
+                            ? count($currentSkema['unit'])
+                            : 0;
+                @endphp
+
+                @if ($error)
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative shadow-md mt-6"
+                        role="alert">
+                        <strong class="font-bold">Error!</strong>
+                        <span class="block sm:inline">{{ $error }}</span>
                     </div>
-                    <div class="p-4 bg-white">
-                        <p class="font-semibold text-gray-700 mb-2 text-sm">Instruksi:</p>
-                        <ul class="list-disc ml-6 text-sm text-gray-600 space-y-1">
-                            <li>Baca setiap pertanyaan di kolom sebelah kiri.</li>
-                            <li>Beri tanda centang (<span class="text-blue-500">K</span>) pada kotak jika Anda yakin
-                                dapat melakukan tugas yang dijelaskan.</li>
-                            <li>Isi kolom di sebelah kanan dengan mendaftar bukti yang Anda miliki untuk menunjukkan
-                                bahwa Anda melakukan tugas-tugas ini.</li>
-                        </ul>
+                    {{-- MENGGUNAKAN VARIABEL $unit_kompetensi_count yang sudah diamankan --}}
+                @elseif ($unit_kompetensi_count === 0)
+                    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative shadow-md mt-6"
+                        role="alert">
+                        <strong class="font-bold">Perhatian!</strong>
+                        <span class="block sm:inline">Tidak ada Unit Kompetensi yang terdaftar untuk skema ini.</span>
                     </div>
-                    {{-- ACCORDION CONTAINER (Menggunakan data $skemaList dari Controller) --}}
+                @else
+                    <p class="text-gray-600 mb-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                        Anda diminta untuk melakukan asesmen mandiri. Tandai **(K)** jika Anda Kompeten
+                        dan **wajib** mengunggah bukti pendukung. Tandai **(BK)** jika Belum Kompeten.
+                    </p>
+
+                    {{-- Kontainer Accordion Unit Kompetensi --}}
                     <div id="accordion-container" class="space-y-4">
-                        {{-- Loop utama menggunakan data dari Model --}}
-                        @foreach ($skemaList as $skema)
-                            @php
-                                // Logika pembentukan HTML tabel (View Logic) tetap di Blade
-                                $unitId = 'unit-' . $skema['unit'];
-                                $tableHTML = '';
+                        <form id="apl02-form" method="POST" action="/asesi/respon/apl02/{{ $idDataSertifikasi }}"
+                            enctype="multipart/form-data">
+                            {{-- CSRF dan Data Sertifikasi --}}
+                            @csrf
+                            <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $idDataSertifikasi }}">
 
-                                foreach ($skema['elements'] as $element) {
-                                    $elementNo = $element['no'];
-                                    $groupName = "el_{$skema['unit']}_{$elementNo}";
-                                    $buktiOnClick = "showCustomMessage('Simulasi upload bukti untuk Elemen Kompetensi {$elementNo}. Anda telah menandai Kompeten (K).', 'Upload Bukti', 'info')";
-
-                                    $kuksHTML = '';
-                                    foreach ($element['kuks'] as $kukIndex => $kukText) {
-                                        $kukNo = $kukIndex + 1;
-                                        $kuksHTML .= "<p class='text-xs text-gray-600 pl-4'>({$elementNo}.{$kukNo}) {$kukText}</p>";
-                                    }
-
-                                    // Building the table row
-                                    $tableHTML .= "
-                                <tr class='hover:bg-gray-50 transition-colors'>
-                                    <td class='px-6 py-4 align-top w-3/4 text-sm text-gray-700'>
-                                        <div class='flex items-start'>
-                                            <span class='font-bold text-gray-900 text-base mr-4'>{$elementNo}</span>
-                                            <div class='space-y-2'>
-                                                <p class='text-sm font-semibold text-gray-900 mb-2'>{$element['name']}</p>
-                                                <div class='space-y-1'>
-                                                    {$kuksHTML}
-                                                </div>
-                                            </div>
+                            @foreach ($currentSkema['unit'] as $unit)
+                                @php
+                                    $unitId = 'unit-kompetensi-' . $unit->id_unit_kompetensi;
+                                @endphp
+                                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                                    {{-- Accordion Header: Unit Kompetensi --}}
+                                    <div class="accordion-header p-5 cursor-pointer flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition duration-150"
+                                        data-target="{{ $unitId }}">
+                                        <div class="flex flex-col">
+                                            <p class="text-xs font-medium text-blue-600">UNIT KOMPETENSI:
+                                                {{ $unit->kode_unit }}</p>
+                                            <h3 class="text-lg font-bold text-gray-800">{{ $unit->judul_unit }}</h3>
                                         </div>
-                                    </td>
-                                    <td class='px-3 py-4 align-top border-l border-gray-200 text-center'>
-                                        <label for='{$groupName}_k' class='flex justify-center cursor-pointer pt-1 relative'>
-                                            {{-- INPUT K --}}
-                                            <input type='checkbox'
-                                                id='{$groupName}_k'
-                                                data-group='{$groupName}'
-                                                data-type='k'
-                                                onchange='handleCheckboxToggle(this)'
-                                                class='peer absolute opacity-0 w-6 h-6 z-10'
-                                                title='Kompeten'
-                                            >
-                                            {{-- CUSTOM BOX & CENTANG (Tailwind Murni) --}}
-                                            <div class='w-6 h-6 border border-gray-400 rounded-md transition-colors peer-checked:bg-blue-500 peer-checked:border-blue-500'></div>
-                                            <svg class='check-icon hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
-                                                <polyline points='20 6 9 17 4 12'></polyline>
-                                            </svg>
-                                        </label>
-                                    </td>
-                                    <td class='px-3 py-4 align-top border-l border-gray-200 text-center'>
-                                        <label for='{$groupName}_bk' class='flex justify-center cursor-pointer pt-1 relative'>
-                                            {{-- INPUT BK --}}
-                                            <input type='checkbox'
-                                                id='{$groupName}_bk'
-                                                data-group='{$groupName}'
-                                                data-type='bk'
-                                                onchange='handleCheckboxToggle(this)'
-                                                class='peer absolute opacity-0 w-6 h-6 z-10'
-                                                title='Belum Kompeten'
-                                            >
-                                            {{-- CUSTOM BOX & SILANG (Tailwind Murni - Menggunakan warna Merah untuk BK) --}}
-                                            <div class='w-6 h-6 border border-gray-400 rounded-md transition-colors peer-checked:bg-red-500 peer-checked:border-red-500'></div>
-                                            <svg class='check-icon hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
-                                                <line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line>
-                                            </svg>
-                                        </label>
-                                    </td>
-                                    <td class='px-6 py-4 align-top border-l border-gray-200 text-center'>
-                                        <button id='bukti_btn_{$groupName}'
-                                                onclick=\"{$buktiOnClick}\"
-                                                disabled
-                                                class='text-xs font-semibold py-1 px-2 mt-1 rounded-md bg-gray-200 border border-gray-300 text-gray-600 transition-all opacity-50 cursor-not-allowed active:scale-95'>
-                                            File Bukti
-                                        </button>
-                                    </td>
-                                </tr>
-                            ";
-                                }
-                            @endphp
-
-                            {{-- Accordion Item Wrapper --}}
-                            <div class="rounded-xl overflow-hidden shadow-xl border border-blue-200">
-                                {{-- Header (Tombol Dropdown) --}}
-                                <div data-target="{{ $unitId }}"
-                                    class="flex items-center justify-between p-4 md:p-6 text-gray-800 transition-colors duration-300 bg-blue-100 hover:bg-blue-200 cursor-pointer">
-                                    <div class="flex items-center space-x-4">
-                                        <span class="text-lg font-extrabold text-blue-700">{{ $skema['unit'] }}.</span>
-                                        <div>
-                                            <p class="font-semibold text-base md:text-lg">{{ $skema['judul'] }}</p>
-                                            <p class="text-xs text-gray-600">{{ $skema['kode'] }}</p>
-                                        </div>
+                                        {{-- Icon untuk indikasi buka/tutup --}}
+                                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-300"
+                                            data-icon="{{ $unitId }}" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </div>
-                                    <svg data-icon="{{ $unitId }}"
-                                        class="w-6 h-6 transform transition-transform text-blue-700" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </div>
 
-                                {{-- Body (Konten Tabel K/BK) --}}
-                                <div id="{{ $unitId }}" class="hidden bg-white px-4 pt-0 pb-4">
-                                    <div class="p-2">
-                                        <h3 class="text-xl font-bold text-gray-700 mb-2">Tabel Asesmen Mandiri</h3>
-                                        <p class="text-sm text-gray-500 mb-4">Unit: {{ $skema['judul'] }}
-                                            ({{ $skema['kode'] }})
-                                        </p>
+                                    {{-- Accordion Body: Tabel KUK dan Pilihan Asesi --}}
+                                    <div id="{{ $unitId }}"
+                                        class="accordion-body hidden border-t border-gray-200">
+                                        <div class="p-5">
+                                            <p class="text-lg font-bold text-blue-700 mb-4">Dapatkah saya: (Tugas
+                                                Mandiri)</p>
+                                        </div>
 
-                                        {{-- K/BK Table --}}
-                                        <div
-                                            class="shadow-xl border border-gray-200 rounded-xl overflow-hidden mb-8 mt-4">
-                                            <table class="min-w-full bg-white">
-                                                <thead class="bg-gray-100">
-                                                    <tr>
-                                                        <th scope="col"
-                                                            class="px-6 py-3 text-left text-sm font-bold text-gray-800 w-3/4">
-                                                            Dapatkah saya ....?</th>
-                                                        <th scope="col"
-                                                            class="px-3 py-3 text-center text-sm font-bold text-gray-800 w-12 border-l border-gray-200">
+                                        {{-- Tabel Utama Unit --}}
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full bg-white border-collapse border-b border-gray-300">
+                                                <thead>
+                                                    <tr
+                                                        class="bg-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+                                                        <th class="p-3 border-b border-t border-gray-300 w-1/12">No.
+                                                        </th>
+                                                        <th class="p-3 border-b border-t border-gray-300 w-1/2">
+                                                            Elemen / Kriteria Unjuk Kerja</th>
+                                                        <th
+                                                            class="p-3 border-b border-t border-gray-300 w-1/12 text-center">
                                                             K</th>
-                                                        <th scope="col"
-                                                            class="px-3 py-3 text-center text-sm font-bold text-gray-800 w-12 border-l border-gray-200">
+                                                        <th
+                                                            class="p-3 border-b border-t border-gray-300 w-1/12 text-center">
                                                             BK</th>
-                                                        <th scope="col"
-                                                            class="px-6 py-3 text-center text-sm font-bold text-gray-800 w-1/4 border-l border-gray-200">
-                                                            Bukti</th>
+                                                        <th
+                                                            class="p-3 border-b border-t border-gray-300 w-1/4 text-center">
+                                                            Bukti (Wajib K)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-gray-200">
-                                                    {!! $tableHTML !!} {{-- Render tabel baris yang telah dibuat --}}
+                                                    @foreach ($unit->elemen as $elemen)
+                                                        @php
+                                                            $elemenNum = $loop->iteration;
+                                                        @endphp
+                                                        {{-- Baris Elemen --}}
+                                                        <tr class="bg-gray-50">
+                                                            <td
+                                                                class="p-3 font-semibold text-gray-700 border-r border-gray-200 align-top">
+                                                                {{ $elemenNum }}
+                                                            </td>
+                                                            <td class="p-3 font-semibold text-gray-700 align-top"
+                                                                colspan="4">
+                                                                {{ $elemen->elemen }}
+                                                            </td>
+                                                        </tr>
+
+                                                        {{-- Baris Kriteria Unjuk Kerja (KUK) --}}
+                                                        @foreach ($elemen->kriteriaUnjukKerja as $kuk)
+                                                            @php
+                                                                // ID unik untuk setiap KUK
+                                                                $kukId = 'kuk-' . $kuk->id_kriteria;
+                                                                $radioName = 'respon[' . $kuk->id_kriteria . ']';
+                                                                $fileId = 'bukti-' . $kuk->id_kriteria;
+                                                            @endphp
+                                                            <tr class="hover:bg-white transition duration-100">
+                                                                <td
+                                                                    class="p-3 text-sm text-gray-600 border-r border-gray-200 align-top">
+                                                                    {{ $elemenNum }}.{{ $loop->iteration }}
+                                                                </td>
+                                                                <td class="p-3 text-sm text-gray-700 align-top">
+                                                                    ({{ $elemenNum }}.{{ $loop->iteration }})
+                                                                    {{ $kuk->kriteria_unjuk_kerja }}
+                                                                </td>
+
+                                                                {{-- Opsi K --}}
+                                                                <td class="p-3 text-center align-top">
+                                                                    <input type="radio" id="{{ $kukId }}-k"
+                                                                        name="{{ $radioName }}" value="1"
+                                                                        class="w-5 h-5 radio-k text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500 rounded-full cursor-pointer"
+                                                                        data-file-target="{{ $fileId }}"
+                                                                        onclick="toggleFileRequired(this, true)">
+                                                                </td>
+
+                                                                {{-- Opsi BK (Default Checked) --}}
+                                                                <td class="p-3 text-center align-top">
+                                                                    <input type="radio" id="{{ $kukId }}-bk"
+                                                                        name="{{ $radioName }}" value="0"
+                                                                        class="w-5 h-5 radio-bk text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 rounded-full cursor-pointer"
+                                                                        onclick="toggleFileRequired(this, false)"
+                                                                        checked>
+                                                                </td>
+
+                                                                {{-- Input Bukti --}}
+                                                                <td class="p-2 text-center align-top">
+                                                                    <input type="file"
+                                                                        name="bukti[{{ $kuk->id_kriteria }}]"
+                                                                        id="{{ $fileId }}"
+                                                                        class="w-full text-xs text-gray-500 file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-150"
+                                                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                                                    <small id="{{ $fileId }}-required-msg"
+                                                                        class="text-red-500 text-xs mt-1 hidden font-medium">Wajib
+                                                                        diisi!</small>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @endforeach
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
+                            @endforeach
+
+                            {{-- Tombol Submit --}}
+                            <div class="mt-8 pt-6 border-t border-gray-300 flex justify-end">
+                                <button type="submit"
+                                    class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                                    Simpan Asesmen Mandiri (APL-02)
+                                </button>
                             </div>
-                        @endforeach
+                        </form>
                     </div>
+                @endif
+            </div>
 
-                    <div class="flex justify-end mt-12 mb-12">
-                        <button
-                            onclick="showCustomMessage('Formulir Asesmen Mandiri telah disubmit. (Simulasi)', 'Berhasil Disubmit', 'success')"
-                            class="bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-xl hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-4 focus:ring-indigo-300">
-                            Simpan dan Lanjutkan Tanda Tangan
-                        </button>
-                    </div>
-
-                </div>
-
-        </main>
-        {{-- ========================================================================================= --}}
-        {{-- CUSTOM MODAL (Client-side UI Logic) --}}
-        {{-- ========================================================================================= --}}
-        <div id="custom-modal"
-            class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4"
-            onclick="this.classList.add('hidden')">
-            <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full transform transition-all duration-300"
-                onclick="event.stopPropagation()">
-                <div id="modal-header" class="px-6 py-4 rounded-t-xl text-white font-bold text-lg"></div>
-                <div class="p-6">
-                    <p id="modal-message" class="text-gray-700 mb-4"></p>
-                    <div class="flex justify-end">
-                        <button id="modal-close"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">Tutup</button>
-                    </div>
+            {{-- Modal Placeholder for Success/Error Messages (Custom Alert) --}}
+            <div id="message-modal"
+                class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50">
+                <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-sm">
+                    <h3 id="modal-title" class="text-xl font-bold mb-4 text-gray-800">Pesan</h3>
+                    <p id="modal-body" class="text-gray-600 mb-6"></p>
+                    <button id="modal-close-button"
+                        class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">Tutup</button>
                 </div>
             </div>
-        </div>
 
-        {{-- ========================================================================================= --}}
-        {{-- JAVASCRIPT LOGIC (Hanya untuk interaksi UI) --}}
-        {{-- ========================================================================================= --}}
-        <script>
-            /**
-             * Menampilkan pesan kustom (Modal).
-             */
-            function showCustomMessage(message, title = 'Informasi', type = 'info') {
-                const modal = document.getElementById('custom-modal');
-                const header = document.getElementById('modal-header');
-                const messageEl = document.getElementById('modal-message');
-                const closeBtn = document.getElementById('modal-close');
+        </main>
+    </div>
 
-                messageEl.textContent = message;
-                header.textContent = title;
+    <script>
+        // --- Custom Alert Function ---
+        function showCustomAlert(title, message, isError = false) {
+            const modal = document.getElementById('message-modal');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').textContent = message;
 
-                // Set styling based on type
-                header.className = 'px-6 py-4 rounded-t-xl text-white font-bold text-lg';
-                closeBtn.className = 'px-4 py-2 rounded-lg transition-colors';
-
-                if (type === 'success') {
-                    header.classList.add('bg-blue-500');
-                    closeBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'text-white');
-                } else if (type === 'error') {
-                    header.classList.add('bg-red-500');
-                    closeBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'text-white');
-                } else { // info/default
-                    header.classList.add('bg-blue-500');
-                    closeBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700', 'text-white');
-                }
-
-                modal.classList.remove('hidden');
-                closeBtn.onclick = () => modal.classList.add('hidden');
+            const titleElement = document.getElementById('modal-title');
+            if (isError) {
+                titleElement.classList.remove('text-gray-800');
+                titleElement.classList.add('text-red-600');
+            } else {
+                titleElement.classList.remove('text-red-600');
+                titleElement.classList.add('text-gray-800');
             }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
 
-            /**
-             * Mengatur logika eksklusif K/BK dan mengaktifkan tombol Bukti.
-             */
-            function handleCheckboxToggle(currentCheckbox) {
-                const isChecked = currentCheckbox.checked;
-                const isK = currentCheckbox.getAttribute('data-type') === 'k';
-                const groupName = currentCheckbox.getAttribute('data-group');
+        document.getElementById('modal-close-button').addEventListener('click', () => {
+            document.getElementById('message-modal').classList.remove('flex');
+            document.getElementById('message-modal').classList.add('hidden');
+        });
 
-                const kCheckbox = document.getElementById(`${groupName}_k`);
-                const bkCheckbox = document.getElementById(`${groupName}_bk`);
-                const buktiButton = document.getElementById(`bukti_btn_${groupName}`);
 
-                // 1. Logika Eksklusif (Hanya bisa pilih K atau BK)
-                if (isChecked) {
-                    const otherCheckbox = isK ? bkCheckbox : kCheckbox;
-                    if (otherCheckbox) {
-                        otherCheckbox.checked = false;
-                    }
-                }
+        // --- Logic Accordion ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', (e) => {
+                    const targetId = header.getAttribute('data-target');
+                    const targetBody = document.getElementById(targetId);
+                    const targetIcon = header.querySelector(`[data-icon="${targetId}"]`);
 
-                // 2. Logika Tombol Bukti (Aktif hanya jika K dicentang)
-                if (buktiButton) {
-                    const isKChecked = kCheckbox.checked;
+                    // Logic: Tutup semua accordion body kecuali yang diklik (jika sedang terbuka)
+                    document.querySelectorAll('#accordion-container > div > div.accordion-body')
+                        .forEach(body => {
+                            const closedId = body.id;
+                            const closedIcon = document.querySelector(
+                                `[data-icon="${closedId}"]`);
 
-                    if (isKChecked) {
-                        // Aktifkan tombol (Warna Biru)
-                        buktiButton.disabled = false;
-                        buktiButton.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-200', 'text-gray-600');
-                        buktiButton.classList.add('bg-blue-200', 'hover:bg-blue-300', 'text-blue-800');
-                    } else {
-                        // Non-aktifkan tombol (Warna Abu-abu)
-                        buktiButton.disabled = true;
-                        buktiButton.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-200', 'text-gray-600');
-                        buktiButton.classList.remove('bg-blue-200', 'hover:bg-blue-300', 'text-blue-800');
-                    }
-                }
-            }
-
-            /**
-             * Tambahkan Event Listener untuk Toggle Accordion.
-             */
-            document.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('[data-target]').forEach(header => {
-                    header.addEventListener('click', (e) => {
-                        const targetId = header.getAttribute('data-target');
-                        const targetBody = document.getElementById(targetId);
-                        const targetIcon = header.querySelector(`[data-icon="${targetId}"]`);
-
-                        // Logic: Tutup semua yang terbuka, lalu buka target
-                        document.querySelectorAll('#accordion-container > div > div:nth-child(2)')
-                            .forEach(body => {
-                                if (body.id !== targetId && !body.classList.contains('hidden')) {
-                                    body.classList.add('hidden');
-                                    const closedIcon = document.querySelector(
-                                        `[data-icon="${body.id}"]`);
-                                    if (closedIcon) closedIcon.classList.remove('rotate-180');
-                                }
-                            });
-
-                        // Toggle visibility of the current target body and rotate icon
-                        targetBody.classList.toggle('hidden');
-                        targetIcon.classList.toggle('rotate-180');
-
-                        // Scroll ke header yang diklik
-                        header.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
+                            // Hanya tutup jika yang lain yang sedang terbuka
+                            if (body.id !== targetId && !body.classList.contains('hidden')) {
+                                body.classList.add('hidden');
+                                if (closedIcon) closedIcon.classList.remove('rotate-180');
+                            }
                         });
+
+                    // Toggle visibility of the current target body and rotate icon
+                    targetBody.classList.toggle('hidden');
+                    targetIcon.classList.toggle('rotate-180');
+
+                    // Scroll ke header yang diklik
+                    header.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
                     });
                 });
             });
-        </script>
+        });
+
+        // --- Logic K/BK dan Bukti (File) ---
+        function toggleFileRequired(radio, isRequired) {
+            // Mengambil ID KUK dari nama radio: respon[123] -> 123
+            const kukIdMatch = radio.name.match(/\[(\d+)\]/);
+            if (!kukIdMatch) return;
+            const kukId = kukIdMatch[1];
+            const fileInput = document.getElementById(`bukti-${kukId}`);
+            const requiredMsg = document.getElementById(`bukti-${kukId}-required-msg`);
+
+            // Atur file input required hanya jika K dipilih
+            if (isRequired) {
+                fileInput.required = true;
+                requiredMsg.classList.remove('hidden');
+            } else {
+                fileInput.required = false;
+                requiredMsg.classList.add('hidden');
+                // Opsional: reset input file jika pindah ke BK, agar tidak ada file yang terkirim
+                fileInput.value = '';
+            }
+        }
+
+        // Inisialisasi: Pastikan semua BK (default) tidak required
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[type="radio"][value="0"]').forEach(radioBk => {
+                // Jalankan pengecekan awal saat DOMContentLoaded untuk data yang sudah tersimpan
+                if (radioBk.checked) {
+                    toggleFileRequired(radioBk, false);
+                }
+            });
+        });
+
+        // --- Logic Form Submission dengan AJAX (untuk handling upload) ---
+        document.getElementById('apl02-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // 1. Validasi manual untuk K yang belum ada bukti
+            let isValid = true;
+            document.querySelectorAll('input[type="radio"][value="1"]:checked').forEach(radioK => {
+                const kukIdMatch = radioK.name.match(/\[(\d+)\]/);
+                if (!kukIdMatch) return;
+                const kukId = kukIdMatch[1];
+                const fileInput = document.getElementById(`bukti-${kukId}`);
+                const requiredMsg = document.getElementById(`bukti-${kukId}-required-msg`);
+
+                // Cek hanya jika K dipilih dan input file diperlukan/required (seharusnya sama)
+                if (fileInput.required && fileInput.files.length === 0) {
+                    isValid = false;
+                    requiredMsg.classList.remove('hidden');
+                    // Scroll ke elemen yang bermasalah
+                    fileInput.closest('tr').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                } else {
+                    requiredMsg.classList.add('hidden');
+                }
+            });
+
+            if (!isValid) {
+                showCustomAlert('Validasi Gagal',
+                    'Harap unggah bukti pendukung untuk semua Kriteria Unjuk Kerja yang Anda nyatakan Kompeten (K).',
+                    true);
+                return;
+            }
+
+            // 2. Submission data via Fetch API
+            const form = e.target;
+            const formData = new FormData(form);
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            // Tampilkan loading state
+            submitButton.textContent = 'Menyimpan...';
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                // Pastikan action URL sesuai dengan route Anda (misalnya: /asesi/respon/apl02/{id})
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                // Coba parse response, jika gagal (bukan JSON), kita tangani sebagai error
+                let result;
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    // Jika response bukan JSON (misal: redirect HTML atau error page)
+                    result = {
+                        message: 'Respons server tidak valid (bukan JSON). Cek log server.'
+                    };
+                }
+
+
+                if (response.ok) {
+                    showCustomAlert('Berhasil!', result.message || 'Respon APL-02 berhasil disimpan.', false);
+                } else {
+                    let errorMessage = 'Terjadi kesalahan saat menyimpan data.';
+                    if (result && result.message) {
+                        errorMessage = result.message;
+                    } else if (result && result.errors) {
+                        errorMessage += "\n" + Object.values(result.errors).flat().join('\n');
+                    }
+                    showCustomAlert('Gagal Menyimpan', errorMessage, true);
+                }
+
+            } catch (error) {
+                console.error('Network or Parse Error:', error);
+                showCustomAlert('Kesalahan Jaringan', 'Tidak dapat terhubung ke server. Coba lagi.', true);
+            } finally {
+                // Kembalikan state tombol
+                submitButton.textContent = 'Simpan Asesmen Mandiri (APL-02)';
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
+    </script>
 </body>
 
 </html>

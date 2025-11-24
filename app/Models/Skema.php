@@ -48,7 +48,7 @@ class Skema extends Model
     /**
      * Relasi: 1 Skema punya BANYAK KelompokPekerjaan
      */
-    public function kelompokPekerjaans(): HasMany
+    public function kelompokPekerjaan(): HasMany
     {
         return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
     }

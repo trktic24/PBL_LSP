@@ -17,7 +17,7 @@ use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
-
+use App\Http\Controllers\Apl02API\ApiPraasesmenController;
 /*
 |--------------------------------------------------------------------------
 | API Routes (VERSION 1)
@@ -101,6 +101,15 @@ Route::prefix('v1')->group(function () {
 
     // --- 6. MIDTRANS PAYMENT CALLBACK ---
     Route::post('/midtrans-callback', [PaymentCallbackController::class, 'receive']);
+
+    Route::prefix('praasesmen')->group(function () {
+            // GET: /api/v1/praasesmen/{idAsesi} -> Mengambil data skema, elemen, KUK, dan respon lama
+            Route::get('/{idAsesi}', [ApiPraasesmenController::class, 'show'])->name('api.v1.praasesmen.show');
+            
+            // POST: /api/v1/praasesmen/store/{idDataSertifikasi} -> Menyimpan/memperbarui hasil APL-02
+            // Menggunakan POST/PUT ke route berbeda untuk menerima data form/file upload
+            Route::post('/store/{idDataSertifikasi}', [ApiPraasesmenController::class, 'update'])->name('api.v1.praasesmen.update');
+        });
 
     Route::prefix('kerahasiaan')->group(function () {
     

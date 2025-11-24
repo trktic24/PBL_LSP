@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(AdminSeeder::class);
         $this->call(BuktiAk01Seeder::class);
+        $this->call(PoinAk03Seeder::class);
         
         // Baris ini udah bener
         \App\Models\Asesi::factory(20)->create();
