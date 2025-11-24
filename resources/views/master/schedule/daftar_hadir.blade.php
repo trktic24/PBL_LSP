@@ -186,7 +186,7 @@
                             
                             <td class="px-6 py-4 text-center">
                                 <div onclick="event.stopPropagation()" class="flex justify-center">
-                                    <div class="h-12 w-20 rounded-md overflow-hidden border border-gray-200 bg-white relative group-img">
+                                    <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-white relative group-img">
                                         @if($data->asesi->tanda_tangan)
                                             <img src="{{ asset($data->asesi->tanda_tangan) }}" 
                                                  class="w-full h-full object-contain p-1 hover:scale-150 transition-transform duration-200 cursor-pointer" 

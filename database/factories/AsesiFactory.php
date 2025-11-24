@@ -34,7 +34,7 @@ class AsesiFactory extends Factory
             'kabupaten_kota' => $this->faker->city(),
             'provinsi'       => $this->faker->state(),
             'nomor_hp'       => $this->faker->numerify('082#########'),
-            'tanda_tangan'   => 'dummy/ttd.png',
+            'tanda_tangan'   => 'images/kelengkapan_asesi/tanda_tangan/dummy_ttd.png',
         ];
     }
 

@@ -16,14 +16,24 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            // [PERBAIKAN 1] Ganti 'name' menjadi 'username'
+            'username' => [
+                'required', 
+                'string', 
+                'max:255',
+                // [PERBAIKAN 2] ignore() membutuhkan 2 parameter karena PK Anda bukan 'id'
+                // ignore(ID_Value, Nama_Kolom_PK)
+                Rule::unique(User::class)->ignore($this->user()->id_user, 'id_user'),
+            ],
+
             'email' => [
                 'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
+                // [PERBAIKAN 3] Sesuaikan ignore untuk email juga
+                Rule::unique(User::class)->ignore($this->user()->id_user, 'id_user'),
             ],
         ];
     }

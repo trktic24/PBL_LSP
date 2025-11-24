@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Asesi;
 use App\Models\User;
-use App\Models\DataPekerjaanAsesi; // [PENTING] Import Model Baru
+use App\Models\DataPekerjaanAsesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File; // [PENTING] Gunakan File Facade
 use Illuminate\Validation\Rules\Password;
 
 class AsesiController extends Controller
@@ -117,7 +117,7 @@ class AsesiController extends Controller
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'kebangsaan' => 'nullable|string|max:100',
             'pendidikan' => 'required|string|max:255',
-            'pekerjaan' => 'required|string|max:255', // Pekerjaan umum
+            'pekerjaan' => 'required|string|max:255', 
             'alamat_rumah' => 'required|string',
             'kode_pos' => 'nullable|string|max:10',
             'kabupaten_kota' => 'required|string|max:255',
@@ -125,7 +125,7 @@ class AsesiController extends Controller
             'nomor_hp' => 'required|string|max:16',
             'tanda_tangan' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
 
-            // 3. Data Pekerjaan Asesi (Detail) - [BARU]
+            // 3. Data Pekerjaan Asesi
             'nama_institusi_pekerjaan' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'no_telepon_institusi' => 'required|string|max:16',
@@ -141,8 +141,18 @@ class AsesiController extends Controller
         DB::beginTransaction();
         try {
             $ttdPath = null;
+            
+            // [PERBAIKAN] Upload ke public/images/kelengkapan_asesi/tanda_tangan
             if ($request->hasFile('tanda_tangan')) {
-                $ttdPath = $request->file('tanda_tangan')->store('public/ttd_asesi');
+                $file = $request->file('tanda_tangan');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $destinationPath = public_path('images/kelengkapan_asesi/tanda_tangan');
+                
+                // Pindahkan file
+                $file->move($destinationPath, $filename);
+                
+                // Simpan path relatif
+                $ttdPath = 'images/kelengkapan_asesi/tanda_tangan/' . $filename;
             }
 
             // A. Buat User
@@ -172,7 +182,7 @@ class AsesiController extends Controller
                 'tanda_tangan' => $ttdPath,
             ]);
 
-            // C. Buat Data Pekerjaan [BARU]
+            // C. Buat Data Pekerjaan
             DataPekerjaanAsesi::create([
                 'id_asesi' => $asesi->id_asesi,
                 'nama_institusi_pekerjaan' => $validatedData['nama_institusi_pekerjaan'],
@@ -188,8 +198,9 @@ class AsesiController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            if (isset($ttdPath)) {
-                Storage::delete($ttdPath);
+            // Hapus file jika DB gagal dan file sudah terupload
+            if ($ttdPath && File::exists(public_path($ttdPath))) {
+                File::delete(public_path($ttdPath));
             }
             return back()->with('error', 'Gagal menyimpan Asesi: '. $e->getMessage())->withInput();
         }
@@ -197,25 +208,18 @@ class AsesiController extends Controller
 
     public function edit($id_asesi)
     {
-        // Load relasi user DAN dataPekerjaan
         $asesi = Asesi::with(['user', 'dataPekerjaan'])->findOrFail($id_asesi);
         return view('master.asesi.edit_asesi', ['asesi' => $asesi]);
     }
 
-    /**
-     * Memperbarui data Asesi, User, dan Data Pekerjaan.
-     */
     public function update(Request $request, $id_asesi)
     {
         $asesi = Asesi::with(['user', 'dataPekerjaan'])->findOrFail($id_asesi);
         $user = $asesi->user;
 
         $validatedData = $request->validate([
-            // 1. Validasi User
             'email' => 'required|email|unique:users,email,' . $user->id_user . ',id_user',
             'password' => ['nullable', 'confirmed', Password::min(8)->mixedCase()->numbers()],
-            
-            // 2. Validasi Asesi
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|size:16|unique:asesi,nik,' . $asesi->id_asesi . ',id_asesi',
             'tempat_lahir' => 'required|string|max:100',
@@ -230,8 +234,6 @@ class AsesiController extends Controller
             'provinsi' => 'required|string|max:255',
             'nomor_hp' => 'required|string|max:16',
             'tanda_tangan' => 'nullable|image|mimes:png,jpg,jpeg|max:1024',
-
-            // 3. Validasi Data Pekerjaan [BARU]
             'nama_institusi_pekerjaan' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
             'no_telepon_institusi' => 'required|string|max:16',
@@ -246,23 +248,30 @@ class AsesiController extends Controller
 
         DB::beginTransaction();
         try {
-            // A. Update File TTD
             $ttdPath = $asesi->tanda_tangan;
+
+            // [PERBAIKAN] Update file ke public/images/kelengkapan_asesi/tanda_tangan
             if ($request->hasFile('tanda_tangan')) {
-                if ($asesi->tanda_tangan) {
-                    Storage::delete(str_replace('public/', '', $asesi->tanda_tangan));
+                // Hapus file lama jika ada
+                if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
+                    File::delete(public_path($asesi->tanda_tangan));
                 }
-                $ttdPath = $request->file('tanda_tangan')->store('public/ttd_asesi');
+                
+                $file = $request->file('tanda_tangan');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('images/kelengkapan_asesi/tanda_tangan'), $filename);
+                
+                $ttdPath = 'images/kelengkapan_asesi/tanda_tangan/' . $filename;
             }
 
-            // B. Update User
+            // Update User
             $user->email = $validatedData['email'];
             if ($request->filled('password')) {
                 $user->password = Hash::make($validatedData['password']);
             }
             $user->save();
 
-            // C. Update Asesi
+            // Update Asesi
             $asesi->update([
                 'nama_lengkap' => $validatedData['nama_lengkap'],
                 'nik' => $validatedData['nik'],
@@ -280,10 +289,9 @@ class AsesiController extends Controller
                 'tanda_tangan' => $ttdPath,
             ]);
 
-            // D. Update Data Pekerjaan [BARU]
-            // Gunakan updateOrCreate untuk menangani jika data lama belum ada
+            // Update Data Pekerjaan
             $asesi->dataPekerjaan()->updateOrCreate(
-                ['id_asesi' => $asesi->id_asesi], // Kondisi pencarian
+                ['id_asesi' => $asesi->id_asesi],
                 [
                     'nama_institusi_pekerjaan' => $validatedData['nama_institusi_pekerjaan'],
                     'jabatan' => $validatedData['jabatan'],
@@ -308,16 +316,15 @@ class AsesiController extends Controller
         DB::beginTransaction();
         try {
             $asesi = Asesi::with('user')->findOrFail($id_asesi);
-            
             $nama = $asesi->nama_lengkap;
             $id = $asesi->id_asesi;
             $user = $asesi->user; 
 
-            if ($asesi->tanda_tangan) {
-                Storage::delete(str_replace('public/', '', $asesi->tanda_tangan));
+            // [PERBAIKAN] Hapus file fisik dari public path
+            if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
+                File::delete(public_path($asesi->tanda_tangan));
             }
             
-            // Hapus User akan meng-cascade delete Asesi dan DataPekerjaanAsesi
             if ($user) {
                 $user->delete();
             } else {
