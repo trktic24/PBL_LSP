@@ -10,6 +10,8 @@ use App\Http\Controllers\TukController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DaftarHadirController;
+use App\Http\Controllers\DetailSkemaController;
+use App\Http\Controllers\DashboardController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
@@ -39,26 +41,9 @@ Route::post('/forgot-password', [LoginController::class, 'sendResetLink'])->name
 Route::middleware('auth')->group(function () {
 
     // 1. Dashboard
-    Route::get('/dashboard', function () {
-        $asesmenBerlangsung = Schedule::where('Status_jadwal', 'Terjadwal')->count();
-        $asesmenSelesai = Schedule::where('Status_jadwal', 'Selesai')->count();
-        $jumlahAsesi = Asesi::count();
-        $jumlahAsesor = Asesor::count();
-        
-        $jadwalTerbaru = Schedule::with('skema')
-                                 ->where('Status_jadwal', 'Terjadwal')
-                                 ->orderBy('tanggal_pelaksanaan', 'asc')
-                                 ->take(5)
-                                 ->get();
-
-        return view('dashboard.dashboard_admin', [
-            'asesmenBerlangsung' => $asesmenBerlangsung,
-            'asesmenSelesai' => $asesmenSelesai,
-            'jumlahAsesi' => $jumlahAsesi,
-            'jumlahAsesor' => $jumlahAsesor,
-            'jadwalTerbaru' => $jadwalTerbaru,
-        ]);
-    })->name('dashboard');
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('/dashboard', 'index')->name('dashboard');
+    });
 
     // 2. Notification
     Route::get('/notifications', function () {
