@@ -95,4 +95,10 @@ class Jadwal extends Model
         // dengan nama tabel pivot dan kolom Anda
         return $this->belongsTo(Asesi::class, 'id_asesi', 'id_jadwal', 'id_asesi');
     }
+
+    public function asesor()
+    {
+        // Pastikan PK 'id_user' sesuai tabel users
+        return $this->belongsTo(User::class, 'id_asesor', 'id_user');
+    }
 }

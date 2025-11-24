@@ -8,6 +8,7 @@ use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\Mapa02Controller;
+use App\Http\Controllers\FrAk07Controller;
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -64,6 +65,7 @@ Route::get('/FR_AK_04', function () {
 Route::get('/FR_AK_05', function () {
     return view('frontend/FR_AK_05');
 })->name('FR_AK_05');
+Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
 
 
 Route::get('/IA_08', function () {
@@ -97,6 +99,15 @@ Route::middleware('auth')->group(function () {
     // MAPA 02
     Route::get('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');
     Route::post('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');
+
+    //Ak07
+    //FR_AK07
+    // 1. Route untuk MENAMPILKAN Form (GET) - Ini yang sudah jalan
+    Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
+
+    // 2. Route untuk MENYIMPAN Data (POST) - INI YANG KURANG!
+    // Perhatikan bagian ->name('fr-ak-07.store') harus sama persis dengan di view
+    Route::post('/FR_AK_07/{id}', [FrAk07Controller::class, 'store'])->name('fr-ak-07.store');
 });
 
 Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
