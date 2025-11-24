@@ -107,7 +107,7 @@
                                 {{-- Tombol Download APL-01 --}}
                                 @if ($level >= $LVL_DAFTAR_SELESAI)
                                     {{-- Kalau level >= 10, BISA DOWNLOAD --}}
-                                    <a href="{{ route('apl01.download', ['id_asesi' => $sertifikasi->id_asesi]) }}"
+                                    <a href="{{ route('pdf.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         target="_blank"
                                         class="mt-2 px-4 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-md hover:bg-blue-600 inline-block">
                                         Unduh APL-01
@@ -179,8 +179,8 @@
                             <div class="absolute left-6 top-6 -bottom-10 w-0.5 bg-gray-200"></div>
                             <div class="relative flex-shrink-0 mr-6">
                                 <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.122 2.122l7.81-7.81" />
                                     </svg>
@@ -220,8 +220,8 @@
                             <div class="absolute left-6 top-6 -bottom-10 w-0.5 bg-gray-200"></div>
                             <div class="relative flex-shrink-0 mr-6">
                                 <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6.75M9 11.25h6.75M9 15.75h6.75M9 20.25h6.75" />
                                     </svg>
@@ -254,8 +254,8 @@
                             <div class="absolute left-6 top-6 -bottom-10 w-0.5 bg-gray-200"></div>
                             <div class="relative flex-shrink-0 mr-6">
                                 <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                        fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                                     </svg>

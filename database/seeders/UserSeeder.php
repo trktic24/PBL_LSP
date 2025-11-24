@@ -39,6 +39,7 @@ class UserSeeder extends Seeder
         // Buat 1 User Admin (spesifik)
         if ($adminRole) {
             User::factory()->create([
+                'nama_user' => 'Admin LSP',
                 'email' => 'admin@gmail.com',
                 'password' => Hash::make('password'),
                 'role_id' => $adminRole->id_role,

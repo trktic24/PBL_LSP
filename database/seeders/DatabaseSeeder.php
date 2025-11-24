@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CategorySeeder::class);
         $this->call(JenisTukSeeder::class);
         $this->call(UserSeeder::class);
+        $this->call(AdminSeeder::class);
         $this->call(BuktiAk01Seeder::class);
         
         // Baris ini udah bener

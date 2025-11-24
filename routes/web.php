@@ -191,7 +191,7 @@ Route::get('/praasesmen5', function () {
 });
 Route::get('/praasesmen6', function () {
     return view('pra-assesmen.praasesmen6');
-});
+}); 
 Route::get('/praasesmen7', function () {
     return view('pra-assesmen.praasesmen7');
 });
@@ -201,9 +201,7 @@ Route::get('/praasesmen8', function () {
 
 // --- Asesmen Lainnya Views ---
 // --- PDF Download ---
-Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])->name('apl01.download');
-Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])->name('apl01.preview');
-
+Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
 // --- Halaman Statis Asesmen ---
 Route::get('/praasesmen1', function () {
     return view('pra-assesmen.praasesmen1');

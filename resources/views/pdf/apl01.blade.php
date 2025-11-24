@@ -1,31 +1,20 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>FR.APL.01 - Permohonan Sertifikasi Kompetensi</title>
+    <title>FR.APL.01</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 10pt;
-            line-height: 1.3;
+            margin: 30px;
             color: #000;
-            padding: 15mm;
         }
 
         .header {
             display: table;
             width: 100%;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .header-left {
@@ -41,421 +30,410 @@
             vertical-align: middle;
         }
 
-        .title {
-            text-align: center;
-            font-size: 14pt;
-            font-weight: bold;
-            margin: 10px 0;
+        .header-right img {
+            max-height: 90px;
         }
 
-        .subtitle {
+        .logo-bnsp {
+            max-height: 100px;
+        }
+
+        .title-section {
             text-align: center;
-            font-size: 12pt;
+            margin: 30px 0 20px 0;
+            border-bottom: 3px solid #000;
+            padding-bottom: 15px;
+        }
+
+        .title-section h1 {
+            margin: 0;
+            font-size: 18pt;
             font-weight: bold;
-            margin-bottom: 20px;
+        }
+
+        .title-section h2 {
+            margin: 5px 0 0 0;
+            font-size: 14pt;
+            font-weight: bold;
         }
 
         .section-title {
             font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 8px;
-            font-size: 10pt;
+            font-size: 11pt;
+            margin-top: 25px;
+            margin-bottom: 10px;
         }
 
         .subsection-title {
             font-weight: bold;
-            margin-top: 10px;
-            margin-bottom: 8px;
             font-size: 10pt;
-            margin-left: 15px;
-        }
-
-        .info-text {
+            margin-top: 15px;
             margin-bottom: 10px;
-            font-size: 9pt;
-            line-height: 1.4;
-        }
-
-        .form-row {
-            display: table;
-            width: 100%;
-            margin-bottom: 4px;
-        }
-
-        .form-label {
-            display: table-cell;
-            width: 180px;
-            padding-left: 30px;
-            vertical-align: top;
-        }
-
-        .form-separator {
-            display: table-cell;
-            width: 15px;
-            text-align: center;
-            vertical-align: top;
-        }
-
-        .form-value {
-            display: table-cell;
-            border-bottom: 1px dotted #666;
-            padding-left: 5px;
+            margin-left: 20px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 8px 0;
         }
 
-        table,
-        th,
-        td {
+        .info-table {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .info-table td {
+            padding: 3px 5px;
+            vertical-align: top;
+        }
+
+        .info-table td:first-child {
+            width: 25%;
+        }
+
+        .info-table td:nth-child(2) {
+            width: 2%;
+        }
+
+        .bordered-table {
             border: 1px solid #000;
+            margin-top: 10px;
         }
 
-        th,
-        td {
-            padding: 5px;
-            text-align: left;
-            font-size: 9pt;
-        }
-
-        th {
-            background-color: #e8e8e8;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .checkbox {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
+        .bordered-table td {
             border: 1px solid #000;
-            margin-right: 5px;
+            padding: 8px;
             vertical-align: middle;
         }
 
-        .checkbox.checked {
-            background-color: #000;
+        .bordered-table thead td {
+            font-weight: bold;
+            text-align: center;
+            background-color: #e2e2e2;
         }
 
-        .checkbox.checked::after {
-            content: '✓';
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            display: block;
+        .rekomendasi-box {
+            margin-top: 10px;
+            padding: 10px 0;
             text-align: center;
-            line-height: 10px;
+        }
+
+        .status-diterima {
+            font-weight: bold;
+            font-size: 12pt;
+            color: #0066cc;
+        }
+
+        .status-tidak-diterima {
+            font-weight: bold;
+            font-size: 12pt;
+            color: #dc3545;
         }
 
         .signature-section {
-            margin-top: 25px;
+            margin-top: 20px;
             display: table;
             width: 100%;
         }
 
-        .signature-box {
+        .signature-left,{
             display: table-cell;
-            width: 48%;
-            text-align: center;
+            width: 50%;
+            text-align: left;
             vertical-align: top;
+            padding: 5px;
+            margin-left: 20px;
+        }
+        .signature-right {
+            display: table-cell;
+            width: 50%;
+            text-align: right;
+            vertical-align: top;
+            padding: 5px;
         }
 
-        .signature-img {
-            margin: 15px auto;
-            height: 60px;
-            border: 1px solid #ccc;
+        .signature-title {
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .page-break {
-            page-break-after: always;
+        .signature-space {
+            height: 80px;
+        }
+
+        .signature-name {
+            font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
 
 <body>
-    <!-- HEADER -->
+
+    <!-- HEADER dengan Logo -->
     <div class="header">
         <div class="header-left">
-            <strong>BNSP</strong><br>
-            <small>BADAN NASIONAL SERTIFIKASI PROFESI</small>
-        </div>
+            <!-- Gunakan Base64 untuk Logo BNSP -->
+            @if ($logoBnspBase64)
+                <img src="data:image/png;base64,{{ $logoBnspBase64 }}" alt="BNSP" class="logo-bnsp">
+            @endif
+            </div>
         <div class="header-right">
-            <img src="{{ public_path('images/Logo_LSP_No_BG.png') }}" alt="LSP POLINES" style="height: 50px;"><br>
-            <strong>LSP POLINES</strong>
+            <!-- Gunakan Base64 untuk Logo LSP -->
+            @if ($logoLspBase64)
+                <img src="data:image/png;base64,{{ $logoLspBase64 }}" alt="LSP" class="logo-lsp">
+            @endif
+            </div>
         </div>
+
+    <!-- TITLE -->
+    <div class="title-section">
+        <h1>PERMOHONAN SERTIFIKASI KOMPETENSI</h1>
+        <h2>FR.APL.01</h2>
     </div>
-
-    <div class="title">PERMOHONAN SERTIFIKASI KOMPETENSI</div>
-    <div class="subtitle">FR.APL.01</div>
-
-    <hr>
 
     <!-- BAGIAN A: RINCIAN DATA PEMOHON -->
     <div class="section-title">A. Rincian Data Pemohon Sertifikasi</div>
-    <p class="info-text">
+    <p style="margin-left: 20px; margin-top: 5px;">
         Pada bagian ini, cantumkan data pribadi, data pendidikan formal serta data pekerjaan Anda pada saat ini.
     </p>
 
-    <!-- a. Data Pribadi -->
     <div class="subsection-title">a. Data Pribadi</div>
+    <table class="info-table">
+        <tr>
+            <td>Nama Lengkap</td>
+            <td>:</td>
+            <td>{{ $asesi->nama_lengkap }}</td>
+        </tr>
+        <tr>
+            <td>NIK</td>
+            <td>:</td>
+            <td>{{ $asesi->nik }}</td>
+        </tr>
+        <tr>
+            <td>Tempat/Tgl. Lahir</td>
+            <td>:</td>
+            <td>{{ $asesi->tempat_lahir }}, {{ \Carbon\Carbon::parse($asesi->tanggal_lahir)->format('d-m-Y') }}</td>
+        </tr>
+        <tr>
+            <td>Jenis Kelamin</td>
+            <td>:</td>
+            <td>{{ $asesi->jenis_kelamin == 1 ? 'Laki-laki' : 'Perempuan' }}</td>
+        </tr>
+        <tr>
+            <td>Kebangsaan</td>
+            <td>:</td>
+            <td>{{ $asesi->kebangsaan }}</td>
+        </tr>
+        <tr>
+            <td>Alamat Rumah</td>
+            <td>:</td>
+            <td>{{ $asesi->alamat_rumah }}</td>
+        </tr>
+        <tr>
+            <td>Kode pos</td>
+            <td>:</td>
+            <td>{{ $asesi->kode_pos }}</td>
+        </tr>
+        <tr>
+            <td>No. Telepon</td>
+            <td>:</td>
+            <td>{{ $asesi->nomor_hp }}</td>
+        </tr>
+        <tr>
+            <td>Kualifikasi Pendidikan</td>
+            <td>:</td>
+            <td>{{ $asesi->pendidikan }}</td>
+        </tr>
+    </table>
 
-    <div class="form-row">
-        <div class="form-label">Nama Lengkap</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">{{ $asesi->nama_lengkap ?? '' }}</div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-label">NIK</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">{{ $asesi->nik ?? '' }}</div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-label">Tempat / tgl. Lahir</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">
-            {{ $asesi->tempat_lahir ?? '' }} /
-            {{ $asesi->tanggal_lahir ? \Carbon\Carbon::parse($asesi->tanggal_lahir)->format('d-m-Y') : '' }}
-        </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-label">Jenis Kelamin</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">{{ $asesi->jenis_kelamin == 1 ? 'Laki-laki' : 'Perempuan' }}</div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-label">Kebangsaan</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">{{ $asesi->kebangsaan ?? 'Indonesia' }}</div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-label">Alamat Rumah</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">{{ $asesi->alamat_rumah ?? '' }}</div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-label">Kode pos</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">{{ $asesi->kode_pos ?? '' }}</div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-label">No. Telepon/E-mail</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">{{ $asesi->nomor_hp ?? '' }} / {{ $asesi->user->email ?? '' }}</div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-label">Kualifikasi Pendidikan</div>
-        <div class="form-separator">:</div>
-        <div class="form-value">{{ $asesi->pendidikan ?? '' }}</div>
-    </div>
-
-    <!-- b. Data Pekerjaan Sekarang -->
     <div class="subsection-title">b. Data Pekerjaan Sekarang</div>
-
-    @if ($dataPekerjaan)
-        <div class="form-row">
-            <div class="form-label">Nama Institusi</div>
-            <div class="form-separator">:</div>
-            <div class="form-value">{{ $dataPekerjaan->nama_perusahaan ?? '' }}</div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-label">Jabatan</div>
-            <div class="form-separator">:</div>
-            <div class="form-value">{{ $dataPekerjaan->jabatan ?? '' }}</div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-label">Alamat Kantor</div>
-            <div class="form-separator">:</div>
-            <div class="form-value">{{ $dataPekerjaan->alamat_kantor ?? '' }}</div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-label">No. Telepon/Fax/Email</div>
-            <div class="form-separator">:</div>
-            <div class="form-value">{{ $dataPekerjaan->no_telp_kantor ?? '' }} /
-                {{ $dataPekerjaan->email_kantor ?? '' }}</div>
-        </div>
-    @endif
+    <table class="info-table">
+        <tr>
+            <td>Nama Perusahaan</td>
+            <td>:</td>
+            <td>{{ $pekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Jabatan</td>
+            <td>:</td>
+            <td>{{ $pekerjaan->jabatan ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Alamat Kantor</td>
+            <td>:</td>
+            <td>{{ $pekerjaan->alamat_institusi ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>No. Telepon</td>
+            <td>:</td>
+            <td>{{ $pekerjaan->no_telepon_institusi ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Kode Pos</td>
+            <td>:</td>
+            <td>{{ $pekerjaan->kode_pos_institusi ?? '-' }}</td>
+        </tr>
+    </table>
 
     <!-- BAGIAN B: DATA SERTIFIKASI -->
-    <div class="section-title" style="margin-top: 20px;">B. Data Sertifikasi</div>
-    <p class="info-text">
-        Berikut Judul dan Nomor Skema Sertifikasi yang anda ajukan berikut Daftar Unit Kompetensi sesuai kemasan pada
-        skema sertifikasi untuk mendapatkan pengakuan sesuai dengan latar belakang pendidikan, pelatihan serta
-        pengalaman kerja yang anda miliki.
+    <div class="section-title" style="margin-top: 30px;">B. Data Sertifikasi</div>
+    <p style="margin-left: 20px; margin-top: 5px;">
+        Berikut Judul dan Nomor Skema Sertifikasi yang Anda ajukan serta Unit Kompetensi sesuai kemasan pada skema
+        sertifikasi untuk mendapatkan pengakuan sesuai dengan latar belakang pendidikan, pelatihan serta pengalaman
+        kerja yang anda miliki.
     </p>
 
-    @if ($dataSertifikasi)
-        <table style="margin-bottom: 10px;">
-            <tr>
-                <th style="text-align: left; width: 200px;">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)</th>
-                <th style="text-align: left;">Judul</th>
-                <td style="border: none; width: 15px;">:</td>
-                <td>{{ $dataSertifikasi->jadwal->masterSkema->nama_skema ?? '' }}</td>
-            </tr>
-            <tr>
-                <th style="text-align: left;"></th>
-                <th style="text-align: left;">Nomor</th>
-                <td style="border: none;">:</td>
-                <td>{{ $dataSertifikasi->jadwal->masterSkema->nomor_skema ?? '' }}</td>
-            </tr>
-        </table>
-
-        <div class="form-row" style="margin-bottom: 10px;">
-            <div class="form-label">Tujuan Asesmen</div>
-            <div class="form-separator">:</div>
-            <div class="form-value">
-                <span class="checkbox {{ strtolower($tujuanAsesmen ?? '') == 'sertifikasi' ? 'checked' : '' }}"></span>
-                Sertifikasi<br>
-                <span class="checkbox {{ strtolower($tujuanAsesmen ?? '') == 'pkt' ? 'checked' : '' }}"></span>
-                Pengakuan Kompetensi Terkini (PKT)<br>
-                <span
-                    class="checkbox {{ strtolower($tujuanAsesmen ?? '') == 'rekognisi pembelajaran lampau' ? 'checked' : '' }}"></span>
-                Rekognisi Pembelajaran Lampau<br>
-                <span class="checkbox {{ strtolower($tujuanAsesmen ?? '') == 'lainnya' ? 'checked' : '' }}"></span>
-                Lainnya
-            </div>
-        </div>
-    @endif
-
-    <!-- Daftar Unit Kompetensi -->
-    <p style="margin-top: 15px; margin-bottom: 5px;"><strong>Daftar Unit Kompetensi sesuai kemasan</strong></p>
-
-    <table>
+    <table class="bordered-table">
         <thead>
             <tr>
-                <th style="width: 30px;">No.</th>
-                <th style="width: 100px;">Kode Unit</th>
-                <th>Judul Unit</th>
-                <th style="width: 100px;">Standar Kompetensi Kerja</th>
+                <td colspan="2" style="text-align: center;">Skema Sertifikasi</td>
             </tr>
         </thead>
         <tbody>
-            @if (is_countable($unitKompetensi) && count($unitKompetensi) > 0)
-                @foreach ($unitKompetensi as $index => $unit)
-                    <tr>
-                        <td style="text-align: center;">{{ $index + 1 }}</td>
-                        <td>{{ $unit->kode_unit ?? '' }}</td>
-                        <td>{{ $unit->nama_unit ?? '' }}</td>
-                        <td style="text-align: center;">{{ $unit->standar_kompetensi_kerja ?? 'SKKNI' }}</td>
-                    </tr>
-                @endforeach
-            @else
+            <tr>
+                <td style="width: 25%; font-weight: bold;">Judul</td>
+                <td>{{ $skema->nama_skema ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Nomor</td>
+                <td>{{ $skema->nomor_skema ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Tujuan Asesmen</td>
+                <td>
+                    @if ($sertifikasi->tujuan_asesmen == 'Sertifikasi')
+                        Sertifikasi
+                    @elseif($sertifikasi->tujuan_asesmen == 'PKT')
+                        Pengakuan Kompetensi Terkini (PKT)
+                    @elseif($sertifikasi->tujuan_asesmen == 'RPL')
+                        Rekognisi Pembelajaran Lampau (RPL)
+                    @elseif($sertifikasi->tujuan_asesmen_lainnya)
+                        Lainnya: {{ $sertifikasi->tujuan_asesmen_lainnya }}
+                    @else
+                        {{ $sertifikasi->tujuan_asesmen }}
+                    @endif
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="subsection-title">Daftar Unit Kompetensi</div>
+
+    <table class="bordered-table">
+        <thead>
+            <tr>
+                <td style="width: 8%;">No.</td>
+                <td style="width: 25%;">Kode Unit</td>
+                <td style="width: 47%;">Judul Unit</td>
+                <td style="width: 20%;">Standar Kompetensi Kerja</td>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($skema->unitKompetensi as $index => $unit)
                 <tr>
-                    <td colspan="4" style="text-align: center; color: #999;">Belum ada unit kompetensi</td>
+                    <td style="text-align: center;">{{ $index + 1 }}</td>
+                    <td>{{ $unit->kode_unit }}</td>
+                    <td>{{ $unit->judul_unit }}</td>
+                    <td style="text-align: center;">{{ $unit->jenis_standar ?? 'SKKNI' }}</td>
                 </tr>
-            @endif
+            @empty
+                <tr>
+                    <td colspan="4" style="text-align: center;">Unit Kompetensi tidak ditemukan</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 
     <!-- BAGIAN C: BUKTI KELENGKAPAN -->
-    <div class="section-title" style="margin-top: 20px;">C. Bukti Kelengkapan Pemohon</div>
+    <div class="section-title" style="margin-top: 30px;">C. Bukti Kelengkapan Pemohon</div>
 
-    <p class="subsection-title">a. Bukti Persyaratan Dasar Pemohon</p>
+    <div class="subsection-title">a. Bukti Persyaratan Dasar Pemohon</div>
 
-    <table>
+    <table class="bordered-table">
         <thead>
             <tr>
-                <th style="width: 30px;">No.</th>
-                <th>Bukti Persyaratan Dasar</th>
-                <th style="width: 80px;">Memenuhi Syarat</th>
-                <th style="width: 100px;">Tidak Memenuhi Syarat</th>
-                <th style="width: 70px;">Tidak Ada</th>
+                <td rowspan="2" style="width: 8%; text-align: center;">No.</td>
+                <td rowspan="2" style="width: 52%; text-align: center;">Bukti Persyaratan Dasar</td>
+                <td colspan="2" style="width: 30%; text-align: center;">Ada</td>
+                <td rowspan="2" style="width: 10%; text-align: center;">Tidak Ada</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; width: 15%;">Memenuhi Syarat</td>
+                <td style="text-align: center; width: 15%;">Tidak Memenuhi Syarat</td>
             </tr>
         </thead>
         <tbody>
-            @php
-                $persyaratanDasar = ['KTP/Identitas', 'Ijazah Pendidikan', 'Sertifikat Pelatihan'];
-            @endphp
-            @foreach ($persyaratanDasar as $index => $nama)
+            @php $no = 1; @endphp
+            @foreach ($sertifikasi->buktiDasar as $bukti)
                 <tr>
-                    <td style="text-align: center;">{{ $index + 1 }}</td>
-                    <td>{{ $nama }}</td>
-                    <td style="text-align: center;"><span class="checkbox"></span></td>
-                    <td style="text-align: center;"><span class="checkbox"></span></td>
-                    <td style="text-align: center;"><span class="checkbox"></span></td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <p class="subsection-title">b. Bukti Administratif</p>
-
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 30px;">No.</th>
-                <th>Bukti Administratif</th>
-                <th style="width: 80px;">Memenuhi Syarat</th>
-                <th style="width: 100px;">Tidak Memenuhi Syarat</th>
-                <th style="width: 70px;">Tidak Ada</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $administratif = ['Formulir Permohonan', 'Pas Foto', 'Bukti Pembayaran'];
-            @endphp
-            @foreach ($administratif as $index => $nama)
-                <tr>
-                    <td style="text-align: center;">{{ $index + 1 }}</td>
-                    <td>{{ $nama }}</td>
-                    <td style="text-align: center;"><span class="checkbox"></span></td>
-                    <td style="text-align: center;"><span class="checkbox"></span></td>
-                    <td style="text-align: center;"><span class="checkbox"></span></td>
+                    <td style="text-align: center;">{{ $no++ }}</td>
+                    <td>{{ $bukti->bukti_dasar }}</td>
+                    <td style="text-align: center;">
+                        @if (strtoupper($bukti->status_kelengkapan) == 'M' || strtoupper($bukti->status_kelengkapan) == 'MEMENUHI')
+                            <img src="{{ public_path('images/bukti_dasar/checkmark.jpg') }}" width="14">
+                        @endif
+                    </td>
+                    </td>
+                    <td style="text-align:center;">
+                        @if ($bukti->status_kelengkapan == 'tidak_memenuhi')
+                            <strong style="color:red;">X</strong> {{-- Menggunakan X sesuai gambar output --}}
+                        @endif
+                    </td>
+                    <td style="text-align: center;">
+                        @if ($bukti->status_kelengkapan == 'tidak_ada')
+                            <strong style="color:black;">-</strong> {{-- Menggunakan - sesuai gambar output --}}
+                        @endif
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
     <!-- BAGIAN D: REKOMENDASI -->
-    <div class="section-title" style="margin-top: 20px;">D. Rekomendasi</div>
-    <p class="info-text">
-        Berdasarkan ketentuan persyaratan dasar, maka pemohon <strong>Diterima/Tidak diterima</strong> sebagai peserta
-        sertifikasi
+    <div class="section-title" style="margin-top: 30px;">D. Rekomendasi</div>
+    <p style="margin-left: 20px; margin-top: 5px;">
+        Berdasarkan ketentuan persyaratan dasar, maka pemohon
+        <span class="rekomendasi-box">
+            @if (isset($sertifikasi->status_rekomendasi) && $sertifikasi->status_rekomendasi == 'diterima')
+                <span class="status-diterima">Diterima</span>
+            @elseif(isset($sertifikasi->status_rekomendasi) && $sertifikasi->status_rekomendasi == 'tidak_diterima')
+                <span class="status-tidak-diterima">Tidak Diterima</span>
+            @else
+                <span class="status-diterima">Diterima</span>
+            @endif
+        </span>
+        sebagai peserta sertifikasi
     </p>
 
     <!-- TANDA TANGAN -->
     <div class="signature-section">
-        <div class="signature-box">
-            <strong>Pemohon,</strong><br>
-            <small>(nama asesi)</small>
-            <div class="signature-img">
-                @if ($fullPathTandaTangan)
-                    <img src="{{ $fullPathTandaTangan }}" alt="TTD" style="max-height: 60px;">
+        <div class="signature-left">
+            <div class="signature-title">Pemohon</div>
+            <div class="signature-space">
+                @if ($asesi->tanda_tangan)
+                    <img src="{{ public_path($asesi->tanda_tangan) }}"
+                        style="max-width: 120px; max-height: 70px; margin-top: 5px;">
                 @endif
             </div>
-            <strong>(tanda tangan)</strong>
-            <div style="margin-top: 10px;">
-                <strong>{{ $asesi->nama_lengkap ?? '' }}</strong>
+            <div class="signature-name">
+                ({{ $asesi->nama_lengkap }})
             </div>
         </div>
-
-        <div class="signature-box">
-            <strong>Lembaga Sertifikasi Profesi</strong><br>
-            <small>(nama admin)</small>
-            <div class="signature-img"></div>
-            <strong>(tanda tangan)</strong>
-            <div style="margin-top: 10px;">
-                <strong>_______________________</strong>
+        <div class="signature-right">
+            <div class="signature-title">Lembaga Sertifikasi Profesi</div>
+            <div class="signature-space">
+                @if ($ttdBase64)
+                    <img src="data:image/png;base64,{{ $ttdBase64 }}" alt="Tanda Tangan Admin"
+                        style="max-width: 120px; max-height: 70px; margin-top: 5px;">
+                @endif
+            </div>
+            <div class="signature-name">
+                ({{ $admin->nama_admin ?? 'nama admin disini' }})
             </div>
         </div>
     </div>
 
-    <p style="margin-top: 20px; text-align: center; font-size: 8pt; color: #666;">
-        Dokumen dicetak otomatis pada {{ now()->format('d F Y, H:i') }} WIB
-    </p>
 </body>
 
 </html>
