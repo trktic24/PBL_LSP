@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PersyaratanModifikasiAk07 extends Model
+class PersyaratanModifikasiAK07 extends Model
 {
     use HasFactory;
 
@@ -13,9 +13,8 @@ class PersyaratanModifikasiAk07 extends Model
     protected $primaryKey = 'id_persyaratan_modifikasi_AK07';
     protected $fillable = ['pertanyaan_karakteristik'];
 
-    // Relasi ke Opsi Keterangan (One to Many)
-    public function opsiKeterangan()
+    public function catatanKeterangan()
     {
-        return $this->hasMany(CatatanKeteranganAk07::class, 'id_persyaratan_modifikasi_AK07', 'id_persyaratan_modifikasi_AK07');
+        return $this->hasMany(CatatanKeteranganAK07::class, 'id_persyaratan_modifikasi_AK07', 'id_persyaratan_modifikasi_AK07');
     }
 }

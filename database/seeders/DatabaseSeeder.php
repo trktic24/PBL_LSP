@@ -43,8 +43,9 @@ class DatabaseSeeder extends Seeder
             // KelompokPekerjaanSeeder::class, // Diganti TenSchemesSeeder
             // SkemaSeeder::class, // Diganti TenSchemesSeeder
             // JuniorWebDevSeeder::class, // Diganti TenSchemesSeeder
-            
+
             TenSchemesSeeder::class, // <-- NEW COMPREHENSIVE SEEDER
+            FrAk07MasterSeeder::class, // <-- Added FR_AK_07 Master Seeder
         ]);
     }
 }

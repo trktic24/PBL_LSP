@@ -116,18 +116,18 @@ class DataSertifikasiAsesi extends Model
     // Relasi ke Respon Potensi (One to Many)
     public function responPotensiAk07()
     {
-        return $this->hasMany(ResponPotensiAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasMany(ResponPotensiAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     // Relasi ke Respon Penyesuaian Q1-Q7 (One to Many)
     public function responPenyesuaianAk07()
     {
-        return $this->hasMany(ResponDiperlukanPenyesuaianAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasMany(ResponDiperlukanPenyesuaianAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     // Relasi ke Hasil Akhir (One to One)
     public function hasilPenyesuaianAk07()
     {
-        return $this->hasOne(HasilPenyesuaianAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasOne(HasilPenyesuaianAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }

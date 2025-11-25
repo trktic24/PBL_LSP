@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PoinPotensiAk07 extends Model
+class PoinPotensiAK07 extends Model
 {
     use HasFactory;
 
