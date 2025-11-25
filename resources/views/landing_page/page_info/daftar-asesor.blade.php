@@ -6,7 +6,9 @@
 <style>
     body { font-family: 'Poppins', sans-serif !important; }
 
-    /* STYLE TABEL (SAMA DENGAN JADWAL) */
+    /* ==============================
+       STYLE TABEL SESUAI GAMBAR
+    =============================== */
     .custom-table-header {
         background: #FFF8C6;
         color: #333;
@@ -14,17 +16,16 @@
         border-bottom: 2px solid #E5DFA3;
     }
     .custom-table-row {
-        background: #FFFFFF;
+        background: #FFFFFF !important;
         border-bottom: 1px solid #F1EEC7;
-    }
-    .custom-table-row:nth-child(even) {
-        background: #FFFDF2;
     }
     .custom-table-row:hover {
         background: #F7F7F7;
     }
 
-    /* FILTER STYLE */
+    /* ==============================
+       FILTER STYLE
+    =============================== */
     .filter-dropdown { position: relative; display: inline-block; }
     .filter-btn {
         padding: 7px 20px; font-size: 14px; border: 1px solid #444;
@@ -66,6 +67,7 @@
 
     <div class="flex flex-col sm:flex-row justify-between mb-4 gap-4">
         
+        {{-- FILTER --}}
         <form method="GET" id="filterForm">
             <div class="filter-dropdown">
                 <button type="button" onclick="toggleFilterPanel()" class="filter-btn">
@@ -76,33 +78,42 @@
                 </button>
 
                 <div id="filterPanel" class="filter-panel">
+                    
+                    {{-- Provinsi --}}
                     <button type="button" class="dropdown-btn" onclick="toggleSubmenu('provinsiBox')">
                         Provinsi
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
                         </svg>
                     </button>
+
                     <div id="provinsiBox" class="submenu">
-                        <input type="text" class="w-full mb-2 p-2 border rounded-lg" placeholder="Cari..." onkeyup="filterCheckbox('provinsiBox', this.value)">
+                        <input type="text" class="w-full mb-2 p-2 border rounded-lg"
+                               placeholder="Cari..." onkeyup="filterCheckbox('provinsiBox', this.value)">
                         @foreach($listProvinsi as $prov)
                             <label class="flex items-center gap-2 text-sm mb-1">
-                                <input type="checkbox" name="provinsi[]" value="{{ $prov }}" {{ is_array(request('provinsi')) && in_array($prov, request('provinsi')) ? 'checked' : '' }}>
+                                <input type="checkbox" name="provinsi[]" value="{{ $prov }}"
+                                    {{ is_array(request('provinsi')) && in_array($prov, request('provinsi')) ? 'checked' : '' }}>
                                 {{ $prov }}
                             </label>
                         @endforeach
                     </div>
 
+                    {{-- Bidang --}}
                     <button type="button" class="dropdown-btn" onclick="toggleSubmenu('bidangBox')">
                         Keahlian
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
                         </svg>
                     </button>
+
                     <div id="bidangBox" class="submenu">
-                        <input type="text" class="w-full mb-2 p-2 border rounded-lg" placeholder="Cari..." onkeyup="filterCheckbox('bidangBox', this.value)">
+                        <input type="text" class="w-full mb-2 p-2 border rounded-lg"
+                               placeholder="Cari..." onkeyup="filterCheckbox('bidangBox', this.value)">
                         @foreach($listBidang as $bid)
                             <label class="flex items-center gap-2 text-sm mb-1">
-                                <input type="checkbox" name="bidang[]" value="{{ $bid }}" {{ is_array(request('bidang')) && in_array($bid, request('bidang')) ? 'checked' : '' }}>
+                                <input type="checkbox" name="bidang[]" value="{{ $bid }}"
+                                    {{ is_array(request('bidang')) && in_array($bid, request('bidang')) ? 'checked' : '' }}>
                                 {{ $bid }}
                             </label>
                         @endforeach
@@ -116,15 +127,25 @@
             </div>
         </form>
 
+        {{-- SEARCH --}}
         <form method="GET" action="{{ url('/daftar-asesor') }}" class="relative">
-            <input type="text" name="search" placeholder="Cari asesor..." value="{{ request('search') }}" class="w-64 pl-10 pr-4 py-2 border border-gray-600 rounded-full text-sm">
+            <input 
+                type="text" 
+                id="searchInput"
+                name="search" 
+                placeholder="Cari asesor..." 
+                value="{{ request('search') }}"
+                class="w-64 pl-10 pr-4 py-2 border border-gray-600 rounded-full text-sm">
+
             <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
         </form>
+
     </div>
 
-
+    {{-- TABLE --}}
     <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden">
 
         <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm">
@@ -138,25 +159,11 @@
         @forelse($asesors as $asesor)
             <div class="grid grid-cols-5 px-6 py-4 custom-table-row text-sm items-center">
                 
-                <div class="flex items-center font-medium text-gray-900">
-                    {{ $asesor->nama_lengkap }}
-                </div>
-                
-                <div class="text-center text-gray-600">
-                    {{ $asesor->nomor_regis }}
-                </div>
-                
-                <div class="text-center text-gray-600">
-                    {{ $asesor->pekerjaan }}
-                </div>
-                
-                <div class="text-center text-gray-600">
-                    {{ $asesor->provinsi }}
-                </div>
-                
-                <div class="text-center text-gray-600 font-semibold">
-                    {{ rand(70,130) }}
-                </div>
+                <div class="font-medium text-gray-900">{{ $asesor->nama_lengkap }}</div>
+                <div class="text-center text-gray-600">{{ $asesor->nomor_regis }}</div>
+                <div class="text-center text-gray-600">{{ $asesor->pekerjaan }}</div>
+                <div class="text-center text-gray-600">{{ $asesor->provinsi }}</div>
+                <div class="text-center text-gray-600 font-semibold">{{ rand(70,130) }}</div>
 
             </div>
         @empty
@@ -176,25 +183,55 @@
 
 
 <script>
-    function toggleFilterPanel() {
-        document.getElementById("filterPanel").classList.toggle("show");
+/* ================================
+   FILTER
+================================ */
+function toggleFilterPanel() {
+    document.getElementById("filterPanel").classList.toggle("show");
+}
+function toggleSubmenu(id) {
+    document.getElementById(id).classList.toggle("show");
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest(".filter-dropdown")) {
+        document.getElementById("filterPanel").classList.remove("show");
     }
-    function toggleSubmenu(id) {
-        document.getElementById(id).classList.toggle("show");
-    }
-    document.addEventListener('click', function(e) {
-        const panel = document.getElementById("filterPanel");
-        if (!e.target.closest(".filter-dropdown")) {
-            panel.classList.remove("show");
-        }
+});
+function filterCheckbox(boxId, keyword) {
+    keyword = keyword.toLowerCase();
+    const labels = document.querySelectorAll(`#${boxId} label`);
+    labels.forEach(label => {
+        label.style.display = label.textContent.toLowerCase().includes(keyword)
+            ? "flex" : "none";
     });
-    function filterCheckbox(boxId, keyword) {
-        keyword = keyword.toLowerCase();
-        const labels = document.querySelectorAll(`#${boxId} label`);
-        labels.forEach(label => {
-            label.style.display = label.textContent.toLowerCase().includes(keyword) ? "flex" : "none";
-        });
+}
+
+/* =======================================
+   SEARCH:
+   - Submit hanya saat ENTER
+   - Jika dikosongkan → auto submit
+======================================= */
+
+const searchInput = document.getElementById("searchInput");
+let lastSearchValue = searchInput.value;
+
+searchInput.addEventListener("keyup", function(e) {
+
+    // Jika dikosongkan → submit otomatis
+    if (this.value.trim() === "") {
+        if (lastSearchValue !== "") {
+            lastSearchValue = "";
+            this.form.submit();
+        }
+        return;
     }
+
+    // Submit hanya saat ENTER
+    if (e.key === "Enter") {
+        lastSearchValue = this.value;
+        this.form.submit();
+    }
+});
 </script>
 
 @endsection
