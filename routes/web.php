@@ -97,6 +97,24 @@ Route::middleware('auth')->group(function () {
     // MAPA 02
     Route::get('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');
     Route::post('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');
+
+    // IA 01
+    // Route Halaman Awal (Cover)
+    Route::get('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
+    Route::post('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
+    // Route Step Wizard (Unit 1, 2, dst)
+    Route::get('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
+    Route::post('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
+    Route::get('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
+    Route::post('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+
+    // Route Admin Read-Only
+    Route::get('/ia01/{id_sertifikasi}/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
+
+    // Route Halaman Sukses (Image 2)
+    Route::get('/ia01/success', function() {
+        return view('frontend.IA_01.success');
+    })->name('ia01.success_page');
 });
 
 Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
@@ -118,19 +136,5 @@ Route::get('/jawab', [SoalController::class, 'jawabIndex'])->name('jawab.index')
 // Menyimpan jawaban user
 Route::post('/jawab', [SoalController::class, 'jawabStore'])->name('jawab.store');
 
-//IA 01
-// Route Halaman Awal (Cover)
-Route::get('/ia01/{skema_id}/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
-Route::post('/ia01/{skema_id}/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
-// Route Step Wizard (Unit 1, 2, dst)
-Route::get('/ia01/{skema_id}/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
-Route::post('/ia01/{skema_id}/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
-Route::get('/ia01/{skema_id}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
-Route::post('/ia01/{skema_id}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
 
-
-// Route Halaman Sukses (Image 2)
-Route::get('/ia01/success', function() {
-    return view('frontend.IA_01.success');
-})->name('ia01.success_page');
 require __DIR__.'/auth.php';

@@ -57,6 +57,7 @@ class DataSertifikasiAsesi extends Model
         'catatan_AK05',
         'rekomendasi1_AK06',
         'rekomendasi2_AK06',
+        'rekomendasi_ia01',
     ];
 
     /**

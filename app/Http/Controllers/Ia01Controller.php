@@ -12,32 +12,40 @@ use Illuminate\Support\Facades\Auth;
 class IA01Controller extends Controller
 {
     // ============================================================================
-    // 🛠️ HELPER UNTUK MOCK DATA (PENTING!)
-    // Function ini nipu View biar seolah-olah ada data Asesor/Asesi/Sertifikasi.
+    // 🛡️ HELPER: CEK ADMIN
     // ============================================================================
-    private function getMockInfo()
+    private function isAdmin()
     {
-        // 🔥 [TEAM BACKEND]: Nanti ganti return ini pakai Query Database beneran
-        // Contoh: return DataSertifikasi::with('asesor','asesi')->find($id);
+        // Asumsi relasi user->role->nama_role ada dan valid
+        return Auth::check() && Auth::user()->role->nama_role === 'admin';
+    }
 
-        return (object) [
-            'id_data_sertifikasi' => 1, // ID Dummy Transaksi
-            'asesor_name' => Auth::user()->name ?? 'Budi Santoso (Asesor Dummy)',
-            'asesor_id'   => Auth::id() ?? 99,
-            'asesor_ttd'  => null, // Path gambar TTD Asesor (bisa null)
-
-            'asesi_name'  => 'Siti Aminah (Asesi Dummy)',
-            'asesi_id'    => 88,
-            'asesi_ttd'   => null, // Path gambar TTD Asesi (bisa null)
-        ];
+    // ============================================================================
+    // 🛠️ HELPER: GET DATA SERTIFIKASI
+    // ============================================================================
+    private function getSertifikasi($id_sertifikasi)
+    {
+        return \App\Models\DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.tuk',
+            'jadwal.skema',
+            'jadwal.asesor',
+            'jadwal.skema.kelompokPekerjaans.UnitKompetensis'
+        ])->findOrFail($id_sertifikasi);
     }
 
     /**
      * 1. HALAMAN COVER / HEADER
      */
-    public function showCover(Request $request, $skema_id)
+    public function showCover(Request $request, $id_sertifikasi)
     {
-        $skema = Skema::with('kelompokPekerjaans.unitKompetensis')->findOrFail($skema_id);
+        // 🔥 [ADMIN CHECK]: Redirect ke halaman khusus admin
+        if ($this->isAdmin()) {
+            return redirect()->route('ia01.admin.show', ['id_sertifikasi' => $id_sertifikasi]);
+        }
+
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+        $skema = $sertifikasi->jadwal->skema;
         $kelompok = $skema->kelompokPekerjaans->first();
 
         if (!$kelompok) {
@@ -45,10 +53,7 @@ class IA01Controller extends Controller
         }
 
         $unitKompetensi = $kelompok->unitKompetensis()->orderBy('urutan')->first();
-        $data_sesi = $request->session()->get("ia01.skema_{$skema_id}", []);
-
-        // 🔥 [INTEGRASI]: Panggil Mock Data biar form gak error undefined variable
-        $sertifikasi = $this->getMockInfo();
+        $data_sesi = $request->session()->get("ia01.sertifikasi_{$id_sertifikasi}", []);
 
         return view('frontend.IA_01.tampilan_awal', compact(
             'kelompok','skema', 'unitKompetensi', 'data_sesi', 'sertifikasi'
@@ -58,39 +63,48 @@ class IA01Controller extends Controller
     /**
      * 2. SIMPAN DATA COVER KE SESSION
      */
-    public function storeCover(Request $request, $skema_id)
+    public function storeCover(Request $request, $id_sertifikasi)
     {
+        if ($this->isAdmin()) {
+            abort(403, 'Admin tidak diizinkan mengisi form.');
+        }
+
         $validatedData = $request->validate([
             'tuk' => 'required|in:sewaktu,tempat_kerja,mandiri',
             'tanggal_asesmen' => 'required|date',
         ]);
 
-        // 🔥 [INTEGRASI]: Ambil nama statis dari Mock
-        $sertifikasi = $this->getMockInfo();
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
 
         $metaData = [
-            'nama_asesor' => $sertifikasi->asesor_name,
-            'nama_asesi'  => $sertifikasi->asesi_name,
+            'nama_asesor' => $sertifikasi->jadwal->asesor->name ?? 'Asesor',
+            'nama_asesi'  => $sertifikasi->asesi->name ?? 'Asesi',
         ];
 
         // Simpan ke Session
-        $sessionKey = "ia01.skema_{$skema_id}";
+        $sessionKey = "ia01.sertifikasi_{$id_sertifikasi}";
         $oldData = $request->session()->get($sessionKey, []);
 
-        // Gabung data: (Data Lama) + (Input User) + (Data Mock)
+        // Gabung data: (Data Lama) + (Input User) + (Data Meta)
         $newData = array_merge($oldData, $validatedData, $metaData);
         $request->session()->put($sessionKey, $newData);
 
         // Lanjut ke Step 1
-        return redirect()->route('ia01.showStep', ['skema_id' => $skema_id, 'urutan' => 1]);
+        return redirect()->route('ia01.showStep', ['id_sertifikasi' => $id_sertifikasi, 'urutan' => 1]);
     }
 
     /**
      * 3. FORM WIZARD (UNIT KOMPETENSI 1, 2, DST)
      */
-    public function showStep(Request $request, $skema_id, $urutan)
+    public function showStep(Request $request, $id_sertifikasi, $urutan)
     {
-        $skema = Skema::with('kelompokPekerjaans')->findOrFail($skema_id);
+        // 🔥 [ADMIN CHECK]: Redirect ke halaman khusus admin
+        if ($this->isAdmin()) {
+            return redirect()->route('ia01.admin.show', ['id_sertifikasi' => $id_sertifikasi]);
+        }
+
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+        $skema = $sertifikasi->jadwal->skema;
         $kelompok = $skema->kelompokPekerjaans->firstOrFail();
 
         $unitKompetensi = UnitKompetensi::with(['elemens.kriteriaUnjukKerja'])
@@ -100,13 +114,10 @@ class IA01Controller extends Controller
 
         $kuks = $unitKompetensi->kriteriaUnjukKerja()->orderBy('no_kriteria')->get();
         $totalSteps = $kelompok->unitKompetensis()->count();
-        $data_sesi = $request->session()->get("ia01.skema_{$skema_id}", []);
+        $data_sesi = $request->session()->get("ia01.sertifikasi_{$id_sertifikasi}", []);
 
         // Cek tipe form (Aktivitas vs Demonstrasi, opsional)
         $formType = $kuks->first()->tipe ?? 'aktivitas';
-
-        // Mock data (siapa tau butuh nampilin nama asesi di header setiap page)
-        $sertifikasi = $this->getMockInfo();
 
         return view('frontend.IA_01.IA_01', compact(
             'unitKompetensi', 'kuks','skema', 'data_sesi', 'totalSteps', 'formType', 'sertifikasi'
@@ -116,9 +127,14 @@ class IA01Controller extends Controller
     /**
      * 4. SIMPAN DATA PER STEP (PER UNIT)
      */
-    public function storeStep(Request $request, $skema_id, $urutan)
+    public function storeStep(Request $request, $id_sertifikasi, $urutan)
     {
-        $skema = Skema::with('kelompokPekerjaans')->findOrFail($skema_id);
+        if ($this->isAdmin()) {
+            abort(403, 'Admin tidak diizinkan mengisi form.');
+        }
+
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+        $skema = $sertifikasi->jadwal->skema;
         $kelompok = $skema->kelompokPekerjaans->firstOrFail();
         $unitKompetensi = UnitKompetensi::where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
                                     ->where('urutan', $urutan)
@@ -143,7 +159,7 @@ class IA01Controller extends Controller
             'hasil.*.required' => 'Semua poin pencapaian (Ya/Tidak) harus dipilih.',
         ]);
 
-        $sessionKey = "ia01.skema_{$skema_id}";
+        $sessionKey = "ia01.sertifikasi_{$id_sertifikasi}";
         $currentSession = $request->session()->get($sessionKey, []);
 
         // Gunakan array_replace biar data baru (revisi) nimpah data lama
@@ -170,53 +186,54 @@ class IA01Controller extends Controller
         // Navigasi Next / Finish
         $totalSteps = $kelompok->unitKompetensis()->count();
         if ($urutan < $totalSteps) {
-            return redirect()->route('ia01.showStep', ['skema_id' => $skema_id, 'urutan' => $urutan + 1]);
+            return redirect()->route('ia01.showStep', ['id_sertifikasi' => $id_sertifikasi, 'urutan' => $urutan + 1]);
         } else {
-            return redirect()->route('ia01.finish', ['skema_id' => $skema_id]);
+            return redirect()->route('ia01.finish', ['id_sertifikasi' => $id_sertifikasi]);
         }
     }
 
     /**
      * 5. HALAMAN FINISH (REKOMENDASI & TTD)
      */
-    public function showFinish(Request $request, $skema_id)
+    public function showFinish(Request $request, $id_sertifikasi)
     {
-        $skema = Skema::with('kelompokPekerjaans')->findOrFail($skema_id);
+        // 🔥 [ADMIN CHECK]: Redirect ke halaman khusus admin
+        if ($this->isAdmin()) {
+            return redirect()->route('ia01.admin.show', ['id_sertifikasi' => $id_sertifikasi]);
+        }
+
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+        $skema = $sertifikasi->jadwal->skema;
         $kelompok = $skema->kelompokPekerjaans->first();
 
-        $sessionKey = "ia01.skema_{$skema_id}";
+        $sessionKey = "ia01.sertifikasi_{$id_sertifikasi}";
         $data_sesi = $request->session()->get($sessionKey, []);
 
         if (empty($data_sesi)) {
-            return redirect()->route('ia01.cover', ['skema_id' => $skema_id]);
+            return redirect()->route('ia01.cover', ['id_sertifikasi' => $id_sertifikasi]);
         }
 
         // LOGIC: Jika ada satu saja 'belum_kompeten', sistem menyarankan BK
         $adaBK = in_array('belum_kompeten', $data_sesi['hasil'] ?? []);
         $rekomendasiSistem = $adaBK ? 'belum_kompeten' : 'kompeten';
 
-        // 🔥 [INTEGRASI]: Convert Mock Data jadi Object untuk View
-        $mock = $this->getMockInfo();
-
-        // Kita bungkus jadi object sertifikasi biar view-nya tetep elegan
-        // View lu manggil: $sertifikasi->asesi->name
-        $sertifikasi = (object) [
-            'id_data_sertifikasi' => $mock->id_data_sertifikasi,
-            'asesi' => (object) ['name' => $mock->asesi_name, 'ttd_path' => $mock->asesi_ttd],
-            'asesor' => (object) ['name' => $mock->asesor_name, 'ttd_path' => $mock->asesor_ttd],
-        ];
-
         return view('frontend.IA_01.finish', compact(
             'skema', 'kelompok', 'rekomendasiSistem', 'sertifikasi', 'data_sesi'
         ));
     }
 
+
+
     /**
      * 6. FINAL SUBMIT KE DATABASE
      */
-    public function storeFinish(Request $request, $skema_id)
+    public function storeFinish(Request $request, $id_sertifikasi)
     {
-        $sessionKey = "ia01.skema_{$skema_id}";
+        if ($this->isAdmin()) {
+            abort(403, 'Admin tidak diizinkan menyimpan data.');
+        }
+
+        $sessionKey = "ia01.sertifikasi_{$id_sertifikasi}";
         $finalData = $request->session()->get($sessionKey);
 
         // Validasi Logic Backend (Double Check)
@@ -235,18 +252,10 @@ class IA01Controller extends Controller
                 },
             ],
             'umpan_balik' => 'required|string|min:5',
-            // ==============================================================
-            // [TODO TEAM ASESOR]: HAPUS KOMENTAR INI SAAT PRODUCTION
-            // Agar jika status BK, asesor WAJIB mengisi detailnya.
-            // ==============================================================
-            // 'bk_unit'   => 'required_if:rekomendasi,belum_kompeten',
-            // 'bk_elemen' => 'required_if:rekomendasi,belum_kompeten',
-            // 'bk_kuk'    => 'required_if:rekomendasi,belum_kompeten',
         ]);
 
-        // 🔥 [INTEGRASI]: Ambil ID Sertifikasi dari Mock Data
-        $mock = $this->getMockInfo();
-        $idDataSertifikasi = $mock->id_data_sertifikasi;
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+        $idDataSertifikasi = $sertifikasi->id_data_sertifikasi_asesi;
 
         try {
             // Simpan data per KUK ke tabel Respon
@@ -268,9 +277,12 @@ class IA01Controller extends Controller
                 }
             }
 
-            // 🔥 [TEAM BACKEND]: Insert Logic Update Status Global Disini
-            // Contoh: DataSertifikasi::where('id', $idDataSertifikasi)->update(...)
-            // Tapi karena ini tugas lu cuma form, biarin aja kosong atau dikomen.
+            // Update Data Sertifikasi (Umpan Balik & Rekomendasi)
+            $sertifikasi->update([
+                'feedback_ia01' => $request->umpan_balik,
+                'rekomendasi_ia01' => $request->rekomendasi,
+            ]);
+
 
             // Bersihkan Session setelah sukses
             $request->session()->forget($sessionKey);
@@ -280,5 +292,34 @@ class IA01Controller extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * 7. HALAMAN KHUSUS ADMIN (READ ONLY - ALL UNITS)
+     */
+    public function showAdmin($id_sertifikasi)
+    {
+        if (!$this->isAdmin()) {
+            return redirect()->route('ia01.cover', ['id_sertifikasi' => $id_sertifikasi]);
+        }
+
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+        $skema = $sertifikasi->jadwal->skema;
+        $kelompok = $skema->kelompokPekerjaans->firstOrFail();
+
+        // Ambil SEMUA unit kompetensi beserta elemen dan KUK
+        $units = UnitKompetensi::with(['elemens.kriteriaUnjukKerja'])
+                    ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
+                    ->orderBy('urutan')
+                    ->get();
+
+        // Ambil semua jawaban yang tersimpan di DB
+        $responses = ResponApl02Ia01::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
+                        ->get()
+                        ->keyBy('id_kriteria');
+
+        return view('frontend.IA_01.admin_show', compact(
+            'skema', 'kelompok', 'units', 'sertifikasi', 'responses'
+        ));
     }
 }

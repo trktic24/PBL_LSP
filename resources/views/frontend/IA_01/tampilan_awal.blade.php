@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <form action="{{ route('ia01.storeCover', ['skema_id' => $skema->id_skema]) }}" method="POST">
+    <form action="{{ route('ia01.storeCover', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" method="POST">
         @csrf
 
         {{-- HEADER --}}
@@ -77,8 +77,8 @@
                     Nama Asesor
                 </div>
                 <div class="p-2 pl-4 font-medium">
-                    {{ $sertifikasi->asesor_name }}
-                    <input type="hidden" name="nama_asesor" value="{{ $sertifikasi->asesor_name }}">
+                    {{ $sertifikasi->jadwal->asesor->name ?? 'Asesor' }}
+                    <input type="hidden" name="nama_asesor" value="{{ $sertifikasi->jadwal->asesor->name ?? 'Asesor' }}">
                 </div>
             </div>
 
@@ -88,7 +88,7 @@
                     Nama Asesi
                 </div>
                 <div class="p-2 pl-4 font-medium">
-                    {{ $sertifikasi->asesi_name }}
+                    {{ $sertifikasi->asesi->name ?? 'Asesi' }}
                 </div>
             </div>
 
