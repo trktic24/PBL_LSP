@@ -122,6 +122,22 @@ Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFO
 Route::get('/FR_IA_07', [IA07Controller::class, 'index'])->name('ia07.asesor');
 Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
 
+// IA 01 (MOVED OUTSIDE AUTH FOR TESTING)
+// Route Halaman Awal (Cover)
+Route::get('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
+Route::post('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
+// Route Step Wizard (Unit 1, 2, dst)
+Route::get('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
+Route::post('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
+Route::get('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
+Route::post('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+// Route Admin Read-Only
+Route::get('/ia01/{id_sertifikasi}/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
+// Route Halaman Sukses (Image 2)
+Route::get('/ia01/success', function() {
+    return view('frontend.IA_01.success');
+})->name('ia01.success_page');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -141,21 +157,21 @@ Route::middleware('auth')->group(function () {
 
     // IA 01
     // Route Halaman Awal (Cover)
-    Route::get('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
-    Route::post('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
+    // Route::get('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
+    // Route::post('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
     // Route Step Wizard (Unit 1, 2, dst)
-    Route::get('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
-    Route::post('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
-    Route::get('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
-    Route::post('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+    // Route::get('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
+    // Route::post('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
+    // Route::get('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
+    // Route::post('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
 
     // Route Admin Read-Only
-    Route::get('/ia01/{id_sertifikasi}/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
+    // Route::get('/ia01/{id_sertifikasi}/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
 
     // Route Halaman Sukses (Image 2)
-    Route::get('/ia01/success', function() {
-        return view('frontend.IA_01.success');
-    })->name('ia01.success_page');
+    // Route::get('/ia01/success', function() {
+    //     return view('frontend.IA_01.success');
+    // })->name('ia01.success_page');
 
     //Ak07
 

@@ -39,10 +39,12 @@ class DatabaseSeeder extends Seeder
 
             // 4. Data Transaksi (Jalankan PALING AKHIR)
             CategorieSeeder::class,
-            UnitKompetensiSeeder::class,
-            KelompokPekerjaanSeeder::class,
-            SkemaSeeder::class,
-            JuniorWebDevSeeder::class
+            // UnitKompetensiSeeder::class, // Diganti TenSchemesSeeder
+            // KelompokPekerjaanSeeder::class, // Diganti TenSchemesSeeder
+            // SkemaSeeder::class, // Diganti TenSchemesSeeder
+            // JuniorWebDevSeeder::class, // Diganti TenSchemesSeeder
+            
+            TenSchemesSeeder::class, // <-- NEW COMPREHENSIVE SEEDER
         ]);
     }
 }
