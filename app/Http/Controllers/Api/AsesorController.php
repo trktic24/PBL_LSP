@@ -17,7 +17,7 @@ class AsesorController extends Controller
     public function index()
     {
         try {
-            $asesors = Asesor::with(['user:id_user,email'])->get(); // diperbaiki
+            $asesors = Asesor::with(['user:id_user,email'])->get();
 
             return response()->json([
                 'status' => 'success',
@@ -40,7 +40,6 @@ class AsesorController extends Controller
      */
     public function store(Request $request)
     {
-        // 🔥 VALIDASI BARU (tanpa hapus validasi lama)
         $validator2 = Validator::make($request->all(), [
             'user_id'           => 'required|exists:users,id_user',
             'nomor_regis'       => 'required|unique:asesor,nomor_regis',
@@ -59,8 +58,6 @@ class AsesorController extends Controller
             'NPWP'              => 'required',
             'nama_bank'         => 'required',
             'norek'             => 'required',
-
-            // file uploads
             'ktp'                   => 'required|file',
             'pas_foto'              => 'required|file',
             'NPWP_foto'             => 'required|file',
@@ -81,8 +78,6 @@ class AsesorController extends Controller
         }
 
         try {
-
-            // 🔥 HANDLE UPLOAD FILES
             $fileFields = [
                 'ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto',
                 'CV', 'ijazah', 'sertifikat_asesor',
@@ -97,7 +92,6 @@ class AsesorController extends Controller
                 }
             }
 
-            // 🔥 CREATE ASESOR
             $asesor = Asesor::create($data);
 
             return response()->json([
@@ -151,14 +145,11 @@ class AsesorController extends Controller
             ], 404);
         }
 
-        // 🔥 VALIDASI UPDATE BARU
         $validator2 = Validator::make($request->all(), [
             'nama_lengkap'      => 'sometimes|string',
             'user_id'           => 'sometimes|exists:users,id_user',
             'nik'               => 'sometimes|size:16|unique:asesor,nik,' . $id . ',id_asesor',
             'nomor_regis'       => 'sometimes|unique:asesor,nomor_regis,' . $id . ',id_asesor',
-
-            // file upload opsional
             'ktp'                   => 'sometimes|file',
             'pas_foto'              => 'sometimes|file',
             'NPWP_foto'             => 'sometimes|file',
@@ -179,9 +170,31 @@ class AsesorController extends Controller
         }
 
         try {
-            $data = $request->all();
+            // 🔥 *KODE BARU* — hanya update field yang dikirim
+            $data = $request->only([
+                "nomor_regis",
+                "user_id",
+                "nama_lengkap",
+                "nik",
+                "tempat_lahir",
+                "tanggal_lahir",
+                "jenis_kelamin",
+                "kebangsaan",
+                "pekerjaan",
+                "alamat_rumah",
+                "kode_pos",
+                "kabupaten_kota",
+                "provinsi",
+                "nomor_hp",
+                "NPWP",
+                "nama_bank",
+                "norek"
+            ]);
 
-            // 🔥 UPDATE FILES (ganti file lama)
+            // buang field NULL (tidak dikirim oleh Postman)
+            $data = array_filter($data, fn($value) => !is_null($value));
+
+            // FILE UPDATES
             $fileFields = [
                 'ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto',
                 'CV', 'ijazah', 'sertifikat_asesor',
@@ -232,8 +245,6 @@ class AsesorController extends Controller
         }
 
         try {
-
-            // 🔥 delete semua file
             $fileFields = [
                 'ktp','pas_foto','NPWP_foto','rekening_foto',
                 'CV','ijazah','sertifikat_asesor',
