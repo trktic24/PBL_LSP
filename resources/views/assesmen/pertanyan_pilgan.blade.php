@@ -61,26 +61,36 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
 
                     {{-- Header Halaman --}}
-                    <div class="md:flex md:items-center md:justify-between mb-6">
-                        <div class="flex-1 min-w-0">
-                            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                                Asesmen Teori (IA-05)
-                            </h1>
-                            <p class="mt-1 text-sm text-gray-500">
-                                Skema: {{ $sertifikasi->jadwal->skema->nama_skema ?? 'Nama Skema Tidak Tersedia' }}
-                            </p>
-                        </div>
-                        {{-- Timer (Placeholder) --}}
-                        <div class="mt-4 flex md:mt-0 md:ml-4">
-                            <div
-                                class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-mono font-bold flex items-center shadow-sm">
-                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <div class="mb-8">
+                        
+                        {{-- 1. JUDUL UTAMA (Center, Tebal, Hitam - Persis Screenshot) --}}
+                        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-5 tracking-wide">
+                            Pertanyaan Pilihan Ganda
+                        </h1>
+
+                        {{-- 2. GARIS PEMBATAS (Tebal Abu-abu) --}}
+                        <div class="w-full border-b-2 border-gray-300 mb-6"></div>
+
+                        {{-- 3. INFO BAR (Di bawah garis: Kiri Info Skema, Kanan Timer) --}}
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                            
+                            {{-- Bagian Kiri: Info Skema (Mirip layout TUK di screenshot) --}}
+                            <div class="flex items-center gap-3 w-full md:w-auto">
+                                <span class="font-bold text-gray-800 text-lg">Skema :</span>
+                                {{-- Kotak tampilan skema --}}
+                                <div class="px-0 py-1.5 text-sm font-medium text-gray-700 flex-1 md:flex-none">
+                                    {{ $sertifikasi->jadwal->skema->nama_skema ?? 'Skema Tidak Tersedia' }}
+                                </div>
+                            </div>
+
+                            {{-- Bagian Kanan: Timer (Tetap ada biar fungsional) --}}
+                            <div class="bg-white border-2 border-gray-200 text-gray-800 px-5 py-2 rounded-lg font-mono font-bold flex items-center shadow-sm">
+                                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 <span id="timer">--:--</span>
                             </div>
+
                         </div>
                     </div>
 

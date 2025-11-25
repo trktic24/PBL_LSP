@@ -48,12 +48,25 @@
             <div class="max-w-6xl mx-auto">
 
                 {{-- JUDUL HALAMAN & SKEMA --}}
+                {{-- JUDUL HALAMAN & SKEMA (MODIFIED STYLE) --}}
                 <div class="mb-8">
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Pra - Asesmen Mandiri</h1>
-                    <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-1">
-                        Skema: {{ $skema->nama_skema ?? 'N/A' }}
-                    </h2>
-                    <p class="text-sm text-gray-500 mt-1">Nomor Skema: {{ $skema->nomor_skema ?? $skema->kode_unit ?? '-' }}</p>
+                    {{-- 1. Judul Utama (Persis Screenshot: Tengah, Tebal, Gelap) --}}
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 text-center mb-4 tracking-wide">
+                        Pra - Asesmen Mandiri
+                    </h1>
+
+                    {{-- 2. Garis Pembatas (Divider Tebal Abu-abu) --}}
+                    <div class="w-full border-b-2 border-gray-300 mb-6"></div>
+
+                    {{-- 3. Detail Skema (Dibuat Center agar seimbang dengan Header) --}}
+                    <div class="text-center">
+                        <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-1">
+                            Skema: {{ $skema->nama_skema ?? 'N/A' }}
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1 bg-gray-100 inline-block px-3 py-1 rounded-full border border-gray-200">
+                            Nomor Skema: <span class="font-mono font-medium text-gray-700">{{ $skema->nomor_skema ?? $skema->kode_unit ?? '-' }}</span>
+                        </p>
+                    </div>
                 </div>
 
                 @php
@@ -238,11 +251,20 @@
                         </div> {{-- End accordion-container --}}
 
                         {{-- TOMBOL SIMPAN (Style Temanmu) --}}
-                        <div class="mt-8 pt-6 border-t border-gray-300 flex justify-end pb-8">
+                        <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center pb-8">
+                            
+                            {{-- 1. TOMBOL SEBELUMNYA (Lebar Tetap w-48) --}}
+                            <a href="{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                               class="w-48 py-3 bg-gray-300 text-gray-700 font-bold rounded-full shadow-sm hover:bg-gray-400 transition duration-200 focus:outline-none transform hover:-translate-y-0.5 text-center inline-block">
+                                Sebelumnya
+                            </a>
+
+                            {{-- 2. TOMBOL SIMPAN (Lebar Tetap w-48, Teks "Simpan") --}}
                             <button type="submit" id="btn-submit" 
-                                    class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Simpan Asesmen Mandiri (APL-02)
+                                    class="w-48 py-3 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed text-center">
+                                Simpan
                             </button>
+                            
                         </div>
 
                     </form>
@@ -257,18 +279,20 @@
         <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-sm transform transition-all scale-95" id="modal-content">
             <h3 id="modal-title" class="text-xl font-bold mb-4 text-gray-800">Pesan</h3>
             <p id="modal-body" class="text-gray-600 mb-6 leading-relaxed"></p>
-            <button id="modal-close-button" class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">Tutup</button>
+            <button id="modal-close-button" class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">Selanjutnya</button>
         </div>
     </div>
 
     {{-- JAVASCRIPT (MENGGUNAKAN LOGIC KITA YANG SUDAH STABIL) --}}
     <script>
+        const nextUrl = "{{ route('show.jadwal_tuk', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
         // --- Custom Alert Function (Style Temanmu, Logic Kita) ---
         function showCustomAlert(title, message, isError = false) {
             const modal = document.getElementById('message-modal');
             const modalContent = document.getElementById('modal-content');
             const modalTitle = document.getElementById('modal-title');
             const modalBody = document.getElementById('modal-body');
+            
 
             modalTitle.textContent = title;
             modalBody.textContent = message;
@@ -414,7 +438,7 @@
                         showCustomAlert('Berhasil!', result.message || 'Data APL-02 berhasil disimpan.', false);
                         // Redirect setelah beberapa detik (opsional)
                          setTimeout(() => {
-                             window.location.href = `/tracker/${result.id_jadwal}`; 
+                             window.location.href = nextUrl; 
                          }, 2000);
                     } else {
                         throw new Error(result.message || 'Terjadi kesalahan saat menyimpan.');
@@ -424,7 +448,7 @@
                     showCustomAlert('Gagal Menyimpan', error.message, true);
                 } finally {
                     btnSubmit.disabled = false;
-                    btnSubmit.innerText = 'Simpan Asesmen Mandiri';
+                    btnSubmit.innerText = 'Simpan';
                 }
             });
         }

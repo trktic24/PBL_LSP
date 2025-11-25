@@ -13,6 +13,7 @@ use App\Http\Controllers\Apl02\PraasesmenController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
+use App\Http\Controllers\asesmen\AsesmenEsaiController;
 use App\Http\Controllers\Apl02API\ApiPraasesmenController;
 use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
 use App\Http\Controllers\asesmen\AsesmenPilihanGandaController;
@@ -135,6 +136,10 @@ Route::prefix('v1')->group(function () {
 
     // POST: Simpan jawaban
     Route::post('/asesmen-teori/{id_sertifikasi}/submit', [AsesmenPilihanGandaController::class, 'submitAnswers']);
+
+    // API Asesmen Essai (IA-06)
+    Route::get('/asesmen-esai/{id_sertifikasi}/soal', [AsesmenEsaiController::class, 'getQuestions']);
+    Route::post('/asesmen-esai/{id_sertifikasi}/submit', [AsesmenEsaiController::class, 'submitAnswers']);
 });
 
 

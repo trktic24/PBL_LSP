@@ -10,6 +10,7 @@ use App\Models\Asesor;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TukController;
 
+use App\Http\Controllers\Ak03Controller;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\JadwalController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\SkemaWebController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Apl02\PraasesmenController;
 use App\Http\Controllers\Asesor\AsesorTableController;
+use App\Http\Controllers\asesmen\AsesmenEsaiController;
 use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
 use App\Http\Controllers\asesmen\AsesmenPilihanGandaController;
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
@@ -168,12 +170,13 @@ Route::get('/pra-asesmen/{id_sertifikasi}', [PraasesmenController::class, 'index
     ->middleware('auth')
     ->name('apl02.view');
 
-// 
 // --- Asesmen Lainnya Views ---
 // --- PDF Download ---
-Route::get('/apl01/download/{id_asesi}', [Apl01PdfController::class, 'download'])->name('apl01.download');
-Route::get('/apl01/preview/{id_asesi}', [Apl01PdfController::class, 'preview'])->name('apl01.preview');
+Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
 
+//umpan balik (ak03)
+Route::get('/umpan-balik', [Ak03Controller::class, 'index'])->name('ak03.index');
+Route::post('/umpan-balik/store', [Ak03Controller::class, 'store'])->name('ak03.store');
 
 // ====================================================
 // GRUP 6: ROUTE LAIN-LAIN (API & KEEP ALIVE)
@@ -204,3 +207,6 @@ Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show
 
 Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])
         ->name('asesmen.ia05.view');
+
+Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])
+    ->name('asesmen.ia06.view');
