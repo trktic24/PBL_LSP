@@ -10,6 +10,7 @@ use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\FrAk07Controller;
 use App\Http\Controllers\Ia11Controller; // <-- DITAMBAHKAN
+use App\Http\Controllers\IA06Controller;
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -80,6 +81,39 @@ Route::get('/IA_08', function () {
 Route::get('/FR_IA_11', [Ia11Controller::class, 'create'])->name('ia11.create');
 Route::post('/FR_IA_11/store', [Ia11Controller::class, 'store'])->name('ia11.store');
 // ============================
+//IA06
+Route::get('/IA_06_A', function () {
+    return view('frontend/fr_IA_06_a');
+})->name('IA06-a');
+
+Route::get('/IA_06_B', function () {
+    return view('frontend/fr_IA_06_b');
+})->name('IA06-b');
+
+Route::get('/IA_06_C', function () {
+    return view('frontend/fr_IA_06_c');
+})->name('IA06-c');
+
+// --- ROUTE UNTUK ADMIN (FR.IA.06.A) ---
+// Menggunakan [NamaController::class, 'namaMethod']
+Route::get('/IA_06_A', [IA06Controller::class, 'index'])->name('fr_IA_06_a');
+
+Route::get('/IA_06_B', [IA06Controller::class, 'kunciIndex'])->name('fr_IA_06_b');
+
+Route::get('/IA_06_C', [IA06Controller::class, 'jawabIndex'])->name('fr_IA_06_c');
+Route::post('/IA_06_C', [IA06Controller::class, 'jawabStore'])->name('fr_IA_06_c.store');
+
+// --- ROUTE UNTUK CRUD SOAL (Tambah/Edit/Hapus) ---
+Route::get('/soal/create', [IA06Controller::class, 'create'])->name('soal.create');
+Route::post('/soal', [IA06Controller::class, 'store'])->name('soal.store');
+Route::get('/soal/{id}/edit', [IA06Controller::class, 'edit'])->name('soal.edit');
+Route::put('/soal/{id}', [IA06Controller::class, 'update'])->name('soal.update');
+Route::delete('/soal/{id}', [IA06Controller::class, 'destroy'])->name('soal.destroy');
+
+//porto
+Route::get('/PORTOFOLIO', function () {
+    return view('frontend/PORTOFOLIO');
+})->name('PORTOFOLIO');
 
 //porto
 Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
