@@ -8,6 +8,8 @@ use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\Mapa02Controller;
+use App\Http\Controllers\FrAk07Controller;
+use App\Http\Controllers\Ia11Controller; // <-- DITAMBAHKAN
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -64,15 +66,20 @@ Route::get('/FR_AK_04', function () {
 Route::get('/FR_AK_05', function () {
     return view('frontend/FR_AK_05');
 })->name('FR_AK_05');
+Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
 
 
 Route::get('/IA_08', function () {
     return view('frontend/IA_08/IA_08');
 })->name('IA08');
-// FR IA 11
-Route::get('/FR_IA_11', function () {
-    return view('frontend/FR_IA_11');
-})->name('FR_IA_11');
+
+// ============================
+//        IA11 ROUTES
+// ============================
+// GANTI ROUTE LAMA (VIEW STATIS)
+Route::get('/FR_IA_11', [Ia11Controller::class, 'create'])->name('ia11.create');
+Route::post('/FR_IA_11/store', [Ia11Controller::class, 'store'])->name('ia11.store');
+// ============================
 
 //porto
 Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
@@ -115,6 +122,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/ia01/success', function() {
         return view('frontend.IA_01.success');
     })->name('ia01.success_page');
+
+    //Ak07
+
+    Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
+
+    Route::post('/FR_AK_07/{id}', [FrAk07Controller::class, 'store'])->name('fr-ak-07.store');
 });
 
 Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
@@ -136,5 +149,9 @@ Route::get('/jawab', [SoalController::class, 'jawabIndex'])->name('jawab.index')
 // Menyimpan jawaban user
 Route::post('/jawab', [SoalController::class, 'jawabStore'])->name('jawab.store');
 
+
+Route::get('/ia01/success', function() {
+    return view('frontend.IA_01.success');
+})->name('ia01.success_page');
 
 require __DIR__.'/auth.php';

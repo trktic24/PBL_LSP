@@ -75,7 +75,7 @@ class DataSertifikasiAsesi extends Model
     public function asesi(): BelongsTo
     {
         // Tentukan foreign key dan owner key karena tidak standar
-        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
+        return $this->belongsTo(User::class, 'id_asesi', 'id_user');
     }
 
     /**
@@ -100,5 +100,34 @@ class DataSertifikasiAsesi extends Model
     {
         // Tentukan foreign key dan local key karena tidak standar
         return $this->hasMany(ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function getSkemaAttribute()
+    {
+        // Logika: Ambil jadwal dulu, baru ambil skema di dalamnya
+        return $this->jadwal->skema ?? null;
+    }
+
+    public function getAsesorAttribute()
+    {
+        return $this->jadwal->asesor ?? null;
+    }
+
+    // Relasi ke Respon Potensi (One to Many)
+    public function responPotensiAk07()
+    {
+        return $this->hasMany(ResponPotensiAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    // Relasi ke Respon Penyesuaian Q1-Q7 (One to Many)
+    public function responPenyesuaianAk07()
+    {
+        return $this->hasMany(ResponDiperlukanPenyesuaianAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    // Relasi ke Hasil Akhir (One to One)
+    public function hasilPenyesuaianAk07()
+    {
+        return $this->hasOne(HasilPenyesuaianAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }

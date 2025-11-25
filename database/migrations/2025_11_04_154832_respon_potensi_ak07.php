@@ -1,44 +1,31 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('respon_potensi_AK07', function (Blueprint $table) {
-            // PK PERSIS kayak ERD
-            $table->id('id_respon_potensi');
+            $table->id('id_respon_potensi_AK07');
 
-            // --- FK 1 (ke asesi) ---
-            // Kita bikin manual pake nama pendek biar gak error "too long"
-            $table->foreignId('id_data_sertifikasi_asesi');
-            $table->foreign('id_data_sertifikasi_asesi', 'resp_potensi_sertifikasi_fk')
-                  ->references('id_data_sertifikasi_asesi')->on('data_sertifikasi_asesi')
-                  ->onUpdate('cascade')->onDelete('cascade');
+            // --- FOREIGN KEYS ---
+            // FK ke sesi sertifikasi (Induk)
+            $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+            // FK ke poin statis yang dipilih
+            $table->foreignId('id_poin_potensi_AK07')->constrained('poin_potensi_AK07', 'id_poin_potensi_AK07');
 
-            // --- FK 2 (ke master-nya) ---
-            // Kita bikin manual pake nama pendek biar gak error "too long"
-            $table->foreignId('id_poin_potensi_AK07');
-            $table->foreign('id_poin_potensi_AK07', 'resp_potensi_master_fk')
-                  ->references('id_poin_potensi_AK07')->on('poin_potensi_AK07')
-                  ->onUpdate('cascade')->onDelete('cascade');
-            
-            // Kolom sisa dari ERD
-            $table->text('respon_asesor')->nullable();
+            // --- DATA RESPON ---
+            $table->text('respon_asesor')->nullable()->comment('Catatan asesor terkait poin potensi ini');
 
             $table->timestamps();
+            
+            // Mencegah duplikasi entri (opsional, tergantung logic app)
+            $table->unique(['id_data_sertifikasi_asesi', 'id_poin_potensi_AK07'], 'unique_potensi_respon');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('respon_potensi_AK07');
