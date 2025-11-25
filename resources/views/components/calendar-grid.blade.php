@@ -1,7 +1,7 @@
-<div class="col-span-9 bg-white shadow-md rounded-xl border border-gray-200 p-6">
+<div class="col-span-9 bg-white shadow-md rounded-xl border border-gray-200 p-6 relative">
           
     <div class="flex justify-between items-center mb-4">
-      <h3 class="font-semibold text-lg" x-text="monthName + ' ' + year"></h3>
+      <h3 class="font-semibold text-xl" x-text="monthName + ' ' + year"></h3>
       <div class="flex space-x-1 p-1 bg-white border border-gray-200 rounded-xl shadow-sm">
         <button @click="toggleView('week')"
                 :class="viewMode === 'week' 
@@ -23,13 +23,44 @@
     </div>
 
     <div class="grid grid-cols-7 gap-2 text-center text-base">
+      
       <template x-if="viewMode === 'month'">
         <template x-for="(day, index) in bigDays" :key="index">
-          <div class="p-2 h-24 rounded-lg border text-gray-700 flex flex-col items-start justify-start transition hover:shadow-sm"
-               :class="day.isToday ? 'border-blue-400 bg-blue-50 font-semibold' : 'border-gray-200 bg-white'">
-            <span x-text="day.date" class="text-sm"></span>
+          
+          <div @click="openModal(day)"
+               class="p-1 h-28 rounded-lg border text-gray-700 flex flex-col justify-between transition hover:shadow-md overflow-hidden relative group cursor-pointer"
+               :class="day.isToday ? 'border-blue-400 bg-blue-50/30' : (day.isCurrentMonth ? 'border-gray-200 bg-white hover:border-blue-300' : 'border-transparent bg-gray-100 opacity-60')">
             
+            <span x-text="day.date" class="text-xs font-semibold ml-1 mt-1 text-left block" :class="day.isToday ? 'text-blue-600' : 'text-gray-500'"></span>
+            
+            <div class="w-full flex flex-col px-1 mb-1">
+                
+                <template x-for="event in day.events.slice(0, 1)" :key="event.id_jadwal">
+                    <div class="flex items-center w-full px-2 py-1.5 bg-white font-semibold border border-gray-200 rounded-full shadow-sm">
+                       
+                       <span class="w-3 h-3 rounded-full shrink-0 mr-2"
+                             :class="{
+                                 'bg-blue-500': event.Status_jadwal === 'Terjadwal',
+                                 'bg-green-500': event.Status_jadwal === 'Selesai',
+                                 'bg-red-500': event.Status_jadwal === 'Dibatalkan'
+                             }">
+                       </span>
+
+                       <span class="text-[10px] font-semibold text-gray-700 truncate leading-tight" 
+                             x-text="event.skema?.nama_skema || 'Jadwal'">
+                       </span>
+                    </div>
+                </template>
+
+                <template x-if="day.events.length > 1">
+                    <div class="text-[10px] text-right text-gray-500 font-medium pr-1">
+                        +<span x-text="day.events.length - 1"></span> More
+                    </div>
+                </template>
+
             </div>
+
+          </div>
         </template>
       </template>
 
@@ -38,8 +69,73 @@
           <div class="p-2 h-96 rounded-lg border text-gray-700 flex flex-col items-start justify-start"
                :class="day.isToday ? 'border-blue-400 bg-blue-50 font-semibold' : 'border-gray-200 bg-white'">
             <div class="text-base text-gray-500 mb-2" x-text="day.date"></div>
-             </div>
+          </div>
         </template>
       </template>
     </div>
+
+    <div x-show="isModalOpen" 
+         class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 backdrop-blur-sm"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         style="display: none;">
+         
+         <div class="bg-white w-full max-w-md m-4 rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[80vh]">
+            
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800">Jadwal Tanggal <span x-text="selectedDateLabel"></span></h3>
+                <button @click="isModalOpen = false" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-4 overflow-y-auto custom-scrollbar">
+                <template x-if="selectedEvents.length === 0">
+                    <p class="text-center text-gray-500 text-sm py-4">Tidak ada jadwal di tanggal ini.</p>
+                </template>
+
+                <div class="space-y-3">
+                    <template x-for="event in selectedEvents" :key="event.id_jadwal">
+                        <a :href="'/master/schedule/attendance/' + event.id_jadwal" 
+                           class="block bg-white border border-gray-200 rounded-lg p-3 hover:border-blue-400 hover:shadow-md transition group">
+                            
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-xs font-bold px-2 py-1 rounded-full"
+                                      :class="{
+                                        'bg-blue-100 text-blue-700': event.Status_jadwal === 'Terjadwal',
+                                        'bg-green-100 text-green-700': event.Status_jadwal === 'Selesai',
+                                        'bg-red-100 text-red-700': event.Status_jadwal === 'Dibatalkan'
+                                      }" 
+                                      x-text="event.Status_jadwal">
+                                </span>
+                                <span class="text-xs text-gray-500" x-text="formatTime(event.waktu_mulai)"></span>
+                            </div>
+
+                            <h4 class="font-semibold text-gray-900 text-sm mb-1 group-hover:text-blue-600 transition" x-text="event.skema?.nama_skema"></h4>
+                            
+                            <div class="flex items-center text-xs text-gray-500 gap-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt mr-1 text-gray-400"></i>
+                                    <span x-text="event.tuk?.nama_lokasi || '-'"></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-users mr-1 text-gray-400"></i>
+                                    <span x-text="(event.kuota_minimal || 0) + '/' + event.kuota_maksimal"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 text-right">
+                <button @click="isModalOpen = false" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Tutup</button>
+            </div>
+        </div>
+    </div>
+
 </div>

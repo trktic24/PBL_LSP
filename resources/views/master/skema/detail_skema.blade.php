@@ -49,13 +49,13 @@
                 <i class="fas fa-certificate text-lg"></i>
             </a>
             
-            <a href="{{ route('asesi_profile_form') }}" 
+            <a href="{{ route('detail_kelompokpekerjaan') }}" 
                class="nav-icon w-11 h-11 text-white rounded-xl {{ Request::routeIs('asesi_profile_form') ? 'bg-blue-700 shadow-lg' : 'hover:bg-blue-700/70' }} transition duration-150 transform hover:scale-105" 
                title="Formulir Asesi">
                 <i class="fas fa-file-alt text-lg"></i>
             </a>
             
-            <a href="{{ route('asesi_profile_tracker') }}" 
+            <a href="{{ route('detail_banksoal') }}" 
                class="nav-icon w-11 h-11 text-white rounded-xl {{ Request::routeIs('asesi_profile_tracker') ? 'bg-blue-700 shadow-lg' : 'hover:bg-blue-700/70' }} transition duration-150 transform hover:scale-105" 
                title="Tracker Pendaftaran">
                 <i class="fas fa-list-alt text-lg"></i>
