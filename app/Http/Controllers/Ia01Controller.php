@@ -77,8 +77,8 @@ class IA01Controller extends Controller
         $sertifikasi = $this->getSertifikasi($id_sertifikasi);
 
         $metaData = [
-            'nama_asesor' => $sertifikasi->jadwal->asesor->name ?? 'Asesor',
-            'nama_asesi'  => $sertifikasi->asesi->name ?? 'Asesi',
+            'nama_asesor' => $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor',
+            'nama_asesi'  => $sertifikasi->asesi->nama_lengkap ?? 'Asesi',
         ];
 
         // Simpan ke Session

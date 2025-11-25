@@ -51,14 +51,14 @@
         <div class="grid grid-cols-1 md:grid-cols-[200px_20px_1fr] items-center">
             <label class="font-bold">Nama Asesor</label>
             <div class="hidden md:block font-bold">:</div>
-            <div>{{ $sertifikasi->jadwal->asesor->name ?? 'Asesor' }}</div>
+            <div>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}</div>
         </div>
 
         {{-- Nama Asesi --}}
         <div class="grid grid-cols-1 md:grid-cols-[200px_20px_1fr] items-center">
             <label class="font-bold">Nama Asesi</label>
             <div class="hidden md:block font-bold">:</div>
-            <div>{{ $sertifikasi->asesi->name }}</div>
+            <div>{{ $sertifikasi->asesi->nama_lengkap }}</div>
         </div>
 
         {{-- Tanggal --}}
@@ -192,7 +192,7 @@
                     @endif
                 </div>
 
-                <p class="font-medium">{{ $sertifikasi->asesi->name }}</p>
+                <p class="font-medium">{{ $sertifikasi->asesi->nama_lengkap }}</p>
             </div>
 
             {{-- ASESOR --}}
@@ -213,7 +213,7 @@
                     @endif
                 </div>
 
-                <p class="font-medium mt-2 text-center">{{ $sertifikasi->jadwal->asesor->name ?? 'Asesor' }}</p>
+                <p class="font-medium mt-2 text-center">{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}</p>
             </div>
 
         </div>

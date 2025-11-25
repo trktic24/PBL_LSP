@@ -20,8 +20,8 @@
                 tuk="{{ $sertifikasi->jadwal->tuk->nama_tuk ?? '-' }}"
                 
                 {{-- ASESOR & ASESI --}}
-                namaAsesor="{{ $sertifikasi->asesor->name ?? '-' }}"
-                namaAsesi="{{ $sertifikasi->asesi->name ?? '-' }}"
+                namaAsesor="{{ $sertifikasi->asesor->nama_lengkap ?? '-' }}"
+                namaAsesi="{{ $sertifikasi->asesi->nama_lengkap ?? '-' }}"
                 
                 tanggal="{{ \Carbon\Carbon::parse($sertifikasi->tanggal_daftar)->format('d-m-Y') }}"
             />

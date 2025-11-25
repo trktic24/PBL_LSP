@@ -74,8 +74,8 @@ class DataSertifikasiAsesi extends Model
      */
     public function asesi(): BelongsTo
     {
-        // Tentukan foreign key dan owner key karena tidak standar
-        return $this->belongsTo(User::class, 'id_asesi', 'id_user');
+        // Relasi ke model Asesi (bukan User)
+        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
     }
 
     /**

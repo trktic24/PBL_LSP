@@ -42,12 +42,12 @@
                 <div class="grid grid-cols-[120px_10px_1fr] mb-2">
                     <span class="font-semibold text-gray-600">Asesor</span>
                     <span>:</span>
-                    <span class="font-bold text-gray-900">{{ $sertifikasi->jadwal->asesor->name ?? 'Asesor' }}</span>
+                    <span class="font-bold text-gray-900">{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}</span>
                 </div>
                 <div class="grid grid-cols-[120px_10px_1fr] mb-2">
                     <span class="font-semibold text-gray-600">Asesi</span>
                     <span>:</span>
-                    <span class="font-bold text-gray-900">{{ $sertifikasi->asesi->name ?? 'Asesi' }}</span>
+                    <span class="font-bold text-gray-900">{{ $sertifikasi->asesi->nama_lengkap ?? 'Asesi' }}</span>
                 </div>
                 <div class="grid grid-cols-[120px_10px_1fr]">
                     <span class="font-semibold text-gray-600">Tanggal</span>
@@ -175,14 +175,14 @@
                     <div class="h-24 w-32 bg-gray-100 rounded mb-2 flex items-center justify-center text-gray-400 text-xs border border-dashed border-gray-300">
                         (TTD Asesi)
                     </div>
-                    <p class="font-bold text-sm">{{ $sertifikasi->asesi->name ?? 'Asesi' }}</p>
+                    <p class="font-bold text-sm">{{ $sertifikasi->asesi->nama_lengkap ?? 'Asesi' }}</p>
                     <p class="text-xs text-gray-500">Asesi</p>
                 </div>
                 <div class="text-center">
                     <div class="h-24 w-32 bg-gray-100 rounded mb-2 flex items-center justify-center text-gray-400 text-xs border border-dashed border-gray-300">
                         (TTD Asesor)
                     </div>
-                    <p class="font-bold text-sm">{{ $sertifikasi->jadwal->asesor->name ?? 'Asesor' }}</p>
+                    <p class="font-bold text-sm">{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}</p>
                     <p class="text-xs text-gray-500">Asesor</p>
                 </div>
             </div>

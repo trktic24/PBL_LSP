@@ -21,7 +21,7 @@
 
         {{-- HEADER --}}
         <div class="relative mb-8">
-            <img src="{{ asset('images/bnsp_logo.png') }}" class="h-12 object-contain mb-4" alt="BNSP">
+            <img src="{{ asset('images/Logo_BNSP.png') }}" class="h-12 object-contain mb-4" alt="BNSP">
             <h1 class="text-2xl md:text-3xl font-bold leading-tight text-gray-900">
                 FR.IA.01 - Ceklis Observasi Aktivitas di Tempat Kerja atau Tempat Kerja Simulasi
             </h1>
@@ -77,8 +77,8 @@
                     Nama Asesor
                 </div>
                 <div class="p-2 pl-4 font-medium">
-                    {{ $sertifikasi->jadwal->asesor->name ?? 'Asesor' }}
-                    <input type="hidden" name="nama_asesor" value="{{ $sertifikasi->jadwal->asesor->name ?? 'Asesor' }}">
+                    {{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}
+                    <input type="hidden" name="nama_asesor" value="{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}">
                 </div>
             </div>
 
@@ -88,7 +88,7 @@
                     Nama Asesi
                 </div>
                 <div class="p-2 pl-4 font-medium">
-                    {{ $sertifikasi->asesi->name ?? 'Asesi' }}
+                    {{ $sertifikasi->asesi->nama_lengkap ?? 'Asesi' }}
                 </div>
             </div>
 
