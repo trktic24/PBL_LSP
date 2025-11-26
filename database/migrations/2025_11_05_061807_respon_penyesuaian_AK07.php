@@ -3,9 +3,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-        public function up(): void
+return new class extends Migration {
+    public function up(): void
     {
         Schema::create('respon_diperlukan_penyesuaian_AK07', function (Blueprint $table) {
             $table->id('id_diperlukan_penyesuaian_AK07');
@@ -16,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_catatan_keterangan_AK07')->nullable();
 
             // 2. Definisi Foreign Key secara MANUAL (Agar nama alias & kolom target benar)
-            
+
             // FK ke Data Sertifikasi
             // Format: foreign('kolom_lokal', 'nama_alias_pendek')->references('kolom_target')->on('tabel_target')
             $table->foreign('id_data_sertifikasi_asesi', 'fk_rdpa_sertifikasi')
@@ -43,5 +42,10 @@ return new class extends Migration
 
             $table->timestamps();
         });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('respon_diperlukan_penyesuaian_AK07');
     }
 };
