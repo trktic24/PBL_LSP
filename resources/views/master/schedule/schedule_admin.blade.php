@@ -370,8 +370,9 @@
                 month: dayjs().month(),
                 year: dayjs().year(),
                 viewMode: 'month',
+                selectedWeek: 1, // Default
 
-                // --- 2. MODAL STATE (Ini yang kemarin hilang) ---
+                // --- 2. MODAL STATE ---
                 isModalOpen: false,
                 selectedEvents: [],
                 selectedDateLabel: '',
@@ -391,52 +392,122 @@
                 allSchedules: @json($schedules),
 
                 // =====================================================================
-                // LOGIKA KALENDER & MODAL
+                // LOGIKA MINGGU OTOMATIS (AUTO DETECT WEEK)
+                // =====================================================================
+
+                // [PERBAIKAN UTAMA] Hitung minggu berdasarkan posisi grid visual
+                setCurrentWeek() {
+                    const today = dayjs();
+
+                    // Cek apakah Kalender sedang membuka Bulan & Tahun saat ini (Hari Ini)
+                    if (today.month() === this.month && today.year() === this.year) {
+                        const date = today.date(); // Tanggal hari ini (misal: 25)
+                        const startOfMonth = dayjs().year(this.year).month(this.month).startOf('month');
+                        const firstDayIndex = startOfMonth.day(); // Hari apa tgl 1 itu (0=Minggu, 6=Sabtu)
+
+                        // Rumus: (Tanggal + Index Hari Pertama) / 7, dibulatkan ke atas
+                        // Ini mencerminkan posisi baris di kalender visual
+                        this.selectedWeek = Math.ceil((date + firstDayIndex) / 7);
+                    } else {
+                        // Jika membuka bulan lain (masa depan/lalu), default ke Minggu 1
+                        this.selectedWeek = 1;
+                    }
+                },
+
+                // Hitung total minggu dalam bulan ini (untuk Loop Dropdown)
+                get totalWeeksInMonth() {
+                    const firstDayOfMonth = dayjs().year(this.year).month(this.month).startOf('month');
+                    const lastDayOfMonth = dayjs().year(this.year).month(this.month).endOf('month');
+                    const used = firstDayOfMonth.day() + lastDayOfMonth.date();
+                    return Math.ceil(used / 7);
+                },
+
+                // =====================================================================
+                // NAVIGASI KALENDER (UPDATED)
+                // =====================================================================
+
+                toggleView(mode) {
+                    this.viewMode = mode;
+                    // Saat pindah ke mode week, hitung ulang minggu saat ini
+                    if (mode === 'week') {
+                        this.setCurrentWeek();
+                    }
+                },
+
+                nextMonth() {
+                    if (this.month === 11) {
+                        this.month = 0;
+                        this.year++;
+                    } else {
+                        this.month++;
+                    }
+                    this.setCurrentWeek(); // [UPDATE] Cek ulang apakah bulan baru ini bulan "hari ini"
+                },
+
+                prevMonth() {
+                    if (this.month === 0) {
+                        this.month = 11;
+                        this.year--;
+                    } else {
+                        this.month--;
+                    }
+                    this.setCurrentWeek(); // [UPDATE] Cek ulang apakah bulan baru ini bulan "hari ini"
+                },
+
+                // =====================================================================
+                // INITIALISASI
+                // =====================================================================
+
+                init() {
+                    this.setCurrentWeek(); // [PENTING] Jalankan saat load pertama kali
+
+                    this.$watch('pageSize', () => this.currentPage = 1);
+                    this.$watch('month', () => this.currentPage = 1);
+                    this.$watch('search', () => this.currentPage = 1);
+                    this.$watch('filterStatus', () => this.currentPage = 1);
+                    this.$watch('filterJenisTuk', () => this.currentPage = 1);
+                    this.$watch('isModalOpen', (value) => {
+                        if (value) {
+                            document.body.classList.add('overflow-hidden');
+                        } else {
+                            document.body.classList.remove('overflow-hidden');
+                        }
+                    });
+                },
+
+                // =====================================================================
+                // SISA LOGIKA (FILTER, SORT, RENDER GRID) - TIDAK BERUBAH
                 // =====================================================================
 
                 get monthName() {
                     return dayjs().month(this.month).format('MMMM');
                 },
 
-                // Helper: Ambil event untuk tanggal tertentu (Dipakai oleh Kalender)
                 getEventsForDate(date) {
                     if (!date) return [];
                     const dateString = dayjs().year(this.year).month(this.month).date(date).format('YYYY-MM-DD');
-
-                    return this.allSchedules.filter(jadwal => {
-                        return dayjs(jadwal.tanggal_pelaksanaan).format('YYYY-MM-DD') === dateString;
-                    });
+                    return this.allSchedules.filter(jadwal => dayjs(jadwal.tanggal_pelaksanaan).format('YYYY-MM-DD') === dateString);
                 },
 
-                // Action: Buka Modal saat tanggal diklik
-                openModal(day) {
-                    // Opsi: Hanya buka jika tanggal ada di bulan ini
-                    if (!day.isCurrentMonth) return;
+                getEventsForFullDate(dateObj) {
+                    const dateString = dateObj.format('YYYY-MM-DD');
+                    return this.allSchedules.filter(jadwal => dayjs(jadwal.tanggal_pelaksanaan).format('YYYY-MM-DD') === dateString);
+                },
 
+                openModal(day) {
+                    if (!day.isCurrentMonth) return;
                     this.selectedEvents = day.events;
                     this.selectedDateLabel = day.date + ' ' + this.monthName + ' ' + this.year;
                     this.isModalOpen = true;
                 },
 
-                // =====================================================================
-                // LOGIKA TABEL (FILTER + SORT + PAGINATION)
-                // =====================================================================
-
-                // 1. Filter Data
                 get filteredData() {
                     let data = this.allSchedules.filter(jadwal => {
-                        // A. Filter Wajib: Bulan & Tahun Kalender
                         const jadwalDate = dayjs(jadwal.tanggal_pelaksanaan);
                         const matchDate = jadwalDate.month() === this.month && jadwalDate.year() === this.year;
                         if (!matchDate) return false;
-
-                        // B. Filter Status
                         if (this.filterStatus !== '' && jadwal.Status_jadwal !== this.filterStatus) return false;
-
-                        // C. Filter Jenis TUK
                         if (this.filterJenisTuk !== '' && jadwal.id_jenis_tuk != this.filterJenisTuk) return false;
-
-                        // D. Search Text
                         if (this.search !== '') {
                             const q = this.search.toLowerCase();
                             const match = (
@@ -448,47 +519,32 @@
                             );
                             if (!match) return false;
                         }
-
                         return true;
                     });
-
-                    // 2. Sorting
                     return data.sort((a, b) => {
                         let valA = this.getNestedValue(a, this.sortCol);
                         let valB = this.getNestedValue(b, this.sortCol);
-
                         if (valA === null) valA = "";
                         if (valB === null) valB = "";
-
                         if (typeof valA === 'string') valA = valA.toLowerCase();
                         if (typeof valB === 'string') valB = valB.toLowerCase();
-
                         if (valA < valB) return this.sortAsc ? -1 : 1;
                         if (valA > valB) return this.sortAsc ? 1 : -1;
                         return 0;
                     });
                 },
 
-                // 3. Pagination Slice
                 get paginatedData() {
                     const start = (this.currentPage - 1) * this.pageSize;
                     const end = start + parseInt(this.pageSize);
                     return this.filteredData.slice(start, end);
                 },
-
                 get totalPages() {
                     return Math.ceil(this.filteredData.length / this.pageSize) || 1;
                 },
-
-                // =====================================================================
-                // HELPERS & WATCHERS
-                // =====================================================================
-
                 getNestedValue(obj, path) {
                     return path.split('.').reduce((o, p) => (o ? o[p] : null), obj);
                 },
-
-                // Actions Table
                 sortBy(col) {
                     if (this.sortCol === col) {
                         this.sortAsc = !this.sortAsc;
@@ -508,7 +564,6 @@
                     if (page !== '...') this.currentPage = page;
                 },
 
-                // Pagination Dots Logic
                 get paginationRange() {
                     const total = this.totalPages;
                     const current = this.currentPage;
@@ -530,26 +585,6 @@
                     return rangeWithDots;
                 },
 
-                // Inisialisasi & Watchers
-                init() {
-                    // Reset halaman tabel jika filter berubah
-                    this.$watch('pageSize', () => this.currentPage = 1);
-                    this.$watch('month', () => this.currentPage = 1);
-                    this.$watch('search', () => this.currentPage = 1);
-                    this.$watch('filterStatus', () => this.currentPage = 1);
-                    this.$watch('filterJenisTuk', () => this.currentPage = 1);
-
-                    // Lock Scroll saat Modal Terbuka (Ini penting untuk UX Modal)
-                    this.$watch('isModalOpen', (value) => {
-                        if (value) {
-                            document.body.classList.add('overflow-hidden');
-                        } else {
-                            document.body.classList.remove('overflow-hidden');
-                        }
-                    });
-                },
-
-                // Formatters
                 formatFullDate(dateStr) {
                     return dayjs(dateStr).format('DD MMMM YYYY');
                 },
@@ -557,23 +592,21 @@
                     return timeStr ? timeStr.substring(0, 5) : '-';
                 },
 
-                // =====================================================================
-                // GENERATOR GRID KALENDER
-                // =====================================================================
-
-                toggleView(mode) {
-                    this.viewMode = mode;
-                },
                 weekDays() {
-                    const today = dayjs();
-                    const startOfWeek = today.startOf('week');
+                    const startOfMonth = dayjs().year(this.year).month(this.month).startOf('month');
+                    const startOfFirstWeek = startOfMonth.startOf('week');
+                    const startOfSelectedWeek = startOfFirstWeek.add(this.selectedWeek - 1, 'week');
+
                     const days = [];
                     for (let i = 0; i < 7; i++) {
-                        const day = startOfWeek.add(i, 'day');
+                        const day = startOfSelectedWeek.add(i, 'day');
+                        const events = this.getEventsForFullDate(day); // Pakai helper khusus week view
                         days.push({
                             label: day.format('ddd'),
                             date: day.format('D'),
-                            isToday: day.isSame(today, 'day')
+                            isToday: day.isSame(dayjs(), 'day'),
+                            isCurrentMonth: day.month() === this.month,
+                            events: events
                         });
                     }
                     return days;
@@ -598,43 +631,23 @@
                 },
 
                 get bigDays() {
-                    const start = dayjs().year(this.year).month(this.month).startOf('month').day();
-                    const daysInMonth = dayjs().year(this.year).month(this.month).daysInMonth();
+                    const startOfMonth = dayjs().year(this.year).month(this.month).startOf('month');
+                    const startOfGrid = startOfMonth.startOf('week'); // Hari Minggu sebelum tanggal 1 (atau tgl 1 itu sendiri)
                     const days = [];
-                    const today = dayjs();
 
-                    // Slot kosong sebelum tanggal 1
-                    for (let i = 0; i < start; i++) {
-                        days.push({
-                            date: '',
-                            isCurrentMonth: false,
-                            isToday: false,
-                            events: []
-                        });
-                    }
+                    // Kita buat grid fix 6 minggu (42 hari) agar kalender stabil tidak naik turun
+                    for (let i = 0; i < 42; i++) {
+                        const day = startOfGrid.add(i, 'day');
+                        const isCurrentMonth = day.month() === this.month;
 
-                    // Tanggal-tanggal bulan ini
-                    for (let d = 1; d <= daysInMonth; d++) {
-                        // Ambil events untuk tanggal ini (Agar muncul di kalender)
-                        const events = this.getEventsForDate(d);
+                        // Ambil event
+                        const events = this.getEventsForFullDate(day);
 
                         days.push({
-                            date: d,
-                            isCurrentMonth: true,
-                            isToday: today.date() === d && today.month() === this.month && today.year() === this.year,
-                            events: events // Data event masuk sini
-                        });
-                    }
-
-                    // Slot kosong setelah akhir bulan
-                    const totalSlots = start + daysInMonth;
-                    const slotsToFill = 42 - totalSlots;
-                    for (let i = 0; i < slotsToFill; i++) {
-                        days.push({
-                            date: '',
-                            isCurrentMonth: false,
-                            isToday: false,
-                            events: []
+                            date: day.format('D'), // [FIX] Selalu isi angka tanggal (misal 30, 31, 1, 2...)
+                            isCurrentMonth: isCurrentMonth,
+                            isToday: day.isSame(dayjs(), 'day'),
+                            events: events
                         });
                     }
 

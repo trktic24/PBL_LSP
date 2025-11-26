@@ -1,7 +1,48 @@
 <div class="col-span-9 bg-white shadow-md rounded-xl border border-gray-200 p-6 relative">
           
     <div class="flex justify-between items-center mb-4">
-      <h3 class="font-semibold text-xl" x-text="monthName + ' ' + year"></h3>
+      
+      <div class="flex items-center gap-3">
+          <h3 class="font-semibold text-lg" x-text="monthName + ' ' + year"></h3>
+          
+          <div x-show="viewMode === 'week'" x-transition class="relative" x-data="{ openWeekDropdown: false }">
+              
+              <button 
+                  @click="openWeekDropdown = !openWeekDropdown" 
+                  @click.away="openWeekDropdown = false"
+                  class="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 text-sm font-semibold py-1.5 px-3 rounded-lg shadow-sm hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              >
+                  <span x-text="'Week ' + selectedWeek"></span>
+                  
+                  <i class="fas fa-chevron-down text-xs text-gray-400 transition-transform duration-200"
+                     :class="openWeekDropdown ? 'rotate-180' : ''"></i>
+              </button>
+
+              <div 
+                  x-show="openWeekDropdown" 
+                  x-transition:enter="transition ease-out duration-100"
+                  x-transition:enter-start="opacity-0 scale-95"
+                  x-transition:enter-end="opacity-100 scale-100"
+                  x-transition:leave="transition ease-in duration-75"
+                  x-transition:leave-start="opacity-100 scale-100"
+                  x-transition:leave-end="opacity-0 scale-95"
+                  class="absolute top-full left-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden"
+                  style="display: none;"
+              >
+                  <template x-for="i in totalWeeksInMonth" :key="i">
+                      <button 
+                          @click="selectedWeek = i; weekDays(); openWeekDropdown = false"
+                          class="block w-full text-left px-4 py-2 text-sm transition-colors"
+                          :class="selectedWeek === i ? 'bg-blue-50 text-blue-600 font-bold' : 'text-gray-700 hover:bg-blue-50 hover:text-gray-900'"
+                      >
+                          <span x-text="'Week ' + i"></span>
+                      </button>
+                  </template>
+              </div>
+
+          </div>
+      </div>
+
       <div class="flex space-x-1 p-1 bg-white border border-gray-200 rounded-xl shadow-sm">
         <button @click="toggleView('week')"
                 :class="viewMode === 'week' 
@@ -66,10 +107,46 @@
 
       <template x-if="viewMode === 'week'">
         <template x-for="(day, index) in weekDays()" :key="'week-' + index">
-          <div class="p-2 h-96 rounded-lg border text-gray-700 flex flex-col items-start justify-start"
-               :class="day.isToday ? 'border-blue-400 bg-blue-50 font-semibold' : 'border-gray-200 bg-white'">
-            <div class="text-base text-gray-500 mb-2" x-text="day.date"></div>
+          
+          <div @click="openModal(day)"
+               class="p-1 h-28 rounded-lg border text-gray-700 flex flex-col justify-between transition overflow-hidden relative group"
+               :class="{
+                   'border-blue-400 bg-blue-50/30 cursor-pointer hover:shadow-md': day.isToday,
+                   'border-gray-200 bg-white hover:border-blue-300 cursor-pointer hover:shadow-md': !day.isToday && day.isCurrentMonth,
+                   'border-transparent bg-gray-100 opacity-60 cursor-default': !day.isCurrentMonth
+               }">
+            
+            <div class="text-xs font-semibold ml-1 mt-1 text-left block" 
+                 :class="day.isToday ? 'text-blue-600' : (day.isCurrentMonth ? 'text-gray-500' : 'text-gray-500')">
+                <span x-text="day.date"></span>
+            </div>
+            
+            <div class="w-full flex flex-col gap-1 px-1 mb-1" :class="!day.isCurrentMonth ? 'opacity-50' : ''">
+                
+                <template x-for="event in day.events.slice(0, 1)" :key="event.id_jadwal">
+                    <div class="flex items-center w-full px-2 py-1.5 bg-white font-semibold border border-gray-200 rounded-full shadow-sm">
+                       <span class="w-3 h-3 rounded-full shrink-0 mr-2"
+                             :class="{
+                                 'bg-blue-500': event.Status_jadwal === 'Terjadwal',
+                                 'bg-green-500': event.Status_jadwal === 'Selesai',
+                                 'bg-red-500': event.Status_jadwal === 'Dibatalkan'
+                             }">
+                       </span>
+                       <span class="text-[10px] font-semibold text-gray-700 truncate leading-tight" 
+                             x-text="event.skema?.nama_skema || 'Jadwal'">
+                       </span>
+                    </div>
+                </template>
+
+                <template x-if="day.events.length > 1">
+                    <div class="text-[10px] text-right text-gray-500 font-medium pr-1">
+                        +<span x-text="day.events.length - 1"></span> More
+                    </div>
+                </template>
+
+            </div>
           </div>
+
         </template>
       </template>
     </div>
