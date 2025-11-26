@@ -22,10 +22,10 @@
 <body class="bg-gray-50 flex min-h-screen">
 
   {{-- Sidebar --}}
-  <x-sidebar.sidebar-asesi />
+  <x-sidebar.sidebar-asesi :jadwal="$jadwal" :asesi="$asesi"/>
 
   {{-- Konten utama --}}
-  <main class="flex-1 p-8 ml-80">
+  <main class="flex-1 p-8 ml-80 min-h-screen">
     @yield('content')
   </main>
 

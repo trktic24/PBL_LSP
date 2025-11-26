@@ -8,12 +8,12 @@
 
         <form class="form-body mt-6">               
             <x-identitas_skema_form.identitas_skema_form
-                skema="Junior Web Developer"
-                nomorSkema="SKK.XXXXX.XXXX"
-                tuk="Tempat Kerja" 
-                namaAsesor="Ajeng Febria Hidayati"
-                namaAsesi="Tatang Sidartang"
-                tanggal="3 November 2025"
+                skema="{{ $jadwal->skema?->nama_skema ?? 'Nama Skema' }}"
+                nomorSkema="{{ $jadwal->skema->nomor_skema ?? 'Nomor Skema' }}"
+                tuk="{{ $jadwal->jenisTuk->jenis_tuk ?? 'Jenis Tuk' }}" 
+                namaAsesor="{{ $jadwal->asesor->nama_lengkap ?? 'Nama Asesor' }}"
+                namaAsesi="{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}"
+                tanggal="{{ $jadwal->tanggal_pelaksanaan ?? 'Tanggal Pelaksanaan' }}"
                 :showWaktu="false" 
             />
 

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Jadwal;
 use App\Models\Asesor;
+use App\Models\Skema;
+use App\Models\MasterTuk;
+use App\Models\JenisTuk;
 use App\Models\Asesi;
 use App\Models\DataSertifikasiAsesi;
 
@@ -17,144 +20,166 @@ class JadwalController extends Controller
     public function index(Request $request)
     {
 
-        // 1. Dapatkan ID user yang sedang login
-        $user_id = Auth::id();
+        // Mendapatkan user yang sedang login
+        $user = $request->user();
 
-        // 2. Cari data Asesor berdasarkan user_id yang login
-        // (Asumsi: tabel 'asesors' punya kolom 'user_id' yang terhubung ke tabel 'users')
-        $asesor = Asesor::where('user_id', $user_id)->first();
-
-        // Ambil parameter dari URL (untuk Search & Sort)
-        $search = $request->query('search');
-        $sortBy = $request->query('sort_by', 'tanggal_pelaksanaan'); // Default sort
-        $sortDir = $request->query('sort_dir', 'asc'); // Default direction (sesuai 'oldest' Anda)
-
-        $filterSesi = $request->query('filter_sesi');
-        $filterStatus = $request->query('filter_status');
-        $filterJenisTuk = $request->query('filter_jenis_tuk');
-        $filterTanggal = $request->query('filter_tanggal');
-
-        // 3. Jika asesor tidak ditemukan, kirim data jadwal kosong
-        if (!$asesor) {
-            // Mengirim Paginator kosong agar method ->links() di view tidak error
-            $jadwals = Jadwal::whereRaw('1 = 0')->paginate(10);
-
-            return view('frontend.jadwal-asesor', [
-                'jadwals' => $jadwals,
-                'currentSearch' => $search,
-                'currentSortBy' => $sortBy,
-                'currentSortDir' => $sortDir,
-                'filter_sesi' => $filterSesi,
-                'filter_status' => $filterStatus,
-                'filter_jenis_tuk' => $filterJenisTuk,
-                'filter_tanggal' => $filterTanggal,
-            ]);
+        // ----------------------------------------------------
+        // 🛡️ TAHAP 1: CEK APAKAH DATA ASESOR ADA?
+        // ----------------------------------------------------
+        if (!$user->asesor) {
+             Auth::logout();
+             return redirect('/login')->with('error', 'Data profil Asesor tidak ditemukan.');
         }
 
-        $query = Jadwal::query()
-                        ->where('id_asesor', $asesor->id_asesor);
+        // ----------------------------------------------------
+        // 🛡️ TAHAP 2: CEK STATUS VERIFIKASI (SATPAM TAMBAHAN)
+        // ----------------------------------------------------
+        // Jika is_verified = 0 (False/Pending), tendang keluar.
+        if ($user->asesor->is_verified == 0) {
 
-        // --- 3. Bangun Query Utama ---
-        $relations = ['skema', 'tuk', 'jenisTuk'];
+            Auth::logout(); // Logout paksa
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-        // Filter Status
-        $query->when($filterStatus, function ($q, $status) {
-            return $q->where('Status_jadwal', $status);
-        });
+            return redirect()->route('login')
+                ->with('error', 'Akun Anda belum diverifikasi oleh Admin. Mohon tunggu persetujuan.');
+        }
 
-        // Filter Jenis TUK
-        $query->when($filterJenisTuk, function ($q, $jenis) {
-            // Asumsi 'jenisTuk' adalah relasi ke tabel yang punya kolom 'jenis_tuk'
-            return $q->whereHas('jenisTuk', function ($rel) use ($jenis) {
-                $rel->where('jenis_tuk', $jenis);
-            });
-        });
+        // ====================================================
+        // JIKA LOLOS, LANJUT KE LOGIKA DASHBOARD
+        // ====================================================
 
-        // Filter Tanggal
-        $query->when($filterTanggal, function ($q, $tanggal) {
-            // Membandingkan kolom tanggal_pelaksanaan dengan tanggal yang di-input
-            return $q->whereDate('tanggal_pelaksanaan', $tanggal);
-        });
+        $id_asesor = $user->asesor->id_asesor;
 
-        // --- 4. Tambahkan Logika SEARCHING ---
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('Status_jadwal', 'like', "%{$search}%")
-                  ->orWhere('sesi', 'like', "%{$search}%")
-                  // Mencari di relasi 'skema'
-                  ->orWhereHas('skema', function ($skemaQuery) use ($search) {
-                      $skemaQuery->where('nama_skema', 'like', "%{$search}%");
+        // Ambil data asesor berdasarkan ID user yang login
+        $asesor = Asesor::with('user', 'skema')->find($id_asesor);
+
+        /*$profile = [
+            'nama' => $asesor->nama_lengkap ?? 'Nama Asesor',
+            'nomor_registrasi' => $asesor->nomor_regis ?? 'Belum ada NOREG',
+            'kompetensi' => 'Pemrograman',
+            // Menggunakan Accessor getUrlFotoAttribute yang sudah kita buat di Model (opsional)
+            // atau logika manual jika belum pakai accessor
+            'foto_url' => $asesor->url_foto ?? 'https://placehold.co/60x60/8B5CF6/ffffff?text=AF',
+        ];*/        
+
+        // 3. Data Jadwal Asesmen
+        $jadwal = Jadwal::where('id_asesor', $id_asesor)
+                            ->with('skema', 'tuk', 'jenisTuk')
+                            ->orderBy('tanggal_pelaksanaan', 'asc');        
+
+        // A. Filter Pencarian (Search Input)
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $jadwal->where(function ($q) use ($searchTerm) {
+                $q->where('Status_jadwal', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('waktu_mulai', 'like', '%' . $searchTerm . '%')  
+                  ->orWhere('tanggal_pelaksanaan', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('sesi', 'like', '%' . $searchTerm . '%')              
+                  ->orWhereHas('skema', function ($qSkema) use ($searchTerm) {
+                      $qSkema->where('nama_skema', 'like', '%' . $searchTerm . '%');
                   })
-                  // Mencari di relasi 'tuk'
-                  ->orWhereHas('tuk', function ($tukQuery) use ($search) {
-                      $tukQuery->where('nama_lokasi', 'like', "%{$search}%");
+                  ->orWhereHas('tuk', function ($qTuk) use ($searchTerm) {
+                      $qTuk->where('nama_lokasi', 'like', '%' . $searchTerm . '%'); 
+                  })                     
+                  ->orWhereHas('jenis_tuk', function ($qJenisTuk) use ($searchTerm) {
+                      $qJenisTuk->where('jenis_tuk', 'like', '%' . $searchTerm . '%');                      
                   });
             });
         }
-
-        // --- 5. Tambahkan Logika SORTING ---
-        $sortableColumns = [
-            'tanggal_pelaksanaan',
-            'Status_jadwal',
-            'sesi',
-            'waktu_mulai',
-            // Ini untuk relasi
-            'nama_skema',
-            'nama_lokasi'
-        ];
-
-        if (in_array($sortBy, $sortableColumns)) {
-            if ($sortBy == 'nama_skema') {
-                // Join untuk sorting berdasarkan relasi
-                $query->join('skema', 'jadwal.id_skema', '=', 'skema.id_skema')
-                      ->orderBy('skema.nama_skema', $sortDir)
-                      ->select('jadwal.*'); // Penting: agar tidak bentrok kolom
-
-                // Hapus 'skema' dari $relations karena sudah di-join
-                unset($relations[array_search('skema', $relations)]);
-
-            } elseif ($sortBy == 'nama_lokasi') {
-                // Join untuk sorting berdasarkan relasi
-                $query->join('master_tuk', 'jadwal.id_tuk', '=', 'tuk.id_tuk')
-                      ->orderBy('tuk.nama_lokasi', $sortDir)
-                      ->select('jadwal.*'); // Penting: agar tidak bentrok kolom
-
-                // Hapus 'tuk' dari $relations karena sudah di-join
-                unset($relations[array_search('tuk', $relations)]);
-            } else {
-                // Sorting untuk kolom di tabel 'jadwals'
-                $query->orderBy($sortBy, $sortDir);
-            }
-        } else {
-            // Fallback default sort
-            $query->orderBy('tanggal_pelaksanaan', 'asc');
+        
+        // B. Filter Nama Skema (dari Checkbox)
+        if ($request->has('namaskema') && is_array($request->namaskema)) {
+            $jadwal->whereHas('skema', function ($q) use ($request) {
+                $q->whereIn('nama_skema', $request->namaskema);
+            });
         }
 
-        // --- 6. Eksekusi Query dengan Eager Loading & PAGINATION ---
-        // Panggil 'with' di AKHIR, HANYA dengan relasi yang tersisa
-        $jadwals = $query->with($relations)
-                        ->paginate(10)
-                        ->appends($request->query());
+        // Filter sesi
+        if ($request->has('sesi') && is_array($request->sesi)) {
+            $jadwal->whereIn('sesi', $request->sesi);
+        }
 
+        // C. Filter Tanggal (dari Input Date tunggal)
+        // Saya asumsikan Anda ingin mencari jadwal TEPAT PADA tanggal tersebut.
+        if ($request->filled('tanggal')) {
+            // Pastikan Anda membandingkan tanggal dengan tepat (misalnya, pada hari itu)
+             $jadwal->whereDate('tanggal_pelaksanaan', $request->tanggal);
+        }
+        
+        // D. Filter Status (dari Checkbox)
+        if ($request->has('status') && is_array($request->status)) {
+            $jadwal->whereIn('Status_jadwal', $request->status);
+        }
+        
+        // Waktu
+        if ($request->filled('waktu')) {
+            $jadwal->whereTime('waktu_mulai', '>=', $request->waktu);
+        }        
+        // Filter TUK
+        if ($request->has('tuk') && is_array($request->tuk)) {
+            $jadwal->whereIn('tuk', $request->tuk);
+        }
 
-        // Kirim data 'jadwals' ke view
+        // Filter Jenis TUK
+        if ($request->has('jenistuk') && is_array($request->jenistuk)) {
+            $jadwal->whereIn('jenistuk', $request->jenistuk);
+        }        
+
+        // 4. Eksekusi Query Jadwal (Hanya 5 data pertama untuk Dashboard)
+        $jadwals = $jadwal->latest()->paginate(10);
+
+        /*$jadwals->getCollection()->transform(function ($item) {
+
+            return (object) [
+                'id_jadwal' => $item->id_jadwal,
+                'skema_nama' => $item->skema->nama_skema ?? 'Skema Tidak Ditemukan',
+                'waktu_mulai' => $item->waktu_mulai,
+                'Status_jadwal' => $item->Status_jadwal,
+                'tanggal' => $item->tanggal_pelaksanaan ?? 'N/A',
+            ];
+        });*/
+
+        $skemaIdsInJadwal = Jadwal::where('id_asesor', $id_asesor)
+                                  ->select('id_skema')->distinct()->pluck('id_skema');
+        $listSkema = Skema::whereIn('id_skema', $skemaIdsInJadwal)
+                          ->pluck('nama_skema')->filter()->sort()->values();
+
+        $listSesi = Jadwal::where('id_asesor', $id_asesor)
+                            ->select('sesi')->distinct()->pluck('sesi')
+                            ->filter()->sort()->values();                            
+        
+        // LIST STATUS
+        $listStatus = Jadwal::where('id_asesor', $id_asesor)
+                            ->select('Status_jadwal')->distinct()->pluck('Status_jadwal')
+                            ->filter()->sort()->values();
+                            
+        $tukIdsInJadwal = Jadwal::where('id_asesor', $id_asesor)
+                                  ->select('id_tuk')->distinct()->pluck('id_tuk');
+        $listTuk = MasterTuk::whereIn('id_tuk', $tukIdsInJadwal)
+                          ->pluck('nama_lokasi')->filter()->sort()->values();   
+                          
+        $jenistukIdsInJadwal = Jadwal::where('id_asesor', $id_asesor)
+                                  ->select('id_jenis_tuk')->distinct()->pluck('id_jenis_tuk');
+        $listjenisTuk = JenisTuk::whereIn('id_jenis_tuk', $jenistukIdsInJadwal)
+                          ->pluck('jenis_tuk')->filter()->sort()->values();                           
+
+        // Kirim ke view frontend.jadwal (dashboard asesor)
         return view('frontend.jadwal-asesor', [
+            //'profile' => $profile,
             'jadwals' => $jadwals,
-            'currentSearch' => $search,
-            'currentSortBy' => $sortBy,
-            'currentSortDir' => $sortDir,
-            'filter_sesi' => $filterSesi,
-            'filter_status' => $filterStatus,
-            'filter_jenis_tuk' => $filterJenisTuk,
-            'filter_tanggal' => $filterTanggal,
+            'listSkema' => $listSkema, 
+            'listSesi' => $listSesi,
+            'listStatus' => $listStatus,            
+            'listTuk' => $listTuk,
+            'listjenisTuk' => $listjenisTuk,
         ]);
-        return view('landing_page.jadwal', compact('jadwalList'));
     }
 
     public function showAsesi($id_jadwal) // <-- Variabel ini datang dari URL
     {
         // 1. Dapatkan data jadwal (Hapus 'asesi' dari 'with')
-        $jadwal = Jadwal::with(['skema', 'tuk']) // <-- Modifikasi 1: Hapus 'asesi'
+        $jadwal = Jadwal::with(['skema', 'tuk', 'dataSertifikasiAsesi.asesi']) // <-- Modifikasi 1: Hapus 'asesi'
                         ->findOrFail($id_jadwal);
 
         // 2. PENTING: Cek apakah asesor ini berhak melihat jadwal ini
@@ -169,19 +194,19 @@ class JadwalController extends Controller
 
         // 3a. Dapatkan dulu semua ID Asesi dari tabel perantara
         //     (Asumsi: tabel 'data_sertifikasi_asesi' punya kolom 'id_jadwal' dan 'id_asesi')
-        $asesiIds = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
+        /*$asesiIds = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
                                 ->pluck('id_asesi') // ->pluck() hanya mengambil kolom 'id_asesi'
                                 ->unique(); // Pastikan tidak ada ID asesi yang duplikat
 
         // 3b. Ambil data lengkap Asesi berdasarkan ID yang kita temukan
         //     (Asumsi: primary key di tabel 'asesi' adalah 'id_asesi')
-        $asesis = Asesi::whereIn('id_asesi', $asesiIds)->get();
+        $asesis = Asesi::whereIn('id_asesi', $asesiIds)->get();*/
 
         // 4. Kirim data ke view 'daftar_asesi'
         //    (Struktur data yang dikirim tetap sama, jadi view tidak perlu diubah)
         return view('frontend.daftar_asesi', [
             'jadwal' => $jadwal,
-            'asesis' => $asesis, // <-- Variabel $asesis berhasil kita buat
+            //'asesis' => $asesis, // <-- Variabel $asesis berhasil kita buat
         ]);
     }
 

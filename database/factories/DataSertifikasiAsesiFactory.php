@@ -38,7 +38,7 @@ class DataSertifikasiAsesiFactory extends Factory
             'rekomendasi_apl01' => fake()->randomElement($opsiDiterima),
             'tujuan_asesmen' => fake()->randomElement(['sertifikasi', 'PKT', 'rekognisi pembelajaran sebelumnya', 'lainnya']),
             'rekomendasi_apl02' => fake()->randomElement($opsiDiterima),
-            'tanggal_daftar' => fake()->date(),
+            'tanggal_daftar' => fake()->dateTimeThisCentury()->format('Y-m-d'),
             'jawaban_mapa01' => fake()->randomElement(['hasil pelatihan', 'pekerjaan', 'pelatihan']),
             'karakteristik_kandidat' => fake()->randomElement($opsiYaTidak),
             'kebutuhan_kontekstualisasi_terkait_tempat_kerja' => fake()->randomElement($opsiYaTidak),
@@ -58,7 +58,7 @@ class DataSertifikasiAsesiFactory extends Factory
             'saran_dan_perbaikan_AK05' => fake()->sentence(10),
             'catatan_AK05' => fake()->paragraph(1),
             'rekomendasi1_AK06' => fake()->sentence(12),
-            'rekomendasi2_AK06' => fake()->sentence(12),
+            'rekomendasi2_AK06' => fake()->sentence(12),          
         ];
     }
 }

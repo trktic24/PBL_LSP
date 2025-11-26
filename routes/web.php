@@ -5,9 +5,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Asesor\FormIA07Controller; // <-- Sudah dikembalikan!
+use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\TukController;
+use App\Http\Controllers\AsesiTrackerController;
 use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Asesor\DashboardController as AsesorDashboardController;
@@ -77,7 +78,7 @@ Route::middleware(['auth'])->group(function () {
     */
 
     // FR.IA.02
-    Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])->name('fr-ia-02.show'); 
+    Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])->name('fr-ia-02.show');  
     Route::post('/fr-ia-02/{id}', [IA02Controller::class, 'store'])->name('fr-ia-02.store');
     Route::get('/fr-ia-02', fn() => view('frontend.FR_IA_02'))->name('FR_IA_02');
 
@@ -141,6 +142,7 @@ Route::middleware(['auth'])->prefix('asesor')->group(function () {
     // Manajemen Jadwal & Asesi
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
     Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])->name('daftar_asesi');
+    Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker'); 
     
     // Tools
     Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');

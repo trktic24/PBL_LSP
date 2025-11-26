@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             // 2. Data User & Profil (Mungkin RoleSeeder harus dijalankan dulu)
             UserSeeder::class,
             CountrySeeder::class,
-            JenisTukSeeder::class,
+            //JenisTukSeeder::class,
             MasterTukSeeder::class,
             SkemaSeeder::class,
             AsesiSeeder::class,
@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             CategorieSeeder::class,
             UnitKompetensiSeeder::class,
             KelompokPekerjaanSeeder::class,
-            SkemaSeeder::class,
+            //SkemaSeeder::class,
         ]);
     }
 }

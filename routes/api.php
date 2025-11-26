@@ -42,7 +42,7 @@ Route::get('/skema', [SkemaController::class, 'index']);
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
 
 // Rute API Jadwal
-Route::apiResource('jadwal', JadwalController::class);
+Route::apiResource('jadwal', JadwalController::class, ['as' => 'api']);
 
 // Rute API Asesor
 Route::get('/asesor/{id}', [AsesorApiController::class, 'show']);

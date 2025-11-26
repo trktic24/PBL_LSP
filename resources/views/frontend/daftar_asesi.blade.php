@@ -30,62 +30,68 @@
                 <div class="bg-yellow-50 rounded-lg shadow-xl overflow-x-auto w-full"> 
                     <table class="min-w-full divide-y divide-gray-200 table-fixed">
                         
-                        <thead class="bg-yellow-50 border-b-2 border-gray-500">
-                            <th class="p-4 w-1/12 text-left text-sm font-semibold text-gray-600 uppercase">No</th>
-                            <th class="p-4 w-2/12 text-left text-sm font-semibold text-gray-600 uppercase">Nama Asesi</th>
-                            <th class="p-4 w-[12%] text-center text-sm font-semibold text-gray-600 uppercase">Pra Asesmen</th>
-                            <th class="p-4 w-[12%] text-center text-sm font-semibold text-gray-600 uppercase">Asesmen</th>
-                            <th class="p-4 w-[12%] text-center text-sm font-semibold text-gray-600 uppercase">Semua</th>
-                            <th class="p-4 w-[12%] text-center text-sm font-semibold text-gray-600 uppercase">Asesmen Mandiri</th>
-                            <th class="p-4 w-[14%] text-center text-sm font-semibold text-gray-600 uppercase">Penyesuaian</th>
+                        <thead class="bg-yellow-100 border-b-2 border-gray-500 text-gray-800">
+                            <th class="p-4 w-1/12 text-left text-sm font-semibold">No</th>
+                            <th class="p-4 w-2/12 text-left text-sm font-semibold">Nama Asesi</th>
+                            <th class="p-4 w-[12%] text-center text-sm font-semibold">Pra Asesmen</th>
+                            <th class="p-4 w-[12%] text-center text-sm font-semibolde">Asesmen</th>
+                            <th class="p-4 w-[12%] text-center text-sm font-semibold">Semua</th>
+                            <th class="p-4 w-[12%] text-center text-sm font-semibold">Asesmen Mandiri</th>
+                            <th class="p-4 w-[14%] text-center text-sm font-semibold">Penyesuaian</th>
                         </thead>
 
                         <tbody class="divide-y divide-gray-200">
-                            {{-- Gunakan LOOP untuk menampilkan data asesi --}}
-                            @php
-                                $asesis = [
-                                    ['no' => 1, 'nama' => 'Tatang Sitartang', 'status' => 'Dalam Proses', 'check' => false],
-                                    ['no' => 2, 'nama' => 'Jojon Sudarman', 'status' => 'Dalam Proses', 'check' => false],
-                                    ['no' => 3, 'nama' => 'Abdul Sidarta M.', 'status' => 'Sudah Diverifikasi', 'check' => true],
-                                    ['no' => 4, 'nama' => 'Mustika Pujastuti', 'status' => 'Belum Diverifikasi', 'check' => false],
-                                ];
-                            @endphp
-
-                            @foreach($asesis as $asesi)
+                            {{-- MODIFIKASI: Menggunakan data dari relasi jadwal --}}
+                            @forelse($jadwal->dataSertifikasiAsesi as $index => $item)
                                 <tr class="hover:bg-yellow-100">
-                                    <td class="p-4 text-left text-sm text-gray-700">{{ $asesi['no'] }}</td>
-                                    <td class="p-4 text-left text-sm text-gray-900 font-medium truncate">{{ $asesi['nama'] }}</td>
+                                    <td class="p-4 text-left text-sm text-gray-700">{{ $index + 1 }}</td>
                                     
-                                    @php
-                                        $color = match($asesi['status']) {
-                                            'Sudah Diverifikasi' => 'text-green-600',
-                                            'Belum Diverifikasi' => 'text-red-600',
-                                            default => 'text-yellow-600',
-                                        };
-                                    @endphp
-
-                                    <td class="p-4 text-left text-sm font-medium {{ $color }}">
-                                        @if($asesi['no'] == 1)
-                                            <a href="{{ route('tracker') }}" class="{{ $color }}">{{ $asesi['status'] }}</a>
-                                        @else
-                                            {{ $asesi['status'] }}
-                                        @endif
+                                    {{-- Nama Asesi diambil dari relasi ->asesi --}}
+                                    <td class="p-4 text-left text-sm text-gray-900 font-medium truncate">
+                                        {{ $item->asesi->nama_lengkap ?? $item->asesi->nama ?? 'Nama Tidak Ditemukan' }}
                                     </td>
-                                    <td class="p-4 text-left text-sm font-medium {{ $color }}">{{ $asesi['status'] }}</td>
-                                    <td class="p-4 text-left text-sm font-medium {{ $color }}">{{ $asesi['status'] }}</td>
                                     
+                                    {{-- Pra Asesmen --}}
                                     <td class="p-4 text-center">
-                                        <input type="checkbox" class="h-5 w-5 rounded text-yellow-600 mx-auto block" @if($asesi['check']) checked @endif>
+                                        {{-- Menggunakan tag <a> agar bisa diklik --}}
+                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                            Dalam Proses
+                                        </a>
+                                    </td>
+
+                                    {{-- Asesmen --}}
+                                    <td class="p-4 text-center">
+                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                            Dalam Proses
+                                        </a>
+                                    </td>
+
+                                    {{-- Semua --}}
+                                    <td class="p-4 text-center">
+                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                            Dalam Proses
+                                        </a>
                                     </td>
                                     
+                                    {{-- Checkbox Asesmen Mandiri (Statis Checked) --}}
+                                    <td class="p-4 text-center">
+                                        <input type="checkbox" class="h-5 w-5 rounded text-yellow-600 mx-auto block" checked>
+                                    </td>
+                                    
+                                    {{-- Tombol Penyesuaian --}}
                                     <td class="p-4 text-center">
                                         <button class="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-yellow-700 whitespace-nowrap">
                                             Lakukan Penyesuaian
                                         </button>
                                     </td>
                                 </tr>
-                            @endforeach
-                            
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="p-4 text-center text-gray-500 italic">
+                                        Belum ada asesi yang terdaftar di jadwal ini.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

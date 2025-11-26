@@ -1,124 +1,187 @@
 @extends('layouts.app-profil')
 @section('content')
 
+<style>
+
+    /* FILTER STYLE */
+    .filter-dropdown { position: relative; display: inline-block; }
+    .filter-btn {
+        padding: 7px 20px; font-size: 14px; border: 1px solid #444;
+        border-radius: 999px; background: white; display: flex;
+        align-items: center; gap: 8px; cursor: pointer; transition: 0.2s;
+    }
+    .filter-btn:hover { background: #f3f3f3; }
+    .filter-panel {
+        position: absolute; top: 48px; left: 0; background: white;
+        width: 280px; border-radius: 18px; padding: 12px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.12); border: 1px solid #ddd;
+        display: none; z-index: 30;
+    }
+    .filter-panel.show { display: block; }
+    .dropdown-btn {
+        width: 100%; padding: 10px 14px; border-radius: 12px;
+        border: 1px solid #e5e7eb; background: #fafafa; font-size: 14px;
+        cursor: pointer; margin-bottom: 6px; display: flex;
+        justify-content: space-between; align-items: center;
+    }
+    .submenu {
+        display: none; background: #fff; border: 1px solid #e5e7eb;
+        border-radius: 12px; padding: 10px; margin-top: 6px;
+        max-height: 220px; overflow-y: auto;
+    }
+    .submenu.show { display: block; }
+</style>
+
 <main class="container mx-auto px-6 mt-20 mb-12">
     <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">
         Jadwal Asesmen
     </h1>
 
-    <div class="mb-4">
-        <form action="{{ url()->current() }}" method="GET" id="filterForm">
-            <div class="flex justify-end items-center mb-4 space-x-2">
-
-                {{-- TOMBOL TOGGLE FILTER --}}
-                <button type="button" id="toggleFilterBtn"
-                        class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg text-sm flex items-center shadow-md transition duration-150">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-                        <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414A1 1 0 0012 15.586V21h-2v-5.414a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                    </svg>
+    <div class="flex flex-col sm:flex-row justify-between mb-4 gap-4">
+        
+        <form method="GET" id="filterForm">
+            <div class="filter-dropdown">
+                <button type="button" onclick="toggleFilterPanel()" class="filter-btn">
                     <span>Filter</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                    </svg>
                 </button>
 
-                {{-- Kotak Pencarian (Search Box) --}}
-                <div class="relative w-64">
-                    <input type="text" name="search"
-                        class="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        placeholder="Cari..."
-                        value="{{ $currentSearch ?? '' }}">
-                    <button type="submit"
-                        class="absolute right-0 top-0 h-full w-10 bg-amber-600 text-white rounded-r-lg flex items-center justify-center hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
-                        <svg class="w-5 h-5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                <div id="filterPanel" class="filter-panel">
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('namaskemaBox')">
+                        Nama Skema
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
                         </svg>
                     </button>
-                </div>
-            </div>
-
-            <div id="filterContainer" class="bg-gray-100 p-4 rounded-lg shadow-inner mb-4 hidden">
-                <h3 class="font-bold text-gray-700 mb-3 border-b pb-2">Filter Data Jadwal</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-
-                    {{-- Filter Sesi --}}
-                    <div>
-                        <label for="filter_sesi" class="block text-sm font-medium text-gray-700">Sesi</label>
-                        <select name="filter_sesi" id="filter_sesi" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md">
-                            <option value="">Semua Sesi</option>
-                            @foreach (['1', '2', '3'] as $sesi)
-                                <option value="{{ $sesi }}" {{ (request('filter_sesi') == $sesi) ? 'selected' : '' }}>{{ $sesi }}</option>
-                            @endforeach
-                        </select>
+                    <div id="namaskemaBox" class="submenu">
+                        <input type="text" class="w-full mb-2 p-2 border rounded-lg" placeholder="Cari..." onkeyup="filterCheckbox('namaskemaBox', this.value)">
+                        @foreach($listSkema as $skema)
+                            <label class="flex items-center gap-2 text-sm mb-1">
+                                <input type="checkbox" name="namaskema[]" value="{{ $skema }}" {{ is_array(request('skema')) && in_array($skema, request('skema')) ? 'checked' : '' }}>
+                                {{ $skema }}
+                            </label>
+                        @endforeach
                     </div>
 
-                    {{-- Filter Status --}}
-                    <div>
-                        <label for="filter_status" class="block text-sm font-medium text-gray-700">Status</label>
-                        <select name="filter_status" id="filter_status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md">
-                            <option value="">Semua Status</option>
-                            @foreach (['Terjadwal', 'Selesai', 'Dibatalkan'] as $status)
-                                <option value="{{ $status }}" {{ (request('filter_status') == $status) ? 'selected' : '' }}>{{ $status }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Filter Jenis TUK --}}
-                    <div>
-                        <label for="filter_jenis_tuk" class="block text-sm font-medium text-gray-700">Jenis TUK</label>
-                        <select name="filter_jenis_tuk" id="filter_jenis_tuk" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md">
-                            <option value="">Semua Jenis TUK</option>
-                            @foreach (['Sewaktu', 'Tempat Kerja'] as $jenis)
-                                <option value="{{ $jenis }}" {{ (request('filter_jenis_tuk') == $jenis) ? 'selected' : '' }}>{{ $jenis }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Filter Tanggal --}}
-                    <div>
-                        <label for="filter_tanggal" class="block text-sm font-medium text-gray-700">Tanggal</label>
-                        <input type="date" name="filter_tanggal" id="filter_tanggal"
-                               class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md"
-                               value="{{ request('filter_tanggal') }}">
-                    </div>
-
-                </div>
-
-                <div class="mt-4 flex justify-end space-x-2">
-                    <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-md text-sm transition duration-150">
-                        Terapkan Filter
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('sesiBox')">
+                        Sesi
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
                     </button>
-                    <a href="{{ url()->current() }}" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-md text-sm transition duration-150">
-                        Reset Filter
-                    </a>
+                    <div id="sesiBox" class="submenu">
+                        <input type="text" class="w-full mb-2 p-2 border rounded-lg" placeholder="Cari..." onkeyup="filterCheckbox('sesiBox', this.value)">
+                        @foreach($listSesi as $sesi)
+                            <label class="flex items-center gap-2 text-sm mb-1">
+                                <input type="checkbox" name="sesi[]" value="{{ $sesi }}" {{ is_array(request('sesi')) && in_array($sesi, request('sesi')) ? 'checked' : '' }}>
+                                {{ $sesi }}
+                            </label>
+                        @endforeach
+                    </div>      
+                    
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('waktuBox')">
+                        Waktu Mulai
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                    <div id="waktuBox" class="submenu">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Mulai</label>
+                        <input type="time" name="waktu" 
+                            value="{{ request('waktu') }}"
+                            class="w-full mb-2 p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>                     
+
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('tanggalBox')">
+                        Tanggal
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                    <div id="tanggalBox" class="submenu">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                        <input type="date" name="tanggal" 
+                            value="{{ request('tanggal') }}"
+                            class="w-full mb-2 p-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>                    
+
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('statusBox')">
+                        Status
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                    <div id="statusBox" class="submenu">
+                        <input type="text" class="w-full mb-2 p-2 border rounded-lg" placeholder="Cari..." onkeyup="filterCheckbox('statusBox', this.value)">
+                        @foreach($listStatus as $status)
+                            <label class="flex items-center gap-2 text-sm mb-1">
+                                <input type="checkbox" name="status[]" value="{{ $status }}" {{ is_array(request('status')) && in_array($status, request('status')) ? 'checked' : '' }}>
+                                {{ $status }}
+                            </label>
+                        @endforeach
+                    </div>
+
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('tukBox')">
+                        TUK
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                    <div id="tukBox" class="submenu">
+                        <input type="text" class="w-full mb-2 p-2 border rounded-lg" placeholder="Cari..." onkeyup="filterCheckbox('tukBox', this.value)">
+                        @foreach($listTuk as $tuk)
+                            <label class="flex items-center gap-2 text-sm mb-1">
+                                <input type="checkbox" name="tuk[]" value="{{ $tuk }}" {{ is_array(request('tuk')) && in_array($tuk, request('tuk')) ? 'checked' : '' }}>
+                                {{ $tuk }}
+                            </label>
+                        @endforeach
+                    </div>    
+                    
+                    <button type="button" class="dropdown-btn" onclick="toggleSubmenu('jenistukBox')">
+                        Jenis TUK
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                    <div id="jenistukBox" class="submenu">
+                        <input type="text" class="w-full mb-2 p-2 border rounded-lg" placeholder="Cari..." onkeyup="filterCheckbox('jenistukBox', this.value)">
+                        @foreach($listjenisTuk as $jenistuk)
+                            <label class="flex items-center gap-2 text-sm mb-1">
+                                <input type="checkbox" name="jenistuk[]" value="{{ $jenistuk }}" {{ is_array(request('jenistuk')) && in_array($jenistuk, request('jenistuk')) ? 'checked' : '' }}>
+                                {{ $jenistuk }}
+                            </label>
+                        @endforeach
+                    </div>                    
+
+                    <div class="flex justify-between mt-4 pt-3 border-t">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Terapkan</button>
+                        <a href="{{ route('jadwal.index') }}" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">Reset</a>
+                    </div>
                 </div>
             </div>
-            @if(isset($currentSortBy) && isset($currentSortDir))
-                <input type="hidden" name="sort_by" value="{{ $currentSortBy }}">
-                <input type="hidden" name="sort_dir" value="{{ $currentSortDir }}">
-            @endif
+        </form>
+
+        <form method="GET" action="{{ route('jadwal.index') }}" class="relative">
+            <input type="text" name="search" placeholder="Cari jadwal..." value="{{ request('search') }}" class="w-64 pl-10 pr-4 py-2 border border-gray-600 rounded-full text-sm">
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
         </form>
     </div>
 
-    <div class="bg-amber-50 shadow-md rounded-lg overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full border-separate border-spacing-0">
-                <thead class="bg-amber-200 text-gray-800 rounded-t-lg">
+    <div class="bg-yellow-100 shadow-md rounded-lg overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead class="bg-yellow-100 text-gray-800 rounded-t-lg border-b-2 border-gray-800">
                     <tr>
                         <th class="py-3 px-4 text-left">No</th>
-                        {{-- Helper untuk membuat link sorting --}}
-                        @php
-                        $makeSortLink = function($column, $label) use ($currentSortBy, $currentSortDir) {
-                            $dir = ($currentSortBy == $column && $currentSortDir == 'asc') ? 'desc' : 'asc';
-                            $icon = ($currentSortBy == $column) ? ($currentSortDir == 'asc' ? '▲' : '▼') : '';
-                            $url = url()->current() . '?' . http_build_query(array_merge(request()->query(), ['sort_by' => $column, 'sort_dir' => $dir]));
-                            return '<a href="' . $url . '" class="hover:underline">' . $label . ' ' . $icon . '</a>';
-                        };
-                        @endphp                        
-                        <th class="py-3 px-4 text-left">{!! $makeSortLink('nama_skema', 'Nama Skema') !!}</th>
-                        <th class="py-3 px-4 text-center">{!! $makeSortLink('sesi', 'Sesi') !!}</th>
-                        <th class="py-3 px-4 text-center">{!! $makeSortLink('waktu_mulai', 'Waktu Mulai') !!}</th>
-                        <th class="py-3 px-4 text-center">{!! $makeSortLink('tanggal_pelaksanaan', 'Tanggal') !!}</th>
-                        <th class="py-3 px-4 text-center">{!! $makeSortLink('Status_jadwal', 'Status') !!}</th>
-                        <th class="py-3 px-4 text-center">{!! $makeSortLink('nama_lokasi', 'TUK') !!}</th>
+                        <th class="py-3 px-4 text-left">Nama Skema</th>
+                        <th class="py-3 px-4 text-center">Sesi</th>
+                        <th class="py-3 px-4 text-center">Waktu Mulai</th>
+                        <th class="py-3 px-4 text-center">Tanggal</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-center">TUK</th>
                         <th class="py-3 px-4 text-center">Jenis TUK</th>
                         <th class="py-3 px-4 text-center">Aksi</th>
                     </tr>
@@ -126,9 +189,9 @@
                 <tbody class="text-gray-700">
                 {{-- Loop data dari controller --}}
                     @forelse ($jadwals as $jadwal)
-                        <tr class="border-b hover:bg-amber-100">
+                        <tr class="border-b bg-yellow-50 hover:bg-yellow-100">
                             {{-- Penomoran yang benar untuk pagination --}}
-                            <td class="py-3 px-4">{{ ($jadwals->currentPage() - 1) * $jadwals->perPage() + $loop->iteration }}</td>
+                            <td class="py-3 px-4">{{ $loop->iteration }}</td>
                             <td class="py-3 px-4">{{ $jadwal->skema->nama_skema ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-center">{{ $jadwal->sesi ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-center">{{ $jadwal->waktu_mulai ? $jadwal->waktu_mulai->format('H:i') : 'N/A' }}</td>
@@ -151,75 +214,40 @@
                         {{-- Tampil jika $jadwals kosong --}}
                         <tr>
                             <td colspan="9" class="py-4 px-4 text-center text-gray-500">
-                                @if(isset($currentSearch) && $currentSearch)
-                                    Data tidak ditemukan untuk pencarian "{{ $currentSearch }}".
-                                @else
-                                    Belum ada jadwal asesmen yang tersedia.
-                                @endif
+                                Belum ada jadwal asesmen yang tersedia.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-        </div>
-
-        <div class="p-4 bg-amber-100 border-t border-amber-200">
-            {{-- Ini akan merender link pagination (1, 2, 3, Next, Prev) --}}
-            {{ $jadwals->links() }}
-        </div>
+    </div>
+    <div class="p-4 bg-yellow-50 border-t hover:bg-yellow-100">
+        {{-- Ini akan merender link pagination (1, 2, 3, Next, Prev) --}}
+        {{ $jadwals->links() }}
     </div>
 </main>
 
 {{-- GABUNGKAN SEMUA SCRIPT DI SINI --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 1. SCRIPT UNTUK FILTER TOGGLE
-        const toggleBtn = document.getElementById('toggleFilterBtn');
-        const filterContainer = document.getElementById('filterContainer');
-
-        if (toggleBtn && filterContainer) {
-            // Fungsi untuk mengecek apakah ada filter yang aktif di URL
-            const checkActiveFilters = () => {
-                const params = new URLSearchParams(window.location.search);
-                // Cek apakah ada nilai di parameter filter yang spesifik
-                const filterParams = ['filter_sesi', 'filter_status', 'filter_jenis_tuk', 'filter_tanggal_mulai', 'filter_tanggal_akhir'];
-
-                for (const param of filterParams) {
-                    if (params.get(param)) {
-                        return true;
-                    }
-                }
-                return false;
-            };
-
-            // Jika ada filter yang aktif di URL, pastikan kontainer filter ditampilkan saat dimuat
-            if (checkActiveFilters()) {
-                filterContainer.classList.remove('hidden');
-            }
-
-            // Event listener untuk tombol filter
-            toggleBtn.addEventListener('click', () => {
-                filterContainer.classList.toggle('hidden');
-            });
-        }
-
-        // 2. SCRIPT DROPDOWN (JIKA MASIH DIGUNAKAN DI TEMPAT LAIN)
-        const dropdownToggle = document.getElementById('dropdownToggle');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-
-        if (dropdownToggle && dropdownMenu) {
-            dropdownToggle.addEventListener('click', (e) => {
-                e.stopPropagation(); // Penting untuk mencegah event klik menyebar ke window
-                dropdownMenu.classList.toggle('hidden');
-            });
-
-            window.addEventListener('click', function(e) {
-                if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
-                }
-            });
+    function toggleFilterPanel() {
+        document.getElementById("filterPanel").classList.toggle("show");
+    }
+    function toggleSubmenu(id) {
+        document.getElementById(id).classList.toggle("show");
+    }
+    document.addEventListener('click', function(e) {
+        const panel = document.getElementById("filterPanel");
+        if (!e.target.closest(".filter-dropdown")) {
+            panel.classList.remove("show");
         }
     });
+    function filterCheckbox(boxId, keyword) {
+        keyword = keyword.toLowerCase();
+        const labels = document.querySelectorAll(`#${boxId} label`);
+        labels.forEach(label => {
+            label.style.display = label.textContent.toLowerCase().includes(keyword) ? "flex" : "none";
+        });
+    }
 </script>
 
 @endsection
