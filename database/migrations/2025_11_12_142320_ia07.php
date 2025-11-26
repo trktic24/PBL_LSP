@@ -17,7 +17,7 @@ return new class extends Migration
 
             // Isi kolom lainnya sesuai kebutuhan
             $table->text('pertanyaan');
-            $table->text('jawaban_asesi')->nullable()->unique();
+            $table->string('jawaban_asesi', 255)->nullable()->unique();
             $table->text('jawaban_diharapkan');
             $table->boolean('pencapaian')->default(null)->comment('1 untuk Ya, 0 untuk Tidak');
             $table->timestamps();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Scheama::dropIfExists('ia07');
+        Schema::dropIfExists('ia07');
     }
 };
