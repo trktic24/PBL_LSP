@@ -6,28 +6,39 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('lembar_jawab_ia05', function (Blueprint $table) {
-            $table->id('id_lembar_jawab_ia05');
-            $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_soal_ia05')->constrained('soal_ia05', 'id_soal_ia05')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_kunci_jawaban_ia05')->constrained('kunci_jawaban_ia05', 'id_kunci_jawaban_ia05')->onUpdate('cascade')->onDelete('cascade');
+            $table->id('id_lembar_jawab_ia05'); // PK
 
-            // isi dari database lembar_jawab_ia05
-            $table->string('teks_jawaban_asesi_ia05');
-            $table->boolean('pencapaian_ia05_iya')->default(false)->comment('1 untuk Kompeten, 0 untuk Belum Kompeten');
-            $table->boolean('pencapaian_ia05_tidak')->default(false)->comment('1 untuk Tidak Kompeten, 0 untuk Kompeten');
+            // Relasi ke Peserta (Data Sertifikasi)
+            // (Pastikan nama tabel dan PK sesuai dengan database kamu)
+            $table->foreignId('id_data_sertifikasi_asesi')
+                  ->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
+            // Relasi ke Soal Master yang dijawab
+            $table->foreignId('id_soal_ia05')
+                  ->constrained('soal_ia05', 'id_soal_ia05')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
+            // Jawaban yang dipilih peserta (a, b, c, atau d)
+            // Bisa null sebelum peserta menjawab
+            $table->enum('jawaban_asesi', ['a', 'b', 'c', 'd'])->nullable();
+
+            // [PENCAPAIAN - HASIL KOREKSI OTOMATIS]
+            // Kolom ini menggantikan 'status_koreksi'.
+            // Berisi 'ya' (jika jawaban benar) atau 'tidak' (jika jawaban salah).
+            // Dibuat nullable() karena saat soal baru disiapkan, belum ada hasilnya.
+            // Nanti Controller yang akan mengisi ini otomatis saat submit.
+            $table->enum('pencapaian', ['ya', 'tidak'])->nullable();
+            
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('lembar_jawab_ia05');

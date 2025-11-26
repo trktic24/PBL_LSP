@@ -80,4 +80,9 @@ class Skema extends Model
             'id_kelompok_pekerjaan'     // 6. PK di tabel perantara (kelompok_pekerjaan)
         );
     }
+
+    public function soalIa05(): HasMany
+    {
+        return $this->hasMany(SoalIa05::class, 'id_skema', 'id_skema');
+    }
 }

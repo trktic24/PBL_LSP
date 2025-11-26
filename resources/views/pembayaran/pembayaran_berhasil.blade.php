@@ -96,7 +96,7 @@
                     @endif
 
                     {{-- TOMBOL SELANJUTNYA (KE TRACKER) --}}
-                    <a href="{{ url('/tracker/' . $id_jadwal) }}"
+                    <a href="{{ route('apl02.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                         class="w-48 text-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md transition-all">
                         Selanjutnya
                     </a>

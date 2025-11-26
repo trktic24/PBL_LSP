@@ -6,15 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('soal_ia05', function (Blueprint $table) {
-            $table->id('id_soal_ia05');
+            $table->id('id_soal_ia05'); // Primary Key
 
-            // isi dari database soal_ia06
+            // [PENTING] HUBUNGAN KE SKEMA
+            // Asumsi nama tabel skema kamu adalah 'skemas' dan PK-nya 'id_skema'
+            $table->foreignId('id_skema')
+                  ->constrained('skema', 'id_skema')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
+            // Isi Soal
             $table->text('soal_ia05');
             $table->string('opsi_jawaban_a');
             $table->string('opsi_jawaban_b');
@@ -25,9 +29,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('soal_ia05');

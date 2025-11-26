@@ -2,19 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SoalIA06 extends Model
+class SoalIa06 extends Model
 {
-    use HasFactory;
+    protected $table = 'soal_ia06';
+    protected $primaryKey = 'id_soal_ia06';
+    protected $guarded = [];
 
-    protected $table = 'soal_IA06';
-    protected $primaryKey = 'id_soal_IA06';
-    protected $fillable = ['soal_IA06'];
-
-    public function kuncis()
+    // Relasi ke tabel transaksi jawaban user
+    public function lembarJawab()
     {
-        return $this->hasMany(KunciIA06::class, 'id_soal_IA06');
+        // Note: Nama tabel transaksi kamu 'kunci_ia06'
+        return $this->hasMany(KunciIa06::class, 'id_soal_ia06', 'id_soal_ia06');
     }
 }
