@@ -56,7 +56,7 @@ Route::prefix('v1')->group(function() {
         Route::get('/skema', [SkemaController::class, 'index']);
         Route::get('/skema/{id}', [SkemaController::class, 'show']);
         Route::post('/skema', [SkemaController::class, 'store']);
-        Route::put('/skema/{id}', [SkemaController::class, 'update']);
+        Route::put('/skema/{id}', [SkemaController::class, 'updateData']);
         Route::delete('/skema/{id}', [SkemaController::class, 'destroy']);
 
 
@@ -77,7 +77,7 @@ Route::prefix('v1')->group(function() {
         Route::get('/category', [CategoryController::class, 'index']);
         Route::post('/category', [CategoryController::class, 'store']);
         Route::get('/category/{id}', [CategoryController::class, 'show']);
-        Route::post('/category/{id}', [CategoryController::class, 'update']);
+        Route::put('/category/{id}', [CategoryController::class, 'putUpdate']);
         Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
 
 

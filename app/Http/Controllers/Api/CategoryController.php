@@ -59,7 +59,7 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    // UPDATE category (pakai POST biar tidak menghapus kode lain)
+    // UPDATE category (POST update - tetap ada)
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -86,6 +86,35 @@ class CategoryController extends Controller
             'data' => $data
         ], 200);
     }
+
+    // ====== PUT UPDATE BARU (ditambahkan) ======
+    public function putUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'nama_kategori' => 'required|string|max:255'
+        ]);
+
+        $data = Category::find($id);
+
+        if (!$data) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kategori tidak ditemukan'
+            ], 404);
+        }
+
+        $data->update([
+            'nama_kategori' => $request->nama_kategori,
+            'slug' => Str::slug($request->nama_kategori)
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Kategori berhasil diupdate (PUT)',
+            'data' => $data
+        ], 200);
+    }
+    // ===========================================
 
     // DELETE category
     public function destroy($id)

@@ -61,8 +61,8 @@ class SkemaController extends Controller
         ]);
     }
 
-    // PUT update skema
-    public function update(Request $request, $id)
+        // PUT update skema
+        public function updateData(Request $request, $id)
     {
         $skema = Skema::findOrFail($id);
 
@@ -76,12 +76,13 @@ class SkemaController extends Controller
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Replace files
+        // Update SKKNI
         if ($request->hasFile('SKKNI')) {
             if ($skema->SKKNI) Storage::delete($skema->SKKNI);
             $validated['SKKNI'] = $request->file('SKKNI')->store('public/skkni');
         }
 
+        // Update gambar
         if ($request->hasFile('gambar')) {
             if ($skema->gambar) Storage::delete($skema->gambar);
             $validated['gambar'] = $request->file('gambar')->store('public/gambar');
@@ -91,10 +92,11 @@ class SkemaController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Data skema berhasil diperbarui',
+            'message' => 'Data skema berhasil diperbarui (POST update)',
             'data' => $skema
         ]);
     }
+
 
     // DELETE skema
     public function destroy($id)
