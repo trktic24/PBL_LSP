@@ -14,21 +14,16 @@
         ::-webkit-scrollbar { width: 0; }
         [x-cloak] { display: none !important; }
         
-        /* 1. Sidebar Ikonik (Dynamic Island Style) - Disesuaikan agar pas di ruang kosong */
+        /* Sidebar & Layout Style */
         .fixed-sidebar-icon {
-            width: 60px; /* Lebar kompak */
-            top: 85px; /* Posisikan tepat di bawah Navbar atas */
-            left: 5px; /* Didekatkan ke tepi kiri viewport */
+            width: 60px; 
+            top: 85px; 
+            left: 5px; 
         }
-        
-        /* 2. Area Konten Utama - Padding DITINGKATKAN agar ada SPACE KOSONG di kiri */
         .content-area {
-            /* Padding kiri: 96px (sekitar 24px ruang kosong di sebelah sidebar 60px) */
             padding-left: 96px; 
             min-height: 100vh;
         }
-        
-        /* Style Ikon */
         .nav-icon {
             display: flex;
             justify-content: center;
@@ -43,22 +38,22 @@
     <aside class="fixed fixed-sidebar-icon bg-blue-600 shadow-xl rounded-2xl p-2 z-50">
         <nav class="flex flex-col space-y-4">
             
-            <a href="{{ route('master_skema') }}" 
-               class="nav-icon w-11 h-11 text-white rounded-xl {{ Request::routeIs('master_skema') || Request::routeIs('detail_skema') ? 'bg-blue-700 shadow-lg' : 'hover:bg-blue-700/70' }} transition duration-150 transform hover:scale-105" 
-               title="Master Skema">
+            <a href="{{ route('skema.detail', $skema->id_skema) }}" 
+               class="nav-icon w-11 h-11 text-white rounded-xl {{ Request::routeIs('skema.detail') ? 'bg-blue-700 shadow-lg' : 'hover:bg-blue-700/70' }} transition duration-150 transform hover:scale-105" 
+               title="Informasi Skema">
                 <i class="fas fa-certificate text-lg"></i>
             </a>
             
-            <a href="{{ route('detail_kelompokpekerjaan') }}" 
-               class="nav-icon w-11 h-11 text-white rounded-xl {{ Request::routeIs('asesi_profile_form') ? 'bg-blue-700 shadow-lg' : 'hover:bg-blue-700/70' }} transition duration-150 transform hover:scale-105" 
-               title="Formulir Asesi">
-                <i class="fas fa-file-alt text-lg"></i>
+            <a href="{{ route('skema.detail.kelompok', $skema->id_skema) }}" 
+               class="nav-icon w-11 h-11 text-white rounded-xl {{ Request::routeIs('skema.detail.kelompok') ? 'bg-blue-700 shadow-lg' : 'hover:bg-blue-700/70' }} transition duration-150 transform hover:scale-105" 
+               title="Kelompok Pekerjaan & Unit">
+                <i class="fas fa-layer-group text-lg"></i>
             </a>
             
-            <a href="{{ route('detail_banksoal') }}" 
-               class="nav-icon w-11 h-11 text-white rounded-xl {{ Request::routeIs('asesi_profile_tracker') ? 'bg-blue-700 shadow-lg' : 'hover:bg-blue-700/70' }} transition duration-150 transform hover:scale-105" 
-               title="Tracker Pendaftaran">
-                <i class="fas fa-list-alt text-lg"></i>
+            <a href="{{ route('skema.detail.bank_soal', $skema->id_skema) }}" 
+               class="nav-icon w-11 h-11 text-white rounded-xl {{ Request::routeIs('skema.detail.bank_soal') ? 'bg-blue-700 shadow-lg' : 'hover:bg-blue-700/70' }} transition duration-150 transform hover:scale-105" 
+               title="Bank Soal & Form">
+                <i class="fas fa-file-alt text-lg"></i>
             </a>
             
         </nav>
@@ -96,6 +91,7 @@
                 </div>
             </div>
         </div>
+
         <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8">
             <div class="flex items-center justify-between mb-6 border-b pb-3">
                 <h3 class="text-xl font-semibold text-gray-900">Formulir Pendaftaran Sertifikasi</h3>
@@ -105,13 +101,16 @@
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-                @foreach ($formAsesmen as $form)
+                @forelse ($formAsesmen ?? [] as $form)
                 <a href="#" class="w-full text-center py-3 px-2 {{ $form['warna'] }} text-white rounded-lg font-semibold text-sm shadow-md transition-all duration-200 ease-in-out transform hover:scale-[1.03] active:scale-95">
                     {{ $form['kode'] }}
                 </a>
-                @endforeach
+                @empty
+                <p class="col-span-full text-center text-gray-400 text-sm">Belum ada form asesmen.</p>
+                @endforelse
             </div>
         </div>
+
         <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 overflow-x-auto">
             <h3 class="text-xl font-semibold text-gray-900 mb-6 border-b pb-3">Unit Kompetensi</h3>
             
@@ -140,8 +139,7 @@
                                 @if ($currentKelompok !== $kelompok->nama_kelompok_pekerjaan)
                                     {{ $kelompok->nama_kelompok_pekerjaan }}
                                     @php $currentKelompok = $kelompok->nama_kelompok_pekerjaan; @endphp
-                                @else
-                                    @endif
+                                @endif
                             </td>
                             
                             <td class="px-4 py-3 whitespace-nowrap">{{ $unit->kode_unit }}</td>
@@ -156,7 +154,8 @@
                 </tbody>
             </table>
         </div>
-        </main>
+        
+    </main>
     
 </body>
 </html>

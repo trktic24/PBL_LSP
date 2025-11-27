@@ -26,7 +26,7 @@
 
   <x-navbar />
   <main class="flex min-h-[calc(100vh-80px)]">
-    <x-sidebar_profile_asesi />
+    <x-sidebar_profile_asesi :asesi="$asesi" />
 
     <section class="ml-[22%] flex-1 p-8 h-[calc(100vh-80px)] overflow-y-auto">
       <div class="bg-white p-10 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.08)]">

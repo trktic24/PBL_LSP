@@ -25,7 +25,7 @@
     <x-sidebar_profile_asesi :asesi="$asesi" />
 
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">
-      <div class="bg-white rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.08)] p-10">
+      <div class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-10 border border-gray-100">
         
         <div class="flex flex-col items-center text-center mb-10">
           <h1 class="text-3xl font-bold text-gray-800 mb-3">Profile Settings</h1>
