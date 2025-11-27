@@ -35,7 +35,7 @@
     {{-- KONTEN UTAMA --}}
     {{-- Perubahan: Tambahkan :class logic untuk mengatur margin kiri --}}
     <main
-        class="flex-1 py-6 transition-all duration-300 ease-in-out"
+        class="flex-1 py-6 transition-all duration-300 ease-in-out min-w-0"
         :class="$store.sidebar.open ? 'lg:ml-80' : 'lg:ml-0'">
 
         {{-- 1. Tombol Buka (Mobile) - Tetap --}}
