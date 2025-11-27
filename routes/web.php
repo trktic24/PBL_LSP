@@ -8,6 +8,7 @@ use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\Mapa02Controller;
+use App\Http\Controllers\FrAk06Controller;
 use App\Http\Controllers\FrAk07Controller;
 use App\Http\Controllers\Ia11Controller; // <-- DITAMBAHKAN
 use App\Http\Controllers\IA06Controller;
@@ -203,5 +204,38 @@ Route::post('/jawab', [SoalController::class, 'jawabStore'])->name('jawab.store'
 Route::get('/ia01/success', function() {
     return view('frontend.IA_01.success');
 })->name('ia01.success_page');
+
+
+
+Route::get('/FR_AK_06', function () {
+    // Tambahkan 'frontend.' di depannya
+    return view('frontend.FR_AK_06');
+});
+
+Route::get('/FR_IA_04A', function () {
+    // Tambahkan 'frontend.' di depannya
+    return view('frontend.FR_IA_04A'); 
+});
+
+
+
+
+// Route FR.AK.06
+Route::get('/asesmen/ak-06', [FrAk06Controller::class, 'index'])->name('ak06.index');
+Route::post('/asesmen/ak-06', [FrAk06Controller::class, 'store'])->name('ak06.store');
+
+use App\Http\Controllers\FrMapa01Controller;
+
+// Route untuk menampilkan form
+Route::get('/asesmen/mapa-01', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
+
+// Route untuk memproses simpan data (WAJIB ADA)
+Route::post('/asesmen/mapa-01', [FrMapa01Controller::class, 'store'])->name('mapa01.store');
+
+use App\Http\Controllers\AssessmentController;
+
+// Ubah route lama menjadi ini:
+Route::get('/FR_IA_04B', [AssessmentController::class, 'index'])->name('fr_ia_04b.index');
+Route::post('/FR_IA_04B/store', [AssessmentController::class, 'store'])->name('fr_ia_04b.store');
 
 require __DIR__.'/auth.php';
