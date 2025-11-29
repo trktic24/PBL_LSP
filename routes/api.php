@@ -21,6 +21,7 @@ use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
+use App\Http\Controllers\Ak04API\APIBandingController;
 /*
 |--------------------------------------------------------------------------
 | API Routes (VERSION 1)
@@ -130,6 +131,20 @@ Route::prefix('v1')->group(function () {
         Route::get('/{id_sertifikasi}', [JadwalTukAPIController::class, 'getJadwalData']);
         Route::post('/konfirmasi/{id_sertifikasi}', [JadwalTukAPIController::class, 'konfirmasiJadwal']);
     });
+
+   // ======================= BANDING (AK.04) =======================
+    Route::prefix('banding')->group(function () {
+
+        //ambil data
+         Route::get('/{id_sertifikasi}', [APIBandingController::class, 'getBandingData']
+         )->name('api.v1.get.ak04');
+         
+         // POST: Simpan hasil banding
+        Route::post('/{id_sertifikasi}', [APIBandingController::class, 'simpanBanding'])
+        ->name('api.v1.post.ak04');
+        
+        });
+
 
     // GET: Ambil daftar soal
     Route::get('/asesmen-teori/{id_sertifikasi}/soal', [AsesmenPilihanGandaController::class, 'getQuestions']);

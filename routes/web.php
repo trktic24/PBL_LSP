@@ -31,6 +31,7 @@ use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
+use App\Http\Controllers\Ak04API\APIBandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -202,6 +203,17 @@ Route::get('/pembayaran_batal', [PaymentController::class, 'paymentCancel'])->na
 Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])
        ->name('kerahasiaan.fr_ak01');
 
+Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])  ->name('show.jadwal_tuk');
+
+// Route Web AK.04 (DISESUAIKAN)
+Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show']) 
+    ->name('banding.fr_ak04'); // KRITIS: Menggunakan fr-ak04
+
+// Route Placeholder untuk Umpan Balik (AK.03)
+Route::get('/asesi/umpan-balik/{id_sertifikasi}', function($id_sertifikasi) {
+    // Arahkan kembali ke halaman banding (saat ini) atau halaman data utama
+    return redirect()->route('banding.show', ['id_sertifikasi' => $id_sertifikasi]);
+})->name('umpan.balik');
 Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])
     ->name('show.jadwal_tuk');
 
