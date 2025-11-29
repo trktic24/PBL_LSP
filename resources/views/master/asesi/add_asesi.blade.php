@@ -31,7 +31,7 @@
             <i class="fas fa-arrow-left mr-2"></i> Back
           </a> 
           <h1 class="text-3xl font-bold text-gray-900 text-center absolute left-1/2 -translate-x-1/2">
-            ADD ASESI
+            TAMBAH ASESI
           </h1>
           <div class="w-[80px]"></div> 
         </div>

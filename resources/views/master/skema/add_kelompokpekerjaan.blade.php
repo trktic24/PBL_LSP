@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edit Kelompok & Unit | LSP Polines</title>
+    <title>Tambah Kelompok & Unit | LSP Polines</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -33,7 +33,7 @@
                     
                     <div class="text-center flex-1 px-4">
                         <h1 class="text-2xl font-bold text-gray-900 uppercase leading-tight">
-                            EDIT KOMPETENSI
+                            Tambah Kelompok Pekerjaan - Unit Kompetensi
                         </h1>
                         <p class="text-sm text-gray-500 mt-1 font-medium">
                             Skema: {{ $skema->nama_skema }}
@@ -52,11 +52,23 @@
                     </div>
                 @endif
 
-                <form action="{{ route('skema.detail.update_kelompok', $kelompok->id_kelompok_pekerjaan) }}" method="POST" 
+                <form action="{{ route('skema.detail.store_kelompok', $skema->id_skema) }}" method="POST" 
                       class="space-y-8" 
-                      x-data="unitHandler()">
+                      x-data="{ 
+                          // Inisialisasi data unit, minimal 1 baris
+                          units: [
+                              { kode_unit: '', judul_unit: '' }
+                          ],
+                          addUnit() {
+                              this.units.push({ kode_unit: '', judul_unit: '' });
+                          },
+                          removeUnit(index) {
+                              if(this.units.length > 1) {
+                                  this.units.splice(index, 1);
+                              }
+                          }
+                      }">
                     @csrf
-                    @method('PUT')
 
                     <div class="border-b border-gray-200 pb-6">
                         <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -66,9 +78,9 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Kelompok Pekerjaan <span class="text-red-500">*</span></label>
-                            <input type="text" name="nama_kelompok_pekerjaan" value="{{ old('nama_kelompok_pekerjaan', $kelompok->nama_kelompok_pekerjaan) }}" 
+                            <input type="text" name="nama_kelompok_pekerjaan" value="{{ old('nama_kelompok_pekerjaan') }}" 
                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition shadow-sm" 
-                                   required>
+                                   placeholder="Contoh: Kompetensi Inti / Kompetensi Pilihan / Klaster Pengelasan" required>
                             <p class="text-xs text-gray-500 mt-2">Nama kelompok ini akan menjadi judul grup untuk unit-unit kompetensi di bawahnya.</p>
                         </div>
                     </div>
@@ -82,7 +94,7 @@
                             
                             <button type="button" @click="addUnit()" 
                                     class="px-4 py-2 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm font-medium hover:bg-green-100 transition flex items-center shadow-sm">
-                                <i class="fas fa-plus mr-2"></i> Tambah Baris
+                                <i class="fas fa-plus mr-2"></i> Tambah Unit
                             </button>
                         </div>
 
@@ -96,15 +108,13 @@
                             <template x-for="(unit, index) in units" :key="index">
                                 <div class="flex flex-col md:flex-row gap-4 items-start animate-fade-in-down">
                                     
-                                    <input type="hidden" :name="'units[' + index + '][id]'" x-model="unit.id_unit_kompetensi">
-
                                     <div class="w-full md:w-1/3">
                                         <label class="md:hidden block text-xs font-bold text-gray-500 mb-1">Kode Unit</label>
                                         <input type="text" 
                                                :name="'units[' + index + '][kode_unit]'" 
                                                x-model="unit.kode_unit" 
                                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm shadow-sm" 
-                                               placeholder="Kode Unit" required>
+                                               placeholder="Cth: J.620100.001.01" required>
                                     </div>
 
                                     <div class="flex-1 w-full">
@@ -113,7 +123,7 @@
                                                :name="'units[' + index + '][judul_unit]'" 
                                                x-model="unit.judul_unit" 
                                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm shadow-sm" 
-                                               placeholder="Judul Unit" required>
+                                               placeholder="Masukkan Judul Unit Kompetensi" required>
                                     </div>
 
                                     <div class="w-full md:w-auto flex justify-end">
@@ -131,7 +141,7 @@
                         
                         <div class="mt-3 flex justify-between items-center">
                             <p class="text-xs text-gray-500 italic">
-                                <i class="fas fa-info-circle mr-1"></i> Hapus baris jika unit kompetensi tersebut tidak lagi diperlukan.
+                                <i class="fas fa-info-circle mr-1"></i> Pastikan kode unit unik dan sesuai standar SKKNI.
                             </p>
                             <div class="text-right text-sm text-gray-600 font-medium">
                                 Total Unit: <span x-text="units.length" class="text-blue-600 font-bold"></span>
@@ -140,8 +150,8 @@
                     </div>
 
                     <div class="pt-8 border-t mt-8">
-                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition flex justify-center items-center text-lg">
-                            <i class="fas fa-save mr-2"></i> Simpan Perubahan
+                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition flex justify-center items-center">
+                            Tambah
                         </button>
                     </div>
                 </form>
@@ -158,26 +168,5 @@
             animation: fadeInDown 0.3s ease-out forwards;
         }
     </style>
-
-    <script>
-        function unitHandler() {
-            return {
-                // [PENTING] Inject data Unit dari Database
-                // Jika kosong, default ke 1 baris kosong
-                units: @json($kelompok->unitKompetensi->isNotEmpty() ? $kelompok->unitKompetensi : [['id_unit_kompetensi' => null, 'kode_unit' => '', 'judul_unit' => '']]),
-                
-                addUnit() {
-                    // Tambahkan object kosong (id: null menandakan data baru)
-                    this.units.push({ id_unit_kompetensi: null, kode_unit: '', judul_unit: '' });
-                },
-                
-                removeUnit(index) {
-                    if(this.units.length > 1) {
-                        this.units.splice(index, 1);
-                    }
-                }
-            }
-        }
-    </script>
 </body>
 </html>

@@ -59,7 +59,7 @@
                     <a href="{{ route('master_skema') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
-                    <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">ADD SKEMA</h1>
+                    <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">TAMBAH SKEMA</h1>
                     <div class="w-[80px]"></div>
                 </div>
 
@@ -107,27 +107,41 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
                         <div x-data="{ fileName: '' }">
                             <label class="block text-sm font-medium text-gray-700 mb-2">File SKKNI (PDF) <span class="text-red-500">*</span></label>
-                            <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
+                            <label class="w-full flex items-center px-4 py-3 bg-white border rounded-lg cursor-pointer hover:bg-gray-50 transition
+                                          @error('SKKNI') border-red-500 ring-1 ring-red-500 @else border-gray-300 @enderror">
                                 <i class="fas fa-file-pdf text-red-500 mr-3"></i>
                                 <span x-text="fileName || 'Upload PDF...'" class="text-sm text-gray-600"></span>
-                                <input type="file" name="SKKNI" @change="fileName = $event.target.files[0]?.name" class="hidden" accept=".pdf" required>
+                                
+                                <input type="file" name="SKKNI" @change="fileName = $event.target.files[0]?.name" class="hidden" accept=".pdf">
                             </label>
+                            
+                            @error('SKKNI')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
+
                         <div x-data="{ fileName: '' }">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Skema <span class="text-red-500">*</span></label>
-                            <label class="w-full flex items-center px-4 py-3 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500">
+                            <label class="w-full flex items-center px-4 py-3 bg-white border rounded-lg cursor-pointer hover:bg-gray-50 transition
+                                          @error('gambar') border-red-500 ring-1 ring-red-500 @else border-gray-300 @enderror">
                                 <i class="fas fa-image text-blue-500 mr-3"></i>
                                 <span x-text="fileName || 'Upload Gambar...'" class="text-sm text-gray-600"></span>
-                                <input type="file" name="gambar" @change="fileName = $event.target.files[0]?.name" class="hidden" accept="image/*" required>
+                                
+                                <input type="file" name="gambar" @change="fileName = $event.target.files[0]?.name" class="hidden" accept="image/*">
                             </label>
+
+                            @error('gambar')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="pt-6 border-t mt-6">
                         <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition">
-                            Simpan & Lanjut
+                            Tambah
                         </button>
                     </div>
                 </form>

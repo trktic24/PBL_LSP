@@ -107,7 +107,7 @@ class SkemaController extends Controller
 
         // [PENTING] Redirect langsung ke halaman DETAIL (Kelompok Pekerjaan)
         // Route 'skema.detail' ini akan ditangani oleh DetailSkemaController
-        return redirect()->route('skema.detail_skema', $skema->id_skema)
+        return redirect()->route('skema.detail', $skema->id_skema)
                          ->with('success', "Skema '{$skema->nama_skema}' (ID: {$skema->id_skema}) berhasil dibuat. Silakan lengkapi Kelompok Pekerjaan.");
     }
 

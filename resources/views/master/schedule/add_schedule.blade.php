@@ -67,7 +67,7 @@
                     <a href="{{ route('master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium justify-self-start">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center">ADD SCHEDULE</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center">TAMBAH SCHEDULE</h1>
                     <div class="justify-self-end"></div>
                 </div>
 

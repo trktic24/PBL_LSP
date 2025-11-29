@@ -33,7 +33,7 @@
                     
                     <div class="text-center flex-1 px-4">
                         <h1 class="text-2xl font-bold text-gray-900 uppercase leading-tight">
-                            EDIT KOMPETENSI
+                            EDIT KELOMPOK PEKERJAAN - UNIT KOMPETENSI
                         </h1>
                         <p class="text-sm text-gray-500 mt-1 font-medium">
                             Skema: {{ $skema->nama_skema }}
@@ -54,7 +54,7 @@
 
                 <form action="{{ route('skema.detail.update_kelompok', $kelompok->id_kelompok_pekerjaan) }}" method="POST" 
                       class="space-y-8" 
-                      x-data="unitHandler()">
+                      x-data="editUnitHandler()">
                     @csrf
                     @method('PUT')
 
@@ -104,7 +104,7 @@
                                                :name="'units[' + index + '][kode_unit]'" 
                                                x-model="unit.kode_unit" 
                                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm shadow-sm" 
-                                               placeholder="Kode Unit" required>
+                                               placeholder="Cth: J.620100.001.01" required>
                                     </div>
 
                                     <div class="flex-1 w-full">
@@ -113,7 +113,7 @@
                                                :name="'units[' + index + '][judul_unit]'" 
                                                x-model="unit.judul_unit" 
                                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm shadow-sm" 
-                                               placeholder="Judul Unit" required>
+                                               placeholder="Masukkan Judul Unit Kompetensi" required>
                                     </div>
 
                                     <div class="w-full md:w-auto flex justify-end">
@@ -131,7 +131,7 @@
                         
                         <div class="mt-3 flex justify-between items-center">
                             <p class="text-xs text-gray-500 italic">
-                                <i class="fas fa-info-circle mr-1"></i> Hapus baris jika unit kompetensi tersebut tidak lagi diperlukan.
+                                <i class="fas fa-info-circle mr-1"></i> Pastikan kode unit unik dan sesuai standar SKKNI.
                             </p>
                             <div class="text-right text-sm text-gray-600 font-medium">
                                 Total Unit: <span x-text="units.length" class="text-blue-600 font-bold"></span>
@@ -140,8 +140,8 @@
                     </div>
 
                     <div class="pt-8 border-t mt-8">
-                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition flex justify-center items-center text-lg">
-                            <i class="fas fa-save mr-2"></i> Simpan Perubahan
+                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition flex justify-center items-center">
+                            Simpan Perubahan
                         </button>
                     </div>
                 </form>
@@ -160,14 +160,13 @@
     </style>
 
     <script>
-        function unitHandler() {
+        function editUnitHandler() {
             return {
-                // [PENTING] Inject data Unit dari Database
-                // Jika kosong, default ke 1 baris kosong
-                units: @json($kelompok->unitKompetensi->isNotEmpty() ? $kelompok->unitKompetensi : [['id_unit_kompetensi' => null, 'kode_unit' => '', 'judul_unit' => '']]),
+                // Inject data existing dari database ke Alpine.js
+                units: @json($kelompok->unitKompetensi),
                 
                 addUnit() {
-                    // Tambahkan object kosong (id: null menandakan data baru)
+                    // Tambah baris baru (ID null menandakan ini data baru)
                     this.units.push({ id_unit_kompetensi: null, kode_unit: '', judul_unit: '' });
                 },
                 

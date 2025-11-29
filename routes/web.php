@@ -78,15 +78,14 @@ Route::middleware('auth')->group(function () {
     Route::controller(\App\Http\Controllers\DetailSkemaController::class)
          ->prefix('master/skema/detail')
          ->group(function () {
-            
-            // Tab 1: Informasi Skema (detail_skema.blade.php)
             Route::get('/{id_skema}', 'index')->name('skema.detail');
 
-            // Tab 2: Kelompok Pekerjaan (detail_kelompokpekerjaan.blade.php)
-            Route::get('/{id_skema}/kelompok', 'kelompok')->name('skema.detail.kelompok');
-
-            // Tab 3: Bank Soal (detail_banksoal.blade.php)
-            Route::get('/{id_skema}/bank-soal', 'bankSoal')->name('skema.detail.bank_soal');
+            Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
+            Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
+            Route::get('/kelompok/{id_kelompok}/edit', 'editKelompok')->name('skema.detail.edit_kelompok');
+            Route::put('/kelompok/{id_kelompok}', 'updateKelompok')->name('skema.detail.update_kelompok');
+            Route::delete('/kelompok/{id_kelompok}', 'destroyKelompok')->name('skema.detail.destroy_kelompok');
+            Route::delete('/unit/{id_unit}', 'destroyUnit')->name('skema.detail.destroy_unit');
     });
 
 

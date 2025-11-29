@@ -30,7 +30,7 @@
                     <a href="{{ route('master_category') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
-                    <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">ADD KATEGORI</h1>
+                    <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">TAMBAH KATEGORI</h1>
                     <div class="w-[80px]"></div>
                 </div>
 
