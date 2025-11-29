@@ -1,6 +1,6 @@
+@use('App\Models\DataSertifikasiAsesi')
+
 @php
-    // Kita ambil data pekerjaan pertama biar kodenya pendek
-    // Tanda '?' (optional chaining) biar gak error kalau datanya kosong
     $pekerjaan = $asesi->dataPekerjaan->first();
 @endphp
 
@@ -12,63 +12,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tanda Tangan Pemohon</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    {{-- Library Signature Pad --}}
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
-        canvas {
-            touch-action: none;
-            /* Biar gak scroll pas tanda tangan di HP */
-        }
+        canvas { touch-action: none; }
     </style>
 </head>
 
+{{-- Body Background Original: bg-gray-100 --}}
 <body class="bg-gray-100">
 
-    <div class="flex h-screen overflow-hidden">
-        {{-- Sidebar --}}
-        <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
+    <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden">
 
-        {{-- Main Content --}}
-        <main class="flex-1 p-12 bg-white overflow-y-auto">
-            <div class="max-w-3xl mx-auto">
+        {{-- 1. SIDEBAR (Desktop Only) --}}
+        <div class="hidden md:block md:w-80 flex-shrink-0">
+            <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi"></x-sidebar>
+        </div>
 
-                {{-- Stepper Progress --}}
-                <div class="flex items-center justify-center mb-12">
-                    {{-- Step 1 --}}
-                    <div class="flex flex-col items-center">
-                        <div
-                            class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                            1
-                        </div>
-                    </div>
+        {{-- 2. HEADER MOBILE (Component Baru) --}}
+        @php
+            $gambarSkema = ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) 
+                ? asset('images/' . $sertifikasi->jadwal->skema->gambar) 
+                : null;
+        @endphp
 
-                    {{-- Garis 1-2 --}}
+        <x-mobile_header
+            :title="$sertifikasi->jadwal->skema->nama_skema ?? 'Skema Sertifikasi'"
+            :code="$sertifikasi->jadwal->skema->kode_unit ?? $sertifikasi->jadwal->skema->nomor_skema ?? '-'"
+            :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'"
+            :image="$gambarSkema"
+            backUrl="{{ route('bukti.pemohon', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+        />
+
+        {{-- 3. MAIN CONTENT --}}
+        <main class="flex-1 w-full relative md:p-12 md:overflow-y-auto bg-gray-50 md:bg-white z-0" 
+              data-sertifikasi-id="{{ $sertifikasi->id_data_sertifikasi_asesi }}">
+            
+            {{-- CONTAINER RESPONSIF --}}
+            <div class="max-w-3xl mx-auto mt-16 md:mt-0 p-6 md:p-0 transition-all bg-white rounded-t-[40px] md:rounded-none md:bg-transparent min-h-screen md:min-h-0 shadow-2xl md:shadow-none">
+
+                {{-- A. STEPPER --}}
+                {{-- 1. Desktop --}}
+                <div class="hidden md:flex items-center justify-center mb-12">
+                    <div class="flex flex-col items-center"><div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">1</div></div>
                     <div class="w-24 h-0.5 bg-yellow-400 mx-4"></div>
-
-                    {{-- Step 2 --}}
-                    <div class="flex flex-col items-center">
-                        <div
-                            class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                            2
-                        </div>
-                    </div>
-
-                    {{-- Garis 2-3 --}}
+                    <div class="flex flex-col items-center"><div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">2</div></div>
                     <div class="w-24 h-0.5 bg-yellow-400 mx-4"></div>
-
-                    {{-- Step 3 (Aktif) --}}
-                    <div class="flex flex-col items-center">
-                        <div
-                            class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                            3
-                        </div>
-                    </div>
+                    <div class="flex flex-col items-center"><div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-bold text-lg">3</div></div>
                 </div>
 
-                <h1 class="text-4xl font-bold text-gray-900 mb-8">Tanda Tangan Pemohon</h1>
+                {{-- 2. Mobile (Kuning) --}}
+                <div class="flex items-center justify-center mb-8 md:hidden pt-8 md:pt-0">
+                    <div class="flex flex-col items-center"><div class="w-12 h-12 bg-[#FFD700] rounded-full flex items-center justify-center text-black font-bold text-xl shadow-md">1</div></div>
+                    <div class="w-16 h-1.5 bg-[#FFD700] mx-1"></div>
+                    <div class="flex flex-col items-center"><div class="w-12 h-12 bg-[#FFD700] rounded-full flex items-center justify-center text-black font-bold text-xl shadow-md">2</div></div>
+                    <div class="w-16 h-1.5 bg-[#FFD700] mx-1"></div>
+                    <div class="flex flex-col items-center"><div class="w-12 h-12 bg-[#FFD700] rounded-full flex items-center justify-center text-black font-bold text-xl shadow-md">3</div></div>
+                </div>
 
-                {{-- Info Pemohon --}}
+                {{-- JUDUL --}}
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center md:text-left">Tanda Tangan Pemohon</h1>
+
+                {{-- INFO PEMOHON --}}
                 <div class="space-y-4 text-sm mb-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
                     <p class="text-base text-gray-800 font-semibold mb-4">Saya yang bertanda tangan di bawah ini:</p>
 
@@ -83,8 +88,7 @@
                         </div>
                         <div>
                             <label class="text-gray-500 block">Perusahaan</label>
-                            <p class="text-gray-900 font-medium text-lg">
-                                {{ $pekerjaan?->nama_institusi_pekerjaan ?? '-' }}</p>
+                            <p class="text-gray-900 font-medium text-lg">{{ $pekerjaan?->nama_institusi_pekerjaan ?? '-' }}</p>
                         </div>
                         <div>
                             <label class="text-gray-500 block">Alamat Perusahaan</label>
@@ -93,60 +97,51 @@
                     </div>
 
                     <div class="mt-4 pt-4 border-t border-gray-200 text-gray-600 text-xs leading-relaxed">
-                        Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan saya setuju untuk
-                        mengikuti proses sertifikasi sesuai dengan prosedur yang berlaku.
+                        Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan saya setuju untuk mengikuti proses sertifikasi sesuai dengan prosedur yang berlaku.
                     </div>
                 </div>
 
-                {{-- Area Tanda Tangan --}}
+                {{-- AREA TANDA TANGAN --}}
                 <div class="mb-8">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Tanda Tangan Digital</label>
 
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg bg-white relative overflow-hidden">
-
-                        {{-- 1. Wadah Gambar Jadi (Preview) --}}
-                        {{-- Kita kasih ID biar bisa diatur JS --}}
-                        <div id="signature-image-container"
-                            class="w-full h-64 flex items-center justify-center {{ $asesi->tanda_tangan ? '' : 'hidden' }}">
-                            <img id="signature-image-display" {{-- Perhatikan fungsi asset() ini --}}
-                                src="{{ $asesi->tanda_tangan ? asset($asesi->tanda_tangan) : '' }}"
-                                class="max-h-full max-w-full object-contain" alt="Tanda Tangan">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg bg-white relative overflow-hidden h-64">
+                        {{-- Preview Gambar --}}
+                        <div id="signature-image-container" class="w-full h-full flex items-center justify-center {{ $asesi->tanda_tangan ? '' : 'hidden' }}">
+                            <img id="signature-image-display" 
+                                 src="{{ $asesi->tanda_tangan ? asset($asesi->tanda_tangan) : '' }}" 
+                                 class="max-h-full max-w-full object-contain p-4" alt="Tanda Tangan">
                         </div>
 
-                        {{-- 2. Wadah Canvas (Untuk Nulis) --}}
-                        {{-- Kalau udah ada tanda tangan, canvas kita sembunyiin dulu --}}
-                        <div id="signature-canvas-container"
-                            class="w-full h-full {{ $asesi->tanda_tangan ? 'hidden' : '' }}">
-                            <canvas id="signature-pad" class="w-full h-64 rounded-lg cursor-crosshair block"></canvas>
-
-                            {{-- Placeholder text --}}
-                            <div id="signature-placeholder"
-                                class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        {{-- Canvas --}}
+                        <div id="signature-canvas-container" class="w-full h-full {{ $asesi->tanda_tangan ? 'hidden' : '' }}">
+                            <canvas id="signature-pad" class="w-full h-full cursor-crosshair block touch-none"></canvas>
+                            <div id="signature-placeholder" class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <span class="text-gray-400 text-sm">Tanda tangan di sini</span>
                             </div>
                         </div>
-
                     </div>
 
-                    {{-- Tombol Aksi --}}
+                    {{-- Tombol Aksi TTD --}}
                     <div class="flex justify-between items-center mt-2">
-                        <button type="button" id="clear-signature"
-                            class="text-sm text-red-600 hover:text-red-800 font-medium">
+                        <button type="button" id="clear-signature" class="text-sm text-red-600 hover:text-red-800 font-medium flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             Hapus & Ulangi
                         </button>
                         <p class="text-xs text-gray-500">Gunakan mouse atau jari (touchscreen)</p>
                     </div>
                 </div>
 
-                {{-- Tombol Navigasi --}}
-                <div class="flex justify-between items-center mt-12 pt-6 border-t border-gray-100">
+                {{-- TOMBOL NAVIGASI (UPDATED: Sama persis layout halaman Bukti Pemohon) --}}
+                {{-- flex-row: Biar tombolnya jejer kiri-kanan (tidak tumpuk) --}}
+                <div class="flex justify-between items-center mt-12 pt-6 border-t border-gray-100 pb-10 md:pb-0">
                     <a href="{{ route('bukti.pemohon', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                        class="w-48 text-center px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-all shadow-sm">
+                        class="w-32 md:w-48 text-center px-4 md:px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-full hover:bg-gray-300 transition-all shadow-sm text-sm md:text-base">
                         Kembali
                     </a>
 
                     <button type="button" id="save-submit-btn"
-                        class="w-48 text-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="w-32 md:w-48 text-center px-4 md:px-8 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 shadow-md transition-all text-sm md:text-base shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed">
                         Selanjutnya
                     </button>
                 </div>
@@ -155,106 +150,56 @@
         </main>
     </div>
 
+    {{-- Script JS --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
-            // --- 1. VARIABEL & ELEMEN DOM ---
             const canvas = document.getElementById('signature-pad');
             const placeholder = document.getElementById('signature-placeholder');
-
-            // Container
             const imgContainer = document.getElementById('signature-image-container');
             const canvasContainer = document.getElementById('signature-canvas-container');
-
-            // Elemen Gambar & Tombol
             const imgDisplay = document.getElementById('signature-image-display');
             const btnHapus = document.getElementById('clear-signature');
             const btnSimpan = document.getElementById('save-submit-btn');
 
-            // --- AMBIL DATA DARI BLADE DENGAN AMAN ---
-            // Kita pakai null coalescing operator (??) di blade biar gak error kalau data kosong
             const idAsesi = "{{ $asesi->id_asesi ?? '' }}";
             const idSertifikasi = "{{ $sertifikasi->id_data_sertifikasi_asesi ?? '' }}";
-            const idJadwal = "{{ $sertifikasi->id_jadwal ?? '' }}";
-
-            // Cek apakah user punya ttd saat halaman dimuat
-            // Perhatikan kutipnya, ini penting biar jadi string 'true'/'false' atau boolean
             let hasSignature = {{ isset($asesi) && $asesi->tanda_tangan ? 'true' : 'false' }};
 
-            // Validasi Awal: Kalau ID gak ada, jangan jalankan script (biar gak error console)
             if (!idAsesi || !idSertifikasi) {
-                console.error("ID Asesi atau ID Sertifikasi tidak ditemukan.");
+                console.error("ID Asesi/Sertifikasi tidak ditemukan.");
                 return;
             }
 
+            let signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgba(255, 255, 255, 0)' });
 
-            // --- 2. SETUP SIGNATURE PAD ---
-            // Inisialisasi SignaturePad
-            let signaturePad = new SignaturePad(canvas, {
-                backgroundColor: 'rgba(255, 255, 255, 0)' // Transparan
-            });
-
-            // Fungsi Resize Canvas (Responsive)
             function resizeCanvas() {
-                // Hanya resize jika canvas sedang terlihat (biar gak error layout/hidden element)
                 if (canvasContainer.classList.contains('hidden')) return;
-
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
-
-                // Simpan data lama sebelum resize (karena resize akan menghapus canvas)
-                // Tapi untuk kasus ini kita biarkan kosong saat resize agar bersih
                 canvas.width = canvas.offsetWidth * ratio;
                 canvas.height = canvas.offsetHeight * ratio;
                 canvas.getContext("2d").scale(ratio, ratio);
-
-                // signaturePad.clear(); // Opsional: Bersihkan setelah resize
             }
-
-            // Panggil resize saat window diubah ukurannya
             window.addEventListener("resize", resizeCanvas);
+            if (!hasSignature) setTimeout(resizeCanvas, 100);
 
-            // Inisialisasi awal canvas (jika belum ada ttd)
-            if (!hasSignature) {
-                // Sedikit delay biar element HTML benar-benar render dulu
-                setTimeout(resizeCanvas, 100);
-            }
-
-            // Hilangkan tulisan "Tanda tangan di sini" saat mulai nulis
             signaturePad.addEventListener("beginStroke", () => {
                 placeholder.classList.add('hidden');
             });
 
-
-            // --- 3. TOMBOL HAPUS / ULANGI ---
             btnHapus.addEventListener('click', () => {
-                // Sembunyikan Gambar Preview
                 imgContainer.classList.add('hidden');
-
-                // Tampilkan Canvas
                 canvasContainer.classList.remove('hidden');
-
-                // Reset Canvas
                 placeholder.classList.remove('hidden');
                 hasSignature = false;
-
-                // Wajib resize ulang saat ditampilkan kembali agar ukurannya pas
                 resizeCanvas();
                 signaturePad.clear();
             });
 
-            // --- 4. TOMBOL SIMPAN ---
             btnSimpan.addEventListener('click', async () => {
-
                 let dataUrl = null;
-
-                // Skenario 1: User pakai tanda tangan lama (Gambar tampil)
                 if (hasSignature && !imgContainer.classList.contains('hidden')) {
-                    // Kirim null, biar Controller tau kita gak mau ubah gambar, 
-                    // TAPI tetep mau update status sertifikasi.
-                    dataUrl = null; 
-                } 
-                // Skenario 2: User bikin tanda tangan baru
-                else {
+                    dataUrl = null;
+                } else {
                     if (signaturePad.isEmpty()) {
                         alert("Harap tanda tangan terlebih dahulu!");
                         return;
@@ -262,13 +207,12 @@
                     dataUrl = signaturePad.toDataURL('image/png');
                 }
 
-                // --- PROSES KIRIM KE API ---
                 const originalText = btnSimpan.innerText;
                 btnSimpan.innerText = 'Menyimpan...';
                 btnSimpan.disabled = true;
 
                 try {
-                    const response = await fetch(`/api/v1/ajax-simpan-tandatangan/${idAsesi}`, { // Pastikan URL pake v1
+                    const response = await fetch(`/api/v1/ajax-simpan-tandatangan/${idAsesi}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -276,31 +220,17 @@
                             'Accept': 'application/json'
                         },
                         body: JSON.stringify({
-                            data_tanda_tangan: dataUrl, // Bisa isi base64 atau null
-                            id_data_sertifikasi_asesi: idSertifikasi // ID PENTING BUAT UPDATE STATUS
+                            data_tanda_tangan: dataUrl,
+                            id_data_sertifikasi_asesi: idSertifikasi
                         })
                     });
-
                     const result = await response.json();
-
                     if (response.ok && result.success) {
-                        alert('Berhasil! Status pendaftaran diperbarui.');
-                        
-                        // Refresh gambar kalau ada update gambar baru
-                        if (dataUrl && imgDisplay) {
-                             imgDisplay.src = `/${result.path}?t=${new Date().getTime()}`;
-                        }
-
-                        // Redirect ke Tracker yang benar
-                        // (Pastikan variabel idJadwal sudah didefinisikan di atas script, lihat jawaban sebelumnya)
-                        // Kalau belum ada variabel idJadwal, ambil dari PHP:
-                        const targetUrl = "{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
-                        window.location.href = targetUrl;
-
+                        alert('Berhasil! Data tersimpan.');
+                        window.location.href = "{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
                     } else {
                         throw new Error(result.message || 'Gagal menyimpan');
                     }
-
                 } catch (error) {
                     console.error(error);
                     alert('Terjadi kesalahan: ' + error.message);
@@ -308,10 +238,8 @@
                     btnSimpan.disabled = false;
                 }
             });
-
         });
     </script>
 
 </body>
-
 </html>

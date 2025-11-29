@@ -3,7 +3,7 @@
     'code' => null,
     'name' => null,
     'image' => null,
-    'backUrl' => '/'
+    'sertifikasi' => null,
 ])
 
 {{-- 
@@ -15,11 +15,11 @@
     - Tombol Kembali di Pojok Kiri
 --}}
 
-<div class="block md:hidden bg-gradient-to-b from-[#FFF9E5] to-[#FFFFFF] pb-24 pt-20 px-6 rounded-b-[40px] shadow-sm relative z-30">
+<div class="block md:hidden bg-gradient-to-b from-[#FFF9E5] to-[#3fa1f649] pb-24 pt-20 px-6 rounded-b-[40px] shadow-sm relative z-30">
     
     {{-- 1. Tombol Kembali --}}
     <div class="absolute top-8 left-6">
-        <a href="{{ $backUrl }}" class="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
+        <a href="{{ $backUrl ?? ($sertifikasi ? '/tracker/' . $sertifikasi->id_jadwal : '/dashboard') }}" class="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
