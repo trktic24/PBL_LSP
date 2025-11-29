@@ -92,7 +92,7 @@
                         </div>
                         <div class="flex md:contents">
                             <div class="w-24 md:w-auto text-sm font-medium text-gray-600">Nomor</div>
-                            <div class="md:col-span-2 text-sm text-gray-900 font-mono" id="skema-nomor">: ...Memuat data...</div>
+                            <div class="md:col-span-2 text-sm text-gray-900 font-medium md:font-normal" id="skema-nomor">: ...Memuat data...</div>
                         </div>
                     </div>
                 </div>
@@ -113,20 +113,19 @@
                 {{-- TABEL UNIT KOMPETENSI (FIXED & RESPONSIVE) --}}
                 <div class="mb-10">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Daftar Unit Kompetensi</h3>
-                    <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                        {{-- table-fixed: Biar kolom nurut sama width yang kita set --}}
-                        <table class="w-full table-fixed divide-y divide-gray-200">
-                            {{-- Header Hitam di Mobile & Desktop --}}
+                    
+                    {{-- PERBAIKAN DI SINI: Tambah overflow-x-auto di wrapper --}}
+                    <div class="border border-gray-200 rounded-lg shadow-sm overflow-x-auto">
+                        
+                        {{-- PERBAIKAN DI SINI: Hapus table-fixed, biarkan lebar otomatis --}}
+                        <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-black text-white">
                                 <tr>
-                                    {{-- Kolom No (Kecil) --}}
-                                    <th class="px-2 py-3 text-center text-[10px] md:text-sm font-bold uppercase tracking-wider w-10 md:w-16">No</th>
-                                    {{-- Kolom Kode (Sedang) --}}
-                                    <th class="px-2 py-3 text-left text-[10px] md:text-sm font-bold uppercase tracking-wider w-24 md:w-40">Kode</th>
-                                    {{-- Kolom Judul (Auto/Sisa Ruang) --}}
-                                    <th class="px-2 py-3 text-left text-[10px] md:text-sm font-bold uppercase tracking-wider">Judul Unit</th>
-                                    {{-- Kolom Jenis (Kecil/Sedang) --}}
-                                    <th class="px-2 py-3 text-center text-[10px] md:text-sm font-bold uppercase tracking-wider w-20 md:w-32">Jenis</th>
+                                    {{-- PERBAIKAN DI SINI: Hapus width fixed, pakai whitespace-nowrap --}}
+                                    <th class="px-4 py-3 text-center text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap">No</th>
+                                    <th class="px-4 py-3 text-left text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap">Kode</th>
+                                    <th class="px-4 py-3 text-left text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap">Judul Unit</th>
+                                    <th class="px-4 py-3 text-center text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap">Jenis</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200" id="unit-kompetensi-body">
