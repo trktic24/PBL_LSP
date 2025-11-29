@@ -229,7 +229,7 @@
                                                 <button type="submit" 
                                                         class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-600 rounded-md hover:bg-red-100 hover:text-red-700 transition shadow-sm border border-red-100" 
                                                         title="Hapus Unit">
-                                                    <i class="fas fa-trash-alt text-xs"></i>
+                                                    <i class="fas fa-trash text-xs"></i>
                                                 </button>
                                             </div>
                                         </form>
