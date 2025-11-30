@@ -4,7 +4,7 @@
 
 <header
   x-data="{ openMenu:false, openInfo:false, openProfil:false, openUser:false }"
-  class="fixed top-0 left-0 w-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-6 sm:px-12 z-30 font-[Poppins]"
+  class="fixed top-0 left-0 w-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-6 sm:px-12 z-[999] font-[Poppins]"
 >
   <div class="flex items-center justify-between w-full max-w-7xl mx-auto">
     {{-- 🟦 Logo --}}

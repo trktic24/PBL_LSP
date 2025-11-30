@@ -3,11 +3,12 @@
 @section('content')
 
 {{-- ======================= HERO ======================= --}}
-<section class="relative h-[900px] rounded-t-4xl overflow-hidden z-10">
+{{-- ======================= HERO ======================= --}}
+<section class="relative min-h-screen flex items-center rounded-b-[3rem] overflow-hidden z-10 pb-20">
     {{-- Gambar Latar Belakang --}}
     <img src="{{ asset('images/Gedung Polines.jpg') }}"
         alt="Gedung Polines"
-        class="w-full h-full object-cover">
+        class="absolute inset-0 w-full h-full object-cover">
     
     {{-- Overlay Gradasi Biru --}}
     <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
@@ -16,26 +17,26 @@
     <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
     
     {{-- Konten Utama (Header Text dan Tombol) --}}
-    <div class="absolute top-1/3 inset-x-0">
+    <div class="relative w-full pt-32 pb-12">
         
         <div class="container mx-auto px-8"> 
             
             <div class="text-black drop-shadow-lg max-w-xl">
-                <h1 class="text-6xl font-bold mb-4">LSP POLINES</h1>
-                <p class="text-xl mb-6 leading-relaxed">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
+                <h1 class="text-4xl md:text-6xl font-bold mb-4 font-poppins">LSP POLINES</h1>
+                <p class="text-lg md:text-xl mb-6 leading-relaxed font-inter">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
 
-                <div class="flex items-center gap-6 mt-8">
+                <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-8">
                     {{-- Tombol Daftar --}}
                     <a href="{{ route('login') }}"
                            class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
                                   hover:bg-yellow-500 transition-all duration-300 ease-in-out
-                                  transform hover:scale-105">
+                                  transform hover:scale-105 font-poppins w-full sm:w-auto text-center">
                         Daftar
                     </a>
                     {{-- Tombol Eksplore --}}
                     <a href="#skema-sertifikasi"
                            class="text-black font-semibold text-lg flex items-center gap-2
-                                  hover:gap-3 transition-all duration-300 ease-in-out group">
+                                  hover:gap-3 transition-all duration-300 ease-in-out group font-poppins">
                         Eksplore Skema
                         <span class="font-bold text-xl transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
                     </a>
@@ -89,7 +90,7 @@ html { scroll-behavior: smooth; }
 {{-- ======================= FILTER KATEGORI ====================== --}}
 <section id="skema-sertifikasi" 
              class="py-10 text-center relative z-20 bg-white -mt-10">
-    <p class="font-bold text-2xl mb-6">Skema Sertifikasi</p>
+    <p class="font-bold text-2xl mb-6 font-poppins">Skema Sertifikasi</p>
     
     <div class="relative w-full max-w-7xl mx-auto px-4"> 
         
@@ -314,7 +315,7 @@ if (scrollContainer) {
   Kode ini menggantikan grid lama Anda dengan slider 3-kartu yang benar.
 --}}
 <section class="bg-gray-50 py-12 px-10 text-center relative">
-    <h2 class="text-3xl font-bold mb-8">Jadwal yang Akan Datang</h2>
+    <h2 class="text-3xl font-bold mb-8 font-poppins">Jadwal yang Akan Datang</h2>
 
     @php
         // Membagi data jadwal menjadi kelompok-kelompok (3 jadwal per kelompok/slide)
@@ -432,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 {{-- ======================= BERITA TERBARU (VERSI SLIDER) ======================= --}}
 <section id="berita-terbaru" class="bg-white py-12 px-10 text-center relative">
-    <h2 class="text-3xl font-bold mb-8">Berita Terbaru</h2>
+    <h2 class="text-3xl font-bold mb-8 font-poppins">Berita Terbaru</h2>
 
     @php
         // Membagi data berita menjadi kelompok-kelompok (3 berita per slide)

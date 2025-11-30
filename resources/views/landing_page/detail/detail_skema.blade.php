@@ -17,7 +17,7 @@
             <div class="absolute inset-0 bg-gradient-to-r from-blue-500/90 via-blue-400/40 to-transparent"></div>
 
             <div class="absolute inset-0 flex flex-col justify-center px-12 text-white">
-                <h1 class="text-6xl font-bold mb-4">{{ strtoupper($skema->nama_skema ?? $skema->nama ?? 'Skema Sertifikasi') }}</h1>
+                <h1 class="text-6xl font-bold mb-4 font-poppins">{{ strtoupper($skema->nama_skema ?? $skema->nama ?? 'Skema Sertifikasi') }}</h1>
                 <p class="text-lg max-w-md">{{ $skema->deskripsi ?? 'Deskripsi skema belum tersedia.' }}</p>
                 
                 {{-- Detail jadwal tunggal dihapus karena ini adalah halaman daftar skema --}}
@@ -29,7 +29,7 @@
 
     {{-- Jadwal Pelaksanaan (Menggunakan Grid/Card Horizontal) --}}
     <section class="max-w-screen-xl mx-auto px-8 py-10">
-        <h2 class="text-3xl font-bold mb-6 text-gray-800">Jadwal Pelaksanaan</h2>
+        <h2 class="text-3xl font-bold mb-6 text-gray-800 font-poppins">Jadwal Pelaksanaan</h2>
 
         @if(isset($skema->jadwal) && $skema->jadwal->isNotEmpty())
             {{-- MENGGUNAKAN LAYOUT CARD HORIZONTAL --}}
@@ -65,7 +65,7 @@
                     <div class="bg-white rounded-2xl shadow-xl p-6 border-2 {{ $border_class }} flex flex-col justify-between transition duration-300">
                         
                         {{-- Header: Bulan Pelaksanaan (Teks Rata Tengah) --}}
-                        <h3 class="font-extrabold text-xl mb-4 text-gray-800 uppercase text-center border-b pb-2">
+                        <h3 class="font-extrabold text-xl mb-4 text-gray-800 uppercase text-center border-b pb-2 font-poppins">
                             {{ $header_text ?? 'N/A' }}
                         </h3>
 
@@ -113,13 +113,13 @@
 
     {{-- Unit Kompetensi --}}
     <section class="max-w-screen-xl mx-auto px-8 py-10">
-        <h2 class="text-3xl font-bold mb-6 text-gray-800">Unit Kompetensi</h2>
+        <h2 class="text-3xl font-bold mb-6 text-gray-800 font-poppins">Unit Kompetensi</h2>
 
         <div class="space-y-4">
             @if(isset($skema->unit_kompetensi) && count($skema->unit_kompetensi) > 0)
                 @foreach($skema->unit_kompetensi as $unit)
                     <div class="bg-white rounded-2xl p-6 border-2 border-blue-500 shadow-xl hover:shadow-2xl transition duration-300">
-                        <h3 class="text-lg font-bold text-blue-600 mb-3 border-b pb-2">Kode Unit: {{ $unit->kode ?? 'N/A' }}</h3>
+                        <h3 class="text-lg font-bold text-blue-600 mb-3 border-b pb-2 font-poppins">Kode Unit: {{ $unit->kode ?? 'N/A' }}</h3>
                         <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
                             {{-- Looping judul unit --}}
                             @if(isset($unit->judul) && is_array($unit->judul))
@@ -142,7 +142,7 @@
 
     {{-- SKKNI (Standar Kompetensi Kerja Nasional Indonesia) --}}
     <section class="max-w-screen-xl mx-auto px-8 py-10">
-        <h2 class="text-3xl font-bold mb-6 text-gray-800">SKKNI (Standar Kompetensi Kerja Nasional Indonesia)</h2>
+        <h2 class="text-3xl font-bold mb-6 text-gray-800 font-poppins">SKKNI (Standar Kompetensi Kerja Nasional Indonesia)</h2>
 
         <div class="space-y-4">
             @if(isset($skema->skkni) && count($skema->skkni) > 0)

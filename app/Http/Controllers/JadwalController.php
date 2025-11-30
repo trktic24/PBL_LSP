@@ -64,7 +64,7 @@ class JadwalController extends Controller
         }
 
         // Order & paginate (20 per halaman)
-        $jadwal = $query->orderBy('tanggal_pelaksanaan', 'desc')
+        $jadwal = $query->orderBy('tanggal_pelaksanaan', 'asc')
                        ->paginate(20)
                        ->appends($request->except('page'));
 

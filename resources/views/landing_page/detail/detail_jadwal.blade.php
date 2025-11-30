@@ -7,7 +7,7 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         
         {{-- Judul Skema --}}
-        <h1 class="text-3xl font-bold mb-4">{{ $jadwal->skema?->nama_skema ?? 'Nama Skema Tidak Ditemukan' }}</h1>
+        <h1 class="text-3xl font-bold mb-4 font-poppins">{{ $jadwal->skema?->nama_skema ?? 'Nama Skema Tidak Ditemukan' }}</h1>
         
         <div class="mb-6">
             <div class="flex flex-wrap gap-6 text-gray-900 text-sm">
@@ -41,7 +41,7 @@
                 
                 {{-- Deskripsi Skema (Tetap Ambil dari Database) --}}
                 <div class="mb-12">
-                    <h2 class="text-xl font-bold mb-3">Deskripsi Skema</h2>
+                    <h2 class="text-xl font-bold mb-3 font-poppins">Deskripsi Skema</h2>
                     <p class="text-gray-600 leading-relaxed text-justify">
                         {{ $jadwal->skema?->deskripsi_skema ?? 'Deskripsi skema belum tersedia saat ini.' }}
                     </p>
@@ -49,7 +49,7 @@
 
                 {{-- 🟦 PERBAIKAN: PERSYARATAN PESERTA (STATIS) --}}
                 <div class="mb-6">
-                    <h2 class="text-xl font-bold mb-3">Persyaratan Peserta</h2>
+                    <h2 class="text-xl font-bold mb-3 font-poppins">Persyaratan Peserta</h2>
                     <div class="text-gray-600 leading-relaxed">
                         <ul class="list-disc list-inside space-y-2">
                             <li>Kartu Tanda Pengenal(KTP/PASPOR/KTM).</li>
@@ -72,10 +72,7 @@
                         <span class="font-semibold text-gray-700">Jumlah Pendaftar :</span>
                         <span class="font-bold">{{ $jumlahPeserta ?? 0 }} Orang</span>
                     </div>
-                    
-                    {{-- Tombol Daftar --}}
-                    {{-- Ganti href="#" dengan route pendaftaran yang sesuai jika sudah ada --}}
-                    <a href="#" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
+                    <a href="{{ route('login') }}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
                         Daftar Sekarang
                     </a>
                     

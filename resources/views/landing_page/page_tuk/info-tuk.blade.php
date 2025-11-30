@@ -3,11 +3,7 @@
 @section('title', 'Tempat Uji Kompetensi')
 
 @section('content')
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
     <style>
-        body { font-family: 'Poppins', sans-serif !important; }
-
         /* STYLE TABEL (SAMA DENGAN JADWAL) */
         .custom-table-header {
             background: #FFF8C6;
@@ -29,7 +25,7 @@
 
     <div class="bg-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Tempat Uji Kompetensi</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2 font-poppins">Tempat Uji Kompetensi</h1>
             <p class="text-gray-600">Daftar lokasi pelaksanaan uji kompetensi<br>yang terdaftar secara resmi</p>
         </div>
     </div>
@@ -53,7 +49,7 @@
         <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden">
 
             {{-- Grid kolom disesuaikan: 30% | 40% | 20% | 10% --}}
-            <div class="grid grid-cols-10 px-6 py-4 custom-table-header text-sm">
+            <div class="grid grid-cols-10 px-6 py-4 custom-table-header text-sm font-poppins">
                 
                 {{-- Tempat (3 Kolom) --}}
                 <div class="col-span-3 font-bold flex items-center">

@@ -13,61 +13,6 @@ use \DateTime;
 
 class HomeController extends Controller
 {
-    // FUNGSI INI HANYA UNTUK BERITA (DATA BERITA MASIH DUMMY)
-    private function getSemuaDummyBerita() 
-    {
-        return [
-            (object)[
-                'id' => 1,
-                'judul' => 'LSP Polines Adakan Uji Kompetensi Skema Jaringan',
-                'tanggal' => now()->subDays(2),
-                'gambar' => 'https://placehold.co/600x400/96C9F4/white?text=Berita+1'
-            ],
-            (object)[
-                'id' => 2,
-                'judul' => 'Kerjasama Baru LSP Polines dengan Industri Digital',
-                'tanggal' => now()->subDays(5),
-                'gambar' => 'https://placehold.co/600x400/FACC15/white?text=Berita+2'
-            ],
-            (object)[
-                'id' => 3,
-                'judul' => 'Sosialisasi Pentingnya Sertifikasi di Era Industri 4.0',
-                'tanggal' => now()->subWeeks(1),
-                'gambar' => 'https://placehold.co/600x400/3B82F6/white?text=Berita+3'
-            ],
-        ];
-    }
-    
-    // Ini tetap dummy karena belum kita migrasikan
-    private function getSemuaDummyJadwal()
-    {
-        return [
-            (object) [
-                'id' => 1,
-                'nama_skema' => 'Network Engineering',
-                'tanggal' => new DateTime('2025-12-15'),
-                'waktu_mulai' => '08:00',
-                'waktu_selesai' => '16:00',
-                'tuk' => 'Politeknik Negeri Semarang',
-                'deskripsi' => 'Deskripsi lengkap untuk skema sertifikasi Network Engineering...',
-                'persyaratan' => '1. Mahasiswa Aktif Polines...',
-                'harga' => 350000,
-                'tanggal_tutup' => new DateTime('2025-12-01')
-            ],
-            (object) [
-                'id' => 2,
-                'nama_skema' => 'Junior Web Developer',
-                'tanggal' => new DateTime('2025-11-30'),
-                'waktu_mulai' => '09:00',
-                'waktu_selesai' => '17:00',
-                'tuk' => 'Lab RPL Gedung D4',
-                'deskripsi' => 'Deskripsi untuk Junior Web Developer...',
-                'persyaratan' => '1. Terbuka untuk umum...',
-                'harga' => 500000,
-                'tanggal_tutup' => new DateTime('2025-11-20')
-            ],
-        ];
-    }
 
     public function index(): View
     {
@@ -94,21 +39,7 @@ class HomeController extends Controller
         return view('landing_page.home', compact('skemas', 'jadwals', 'categories', 'beritas'));
     }
 
-    public function filterSkema(Request $request)
-    {
-        $categoryId = $request->input('category_id');
 
-        $category = Category::where('nama_kategori', $categoryId)->first();
-        $query = Skema::with('category');
-
-        if ($categoryId !== 'Semua' && $category) {
-            $query->where('category_id', $category->id);
-        }
-        
-        $skemas = $query->get();
-        
-        // FUNGSI INI BELUM MENGEMBALIKAN RESPON (misalnya view/JSON)
-    }
     
     public function show($id): View
     {
@@ -148,16 +79,6 @@ class HomeController extends Controller
         
         // Mengarahkan ke file view detail_skema.blade.php
         return view('landing_page.detail.detail_skema', compact('skema')); 
-    }
-
-    public function jadwal(): View
-    {
-        return view('landing_page.frontend.jadwal');
-    }
-
-    public function laporan(): View
-    {
-        return view('landing_page.frontend.laporan');
     }
 
     /**

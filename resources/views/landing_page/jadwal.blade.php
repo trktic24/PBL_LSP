@@ -3,11 +3,7 @@
 @section('title', 'Jadwal Asesmen')
 @section('content')
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
 <style>
-    body { font-family: 'Poppins', sans-serif !important; }
-
     /* TABLE STYLE LIKE IMAGE */
     .custom-table-header {
         background: #FFF8C6;
@@ -89,7 +85,7 @@
 <!-- TITLE -->
 <div class="bg-white py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Jadwal Asesmen</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2 font-poppins">Jadwal Asesmen</h1>
         <p class="text-gray-600">Berikut jadwal asesmen terbaru</p>
     </div>
 </div>
@@ -228,7 +224,7 @@
     <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden">
 
         <!-- HEADER -->
-        <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm">
+        <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm font-poppins">
             <div>Skema Sertifikasi</div>
             <div class="text-center">Pendaftaran</div>
             <div class="text-center">Tanggal Asesmen</div>

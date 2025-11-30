@@ -1,14 +1,8 @@
 @extends('layouts.app-profil')
 @section('content')
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
 <style>
-    body { font-family: 'Poppins', sans-serif !important; }
-
-    /* ==============================
-       STYLE TABEL SESUAI GAMBAR
-    =============================== */
+    /* STYLE TABEL SESUAI GAMBAR */
     .custom-table-header {
         background: #FFF8C6;
         color: #333;
@@ -57,7 +51,7 @@
 
 <div class="bg-white py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Daftar Asesor</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2 font-poppins">Daftar Asesor</h1>
         <p class="text-gray-600">Berikut daftar asesor beserta bidang pekerjannya</p>
     </div>
 </div>
@@ -148,7 +142,7 @@
     {{-- TABLE --}}
     <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden">
 
-        <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm">
+        <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm font-poppins">
             <div class="font-bold">Nama Asesor</div>
             <div class="font-bold text-center">No. Registrasi</div>
             <div class="font-bold text-center">Bidang</div>

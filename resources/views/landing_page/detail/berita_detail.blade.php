@@ -5,7 +5,7 @@
     <article class="max-w-3xl mx-auto">
         
         {{-- Judul Berita --}}
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ $berita->judul }}</h1>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4 font-poppins">{{ $berita->judul }}</h1>
         
         {{-- Info Meta: Tanggal --}}
         <p class="text-base text-gray-600 mb-6">

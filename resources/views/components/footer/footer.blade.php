@@ -41,7 +41,7 @@
 
   {{-- Bagian alamat dan kontak --}}
   <div class="w-full px-6 sm:px-12">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center text-sm text-white/90 gap-14 max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-center text-sm text-white/90 gap-8 md:gap-14 max-w-6xl mx-auto">
       <div class="text-center md:text-left leading-relaxed">
         <p>Jl. Prof. Soedarto, SH,<br>Tembalang, Semarang, Jawa Tengah</p>
       </div>
@@ -57,16 +57,17 @@
     <div class="border-t border-white/30 pt-3 max-w-6xl mx-auto"></div>
 
     {{-- Footer bawah --}}
-    <div class="relative max-w-6xl mx-auto mt-3 flex items-center justify-between gap-3">
-      <div class="flex items-center gap-2">
+    {{-- Footer bawah --}}
+    <div class="relative max-w-6xl mx-auto mt-3 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-3">
+      <div class="flex items-center gap-2 order-1 md:order-none">
         <img src="{{ asset('images/Polines Onli.png') }}" alt="Logo LSP POLINES" class="w-10">
       </div>
 
-      <p class="absolute left-1/2 transform -translate-x-1/2 text-xs text-white/70">
+      <p class="md:absolute md:left-1/2 md:transform md:-translate-x-1/2 text-xs text-white/70 order-3 md:order-none">
         © <span x-text="year"></span> LSP POLINES. All rights reserved.
       </p>
 
-      <div class="flex gap-2">
+      <div class="flex gap-2 order-2 md:order-none">
         <template x-for="icon in socialLinks" :key="icon.name">
           <a
             :href="icon.link"

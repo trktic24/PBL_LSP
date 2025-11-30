@@ -19,7 +19,7 @@
                     <x-auth-session-status class="mb-4" :status="session('status')" />
 
                     <div class="mt-6 mb-8">
-                        <h1 class="text-2xl font-semibold text-gray-900 mb-1">Masuk ke Akun Anda</h1>
+                        <h1 class="font-poppins text-2xl font-semibold text-gray-900 mb-1">Masuk ke Akun Anda</h1>
                         <p class="text-sm text-gray-500">
                             Belum punya akun?
                             <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-700 font-medium">
