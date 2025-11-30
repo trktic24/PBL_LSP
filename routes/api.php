@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 // Controller API
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\SkemaController;
+use App\Http\Controllers\Api\KelompokPekerjaanController;
+use App\Http\Controllers\Api\UnitKompetensiController;
 use App\Http\Controllers\Api\AsesorController;
 use App\Http\Controllers\Api\TukController;
 use App\Http\Controllers\Api\AsesiController;
@@ -59,6 +61,23 @@ Route::prefix('v1')->group(function() {
         Route::put('/skema/{id}', [SkemaController::class, 'updateData']);
         Route::delete('/skema/{id}', [SkemaController::class, 'destroy']);
 
+        // =======================================================
+        // 🏗️ DETAIL SKEMA (KELOMPOK & UNIT)
+        // =======================================================
+        
+        // Kelompok Pekerjaan
+        Route::get('/kelompokpekerjaan', [KelompokPekerjaanController::class, 'index']);
+        Route::get('/kelompokpekerjaan/{id}', [KelompokPekerjaanController::class, 'show']);
+        Route::post('/kelompokpekerjaan', [KelompokPekerjaanController::class, 'store']);
+        Route::put('/kelompokpekerjaan/{id}', [KelompokPekerjaanController::class, 'update']);
+        Route::delete('/kelompokpekerjaan/{id}', [KelompokPekerjaanController::class, 'destroy']);
+
+        // Unit Kompetensi
+        Route::get('/unitkompetensi', [UnitKompetensiController::class, 'index']);
+        Route::get('/unitkompetensi/{id}', [UnitKompetensiController::class, 'show']);
+        Route::post('/unitkompetensi', [UnitKompetensiController::class, 'store']);
+        Route::put('/unitkompetensi/{id}', [UnitKompetensiController::class, 'update']);
+        Route::delete('/unitkompetensi/{id}', [UnitKompetensiController::class, 'destroy']);
 
         // =======================================================
         // 📘 MASTER ASESI (CRUD LENGKAP)
