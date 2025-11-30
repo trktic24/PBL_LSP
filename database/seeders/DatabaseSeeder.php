@@ -11,13 +11,13 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
 
-            // 1. Data Master (yang tidak bergantung satu sama lain)
+                // 1. Data Master (yang tidak bergantung satu sama lain)
             RoleSeeder::class,
             JenisTukSeeder::class,
             MasterTukSeeder::class,  // <-- PINDAHKAN KE ATAS
-            // SkemaSeeder::class,       // <-- TAMBAHKAN INI (jika ada)
+                // SkemaSeeder::class,       // <-- TAMBAHKAN INI (jika ada)
 
-            // 2. Data User & Profil (Mungkin RoleSeeder harus dijalankan dulu)
+                // 2. Data User & Profil (Mungkin RoleSeeder harus dijalankan dulu)
             UserSeeder::class,
             CountrySeeder::class,
             JenisTukSeeder::class,
@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             AsesiSeeder::class,
             AsesorSeeder::class,
 
-            // 3. Data pendukung lainnya
+                // 3. Data pendukung lainnya
             JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
             DataSertifikasiAsesiSeeder::class,
             TujuanAssesmenMapa01::class,
@@ -37,15 +37,16 @@ class DatabaseSeeder extends Seeder
             PemenuhanDimensiAk06Seeder::class,
             Ia07Seeder::class,
 
-            // 4. Data Transaksi (Jalankan PALING AKHIR)
+                // 4. Data Transaksi (Jalankan PALING AKHIR)
             CategorieSeeder::class,
-            // UnitKompetensiSeeder::class, // Diganti TenSchemesSeeder
-            // KelompokPekerjaanSeeder::class, // Diganti TenSchemesSeeder
-            // SkemaSeeder::class, // Diganti TenSchemesSeeder
-            // JuniorWebDevSeeder::class, // Diganti TenSchemesSeeder
+                // UnitKompetensiSeeder::class, // Diganti TenSchemesSeeder
+                // KelompokPekerjaanSeeder::class, // Diganti TenSchemesSeeder
+                // SkemaSeeder::class, // Diganti TenSchemesSeeder
+                // JuniorWebDevSeeder::class, // Diganti TenSchemesSeeder
 
             TenSchemesSeeder::class, // <-- NEW COMPREHENSIVE SEEDER
             FrAk07MasterSeeder::class, // <-- Added FR_AK_07 Master Seeder
+            PoinAk02Seeder::class, // <-- Added PoinAk02Seeder
         ]);
     }
 }
