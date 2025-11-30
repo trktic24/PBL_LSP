@@ -12,6 +12,8 @@ use App\Http\Controllers\FrAk06Controller;
 use App\Http\Controllers\FrAk07Controller;
 use App\Http\Controllers\Ia11Controller; // <-- DITAMBAHKAN
 use App\Http\Controllers\IA06Controller;
+use App\Http\Controllers\IA10Controller;
+use App\Http\Controllers\IA05Controller;
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -179,6 +181,54 @@ Route::middleware('auth')->group(function () {
     Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
 
     Route::post('/FR_AK_07/{id}', [FrAk07Controller::class, 'store'])->name('fr-ak-07.store');
+    /*
+    |--------------------------------------------------------------------------
+    | FORMULIR FR.IA.10 (Verifikasi Pihak Ketiga)
+    |--------------------------------------------------------------------------
+    */
+    // Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
+    // Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
+    // Route::get('/FR-IA-10-view', fn() => view('frontend.FR_IA_10'))->name('FR-IA-10'); 
+
+    // /*
+    // |--------------------------------------------------------------------------
+    // | FORMULIR IA-05 (Pertanyaan Tertulis Pilihan Ganda)
+    // |--------------------------------------------------------------------------
+    // */
+    
+    // // --- Form A: Soal & Lembar Jawab ---
+    // // Bisa diakses Admin (edit soal), Asesor (lihat soal), Asesi (jawab soal)
+    // Route::middleware(['role:admin,asesor,asesi'])->group(function () {
+    //     Route::get('/fr-ia-05-a/{id_asesi}', [IA05Controller::class, 'showSoalForm'])->name('FR_IA_05_A');
+    // });
+    // // Admin simpan soal
+    // Route::middleware(['role:admin'])->group(function () {
+    //     Route::post('/fr-ia-05-a/store-soal', [IA05Controller::class, 'storeSoal'])->name('ia-05.store.soal');
+    // });
+    // // Asesi kirim jawaban
+    // Route::middleware(['role:asesi'])->group(function () {
+    //     Route::post('/fr-ia-05-a/store-jawaban/{id_asesi}', [IA05Controller::class, 'storeJawabanAsesi'])->name('ia-05.store.jawaban');
+    // });
+
+    // // --- Form B: Kunci Jawaban ---
+    // // Admin & Asesor bisa lihat
+    // Route::middleware(['role:admin,asesor'])->group(function () {
+    //     Route::get('/fr-ia-05-b', [IA05Controller::class, 'showKunciForm'])->name('FR_IA_05_B');
+    // });
+    // // Hanya Admin yang bisa simpan kunci jawaban
+    // Route::middleware(['role:admin'])->group(function () {
+    //     Route::post('/fr-ia-05-b', [IA05Controller::class, 'storeKunci'])->name('ia-05.store.kunci');
+    // });
+
+    // // --- Form C: Penilaian ---
+    // // Admin & Asesor bisa lihat hasil
+    // Route::middleware(['role:admin,asesor'])->group(function () {
+    //     Route::get('/fr-ia-05-c/{id_asesi}', [IA05Controller::class, 'showJawabanForm'])->name('FR_IA_05_C');
+    // });
+    // // Hanya Asesor yang memberi penilaian (Y/T)
+    // Route::middleware(['role:asesor'])->group(function () {
+    //     Route::post('/fr-ia-05-c/store-penilaian/{id_asesi}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia-05.store.penilaian');
+    // });
 });
 
 Route::get('/soal', [SoalController::class, 'index'])->name('soal.index');
@@ -237,5 +287,32 @@ use App\Http\Controllers\AssessmentController;
 // Ubah route lama menjadi ini:
 Route::get('/FR_IA_04B', [AssessmentController::class, 'index'])->name('fr_ia_04b.index');
 Route::post('/FR_IA_04B/store', [AssessmentController::class, 'store'])->name('fr_ia_04b.store');
+
+// --- TARUH DI PALING BAWAH FILE web.php (DI LUAR middleware auth) ---
+
+/*
+|--------------------------------------------------------------------------
+| ROUTE TESTING (TANPA LOGIN)
+|--------------------------------------------------------------------------
+*/
+
+// IA 10
+Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
+Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
+
+// IA 05
+// Form A (Soal/Jawab)
+Route::get('/fr-ia-05-a/{id_asesi}', [IA05Controller::class, 'showSoalForm'])->name('FR_IA_05_A');
+Route::post('/fr-ia-05-a/store-soal', [IA05Controller::class, 'storeSoal'])->name('ia-05.store.soal');
+Route::post('/fr-ia-05-a/store-jawaban/{id_asesi}', [IA05Controller::class, 'storeJawabanAsesi'])->name('ia-05.store.jawaban');
+
+// Form B (Kunci)
+Route::get('/fr-ia-05-b', [IA05Controller::class, 'showKunciForm'])->name('FR_IA_05_B');
+Route::post('/fr-ia-05-b', [IA05Controller::class, 'storeKunci'])->name('ia-05.store.kunci');
+
+// Form C (Penilaian)
+Route::get('/fr-ia-05-c/{id_asesi}', [IA05Controller::class, 'showJawabanForm'])->name('FR_IA_05_C');
+Route::post('/fr-ia-05-c/store-penilaian/{id_asesi}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia-05.store.penilaian');
+
 
 require __DIR__.'/auth.php';
