@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FrAk07Controller;
+use App\Http\Controllers\Api\FrAk07ApiController;
+use App\Http\Controllers\Api\Mapa02ApiController;
+use App\Http\Controllers\Api\Ia02ApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,8 +22,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // FR_AK_07 API Routes
-Route::get('/fr-ak-07/{id}', [FrAk07Controller::class, 'index']);
-Route::post('/fr-ak-07/{id}', [FrAk07Controller::class, 'store']);
+Route::get('/fr-ak-07/{id}', [FrAk07ApiController::class, 'show']);
+Route::post('/fr-ak-07/{id}', [FrAk07ApiController::class, 'store']);
+
+// FR_MAPA_02 API Routes
+Route::get('/mapa-02/{id}', [Mapa02ApiController::class, 'show']);
+Route::post('/mapa-02/{id}', [Mapa02ApiController::class, 'store']);
+
+// FR_IA_02 API Routes
+Route::get('/ia-02/{id}', [Ia02ApiController::class, 'show']);
+Route::post('/ia-02/{id}', [Ia02ApiController::class, 'store']);
 
 // IA_01 API Routes
 use App\Http\Controllers\Api\Ia01ApiController;
