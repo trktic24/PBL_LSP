@@ -50,31 +50,39 @@
         <span>Kembali</span>
     </a>
 
-    {{-- SISA KONTEN (Profil dll) SAMA SEPERTI SEBELUMNYA --}}
+    {{-- SISA KONTEN (Profil dll) --}}
     <div class="flex flex-col items-center text-center">
         <div class="relative w-36 h-36 mb-4">
-            <img src="{{ asset('images/junior_web.jpg') }}"
-                 alt="Skema"
+            {{-- Foto Skema --}}
+            <img src="{{ $skema && $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/junior_web.jpg') }}"
+                 alt="{{ $skema->nama_skema ?? 'Skema' }}"
                  class="w-full h-full object-cover rounded-full border-4 border-white shadow-md">
         </div>
-        <h2 class="text-2xl font-bold">Junior Web Developer</h2>
+        {{-- Nama Skema --}}
+        <h2 class="text-2xl font-bold">{{ $skema->nama_skema ?? 'Nama Skema' }}</h2>
+        {{-- Deskripsi Skema --}}
         <p class="text-sm mt-2 opacity-80 leading-relaxed">
-            Lorem ipsum dolor sit amet<br>You're the best person I ever met
+            {{ $skema->deskripsi_skema ?? 'Deskripsi skema belum tersedia.' }}
         </p>
     </div>
 
     <div class="flex flex-col items-center text-center mt-10">
-        <h4 class="text-xs font-semibold uppercase tracking-wider opacity-60 mb-3">OLEH PESERTA:</h4>
+        <h4 class="text-s font-semibold uppercase tracking-wider opacity-60 mb-3">ASESI:</h4>
         <div class="flex items-center space-x-3">
-            <img src="{{ asset('images/asesi.jpeg') }}"
-                 alt="Tatang Sidartang"
+            {{-- Foto Asesi --}}
+            <img src="{{ $asesi && $asesi->user && $asesi->user->profile_photo_path ? asset('storage/' . $asesi->user->profile_photo_path) : asset('images/asesi.jpeg') }}"
+                 alt="{{ $asesi->nama_lengkap ?? 'Peserta' }}"
                  class="w-12 h-12 rounded-full object-cover border-2 border-white/50">
             <div>
-                <p class="font-semibold">Tatang Sidartang</p>
+                {{-- Nama Asesi --}}
+                <p class="font-semibold">{{ $asesi->nama_lengkap ?? 'Nama Peserta' }}</p>
             </div>
         </div>
 
-        <h4 class="text-xs font-semibold uppercase tracking-wider opacity-60 mt-6 mb-2">DIMULAI PADA:</h4>
-        <p class="text-sm font-medium">2025-09-29 06:18:25</p>
+        <h4 class="text-s font-semibold uppercase tracking-wider opacity-60 mt-6 mb-2">DIMULAI PADA:</h4>
+        {{-- Tanggal Mulai Jadwal --}}
+        <p class="text-sm font-medium">
+            {{ $jadwal && $jadwal->tanggal_mulai ? \Carbon\Carbon::parse($jadwal->tanggal_mulai)->format('Y-m-d H:i:s') : '-' }}
+        </p>
     </div>
 </aside>

@@ -2,166 +2,119 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SoalIA06;   // Model untuk tabel 'soal_ia06'
-use App\Models\KunciIA06;   // Model untuk tabel 'kunci_ia06' (Jawaban Asesi)
+use App\Models\SoalIA06;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth; // Anda akan perlu ini nanti untuk ID Asesi
 
-class SoalController extends Controller
+// PERBAIKAN: Nama Class diganti menjadi IA06Controller (Sesuai nama file)
+class IA06Controller extends Controller
 {
     /**
-     * UNTUK ADMIN (FR.IA.06A - Daftar Pertanyaan)
-     * Menampilkan view: 'frontend/fr_IA_06_a.blade.php'
+     * MENAMPILKAN HALAMAN UTAMA (Daftar Soal + Modal)
      */
     public function index()
     {
-        // Mengambil semua soal dari tabel 'soal_ia06'
+        // Ambil semua data soal
         $soals = SoalIA06::all();
 
-        // Mengirim data ke view
-        // 'soalItems' adalah nama variabel yang dipakai di view Anda
+        // Kirim data ke view 'frontend.fr_IA_06_a'
         return view('frontend.fr_IA_06_a', ['soalItems' => $soals]);
     }
 
     /**
-     * UNTUK ADMIN (FR.IA.06B - Kunci Jawaban Master)
-     * Menampilkan view: 'frontend/fr_IA_06_b.blade.php'
-     */
-    public function kunciIndex()
-    {
-        // Mengambil semua soal, yang sekarang juga berisi kunci jawaban master
-        $soals = SoalIA06::all();
-
-        // Mengirim data ke view
-        // View 'fr_IA_06_b' Anda bisa menampilkan
-        // $soal->soal_ia06 dan $soal->kunci_jawaban_ia06
-        return view('frontend.fr_IA_06_b', ['soalItems' => $soals]);
-    }
-
-    /**
-     * UNTUK ASESI (FR.IA.06C - Form Ujian)
-     * Menampilkan view: 'frontend/fr_IA_06_c.blade.php'
-     */
-    public function jawabIndex()
-    {
-        // Mengambil semua soal untuk ditampilkan ke asesi
-        $soals = SoalIA06::all();
-        return view('frontend.fr_IA_06_c', compact('soals'));
-    }
-
-    /**
-     * UNTUK ASESI: Menyimpan jawaban dari 'fr_IA_06_c'
-     * Ini akan menyimpan ke tabel 'kunci_ia06' (Tabel Jawaban Asesi)
-     */
-    public function jawabStore(Request $request)
-    {
-        $validated = $request->validate([
-            // 'jawaban' berasal dari name="jawaban[...]" di view Anda
-            'jawaban' => 'required|array',
-            'jawaban.*' => 'nullable|string',
-        ]);
-
-        // GANTI INI: Dapatkan ID Asesi yang sedang login
-        // $id_sertifikasi_asesi = Auth::user()->id_data_sertifikasi_asesi;
-        $id_sertifikasi_asesi = 1; // Placeholder, ganti dengan ID asesi yang valid
-
-        // Hapus jawaban lama asesi ini (jika ada, agar bisa mengulang)
-        KunciIA06::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->delete();
-
-        // Simpan jawaban baru
-        foreach ($validated['jawaban'] as $id_soal => $teks_jawaban) {
-
-            // Hanya simpan jika asesi benar-benar menjawab (tidak kosong)
-            if ($teks_jawaban) {
-                KunciIA06::create([
-                    'id_soal_ia06' => $id_soal,
-                    'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                    'teks_jawaban_ia06' => $teks_jawaban // <-- Menyimpan ke kolom yang benar
-                ]);
-            }
-        }
-
-        // Redirect kembali ke halaman form ujian (sesuai nama rute Anda)
-        return redirect()->route('fr_IA_06_c')
-                         ->with('success', 'Jawaban Anda berhasil disimpan.');
-    }
-
-
-    // =================================================================
-    // FUNGSI ADMIN CRUD (Soal & Kunci Jawaban Master)
-    // =================================================================
-
-    /**
-     * Menampilkan form untuk membuat soal baru
-     * (Memerlukan view 'soal.create')
-     */
-    public function create()
-    {
-        return view('soal.create'); // (View admin terpisah)
-    }
-
-    /**
-     * Menyimpan soal BARU beserta Kunci Jawabannya ke tabel 'soal_ia06'
+     * MENYIMPAN SOAL BARU (Dari Modal Tambah)
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'soal_ia06' => 'required|string',
-            'kunci_jawaban_ia06' => 'nullable|string', // <-- Kunci Master
+            'kunci_jawaban_ia06' => 'nullable|string',
         ]);
 
         SoalIA06::create($validated);
 
-        // Redirect ke halaman daftar pertanyaan admin
+        // Redirect kembali ke halaman yang sama (bukan ke index controller lain)
         return redirect()->route('fr_IA_06_a')->with('success', 'Soal berhasil ditambahkan.');
     }
 
     /**
-     * Menampilkan form untuk mengedit soal
-     * (Memerlukan view 'soal.edit')
-     */
-    public function edit($id)
-    {
-        $soal = SoalIA06::findOrFail($id);
-        return view('soal.edit', compact('soal')); // (View admin terpisah)
-    }
-
-    /**
-     * Update soal beserta Kunci Jawabannya di tabel 'soal_ia06'
+     * UPDATE SOAL (Dari Modal Edit)
      */
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
             'soal_ia06' => 'required|string',
-            'kunci_jawaban_ia06' => 'nullable|string', // <-- Kunci Master
+            'kunci_jawaban_ia06' => 'nullable|string',
         ]);
 
         $soal = SoalIA06::findOrFail($id);
         $soal->update($validated);
 
-        // Redirect ke halaman daftar pertanyaan admin
+        // Redirect kembali ke halaman yang sama
         return redirect()->route('fr_IA_06_a')->with('success', 'Soal berhasil diperbarui.');
     }
 
     /**
-     * Hapus soal dari tabel 'soal_ia06'
+     * HAPUS SOAL
      */
     public function destroy($id)
     {
-        // Saat Soal dihapus, jawaban asesi (dari tabel 'kunci_ia06')
-        // akan ikut terhapus otomatis karena 'onDelete('cascade')' di migrasi Anda.
         $soal = SoalIA06::findOrFail($id);
         $soal->delete();
 
         return redirect()->route('fr_IA_06_a')->with('success', 'Soal berhasil dihapus.');
     }
 
-    /**
-     * Fungsi duplikat, sama dengan index()
-     */
-    public function onlySoal()
+    // --- Method create() dan edit() tidak lagi dibutuhkan karena kita pakai Modal ---
+    // --- Tapi jika ingin dibiarkan kosong/tidak ada, tidak masalah ---
+
+    public function kunciIndex()
+    {
+        // Ambil semua data soal
+        $soals = SoalIA06::all();
+
+        // Kirim ke view 'frontend.fr_IA_06_b'
+        return view('frontend.fr_IA_06_b', ['soalItems' => $soals]);
+    }
+
+    public function jawabIndex()
     {
         $soals = SoalIA06::all();
-        return view('frontend.fr_IA_06_a', ['soalItems' => $soals]);
+        return view('frontend.fr_IA_06_c', ['soalItems' => $soals]);
+    }
+
+    /**
+     * UNTUK ASESI: Menyimpan Jawaban ke Database
+     */
+    public function jawabStore(Request $request)
+    {
+        // 1. Validasi
+        $request->validate([
+            'jawaban' => 'required|array', // Harus berupa array
+            'jawaban.*' => 'nullable|string',
+            // 'nama_asesi' => 'required|string', // Opsional jika ingin validasi nama
+        ]);
+
+        // 2. ID Asesi (Nanti diganti Auth::user()->id)
+        $id_asesi_dummy = 1;
+
+        // 3. Simpan Jawaban (Looping array jawaban)
+        // Format name di view adalah: jawaban[ID_SOAL]
+        foreach ($request->jawaban as $id_soal => $teks_jawaban) {
+
+            // Cek apakah jawaban untuk soal ini sudah ada? (Update or Create)
+            \App\Models\KunciIA06::updateOrCreate(
+                [
+                    'id_soal_ia06' => $id_soal,
+                    'id_data_sertifikasi_asesi' => $id_asesi_dummy
+                ],
+                [
+                    'teks_jawaban_ia06' => $teks_jawaban ?? '-' // Isi '-' jika kosong
+                ]
+            );
+        }
+
+        // 4. Redirect kembali dengan pesan sukses
+        // Pesan 'success' ini yang akan memicu Modal Alpine.js
+        return redirect()->route('fr_IA_06_c')->with('success', 'Jawaban berhasil dikirim!');
     }
 }

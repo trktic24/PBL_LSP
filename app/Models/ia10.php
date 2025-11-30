@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class ia10 extends Model
 {
     use HasFactory;
-
-    // Tentukan nama tabel jika tidak jamak
-    protected $table = 'IA_10';
-
-    // Izinkan semua field ini diisi
+    
+    // Tentukan nama tabel & primary key sesuai migrasi Anda
+    protected $table = 'ia10';
+    protected $primaryKey = 'id_ia10';
     protected $guarded = [];
 }

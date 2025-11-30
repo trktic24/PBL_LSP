@@ -27,7 +27,7 @@ return new class extends Migration
             $table->enum('Saran_yang_diberikan_oleh_paket_pelatihan', ['ada', 'tidak ada'])->comment('Apakah ada saran yang diberikan oleh paket pelatihan terkait kebutuhan kandidat');
             $table->enum('penyesuaian_perangkat_asesmen', ['ada', 'tidak ada'])->comment('Apakah ada penyesuaian asesmen yang diperlukan untuk kandidat');
             $table->enum('peluang_kegiatan_asesmen_terintegrasi_dan_perubahan_alat_asesmen', ['ada', 'tidak ada'])->comment('Apakah ada peluang untuk kegiatan asesmen terintegrasi dan perubahan alat asesmen untuk kandidat');
-            $table->enum('feedback_ia01', ['ada', 'tidak ada'])->comment('Apakah ada feedback dari IA01 mengenai proses asesmen kandidat');
+            $table->text('feedback_ia01')->nullable()->comment('Feedback dari IA01 mengenai proses asesmen kandidat');
             $table->enum('rekomendasi_IA04B', ['kompeten', 'belum kompeten'])->comment('Apakah ada rekomendasi dari IA04 mengenai kelayakan sertifikasi kandidat');
             $table->enum('rekomendasi_hasil_asesmen_AK02', ['kompeten', 'belum kompeten'])->comment('Rekomendasi hasil asesmen dari AK02 untuk sertifikasi kandidat');
             $table->text('tindakan_lanjut_AK02');
@@ -41,6 +41,7 @@ return new class extends Migration
             $table->text('catatan_AK05');
             $table->text('rekomendasi1_AK06');
             $table->text('rekomendasi2_AK06');
+            $table->string('rekomendasi_ia01')->nullable();
             $table->string('status_sertifikasi', 50)->default('pendaftaran_selesai');
             $table->timestamps();
         });

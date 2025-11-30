@@ -48,7 +48,7 @@
                             @foreach($kp->unitKompetensis as $index => $unit)
                                 <tr class="border-b border-gray-300 hover:bg-gray-50 transition">
                                     @if($index === 0)
-                                        <td class="p-3 align-top border-r border-gray-200 font-semibold" rowspan="{{ count($kp->unitKompetensis) }}">
+                                        <td class="p-3 text-center border-r border-gray-200 font-semibold" rowspan="{{ count($kp->unitKompetensis) }}">
                                             {{ $kp->nama_kelompok_pekerjaan }}
                                         </td>
                                     @endif
