@@ -27,6 +27,22 @@
     </div>
 
     {{-- 3. PANDUAN --}}
+    {{-- 3. PANDUAN --}}
+    @if($isReadOnly)
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6 rounded-r-md shadow-sm">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-eye text-yellow-400 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-bold text-yellow-800 uppercase">Mode Lihat Saja</h3>
+                <p class="mt-1 text-sm text-yellow-700">
+                    Anda sedang melihat formulir ini sebagai <strong>{{ Auth::user()->role->nama_role }}</strong>. Anda tidak dapat mengubah data.
+                </p>
+            </div>
+        </div>
+    </div>
+    @else
     <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-md shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
@@ -40,6 +56,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- 4. FORM UTAMA --}}
     <form action="{{ route('fr-ak-07.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
@@ -57,6 +74,7 @@
                     <input type="checkbox"
                         name="potensi_asesi[]"
                         value="{{ $potensi->id_poin_potensi_AK07 }}"
+                        {{ $isReadOnly ? 'disabled' : '' }}
                         class="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                     <span class="text-sm text-gray-700">{{ $potensi->deskripsi_potensi }}</span>
                 </label>
@@ -103,6 +121,7 @@
                                             name="penyesuaian[{{ $soal->id_persyaratan_modifikasi_AK07 }}][status]"
                                             value="Ya"
                                             @click="showOptions = true"
+                                            {{ $isReadOnly ? 'disabled' : '' }}
                                             class="text-blue-600 form-radio focus:ring-blue-500">
                                         <span class="ml-1">Ya</span>
                                     </label>
@@ -112,6 +131,7 @@
                                             value="Tidak"
                                             @click="showOptions = false"
                                             checked
+                                            {{ $isReadOnly ? 'disabled' : '' }}
                                             class="text-gray-600 form-radio focus:ring-gray-500">
                                         <span class="ml-1">Tidak</span>
                                     </label>
@@ -133,6 +153,7 @@
                                             <input type="checkbox"
                                                 name="penyesuaian[{{ $soal->id_persyaratan_modifikasi_AK07 }}][keterangan][]"
                                                 value="{{ $opsi->id_catatan_keterangan_AK07 }}"
+                                                {{ $isReadOnly ? 'disabled' : '' }}
                                                 class="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                             <span class="leading-snug">{{ $opsi->isi_opsi }}</span>
                                         </label>
@@ -144,6 +165,7 @@
                                     <input type="text"
                                         name="penyesuaian[{{ $soal->id_persyaratan_modifikasi_AK07 }}][catatan_manual]"
                                         placeholder="Catatan tambahan (opsional)..."
+                                        {{ $isReadOnly ? 'disabled' : '' }}
                                         class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
 
@@ -173,18 +195,21 @@
                     label="1) Acuan Pembanding Asesmen"
                     id="acuan_pembanding"
                     name="acuan_pembanding"
+                    :disabled="$isReadOnly"
                     type="text" />
 
                 <x-kolom_form.kolom_form
                     label="2) Metode Asesmen"
                     id="metode_asesmen"
                     name="metode_asesmen"
+                    :disabled="$isReadOnly"
                     type="text" />
 
                 <x-kolom_form.kolom_form
                     label="3) Instrumen Asesmen"
                     id="instrumen_asesmen"
                     name="instrumen_asesmen"
+                    :disabled="$isReadOnly"
                     type="text" />
 
             </div>
@@ -200,9 +225,11 @@
             <a href="{{ url()->previous() }}" class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition text-center flex items-center justify-center gap-2">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
+            @if(!$isReadOnly)
             <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
                 Simpan & Lanjutkan <i class="fas fa-arrow-right"></i>
             </button>
+            @endif
         </div>
 
     </form>

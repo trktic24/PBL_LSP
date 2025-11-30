@@ -10,6 +10,7 @@ use App\Models\ResponDiperlukanPenyesuaianAK07;
 use App\Models\ResponPotensiAK07;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class FrAk07Controller extends Controller
 {
@@ -48,7 +49,16 @@ class FrAk07Controller extends Controller
         $poinPotensi = PoinPotensiAK07::all();
         $persyaratanModifikasi = PersyaratanModifikasiAK07::with('catatanKeterangan')->get();
 
-        return view('frontend.FR_AK_07', [
+        $user = Auth::user();
+        $isReadOnly = false;
+        if ($user && $user->role) {
+            $roleName = $user->role->nama_role;
+            if (in_array($roleName, ['Asesor', 'Admin'])) {
+                $isReadOnly = true;
+            }
+        }
+
+        return view('frontend.AK_07.FR_AK_07', [
             'sertifikasi' => $dataSertifikasi,
             'masterPotensi' => $poinPotensi,
             'masterPersyaratan' => $persyaratanModifikasi,
@@ -56,6 +66,7 @@ class FrAk07Controller extends Controller
             'asesi' => $dataSertifikasi->asesi ?? null,
             'asesor' => $dataSertifikasi->jadwal->asesor ?? null,
             'jadwal' => $dataSertifikasi->jadwal ?? null,
+            'isReadOnly' => $isReadOnly,
         ]);
     }
 
