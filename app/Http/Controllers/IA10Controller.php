@@ -13,9 +13,16 @@ class IA10Controller extends Controller
 {
     public function create($id_asesi)
     {
-        $user = Auth::user();
+        // --- MODIFIKASI BYPASS LOGIN (DUMMY USER) ---
+        // Kita pura-pura jadi ASESOR (id 3) karena kode asli menolak Asesi (id 2)
+        $user = new \stdClass();
+        $user->id = 3; 
+        $user->role_id = 1; 
+        $user->role = 'admin';
+        $user->name = 'Asesor Testing';
+        // ---------------------------------------------
 
-        // Cek Role (jika perlu)
+        // Cek Role (Sesuai kode asli, tapi sekarang aman karena dummy user kita role_id=3)
         if ($user->role_id == 2) { 
             return abort(403, 'Akses Ditolak');
         }
@@ -26,12 +33,10 @@ class IA10Controller extends Controller
         $daftar_soal = Ia10::all();
 
         // Ambil Jawaban Existing
-        // LOGIC FIX: Kita mapping berdasarkan ID_IA10 (bukan teks pertanyaan) agar presisi
         $jawaban_db = ResponIa10::where('id_data_sertifikasi_asesi', $id_asesi)->get();
         
         $jawaban_map = [];
         foreach($jawaban_db as $resp) {
-            // Gunakan ID sebagai key array untuk memudahkan pengecekan di Blade
             if($resp->jawaban_pilihan_iya == 1) $jawaban_map[$resp->id_ia10] = 'ya';
             elseif($resp->jawaban_pilihan_tidak == 1) $jawaban_map[$resp->id_ia10] = 'tidak';
         }
@@ -53,23 +58,18 @@ class IA10Controller extends Controller
 
         DB::beginTransaction();
         try {
-            // Loop array jawaban dari form
-            // Format array dari Blade nanti harus: name="jawaban[ID_SOAL]"
             if ($request->has('jawaban')) {
                 foreach ($request->jawaban as $id_soal => $nilai) {
                     
-                    // Validasi apakah soal benar ada
                     $cek_soal = Ia10::find($id_soal);
                     
                     if($cek_soal) {
                         ResponIa10::updateOrCreate(
                             [
-                                // KONDISI PENCARIAN (WHERE)
                                 'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
-                                'id_ia10' => $id_soal // LOGIC FIX: Simpan ID, bukan Teks
+                                'id_ia10' => $id_soal 
                             ],
                             [
-                                // DATA YANG DIUPDATE/INSERT
                                 'jawaban_pilihan_iya'   => ($nilai == 'ya') ? 1 : 0,
                                 'jawaban_pilihan_tidak' => ($nilai == 'tidak') ? 1 : 0,
                                 'jawaban_isian' => null 

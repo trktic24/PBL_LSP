@@ -150,6 +150,8 @@ Route::middleware(['auth'])->prefix('asesor')->group(function () {
 
 });
 
+
+
 /*
 |--------------------------------------------------------------------------
 | 4. AUTH ROUTES (Bawaan Laravel Breeze/Jetstream)

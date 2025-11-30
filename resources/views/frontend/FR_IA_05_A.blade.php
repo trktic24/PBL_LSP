@@ -3,6 +3,56 @@
 <main class="main-content">
 <x-header_form.header_form title="FR.IA.05A. DPT - PERTANYAAN TERTULIS PILIHAN GANDA" />
 
+{{-- === [BARU] DROPDOWN NAVIGASI (Hanya Admin & Asesor) === --}}
+    @if($user->role_id != 2)
+    <div class="flex justify-end mt-6 mb-2 relative">
+        <button type="button" onclick="toggleNavDropdown()" class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 flex items-center gap-2 text-sm font-bold transition duration-150 ease-in-out">
+            <span>Navigasi</span>
+            {{-- Icon Panah Bawah --}}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+
+        {{-- Isi Dropdown --}}
+        <div id="nav-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
+            <div class="bg-gray-50 px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Pindah Halaman
+            </div>
+            
+            {{-- Link ke Form B --}}
+            <a href="{{ route('FR_IA_05_B') }}?ref={{ $asesi->id_data_sertifikasi_asesi }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 border-b border-gray-100 transition">
+                Kunci Jawaban
+            </a>
+            
+            {{-- Link ke Form C --}}
+            {{-- Kita oper ID Asesi saat ini agar Form C membuka orang yang sama --}}
+            <a href="{{ route('FR_IA_05_C', $asesi->id_data_sertifikasi_asesi) }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+                Lembar Penilaian
+            </a>
+        </div>
+    </div>
+
+    {{-- Script Sederhana untuk Buka/Tutup --}}
+    <script>
+        function toggleNavDropdown() {
+            const dropdown = document.getElementById('nav-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Tutup dropdown jika klik di luar tombol
+        window.onclick = function(event) {
+            if (!event.target.closest('button')) {
+                const dropdown = document.getElementById('nav-dropdown');
+                if (!dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        }
+    </script>
+    @endif
+    {{-- === [AKHIR] DROPDOWN === --}}
+
     @php
         $formAction = '#'; 
         if ($user->role_id == 1) { // Admin
@@ -11,24 +61,15 @@
             $formAction = route('ia-05.store.jawaban', ['id_asesi' => $asesi->id_data_sertifikasi_asesi]);
         }
     @endphp
-
+    
     <form class="form-body mt-6" action="{{ $formAction }}" method="POST"> 
         @csrf
         <x-identitas_skema_form.identitas_skema_form
-            {{-- Mengambil Judul Skema dari relasi: DataSertifikasi -> Jadwal -> Skema --}}
             skema="{{ $asesi->jadwal->skema->judul_skema ?? 'Judul Skema Tidak Ditemukan' }}"
-            
-            {{-- Mengambil Kode Skema --}}
             nomorSkema="{{ $asesi->jadwal->skema->kode_skema ?? 'Kode Tidak Ditemukan' }}"
-            
-            tuk="Tempat Kerja" {{-- (Bisa dibuat dinamis juga jika ada di tabel Jadwal) --}}
-            
-            {{-- Mengambil Nama Asesor dari relasi: DataSertifikasi -> Asesor --}}
+            tuk="Tempat Kerja" 
             namaAsesor="{{ $asesi->asesor->nama_asesor ?? 'Nama Asesor Tidak Ditemukan' }}"
-            
-            {{-- Mengambil Nama Asesi dari relasi: DataSertifikasi -> Asesi --}}
             namaAsesi="{{ $asesi->asesi->nama_asesi ?? 'Nama Asesi Tidak Ditemukan' }}"
-            
             tanggal="{{ now()->format('d F Y') }}"
         />
 
@@ -47,10 +88,11 @@
             <h3 class="mb-4 font-semibold text-lg text-gray-800">
                 @if($user->role_id == 1) Input Pertanyaan (Mode Admin):
                 @elseif($user->role_id == 2) Lembar Jawaban Pilihan Ganda:
-                @else Formulir Pertanyaan (Read-Only untuk Asesor):
+                @else Daftar Pertanyaan: {{-- TULISAN READ ONLY SUDAH DIHAPUS --}}
                 @endif
             </h3>
 
+            {{-- === LOOPING SOAL === --}}
             @forelse ($semua_soal as $loop => $soal)
             <div class="form-group bg-white p-4 rounded-lg border border-gray-200 @if(!$loop->first) mt-4 @endif">
                 
@@ -58,81 +100,57 @@
                 @if ($user->role == 'admin')
                     <div class="flex items-start space-x-3">
                         <label for="q{{ $soal->id_soal_ia05 }}" class="text-base font-semibold text-gray-800 pt-2">{{ $loop->iteration }}.</label>
-                        {{-- UBAH: name="soal[...][pertanyaan]" (controller akan handle mapping) --}}
-                        {{-- UBAH: value="$soal->soal_ia05" (sesuai DB) --}}
                         <textarea id="q{{ $soal->id_soal_ia05 }}" name="soal[{{ $soal->id_soal_ia05 }}][pertanyaan]" rows="2" placeholder="Tulis pertanyaan..." 
                                   class="form-textarea w-full border-gray-300 rounded-md shadow-sm"
                         >{{ $soal->soal_ia05 }}</textarea>
                     </div>
                     <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-center mt-3 ml-8">
-                        {{-- UBAH: value="$soal->opsi_jawaban_a" (sesuai DB) --}}
                         <label for="q{{ $soal->id_soal_ia05 }}a" class="text-sm">a.</label> <input type="text" id="q{{ $soal->id_soal_ia05 }}a" name="soal[{{ $soal->id_soal_ia05 }}][opsi_a]" value="{{ $soal->opsi_jawaban_a }}" placeholder="Opsi a..." class="form-input w-full border-gray-300 rounded-md shadow-sm text-sm">
                         <label for="q{{ $soal->id_soal_ia05 }}b" class="text-sm">b.</label> <input type="text" id="q{{ $soal->id_soal_ia05 }}b" name="soal[{{ $soal->id_soal_ia05 }}][opsi_b]" value="{{ $soal->opsi_jawaban_b }}" placeholder="Opsi b..." class="form-input w-full border-gray-300 rounded-md shadow-sm text-sm">
                         <label for="q{{ $soal->id_soal_ia05 }}c" class="text-sm">c.</label> <input type="text" id="q{{ $soal->id_soal_ia05 }}c" name="soal[{{ $soal->id_soal_ia05 }}][opsi_c]" value="{{ $soal->opsi_jawaban_c }}" placeholder="Opsi c..." class="form-input w-full border-gray-300 rounded-md shadow-sm text-sm">
                         <label for="q{{ $soal->id_soal_ia05 }}d" class="text-sm">d.</label> <input type="text" id="q{{ $soal->id_soal_ia05 }}d" name="soal[{{ $soal->id_soal_ia05 }}][opsi_d]" value="{{ $soal->opsi_jawaban_d }}" placeholder="Opsi d..." class="form-input w-full border-gray-300 rounded-md shadow-sm text-sm">
                     </div>
                 
-                {{-- TAMPILAN ASESI --}}
+                {{-- TAMPILAN ASESI (Bisa Pilih Jawaban) --}}
                 @elseif ($user->role == 'asesi')
                     <div class="flex items-start space-x-3">
                         <label class="text-base font-semibold text-gray-800 pt-2">{{ $loop->iteration }}.</label>
-                        <textarea rows="2" class="form-textarea w-full border-gray-300 rounded-md shadow-sm bg-gray-50" readonly>{{ $soal->soal_ia05 }}</textarea>
+                        <div class="w-full bg-gray-50 p-3 rounded text-gray-700 border border-gray-200">{{ $soal->soal_ia05 }}</div>
                     </div>
                     <div class="space-y-2 mt-3 ml-8">
-                        {{-- UBAH: Tampilkan $soal->opsi_jawaban_a --}}
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="radio" name="jawaban[{{ $soal->id_soal_ia05 }}]" value="A" class="form-radio h-4 w-4 text-blue-600"
-                                   {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == 'A') ? 'checked' : '' }} required>
-                            <span class="text-sm"><strong>a.</strong> {{ $soal->opsi_jawaban_a }}</span>
-                        </label>
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="radio" name="jawaban[{{ $soal->id_soal_ia05 }}]" value="B" class="form-radio h-4 w-4 text-blue-600"
-                                   {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == 'B') ? 'checked' : '' }} required>
-                            <span class="text-sm"><strong>b.</strong> {{ $soal->opsi_jawaban_b }}</span>
-                        </label>
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="radio" name="jawaban[{{ $soal->id_soal_ia05 }}]" value="C" class="form-radio h-4 w-4 text-blue-600"
-                                   {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == 'C') ? 'checked' : '' }} required>
-                            <span class="text-sm"><strong>c.</strong> {{ $soal->opsi_jawaban_c }}</span>
-                        </label>
-                        @if(!empty($soal->opsi_jawaban_d))
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="radio" name="jawaban[{{ $soal->id_soal_ia05 }}]" value="D" class="form-radio h-4 w-4 text-blue-600"
-                                   {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == 'D') ? 'checked' : '' }} required>
-                            <span class="text-sm"><strong>d.</strong> {{ $soal->opsi_jawaban_d }}</span>
-                        </label>
-                        @endif
+                        @foreach(['A','B','C','D'] as $opsi)
+                            @php 
+                                $teks_opsi = 'opsi_jawaban_'.strtolower($opsi); 
+                                // Cek apakah opsi tersebut ada isinya (misal opsi D kosong, jangan ditampilkan)
+                            @endphp
+                            @if(!empty($soal->$teks_opsi))
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="jawaban[{{ $soal->id_soal_ia05 }}]" value="{{ $opsi }}" class="form-radio h-4 w-4 text-blue-600"
+                                        {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == $opsi) ? 'checked' : '' }} required>
+                                    <span class="text-sm"><strong>{{ strtolower($opsi) }}.</strong> {{ $soal->$teks_opsi }}</span>
+                                </label>
+                            @endif
+                        @endforeach
                     </div>
 
-                {{-- TAMPILAN ASESOR --}}
+                {{-- TAMPILAN ASESOR (Lihat Soal & Opsi - Read Only) --}}
                 @else
                     <div class="flex items-start space-x-3">
                         <label class="text-base font-semibold text-gray-800 pt-2">{{ $loop->iteration }}.</label>
-                        <textarea rows="2" class="form-textarea w-full border-gray-300 rounded-md shadow-sm bg-gray-50" readonly>{{ $soal->soal_ia05 }}</textarea>
+                        <div class="w-full bg-gray-50 p-3 rounded text-gray-700 border border-gray-200">{{ $soal->soal_ia05 }}</div>
                     </div>
                     <div class="space-y-2 mt-3 ml-8">
-                        <label class="flex items-center space-x-3 cursor-not-allowed">
-                            <input type="radio" name="jawaban_disabled[{{ $soal->id_soal_ia05 }}]" value="A" class="form-radio h-4 w-4 text-blue-600"
-                                   {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == 'A') ? 'checked' : '' }} disabled>
-                            <span class="text-sm"><strong>a.</strong> {{ $soal->opsi_jawaban_a }}</span>
-                        </label>
-                        <label class="flex items-center space-x-3 cursor-not-allowed">
-                            <input type="radio" name="jawaban_disabled[{{ $soal->id_soal_ia05 }}]" value="B" class="form-radio h-4 w-4 text-blue-600"
-                                   {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == 'B') ? 'checked' : '' }} disabled>
-                            <span class="text-sm"><strong>b.</strong> {{ $soal->opsi_jawaban_b }}</span>
-                        </label>
-                        <label class="flex items-center space-x-3 cursor-not-allowed">
-                            <input type="radio" name="jawaban_disabled[{{ $soal->id_soal_ia05 }}]" value="C" class="form-radio h-4 w-4 text-blue-600"
-                                   {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == 'C') ? 'checked' : '' }} disabled>
-                            <span class="text-sm"><strong>c.</strong> {{ $soal->opsi_jawaban_c }}</span>
-                        </label>
-                        @if(!empty($soal->opsi_jawaban_d))
-                        <label class="flex items-center space-x-3 cursor-not-allowed">
-                            <input type="radio" name="jawaban_disabled[{{ $soal->id_soal_ia05 }}]" value="D" class="form-radio h-4 w-4 text-blue-600"
-                                   {{ ($data_jawaban_asesi->get($soal->id_soal_ia05) == 'D') ? 'checked' : '' }} disabled>
-                            <span class="text-sm"><strong>d.</strong> {{ $soal->opsi_jawaban_d }}</span>
-                        </label>
-                        @endif
+                        {{-- REVISI: MENAMPILKAN OPSI A, B, C, D TAPI DISABLED --}}
+                        @foreach(['A','B','C','D'] as $opsi)
+                            @php $teks_opsi = 'opsi_jawaban_'.strtolower($opsi); @endphp
+                            
+                            @if(!empty($soal->$teks_opsi))
+                                <label class="flex items-center space-x-3 cursor-default">
+                                    <input type="radio" disabled class="form-radio h-4 w-4 text-gray-300 bg-gray-100 border-gray-300">
+                                    <span class="text-sm text-gray-600"><strong>{{ strtolower($opsi) }}.</strong> {{ $soal->$teks_opsi }}</span>
+                                </label>
+                            @endif
+                        @endforeach
                     </div>
                 @endif 
             </div>
@@ -141,6 +159,18 @@
                 Data soal belum diinput oleh Admin.
             </div>
             @endforelse 
+
+            {{-- BAGIAN DINAMIS (ADMIN ONLY) --}}
+            <div id="dynamic-soal-container"></div>
+
+            @if($user->role == 'admin')
+            <div class="mt-4 text-center">
+                <button type="button" onclick="tambahSoal()" class="btn py-2 px-4 border border-blue-600 text-blue-600 rounded-md font-semibold hover:bg-blue-50">
+                    + Tambah Soal Baru
+                </button>
+            </div>
+            @endif
+
         </div>
         
         <div class="form-section my-8">
@@ -162,4 +192,36 @@
         </div>
     </form>
 </main>
+
+@if($user->role == 'admin')
+<script>
+    let newSoalIndex = {{ count($semua_soal) }}; 
+
+    function tambahSoal() {
+        newSoalIndex++;
+        const container = document.getElementById('dynamic-soal-container');
+        
+        const template = `
+        <div class="form-group bg-white p-4 rounded-lg border border-gray-200 mt-4 relative">
+            <div class="absolute top-2 right-2">
+                 <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-500 hover:text-red-700 text-xs font-bold">[Hapus]</button>
+            </div>
+            <div class="flex items-start space-x-3">
+                <label class="text-base font-semibold text-gray-800 pt-2">${newSoalIndex}.</label>
+                <textarea name="new_soal[${newSoalIndex}][pertanyaan]" rows="2" placeholder="Tulis pertanyaan baru..." class="form-textarea w-full border-gray-300 rounded-md shadow-sm" required></textarea>
+            </div>
+            <div class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-center mt-3 ml-8">
+                <label class="text-sm">a.</label> <input type="text" name="new_soal[${newSoalIndex}][opsi_a]" placeholder="Opsi a..." class="form-input w-full border-gray-300 rounded-md shadow-sm text-sm" required>
+                <label class="text-sm">b.</label> <input type="text" name="new_soal[${newSoalIndex}][opsi_b]" placeholder="Opsi b..." class="form-input w-full border-gray-300 rounded-md shadow-sm text-sm" required>
+                <label class="text-sm">c.</label> <input type="text" name="new_soal[${newSoalIndex}][opsi_c]" placeholder="Opsi c..." class="form-input w-full border-gray-300 rounded-md shadow-sm text-sm" required>
+                <label class="text-sm">d.</label> <input type="text" name="new_soal[${newSoalIndex}][opsi_d]" placeholder="Opsi d..." class="form-input w-full border-gray-300 rounded-md shadow-sm text-sm" required>
+            </div>
+        </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', template);
+    }
+</script>
+@endif
+
 @endsection

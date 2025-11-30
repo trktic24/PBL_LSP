@@ -13,6 +13,15 @@ use App\Models\Skema;
 
 class IA05Controller extends Controller
 {
+    // FUNGSI BANTUAN: Mapping Role ID ke Teks (Supaya View tidak error)
+    private function assignRoleText($user) {
+        if ($user->role_id == 1) $user->role = 'admin';
+        elseif ($user->role_id == 2) $user->role = 'asesi';
+        elseif ($user->role_id == 3) $user->role = 'asesor';
+        else $user->role = 'guest';
+        return $user;
+    }
+
     /**
      * =================================================================
      * FORM A: SOAL (untuk Admin) & LEMBAR JAWAB (untuk Asesi)
@@ -20,15 +29,28 @@ class IA05Controller extends Controller
      */
     public function showSoalForm(Request $request, $id_asesi)
     {
-        $user = Auth::user();
+        // --- [MATIKAN] MODIFIKASI BYPASS LOGIN (DUMMY USER) ---
+        // $user = new \stdClass();
+        // $user->id = 1; 
+        // $user->role_id = 1; 
+        // $user->role = 'admin'; 
+        // $user->name = 'User Testing Tanpa Login';
+        // ---------------------------------------------
+
+        // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
+        $user = Auth::user(); 
+        $user = $this->assignRoleText($user); // Mapping ID ke Teks
+        // ----------------------------------------
+
         $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $data_jawaban_asesi = collect();
+        
+        // Logika ambil jawaban jika role asesi/asesor
         if ($user->role_id == 2 || $user->role_id == 3) {
-            // UBAH: Ambil 'teks_jawaban_asesi_ia05'
             $data_jawaban_asesi = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                                            ->pluck('teks_jawaban_asesi_ia05', 'id_soal_ia05');
+                                                    ->pluck('teks_jawaban_asesi_ia05', 'id_soal_ia05');
         }
 
         return view('frontend.fr_IA_05_A', [
@@ -44,21 +66,37 @@ class IA05Controller extends Controller
      */
     public function storeSoal(Request $request)
     {
+        // ... (KODE STORE SOAL BIARKAN SAMA, TIDAK ADA PERUBAHAN) ...
         $request->validate(['soal' => 'required|array']);
 
         DB::beginTransaction();
         try {
-            foreach ($request->soal as $id_soal => $data) {
-                SoalIA05::updateOrCreate(
-                    ['id_soal_ia05' => $id_soal],
-                    [ // UBAH: Sesuaikan nama kolom
+            if ($request->has('soal')) {
+                foreach ($request->soal as $id_soal => $data) {
+                    SoalIA05::updateOrCreate(
+                        ['id_soal_ia05' => $id_soal],
+                        [
+                            'soal_ia05' => $data['pertanyaan'],
+                            'opsi_jawaban_a' => $data['opsi_a'],
+                            'opsi_jawaban_b' => $data['opsi_b'],
+                            'opsi_jawaban_c' => $data['opsi_c'],
+                            'opsi_jawaban_d' => $data['opsi_d'] ?? null,
+                        ]
+                    );
+                }
+            }
+
+            // 2. INSERT SOAL BARU
+            if ($request->has('new_soal')) {
+                foreach ($request->new_soal as $index => $data) {
+                    SoalIA05::create([
                         'soal_ia05' => $data['pertanyaan'],
                         'opsi_jawaban_a' => $data['opsi_a'],
                         'opsi_jawaban_b' => $data['opsi_b'],
                         'opsi_jawaban_c' => $data['opsi_c'],
                         'opsi_jawaban_d' => $data['opsi_d'] ?? null,
-                    ]
-                );
+                    ]);
+                }
             }
             DB::commit();
             return redirect()->back()->with('success', 'Bank Soal (IA-05 A) berhasil diperbarui.');
@@ -73,21 +111,21 @@ class IA05Controller extends Controller
      */
     public function storeJawabanAsesi(Request $request, $id_asesi)
     {
+        // ... (KODE STORE JAWABAN BIARKAN SAMA) ...
         $request->validate(['jawaban' => 'required|array']);
 
         DB::beginTransaction();
         try {
             foreach ($request->jawaban as $id_soal => $pilihan_jawaban) {
-                // (Asumsi) 'jawaban' ('A'/'B'/'C') disimpan di 'teks_jawaban_asesi_ia05'
                 LembarJawabIA05::updateOrCreate(
                     [
                         'id_data_sertifikasi_asesi' => $id_asesi,
                         'id_soal_ia05' => $id_soal,
                     ],
-                    [ // UBAH: Sesuaikan nama kolom
+                    [ 
                         'teks_jawaban_asesi_ia05' => $pilihan_jawaban,
-                        'pencapaian_ia05_iya' => 0, // Reset penilaian
-                        'pencapaian_ia05_tidak' => 0, // Reset penilaian
+                        'pencapaian_ia05_iya' => 0, 
+                        'pencapaian_ia05_tidak' => 0, 
                     ]
                 );
             }
@@ -106,10 +144,25 @@ class IA05Controller extends Controller
      */
     public function showKunciForm(Request $request)
     {
-        $user = Auth::user();
+        // --- [MATIKAN] MODIFIKASI BYPASS LOGIN (DUMMY USER) ---
+        // $user = new \stdClass();
+        // $user->id = 1; 
+        // $user->role_id = 1; 
+        // $user->role = 'admin';
+        // $user->name = 'User Testing';
+        // ---------------------------------------------
+
+        // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
+        $user = Auth::user(); 
+        $user = $this->assignRoleText($user);
+        // ----------------------------------------
+
+        // Jika role_id = 2 (Asesi), langsung tolak!
+        if ($user->role_id == 2) {
+            return abort(403, 'Akses Ditolak. Asesi tidak boleh melihat Kunci Jawaban!');
+        }
+
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
-        
-        // UBAH: Ambil 'teks_kunci_jawaban_ia05'
         $kunci_jawaban = KunciJawabanIA05::pluck('teks_kunci_jawaban_ia05', 'id_soal_ia05'); 
         $skema_info = Skema::first();
 
@@ -126,7 +179,7 @@ class IA05Controller extends Controller
      */
     public function storeKunci(Request $request)
     {
-        // Asumsi: Form mengirim array 'kunci[id_soal]' => 'A. Teks Jawaban'
+        // ... (KODE STORE KUNCI BIARKAN SAMA) ...
         $request->validate(['kunci' => 'required|array']);
 
         DB::beginTransaction();
@@ -134,9 +187,9 @@ class IA05Controller extends Controller
             foreach ($request->kunci as $id_soal => $teks_kunci) {
                 KunciJawabanIA05::updateOrCreate(
                     ['id_soal_ia05' => $id_soal],
-                    [ // UBAH: Sesuaikan nama kolom
+                    [ 
                         'teks_kunci_jawaban_ia05' => $teks_kunci,
-                        // 'nomor_kunci_jawaban_ia05' => $nomor (jika Anda kirim nomor)
+                        'nomor_kunci_jawaban_ia05' => 1,
                     ]
                 );
             }
@@ -155,16 +208,36 @@ class IA05Controller extends Controller
      */
     public function showJawabanForm(Request $request, $id_asesi)
     {
-        $user = Auth::user();
+        // --- [MATIKAN] MODIFIKASI BYPASS LOGIN (DUMMY USER) ---
+        // $user = new \stdClass();
+        // $user->id = 3; 
+        // $user->role_id = 1; 
+        // $user->role = 'admin';
+        // $user->name = 'Asesor Testing';
+        // ---------------------------------------------
+
+        // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
+        $user = Auth::user(); 
+        $user = $this->assignRoleText($user);
+        // ----------------------------------------
+
+        // Jika role_id = 2 (Asesi), langsung tolak!
+        if ($user->role_id == 2) {
+            return abort(403, 'Akses Ditolak. Asesi tidak boleh melihat Kunci Jawaban!');
+        }
+
         $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
         
         $kunci_jawaban = KunciJawabanIA05::pluck('teks_kunci_jawaban_ia05', 'id_soal_ia05');
         
-        // Ambil semua data lembar jawab (termasuk pencapaian_iya/tidak)
         $lembar_jawab = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
                                         ->get()
                                         ->keyBy('id_soal_ia05');
+
+        // Ambil Umpan Balik
+        $contoh_jawaban = $lembar_jawab->first();
+        $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
 
         return view('frontend.fr_IA_05_C', [
             'user' => $user,
@@ -172,20 +245,20 @@ class IA05Controller extends Controller
             'semua_soal' => $semua_soal,
             'kunci_jawaban' => $kunci_jawaban,
             'lembar_jawab' => $lembar_jawab,
+            'umpan_balik' => $umpan_balik,
         ]);
     }
 
     /**
      * [KHUSUS ASESOR] Menyimpan Penilaian Asesor (Form C)
-     * UBAH: Logika ini diubah total untuk menyimpan Ya/Tidak
      */
     public function storePenilaianAsesor(Request $request, $id_asesi)
     {
-        // Asumsi: Form mengirim 'penilaian[id_soal]' => 'ya' atau 'tidak'
+        // ... (KODE STORE PENILAIAN BIARKAN SAMA DENGAN UPDATE TERAKHIR) ...
         $request->validate([
             'penilaian' => 'required|array',
             'penilaian.*' => 'required|in:ya,tidak',
-            // 'umpan_balik' => 'nullable|string' // (Lihat catatan di Blade C)
+            'umpan_balik' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -197,12 +270,17 @@ class IA05Controller extends Controller
 
                 if ($jawaban) {
                     $jawaban->update([
-                        // UBAH: Terjemahkan 'ya'/'tidak' ke 1/0
                         'pencapaian_ia05_iya' => ($hasil_penilaian == 'ya') ? 1 : 0,
                         'pencapaian_ia05_tidak' => ($hasil_penilaian == 'tidak') ? 1 : 0,
                     ]);
                 }
             }
+
+            if ($request->has('umpan_balik')) {
+                LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                               ->update(['umpan_balik_ia05' => $request->umpan_balik]);
+            }
+
             DB::commit();
             return redirect()->back()->with('success', 'Penilaian (IA-05 C) berhasil disimpan.');
         } catch (\Exception $e) {

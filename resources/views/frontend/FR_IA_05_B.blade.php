@@ -1,13 +1,67 @@
 @extends('layouts.app-sidebar')
 
 @section('content')
-<main class="main-content">
+<main class="main-content">    
 
-    @php $is_admin = $user->role_id == 1; @endphp
+    @php 
+        // Cek apakah user adalah Admin
+        $is_admin = ($user->role_id == 1); 
+    @endphp
 
     <x-header_form.header_form title="FR.IA.05.B. LEMBAR KUNCI JAWABAN PERTANYAAN TERTULIS PILIHAN GANDA" />
     <br>
     
+{{-- === DROPDOWN NAVIGASI (Form B) === --}}
+    @if($user->role_id != 2)
+    
+    {{-- Ambil ID Asesi dari URL (?ref=1) --}}
+    @php $ref_id = request('ref'); @endphp
+
+    <div class="flex justify-end mt-6 mb-2 relative">
+        <button type="button" onclick="toggleNavDropdown()" class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 flex items-center gap-2 text-sm font-bold transition duration-150 ease-in-out">
+            <span>Navigasi</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+
+        <div id="nav-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
+            <div class="bg-gray-50 px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Pindah Halaman
+            </div>
+            
+            @if($ref_id)
+                {{-- Jika ada ID Referensi, Tampilkan Link Navigasi --}}
+                <a href="{{ route('FR_IA_05_A', $ref_id) }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 border-b border-gray-100 transition">
+                    Soal
+                </a>
+                <a href="{{ route('FR_IA_05_C', $ref_id) }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+                    Penilaian
+                </a>
+            @else
+                {{-- Jika Form B dibuka langsung tanpa link dari A/C --}}
+                <span class="block px-4 py-3 text-sm text-gray-400 italic border-b border-gray-100">
+                    (Buka dari Form A/C untuk navigasi)
+                </span>
+                <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+                    🏠 Ke Dashboard
+                </a>
+            @endif
+        </div>
+    </div>
+    {{-- Script Toggle --}}
+    <script>
+        function toggleNavDropdown() { document.getElementById('nav-dropdown').classList.toggle('hidden'); }
+        window.onclick = function(event) {
+            if (!event.target.closest('button')) {
+                const dropdown = document.getElementById('nav-dropdown');
+                if (!dropdown.classList.contains('hidden')) dropdown.classList.add('hidden');
+            }
+        }
+    </script>
+    @endif
+    {{-- === AKHIR DROPDOWN === --}}
+
     {{-- BAGIAN IDENTITAS SKEMA (SUDAH DIISI) --}}
     <div class="form-row grid grid-cols-1 md:grid-cols-[250px_1fr] md:gap-x-6 gap-y-1.5 items-start md:items-center">
         
@@ -54,10 +108,11 @@
         </div>
     @endif
 
-    <form class="form-body mt-10" method="POST" action="{{ route('ia-05.store.kunci') }}">
+    {{-- Form hanya submit ke route store jika Admin, jika tidak biarkan # --}}
+    <form class="form-body mt-10" method="POST" action="{{ $is_admin ? route('ia-05.store.kunci') : '#' }}">
         @csrf 
         
-        {{-- TABEL UNIT KOMPETENSI (Statis / Disabled) --}}
+        {{-- TABEL UNIT KOMPETENSI (Statis / Disabled sesuai request) --}}
         <div class="form-section my-8">
             <div class="border border-gray-900 shadow-md">
                 <table class="w-full">
@@ -126,66 +181,55 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if(isset($semua_soal) && $semua_soal->count() > 0)
-                            {{-- Kita loop chunk-nya, tapi kita hitung nomor manual --}}
-                            @foreach ($semua_soal->chunk(2) as $chunkIndex => $chunk)
+                        {{-- LOGIKA LOOPING DINAMIS --}}
+                        {{-- Menggunakan chunk(2) untuk membagi soal menjadi 2 kolom per baris --}}
+                        @forelse ($semua_soal->chunk(2) as $chunk)
                             <tr>
-                                {{-- KOLOM KIRI --}}
-                                @if (isset($chunk[0]))
-                                    @php 
-                                        $soal_kiri = $chunk[0]; 
-                                        // HITUNG NOMOR MANUAL: (Index Chunk * 2) + 1
-                                        $nomor_kiri = ($loop->index * 2) + 1; 
-                                    @endphp
-                                    
-                                    <td class="border border-gray-900 p-2 text-sm text-center">
-                                        {{ $nomor_kiri }}.
-                                    </td>
-                                    <td class="border border-gray-900 p-2 text-sm">
-                                        <input type="text" 
-                                            name="kunci[{{ $soal_kiri->id_soal_ia05 }}]" 
-                                            class="form-input w-full border-gray-300 rounded-md shadow-sm"
-                                            value="{{ $kunci_jawaban->get($soal_kiri->id_soal_ia05) ?? '' }}"
-                                            placeholder="Contoh: A. {{ $soal_kiri->opsi_jawaban_a }}"
-                                            @if(!$is_admin) disabled @endif>
-                                    </td>
-                                @else
-                                    <td class="border border-gray-900 p-2"></td>
-                                    <td class="border border-gray-900 p-2"></td>
-                                @endif
+                                {{-- === KOLOM KIRI (Soal Ganjil) === --}}
+                                @php 
+                                    $soalKiri = $chunk->first(); 
+                                    $nomorKiri = ($loop->index * 2) + 1;
+                                @endphp
+                                <td class="border border-gray-900 p-2 text-sm text-center">{{ $nomorKiri }}.</td>
+                                <td class="border border-gray-900 p-2 text-sm">
+                                    <input type="text" 
+                                           name="kunci[{{ $soalKiri->id_soal_ia05 }}]" 
+                                           class="form-input w-full border-gray-300 rounded-md shadow-sm"
+                                           {{-- Tampilkan jawaban jika ada di database --}}
+                                           value="{{ $kunci_jawaban[$soalKiri->id_soal_ia05] ?? '' }}" 
+                                           placeholder="Contoh: a"
+                                           {{-- Disabled jika bukan Admin --}}
+                                           {{ $is_admin ? '' : 'disabled' }}>
+                                </td>
 
-                                {{-- KOLOM KANAN --}}
-                                @if (isset($chunk[1]))
+                                {{-- === KOLOM KANAN (Soal Genap) === --}}
+                                @if($chunk->count() > 1)
                                     @php 
-                                        $soal_kanan = $chunk[1]; 
-                                        // HITUNG NOMOR MANUAL: (Index Chunk * 2) + 2
-                                        $nomor_kanan = ($loop->index * 2) + 2; 
+                                        $soalKanan = $chunk->last(); 
+                                        $nomorKanan = ($loop->index * 2) + 2;
                                     @endphp
-                                    
-                                    <td class="border border-gray-900 p-2 text-sm text-center">
-                                        {{ $nomor_kanan }}.
-                                    </td>
+                                    <td class="border border-gray-900 p-2 text-sm text-center">{{ $nomorKanan }}.</td>
                                     <td class="border border-gray-900 p-2 text-sm">
                                         <input type="text" 
-                                            name="kunci[{{ $soal_kanan->id_soal_ia05 }}]" 
-                                            class="form-input w-full border-gray-300 rounded-md shadow-sm"
-                                            value="{{ $kunci_jawaban->get($soal_kanan->id_soal_ia05) ?? '' }}"
-                                            placeholder="Contoh: B. {{ $soal_kanan->opsi_jawaban_b }}"
-                                            @if(!$is_admin) disabled @endif>
+                                               name="kunci[{{ $soalKanan->id_soal_ia05 }}]" 
+                                               class="form-input w-full border-gray-300 rounded-md shadow-sm"
+                                               value="{{ $kunci_jawaban[$soalKanan->id_soal_ia05] ?? '' }}" 
+                                               placeholder="Contoh: c"
+                                               {{ $is_admin ? '' : 'disabled' }}>
                                     </td>
                                 @else
-                                    <td class="border border-gray-900 p-2"></td>
-                                    <td class="border border-gray-900 p-2"></td>
+                                    {{-- Jika soal ganjil (tidak ada pasangan di kanan), tampilkan kolom kosong --}}
+                                    <td class="border border-gray-900 p-2 bg-gray-100"></td>
+                                    <td class="border border-gray-900 p-2 bg-gray-100"></td>
                                 @endif
                             </tr>
-                            @endforeach
-                        @else
+                        @empty
                             <tr>
-                                <td colspan="4" class="p-4 text-center text-gray-500">
-                                    Belum ada soal yang dibuat oleh Admin.
+                                <td colspan="4" class="text-center p-4 text-gray-500">
+                                    Belum ada soal yang dibuat. Silakan input soal di Form IA.05.A terlebih dahulu.
                                 </td>
                             </tr>
-                        @endif
+                        @endforelse
                     </tbody>
                 </table>
             </div>

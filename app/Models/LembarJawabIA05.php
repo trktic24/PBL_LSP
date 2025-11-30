@@ -13,7 +13,7 @@ class LembarJawabIA05 extends Model
     
     // PERHATIKAN: Primary key Anda di screenshot adalah 'id_lembar_jawab_ia06'
     // Ini sepertinya typo di database Anda, tapi Model harus mengikutinya.
-    protected $primaryKey = 'id_lembar_jawab_ia06'; 
+    protected $primaryKey = 'id_lembar_jawab_ia05'; 
 
     protected $fillable = [
         'id_data_sertifikasi_asesi',
