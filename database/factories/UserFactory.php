@@ -24,7 +24,7 @@ class UserFactory extends Factory
             // Ini ASUMSI tabel roles-nya udah keisi dulu
             'role_id' => Role::inRandomOrder()->first()->id_role,
 
-            'username' => $this->faker->unique()->userName(),
+            //'username' => $this->faker->unique()->userName(),
 
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),

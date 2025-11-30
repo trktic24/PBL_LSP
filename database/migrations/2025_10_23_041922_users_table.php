@@ -19,9 +19,6 @@ return new class extends Migration
             // Sesuai ERD (id_role)
             $table->foreignId('role_id')->constrained('roles', 'id_role')->onUpdate('cascade')->onDelete('cascade');
 
-            // Sesuai ERD (Username)
-            $table->string('username')->unique();
-            
             // Sesuai ERD (email)
             $table->string('email')->unique();
             

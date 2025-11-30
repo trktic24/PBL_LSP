@@ -31,7 +31,7 @@ class SkemaFactory extends Factory
             'categorie_id' => Categorie::factory(),
             
             // Sesuai dengan migration 'id_kelompok_pekerjaan' (BARU)
-            'id_kelompok_pekerjaan' => \App\Models\KelompokPekerjaan::factory(),
+            //'id_kelompok_pekerjaan' => \App\Models\KelompokPekerjaan::factory(),
 
             // Diubah dari 'kode_unit' menjadi 'nomor_skema' (DIUBAH)
             // Ditambahkan unique() karena ada constraint ->unique() di migration

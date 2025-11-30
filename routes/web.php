@@ -14,6 +14,9 @@ use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Asesor\DashboardController as AsesorDashboardController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\IA02Controller; // Ditambahkan karena ada route IA-02 di bawah
+use App\Http\Controllers\APL01Controller;
+use App\Http\Controllers\FrMapa01Controller;
+use App\Http\Controllers\Mapa02Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,6 +129,28 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/fr-ia-05-c/store-penilaian/{id_asesi}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia-05.store.penilaian');
     });
 
+    //APL01
+    // Rute untuk Halaman 1 (Panggil fungsi step1)
+    Route::get('/apl-01-1/view/{id}', [APL01Controller::class, 'step1'])->name('APL_01_1');
+
+    // Rute untuk Simpan Halaman 1 (Method POST)
+    Route::post('/apl-01-1/store', [APL01Controller::class, 'storeStep1'])->name('apl01_1.store');
+
+    // Rute untuk Halaman 2 (Panggil fungsi step2)
+    Route::get('/apl-01-2/view/{id}', [APL01Controller::class, 'step2'])->name('APL_01_2');
+
+    Route::post('/apl-01-2/store', [APL01Controller::class, 'storeStep2'])->name('apl01_2.store');    
+
+    // Rute untuk Halaman 3 (Panggil fungsi step3)
+    Route::get('/apl-01-3/view/{id}', [APL01Controller::class, 'step3'])->name('APL_01_3');
+
+    //MAPA01
+    Route::get('/mapa01/show/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
+    Route::post('/mapa01/store', [FrMapa01Controller::class, 'store'])->name('mapa01.store'); 
+    
+    //MAPA02
+    Route::get('/mapa02/show/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');    
+    Route::post('/mapa02/store/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');     
 });
 
 
@@ -146,7 +171,7 @@ Route::middleware(['auth'])->prefix('asesor')->group(function () {
     
     // Tools
     Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
-    Route::get('/tracker', fn() => view('frontend.tracker'))->name('tracker');
+    //Route::get('/tracker', fn() => view('frontend.tracker'))->name('tracker');
 
 });
 

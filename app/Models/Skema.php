@@ -60,7 +60,7 @@ class Skema extends Model
         // Model, foreign_key, owner_key
         // Key kedua ('id_kelompok_pekerjaan') dispesifikkan karena 
         // nama kolom di tabel parent (kelompok_pekerjaan) tidak 'id'.
-        return $this->belongsTo(KelompokPekerjaan::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
+        return $this->hasMany(KelompokPekerjaan::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
     }
 
     // --- Relasi yang sudah ada di kode Anda (tetap valid) ---

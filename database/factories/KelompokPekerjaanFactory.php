@@ -30,7 +30,8 @@ class KelompokPekerjaanFactory extends Factory
             'nama_kelompok_pekerjaan' => fake()->jobTitle(),
 
             // Kolom 'id_unit_kompetensi' (WAJIB ADA)
-            'id_unit_kompetensi' => UnitKompetensi::factory(),
+            //'id_unit_kompetensi' => UnitKompetensi::factory(),
+            'id_skema' => Skema::factory(),
         ];
     }
 }

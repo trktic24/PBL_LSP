@@ -1,4 +1,4 @@
-@props(['jadwal', 'asesi'])
+@props(['jadwal', 'asesi', 'backUrl'])
 
 <aside
     x-cloak
@@ -42,7 +42,7 @@
     </div>
 
     <!-- Tombol Kembali -->
-    <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}"
+    <a href="{{$backUrl}}"
        class="flex items-center space-x-2 text-sm font-medium opacity-80 hover:opacity-100 mb-10 transition">
         <svg xmlns="http://www.w3.org/2000/svg"
              class="h-5 w-5" fill="none" viewBox="0 0 24 24"

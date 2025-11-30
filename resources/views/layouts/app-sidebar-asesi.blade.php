@@ -26,7 +26,7 @@
 <body x-data x-cloak class="bg-gray-50 min-h-screen flex">
 
   {{-- Sidebar --}}
-  <x-sidebar.sidebar-asesi :jadwal="$jadwal" :asesi="$asesi"/>
+  <x-sidebar.sidebar-asesi :jadwal="$jadwal" :asesi="$asesi" :backUrl="$backUrl ?? route('daftar_asesi', $jadwal->id_jadwal)"/>
 
   {{-- KONTEN UTAMA --}}
   {{-- Perubahan: Tambahkan :class logic untuk mengatur margin kiri --}}

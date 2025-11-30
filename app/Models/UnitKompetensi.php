@@ -40,7 +40,7 @@ class UnitKompetensi extends Model
      */
     public function kelompokPekerjaan()
     {
-        return $this->hasMany(
+        return $this->belongsTo(
             KelompokPekerjaan::class,
             'id_unit_kompetensi', // Foreign key di tabel 'kelompok_pekerjaan'
             'id_unit_kompetensi'  // Primary key di tabel ini

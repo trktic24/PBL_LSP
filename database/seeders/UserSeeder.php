@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'google_id' => null,
                 'remember_token' => Str::random(10),
-                'username' => 'admin', // <-- DIPERBAIKI: Baris ini dihapus karena kolomnya tidak ada
+
             ]);
         }
 
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
                 'role_id' => $asesorRole->id_role,
             ]);
             User::updateOrCreate(
-                ['username' => 'asesor'],
+                ['email' => 'asesor@example.com'],
                 [
                     'role_id' => $asesorRole->id_role,
                     'email' => 'asesor@example.com',
@@ -54,9 +54,6 @@ class UserSeeder extends Seeder
 
         // Buat Contoh Asesi
         if ($asesiRole) {
-            User::factory()->count(40)->create([
-                'role_id' => $asesiRole->id_role,
-            ]);            
             User::updateOrCreate([
                 'role_id' => $asesiRole->id_role,
                 'email' => 'asesi@example.com',
@@ -64,7 +61,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'google_id' => null,
                 'remember_token' => Str::random(10),
-                'username' => 'asesi', // <-- DIPERBAIKI: Baris ini dihapus
+
             ]);
         }
 

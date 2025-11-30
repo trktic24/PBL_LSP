@@ -13,4 +13,14 @@ class ia10 extends Model
     protected $table = 'ia10';
     protected $primaryKey = 'id_ia10';
     protected $guarded = [];
+
+    /**
+     * Atribut yang dapat diisi secara massal.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'id_data_sertifikasi_asesi',
+        'pertanyaan',
+    ];    
 }
