@@ -9,7 +9,27 @@ use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\FrAk07Controller;
-use App\Http\Controllers\Ia11Controller; // <-- DITAMBAHKAN
+use App\Http\Controllers\Ia11Controller; 
+use App\Http\Controllers\IA09Controller;
+
+// ==========================================================
+// RUTE DASAR UNTUK MENGATASI ERROR (DASHBOARD & ROOT)
+// ==========================================================
+
+// Rute Root, biasanya mengarah ke dashboard
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+});
+
+// Rute Dashboard: HARUS ADA untuk mengatasi 'Route [dashboard] not defined'
+Route::get('/dashboard', function () {
+    // Ganti dengan tampilan dashboard yang sesungguhnya jika ada
+    return view('frontend/home'); 
+})->name('dashboard');
+
+// ==========================================================
+// RUTE FRONTEND LAINNYA
+// ==========================================================
 
 Route::get('/home', function () {
     return view('frontend/home');
@@ -44,13 +64,7 @@ Route::get('/APL_02', function () {
     return view('frontend/APL_02/APL_02');
 })->name('APL_02');
 
-// MAPA
-// MAPA
-// Route::get('/FR-MAPA-02', function () {
-//     return view('frontend/FR_MAPA_02');
-// })->name('MAPA-02');
-
-//AK
+// AK
 Route::get('/FR_AK_01', function () {
     return view('frontend/FR_AK_01');
 })->name('FR_AK_01');
@@ -74,19 +88,20 @@ Route::get('/IA_08', function () {
 })->name('IA08');
 
 // ============================
-//        IA11 ROUTES
+// IA11 ROUTES
 // ============================
-// GANTI ROUTE LAMA (VIEW STATIS)
 Route::get('/FR_IA_11', [Ia11Controller::class, 'create'])->name('ia11.create');
 Route::post('/FR_IA_11/store', [Ia11Controller::class, 'store'])->name('ia11.store');
 // ============================
 
-//porto
+// porto
 Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
 
-//IA07
+// IA07
 Route::get('/FR_IA_07', [IA07Controller::class, 'index'])->name('ia07.asesor');
 Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
+
+Route::get('/IA09', [IA09Controller::class, 'showWawancara'])->name('ia09.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -141,8 +156,6 @@ Route::post('/ia01/{skema_id}/step/{urutan}', [IA01Controller::class, 'storeStep
 
 Route::get('/ia01/{skema_id}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
 Route::post('/ia01/{skema_id}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
-
-
 
 Route::get('/ia01/success', function() {
     return view('frontend.IA_01.success');
