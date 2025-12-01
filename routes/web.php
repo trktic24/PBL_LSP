@@ -82,15 +82,19 @@ Route::get('/FR_AK_05', function () {
 })->name('FR_AK_05');
 Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
 
-
 Route::get('/IA_08', function () {
     return view('frontend/IA_08/IA_08');
 })->name('IA08');
 
+// ==========================================================
+// RUTE FR.IA.11 (CEKLIST REVIU PRODUK) - MODIFIKASI INI
+// ==========================================================
+// Rute Tampilan (show) sekarang memerlukan ID data IA11
+Route::get('/FR_IA_11/{ia11}', [Ia11Controller::class, 'show'])->name('ia11.show');
+// Rute Update (put) sekarang menangani penyimpanan data dengan logika peran
+Route::put('/FR_IA_11/{ia11}', [Ia11Controller::class, 'update'])->name('ia11.update');
+// ==========================================================
 
-Route::get('/FR_IA_11', [Ia11Controller::class, 'create'])->name('ia11.create');
-Route::post('/FR_IA_11/store', [Ia11Controller::class, 'store'])->name('ia11.store');
-// ============================
 
 // porto
 Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
@@ -104,18 +108,18 @@ Route::prefix('IA09')->group(function () {
     // Rute Asesor (Tampilan Form)
     // Akses di Browser: http://127.0.0.1:8000/IA09/asesor
     Route::get('/asesor', [IA09Controller::class, 'showWawancaraAsesor'])
-         ->name('ia09.asesor');
+        ->name('ia09.asesor');
     
     // Rute Penyimpanan Data (POST)
     // Digunakan oleh Form HTML untuk mengirim data wawancara
     // Aksi ini akan dipanggil dari Form di rute 'ia09.asesor'
     Route::post('/store', [IA09Controller::class, 'storeWawancara'])
-         ->name('ia09.store');
+        ->name('ia09.store');
     
     // Rute Admin (Tampilan Read-only)
     // Akses di Browser: http://127.0.0.1:8000/IA09/admin
     Route::get('/admin', [IA09Controller::class, 'showWawancaraAdmin'])
-         ->name('ia09.admin');
+        ->name('ia09.admin');
 });
 
 Route::middleware('auth')->group(function () {
