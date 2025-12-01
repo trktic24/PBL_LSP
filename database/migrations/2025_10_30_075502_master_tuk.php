@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('alamat_tuk');
             $table->string('kontak_tuk');
             $table->string('foto_tuk')->comment('Path ke file foto TUK');
-            $table->string('link_gmap')->comment('Link Google Maps lokasi TUK');
+            $table->text('link_gmap')->comment('Link Google Maps lokasi TUK');
             $table->timestamps();
         });
     }

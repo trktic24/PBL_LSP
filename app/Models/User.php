@@ -4,23 +4,27 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-
 
 class User extends Authenticatable
 {
-    use HasFactory,HasApiTokens, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
+    use HasApiTokens, HasFactory, Notifiable;
+
+    /**
+     * Beri tahu Laravel bahwa Primary Key Anda BUKAN 'id',
+     * tapi 'id_user'.
+     */
+    protected $primaryKey = 'id_user';
 
     /**
      * Kolom yang boleh diisi secara massal.
      * Disesuaikan dengan ERD Anda.
      */
     protected $table ='users';
-    protected $primaryKey = 'id_user';
 
     /**
      * The attributes that are mass assignable.

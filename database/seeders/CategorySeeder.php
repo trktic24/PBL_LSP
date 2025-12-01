@@ -6,10 +6,15 @@ use App\Models\Category;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str; // Tambahkan ini jika menggunakan Str::slug
 
+
 class CategorySeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
+        // 1. Data 12 Kategori dari gambar Anda
         $categories = [
             'Cloud Computing',
             'Data Science & AI',

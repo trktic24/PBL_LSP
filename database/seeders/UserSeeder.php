@@ -6,7 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Hash; // Gunakan Hash Facade
 
 class UserSeeder extends Seeder
 {
@@ -59,5 +59,11 @@ class UserSeeder extends Seeder
                 'role_id' => $asesiRole->id_role,
             ]);
         }
+        User::create([
+            'role_id' => 1,  // Ini akan berhasil karena RoleSeeder berjalan duluan
+            'username' => 'admin',
+            'email' => 'admin@polines.ac.id',
+            'password' => Hash::make('1234') // bcrypt() juga bisa, tapi Hash lebih modern
+        ]);
     }
 }

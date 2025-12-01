@@ -41,6 +41,7 @@ return new class extends Migration
             $table->text('catatan_AK05');
             $table->text('rekomendasi1_AK06');
             $table->text('rekomendasi2_AK06');
+            $table->string('status_sertifikasi', 50)->default('pendaftaran_selesai');
             $table->timestamps();
         });
     }

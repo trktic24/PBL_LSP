@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;  
+
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Asesi extends Model
@@ -13,6 +14,8 @@ class Asesi extends Model
 
     protected $table = 'asesi';
     protected $primaryKey = 'id_asesi';
+    protected $guarded = [];
+
 
     protected $fillable = [
         'id_user',
@@ -32,6 +35,9 @@ class Asesi extends Model
         'tanda_tangan',
     ];
 
+    /**
+     * Tentukan kolom yang harus diperlakukan sebagai tanggal.
+     */
     protected $casts = [
         'tanggal_lahir' => 'date',
     ];
@@ -42,9 +48,16 @@ class Asesi extends Model
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
-    // Relasi ke data pekerjaan
-    public function pekerjaan(): HasOne
+    public function dataPekerjaan()
     {
         return $this->hasOne(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
+    }
+    
+    /**
+     * Relasi: Asesi bisa punya banyak data sertifikasi (history).
+     */
+    public function dataSertifikasi()
+    {
+        return $this->hasMany(DataSertifikasiAsesi::class, 'id_asesi', 'id_asesi');
     }
 }
