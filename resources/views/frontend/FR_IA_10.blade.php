@@ -188,6 +188,7 @@
                 </div>
                 
                 @include('components.kolom_ttd.asesiasesor', [
+                    'sertifikasi' => $asesi,
                     'showAsesi'  => false,
                     'showAsesor' => true,
                 ])

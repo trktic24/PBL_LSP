@@ -59,7 +59,7 @@
                     </thead>
 
                     <tbody class="bg-white text-gray-800">
-                        @forelse($sertifikasi->skema->unitKompetensis ?? [] as $unit)
+                        @forelse($daftarUnitKompetensi ?? [] as $unit)
                             <tr class="border-b border-gray-300 hover:bg-gray-50 transition">
                                 <td class="p-3 text-center border-r border-gray-200 font-semibold">
                                     {{ $loop->iteration }}
@@ -87,9 +87,7 @@
 
                 @if($isAdmin)
                     <textarea name="skenario" rows="6"
-                        class="mt-2 w-full border border-gray-300 rounded shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">
-                        {{ old('skenario', $ia02->skenario ?? '') }}
-                    </textarea>
+                        class="mt-2 w-full border border-gray-300 rounded shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">{{ old('skenario', $ia02->skenario ?? '') }}</textarea>
                 @else
                     <div class="mt-2 bg-gray-50 border border-gray-300 rounded p-4 whitespace-pre-line min-h-[100px]">
                         {!! nl2br(e($ia02->skenario ?? '-')) !!}
@@ -103,9 +101,7 @@
 
                 @if($isAdmin)
                     <textarea name="peralatan" rows="3"
-                        class="mt-2 w-full border border-gray-300 rounded shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">
-                        {{ old('peralatan', $ia02->peralatan ?? '') }}
-                    </textarea>
+                        class="mt-2 w-full border border-gray-300 rounded shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">{{ old('peralatan', $ia02->peralatan ?? '') }}</textarea>
                 @else
                     <div class="mt-2 bg-gray-50 border border-gray-300 rounded p-4 whitespace-pre-line">
                         {!! nl2br(e($ia02->peralatan ?? '-')) !!}

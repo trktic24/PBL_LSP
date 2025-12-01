@@ -406,46 +406,7 @@
 
             {{-- PENYUSUN & VALIDATOR --}}
             <div class="mt-8">
-                <h3 class="font-bold text-sm mb-2 uppercase">Penyusun dan Validator</h3>
-                <table class="w-full text-sm form-table">
-                    <thead class="bg-gray-100 text-center font-bold">
-                        <tr>
-                            <th class="p-2 w-1/6">STATUS</th>
-                            <th class="p-2 w-12">NO</th>
-                            <th class="p-2 w-1/3">NAMA</th>
-                            <th class="p-2 w-1/6">NOMOR MET</th>
-                            <th class="p-2">TANDA TANGAN DAN TANGGAL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td rowspan="2" class="p-2 text-center font-bold align-middle bg-gray-50">PENYUSUN</td>
-                            <td class="p-2 text-center">1</td>
-                            <td class="p-2"><input type="text" name="penyusun[0][nama]" class="w-full outline-none bg-transparent"></td>
-                            <td class="p-2"><input type="text" name="penyusun[0][nomor_met]" class="w-full outline-none bg-transparent"></td>
-                            <td class="p-2"><input type="text" name="penyusun[0][ttd_tanggal]" class="w-full outline-none bg-transparent"></td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 text-center">2</td>
-                            <td class="p-2"><input type="text" name="penyusun[1][nama]" class="w-full outline-none bg-transparent"></td>
-                            <td class="p-2"><input type="text" name="penyusun[1][nomor_met]" class="w-full outline-none bg-transparent"></td>
-                            <td class="p-2"><input type="text" name="penyusun[1][ttd_tanggal]" class="w-full outline-none bg-transparent"></td>
-                        </tr>
-                        <tr>
-                            <td rowspan="2" class="p-2 text-center font-bold align-middle bg-gray-50">VALIDATOR</td>
-                            <td class="p-2 text-center">1</td>
-                            <td class="p-2"><input type="text" name="validator[0][nama]" class="w-full outline-none bg-transparent"></td>
-                            <td class="p-2"><input type="text" name="validator[0][nomor_met]" class="w-full outline-none bg-transparent"></td>
-                            <td class="p-2"><input type="text" name="validator[0][ttd_tanggal]" class="w-full outline-none bg-transparent"></td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 text-center">2</td>
-                            <td class="p-2"><input type="text" name="validator[1][nama]" class="w-full outline-none bg-transparent"></td>
-                            <td class="p-2"><input type="text" name="validator[1][nomor_met]" class="w-full outline-none bg-transparent"></td>
-                            <td class="p-2"><input type="text" name="validator[1][ttd_tanggal]" class="w-full outline-none bg-transparent"></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <x-kolom_ttd.penyusunvalidator :sertifikasi="$sertifikasi ?? null" />
             </div>
 
             {{-- TOMBOL AKSI --}}
