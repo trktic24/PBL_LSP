@@ -38,7 +38,7 @@ class SkemaFactory extends Factory
         // -----------------------------
 
         return [
-            'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' .
+            'nomor_skema' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' .
                             $this->faker->numberBetween(100, 999) . '.01',
 
             'nama_skema' => 'Skema Sertifikasi ' . $this->faker->randomElement([

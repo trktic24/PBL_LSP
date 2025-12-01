@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\LoginController as AdminLoginController;
 
 // ======================================================
 // --- RUTE GUEST (YANG BELUM LOGIN) ---
@@ -43,6 +44,14 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    // Admin Login Routes
+    Route::prefix('admin')->group(function () {
+        Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('login_admin');
+        Route::post('login', [AdminLoginController::class, 'login'])->name('login_admin.post');
+        Route::get('forgot-password', [AdminLoginController::class, 'showForgotPassword'])->name('forgot_pass');
+        Route::post('forgot-password', [AdminLoginController::class, 'sendResetLink'])->name('forgot_pass.send');
+    });
 });
 
 // --- RUTE GOOGLE AUTH ---

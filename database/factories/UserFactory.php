@@ -24,7 +24,6 @@ class UserFactory extends Factory
             // Ini ASUMSI tabel roles-nya udah keisi dulu
             'role_id' => Role::inRandomOrder()->first()->id_role,
             'email' => $this->faker->unique()->safeEmail(),
-            'username' => fake()->unique()->userName(), // DITAMBAHKAN
             'email_verified_at' => now(),
 
             // Password default-nya adalah 'password'
@@ -32,7 +31,6 @@ class UserFactory extends Factory
 
             'google_id' => null,
             'remember_token' => Str::random(10),
-            'role_id' => 3, // Default role 'asesi'
         ];
     }
 

@@ -60,8 +60,7 @@ class UserSeeder extends Seeder
             ]);
         }
         User::create([
-            'role_id' => 1,  // Ini akan berhasil karena RoleSeeder berjalan duluan
-            'username' => 'admin',
+            'role_id' => 1, 
             'email' => 'admin@polines.ac.id',
             'password' => Hash::make('1234') // bcrypt() juga bisa, tapi Hash lebih modern
         ]);

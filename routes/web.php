@@ -6,23 +6,7 @@ use App\Http\Controllers\TukController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\Api\V1\CountryController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\SkemaController;
-use App\Http\Controllers\AsesorController; 
-use App\Http\Controllers\AsesiController; 
-use App\Http\Controllers\TukAdminController;
-use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\DaftarHadirController;
-use App\Http\Controllers\DetailSkemaController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AsesiProfileController;
-use App\Models\Skema;
-use App\Models\Asesor;
-use App\Models\Tuk;
-use App\Models\Schedule;
-use App\Models\Asesi;
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Route resmi untuk detail skema
@@ -93,7 +77,6 @@ Route::get('/keep-alive', function () {
 });
 Route::get('/api/search-countries', [CountryController::class, 'search'])
     ->name('api.countries.search');
-
 /*
 |--------------------------------------------------------------------------
 | Auth Routes
