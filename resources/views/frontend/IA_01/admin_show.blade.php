@@ -153,19 +153,18 @@
             <div>
                 <p class="font-semibold text-gray-700 mb-2">Rekomendasi Asesor:</p>
                 @php
-                    // Cek apakah ada BK di seluruh responses
-                    $adaBK = $responses->contains('pencapaian_ia01', 0);
-                    $rekomendasi = $adaBK ? 'Belum Kompeten' : 'Kompeten';
-                    $color = $adaBK ? 'text-red-600' : 'text-green-600';
+                    $rekomendasi = $sertifikasi->rekomendasi_ia01 ?? '-';
+                    $color = $rekomendasi === 'kompeten' ? 'text-green-600' : ($rekomendasi === 'belum_kompeten' ? 'text-red-600' : 'text-gray-600');
+                    $rekomendasiText = $rekomendasi === 'kompeten' ? 'Kompeten' : ($rekomendasi === 'belum_kompeten' ? 'Belum Kompeten' : '-');
                 @endphp
                 <div class="text-2xl font-bold {{ $color }} mb-4">
-                    {{ $rekomendasi }}
+                    {{ $rekomendasiText }}
                 </div>
 
                 <p class="font-semibold text-gray-700 mb-2">Umpan Balik:</p>
                 <div class="p-4 bg-gray-50 rounded border border-gray-200 italic text-gray-600 min-h-[80px]">
                     {{-- Umpan balik biasanya di tabel lain (DataSertifikasi), disini kita mock dulu atau kosong --}}
-                    Belum ada umpan balik yang tersimpan di tabel Respon. (Perlu join ke tabel sertifikasi untuk data ini).
+                    {{ $sertifikasi->feedback_ia01 ?? '-' }}
                 </div>
             </div>
 
