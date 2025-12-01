@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Models\User;  
 use App\Models\Skema; 
 use Illuminate\Support\Facades\Storage; // Pastikan Storage di-import
@@ -12,58 +13,64 @@ use Illuminate\Support\Facades\Storage; // Pastikan Storage di-import
 class Asesor extends Model
 {
     use HasFactory;
-
     protected $table = 'asesor';
-
-    // Primary key
     protected $primaryKey = 'id_asesor';
+    protected $guarded = ['id_asesor'];
 
-    // Kolom yang boleh diisi (sesuaikan dengan migration & form step 2 & 3 asesor)
-    protected $fillable = [
-        'id_user',
-        'id_skema',
-        'nomor_regis', // Mapping dari 'no_registrasi_asesor'
-        'nama_lengkap',
-        'nik',
-        'tempat_lahir',
-        'tanggal_lahir', // Simpan YYYY-MM-DD
-        'jenis_kelamin', // Simpan 0/1
-        'kebangsaan',
-        'alamat_rumah',
-        'kode_pos', // <-- Ditambahkan
-        'kabupaten_kota', // <-- Ditambahkan (menggantikan tempat_tinggal)
-        'provinsi',
-        'nomor_hp',
-        'NPWP',
-        'nama_bank',
-        'norek', // Mapping dari 'nomor_rekening'
-        'pekerjaan', // Mapping dari 'pekerjaan_asesor'
-        // Path file (nama samain sama migration)
-        'ktp',
-        'pas_foto',
-        'NPWP_foto',
-        'rekening_foto',
-        'CV',
-        'ijazah',
-        'sertifikat_asesor',
-        'sertifikasi_kompetensi',
-        'tanda_tangan'
-    ];
-
-    // Casting
-    protected $casts = [
-        'tanggal_lahir' => 'date',
-    ];
-
-    // Relasi: Satu Asesor dimiliki oleh satu User
-    public function user(): BelongsTo
+    public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user'); // FK, Owner Key
+        return $this->belongsTo(User::class, 'user_id', 'id_user');
     }
 
-    // Relasi: Satu Asesor punya satu Skema
-    public function skema(): BelongsTo
+    // HAPUS atau GANTI FUNGSI INI:
+    // public function skema()
+    // {
+    //     return $this->belongsTo(Skema::class, 'skema_id');
+    // }
+
+    // GANTI DENGAN FUNGSI INI:
+    /**
+     * Skema yang dimiliki/diampu oleh Asesor ini.
+     */
+    public function skema()
     {
-        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema'); // FK, Owner Key
+        return $this->belongsToMany(
+            Skema::class,           // Model tujuan
+            'transaksi_asesor_skema', // Nama tabel pivot
+            'id_asesor',            // Foreign key di pivot untuk model ini
+            'id_skema'              // Foreign key di pivot untuk model tujuan
+        );
+    }
+
+    public function skemas()
+    {
+        return $this->hasMany(Skema::class, 'id_skema');
+    }
+
+    public function jadwals()
+    {
+    return $this->hasMany(Jadwal::class, 'id_asesor', 'id_asesor');
+    }
+
+
+    /**
+     * Accessor untuk mendapatkan URL Foto Profil yang aman.
+     * Cara panggil di blade: $asesor->url_foto
+     */
+    public function getUrlFotoAttribute()
+    {
+        // 1. Bersihkan path dulu (buang 'public/' jika ada)
+        $pathDiDatabase = $this->pas_foto;
+        $cleanPath = str_replace('public/', '', $pathDiDatabase);
+
+        // 2. LOGIKA BARU:
+        // Cek jika database kosong ATAU file fisiknya TIDAK ADA di storage
+        if (empty($pathDiDatabase) || !Storage::disk('public')->exists($cleanPath)) {
+            // Jika kosong atau file hilang, pakai default
+            return asset('images/profil_asesor.jpeg');
+        }
+
+        // 3. Jika file benar-benar ada, kembalikan URL aslinya
+        return asset('storage/' . $cleanPath);
     }
 }

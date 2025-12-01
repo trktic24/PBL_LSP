@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage; // <<< IMPORT STORAGE
 use App\Models\Skema;
@@ -31,6 +30,11 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             
             RoleSeeder::class,
+            JenisTukSeeder::class,
+            MasterTukSeeder::class,  // <-- PINDAHKAN KE ATAS
+                // SkemaSeeder::class,       // <-- TAMBAHKAN INI (jika ada)
+
+                // 2. Data User & Profil (Mungkin RoleSeeder harus dijalankan dulu)
             UserSeeder::class,
             CountrySeeder::class,
             JenisTukSeeder::class,
@@ -38,6 +42,10 @@ class DatabaseSeeder extends Seeder
             SkemaSeeder::class, // SkemaSeeder akan memanggil SkemaFactory yang membuat gambar
             AsesiSeeder::class,
             AsesorSeeder::class,
+
+                // 3. Data pendukung lainnya
+            JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
+            DataSertifikasiAsesiSeeder::class,
             TujuanAssesmenMapa01::class,
             MasterPoinSiapaAsesmenSeeder::class,
             PoinHubunganStandarSeeder::class,

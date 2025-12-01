@@ -73,14 +73,6 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     | PENJELASAN UNTUK KELOMPOK LAIN (ADMIN, ASESOR, ASESI)
     |--------------------------------------------------------------------------
-    |
-    | Di bawah ini adalah grup route untuk dashboard kalian.
-    | 1. 'prefix' -> Bikin URL kalian otomatis ada awalan (misal /admin/...)
-    | 2. 'name'   -> Bikin nama route kalian otomatis ada awalan (misal admin.dashboard)
-    | 3. 'role'   -> Ini middleware "Satpam" yang udah gw buatin.
-    |
-    | Kalian tinggal isi aja grup di bawah ini pake controller dan route kalian.
-    |
     */
 
     // // 1. HANYA Superadmin
@@ -239,54 +231,66 @@ Route::middleware('auth')->group(function () {
     // Ini "Polisi Lalu Lintas" yang ngarahin user ke dashboard-nya masing2
     // setelah mereka login.
     Route::get('/dashboard', function (Request $request) {
+    // --- RUTE DASHBOARD / HOME INTERAL ---
+    // Ini "Polisi Lalu Lintas" yang mengarahkan user setelah login.
+    //
+    Route::get('/home', function (Request $request) {
         $user = Auth::user();
         $roleName = $user->role->nama_role ?? null;
 
+        // 1. JIKA ASESI
         if ($roleName === 'asesi') {
-            return app(AsesiDashboardController::class)->index($request);// Arahin ke route Asesi
-        }elseif ($roleName === 'asesor') {
+            return app(AsesiDashboardController::class)->index($request);
+        }
 
-            // Logika blokir asesor 'pending'/'rejected' tetep di sini
-            $status = $user->asesor?->status_verifikasi;
+        // 2. JIKA ASESOR
+        elseif ($roleName === 'asesor') {
 
-            if ($status === 'pending') {
+            // --- CEK STATUS VERIFIKASI ---
+            // Ambil kolom 'is_verified' (0 = Belum, 1 = Sudah)
+            $isVerified = $user->asesor?->is_verified;
+
+            // Jika data asesor belum ada ATAU belum diverifikasi (0)
+            if (!$user->asesor || $isVerified == 0) {
+
+                // TENDANG KELUAR (LOGOUT PAKSA)
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
+
                 return redirect()->route('login')
-                    ->with('error', 'Akun Anda sedang menunggu verifikasi Admin.');
-            }
-            if ($status === 'rejected') {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                return redirect()->route('login')
-                    ->with('error', 'Pendaftaran Anda ditolak. Silakan hubungi Admin.');
+                    ->with('error', 'Akun Anda belum diverifikasi oleh Admin. Silakan tunggu persetujuan.');
             }
 
-            // ✅ UDAH DIGANTI PAKE CONTROLLER LU (kalo lolos/approved)
+            // Jika lolos (is_verified == 1), masuk ke Dashboard Asesor
             return app(AsesorDashboardController::class)->index($request);
+        }
 
-        } elseif ($roleName === 'admin' || $roleName === 'superadmin') {
-            // ✅ UDAH DIGANTI PAKE CONTROLLER LU
+        // 3. JIKA ADMIN
+        elseif ($roleName === 'admin' || $roleName === 'superadmin') {
             return app(AdminDashboardController::class)->index($request);
         }
 
-        // Kalo role-nya aneh, tendang
+        // 4. JIKA ROLE TIDAK DIKENALI
         Auth::logout();
         return redirect('/login')->with('error', 'Role Anda tidak terdefinisi.');
 
-    })->name('dashboard');
+    })->name('home.index');
 
 });
 
-
+// Halaman tunggu verifikasi (Opsional, jika Anda ingin redirect ke sini alih-alih logout)
+// Saya sesuaikan juga kolomnya jadi 'is_verified' untuk jaga-jaga.
 Route::get('/tunggu-verifikasi', function () {
     $user = Auth::user();
 
     if (!$user) return redirect()->route('login');
-    if ($user->role->nama_role !== 'asesor') return redirect()->route('dashboard');
-    if ($user->asesor?->status_verifikasi !== 'pending') return redirect()->route('dashboard');
+    if ($user->role->nama_role !== 'asesor') return redirect()->route('home.index');
+
+    // Cek is_verified
+    if ($user->asesor?->is_verified == 1) {
+        return redirect()->route('home.index');
+    }
 
     return view('auth.verification-asesor');
 })->name('auth.wait');

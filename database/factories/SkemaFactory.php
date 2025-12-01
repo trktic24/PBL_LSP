@@ -2,60 +2,62 @@
 
 namespace Database\Factories;
 
-use App\Models\Skema;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Category;
+// use App\Models\Skema; // Tidak perlu jika $model di-hardcode di bawah
+use App\Models\Categorie;
+use App\Models\KelompokPekerjaan; // <-- DITAMBAHKAN
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Skema>
+ */
 class SkemaFactory extends Factory
 {
     /**
-     * Properti statis untuk melacak urutan angka (counter)
-     * agar gambar dihasilkan secara berurutan, bukan acak.
+     * Tentukan model yang terhubung dengan factory ini.
+     *
+     * @var string
      */
-    protected static $sequence = 0;
+    protected $model = \App\Models\Skema::class;
 
-    protected $model = Skema::class;
-
+    /**
+     * Definisikan status default model.
+     *
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
-        $categoryIds = Category::pluck('id')->all();
-        if (empty($categoryIds)) {
-            $categoryIds = [1];
-        }
-
-        // --- LOGIKA URUTAN GAMBAR ---
-        // 1. Tambah urutan statis (1, 2, 3, ...)
-        self::$sequence++;
-        
-        // 2. Hitung nomor gambar yang berulang dari 1 hingga 15 (siklus)
-        // Jika sequence = 16, maka (16 - 1) % 15 = 0. Lalu + 1 = 1 (kembali ke skema1)
-        $gambarNumber = ((self::$sequence - 1) % 15) + 1;
-        
-        $gambar = 'skema/skema' . $this->faker->numberBetween(1, 10) . '.jpg'; // Baris ini tidak terpakai, bisa dihapus atau diabaikan.
-        
-        // Baris yang Anda minta: menggunakan $gambarNumber yang berurutan
-        $gambarFinal = 'skema' . $gambarNumber . '.jpg';
-        // -----------------------------
-
         return [
-            'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' .
-                            $this->faker->numberBetween(100, 999) . '.01',
+            // Sesuai dengan migration 'categorie_id'
+            'categorie_id' => Categorie::factory(),
+            
+            // Sesuai dengan migration 'id_kelompok_pekerjaan' (BARU)
+            //'id_kelompok_pekerjaan' => \App\Models\KelompokPekerjaan::factory(),
 
-            'nama_skema' => 'Skema Sertifikasi ' . $this->faker->randomElement([
-                'Network Engineer', 'Software Developer', 'Database Administrator',
-                'UI/UX Designer', 'Cybersecurity Analyst', 'Cloud Specialist',
-                'AI Engineer', 'Data Scientist', 'IT Support Technician',
-                'Hardware Engineer'
+            // Diubah dari 'kode_unit' menjadi 'nomor_skema' (DIUBAH)
+            // Ditambahkan unique() karena ada constraint ->unique() di migration
+            'nomor_skema' => fake()->unique()->numerify('J.620100.###.##'),
+
+            // Nama skema (tetap sama)
+            'nama_skema' => fake()->randomElement([
+                'Junior Web Developer',
+                'Ahli Digital Marketing',
+                'Operator Komputer Madya',
+                'Desainer Grafis Muda',
+                'Network Administrator',
+                'Data Analyst',
             ]),
 
-            'deskripsi_skema' => $this->faker->paragraph(2),
-            'SKKNI' => null,
+            // Deskripsi skema (tetap sama)
+            'deskripsi_skema' => fake()->paragraph(3, true),
 
-            // INI YANG PENTING
-            'gambar' => $gambarFinal, // Menggunakan variabel berurutan $gambarFinal
+            // Kolom 'harga' (BARU)
+            'harga' => fake()->numberBetween(500000, 3000000),
 
-            'harga' => $this->faker->numberBetween(100000, 1000000),
-            'category_id' => $this->faker->randomElement($categoryIds),
+            // SKKNI (tetap sama)
+            'SKKNI' => '/storage/files/dummy_skkni.pdf',
+
+            // Gambar (tetap sama)
+            'gambar' => fake()->imageUrl(640, 480, 'technology', true),
         ];
     }
 }

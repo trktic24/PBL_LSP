@@ -41,6 +41,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('respon_apl2_ia01');
+        Schema::dropIfExists('respon_apl02_ia01');
     }
 };

@@ -40,22 +40,25 @@ return new class extends Migration
             $table->string('nomor_hp', 14);
             $table->string('NPWP', 25);
 
-        $table->string('nama_bank', 100)->nullable();
-        $table->string('norek', 20)->nullable();
+            // Informasi Bank
+            $table->string('nama_bank', 100);
+            $table->string('norek', 20);
 
-        $table->string('ktp')->nullable();
-        $table->string('pas_foto')->nullable();
-        $table->string('NPWP_foto')->nullable();
-        $table->string('rekening_foto')->nullable();
-        $table->string('CV')->nullable();
-        $table->string('ijazah')->nullable();
-        $table->string('sertifikat_asesor')->nullable();
-        $table->string('sertifikasi_kompetensi')->nullable();
-        $table->string('tanda_tangan')->nullable();
-        $table->enum('status_verifikasi', ['pending', 'approved', 'rejected'])->default('pending');
+            // Atribut untuk path file
+            $table->string('ktp')->comment('Path ke file KTP');
+            $table->string('pas_foto')->comment('Path ke file pas foto');
+            $table->string('NPWP_foto')->comment('Path ke file foto NPWP');
+            $table->string('rekening_foto')->comment('Path ke file foto rekening');
+            $table->string('CV')->comment('Path ke file CV');
+            $table->string('ijazah')->comment('Path ke file ijazah');
+            $table->string('sertifikat_asesor')->comment('Path ke file sertifikat');
+            $table->string('sertifikasi_kompetensi')->comment('Path ke file sertifikasi');
+            $table->string('tanda_tangan')->comment('Path ke file tanda tangan');
+            $table->boolean('is_verified')->default(false)->comment('Status verifikasi asesor');
 
-        $table->timestamps();
-    });
+            // Standar timestamp seperti di tabel users
+            $table->timestamps();
+        });
     }
 
     /**

@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash; // Gunakan Hash Facade
+use App\Models\User;
+use App\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -15,41 +16,58 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // -- LANGKAH 1: Ambil Role yang udah dibuat sama RoleSeeder --
-
-        // Pastikan nama role-nya SAMA PERSIS kayak di RoleSeeder.php
-        // (admin, asesi, asesor, superadmin)
+        // Ambil ID dari role
         $adminRole = Role::where('nama_role', 'admin')->first();
         $asesorRole = Role::where('nama_role', 'asesor')->first();
         $asesiRole = Role::where('nama_role', 'asesi')->first();
-        $superadminRole = Role::where('nama_role', 'superadmin')->first();
 
-
-        // -- LANGKAH 2: Buat Data User (Admin, Asesor, Asesi) --
-
-        // Buat 1 User Super Admin (spesifik)
-        if ($superadminRole) {
-            User::factory()->create([
-                'email' => 'superadmin@gmail.com',
-                'password' => Hash::make('password'),
-                'role_id' => $superadminRole->id_role,
-            ]);
-        }
-
-        // Buat 1 User Admin (spesifik)
+        // Buat Admin
         if ($adminRole) {
-            User::factory()->create([
-                'email' => 'admin@gmail.com',
-                'password' => Hash::make('password'),
+            User::updateOrCreate([
                 'role_id' => $adminRole->id_role,
+                'email' => 'admin@example.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+                'google_id' => null,
+                'remember_token' => Str::random(10),
+
             ]);
         }
 
-        // Buat 5 User Asesor (pake factory)
+        // Buat Contoh Asesor
         if ($asesorRole) {
             // Kita override role_id-nya jadi 'Asesor'
-            User::factory()->count(50)->create([
+            User::factory()->count(10)->create([
                 'role_id' => $asesorRole->id_role,
+            ]);
+            User::updateOrCreate(
+                ['email' => 'asesor@example.com'],
+                [
+                    'role_id' => $asesorRole->id_role,
+                    'email' => 'asesor@example.com',
+                    'email_verified_at' => now(),
+                    'password' => Hash::make('password'),
+                    'google_id' => null,
+                    'remember_token' => Str::random(10),
+                ]);
+        }
+
+        // Buat Contoh Asesi
+        if ($asesiRole) {
+            // Kita override role_id-nya jadi 'Asesi'
+            User::factory()->count(200)->create([
+                'role_id' => $asesiRole->id_role,
+            ]);            
+            User::updateOrCreate(
+            ['email' => 'asesi@example.com'],
+            [
+                'role_id' => $asesiRole->id_role,
+                'email' => 'asesi@example.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+                'google_id' => null,
+                'remember_token' => Str::random(10),
+
             ]);
         }
 
@@ -61,7 +79,6 @@ class UserSeeder extends Seeder
         }
         User::create([
             'role_id' => 1,  // Ini akan berhasil karena RoleSeeder berjalan duluan
-            'username' => 'admin',
             'email' => 'admin@polines.ac.id',
             'password' => Hash::make('1234') // bcrypt() juga bisa, tapi Hash lebih modern
         ]);
