@@ -148,14 +148,15 @@ Route::post('/jawab', [SoalController::class, 'jawabStore'])->name('jawab.store'
 
 //IA 01
 
-Route::get('/ia01/{skema_id}/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
-Route::post('/ia01/{skema_id}/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
+Route::get('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
+Route::post('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
 
-Route::get('/ia01/{skema_id}/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
-Route::post('/ia01/{skema_id}/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
+Route::get('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
+Route::post('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
 
-Route::get('/ia01/{skema_id}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
-Route::post('/ia01/{skema_id}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+Route::get('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
+Route::post('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+Route::get('/ia01/{id_sertifikasi}/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
 
 Route::get('/ia01/success', function() {
     return view('frontend.IA_01.success');
