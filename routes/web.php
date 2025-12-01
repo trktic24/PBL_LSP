@@ -101,7 +101,24 @@ Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFO
 Route::get('/FR_IA_07', [IA07Controller::class, 'index'])->name('ia07.asesor');
 Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
 
-Route::get('/IA09', [IA09Controller::class, 'showWawancara'])->name('ia09.show');
+Route::prefix('IA09')->group(function () {
+    
+    // Rute Asesor (Tampilan Form)
+    // Akses di Browser: http://127.0.0.1:8000/IA09/asesor
+    Route::get('/asesor', [IA09Controller::class, 'showWawancaraAsesor'])
+         ->name('ia09.asesor');
+    
+    // Rute Penyimpanan Data (POST)
+    // Digunakan oleh Form HTML untuk mengirim data wawancara
+    // Aksi ini akan dipanggil dari Form di rute 'ia09.asesor'
+    Route::post('/store', [IA09Controller::class, 'storeWawancara'])
+         ->name('ia09.store');
+    
+    // Rute Admin (Tampilan Read-only)
+    // Akses di Browser: http://127.0.0.1:8000/IA09/admin
+    Route::get('/admin', [IA09Controller::class, 'showWawancaraAdmin'])
+         ->name('ia09.admin');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
