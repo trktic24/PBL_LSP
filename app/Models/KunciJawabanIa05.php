@@ -16,8 +16,8 @@ class KunciJawabanIa05 extends Model
     // ================= RELASI =================
 
     /**
-     * Relasi balik ke Soal.
-     * Kunci jawaban ini MILIK satu Soal tertentu.
+     * Relasi balik ke Master Soal (One-to-One Inverse).
+     * Kunci jawaban ini MILIK satu soal tertentu.
      */
     public function soal()
     {

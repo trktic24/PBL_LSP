@@ -287,22 +287,28 @@
     <script>
         const nextUrl = "{{ route('show.jadwal_tuk', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
         // --- Custom Alert Function (Style Temanmu, Logic Kita) ---
-        function showCustomAlert(title, message, isError = false) {
+        function showCustomAlert(title, message, isError = false, buttonText = 'Kembali') {
             const modal = document.getElementById('message-modal');
             const modalContent = document.getElementById('modal-content');
             const modalTitle = document.getElementById('modal-title');
             const modalBody = document.getElementById('modal-body');
+            const modalCloseButton = document.getElementById('modal-close-button');
             
 
             modalTitle.textContent = title;
             modalBody.textContent = message;
+            modalCloseButton.textContent = buttonText;
 
             if (isError) {
                 modalTitle.classList.remove('text-gray-800');
                 modalTitle.classList.add('text-red-600');
+                modalCloseButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                modalCloseButton.classList.add('bg-gray-600', 'hover:bg-gray-700');
             } else {
                 modalTitle.classList.remove('text-red-600');
                 modalTitle.classList.add('text-gray-800');
+                modalCloseButton.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                modalCloseButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
             }
             
             modal.classList.remove('hidden');
@@ -435,11 +441,15 @@
                     }
 
                     if (response.ok && result.success) {
-                        showCustomAlert('Berhasil!', result.message || 'Data APL-02 berhasil disimpan.', false);
+                        showCustomAlert('Berhasil!', result.message || 'Data APL-02 berhasil disimpan.', false, 'Selanjutnya');
                         // Redirect setelah beberapa detik (opsional)
-                         setTimeout(() => {
-                             window.location.href = nextUrl; 
-                         }, 2000);
+                        const modalCloseButton = document.getElementById('modal-close-button');
+                        // Hapus listener lama biar gak numpuk (penting!)
+                        const newButton = modalCloseButton.cloneNode(true);
+                        modalCloseButton.parentNode.replaceChild(newButton, modalCloseButton);
+                        setTimeout(() => {
+                            window.location.href = nextUrl; 
+                        }, 2000);
                     } else {
                         throw new Error(result.message || 'Terjadi kesalahan saat menyimpan.');
                     }

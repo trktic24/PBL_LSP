@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\KunciJawabanIa05;
-use App\Models\SoalIa05;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -11,87 +9,94 @@ class SoalDanKunciSeeder extends Seeder
 {
     public function run(): void
     {
-        // DATA SOAL UMUM (Bukan Lorem Ipsum)
-        // Kamu bisa menambah atau mengubah daftar ini sesuka hati.
-        $dataSoalUmum = [
+        // DATA SOAL UMUM & KUNCI JAWABAN (Bank Soal IA-05)
+        // Nama key disesuaikan dengan nama kolom di migrasi terbaru.
+        $bankSoal = [
             [
-                'q' => 'Apa kepanjangan dari HTML dalam dunia pemrograman web?',
-                'a' => 'Hyperlinks and Text Markup Language',
-                'b' => 'Hyper Text Markup Language',
-                'c' => 'Home Tool Markup Language',
-                'd' => 'Hyper Tool Multi Language',
-                'key' => 'b',
+                'pertanyaan_ia05' => 'Apa kepanjangan dari HTML dalam dunia pemrograman web?',
+                'opsi_a_ia05' => 'Hyperlinks and Text Markup Language',
+                'opsi_b_ia05' => 'Hyper Text Markup Language',
+                'opsi_c_ia05' => 'Home Tool Markup Language',
+                'opsi_d_ia05' => 'Hyper Tool Multi Language',
+                'jawaban_benar_ia05' => 'b',
+                'penjelasan_ia05' => 'HTML adalah bahasa markah standar untuk dokumen yang dirancang untuk ditampilkan di peramban internet.',
             ],
             [
-                'q' => 'Ibu kota negara Jepang adalah...',
-                'a' => 'Seoul',
-                'b' => 'Beijing',
-                'c' => 'Tokyo',
-                'd' => 'Bangkok',
-                'key' => 'c',
+                'pertanyaan_ia05' => 'Ibu kota negara Jepang adalah...',
+                'opsi_a_ia05' => 'Seoul',
+                'opsi_b_ia05' => 'Beijing',
+                'opsi_c_ia05' => 'Tokyo',
+                'opsi_d_ia05' => 'Bangkok',
+                'jawaban_benar_ia05' => 'c',
+                'penjelasan_ia05' => 'Tokyo adalah ibu kota Jepang dan daerah metropolitan terpadat di dunia.',
             ],
             [
-                'q' => 'Planet terbesar dalam tata surya kita adalah...',
-                'a' => 'Bumi',
-                'b' => 'Mars',
-                'c' => 'Saturnus',
-                'd' => 'Jupiter',
-                'key' => 'd',
-                
+                'pertanyaan_ia05' => 'Planet terbesar dalam tata surya kita adalah...',
+                'opsi_a_ia05' => 'Bumi',
+                'opsi_b_ia05' => 'Mars',
+                'opsi_c_ia05' => 'Saturnus',
+                'opsi_d_ia05' => 'Jupiter',
+                'jawaban_benar_ia05' => 'd',
+                'penjelasan_ia05' => 'Jupiter adalah planet kelima dari Matahari dan merupakan planet terbesar di Tata Surya.',
             ],
             [
-                'q' => 'Di bawah ini yang BUKAN merupakan bahasa pemrograman adalah...',
-                'a' => 'Python',
-                'b' => 'Java',
-                'c' => 'Microsoft Word',
-                'd' => 'PHP',
-                'key' => 'c',
-                
+                'pertanyaan_ia05' => 'Di bawah ini yang BUKAN merupakan bahasa pemrograman adalah...',
+                'opsi_a_ia05' => 'Python',
+                'opsi_b_ia05' => 'Java',
+                'opsi_c_ia05' => 'Microsoft Word',
+                'opsi_d_ia05' => 'PHP',
+                'jawaban_benar_ia05' => 'c',
+                'penjelasan_ia05' => 'Microsoft Word adalah perangkat lunak pengolah kata (aplikasi), bukan bahasa pemrograman.',
             ],
             [
-                'q' => 'Siapakah penemu bola lampu pijar yang paling terkenal?',
-                'a' => 'Nikola Tesla',
-                'b' => 'Thomas Alva Edison',
-                'c' => 'Alexander Graham Bell',
-                'd' => 'Albert Einstein',
-                'key' => 'b',
-                
+                'pertanyaan_ia05' => 'Siapakah penemu bola lampu pijar yang paling terkenal?',
+                'opsi_a_ia05' => 'Nikola Tesla',
+                'opsi_b_ia05' => 'Thomas Alva Edison',
+                'opsi_c_ia05' => 'Alexander Graham Bell',
+                'opsi_d_ia05' => 'Albert Einstein',
+                'jawaban_benar_ia05' => 'b',
+                'penjelasan_ia05' => 'Thomas Alva Edison sering dianggap sebagai penemu bola lampu pijar praktis pertama yang sukses secara komersial.',
             ],
             [
-                'q' => 'Framework PHP yang sedang kita gunakan saat ini adalah...',
-                'a' => 'CodeIgniter',
-                'b' => 'Symfony',
-                'c' => 'Yii',
-                'd' => 'Laravel',
-                'key' => 'd',
+                'pertanyaan_ia05' => 'Framework PHP yang sedang kita gunakan saat ini adalah...',
+                'opsi_a_ia05' => 'CodeIgniter',
+                'opsi_b_ia05' => 'Symfony',
+                'opsi_c_ia05' => 'Yii',
+                'opsi_d_ia05' => 'Laravel',
+                'jawaban_benar_ia05' => 'd',
+                'penjelasan_ia05' => 'Kita sedang membangun aplikasi ini menggunakan framework Laravel.',
             ],
-                
         ];
 
         // MULAI PROSES SEEDING
-        // Kita gunakan transaksi agar jika ada error di tengah, tidak ada data setengah-setengah yang masuk.
-        DB::transaction(function () use ($dataSoalUmum) {
-            foreach ($dataSoalUmum as $data) {
-                
-                // 1. Buat SOAL dulu menggunakan Factory, tapi timpa datanya dengan data riil kita.
-                // Factory akan otomatis mencarikan id_skema.
-                $soalBaru = SoalIa05::factory()->create([
-                    'soal_ia05' => $data['q'],
-                    'opsi_jawaban_a' => $data['a'],
-                    'opsi_jawaban_b' => $data['b'],
-                    'opsi_jawaban_c' => $data['c'],
-                    'opsi_jawaban_d' => $data['d'],
+        $this->command->info('Memulai proses seeding Bank Soal IA-05...');
+        $now = now();
+
+        DB::transaction(function () use ($bankSoal, $now) {
+            foreach ($bankSoal as $data) {
+                // 1. Insert SOAL MASTER dan dapatkan ID-nya
+                // Kita gunakan insertGetId agar langsung dapat ID soal yang baru dibuat.
+                $soalId = DB::table('soal_ia05')->insertGetId([
+                    'pertanyaan_ia05' => $data['pertanyaan_ia05'],
+                    'opsi_a_ia05' => $data['opsi_a_ia05'],
+                    'opsi_b_ia05' => $data['opsi_b_ia05'],
+                    'opsi_c_ia05' => $data['opsi_c_ia05'],
+                    'opsi_d_ia05' => $data['opsi_d_ia05'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ]);
 
-                // 2. Langsung buat KUNCI JAWABAN yang terhubung ke soal yang baru dibuat.
-                // Kita hubungkan pakai 'id_soal_ia05' agar pasangannya tidak tertukar.
-                KunciJawabanIa05::factory()->create([
-                    'id_soal_ia05' => $soalBaru->id_soal_ia05, // KUNCI PENTING DI SINI
-                    'jawaban_benar' => $data['key'],
+                // 2. Insert KUNCI JAWABAN MASTER yang terhubung ke soal tadi
+                DB::table('kunci_jawaban_ia05')->insert([
+                    'id_soal_ia05' => $soalId, // HUBUNGKAN DI SINI
+                    'jawaban_benar_ia05' => $data['jawaban_benar_ia05'],
+                    'penjelasan_ia05' => $data['penjelasan_ia05'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ]);
             }
         });
 
-        $this->command->info('Berhasil memasukkan ' . count($dataSoalUmum) . ' pasang soal umum dan kunci jawabannya!');
+        $this->command->info('Berhasil memasukkan ' . count($bankSoal) . ' pasang soal dan kunci jawaban IA-05!');
     }
 }

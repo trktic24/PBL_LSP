@@ -20,7 +20,7 @@ class KunciIa06TransaksiSeeder extends Seeder
         // GANTI ANGKA '1' DI BAWAH INI dengan ID Data Sertifikasi Asesi
         // yang sedang kamu buka di browser dan mengalami loading terus.
         // Contoh: Jika URL-nya /asesmen/ia06/5, maka isi angka 5.
-        $targetIdSertifikasi = 82; 
+        $targetIdSertifikasi = 81; 
 
         // Berapa soal yang mau diberikan ke asesi ini?
         $jumlahSoal = 5;
@@ -59,7 +59,7 @@ class KunciIa06TransaksiSeeder extends Seeder
                 'id_data_sertifikasi_asesi' => $targetIdSertifikasi,
                 
                 // Jawaban awal masih kosong (null)
-                'teks_jawaban_ia06' => "kosong", 
+                'teks_jawaban_ia06' => "", 
                 'created_at' => $now,
                 'updated_at' => $now,
             ];

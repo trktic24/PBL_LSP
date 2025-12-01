@@ -17,10 +17,8 @@ class LembarJawabIa05Seeder extends Seeder
         // KONFIGURASI SEEDER (SESUAIKAN DI SINI)
         // ================================================================
         
-        // 1. GANTI ID INI dengan ID Data Sertifikasi Asesi yang mau kamu tes di frontend.
-        // Lihat ID-nya di URL browser saat membuka halaman asesmen.
-        // Contoh: Jika URL-nya /asesmen/ia05/5, maka isi angka 5 di sini.
-        $targetIdSertifikasi = 82; 
+        // 1. GANTI ID INI dengan ID Data Sertifikasi Asesi yang mau kamu tes.
+        $targetIdSertifikasi = 81; 
         
         // 2. Berapa jumlah soal yang mau diberikan ke asesi ini?
         $jumlahSoal = 8;
@@ -30,13 +28,13 @@ class LembarJawabIa05Seeder extends Seeder
         $this->command->info("Memulai proses seeding Lembar Jawab IA-05...");
 
         // Cek dulu apakah data sertifikasi target ada
-        $targetExists = DB::table('data_sertifikasi_asesi')
+        // Pastikan nama tabel 'data_sertifikasi_asesi' sudah benar (kadang ada 's'-nya)
+        $targetExists = DB::table('data_sertifikasi_asesi') // atau 'data_sertifikasi_asesis'
                         ->where('id_data_sertifikasi_asesi', $targetIdSertifikasi)
                         ->exists();
 
         if (!$targetExists) {
             $this->command->error("Gagal! Data Sertifikasi dengan ID $targetIdSertifikasi tidak ditemukan.");
-            $this->command->warn("Pastikan ID yang kamu masukkan di \$targetIdSertifikasi benar.");
             return;
         }
 
@@ -45,7 +43,7 @@ class LembarJawabIa05Seeder extends Seeder
 
         if ($soalMaster->isEmpty()) {
             $this->command->error('Gagal! Tabel master "soal_ia05" masih kosong.');
-            $this->command->warn('Jalankan "SoalDanKunciSeeder" terlebih dahulu untuk mengisi master soal.');
+            $this->command->warn('Jalankan "SoalDanKunciSeeder" terlebih dahulu.');
             return;
         }
 
@@ -59,20 +57,21 @@ class LembarJawabIa05Seeder extends Seeder
         // 2. Loop soal-soal yang didapat dan siapkan data untuk tabel penghubung
         foreach ($soalMaster as $soal) {
             $dataToInsert[] = [
-                // HUBUNGKAN PESERTA DENGAN SOAL
+                // HUBUNGKAN PESERTA DENGAN SOAL (FK)
                 'id_data_sertifikasi_asesi' => $targetIdSertifikasi,
                 'id_soal_ia05' => $soal->id_soal_ia05,
                 
+                // [PERUBAHAN DI SINI: GUNAAN NAMA KOLOM BARU]
                 // Kolom lain dibiarkan default (null/belum dijawab)
-                'jawaban_asesi' => null,
-                'pencapaian' => null, 
+                'jawaban_asesi_ia05' => null, // Nama kolom baru
+                'pencapaian_ia05' => null,     // Nama kolom baru
+                
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
         }
 
-        // 3. Masukkan data ke tabel lembar_jawab_ia05 menggunakan Query Builder (lebih cepat)
-        // Pastikan nama tabelnya sesuai dengan migrasi kamu.
+        // 3. Masukkan data ke tabel lembar_jawab_ia05 menggunakan Query Builder
         DB::table('lembar_jawab_ia05')->insert($dataToInsert);
         
         $count = count($dataToInsert);

@@ -222,3 +222,7 @@ Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::cla
 
 Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])
     ->name('asesmen.ia06.view');
+
+Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'downloadInvoice'])
+    ->name('payment.invoice');
+

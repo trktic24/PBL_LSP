@@ -14,7 +14,6 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
 use App\Http\Controllers\asesmen\AsesmenEsaiController;
-use App\Http\Controllers\Apl02API\ApiPraasesmenController;
 use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
 use App\Http\Controllers\asesmen\AsesmenPilihanGandaController;
 use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganAPIController;

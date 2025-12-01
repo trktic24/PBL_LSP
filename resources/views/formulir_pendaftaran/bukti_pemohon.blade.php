@@ -41,6 +41,7 @@
             :code="$sertifikasi->jadwal->skema->kode_unit ?? $sertifikasi->jadwal->skema->nomor_skema ?? '-'"
             :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'"
             :image="$gambarSkema"
+            :sertifikasi="$sertifikasi"
             backUrl="{{ route('data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
         />
 

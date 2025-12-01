@@ -50,7 +50,10 @@
 
         {{-- Nama User (Opsional) --}}
         @if($name)
-            <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
+            <p class="text-[10px] text-gray-400 mt-3 uppercase tracking-wider font-bold">
+                Peserta
+            </p>
+            <p class="text-[12px] text-gray-600 mt-0 uppercase tracking-wider font-bold">
                 {{ $name }}
             </p>
         @endif

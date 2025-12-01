@@ -14,16 +14,17 @@ class LembarJawabIa05 extends Model
 
     /**
      * Relasi ke Peserta (Data Sertifikasi Asesi).
-     * Lembar jawab ini milik siapa?
+     * Lembar jawab ini MILIK siapa?
      */
     public function dataSertifikasiAsesi()
     {
+        // Pastikan nama model induk dan foreign key-nya benar
         return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     /**
-     * Relasi ke Soal yang sedang dijawab.
-     * Ini penting untuk mengambil teks soalnya nanti di Controller/View.
+     * Relasi ke Master Soal yang sedang dijawab.
+     * Ini penting untuk mengambil teks pertanyaan dan opsi jawaban.
      */
     public function soal()
     {

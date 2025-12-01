@@ -53,7 +53,7 @@
                     {{ $sertifikasi->jadwal->skema->nama_skema }}
                 </h2>
                 
-                <p class="text-gray-600 text-sm mt-2 font-mono bg-white/50 inline-block px-2 py-1 rounded-md">
+                <p class="text-gray-600 text-sm mt-2 font-mono inline-block px-2 py-1 rounded-md">
                     {{ $sertifikasi->jadwal->skema->kode_unit ?? $sertifikasi->jadwal->skema->nomor_skema ?? '-' }}
                 </p>
                 

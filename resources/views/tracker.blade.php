@@ -188,7 +188,12 @@
 
                                 @if ($level >= $LVL_LUNAS)
                                     <p class="{{ $statusClassSelesai }}">Lunas</p>
-                                    <button class="{{ $btnBlue }}">Unduh Invoice</button>
+                                    <a href="{{ route('payment.invoice', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        target="_blank"
+                                        class="{{ $btnBlue }} inline-flex items-center justify-center text-center">
+                                        {{-- ... icon ... --}}
+                                        Unduh Invoice
+                                    </a>
                                 @elseif ($level == $LVL_TUNGGU_BAYAR)
                                     <p class="{{ $statusClassTunggu }}">Menunggu Verifikasi</p>
                                 @elseif ($level == $LVL_DAFTAR_SELESAI)

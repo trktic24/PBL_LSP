@@ -11,29 +11,24 @@ return new class extends Migration
         Schema::create('lembar_jawab_ia05', function (Blueprint $table) {
             $table->id('id_lembar_jawab_ia05'); // PK
 
-            // Relasi ke Peserta (Data Sertifikasi)
-            // (Pastikan nama tabel dan PK sesuai dengan database kamu)
+            // [PENTING] Relasi ke Peserta (Data Sertifikasi)
+            // Ini yang menentukan soal ini milik siapa
             $table->foreignId('id_data_sertifikasi_asesi')
                   ->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
 
-            // Relasi ke Soal Master yang dijawab
+            // Relasi ke Soal Master yang harus dijawab
             $table->foreignId('id_soal_ia05')
                   ->constrained('soal_ia05', 'id_soal_ia05')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
 
-            // Jawaban yang dipilih peserta (a, b, c, atau d)
-            // Bisa null sebelum peserta menjawab
-            $table->enum('jawaban_asesi', ['a', 'b', 'c', 'd'])->nullable();
+            // Jawaban yang dipilih peserta
+            $table->enum('jawaban_asesi_ia05', ['a', 'b', 'c', 'd'])->nullable();
 
-            // [PENCAPAIAN - HASIL KOREKSI OTOMATIS]
-            // Kolom ini menggantikan 'status_koreksi'.
-            // Berisi 'ya' (jika jawaban benar) atau 'tidak' (jika jawaban salah).
-            // Dibuat nullable() karena saat soal baru disiapkan, belum ada hasilnya.
-            // Nanti Controller yang akan mengisi ini otomatis saat submit.
-            $table->enum('pencapaian', ['ya', 'tidak'])->nullable();
+            // 'ya' = Benar, 'tidak' = Salah. Nullable di awal.
+            $table->enum('pencapaian_ia05', ['ya', 'tidak'])->nullable();
             
             $table->timestamps();
         });
