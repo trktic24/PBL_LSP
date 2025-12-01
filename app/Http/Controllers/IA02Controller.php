@@ -35,10 +35,21 @@ class IA02Controller extends Controller
         // Role: yang boleh input adalah admin (1) & superadmin (4)
         $isAdmin = in_array(Auth::user()->role_id, [1, 4]);
 
+        // Fix: Ambil Unit Kompetensi via KelompokPekerjaan (karena relasi Skema->UnitKompetensi broken)
+        $daftarUnitKompetensi = collect();
+        if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema) {
+            foreach ($sertifikasi->jadwal->skema->kelompokPekerjaans as $kp) {
+                foreach ($kp->unitKompetensis as $uk) {
+                    $daftarUnitKompetensi->push($uk);
+                }
+            }
+        }
+
         return view('frontend.FR_IA_02', [
-            'sertifikasi' => $sertifikasi,
-            'ia02'        => $ia02,
-            'isAdmin'     => $isAdmin,
+            'sertifikasi'          => $sertifikasi,
+            'ia02'                 => $ia02,
+            'isAdmin'              => $isAdmin,
+            'daftarUnitKompetensi' => $daftarUnitKompetensi,
         ]);
     }
 

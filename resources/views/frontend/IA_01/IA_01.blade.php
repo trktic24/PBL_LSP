@@ -22,7 +22,7 @@
     @endif
 
     {{-- FIX CRITICAL: Action harus pakai $skema->id_skema, JANGAN id_kelompok_pekerjaan --}}
-    <form action="{{ route('ia01.storeStep', ['skema_id' => $skema->id_skema, 'urutan' => $unitKompetensi->urutan]) }}" method="POST">
+    <form action="{{ route('ia01.storeStep', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'urutan' => $unitKompetensi->urutan]) }}" method="POST">
         @csrf
 
         {{-- HEADER UNIT KOMPETENSI --}}
@@ -150,12 +150,12 @@
         {{-- FOOTER NAVIGASI --}}
         <div class="flex justify-between items-center mt-10 pb-10">
             @if ($unitKompetensi->urutan == 1)
-                <a href="{{ route('ia01.cover', ['skema_id' => $skema->id_skema]) }}"
+                <a href="{{ route('ia01.cover', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                    class="flex items-center px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full shadow-sm transition">
                     ← Data Diri
                 </a>
             @else
-                <a href="{{ route('ia01.showStep', ['skema_id' => $skema->id_skema, 'urutan' => $unitKompetensi->urutan - 1]) }}"
+                <a href="{{ route('ia01.showStep', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'urutan' => $unitKompetensi->urutan - 1]) }}"
                    class="flex items-center px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full shadow-sm transition">
                     ← Unit Sebelumnya
                 </a>

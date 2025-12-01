@@ -74,15 +74,15 @@ class Jadwal extends Model
     /**
      * Mendapatkan asesor yang terkait dengan jadwal.
      */
-    // public function asesor()
-    // {
-    //     return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
-    // }
+    public function asesor()
+    {
+        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
+    }
 
-    public function jenisTuk()
     /**
      * Mendapatkan jenis TUK yang terkait dengan jadwal.
      */
+    public function jenisTuk()
     {
         return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }

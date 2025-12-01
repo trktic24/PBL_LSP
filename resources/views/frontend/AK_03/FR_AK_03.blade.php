@@ -39,13 +39,13 @@
                         <tr>
                             <td class="w-40 font-bold text-gray-700 py-2 align-top">Judul</td>
                             <td class="w-4 py-2 align-top">:</td>
-                            <td class="py-2 text-gray-900 font-medium">Junior Web Developer</td>
+                            <td class="py-2 text-gray-900 font-medium"></td>
                         </tr>
                         {{-- Nomor --}}
                         <tr>
                             <td class="font-bold text-gray-700 py-2 align-top">Nomor</td>
                             <td class="py-2 align-top">:</td>
-                            <td class="py-2 text-gray-900 font-medium">JWD/001/2025</td>
+                            <td class="py-2 text-gray-900 font-medium"></td>
                         </tr>
                         {{-- TUK --}}
                         <tr>

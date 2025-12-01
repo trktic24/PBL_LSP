@@ -5,7 +5,7 @@
 @section('wizard-content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-<form action="{{ route('ia01.storeFinish', ['skema_id' => $skema->id_skema]) }}" method="POST">
+<form action="{{ route('ia01.storeFinish', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" method="POST">
     @csrf
 
     {{-- ================================================================= --}}
@@ -51,14 +51,14 @@
         <div class="grid grid-cols-1 md:grid-cols-[200px_20px_1fr] items-center">
             <label class="font-bold">Nama Asesor</label>
             <div class="hidden md:block font-bold">:</div>
-            <div>{{ $sertifikasi->asesor->name }}</div>
+            <div>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}</div>
         </div>
 
         {{-- Nama Asesi --}}
         <div class="grid grid-cols-1 md:grid-cols-[200px_20px_1fr] items-center">
             <label class="font-bold">Nama Asesi</label>
             <div class="hidden md:block font-bold">:</div>
-            <div>{{ $sertifikasi->asesi->name }}</div>
+            <div>{{ $sertifikasi->asesi->nama_lengkap }}</div>
         </div>
 
         {{-- Tanggal --}}
@@ -192,7 +192,7 @@
                     @endif
                 </div>
 
-                <p class="font-medium">{{ $sertifikasi->asesi->name }}</p>
+                <p class="font-medium">{{ $sertifikasi->asesi->nama_lengkap }}</p>
             </div>
 
             {{-- ASESOR --}}
@@ -204,8 +204,8 @@
                 </div>
 
                 <div class="border border-gray-800 rounded-lg p-4 h-40 flex items-center justify-center">
-                    @if($sertifikasi->asesor->ttd_path)
-                        <img src="{{ asset($sertifikasi->asesor->ttd_path) }}" class="h-full object-contain">
+                    @if($sertifikasi->jadwal->asesor->ttd_path ?? null)
+                        <img src="{{ asset($sertifikasi->jadwal->asesor->ttd_path) }}" class="h-full object-contain">
                     @else
                         <svg width="150" height="80" viewBox="0 0 200 100">
                             <path d="M20,50 C50,20 80,80 110,50 S170,20 190,80" stroke="black" fill="transparent" stroke-width="2"/>
@@ -213,12 +213,23 @@
                     @endif
                 </div>
 
-                <p class="font-medium mt-2 text-center">{{ $sertifikasi->asesor->name }}</p>
+                <p class="font-medium mt-2 text-center">{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}</p>
             </div>
 
         </div>
 
         <p class="text-red-500 text-sm mt-4">* Tanda Tangan di sini (Simulasi)</p>
+        
+        {{-- 
+            [CATATAN UNTUK TIM ASESOR / DEVELOPER]
+            Saat ini tanda tangan masih menggunakan placeholder/simulasi.
+            Jika fitur Tanda Tangan Digital sudah siap (misal dari tabel user/asesor),
+            silakan uncomment kode di bawah ini atau sesuaikan dengan path yang benar.
+            
+            Contoh implementasi:
+            <img src="{{ asset($sertifikasi->asesi->ttd_path) }}" class="h-28 object-contain">
+            <img src="{{ asset($sertifikasi->jadwal->asesor->ttd_path) }}" class="h-full object-contain">
+        --}}
     </div>
 
 

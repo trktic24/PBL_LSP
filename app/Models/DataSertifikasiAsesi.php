@@ -57,6 +57,7 @@ class DataSertifikasiAsesi extends Model
         'catatan_AK05',
         'rekomendasi1_AK06',
         'rekomendasi2_AK06',
+        'rekomendasi_ia01',
     ];
 
     /**
@@ -73,7 +74,7 @@ class DataSertifikasiAsesi extends Model
      */
     public function asesi(): BelongsTo
     {
-        // Tentukan foreign key dan owner key karena tidak standar
+        // Relasi ke model Asesi (bukan User)
         return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
     }
 
@@ -99,5 +100,39 @@ class DataSertifikasiAsesi extends Model
     {
         // Tentukan foreign key dan local key karena tidak standar
         return $this->hasMany(ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function getSkemaAttribute()
+    {
+        // Logika: Ambil jadwal dulu, baru ambil skema di dalamnya
+        return $this->jadwal->skema ?? null;
+    }
+
+    public function getAsesorAttribute()
+    {
+        return $this->jadwal->asesor ?? null;
+    }
+
+    // Relasi ke Respon Potensi (One to Many)
+    public function responPotensiAk07()
+    {
+        return $this->hasMany(ResponPotensiAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    // Relasi ke Respon Penyesuaian Q1-Q7 (One to Many)
+    public function responPenyesuaianAk07()
+    {
+        return $this->hasMany(ResponDiperlukanPenyesuaianAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    // Relasi ke Hasil Akhir (One to One)
+    public function hasilPenyesuaianAk07()
+    {
+        return $this->hasOne(HasilPenyesuaianAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function penyusunValidator(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PenyusunValidator::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }
