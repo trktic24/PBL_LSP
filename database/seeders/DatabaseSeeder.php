@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder
             TenSchemesSeeder::class, // <-- NEW COMPREHENSIVE SEEDER
             FrAk07MasterSeeder::class, // <-- Added FR_AK_07 Master Seeder
             PoinAk02Seeder::class, // <-- Added PoinAk02Seeder
+            DummyIA05Seeder::class,
         ]);
     }
 }

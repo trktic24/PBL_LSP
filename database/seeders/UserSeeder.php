@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
         // Buat Contoh Asesor
         if ($asesorRole) {
             // Kita override role_id-nya jadi 'Asesor'
-            User::factory()->count(15)->create([
+            User::factory()->count(10)->create([
                 'role_id' => $asesorRole->id_role,
             ]);
             User::updateOrCreate(
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
         // Buat Contoh Asesi
         if ($asesiRole) {
             // Kita override role_id-nya jadi 'Asesi'
-            User::factory()->count(35)->create([
+            User::factory()->count(200)->create([
                 'role_id' => $asesiRole->id_role,
             ]);            
             User::updateOrCreate(

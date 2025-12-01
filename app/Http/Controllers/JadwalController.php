@@ -127,7 +127,7 @@ class JadwalController extends Controller
         }        
 
         // 4. Eksekusi Query Jadwal (Hanya 5 data pertama untuk Dashboard)
-        $jadwals = $jadwal->latest()->paginate(10);
+        $jadwals = $jadwal->latest()->paginate(5);
 
         /*$jadwals->getCollection()->transform(function ($item) {
 

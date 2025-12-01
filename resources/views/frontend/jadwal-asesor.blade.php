@@ -188,25 +188,53 @@
                 </thead>
                 <tbody class="text-gray-700">
                 {{-- Loop data dari controller --}}
-                    @forelse ($jadwals as $jadwal)
+                    @forelse($jadwals as $index => $jadwal)
                         <tr class="border-b bg-yellow-50 hover:bg-yellow-100">
                             {{-- Penomoran yang benar untuk pagination --}}
-                            <td class="py-3 px-4">{{ $loop->iteration }}</td>
+                            <td class="px-4 py-2">{{ $index + 1 }}</td>
                             <td class="py-3 px-4">{{ $jadwal->skema->nama_skema ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-center">{{ $jadwal->sesi ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-center">{{ $jadwal->waktu_mulai ? $jadwal->waktu_mulai->format('H:i') : 'N/A' }}</td>
                             <td class="py-3 px-4 text-center">{{ $jadwal->tanggal_pelaksanaan ? \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->translatedFormat('d F Y') : 'N/A' }}</td>
-                            <td class="py-3 px-4 text-center">{{ $jadwal->Status_jadwal ?? 'N/A' }}</td>
+                            <td class="px-4 py-2">
+                                @if($jadwal->Status_jadwal == 'Dibatalkan')
+                                    <span class="px-2 py-1 rounded-full text-xs-center text-red-500 bg-red-100 ">
+                                        Dibatalkan
+                                    </span>
+                                @elseif($jadwal->Status_jadwal == 'Selesai')
+                                    <span class="px-2 py-1 rounded-full text-xs-center text-green-600 bg-green-100">
+                                        Selesai
+                                    </span>
+                                @else
+                                    <span class="px-2 py-1 rounded-full text-xs-center text-blue-500 bg-blue-100">
+                                        Terjadwal
+                                    </span>
+                                @endif
+                            </td>
                             <td class="py-3 px-4 text-center">{{ $jadwal->tuk->nama_lokasi ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-center">{{ $jadwal->jenisTuk->jenis_tuk ?? 'N/A' }}</td>
-                            <td class="py-3 px-4 text-center space-x-2">
+                            <td class="px-4 py-2 text-center space-x-2">
+                                {{-- 1. Cek apakah ID Jadwal tersedia (Safety Check) --}}
                                 @if ($jadwal->id_jadwal)
-                                    <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}"
-                                       class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-md text-sm font-medium">
-                                        Lihat
-                                    </a>
+                                    
+                                    {{-- 2. Logika Status: Beda Tampilan, Rute Sama --}}
+                                    @if($jadwal->Status_jadwal == 'Dibatalkan')
+                                        {{-- Tampilan Tombol Detail (Abu-abu) --}}
+                                        <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}" 
+                                        class="text-sm bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500 transition duration-150">
+                                            Detail
+                                        </a>
+                                    @else
+                                        {{-- Tampilan Tombol Lihat (Kuning Emas) --}}
+                                        <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}" 
+                                        class="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition duration-150 font-medium">
+                                            Lihat
+                                        </a>
+                                    @endif
+
                                 @else
-                                    <span class="text-gray-400 text-sm">N/A</span>
+                                    {{-- Jika ID Jadwal Null/Error --}}
+                                    <span class="text-gray-400 text-sm italic">N/A</span>
                                 @endif
                             </td>
                         </tr>

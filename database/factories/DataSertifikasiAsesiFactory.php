@@ -23,8 +23,8 @@ class DataSertifikasiAsesiFactory extends Factory
         // Data Dasar
         $data = [
             // FIX: Tambah ? (safe navigation) biar gak error kalau tabel kosong
-            'id_asesi' => Asesi::inRandomOrder()->first()?->id_asesi ?? Asesi::factory(),
-            'id_jadwal' => Jadwal::inRandomOrder()->first()?->id_jadwal ?? Jadwal::factory(),
+            'id_asesi' => Asesi::inRandomOrder()->first()->id_asesi,
+            'id_jadwal' => Jadwal::inRandomOrder()->first()->id_jadwal,
             'tanggal_daftar' => fake()->dateTimeThisYear()->format('Y-m-d'),
             'rekomendasi_apl01' => $statusApl01,
             'tujuan_asesmen' => fake()->randomElement(['sertifikasi', 'PKT', 'rekognisi pembelajaran sebelumnya', 'lainnya']),
