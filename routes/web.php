@@ -1,12 +1,5 @@
 <?php
 
-use App\Models\Asesi;
-
-// ====================================================
-// KUMPULAN SEMUA CONTROLLER & MODEL
-// ====================================================
-use App\Models\Skema;
-use App\Models\Asesor;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TukController;
 
@@ -209,11 +202,6 @@ Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show
 Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show']) 
     ->name('banding.fr_ak04'); // KRITIS: Menggunakan fr-ak04
 
-// Route Placeholder untuk Umpan Balik (AK.03)
-Route::get('/asesi/umpan-balik/{id_sertifikasi}', function($id_sertifikasi) {
-    // Arahkan kembali ke halaman banding (saat ini) atau halaman data utama
-    return redirect()->route('banding.show', ['id_sertifikasi' => $id_sertifikasi]);
-})->name('umpan.balik');
 Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])
     ->name('show.jadwal_tuk');
 
