@@ -74,6 +74,8 @@ Route::get('/FR_IA_11', function () {
 
 //porto
 Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
+// Route untuk menyimpan data upload
+Route::post('/PORTOFOLIO', [PortofolioController::class, 'store'])->name('portofolio.store');
 
 //IA07
 Route::get('/FR_IA_07', [IA07Controller::class, 'index'])->name('ia07.asesor');
