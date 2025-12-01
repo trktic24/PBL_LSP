@@ -4,6 +4,8 @@
         session()->forget('google_register_data');
     }
 @endphp
+@section('title', 'Daftar Akun')
+@section('description', 'Daftar akun baru di LSP Polines.')
 <x-register-layout>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />

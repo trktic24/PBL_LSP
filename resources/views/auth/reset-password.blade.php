@@ -1,3 +1,5 @@
+@section('title', 'Reset Password')
+@section('description', 'Buat password baru untuk akun LSP Polines Anda.')
 <x-register-layout> {{-- Ganti ini pake layout lu --}}
     <div class="w-full max-w-md bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)]">
         <div class="p-10 md:p-12">

@@ -1,6 +1,8 @@
 @extends('layouts.app-profil')
 
 @section('title', 'Jadwal Asesmen')
+@section('description', 'Jadwal asesmen sertifikasi profesi terbaru di LSP Polines.')
+@section('keywords', 'Jadwal, Asesmen, Sertifikasi, LSP, Polines')
 @section('content')
 
 <style>

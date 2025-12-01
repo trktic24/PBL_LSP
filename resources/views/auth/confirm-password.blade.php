@@ -1,3 +1,5 @@
+@section('title', 'Konfirmasi Password')
+@section('description', 'Konfirmasi password Anda untuk melanjutkan.')
 <x-register-layout :backUrl="route('login')">
     {{-- Kita bungkus pakai card putih yang sama --}}
     <div class="w-full max-w-md bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)]">

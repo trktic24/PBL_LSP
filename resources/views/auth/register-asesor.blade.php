@@ -1,3 +1,5 @@
+@section('title', 'Daftar Asesor')
+@section('description', 'Pendaftaran asesor baru LSP Polines.')
 <x-register-layout>
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

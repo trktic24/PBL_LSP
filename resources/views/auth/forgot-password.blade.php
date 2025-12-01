@@ -1,3 +1,5 @@
+@section('title', 'Lupa Password')
+@section('description', 'Reset password akun LSP Polines Anda.')
 <x-register-layout :backUrl="route('login')">
     <div class="w-full max-w-md bg-white rounded-3xl border border-gray-200 shadow-[0_8px_24px_rgba(0,0,0,0.05)]">
 

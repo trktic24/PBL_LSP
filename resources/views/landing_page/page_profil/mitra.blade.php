@@ -1,6 +1,7 @@
 @extends('layouts.app-profil')
 
 @section('title', 'Mitra Kami')
+@section('description', 'Daftar mitra kerja sama LSP Polines.')
 
 @section('content')
     <section id="mitra" class="py-20 bg-gray-50">

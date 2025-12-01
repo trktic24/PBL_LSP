@@ -1,3 +1,5 @@
+@section('title', 'Login')
+@section('description', 'Masuk ke akun LSP Polines Anda.')
 <x-register-layout>
 
     <div class="bg-gray-100 w-full flex items-center justify-center py-5">

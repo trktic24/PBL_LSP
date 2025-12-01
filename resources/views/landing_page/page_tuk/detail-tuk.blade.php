@@ -1,6 +1,7 @@
 @extends('layouts.app-profil')
 
 @section('title', 'Detail Tempat Uji Kompetensi')
+@section('description', 'Detail informasi Tempat Uji Kompetensi (TUK) ' . ($data_tuk->nama_lokasi ?? ''))
 
 
 

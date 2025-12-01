@@ -1,6 +1,7 @@
 @extends('layouts.app-profil')
 
 @section('title', 'Alur Proses Sertifikasi')
+@section('description', 'Panduan lengkap alur proses sertifikasi kompetensi di LSP Polines.')
 
 @section('content')
     {{-- HEADER SECTION --}}

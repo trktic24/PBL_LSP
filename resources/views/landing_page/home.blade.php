@@ -1,5 +1,9 @@
 @extends('layouts.app-profil')
 
+@section('title', 'Beranda')
+@section('description', 'Selamat datang di LSP Polines. Lembaga Sertifikasi Profesi yang terpercaya dan profesional.')
+@section('keywords', 'LSP, Polines, Sertifikasi, Profesi, BNSP, Kompetensi')
+
 @section('content')
 
 {{-- ======================= HERO ======================= --}}

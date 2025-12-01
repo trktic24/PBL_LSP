@@ -1,4 +1,7 @@
 @extends('layouts.app-profil') 
+@section('title', 'Detail Jadwal - ' . ($jadwal->skema->nama_skema ?? 'Sertifikasi'))
+@section('description', 'Informasi jadwal sertifikasi ' . ($jadwal->skema->nama_skema ?? '') . ' di ' . ($jadwal->masterTuk->nama_lokasi ?? 'LSP Polines'))
+
 @section('content')
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

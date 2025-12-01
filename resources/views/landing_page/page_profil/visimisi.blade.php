@@ -1,6 +1,7 @@
 @extends('layouts.app-profil')
 
 @section('title', 'Visi & Misi')
+@section('description', 'Visi dan Misi Lembaga Sertifikasi Profesi (LSP) Polines.')
 
 @section('content')
     <section id="visi-misi" class="py-20 bg-gray-50">

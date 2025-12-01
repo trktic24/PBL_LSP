@@ -1,6 +1,7 @@
 @extends('layouts.app-profil')
 
 @section('title', 'Tempat Uji Kompetensi')
+@section('description', 'Daftar Tempat Uji Kompetensi (TUK) yang terdaftar di LSP Polines.')
 
 @section('content')
     <style>

@@ -1,5 +1,8 @@
 @extends('layouts.app-profil')
 
+@section('title', $berita->judul)
+@section('description', Str::limit(strip_tags($berita->isi), 150))
+
 @section('content')
 <div class="container mx-auto px-8 py-12">
     <article class="max-w-3xl mx-auto">

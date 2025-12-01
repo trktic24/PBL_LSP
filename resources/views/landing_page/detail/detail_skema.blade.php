@@ -1,5 +1,9 @@
 @extends('layouts.app-profil')
 
+@section('title', $skema->nama_skema ?? 'Detail Skema')
+@section('description', 'Detail skema sertifikasi ' . ($skema->nama_skema ?? ''))
+@section('keywords', 'Skema, Sertifikasi, ' . ($skema->nama_skema ?? ''))
+
 @section('content')
 
     {{-- CATATAN PENTING: Untuk memastikan konten halaman ini sejajar sempurna

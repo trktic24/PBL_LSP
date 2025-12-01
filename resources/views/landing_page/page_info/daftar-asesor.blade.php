@@ -1,4 +1,7 @@
 @extends('layouts.app-profil')
+@section('title', 'Daftar Asesor')
+@section('description', 'Daftar asesor kompetensi terdaftar di LSP Polines.')
+
 @section('content')
 
 <style>

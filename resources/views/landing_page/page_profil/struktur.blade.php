@@ -1,6 +1,7 @@
 @extends('layouts.app-profil')
 
 @section('title', 'Struktur Organisasi')
+@section('description', 'Struktur organisasi Lembaga Sertifikasi Profesi (LSP) Polines.')
 
 @section('content')
 <section id="struktur" class="pt-24 pb-0 -mb-40 bg-white min-h-screen">
