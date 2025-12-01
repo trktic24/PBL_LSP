@@ -157,13 +157,13 @@
 
                     <div class="flex justify-between mt-4 pt-3 border-t">
                         <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Terapkan</button>
-                        <a href="{{ route('jadwal.index') }}" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">Reset</a>
+                        <a href="{{ route('asesor.jadwal.index') }}" class="px-4 py-2 bg-gray-300 rounded-lg text-sm">Reset</a>
                     </div>
                 </div>
             </div>
         </form>
 
-        <form method="GET" action="{{ route('jadwal.index') }}" class="relative">
+        <form method="GET" action="{{ route('asesor.jadwal.index') }}" class="relative">
             <input type="text" name="search" placeholder="Cari jadwal..." value="{{ request('search') }}" class="w-64 pl-10 pr-4 py-2 border border-gray-600 rounded-full text-sm">
             <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -220,13 +220,13 @@
                                     {{-- 2. Logika Status: Beda Tampilan, Rute Sama --}}
                                     @if($jadwal->Status_jadwal == 'Dibatalkan')
                                         {{-- Tampilan Tombol Detail (Abu-abu) --}}
-                                        <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}" 
+                                        <a href="{{ route('asesor.daftar_asesi', $jadwal->id_jadwal) }}" 
                                         class="text-sm bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500 transition duration-150">
                                             Detail
                                         </a>
                                     @else
                                         {{-- Tampilan Tombol Lihat (Kuning Emas) --}}
-                                        <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}" 
+                                        <a href="{{ route('asesor.daftar_asesi', $jadwal->id_jadwal) }}" 
                                         class="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition duration-150 font-medium">
                                             Lihat
                                         </a>

@@ -139,7 +139,7 @@
 
         {{-- TOMBOL --}}
         <div class="flex justify-end gap-4 pb-10 mt-8">
-            <a href="{{ route('daftar_asesi', $sertifikasi->id_jadwal) }}" 
+            <a href="{{ route('asesor.daftar_asesi', $sertifikasi->id_jadwal) }}" 
                 class="px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full shadow-sm transition">
                 Kembali
             </a>

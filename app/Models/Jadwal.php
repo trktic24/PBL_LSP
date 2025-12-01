@@ -78,6 +78,11 @@ class Jadwal extends Model
         return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk');
     }
 
+    public function tuk()
+    {
+        return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk');
+    }
+
     public function skema()
     {
         return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');

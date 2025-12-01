@@ -235,13 +235,13 @@
                                     {{-- 2. Logika Status: Beda Tampilan, Rute Sama --}}
                                     @if($jadwal->Status_jadwal == 'Dibatalkan')
                                         {{-- Tampilan Tombol Detail (Abu-abu) --}}
-                                        <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}" 
+                                        <a href="{{ route('asesor.daftar_asesi', $jadwal->id_jadwal) }}" 
                                         class="text-sm bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500 transition duration-150">
                                             Detail
                                         </a>
                                     @else
                                         {{-- Tampilan Tombol Lihat (Kuning Emas) --}}
-                                        <a href="{{ route('daftar_asesi', $jadwal->id_jadwal) }}" 
+                                        <a href="{{ route('asesor.daftar_asesi', $jadwal->id_jadwal) }}" 
                                         class="text-sm bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition duration-150 font-medium">
                                             Lihat
                                         </a>
@@ -273,7 +273,7 @@
     </div>
 
             <div class="text-right mt-4">
-                <a href="{{ route('jadwal.index') }}" class="text-sm text-blue-600 hover:underline font-medium">Lihat Selengkapnya</a>
+                <a href="{{ route('asesor.jadwal.index') }}" class="text-sm text-blue-600 hover:underline font-medium">Lihat Selengkapnya</a>
             </div>
         </div>
 </div>
