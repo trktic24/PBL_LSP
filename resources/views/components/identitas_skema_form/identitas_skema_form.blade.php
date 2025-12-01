@@ -4,7 +4,7 @@
     'tuk' => 'Tempat Kerja', // Nilai default
     'namaAsesor' => 'Data Asesor Default',
     'namaAsesi' => 'Data Asesi Default',
-    'tanggal' => 'Tanggal Default',
+    'tanggal' => '12-10-2025',
     'waktu' => '09.00 WIB',
     'showWaktu' => true
 
@@ -85,7 +85,7 @@
     <label class="text-sm font-bold text-black">Tanggal</label>
     <div class="flex items-center">
         <span>:</span>
-        <p class="ml-2 font-medium text-gray-600">{{ $tanggal }}</p>
+        <p class="ml-2 font-medium text-gray-600">{{ $tanggal ? \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') : '-' }}</p>
     </div>
 
     @if($showWaktu)

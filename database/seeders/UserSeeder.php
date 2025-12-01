@@ -54,7 +54,13 @@ class UserSeeder extends Seeder
 
         // Buat Contoh Asesi
         if ($asesiRole) {
-            User::updateOrCreate([
+            // Kita override role_id-nya jadi 'Asesi'
+            User::factory()->count(35)->create([
+                'role_id' => $asesiRole->id_role,
+            ]);            
+            User::updateOrCreate(
+            ['email' => 'asesi@example.com'],
+            [
                 'role_id' => $asesiRole->id_role,
                 'email' => 'asesi@example.com',
                 'email_verified_at' => now(),

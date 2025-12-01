@@ -249,7 +249,11 @@
 
                     <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
                         {{ $stAK01 == 'DONE' ? 'bg-green-500 text-white' : ($stAK01 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        <span class="font-bold text-xs">AK.01</span>
+                        @if($stAK01 == 'DONE') 
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        @else
+                            <span class="font-bold text-xs">AK.01</span>
+                        @endif
                     </div>
 
                     <div>
@@ -275,16 +279,16 @@
 
                                 {{-- BARIS 2: Tombol Verifikasi (Full Width) --}}
                                 {{-- w-full akan membuatnya selebar container di atasnya --}}
-                                <a href="#" class="w-full block bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1 rounded-md text-center transition shadow-sm">
+                                <a href="#" class="w-full block {{ $stAK01 == 'ACTIVE' ? 'bg-blue-100 text-blue-600' : 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' }} bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1 rounded-md text-center transition shadow-sm">
                                     Verifikasi
                                 </a>
 
                             </div>
                         </div>
                     {{-- Status Badge --}}
-                    @if($dataSertifikasi->rekomendasi_apl01 == 'diterima')
+                    @if($dataSertifikasi->responbuktiAk01->contains('respon', 'Valid'))
                         <p class="text-xs text-green-500 mt-1">Diterima</p>
-                    @elseif($dataSertifikasi->rekomendasi_apl01 == 'tidak diterima')
+                    @elseif($dataSertifikasi->rekomendasi_apl01 == 'Tidak Memenuhi')
                         <p class="text-xs text-red-500 mt-1">Tidak Diterima</p>
                     @else
                         <p class="text-xs text-yellow-300 mt-1">Menunggu Verifikasi</p>                        
@@ -314,27 +318,44 @@
                 {{-- ITEM: FR.IA.01 dst --}}
                 <div class="relative pl-20 pb-8">
                     <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stAsesmen == 'DONE' ? 'bg-green-500 text-white' : ($isAsesmenActive ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        <span class="font-bold text-xs">IA.xx</span>
+                        {{ $stAsesmen == 'DONE' ? 'bg-green-500 text-white' : ($isAsesmenActive ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                        <span class="font-bold text-xs">IA.05</span>
                     </div>
 
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold {{ !$isAsesmenActive ? 'text-gray-400' : 'text-gray-800' }}">Instrumen Asesmen (IA.01 - IA.10)</h3>
-                            <div class="flex space-x-2 ml-4">
-                                @if($isAsesmenActive)
-                                    {{-- Placeholder Route --}}
-                                    <a href="#" class="bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-blue-700">Mulai Asesmen</a>
-                                @else
-                                    <span class="text-xs text-gray-400 italic">Belum Mulai</span>
-                                @endif
+                            <h3 class="text-lg font-semibold {{ !$isAsesmenActive ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.05 - Pertanyaan Tertulis Pilihan Ganda</h3>
+                            <div class="flex flex-col gap-2 ml-4"> {{-- Container Vertikal --}}
+                                
+                                {{-- BARIS 1: Tombol Lihat File & PDF (Horizontal) --}}
+                                <div class="flex gap-2">
+                                    {{-- Tombol 1: Lihat File --}}
+                                    <a href="{{ route('FR_IA_05_A', $asesi->id_asesi) }}" class="{{ $isAsesmenActive ? ' bg-gray-300 text-gray-600' : 'bg-blue-100 text-blue-600 ' }} text-xs font-bold py-1 px-3 rounded-md text-center">
+                                        Lihat File
+                                    </a>
+
+                                    {{-- Tombol 2: Lihat PDF --}}
+                                    <a href="#" class="{{ $isAsesmenActive ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>Lihat PDF</span>
+                                    </a>
+                                </div>
+
+                                {{-- BARIS 2: Tombol Verifikasi (Full Width) --}}
+                                {{-- w-full akan membuatnya selebar container di atasnya --}}
+                                <a href="#" class="w-full block {{ $isAsesmenActive ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white' }} text-xs font-bold py-1 rounded-md text-center transition shadow-sm">
+                                    Lakukan Penilaian
+                                </a>
+
                             </div>
                         </div>
                         
                         @if($stAsesmen == 'DONE')
-                            <p class="text-xs text-green-600 font-bold mt-1">Semua soal asesmen telah dikerjakan.</p>
+                            <p class="text-xs text-green-600 font-bold mt-1">Asesmen telah selesai. Silahkan lakukan penilaian</p>
                         @elseif($isAsesmenActive)
-                             <p class="text-xs text-blue-600 mt-1">Asesmen sedang berlangsung. Silakan kerjakan soal.</p>
+                             <p class="text-xs text-blue-600 mt-1">Asesi sedang menjalankan asesmen</p>
                         @endif
                     </div>
                 </div>

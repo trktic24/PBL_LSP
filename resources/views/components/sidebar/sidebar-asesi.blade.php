@@ -72,8 +72,8 @@
             <div>
                 <p class="font-semibold">{{$asesi->nama_lengkap }}</p>
                 <h4 class="text-xs font-semibold uppercase tracking-wider opacity-60 mt-6 mb-2">DIMULAI PADA:</h4>
-                <p class="text-sm font-medium">{{ $jadwal->tanggal_mulai ?? '2025-10-20' }}</p>
-                <p class="text-sm font-medium">{{ $jadwal->waktu_mulai ?? '10.20' }}</p>
+                <p class="text-sm font-medium">{{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan ?? '2025-10-20')->translatedFormat('d F Y') }}</p>
+                <p class="text-sm font-medium">{{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }} WIB</p>
             </div>
         </div>
     </div>

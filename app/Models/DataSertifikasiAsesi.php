@@ -103,6 +103,12 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(Ia07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
+    public function responbuktiAk01(): HasMany
+    {
+        // Tentukan foreign key dan local key karena tidak standar
+        return $this->hasMany(ResponBuktiAk01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }    
+
     /**
      * ACCESSOR: Menghitung 'Level Virtual' berdasarkan isi kolom database.
      * Logika ini MAPPING dari DATA NYATA -> ANGKA LEVEL VIRTUAL.
@@ -118,7 +124,7 @@ class DataSertifikasiAsesi extends Model
 
         // 1. Target Soal (Misal: 10 Soal)
         $idSkema = $this->jadwal->id_skema; 
-        $totalSoal = Ia10::where('id_skema', $idSkema)->count(); 
+        $totalSoal = Ia10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)->count(); 
 
         // 2. Hitung Jawaban Asesi yang VALID (Isinya tidak kosong)
         // Di sini kita pakai ide kamu: Kita filter hanya yang kolomnya TERISI.
@@ -148,7 +154,7 @@ class DataSertifikasiAsesi extends Model
         // Karena kolom terbatas, kita pakai indikator yang ada.
 
         $ak01valid = ResponBuktiAk01::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
-                                ->where('respon', 'memenuhi')                    
+                                ->where('respon', 'Valid')                    
                                 ->exists();        
 
         if ($ak01valid && $this->rekomendasi_apl02 == 'diterima') {
