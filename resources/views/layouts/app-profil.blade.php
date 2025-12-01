@@ -27,11 +27,11 @@
 
 <body class="antialiased bg-white font-inter">
 
-    <x-navbar.navbar-fixx/>
-   
-        <div class="bg-white flex-1">
-        @yield('content')
-    </div>
+    <x-navbar.navbar-fixx/>
+
+    <div class="bg-white flex-1">
+        @yield('content')
+    </div>
 
     {{-- KARENA ANDA SUDAH MENGHILANGKAN FOOTER SECARA KONTINU,
          JIKA ADA FOOTER GLOBAL, HARUS DITAMBAHKAN DI SINI MENGGUNAKAN @yield. --}}

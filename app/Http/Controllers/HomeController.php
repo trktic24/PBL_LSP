@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Asesor;
-use App\Models\Jadwal;
+use Illuminate\View\View;
 use App\Models\Skema;
 use App\Models\Category;
 use App\Models\Jadwal; 
@@ -17,9 +14,6 @@ use \DateTime;
 class HomeController extends Controller
 {
 
-    /**
-     * Landing Page utama
-     */
     public function index(): View
     {
         $categories = Category::all()->pluck('nama_kategori')->all();
@@ -70,7 +64,6 @@ class HomeController extends Controller
             ]
         ]);
 
-        // Data dummy SKKNI
         $skema->skkni = collect([
             (object) ['nama' => 'SKKNI Keamanan Siber 1', 'link_pdf' => '#'],
             (object) ['nama' => 'SKKNI Keamanan Siber 2', 'link_pdf' => '#'],

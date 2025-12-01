@@ -24,7 +24,7 @@ class AsesorSeeder extends Seeder
 
         foreach ($asesorUsers as $user) {
             Asesor::factory()->create([
-                'user_id' => $user->id_user, // gunakan id_user bukan id
+                'id_user' => $user->id_user, // gunakan id_user bukan id
             ]);
         }
     }

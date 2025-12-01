@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 // use App\Models\Skema; // Tidak perlu jika $model di-hardcode di bawah
-use App\Models\Categorie;
+use App\Models\Category;
 use App\Models\KelompokPekerjaan; // <-- DITAMBAHKAN
 
 /**
@@ -29,11 +29,6 @@ class SkemaFactory extends Factory
         return [
             // Sesuai dengan migration 'categorie_id'
             'category_id' => Category::factory(),
-            
-            // Sesuai dengan migration 'id_kelompok_pekerjaan' (BARU)
-            //'id_kelompok_pekerjaan' => \App\Models\KelompokPekerjaan::factory(),
-            'nomor_skema' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' .
-                            $this->faker->numberBetween(100, 999) . '.01',
 
             // Diubah dari 'kode_unit' menjadi 'nomor_skema' (DIUBAH)
             // Ditambahkan unique() karena ada constraint ->unique() di migration

@@ -10,7 +10,7 @@ class AsesorFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
+            'id_user' => User::factory(),
             'nomor_regis' => 'MET.' . fake()->unique()->numberBetween(1000000, 9999999),
             'nama_lengkap' => fake()->name(),
             'nik' => fake()->unique()->numerify('################'),

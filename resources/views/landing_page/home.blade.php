@@ -152,7 +152,7 @@ html { scroll-behavior: smooth; }
                             <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
                                 <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
                                     {{-- Path gambar skema Anda sudah benar --}}
-                                    <img src="{{ asset('images/skema/' . ($skema->gambar ?? 'default.jpg')) }}"
+                                    <img src="{{ asset('images/skema/' . ($skema->gambar && file_exists(public_path('images/skema/' . $skema->gambar)) ? $skema->gambar : 'default.jpg')) }}"
                                         alt="Gambar Skema"
                                         class="w-full h-48 object-cover">
                                 </div>

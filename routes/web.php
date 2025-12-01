@@ -23,16 +23,10 @@ use App\Models\Asesor;
 use App\Models\Tuk;
 use App\Models\Schedule;
 use App\Models\Asesi;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\JadwalController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA05Controller;
-use App\Http\Controllers\TukController;
 use App\Http\Controllers\AsesiTrackerController;
-use App\Http\Controllers\Asesor\AsesorTableController;
-use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Asesor\DashboardController as AsesorDashboardController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\IA02Controller; // Ditambahkan karena ada route IA-02 di bawah

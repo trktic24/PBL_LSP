@@ -87,20 +87,14 @@ class Jadwal extends Model
     {
         return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
     }
-
-    public function jenisTuk()
-    {
-        return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
-    }
-
-    /*public function asesi()
+    public function asesi()
     {
         // Sintaks: return $this->belongsToMany(ModelTujuan, 'nama_tabel_pivot', 'foreign_key_model_ini', 'foreign_key_model_tujuan');
 
         // Sesuaikan 'asesi_jadwal', 'id_jadwal', dan 'id_asesi'
         // dengan nama tabel pivot dan kolom Anda
         return $this->belongsToMany(Asesi::class, 'data_sertifikasi_asesi', 'id_jadwal', 'id_asesi');
-    }*/
+    }
 
     public function dataSertifikasiAsesi(): HasMany
     {

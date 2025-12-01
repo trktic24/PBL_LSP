@@ -18,6 +18,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LoginController as AdminLoginController;
+use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\AsesorController;
+use App\Http\Controllers\AsesiController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\DaftarHadirController;
+use App\Http\Controllers\TukAdminController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AsesiProfileController;
+use App\Http\Controllers\Admin\DashboardController; // Pastikan ini benar, atau gunakan alias jika perlu
 
 // ======================================================
 // --- RUTE GUEST (YANG BELUM LOGIN) ---
@@ -239,7 +248,6 @@ Route::middleware('auth')->group(function () {
     // --- RUTE DASHBOARD (HARUS PALING BAWAH) ---
     // Ini "Polisi Lalu Lintas" yang ngarahin user ke dashboard-nya masing2
     // setelah mereka login.
-    Route::get('/dashboard', function (Request $request) {
     // --- RUTE DASHBOARD / HOME INTERAL ---
     // Ini "Polisi Lalu Lintas" yang mengarahkan user setelah login.
     //

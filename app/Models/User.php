@@ -80,19 +80,19 @@ class User extends Authenticatable
 
     public function asesor()
     {
-        // Relasi ini sudah benar, akan mencari 'user_id' di tabel data_asesor
-        return $this->hasOne(Asesor::class, 'user_id', 'id_user');
+        // Relasi ini sudah benar, akan mencari 'id_user' di tabel data_asesor
+        return $this->hasOne(Asesor::class, 'id_user', 'id_user');
     }
 
     public function asesi()
     {
-        // Relasi ini sudah benar, akan mencari 'user_id' di tabel data_asesi
-        return $this->hasOne(Asesi::class, 'user_id', 'id_user');
+        // Relasi ini sudah benar, akan mencari 'id_user' di tabel data_asesi
+        return $this->hasOne(Asesi::class, 'id_user', 'id_user');
     }
 
     // Anda juga punya data_admin, tambahkan ini jika perlu
     public function admin()
     {
-        return $this->hasOne(Admin::class, 'user_id', 'id_user');
+        return $this->hasOne(Admin::class, 'id_user', 'id_user');
     }
 }
