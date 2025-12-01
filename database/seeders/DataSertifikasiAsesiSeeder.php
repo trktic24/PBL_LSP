@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\Asesi;
+use App\Models\Jadwal;
 
 class DataSertifikasiAsesiSeeder extends Seeder
 {
@@ -13,9 +15,22 @@ class DataSertifikasiAsesiSeeder extends Seeder
      */
     public function run(): void
     {
-        // Membuat 5 data dummy DataSertifikasiAsesi
-        // Ini juga akan otomatis membuat data Asesi dan Jadwal
-        // yang terkait, berkat definisi di dalam factory.
-        DataSertifikasiAsesi::factory()->count(5)->create();
+        $allAsesi = Asesi::all();   // Jumlah 200
+        $allJadwal = Jadwal::all(); // Jumlah 60 (10 asesor x 6)
+
+        if ($allAsesi->isEmpty() || $allJadwal->isEmpty()) return;
+
+        $totalJadwal = $allJadwal->count();
+
+        // Bagi rata 200 asesi ke 60 jadwal
+        foreach ($allAsesi as $index => $asesi) {
+            
+            $jadwal = $allJadwal[$index % $totalJadwal];
+
+            DataSertifikasiAsesi::factory()->create([
+                'id_asesi'  => $asesi->id_asesi,
+                'id_jadwal' => $jadwal->id_jadwal,
+            ]);
+        }
     }
 }

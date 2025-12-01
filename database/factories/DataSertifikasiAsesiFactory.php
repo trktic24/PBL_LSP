@@ -3,62 +3,100 @@
 namespace Database\Factories;
 
 use App\Models\DataSertifikasiAsesi;
-use App\Models\Asesi;   // Pastikan model ini ada
-use App\Models\Jadwal;  // Pastikan model ini ada
+use App\Models\Asesi;
+use App\Models\Jadwal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DataSertifikasiAsesi>
- */
 class DataSertifikasiAsesiFactory extends Factory
 {
-    /**
-     * Model yang terkait dengan factory ini.
-     *
-     * @var string
-     */
     protected $model = DataSertifikasiAsesi::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        $opsiYaTidak = ['ada', 'tidak ada'];
-        $opsiKompeten = ['kompeten', 'belum kompeten'];
-        $opsiDiterima = ['diterima', 'tidak diterima'];
+        // 1. Tentukan Nasib APL-01 (Gerbang Pertama)
+        $statusApl01 = fake()->randomElement(array_merge(
+            array_fill(0, 7, 'diterima'), // 70% Diterima
+            array_fill(0, 2, null),       // 20% Baru daftar
+            ['tidak diterima']            // 10% Ditolak
+        ));
 
-        return [
-            // Menggunakan factory Asesi dan Jadwal untuk mendapatkan ID yang valid
+        // Data Dasar
+        $data = [
+            // FIX: Tambah ? (safe navigation) biar gak error kalau tabel kosong
             'id_asesi' => Asesi::inRandomOrder()->first()->id_asesi,
             'id_jadwal' => Jadwal::inRandomOrder()->first()->id_jadwal,
-
-            'rekomendasi_apl01' => fake()->randomElement($opsiDiterima),
+            'tanggal_daftar' => fake()->dateTimeThisYear()->format('Y-m-d'),
+            'rekomendasi_apl01' => $statusApl01,
             'tujuan_asesmen' => fake()->randomElement(['sertifikasi', 'PKT', 'rekognisi pembelajaran sebelumnya', 'lainnya']),
-            'rekomendasi_apl02' => fake()->randomElement($opsiDiterima),
-            'tanggal_daftar' => fake()->dateTimeThisCentury()->format('Y-m-d'),
-            'jawaban_mapa01' => fake()->randomElement(['hasil pelatihan', 'pekerjaan', 'pelatihan']),
-            'karakteristik_kandidat' => fake()->randomElement($opsiYaTidak),
-            'kebutuhan_kontekstualisasi_terkait_tempat_kerja' => fake()->randomElement($opsiYaTidak),
-            'Saran_yang_diberikan_oleh_paket_pelatihan' => fake()->randomElement($opsiYaTidak),
-            'penyesuaian_perangkat_asesmen' => fake()->randomElement($opsiYaTidak),
-            'peluang_kegiatan_asesmen_terintegrasi_dan_perubahan_alat_asesmen' => fake()->randomElement($opsiYaTidak),
-            'feedback_ia01' => fake()->randomElement($opsiYaTidak),
-            'rekomendasi_IA04B' => fake()->randomElement($opsiKompeten),
-            'rekomendasi_hasil_asesmen_AK02' => fake()->randomElement($opsiKompeten),
-            'tindakan_lanjut_AK02' => fake()->sentence(5),
-            'komentar_AK02' => fake()->sentence(10),
-            'catatan_asesi_AK03' => fake()->paragraph(2),
-            'rekomendasi_AK05' => fake()->randomElement($opsiKompeten),
-            'keterangan_AK05' => fake()->sentence(7),
-            'aspek_dalam_AK05' => fake()->sentence(8),
-            'catatan_penolakan_AK05' => fake()->sentence(9),
-            'saran_dan_perbaikan_AK05' => fake()->sentence(10),
-            'catatan_AK05' => fake()->paragraph(1),
-            'rekomendasi1_AK06' => fake()->sentence(12),
-            'rekomendasi2_AK06' => fake()->sentence(12),          
+            
+            // Default NULL semua
+            'rekomendasi_apl02' => null,
+            'jawaban_mapa01' => null,
+            'karakteristik_kandidat' => null,
+            'kebutuhan_kontekstualisasi_terkait_tempat_kerja' => null,
+            'Saran_yang_diberikan_oleh_paket_pelatihan' => null,
+            'penyesuaian_perangkat_asesmen' => null,
+            'peluang_kegiatan_asesmen_terintegrasi_dan_perubahan_alat_asesmen' => null,
+            'feedback_ia01' => null,
+            'rekomendasi_IA04B' => null,
+            'rekomendasi_hasil_asesmen_AK02' => null,
+            'tindakan_lanjut_AK02' => null,
+            'komentar_AK02' => null,
+            'catatan_asesi_AK03' => null,
+            'rekomendasi_AK05' => null,
+            'keterangan_AK05' => null,
+            'aspek_dalam_AK05' => null,
+            'catatan_penolakan_AK05' => null,
+            'saran_dan_perbaikan_AK05' => null,
+            'catatan_AK05' => null,
+            'rekomendasi1_AK06' => null,
+            'rekomendasi2_AK06' => null,
         ];
+
+        // STOP POINT 1: Jika APL-01 Gagal/Null
+        if ($statusApl01 !== 'diterima') {
+            return $data;
+        }
+
+        // 2. Tahap APL-02
+        $statusApl02 = fake()->randomElement(array_merge(
+            array_fill(0, 8, 'diterima'), 
+            ['tidak diterima', null]
+        ));
+
+        $data['rekomendasi_apl02'] = $statusApl02;
+        $data['jawaban_mapa01'] = fake()->randomElement(['hasil pelatihan', 'pekerjaan']);
+
+        // STOP POINT 2: Jika APL-02 Gagal/Null
+        if ($statusApl02 !== 'diterima') {
+            return $data;
+        }
+
+        // 3. Tahap Asesmen (FR-IA)
+        $opsiYaTidak = ['ada', 'tidak ada'];
+        $data['karakteristik_kandidat'] = fake()->randomElement($opsiYaTidak);
+        $data['kebutuhan_kontekstualisasi_terkait_tempat_kerja'] = fake()->randomElement($opsiYaTidak);
+        $data['Saran_yang_diberikan_oleh_paket_pelatihan'] = fake()->randomElement($opsiYaTidak);
+        $data['penyesuaian_perangkat_asesmen'] = fake()->randomElement($opsiYaTidak);
+        $data['peluang_kegiatan_asesmen_terintegrasi_dan_perubahan_alat_asesmen'] = fake()->randomElement($opsiYaTidak);
+        $data['feedback_ia01'] = fake()->randomElement($opsiYaTidak);
+        $data['rekomendasi_IA04B'] = 'kompeten';
+
+        // 4. Tahap Keputusan (AK-02)
+        // Chance K: 2/3, BK: 1/3
+        $hasilAkhir = fake()->randomElement(['kompeten', 'kompeten', 'belum kompeten']); 
+
+        $data['rekomendasi_hasil_asesmen_AK02'] = $hasilAkhir;
+        $data['tindakan_lanjut_AK02'] = $hasilAkhir == 'kompeten' ? 'Terbitkan sertifikat' : 'Perlu asesmen ulang';
+        $data['komentar_AK02'] = fake()->sentence();
+        $data['catatan_asesi_AK03'] = 'Setuju dengan keputusan asesor';
+
+        // 5. Tahap Pleno (AK-05)
+        $data['rekomendasi_AK05'] = $hasilAkhir;
+        $data['keterangan_AK05'] = 'Proses berjalan lancar';
+        $data['catatan_AK05'] = 'Tidak ada keberatan';
+        $data['rekomendasi1_AK06'] = 'Lanjut proses sertifikasi';
+
+        return $data;
     }
 }
