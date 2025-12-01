@@ -46,9 +46,9 @@ class DatabaseSeeder extends Seeder
                 // 3. Data pendukung lainnya
             JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
             DataSertifikasiAsesiSeeder::class,
-            TujuanAssesmenMapa01::class,
-            MasterPoinSiapaAsesmenSeeder::class,
-            PoinHubunganStandarSeeder::class,
+            // TujuanAssesmenMapa01::class,
+            // MasterPoinSiapaAsesmenSeeder::class,
+            // PoinHubunganStandarSeeder::class,
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
@@ -58,10 +58,10 @@ class DatabaseSeeder extends Seeder
 
         // Panggil seeder Role dan User (Admin)
         $this->call([
-            RoleSeeder::class, // Membuat role 1, 2, 3
-            UserSeeder::class, // Membuat 1 user 'admin' (role_id 1)
-            JenisTukSeeder::class, // Membuat 2 jenis_tukq
-            CategorySeeder::class,
+            // RoleSeeder::class, // Duplicate
+            // UserSeeder::class, // Duplicate
+            // JenisTukSeeder::class, // Duplicate
+            // CategorySeeder::class, // Duplicate
         ]);
 
         Asesor::factory(20)->create();

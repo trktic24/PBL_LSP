@@ -123,7 +123,7 @@
         
         <h2 class="text-[24px] font-semibold mb-2 tracking-wide text-gray-800">Recovery Akun</h2>
         <p class="text-sm text-gray-500 mb-8 leading-relaxed">
-          Masukkan username yang terdaftar untuk mereset password Anda.
+          Masukkan email yang terdaftar untuk mereset password Anda.
         </p>
 
         @if(session('status'))
@@ -142,12 +142,12 @@
           @csrf
 
           <div class="flex flex-col w-full">
-            <label class="text-sm font-medium text-gray-700 mb-1">Username</label>
-            <input type="text" name="username" value="{{ old('username') }}" autocomplete="username"
-              class="px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all @error('username') border-red-500 @enderror"
-              placeholder="Masukkan username Anda" required autofocus>
+            <label class="text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <input type="email" name="email" value="{{ old('email') }}" autocomplete="email"
+              class="px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all @error('email') border-red-500 @enderror"
+              placeholder="Masukkan email Anda" required autofocus>
 
-            @error('username')
+            @error('email')
             <span class="text-xs text-red-500 mt-1">{{ $message }}</span>
             @enderror
           </div>

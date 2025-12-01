@@ -28,10 +28,12 @@ class SkemaFactory extends Factory
     {
         return [
             // Sesuai dengan migration 'categorie_id'
-            'categorie_id' => Categorie::factory(),
+            'category_id' => Category::factory(),
             
             // Sesuai dengan migration 'id_kelompok_pekerjaan' (BARU)
             //'id_kelompok_pekerjaan' => \App\Models\KelompokPekerjaan::factory(),
+            'nomor_skema' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' .
+                            $this->faker->numberBetween(100, 999) . '.01',
 
             // Diubah dari 'kode_unit' menjadi 'nomor_skema' (DIUBAH)
             // Ditambahkan unique() karena ada constraint ->unique() di migration

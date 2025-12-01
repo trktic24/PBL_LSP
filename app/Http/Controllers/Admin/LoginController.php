@@ -1,16 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin; // Namespace adjusted if file is in Admin folder
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+use Illuminate\View\View;
 
 class LoginController extends Controller
 {
     /**
      * Menampilkan halaman form login.
      */
-    public function showLoginForm()
+    public function showLoginForm(): View
     {
         return view('login.login_admin'); 
     }
@@ -18,48 +23,33 @@ class LoginController extends Controller
     /**
      * Memproses data login yang dikirim dari form.
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request): RedirectResponse
     {
-        // 1. Validasi input
-        $credentials = $request->validate([
-            'username' => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ]);
+        $request->authenticate();
 
-        // 2. Coba login
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            
-            // 3. Jika berhasil, amankan sesi
-            $request->session()->regenerate();
+        $request->session()->regenerate();
 
-            // 4. Arahkan ke dashboard
-            return redirect()->intended(route('dashboard'));
-        }
-
-        // 5. Jika gagal
-        // [PERBAIKAN PENTING] Tambahkan withInput agar username tidak hilang
-        return back()
-            ->with('error', 'Username atau Password salah.')
-            ->withInput($request->only('username')); 
+        return redirect()->intended(route('dashboard'));
     }
 
     /**
      * Memproses logout.
      */
-    public function logout(Request $request)
+    public function logout(Request $request): RedirectResponse
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
+
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
         
-        // [PERBAIKAN] Gunakan nama rute yang sudah kita definisikan di web.php
         return redirect()->route('login_admin');
     }
 
     /**
      * Menampilkan halaman lupa password.
      */
-    public function showForgotPassword()
+    public function showForgotPassword(): View
     {
         return view('login.forgot_pass'); 
     }
@@ -67,10 +57,18 @@ class LoginController extends Controller
     /**
      * Menangani pengiriman link reset password.
      */
-    public function sendResetLink(Request $request)
+    public function sendResetLink(Request $request): RedirectResponse
     {
-        $request->validate(['username' => 'required|string']);
+        $request->validate(['email' => 'required|email']);
 
-        return back()->with('success', 'Jika username terdaftar, instruksi reset password akan dikirim (Fitur ini simulasi).');
+        // Kirim link reset password menggunakan mekanisme bawaan Laravel/Breeze
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status == Password::RESET_LINK_SENT
+                    ? back()->with('status', __($status))
+                    : back()->withInput($request->only('email'))
+                            ->withErrors(['email' => __($status)]);
     }
 }
