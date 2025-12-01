@@ -93,8 +93,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="p-2 text-xs italic bg-gray-50 border-t border-gray-300">*Coret yang tidak perlu</div>
-
 
         <div class="border border-gray-900 shadow-md mb-6">
             <div class="bg-gray-100 p-3 border-b border-gray-900">
