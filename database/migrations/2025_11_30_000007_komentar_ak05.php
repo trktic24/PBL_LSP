@@ -10,12 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('respon_ak02', function (Blueprint $table) {
-            $table->id('id_respon_ak02');
-            $table->foreignId('id_poin_ak02')->constrained('poin_ak02', 'id_poin_ak02')->onUpdate('cascade')->onDelete('cascade');
+        Schema::create('komentar_ak05', function (Blueprint $table) {
+            $table->id('id_komentar_ak05');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('respon')->nullable(); // Assuming respon might be text input
-            $table->enum('kompeten', ['K', 'BK'])->nullable(); // K = Kompeten, BK = Belum Kompeten
+            $table->foreignId('id_ak05')->constrained('ak05', 'id_ak05')->onUpdate('cascade')->onDelete('cascade');
+
+            // isi kolom tabel komentar_ak05
+            $table->enum('rekomendasi', ['K', 'BK'])->comment('K=Kompeten, BK=Belum Kompeten');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('respon_ak02');
+        Schema::dropIfExists('komentar_ak05');
     }
 };
