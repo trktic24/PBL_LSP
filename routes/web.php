@@ -87,9 +87,7 @@ Route::get('/IA_08', function () {
     return view('frontend/IA_08/IA_08');
 })->name('IA08');
 
-// ============================
-// IA11 ROUTES
-// ============================
+
 Route::get('/FR_IA_11', [Ia11Controller::class, 'create'])->name('ia11.create');
 Route::post('/FR_IA_11/store', [Ia11Controller::class, 'store'])->name('ia11.store');
 // ============================
