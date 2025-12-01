@@ -14,7 +14,6 @@ class DataSertifikasiAsesi extends Model
     use HasFactory;
 
     /**
-     * Nama tabel sesuai migrasi.
      * Nama tabel yang terkait dengan model.
      *
      * @var string
@@ -22,7 +21,6 @@ class DataSertifikasiAsesi extends Model
     protected $table = 'data_sertifikasi_asesi';
 
     /**
-     * Primary key kustom sesuai migrasi.
      * Primary key yang terkait dengan tabel.
      *
      * @var string
@@ -30,12 +28,10 @@ class DataSertifikasiAsesi extends Model
     protected $primaryKey = 'id_data_sertifikasi_asesi';
 
     /**
-     * Kolom tanggal yang harus di-cast otomatis oleh Laravel.
+     * Atribut yang dapat diisi secara massal.
+     *
+     * @var array<int, string>
      */
-    protected $casts = [
-        'tanggal_daftar' => 'date',
-    ];
-
     protected $fillable = [
         'id_asesi',
         'id_jadwal',
@@ -63,7 +59,7 @@ class DataSertifikasiAsesi extends Model
         'catatan_AK05',
         'rekomendasi1_AK06',
         'rekomendasi2_AK06',
-        'status_sertifikasi',
+        'rekomendasi_ia01',
     ];
 
     /**
@@ -71,6 +67,9 @@ class DataSertifikasiAsesi extends Model
      *
      * @var array<string, string>
      */
+    protected $casts = [
+        'tanggal_daftar' => 'date',
+    ];
 
     /**
      * Mendapatkan data asesi yang memiliki data sertifikasi ini.
@@ -88,12 +87,6 @@ class DataSertifikasiAsesi extends Model
     {
         // Pastikan nama modelnya Schedule (sesuai controller Anda) atau Jadwal
         return $this->belongsTo(Schedule::class, 'id_jadwal', 'id_jadwal');
-    }
-
-    // Relasi ke tabel ASESOR
-    public function asesor()
-    {
-        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
     }
 
     /**

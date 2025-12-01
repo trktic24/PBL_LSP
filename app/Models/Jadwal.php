@@ -35,7 +35,7 @@ class Jadwal extends Model
      * Kita menggunakan Custom Accessor di bawah untuk Null Safety yang lebih baik.
      */
     protected $casts = [
-                'tanggal_mulai' => 'datetime',
+        'tanggal_mulai' => 'datetime',
         'tanggal_selesai' => 'datetime',
         'tanggal_pelaksanaan' => 'date',
         'waktu_mulai' => 'datetime',
@@ -81,19 +81,6 @@ class Jadwal extends Model
     public function skema()
     {
         return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
-    }
-
-    public function asesor()
-    {
-        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
-    }
-    public function asesi()
-    {
-        // Sintaks: return $this->belongsToMany(ModelTujuan, 'nama_tabel_pivot', 'foreign_key_model_ini', 'foreign_key_model_tujuan');
-
-        // Sesuaikan 'asesi_jadwal', 'id_jadwal', dan 'id_asesi'
-        // dengan nama tabel pivot dan kolom Anda
-        return $this->belongsToMany(Asesi::class, 'data_sertifikasi_asesi', 'id_jadwal', 'id_asesi');
     }
 
     public function dataSertifikasiAsesi(): HasMany

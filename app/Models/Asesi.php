@@ -14,8 +14,6 @@ class Asesi extends Model
 
     protected $table = 'asesi';
     protected $primaryKey = 'id_asesi';
-    protected $guarded = [];
-
 
     protected $fillable = [
         'id_user',

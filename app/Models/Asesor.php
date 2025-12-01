@@ -59,8 +59,13 @@ class Asesor extends Model
     }
 
     // Relasi: Satu Asesor punya satu Skema
-    public function skema(): BelongsTo
+    public function skema()
     {
-        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema'); // FK, Owner Key
+        return $this->belongsToMany(
+            Skema::class,           // Model tujuan
+            'transaksi_asesor_skema', // Nama tabel pivot
+            'id_asesor',            // Foreign key di pivot untuk model ini
+            'id_skema'              // Foreign key di pivot untuk model tujuan
+        );
     }
 }

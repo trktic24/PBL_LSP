@@ -28,8 +28,11 @@ class JenisTuk extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['jenis_tuk'];
-
+    protected $fillable = [
+        'sewaktu',
+        'tempat_kerja',
+        'mandiri',
+    ];
 
     /**
      * Mendefinisikan relasi one-to-many ke model Jadwal.
