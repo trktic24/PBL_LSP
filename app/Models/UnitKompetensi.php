@@ -40,4 +40,10 @@ class UnitKompetensi extends Model
         // Model tujuan, Foreign Key, Primary Key di tabel ini
         return $this->hasMany(Elemen::class, 'id_unit_kompetensi', 'id_unit_kompetensi');
     }
+
+    public function pertanyaanLisan() 
+    {
+    // Satu Unit punya Banyak Pertanyaan Lisan
+    return $this->hasMany(PertanyaanLisan::class, 'id_unit_kompetensi');
+    }
 }
