@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banding AK-04</title>
+    <title>Umpan Balik</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -23,7 +23,7 @@
         <div class="max-w-4xl mx-auto">
 
             <h1 class="text-4xl font-bold text-gray-900 mb-10">
-                Formulir Banding (AK-04)
+                Formulir Umpan Balik
             </h1>
 
             <!-- Form -->
@@ -31,7 +31,6 @@
 
                 @csrf
 
-                <input type="hidden" name="id_respon_ak04" value="{{ $respon->id_respon_ak04 ?? '' }}">
                 <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $asesi->id_data_sertifikasi_asesi ?? '' }}">
 
                 <!-- Informasi -->
@@ -56,72 +55,186 @@
 
                         <tbody class="bg-white divide-y divide-gray-200">
 
-                            <!-- 1. Penjelasan Banding -->
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4">
-                                    <p class="text-sm text-gray-700">
-                                        Apakah proses banding telah dijelaskan kepada Anda?
-                                    </p>
-                                </td>
+                        <!-- 1. Penjelasan proses asesmen -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Saya mendapatkan penjelasan yang cukup memadai mengenai proses asesmen/uji kompetensi.
+                                </p>
+                            </td>
 
-                                <td class="px-6 py-4 text-center">
-                                    <input type="radio" name="penjelasan_banding" value="1"
-                                           class="w-5 h-5" required>
-                                </td>
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="penjelasan_proses_asesmen" value="1" class="w-5 h-5" required>
+                            </td>
 
-                                <td class="px-6 py-4 text-center">
-                                    <input type="radio" name="penjelasan_banding" value="0"
-                                           class="w-5 h-5" required>
-                                </td>
-                            </tr>
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="penjelasan_proses_asesmen" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
 
-                            <!-- 2. Diskusi dengan Asesor -->
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4">
-                                    <p class="text-sm text-gray-700">
-                                        Apakah Anda telah mendiskusikan banding dengan asesor?
-                                    </p>
-                                </td>
+                        <!-- 2. Memahami standar kompetensi -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Saya diberikan kesempatan untuk mempelajari standar kompetensi yang akan diujikan dan menilai diri sendiri terhadap pencapaiannya.
+                                </p>
+                            </td>
 
-                                <td class="px-6 py-4 text-center">
-                                    <input type="radio" name="diskusi_dengan_asesor" value="1"
-                                           class="w-5 h-5" required>
-                                </td>
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="memahami_standar_kompetensi" value="1" class="w-5 h-5" required>
+                            </td>
 
-                                <td class="px-6 py-4 text-center">
-                                    <input type="radio" name="diskusi_dengan_asesor" value="0"
-                                           class="w-5 h-5" required>
-                                </td>
-                            </tr>
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="memahami_standar_kompetensi" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
 
-                            <!-- 3. Melibatkan Orang Lain -->
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4">
-                                    <p class="text-sm text-gray-700">
-                                        Apakah Anda melibatkan orang lain dalam proses banding ini?
-                                    </p>
-                                </td>
+                        <!-- 3. Diskusi metode dengan asesor -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Asesor memberikan kesempatan untuk mendiskusikan/menegosiasikan metode, instrumen, dan sumber asesmen, serta jadwal asesmen.
+                                </p>
+                            </td>
 
-                                <td class="px-6 py-4 text-center">
-                                    <input type="radio" name="melibatkan_orang_lain" value="1"
-                                           class="w-5 h-5" required>
-                                </td>
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="diskusi_metode_dengan_asesor" value="1" class="w-5 h-5" required>
+                            </td>
 
-                                <td class="px-6 py-4 text-center">
-                                    <input type="radio" name="melibatkan_orang_lain" value="0"
-                                           class="w-5 h-5" required>
-                                </td>
-                            </tr>
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="diskusi_metode_dengan_asesor" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
 
-                        </tbody>
+                        <!-- 4. Menggali bukti pendukung -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Asesor berusaha menggali seluruh bukti pendukung yang sesuai dengan latar belakang pelatihan dan pengalaman yang saya miliki.
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="menggali_bukti_pendukung" value="1" class="w-5 h-5" required>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="menggali_bukti_pendukung" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
+
+                        <!-- 5. Kesempatan demonstrasi kompetensi -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Saya sepenuhnya diberikan kesempatan untuk mendemonstrasikan kompetensi yang saya miliki selama asesmen.
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="kesempatan_demos_kompetensi" value="1" class="w-5 h-5" required>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="kesempatan_demos_kompetensi" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
+
+                        <!-- 6. Penjelasan keputusan asesmen -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Saya mendapatkan penjelasan yang memadai mengenai keputusan asesmen.
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="penjelasan_keputusan_asesmen" value="1" class="w-5 h-5" required>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="penjelasan_keputusan_asesmen" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
+
+                        <!-- 7. Umpan balik setelah asesmen -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Asesor memberikan umpan balik yang mendukung setelah asesmen serta tindak lanjutnya.
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="umpan_balik_setelah_asesmen" value="1" class="w-5 h-5" required>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="umpan_balik_setelah_asesmen" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
+
+                        <!-- 8. Mempelajari dokumen asesmen -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Asesor bersama saya mempelajari semua dokumen asesmen serta menandatanganinya.
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="mempelajari_dokumen_asesmen" value="1" class="w-5 h-5" required>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="mempelajari_dokumen_asesmen" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
+
+                        <!-- 9. Jaminan kerahasiaan -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Saya mendapatkan jaminan kerahasiaan hasil asesmen serta penjelasan penanganan dokumen asesmen.
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="jaminan_kerahasiaan" value="1" class="w-5 h-5" required>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="jaminan_kerahasiaan" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
+
+                        <!-- 10. Komunikasi efektif asesor -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-gray-700">
+                                    Asesor menggunakan keterampilan komunikasi efektif selama asesmen.
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="komunikasi_efektif_asesor" value="1" class="w-5 h-5" required>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <input type="radio" name="komunikasi_efektif_asesor" value="0" class="w-5 h-5" required>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
                     </table>
                 </div>
 
                 <!-- Alasan Banding -->
                 <div class="mt-6">
-                    <label class="text-sm font-medium text-gray-700">Alasan Mengajukan Banding:</label>
-                    <textarea name="alasan_banding" rows="4"
-                              class="mt-2 w-full border-gray-300 rounded-lg text-sm"></textarea>
+                    <label class="text-sm font-medium text-gray-700">Catatan/komentar (apabila ada):</label>
+                    <textarea name="catatan" rows="4"
+                              class="border-2 border-gray-600 focus:border-blue-600 focus:ring-2 focus:ring-blue-300 rounded-md p-2 w-full"></textarea>
                 </div>
 
                 <div class="flex justify-between items-center mt-12">

@@ -9,15 +9,22 @@ class UmpanBalik extends Model
 {
     use HasFactory;
 
-    protected $table = 'respon_ak04';
-    protected $primaryKey = 'id_respon_ak04';
+    protected $table = 'respon_ak03';
+    protected $primaryKey = 'id_umpan_balik';
 
     protected $fillable = [
         'id_data_sertifikasi_asesi',
-        'penjelasan_banding',
-        'diskusi_dengan_asesor',
-        'melibatkan_orang_lain',
-        'alasan_banding',
+        'penjelasan_proses_asesmen',
+        'memahami_standar_kompetensi',
+        'diskusi_metode_dengan_asesor',
+        'menggali_bukti_pendukung',
+        'kesempatan_demos_kompetensi',
+        'penjelasan_keputusan_asesmen',
+        'umpan_balik_setelah_asesmen',
+        'mempelajari_dokumen_asesmen',
+        'jaminan_kerahasiaan',
+        'komunikasi_efektif_asesor',
+        'catatan',
     ];
 
     /**

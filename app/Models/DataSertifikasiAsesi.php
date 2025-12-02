@@ -47,11 +47,21 @@ class DataSertifikasiAsesi extends Model
     // app/Models/DataSertifikasiAsesi.php
     public function asesi()
     {
-    return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
+        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
+    }
+
+    public function jadwal()
+    {
+        return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
     }
 
     public function UmpanBalik()
     {
         return $this->hasMany(UmpanBalik::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+    
+    public function Banding()
+    {
+        return $this->hasMany(Banding::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }

@@ -16,6 +16,7 @@
 </head>
 <body class="bg-gray-100">
 
+
     <div class="flex min-h-screen">
         
         <!-- Catatan: x-sidebar adalah custom component, diasumsikan berfungsi -->
@@ -25,12 +26,11 @@
             <div class="max-w-3xl mx-auto">
                 
                 <!-- START: FORM WRAPPER -->
-                <form id="bandingForm" method="POST" action="{{ route('banding.store') }}">
+                <form action='/banding/store' method="POST">
                     @csrf <!-- WAJIB untuk form POST di Laravel -->
 
                     <!-- Input Hidden Wajib untuk Controller Store -->
-                    <input type="hidden" name="id_asesmen" value="{{ $dataAsesmen->id_asesmen ?? '' }}">
-                    <input type="hidden" name="id_asesi" value="{{ $id_asesi ?? '' }}"> <!-- Diambil dari Controller -->
+                    <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $dataSertifikasiAsesi->id_data_sertifikasi_asesi ?? '' }}"> <!-- Diambil dari Controller -->
                     <input type="hidden" name="tanda_tangan_asesi" id="tanda_tangan_asesi" required>
 
 
@@ -56,10 +56,10 @@
                         
                         <!-- Menampilkan data dari Controller (dataAsesmen) -->
                         <div class="col-span-1 font-medium text-gray-800">Nama Asesor</div>
-                        <div class="col-span-3 text-gray-800">: {{ $dataAsesmen->nama_asesor ?? 'Data Kosong' }}</div>
+                        <div class="col-span-3 text-gray-800">: {{ $namaAsesor }}</div>
 
                         <div class="col-span-1 font-medium text-gray-800">Nama Asesi</div>
-                        <div class="col-span-3 text-gray-800">: {{ $dataAsesmen->nama_asesi ?? 'Data Kosong' }}</div>
+                        <div class="col-span-3 text-gray-800">: {{ $namaAsesi }}</div>
                     </div>
 
                     <div class="text-sm text-gray-700 mb-6">Jawablah dengan Ya atau Tidak pertanyaan-pertanyaan berikut ini :</div>
@@ -123,8 +123,8 @@
                     <div class="mt-6 text-sm text-gray-700 space-y-2">
                         <p>Banding ini diajukan atas Keputusan Asesmen yang dibuat terhadap Skema Sertifikasi Okupasi Nasional berikut:</p>
                         <!-- Menampilkan data dari Controller (dataAsesmen) -->
-                        <p>Skema Sertifikasi: <span class="font-medium text-gray-900">{{ $dataAsesmen->skema_sertifikasi ?? 'Data Kosong' }}</span></p>
-                        <p>No. Skema Sertifikasi: <span class="font-medium text-gray-900">{{ $dataAsesmen->no_skema_sertifikasi ?? 'Data Kosong' }}</span></p>
+                        <p>Skema Sertifikasi: <span class="font-medium text-gray-900">{{ $namaSkema }}</span></p>
+                        <p>No. Skema Sertifikasi: <span class="font-medium text-gray-900">{{ $noSkema }}</span></p>
                     </div>
 
                     <div class="mt-6">
@@ -149,9 +149,10 @@
                     </div>
 
                     <div class="flex justify-between items-center mt-12">
-                        <button type="button" class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-colors">
+                        <a href="/tracker"
+                           class="px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full">
                             Sebelumnya
-                        </button>
+                        </a>
                         <!-- Tombol Kirim bertipe submit untuk mengirim form -->
                         <button type="submit" class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 shadow-md transition-colors">
                             Kirim

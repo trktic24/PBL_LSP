@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TandaTanganController;
 use App\Http\Controllers\UmpanBalikController;
+use App\Http\Controllers\BandingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
 
@@ -96,10 +97,6 @@ Route::get('/praasesmen8', function () {
     return view('praasesmen8');
 });
 
-Route::get('/banding', function () {
-    return view('banding');
-});
-
 Route::get('/pertanyaan_lisan', function () {
     return view('pertanyaan_lisan');
 });
@@ -134,9 +131,19 @@ Route::get('/laporan', function () {
 Route::get('/profil', function () {
     return view('frontend/profil');
 })->name('profil');
+Route::get('/terimakasih/{id?}', function ($id = null) {
+    return view('terimakasih', compact('id'));
+})->name('terimakasih');
+Route::get('/terimakasih_banding/{id?}', function ($id = null) {
+    return view('terimakasih_banding', compact('id'));
+})->name('terimakasih_banding');
+
 
 Route::post('/simpan/tandatangan', [TandaTanganController::class, 'simpanTandaTangan'])
     ->name('simpan.tandatangan'); 
+
+Route::get('/detail_umpan_balik/{id}', [UmpanBalikController::class, 'show'])->name('detail_umpan_balik');
+Route::get('/detail_banding/{id}', [BandingController::class, 'show'])->name('detail_banding');
 
 Route::post('/umpan_balik/store', [UmpanBalikController::class, 'store']);
 Route::get('/umpan_balik', [UmpanBalikController::class, 'index']);
@@ -144,6 +151,10 @@ Route::get('/umpan_balik/{id}', [UmpanBalikController::class, 'show']);
 Route::put('/umpan_balik/{id}', [UmpanBalikController::class, 'update']);
 Route::delete('/umpan_balik/{id}', [UmpanBalikController::class, 'destroy']);
 
+Route::get('/banding', [BandingController::class, 'create']);
+Route::post('/banding/store', [BandingController::class, 'store']);
+Route::put('banding/{id}', [BandingController::class, 'update']);
+Route::delete('/banding/{id}', [BandingController::class, 'destroy']);
     
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

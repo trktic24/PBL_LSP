@@ -20,27 +20,32 @@ class UmpanBalikController extends Controller
 
     public function show($id)
     {
-        return response()->json(
-            UmpanBalik::with('dataSertifikasiAsesi')->findOrFail($id)
-        );
+        $respon = UmpanBalik::with('dataSertifikasiAsesi')->findOrFail($id);
+
+        return view('detail_umpan_balik', ['respon' => $respon]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
-            'penjelasan_banding'        => 'nullable|boolean',
-            'diskusi_dengan_asesor'     => 'nullable|boolean',
-            'melibatkan_orang_lain'     => 'nullable|boolean',
-            'alasan_banding'            => 'nullable|string',
+            'penjelasan_proses_asesmen' => 'required|boolean',
+            'memahami_standar_kompetensi'   => 'required|boolean',
+            'diskusi_metode_dengan_asesor'  => 'required|boolean',
+            'menggali_bukti_pendukung'  => 'required|boolean',
+            'kesempatan_demos_kompetensi'   => 'required|boolean',   
+            'penjelasan_keputusan_asesmen'  => 'required|boolean',
+            'umpan_balik_setelah_asesmen'   => 'required|boolean',
+            'mempelajari_dokumen_asesmen'   => 'required|boolean',
+            'jaminan_kerahasiaan'   => 'required|boolean',
+            'komunikasi_efektif_asesor' => 'required|boolean',
+            'catatan'            => 'nullable|string',
         ]);
 
         $item = UmpanBalik::create($validated);
 
-        return response()->json([
-            'message' => 'Umpan Balik berhasil dibuat',
-            'data' => $item
-        ], 201);
+        return redirect()->route('terimakasih', ['id' => $item->id_umpan_balik]);
+
     }
 
     public function update(Request $request, $id)
@@ -49,10 +54,17 @@ class UmpanBalikController extends Controller
 
         $validated = $request->validate([
             'id_data_sertifikasi_asesi' => 'nullable|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
-            'penjelasan_banding'        => 'nullable|boolean',
-            'diskusi_dengan_asesor'     => 'nullable|boolean',
-            'melibatkan_orang_lain'     => 'nullable|boolean',
-            'alasan_banding'            => 'nullable|string',
+            'penjelasan_proses_asesmen' => 'required|boolean',
+            'memahami_standar_kompetensi'   => 'required|boolean',
+            'diskusi_metode_dengan_asesor'  => 'required|boolean',
+            'menggali_bukti_pendukung'  => 'required|boolean',
+            'kesempatan_demos_kompetensi'   => 'required|boolean',   
+            'penjelasan_keputusan_asesmen'  => 'required|boolean',
+            'umpan_balik_setelah_asesmen'   => 'required|boolean',
+            'mempelajari_dokumen_asesmen'   => 'required|boolean',
+            'jaminan_kerahasiaan'   => 'required|boolean',
+            'komunikasi_efektif_asesor' => 'required|boolean',
+            'catatan'            => 'nullable|string',
         ]);
 
         $item->update($validated);
