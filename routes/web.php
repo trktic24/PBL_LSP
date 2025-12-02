@@ -89,6 +89,7 @@ Route::get('/IA_08', function () {
 // ==========================================================
 // RUTE FR.IA.11 (CEKLIST REVIU PRODUK) - MODIFIKASI INI
 // ==========================================================
+Route::get('/FR_IA_11', [Ia11Controller::class, 'showSingle'])->name('ia11.show.single');
 // Rute Tampilan (show) sekarang memerlukan ID data IA11
 Route::get('/FR_IA_11/{ia11}', [Ia11Controller::class, 'show'])->name('ia11.show');
 // Rute Update (put) sekarang menangani penyimpanan data dengan logika peran

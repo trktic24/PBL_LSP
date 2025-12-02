@@ -10,12 +10,24 @@ use Carbon\Carbon;
 class Ia11Controller extends Controller
 {
     /**
-     * Menampilkan formulir FR.IA.11 berdasarkan ID.
-     * 
+     * Helper untuk mendapatkan ID Sertifikasi Asesi yang aktif.
+     * Logika ini harus disesuaikan dengan struktur relasi User Anda.
+     */
+    private function getSertifikasiId() {
+        // PERHATIAN: GANTI '1' dengan logika nyata untuk mendapatkan ID sertifikasi aktif
+        // Misalnya: return Auth::user()->asesi->id_data_sertifikasi_aktif;
+        // Untuk tujuan demonstrasi dan uji coba, kita gunakan ID dummy:
+        return 1; 
+    }
+
+    /**
+     * Menampilkan formulir FR.IA.11 berdasarkan ID IA11 (Akses dengan parameter {ia11}).
+     * Digunakan oleh Admin/Asesor untuk melihat form Asesi spesifik.
      */
     public function show($id)
     {
-        $ia11 = Ia11::findOrFail($id);
+        // Mencari berdasarkan ID formulir yang dilewatkan di URL
+        $ia11 = Ia11::findOrFail($id); 
         $user = Auth::user(); 
         
         // Mengambil data JSON dari kolom 'rancangan_produk'
@@ -32,6 +44,36 @@ class Ia11Controller extends Controller
             'nama_asesor' => 'Budi Santoso', 
             'nama_asesi' => 'Siti Aminah', 
             // Mengambil tanggal dari DB, jika kosong ambil tanggal hari ini
+            'tanggal_sekarang' => $ia11->tanggal_pengoperasian ?? Carbon::now()->toDateString(),
+        ];
+
+        return view('frontend.FR_IA_11', $data); 
+    }
+
+    /**
+     * Menampilkan formulir FR.IA.11 berdasarkan ID Sertifikasi Asesi yang aktif (Akses tanpa ID parameter).
+     * Digunakan oleh Asesi/Asesor untuk mengakses form mereka sendiri dengan cepat.
+     */
+    public function showSingle()
+    {
+        $idSertifikasi = $this->getSertifikasiId();
+
+        // Mencari berdasarkan id_data_sertifikasi_asesi yang terkait dengan pengguna/sesi
+        $ia11 = Ia11::where('id_data_sertifikasi_asesi', $idSertifikasi)->firstOrFail();
+        
+        $user = Auth::user(); 
+        $asesor_data = $ia11->rancangan_produk ?? [];
+        
+        $data = [
+            'ia11' => $ia11, 
+            'user' => $user, 
+            'asesor_data' => $asesor_data,
+            
+            // --- Data Dummy (Ganti dengan relasi yang sebenarnya) ---
+            'judul_skema' => 'Web Developer Profesional',
+            'nomor_skema' => 'SKM-WD-01',
+            'nama_asesor' => 'Budi Santoso', 
+            'nama_asesi' => 'Siti Aminah', 
             'tanggal_sekarang' => $ia11->tanggal_pengoperasian ?? Carbon::now()->toDateString(),
         ];
 
@@ -132,7 +174,7 @@ class Ia11Controller extends Controller
         ];
         
         foreach ($fields as $field) {
-            // Checkbox hanya mengirim nilai jika dicentang. Kita simpan sebagai boolean true/false
+            
             $penilaian[$field] = $request->has($field);
         }
 
