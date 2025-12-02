@@ -32,8 +32,8 @@ class DashboardController extends Controller
         // ----------------------------------------------------
         // 🛡️ TAHAP 2: CEK STATUS VERIFIKASI (SATPAM TAMBAHAN)
         // ----------------------------------------------------
-        // Jika is_verified = 0 (False/Pending), tendang keluar.
-        if ($user->asesor->is_verified == 0) {
+        // Jika status_verifikasi != 'approved', tendang keluar.
+        if ($user->asesor->status_verifikasi !== 'approved') {
 
             Auth::logout(); // Logout paksa
             $request->session()->invalidate();

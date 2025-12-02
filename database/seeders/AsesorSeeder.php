@@ -18,13 +18,14 @@ class AsesorSeeder extends Seeder
         if ($asesorUsers->isEmpty()) {
             // kalau belum ada user asesor, buat beberapa dummy user
             $asesorUsers = User::factory()->count(5)->create([
-                'role_id' => 3, // pastikan id 2 = role asesor
+                'role_id' => 3, // pastikan id 3 = role asesor
             ]);
         }
 
         foreach ($asesorUsers as $user) {
             Asesor::factory()->create([
                 'id_user' => $user->id_user, // gunakan id_user bukan id
+                'status_verifikasi' => 'approved', // Force approved for testing
             ]);
         }
     }

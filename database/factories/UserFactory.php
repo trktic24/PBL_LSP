@@ -45,13 +45,13 @@ class UserFactory extends Factory
     }
 
     /**
-     * State khusus untuk membuat Asesor (role_id = 2)
+     * State khusus untuk membuat Asesor (role_id = 3)
      * (Ini akan dipanggil oleh AsesorFactory)
      */
     public function asesor(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role_id' => 2,
+            'role_id' => 3,
         ]);
     }
 }
