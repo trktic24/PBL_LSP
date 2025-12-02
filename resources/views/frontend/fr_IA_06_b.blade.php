@@ -215,6 +215,7 @@
                 </tbody>
             </table>
         </div>
+        <x-kolom_ttd.penyusunvalidator :sertifikasi="$sertifikasi ?? null" />
     </div>
 
     {{-- ================= TOMBOL SIMPAN HASIL PENILAIAN ================= --}}

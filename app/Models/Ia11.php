@@ -18,4 +18,12 @@ class Ia11 extends Model
         'tanggal_pengoperasian',
         'gambar_produk',
     ];
+
+    /**
+     * Casts: Menginstruksikan Laravel untuk mengkonversi kolom JSON 
+     * menjadi array/object PHP secara otomatis.
+     */
+    protected $casts = [
+        'rancangan_produk' => 'array',
+    ];
 }

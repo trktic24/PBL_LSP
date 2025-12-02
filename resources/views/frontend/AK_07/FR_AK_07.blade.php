@@ -217,6 +217,7 @@
 
         {{-- TANDA TANGAN --}}
         <x-kolom_ttd.asesiasesor
+            :sertifikasi="$sertifikasi"
             :showAsesi="true"
             :showAsesor="true" />
 

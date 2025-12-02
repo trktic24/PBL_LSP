@@ -11,26 +11,27 @@ class Ia11Controller extends Controller
 {
     /**
      * Menampilkan formulir FR.IA.11 berdasarkan ID.
-     * Menggunakan kolom 'rancangan_produk' untuk membaca data penilaian Asesor (JSON).
+     * 
      */
     public function show($id)
     {
         $ia11 = Ia11::findOrFail($id);
         $user = Auth::user(); 
         
-        // Data penilaian Asesor sudah otomatis di-decode oleh Model berkat $casts = ['rancangan_produk' => 'array']
+        // Mengambil data JSON dari kolom 'rancangan_produk'
         $asesor_data = $ia11->rancangan_produk ?? [];
         
         $data = [
             'ia11' => $ia11, 
-            'user' => $user, // KRUSIAL: Objek user (beserta role) dikirim ke view
-            'asesor_data' => $asesor_data, // Data penilaian Asesor yang sudah di-array
+            'user' => $user, 
+            'asesor_data' => $asesor_data,
             
-            // Data dummy/relasi (Sesuaikan dengan relasi yang sebenarnya)
+            // --- Data Dummy (Ganti dengan relasi yang sebenarnya) ---
             'judul_skema' => 'Web Developer Profesional',
             'nomor_skema' => 'SKM-WD-01',
-            'nama_asesor' => 'Budi Santoso', // Ambil dari relasi yang benar
-            'nama_asesi' => 'Siti Aminah',   // Ambil dari relasi yang benar
+            'nama_asesor' => 'Budi Santoso', 
+            'nama_asesi' => 'Siti Aminah', 
+            // Mengambil tanggal dari DB, jika kosong ambil tanggal hari ini
             'tanggal_sekarang' => $ia11->tanggal_pengoperasian ?? Carbon::now()->toDateString(),
         ];
 
@@ -38,7 +39,7 @@ class Ia11Controller extends Controller
     }
 
     /**
-     * Memperbarui data FR.IA.11. Otorisasi berdasarkan peran.
+     * Memperbarui data FR.IA.11. Otorisasi berdasarkan peran (Admin, Asesi, Asesor).
      */
     public function update(Request $request, $id)
     {
@@ -46,76 +47,95 @@ class Ia11Controller extends Controller
         $user = Auth::user();
         $role = $user->role ?? 'guest';
 
+        // 1. Otorisasi Admin (View Only)
         if ($role === 'admin') {
             return back()->with('error', 'Admin hanya memiliki hak lihat (view-only).');
         }
 
-        // ===================================
-        // OTORISASI ASESOR (Menyimpan penilaian ke kolom rancangan_produk (JSON))
-        // ===================================
-        if ($role === 'asesor') {
-            // Data yang akan disimpan Asesor ke dalam JSON
-            $asesor_payload = [
-                // Input Asesor
-                'tuk_type' => $request->input('tuk_type'),
-                'tanggal_asesmen' => $request->input('tanggal_asesmen'),
-                
-                // Penilaian Checkbox (Gunakan request->has() untuk boolean)
-                'penilaian' => [
-                    'h1a_ya' => $request->has('h1a_ya'), 'p1a_ya' => $request->has('p1a_ya'), 
-                    'h1b_ya' => $request->has('h1b_ya'), 'p1b_ya' => $request->has('p1b_ya'),
-                    'h2a_ya' => $request->has('h2a_ya'), 'p2a_ya' => $request->has('p2a_ya'), 
-                    'h3a_ya' => $request->has('h3a_ya'), 'p3a_ya' => $request->has('p3a_ya'), 
-                    'h3b_ya' => $request->has('h3b_ya'), 'p3b_ya' => $request->has('p3b_ya'), 
-                    'h3c_ya' => $request->has('h3c_ya'), 'p3c_ya' => $request->has('p3c_ya'), 
-                    // Tambahkan semua 20 checkbox di sini
-                ],
-                
-                // Rekomendasi & Catatan
-                'rekomendasi_kelompok' => $request->input('rekomendasi_kelompok'),
-                'rekomendasi_unit' => $request->input('rekomendasi_unit'),
-                'catatan_asesor' => $request->input('catatan_asesor'),
-                
-                // Tanda Tangan dan Penyusun/Validator
-                'ttd_asesor' => $request->input('ttd_asesor'),
-                'penyusun_nama_1' => $request->input('penyusun_nama_1'),
-                'validator_nama_1' => $request->input('validator_nama_1'),
-                // ... tambahkan data penyusun/validator lain ...
-            ];
-            
-            // Simpan seluruh payload Asesor sebagai JSON di kolom 'rancangan_produk'
-            $ia11->rancangan_produk = $asesor_payload; // Laravel akan otomatis meng-encode ke JSON karena ada $casts di Model
+        // Ambil data JSON yang sudah ada dari kolom rancangan_produk
+        $rancanganProdukData = $ia11->rancangan_produk ?? [];
 
-            // Simpan data teknis awal (jika Asesor juga mengubahnya)
+        // 2. Data yang dapat diubah oleh ASESI & ASESOR (Kolom DB normal & Data Produk JSON)
+        if ($role === 'asesi' || $role === 'asesor') {
+            // Kolom DB Normal
             $ia11->nama_produk = $request->input('nama_produk');
             $ia11->standar_industri = $request->input('standar_industri');
-            // ... (kolom lain yang diizinkan diisi/diubah asesor di data awal)
-            
-            $ia11->save();
-            return back()->with('success', 'Formulir FR.IA.11 berhasil diperbarui oleh Asesor.');
+            $ia11->tanggal_pengoperasian = $request->input('tanggal_pengoperasian');
+            $ia11->gambar_produk = $request->input('gambar_produk');
+
+            // Data Produk yang tersimpan di dalam JSON
+            $rancanganProdukData['spesifikasi_umum'] = $request->input('spesifikasi_umum');
+            $rancanganProdukData['dimensi_produk'] = $request->input('dimensi_produk');
+            $rancanganProdukData['bahan_produk'] = $request->input('bahan_produk');
+            $rancanganProdukData['spesifikasi_teknis'] = $request->input('spesifikasi_teknis');
         }
 
-        // ===================================
-        // OTORISASI ASESI (Hanya mengisi data produk dan TTD)
-        // ===================================
+        // 3. Data yang HANYA dapat diubah oleh ASESI (TTD Asesi)
         if ($role === 'asesi') {
-            $validatedData = $request->validate([
-                'nama_produk' => 'nullable|string',
-                'standar_industri' => 'nullable|string',
-                'tanggal_pengoperasian' => 'nullable|date',
-                'gambar_produk' => 'nullable|string',
-                // KARENA TIDAK ADA KOLOM TTD ASESI, kita coba simpan di kolom TERTENTU, 
-                // tapi ini BUKAN solusi yang bersih. Kita asumsikan TTD Asesi juga di payload JSON Asesor 
-                // atau disimpan di 'gambar_produk' atau kolom string yang tersisa.
-            ]);
+            $rancanganProdukData['ttd_asesi'] = $request->input('ttd_asesi');
             
-            // Simpan data produk awal
-            $ia11->fill($validatedData); 
+            // Simpan model setelah pembaruan Asesi
+            $ia11->rancangan_produk = $rancanganProdukData;
             $ia11->save();
             
             return back()->with('success', 'Formulir FR.IA.11 berhasil diperbarui oleh Asesi.');
         }
 
+        // 4. Data yang HANYA dapat diubah oleh ASESOR (Penilaian, Rekomendasi, TTD Asesor)
+        if ($role === 'asesor') {
+            // Data Asesmen
+            $rancanganProdukData['tuk_type'] = $request->input('tuk_type');
+            $rancanganProdukData['tanggal_asesmen'] = $request->input('tanggal_asesmen');
+
+            // Penilaian Checkbox
+            $rancanganProdukData['penilaian'] = $this->extractPenilaianData($request); 
+
+            // Rekomendasi & Catatan
+            $rancanganProdukData['rekomendasi_kelompok'] = $request->input('rekomendasi_kelompok');
+            $rancanganProdukData['rekomendasi_unit'] = $request->input('rekomendasi_unit');
+            $rancanganProdukData['catatan_asesor'] = $request->input('catatan_asesor');
+
+            // Tanda Tangan, Penyusun, Validator
+            $rancanganProdukData['ttd_asesor'] = $request->input('ttd_asesor');
+            
+            for ($i = 1; $i <= 2; $i++) {
+                $rancanganProdukData["penyusun_nama_{$i}"] = $request->input("penyusun_nama_{$i}");
+                $rancanganProdukData["penyusun_nomor_met_{$i}"] = $request->input("penyusun_nomor_met_{$i}");
+                $rancanganProdukData["penyusun_ttd_{$i}"] = $request->input("penyusun_ttd_{$i}");
+                $rancanganProdukData["validator_nama_{$i}"] = $request->input("validator_nama_{$i}");
+                $rancanganProdukData["validator_nomor_met_{$i}"] = $request->input("validator_nomor_met_{$i}");
+                $rancanganProdukData["validator_ttd_{$i}"] = $request->input("validator_ttd_{$i}");
+            }
+            
+            // Simpan model setelah pembaruan Asesor
+            $ia11->rancangan_produk = $rancanganProdukData;
+            $ia11->save();
+            return back()->with('success', 'Formulir FR.IA.11 berhasil diperbarui oleh Asesor.');
+        }
+        
         return back()->with('error', 'Anda tidak memiliki otorisasi untuk mengubah data ini.');
+    }
+    
+    /**
+     * Helper function untuk mengumpulkan semua data checklist penilaian dari request.
+     */
+    protected function extractPenilaianData(Request $request)
+    {
+        $penilaian = [];
+        $fields = [
+            'h1a_ya', 'h1a_tidak', 'p1a_ya', 'p1a_tidak',
+            'h1b_ya', 'h1b_tidak', 'p1b_ya', 'p1b_tidak',
+            'h2a_ya', 'h2a_tidak', 'p2a_ya', 'p2a_tidak',
+            'h3a_ya', 'h3a_tidak', 'p3a_ya', 'p3a_tidak',
+            'h3b_ya', 'h3b_tidak', 'p3b_ya', 'p3b_tidak',
+            'h3c_ya', 'h3c_tidak', 'p3c_ya', 'p3c_tidak',
+        ];
+        
+        foreach ($fields as $field) {
+            // Checkbox hanya mengirim nilai jika dicentang. Kita simpan sebagai boolean true/false
+            $penilaian[$field] = $request->has($field);
+        }
+
+        return $penilaian;
     }
 }

@@ -69,7 +69,7 @@ Route::get('/FR_AK_01', function () {
     return view('frontend/FR_AK_01');
 })->name('FR_AK_01');
 Route::get('/FR_AK_02', function () {
-    return view('frontend/FR_AK_02');
+    return view('frontend/AK_02/FR_AK_02');
 })->name('FR_AK_02');
 Route::get('/FR_AK_03', function () {
     return view('frontend/FR_AK_03');
@@ -127,9 +127,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/ia02-test', function() {
-        return "Route IA02 Terhubung! Silakan akses dengan ID, misal: /ia02/1";
-    });
 
     // Route Utama (Memerlukan ID)
     Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');

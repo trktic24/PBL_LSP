@@ -130,4 +130,9 @@ class DataSertifikasiAsesi extends Model
     {
         return $this->hasOne(HasilPenyesuaianAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+
+    public function penyusunValidator(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PenyusunValidator::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
 }
