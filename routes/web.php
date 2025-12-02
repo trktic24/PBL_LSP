@@ -72,13 +72,13 @@ Route::get('/FR_AK_02', function () {
     return view('frontend/AK_02/FR_AK_02');
 })->name('FR_AK_02');
 Route::get('/FR_AK_03', function () {
-    return view('frontend/FR_AK_03');
+    return view('frontend/AK_03/FR_AK_03');
 })->name('FR_AK_03');
 Route::get('/FR_AK_04', function () {
     return view('frontend/FR_AK_04');
 })->name('FR_AK_04');
 Route::get('/FR_AK_05', function () {
-    return view('frontend/FR_AK_05');
+    return view('frontend/AK_05/FR_AK_05');
 })->name('FR_AK_05');
 Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
 
