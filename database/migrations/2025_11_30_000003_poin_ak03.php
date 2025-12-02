@@ -12,8 +12,11 @@ return new class extends Migration {
     {
         Schema::create('poin_ak03', function (Blueprint $table) {
             $table->id('id_poin_ak03');
+
+            // isi kolom tabel poin_ak03
             $table->string('komponen');
-            $table->string('hasil')->nullable()->comment('ya/tidak');
+            $table->text('catatan')->nullable()->comment('isi catatan jika ada');
+            $table->boolean('hasil')->default(null)->nullable()->comment('1 = ya, 0 = tidak');
             $table->timestamps();
         });
     }

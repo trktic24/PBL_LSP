@@ -1,38 +1,69 @@
-@extends('layouts.app-sidebar') {{-- Menggunakan layout yang sama dengan IA.05A --}}
+@extends('layouts.app-sidebar')
 
 @section('custom_styles')
 <style>
-    /* Tambahkan style untuk transisi accordion */
-    .accordion-content {
-        transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
-        max-height: 0;
-        opacity: 0;
+    /* Referensi gambar (lokal):
+       /mnt/data/a8f810aa-21c6-4bde-87e8-fede3de44320.png
+       /mnt/data/ba250eff-c91b-43ce-971d-cc8db3b7558b.png
+    */
+
+    /* Fallback (tidak digunakan utk animasi, hanya bila JS mati) */
+    .hidden-custom {
+        display: none !important;
+    }
+
+    /* Accordion base - gunakan max-height untuk animasi slide */
+    .accordion-body {
         overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.36s ease, padding 0.28s ease;
+        background: #fff;
     }
-    .accordion-content.active {
-        max-height: 2000px; /* Nilai cukup besar untuk menampung konten */
-        opacity: 1;
+
+    /* Saat terbuka, beri class .is-open dan atur max-height via JS ke scrollHeight */
+    .accordion-body.is-open {
+        /* nilai default; JS akan override dengan scrollHeight */
+        max-height: 2000px;
     }
+
+    /* Inner wrapper untuk padding dan border (sesuai p-6 dan border-t) */
+    .accordion-body > .accordion-inner {
+        padding: 1.5rem; /* p-6 */
+        border-top: 1px solid rgba(229,231,235,1); /* border-t border-gray-200 */
+        background: #fff;
+    }
+
+    /* Header styling */
+    .accordion-header {
+        transition: background-color 0.28s ease;
+        cursor: pointer;
+    }
+
     /* Rotate icon */
-    .accordion-icon {
-        transition: transform 0.3s ease;
+    .icon-chevron {
+        transition: transform 0.28s cubic-bezier(.2,.9,.3,1);
     }
-    .accordion-btn[aria-expanded="true"] .accordion-icon {
+    .rotate-180 {
         transform: rotate(180deg);
     }
+
+    /* Radio checked tweak (optional visual) */
     input[type="radio"]:checked {
         background-color: #2563eb;
         border-color: #2563eb;
     }
-    /* Style untuk menyesuaikan layout sidebar */
+
     .main-content {
         margin-left: 0;
     }
     @media (min-width: 1024px) {
         .main-content {
-            margin-left: 16rem !important; 
+            margin-left: 16rem !important;
         }
     }
+
+    /* Accessibility/fallback */
+    .accordion-body[aria-hidden="true"] { display: none; }
 </style>
 @endsection
 
@@ -52,7 +83,7 @@
         <form action="{{ route('ia07.store') }}" method="POST">
         @csrf
 
-        {{-- Header --}}
+        {{-- Header Form --}}
         <div class="mb-8 border-b border-gray-200 pb-6">
             <h1 class="text-2xl lg:text-4xl font-bold text-gray-900 mb-2">FR.IA.07. Pertanyaan Lisan (ASESOR)</h1>
             <p class="text-gray-600">
@@ -81,7 +112,6 @@
                 <div>
                     <dt class="font-medium text-gray-500 mb-2">Pilih TUK</dt>
                     <dd class="text-gray-900 font-semibold flex flex-wrap gap-4">
-                        {{-- Menggunakan data dinamis JenisTukOptions --}}
                         @forelse($jenisTukOptions as $id => $jenis)
                             <label class="inline-flex items-center">
                                 <input type="radio" name="id_jenis_tuk" value="{{ $id }}" class="form-radio h-4 w-4 text-blue-600" {{ $id == 1 ? 'checked' : '' }}>
@@ -102,7 +132,7 @@
             </dl>
         </div>
 
-        {{-- PANDUAN ASESOR (Warna Biru) --}}
+        {{-- PANDUAN ASESOR --}}
         <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm mb-8">
             <h3 class="text-base font-bold text-blue-800 mb-2">PANDUAN BAGI ASESOR</h3>
             <ul class="list-disc list-inside space-y-1 text-blue-700 text-sm">
@@ -113,26 +143,37 @@
         </div>
 
         {{-- DAFTAR UNIT (ACCORDION DENGAN DATA DINAMIS) --}}
-        <div class="space-y-4 mb-10">
+        <div class="mb-10">
 
             @foreach($units as $index => $unit)
-            <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            @php
+                // Pastikan kode ID aman (ganti titik / karakter aneh)
+                $unitCode = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace('.', '-', $unit['code']));
+                $targetId = 'unit-' . $unitCode;
+            @endphp
+
+            <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm mb-4">
                 
                 {{-- Header Accordion --}}
-                <button type="button" class="accordion-btn w-full bg-blue-50 p-5 flex justify-between items-center text-left hover:bg-blue-100 transition-colors" aria-expanded="{{ $index === 0 ? 'true' : 'false' }}">
+                <button type="button" 
+                        class="accordion-header w-full p-5 flex justify-between items-center text-left hover:bg-blue-100 transition-colors {{ $index === 0 ? 'bg-blue-100' : 'bg-blue-50' }}" 
+                        data-target="{{ $targetId }}"
+                        aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                        style="background-color: {{ $index === 0 ? '#dbeafe' : '#eff6ff' }};">
                     <div>
-                        <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Unit {{ $index + 1 }}</span>
+                        <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">UNIT {{ $index + 1 }}</span>
                         <h3 class="text-lg font-bold text-gray-900">{{ $unit['code'] }}</h3>
                         <p class="text-sm text-gray-600">{{ $unit['title'] }}</p>
                     </div>
-                    <svg class="accordion-icon w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {{-- Icon Panah --}}
+                    <svg class="icon-chevron w-6 h-6 text-blue-600 transform transition-transform duration-200 {{ $index === 0 ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
 
                 {{-- Body Accordion --}}
-                <div class="accordion-content bg-white {{ $index === 0 ? 'active' : '' }}">
-                    <div class="p-6 border-t border-gray-200">
+                <div id="{{ $targetId }}" class="accordion-body {{ $index === 0 ? '' : 'hidden-custom' }}" aria-hidden="{{ $index === 0 ? 'false' : 'true' }}">
+                    <div class="accordion-inner">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
                                 <thead class="bg-gray-800 text-white">
@@ -148,7 +189,9 @@
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-4 py-4 text-sm font-medium text-gray-900 align-top border-r border-gray-200">{{ $q }}.</td>
                                         <td class="px-4 py-4 text-sm text-gray-700 align-top border-r border-gray-200">
-                                            <p class="mb-2 font-bold text-base text-gray-800">P{{ $q }}: Apa yang dimaksud dengan {{ strtolower(substr($unit['title'], 0, 20)) }}...?</p>
+                                            <p class="mb-2 font-bold text-base text-gray-800">
+                                                P{{ $q }}: Apa yang dimaksud dengan menggunakan struktur...?
+                                            </p>
                                             
                                             <div class="mt-4 bg-gray-100 p-3 rounded-md border border-gray-200">
                                                 <p class="text-xs font-semibold text-gray-600 mb-1">Kunci Jawaban:</p>
@@ -156,16 +199,16 @@
                                             </div>
 
                                             <label class="block text-xs font-semibold text-gray-600 mt-3 mb-1">Ringkasan Jawaban Asesi:</label>
-                                            <textarea name="jawaban_{{$unit['code']}}_q{{$q}}" class="w-full border-gray-300 rounded-md text-xs shadow-sm focus:border-blue-500 focus:ring-blue-500" rows="3" placeholder="Tulis ringkasan jawaban Asesi di sini..." required></textarea>
+                                            <textarea name="jawaban_{{ $unitCode }}_q{{ $q }}" class="w-full border-gray-300 rounded-md text-xs shadow-sm focus:border-blue-500 focus:ring-blue-500" rows="3" placeholder="Tulis ringkasan jawaban Asesi di sini..." required></textarea>
                                         </td>
                                         <td class="px-4 py-4 align-top border-gray-200">
                                             <div class="flex flex-col space-y-4 items-center mt-6">
                                                 <label class="inline-flex items-center">
-                                                    <input type="radio" name="keputusan_{{$unit['code']}}_q{{$q}}" value="K" class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer" required>
+                                                    <input type="radio" name="keputusan_{{ $unitCode }}_q{{ $q }}" value="K" class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer" required>
                                                     <span class="ml-2 text-sm font-bold text-green-700">K</span>
                                                 </label>
                                                 <label class="inline-flex items-center">
-                                                    <input type="radio" name="keputusan_{{$unit['code']}}_q{{$q}}" value="BK" class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer">
+                                                    <input type="radio" name="keputusan_{{ $unitCode }}_q{{ $q }}" value="BK" class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer">
                                                     <span class="ml-2 text-sm font-bold text-red-700">BK</span>
                                                 </label>
                                             </div>
@@ -176,7 +219,7 @@
                             </table>
                         </div>
                     </div>
-                </div>
+                </div> {{-- end body --}}
             </div>
             @endforeach
 
@@ -190,7 +233,6 @@
             <textarea name="umpan_balik_asesi" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 mb-6" rows="3" placeholder="Tuliskan kesimpulan dan saran di sini..."></textarea>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {{-- Asesor --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Asesor (Tanda Tangan)</label>
                     <div class="w-full h-40 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center">
@@ -200,7 +242,6 @@
                     <p class="text-xs text-gray-500">No. Reg. {{ $asesor->nomor_regis ?? 'N/A' }}</p>
                 </div>
 
-                {{-- Asesi --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Asesi (Tanda Tangan)</label>
                     <div class="w-full h-40 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-blue-400 transition-colors">
@@ -225,32 +266,104 @@
     </form>
 </main>
 
+{{-- SCRIPT JAVASCRIPT --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const accordions = document.querySelectorAll('.accordion-btn');
+document.addEventListener('DOMContentLoaded', function() {
+    const headers = document.querySelectorAll('.accordion-header');
 
-        accordions.forEach(acc => {
-            // Atur agar unit pertama terbuka saat load
-            if (acc.getAttribute('aria-expanded') === 'true') {
-                acc.nextElementSibling.classList.add('active');
+    // Tutup semua kecuali exceptId jika disertakan
+    function closeAll(exceptId = null) {
+        document.querySelectorAll('.accordion-body').forEach(body => {
+            if (body.id === exceptId) return;
+            const header = document.querySelector(`.accordion-header[data-target="${body.id}"]`) || document.querySelector(`.accordion-header[data-target="#${body.id}"]`);
+            const icon = header ? header.querySelector('.icon-chevron') : null;
+
+            body.classList.remove('is-open');
+            body.setAttribute('aria-hidden', 'true');
+            body.style.maxHeight = 0;
+
+            if (icon) icon.classList.remove('rotate-180');
+            if (header) header.style.backgroundColor = '#eff6ff';
+            if (header) header.setAttribute('aria-expanded', 'false');
+        });
+    }
+
+    headers.forEach(header => {
+        const rawTarget = header.dataset.target;
+        const targetId = rawTarget.startsWith('#') ? rawTarget.slice(1) : rawTarget;
+        const content = document.getElementById(targetId);
+        const icon = header.querySelector('.icon-chevron');
+
+        if (!content) return;
+
+        // aksesibilitas
+        header.setAttribute('aria-controls', targetId);
+        header.setAttribute('role', 'button');
+        header.setAttribute('tabindex', '0');
+
+        // inisialisasi state berdasarkan kelas hidden-custom
+        if (!content.classList.contains('hidden-custom')) {
+            content.classList.add('is-open');
+            content.setAttribute('aria-hidden', 'false');
+            content.style.maxHeight = content.scrollHeight + 'px';
+            if (icon) icon.classList.add('rotate-180');
+            header.style.backgroundColor = '#dbeafe';
+            header.setAttribute('aria-expanded', 'true');
+        } else {
+            content.classList.remove('is-open');
+            content.setAttribute('aria-hidden', 'true');
+            content.style.maxHeight = 0;
+            if (icon) icon.classList.remove('rotate-180');
+            header.style.backgroundColor = '#eff6ff';
+            header.setAttribute('aria-expanded', 'false');
+        }
+
+        // toggle function
+        const toggle = () => {
+            const isOpen = content.classList.contains('is-open');
+
+            if (isOpen) {
+                // close this
+                content.classList.remove('is-open');
+                content.setAttribute('aria-hidden', 'true');
+                content.style.maxHeight = 0;
+                if (icon) icon.classList.remove('rotate-180');
+                header.style.backgroundColor = '#eff6ff';
+                header.setAttribute('aria-expanded', 'false');
+            } else {
+                // close others first -> membuat efek dropdown sehingga unit lain menghilang / bergeser
+                closeAll(content.id);
+
+                // open this
+                content.classList.add('is-open');
+                content.setAttribute('aria-hidden', 'false');
+                content.style.maxHeight = content.scrollHeight + 'px';
+                if (icon) icon.classList.add('rotate-180');
+                header.style.backgroundColor = '#dbeafe';
+                header.setAttribute('aria-expanded', 'true');
+
+                // scroll ke header (opsional) agar terlihat di viewport jika konten panjang
+                // header.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
+        };
 
-            acc.addEventListener('click', function() {
-                const content = this.nextElementSibling;
-                content.classList.toggle('active');
-                
-                const isExpanded = this.getAttribute('aria-expanded') === 'true';
-                this.setAttribute('aria-expanded', !isExpanded);
+        header.addEventListener('click', toggle);
 
-                // Mengambil semua accordion yang lain dan menutupnya
-                accordions.forEach(otherAcc => {
-                    if (otherAcc !== this) {
-                        otherAcc.nextElementSibling.classList.remove('active');
-                        otherAcc.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            });
+        // keyboard accessibility: Enter / Space toggle
+        header.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggle();
+            }
+        });
+
+        // update maxHeight saat resize jika terbuka
+        window.addEventListener('resize', () => {
+            if (content.classList.contains('is-open')) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
         });
     });
+});
 </script>
 @endsection

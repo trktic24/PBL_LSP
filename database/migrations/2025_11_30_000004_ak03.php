@@ -10,14 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('ak05', function (Blueprint $table) {
-            $table->id('id_ak05');
+        Schema::create('respon_hasil_ak03', function (Blueprint $table) {
+            $table->id('id_respon_hasil_ak03');
+            $table->foreignId('id_poin_ak03')->constrained('poin_ak03', 'id_poin_ak03')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-            $table->enum('rekomendasi', ['K', 'BK'])->comment('K=Kompeten, BK=Belum Kompeten');
-            $table->text('keterangan')->nullable();
-            $table->text('aspek_negatif_positif')->nullable();
-            $table->text('penolakan_hasil_asesmen')->nullable();
-            $table->text('saran_perbaikan')->nullable();
+
+            // isi kolom tabel respon_hasil_ak03
+            $table->text('komentar_lainnya')->nullable()->comment('isi sesuai komentar jika ada');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('ak05');
+        Schema::dropIfExists('respon_hasil_ak03');
     }
 };

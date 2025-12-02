@@ -12,6 +12,8 @@ return new class extends Migration {
     {
         Schema::create('bukti_ak01', function (Blueprint $table) {
             $table->id('id_bukti_ak01');
+
+            // isi kolom bukti ak01
             $table->string('bukti');
             $table->timestamps();
         });
