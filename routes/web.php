@@ -10,6 +10,7 @@ use App\Models\Asesor;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TukController;
 
+use App\Http\Controllers\Ak03Controller;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\JadwalController;
@@ -17,18 +18,20 @@ use App\Http\Controllers\AsesmenController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TrackerController;
-use App\Http\Controllers\Ak03Controller;
 use App\Http\Controllers\Apl01PdfController;
 use App\Http\Controllers\SkemaWebController;
 use App\Http\Controllers\Api\CountryController;
+use App\Http\Controllers\Apl02\PraasesmenController;
 use App\Http\Controllers\Asesor\AsesorTableController;
+use App\Http\Controllers\asesmen\AsesmenEsaiController;
 use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
+use App\Http\Controllers\asesmen\AsesmenPilihanGandaController;
 use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
 use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
 use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
-use App\Http\Controllers\Apl02\PraasesmenController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
+use App\Http\Controllers\Ak04API\APIBandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -164,67 +167,13 @@ Route::get('/formulir-selesai', function () {
     return 'BERHASIL DISIMPAN! Ini halaman selanjutnya.';
 })->name('form.selesai');
 
-// ====================================================
-// GRUP 5: ASESMEN & PEMBAYARAN
-// ====================================================
+Route::get('/pra-asesmen/{id_sertifikasi}', [PraasesmenController::class, 'index'])
+    ->middleware('auth')
+    ->name('apl02.view');
 
-// Route::get('/praasesmen', [PraasesmenController::class, 'index']);
-
-// OPSI 2: Menggunakan URL spesifik (Direkomendasikan)
-// Ini lebih aman dan rapi, biasanya untuk formulir atau fitur tertentu.
-// Contoh: Mengakses formulir di domainanda.com/asesmen/pra
-// Route::get('/asesmen/pra', [PraAsesmenController::class, 'index']);
-
-// // // --- Pra-Asesmen Views ---
-// Route::get('/praasesmen1', function () { return view('pra-assesmen.praasesmen1'); });
-// Route::get('/praasesmen2', function () { return view('pra-assesmen.praasesmen2'); });
-// Route::get('/praasesmen3', function () { return view('pra-assesmen.praasesmen3'); });
-// Route::get('/praasesmen4', function () { return view('pra-assesmen.praasesmen4'); });
-// Route::get('/praasesmen5', function () { return view('pra-assesmen.praasesmen5'); });
-// Route::get('/praasesmen6', function () { return view('pra-assesmen.praasesmen6'); });
-// Route::get('/praasesmen7', function () { return view('pra-assesmen.praasesmen7'); });
-// Route::get('/praasesmen8', function () { return view('pra-assesmen.praasesmen8'); });
-// GET: /asesi/{idAsesi}/praasesmen (Menampilkan form APL-02)
-Route::get('/asesi/praasesmen/{idAsesi}', [PraasesmenController::class, 'index'])->name('praasesmen.index');
-// // --- Pra-Asesmen Views ---
-Route::get('/praasesmen1', function () {
-    return view('pra-assesmen.praasesmen1');
-});
-Route::get('/praasesmen2', function () {
-    return view('pra-assesmen.praasesmen2');
-});
-Route::get('/praasesmen3', function () {
-    return view('pra-assesmen.praasesmen3');
-});
-Route::get('/praasesmen4', function () {
-    return view('pra-assesmen.praasesmen4');
-});
-Route::get('/praasesmen5', function () {
-    return view('pra-assesmen.praasesmen5');
-});
-Route::get('/praasesmen6', function () {
-    return view('pra-assesmen.praasesmen6');
-}); 
-Route::get('/praasesmen7', function () {
-    return view('pra-assesmen.praasesmen7');
-});
-Route::get('/praasesmen8', function () {
-    return view('pra-assesmen.praasesmen8');
-});
-
-// POST: /asesi/sertifikasi/{idDataSertifikasi}/praasesmen/store (Menyimpan respon APL-02)
-Route::post('/asesi/sertifikasi/{idDataSertifikasi}/praasesmen/store', [PraasesmenController::class, 'store'])->name('praasesmen.store');
-// 
 // --- Asesmen Lainnya Views ---
 // --- PDF Download ---
 Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
-// --- Halaman Statis Asesmen ---
-Route::get('/praasesmen1', function () {
-    return view('pra-assesmen.praasesmen1');
-});
-Route::get('/praasesmen2', function () {
-    return view('pra-assesmen.praasesmen2');
-});
 
 //umpan balik (ak03)
 Route::get('/umpan-balik', [Ak03Controller::class, 'index'])->name('ak03.index');
@@ -255,3 +204,25 @@ Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPICo
        ->name('kerahasiaan.fr_ak01');
 
 Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])  ->name('show.jadwal_tuk');
+
+// Route Web AK.04 (DISESUAIKAN)
+Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show']) 
+    ->name('banding.fr_ak04'); // KRITIS: Menggunakan fr-ak04
+
+// Route Placeholder untuk Umpan Balik (AK.03)
+Route::get('/asesi/umpan-balik/{id_sertifikasi}', function($id_sertifikasi) {
+    // Arahkan kembali ke halaman banding (saat ini) atau halaman data utama
+    return redirect()->route('banding.show', ['id_sertifikasi' => $id_sertifikasi]);
+})->name('umpan.balik');
+Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])
+    ->name('show.jadwal_tuk');
+
+Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])
+        ->name('asesmen.ia05.view');
+
+Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])
+    ->name('asesmen.ia06.view');
+
+Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'downloadInvoice'])
+    ->name('payment.invoice');
+

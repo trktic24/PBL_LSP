@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Midtrans\Config;
 use Midtrans\Snap;
+use Midtrans\Config;
 use App\Models\Pembayaran;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 use App\Models\DataSertifikasiAsesi;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -207,5 +208,47 @@ class PaymentController extends Controller
             }
         }
         return redirect('/tracker');
+    }
+    public function downloadInvoice($id_sertifikasi) 
+    {
+        $user = Auth::user();
+
+        // 1. Cari Data Pembayaran berdasarkan ID Sertifikasi
+        // ... (kode query tetap sama)
+        $payment = Pembayaran::with([
+            'sertifikasi.asesi.user', 
+            'sertifikasi.jadwal.skema' 
+        ])
+        ->where('id_data_sertifikasi_asesi', $id_sertifikasi)
+        ->whereIn('status_transaksi', ['settlement', 'capture'])
+        ->latest()
+        ->firstOrFail();
+
+        // 2. Validasi Keamanan (Double Check)
+        // ... (kode validasi tetap sama)
+        if (!$payment->sertifikasi || $payment->sertifikasi->id_asesi !== $user->asesi->id_asesi) {
+             abort(403, 'Unauthorized action.');
+        }
+
+        // 3. Siapkan data untuk View PDF
+        $data = [
+            'payment' => $payment,
+            // Shortcut biar di view gak kepanjangan ngetiknya
+            'asesi' => $payment->sertifikasi->asesi,
+            'skema' => $payment->sertifikasi->jadwal->skema,
+            
+            // <--- INI YANG DITAMBAHKAN (SOLUSI ERRORNYA)
+            'id_jadwal' => $payment->sertifikasi->id_jadwal,
+        ];
+
+        // 4. Load View dan render jadi PDF
+        // ... (kode render tetap sama)
+        $pdf = Pdf::loadView('pdf.invoice_pembayaran', $data);
+        $pdf->setPaper('A4', 'portrait');
+
+        // 5. Download file PDF
+        // ... (kode download tetap sama)
+        $fileName = 'Invoice_' . $payment->order_id . '.pdf';
+        return $pdf->download($fileName);
     }
 }

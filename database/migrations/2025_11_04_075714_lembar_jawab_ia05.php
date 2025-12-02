@@ -6,28 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('lembar_jawab_ia05', function (Blueprint $table) {
-            $table->id('id_lembar_jawab_ia05');
-            $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_soal_ia05')->constrained('soal_ia05', 'id_soal_ia05')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_kunci_jawaban_ia05')->constrained('kunci_jawaban_ia05', 'id_kunci_jawaban_ia05')->onUpdate('cascade')->onDelete('cascade');
+            $table->id('id_lembar_jawab_ia05'); // PK
 
-            // isi dari database lembar_jawab_ia05
-            $table->string('teks_jawaban_asesi_ia05');
-            $table->boolean('pencapaian_ia05_iya')->default(false)->comment('1 untuk Kompeten, 0 untuk Belum Kompeten');
-            $table->boolean('pencapaian_ia05_tidak')->default(false)->comment('1 untuk Tidak Kompeten, 0 untuk Kompeten');
+            // [PENTING] Relasi ke Peserta (Data Sertifikasi)
+            // Ini yang menentukan soal ini milik siapa
+            $table->foreignId('id_data_sertifikasi_asesi')
+                  ->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
+            // Relasi ke Soal Master yang harus dijawab
+            $table->foreignId('id_soal_ia05')
+                  ->constrained('soal_ia05', 'id_soal_ia05')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
+            // Jawaban yang dipilih peserta
+            $table->enum('jawaban_asesi_ia05', ['a', 'b', 'c', 'd'])->nullable();
+
+            // 'ya' = Benar, 'tidak' = Salah. Nullable di awal.
+            $table->enum('pencapaian_ia05', ['ya', 'tidak'])->nullable();
+            
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('lembar_jawab_ia05');
