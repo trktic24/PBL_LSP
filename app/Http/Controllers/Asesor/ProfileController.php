@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Asesor;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class ProfileController extends Controller
         }
 
         // Tampilkan view profil custom kamu
-        return view('frontend.profil', compact('user', 'profil'));
+        return view('asesor.profil', compact('user', 'profil'));
     }
 
     public function updateAsesorAjax(Request $request)

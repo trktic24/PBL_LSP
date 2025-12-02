@@ -229,7 +229,7 @@
             // Pastikan Anda memiliki meta tag CSRF (lihat di bawah)
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            fetch("{{ route('profil.asesor.update') }}", { // Kita akan buat route 'profil.update'
+            fetch("{{ route('asesor.update.ajax') }}", { // Kita akan buat route 'profil.update'
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

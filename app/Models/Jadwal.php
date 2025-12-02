@@ -90,8 +90,28 @@ class Jadwal extends Model
 
     public function dataSertifikasiAsesi(): HasMany
     {
-    // Jadwal (id_jadwal) memiliki banyak DataSertifikasiAsesi
-    return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
+        // Jadwal (id_jadwal) memiliki banyak DataSertifikasiAsesi
+        return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
+    }
+
+    /**
+     * Alias for dataSertifikasiAsesi to match controller usage ($jadwal->asesi)
+     */
+    public function asesi(): HasMany
+    {
+        return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
+    }
+
+    public function asesor()
+    {
+        return $this->belongsToMany(
+            Asesor::class,
+            'transaksi_asesor_skema', // Pivot table
+            'id_skema',               // Foreign key on pivot table related to the parent model (Jadwal's id_skema effectively)
+            'id_asesor',              // Foreign key on pivot table related to the related model (Asesor)
+            'id_skema',               // Local key on parent model (Jadwal)
+            'id_asesor'               // Local key on related model (Asesor)
+        );
     }
 }
     

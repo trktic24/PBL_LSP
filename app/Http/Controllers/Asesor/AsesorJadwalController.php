@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Asesor;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Jadwal;
@@ -12,7 +13,7 @@ use App\Models\JenisTuk;
 use App\Models\Asesi;
 use App\Models\DataSertifikasiAsesi;
 
-class JadwalController extends Controller
+class AsesorJadwalController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,8 +35,8 @@ class JadwalController extends Controller
         // ----------------------------------------------------
         // 🛡️ TAHAP 2: CEK STATUS VERIFIKASI (SATPAM TAMBAHAN)
         // ----------------------------------------------------
-        // Jika is_verified = 0 (False/Pending), tendang keluar.
-        if ($user->asesor->is_verified == 0) {
+        // Jika status_verifikasi != 'approved', tendang keluar.
+        if ($user->asesor->status_verifikasi !== 'approved') {
 
             Auth::logout(); // Logout paksa
             $request->session()->invalidate();
@@ -165,7 +166,7 @@ class JadwalController extends Controller
                           ->pluck('jenis_tuk')->filter()->sort()->values();                           
 
         // Kirim ke view frontend.jadwal (dashboard asesor)
-        return view('frontend.jadwal-asesor', [
+        return view('asesor.jadwal-asesor', [
             //'profile' => $profile,
             'jadwals' => $jadwals,
             'listSkema' => $listSkema, 
@@ -184,7 +185,7 @@ class JadwalController extends Controller
 
         // 2. PENTING: Cek apakah asesor ini berhak melihat jadwal ini
         // (Ambil $asesor dari Auth seperti di method index)
-        $asesor = Asesor::where('user_id', Auth::id())->first();
+        $asesor = Asesor::where('id_user', Auth::id())->first();
         if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
              abort(403, 'Anda tidak berhak mengakses jadwal ini.');
         }
@@ -204,7 +205,7 @@ class JadwalController extends Controller
 
         // 4. Kirim data ke view 'daftar_asesi'
         //    (Struktur data yang dikirim tetap sama, jadi view tidak perlu diubah)
-        return view('frontend.daftar_asesi', [
+        return view('asesor.daftar_asesi', [
             'jadwal' => $jadwal,
             //'asesis' => $asesis, // <-- Variabel $asesis berhasil kita buat
         ]);

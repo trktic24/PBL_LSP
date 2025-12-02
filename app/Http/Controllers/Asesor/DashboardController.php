@@ -137,7 +137,7 @@ class DashboardController extends Controller
                             ->filter()->sort()->values();        
 
         // Kirim ke view frontend.home (dashboard asesor)
-        return view('frontend.home', [
+        return view('asesor.home', [
             'profile' => $profile,
             'summary' => $summary,
             'jadwals' => $jadwals,

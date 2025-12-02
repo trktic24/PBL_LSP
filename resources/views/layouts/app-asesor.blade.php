@@ -24,7 +24,7 @@
 
 <body class="antialiased bg-white">
 
-    <x-navbar.navbar-asesor/>
+    <x-navbar.navbar/>
    
         <div class="bg-white flex-1">
         @yield('content')

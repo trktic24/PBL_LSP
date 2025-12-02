@@ -286,24 +286,26 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:asesor'])->prefix('asesor')->name('asesor.')->group(function () {
         
         // Dashboard
-        Route::get('/home', [AsesorDashboardController::class, 'index'])->name('home.index');
+        Route::get('/dashboard', [AsesorDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/home', [AsesorDashboardController::class, 'index'])->name('home.index'); // Keep for backward compatibility if needed
         
         // Manajemen Jadwal & Asesi
-        Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
-        Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])->name('daftar_asesi');
+        Route::get('/jadwal', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'index'])->name('jadwal.index');
+        Route::get('/daftar-asesi/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
         Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker'); 
         
         // Tools
         Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
 
         // Profile Asesor
+        Route::get('/profil', [\App\Http\Controllers\Asesor\ProfileController::class, 'show'])->name('profil');
         Route::get('/{id_asesor}/bukti', [AsesorController::class, 'showBukti'])->name('bukti');
-        Route::get('/{id_asesor}/profile', [AsesorController::class, 'showProfile'])->name('profile');
+        // Route::get('/{id_asesor}/profile', [AsesorController::class, 'showProfile'])->name('profile'); // Replaced by /profil
         Route::get('/profile_tinjauan', function () { return view('profile_asesor.asesor_profile_tinjauan'); })->name('profile_tinjauan');
         Route::get('/profile_tracker', function () { return view('profile_asesor.asesor_profile_tracker'); })->name('profile_tracker');
         
         // Update Profile Asesor (Ajax)
-        Route::post('/update', [ProfileController::class, 'updateAsesorAjax'])->name('update.ajax');
+        Route::post('/update', [\App\Http\Controllers\Asesor\ProfileController::class, 'updateAsesorAjax'])->name('update.ajax');
     });
 
 
@@ -352,7 +354,7 @@ Route::middleware('auth')->group(function () {
                 return redirect()->route('login')
                     ->with('error', 'Akun Anda belum diverifikasi oleh Admin. Silakan tunggu persetujuan.');
             }
-            return app(AsesorDashboardController::class)->index($request);
+            return redirect()->route('asesor.dashboard');
         }
 
         // 3. JIKA ADMIN
