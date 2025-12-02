@@ -36,5 +36,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\MasterTuk::factory(20)->create();
         \App\Models\DataPekerjaanAsesi::factory(20)->create();
         \App\Models\ResponBuktiAk01::factory(20)->create();
+        \App\Models\IA03::factory(20)->create();
     }
 }

@@ -146,5 +146,30 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(ResponAk04::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
     
+    // shortcut relasi untuk ia03
+    public function getAsesorAttribute()
+    {
+        return $this->jadwal?->asesor;
+    }
+    
+    public function getSkemaAttribute()
+    {
+        return $this->jadwal?->skema;
+    }
+
+    public function getTukAtrribute()
+    {
+        return $this->jadwal?->tuk;
+    }
+
+    public function getJenisTukAttribute()
+    {
+        return $this->jadwal?->jenisTuk;
+    }
+
+    public function getTanggalPelaksanaanAttribute()
+    {
+        return $this->jadwal?->tanggal_pelaksanaan;
+    }
 
 }

@@ -32,6 +32,7 @@ use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
 use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\Ak04API\APIBandingController;
+use App\Http\Controllers\IA03Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -225,4 +226,16 @@ Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'ind
 
 Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'downloadInvoice'])
     ->name('payment.invoice');
+
+Route::middleware(['auth'])->group(function () {
+
+    // Halaman utama IA03 (list pertanyaan + identitas lengkap)
+    Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])
+         ->name('ia03.index');
+
+    // Halaman detail satu pertanyaan (opsional)
+    Route::get('/ia03/detail/{id}', [IA03Controller::class, 'show'])
+         ->name('ia03.show');
+
+});
 
