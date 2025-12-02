@@ -44,7 +44,8 @@ class Asesor extends Model
         'ijazah',
         'sertifikat_asesor',
         'sertifikasi_kompetensi',
-        'tanda_tangan'
+        'tanda_tangan',
+        'status_verifikasi',
     ];
 
     // Casting

@@ -44,7 +44,8 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisteredUserController::class, 'store'])
+        ->name('register.store');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
@@ -343,8 +344,8 @@ Route::middleware('auth')->group(function () {
         // 2. JIKA ASESOR
         elseif ($roleName === 'asesor') {
             // --- CEK STATUS VERIFIKASI ---
-            $isVerified = $user->asesor?->is_verified;
-            if (!$user->asesor || $isVerified == 0) {
+            $status = $user->asesor?->status_verifikasi;
+            if (!$user->asesor || $status !== 'approved') {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -375,8 +376,8 @@ Route::get('/tunggu-verifikasi', function () {
     if (!$user) return redirect()->route('login');
     if ($user->role->nama_role !== 'asesor') return redirect()->route('home.index');
 
-    // Cek is_verified
-    if ($user->asesor?->is_verified == 1) {
+    // Cek status_verifikasi
+    if ($user->asesor?->status_verifikasi === 'approved') {
         return redirect()->route('home.index');
     }
 

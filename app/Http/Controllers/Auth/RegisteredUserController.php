@@ -218,7 +218,7 @@ class RegisteredUserController extends Controller
                 // $skema = Skema::where('id_skema', $validated['skema'])->first();
 
                 Asesor::create([
-                    'user_id' => $user->id_user,
+                    'id_user' => $user->id_user,
                     'id_skema' => $validated['skema'],
                     'nama_lengkap' => $validated['nama_lengkap'],
                     'nomor_regis' => $validated['no_registrasi_asesor'],
@@ -257,6 +257,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
+
+        // Refresh user to load relationships (asesor)
+        $user->refresh();
+
         if ($user->role->nama_role === 'asesor' && $user->asesor?->status_verifikasi === 'pending') {
             return redirect()->route('auth.wait');
         }

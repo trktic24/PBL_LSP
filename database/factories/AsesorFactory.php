@@ -39,7 +39,7 @@ class AsesorFactory extends Factory
             'sertifikasi_kompetensi' => 'uploads/kompetensi/dummy.pdf',
             'tanda_tangan' => 'uploads/ttd/dummy.png',
 
-            'is_verified' => 1,
+            'status_verifikasi' => $this->faker->boolean(80) ? 'approved' : $this->faker->randomElement(['pending', 'rejected']),
         ];
     }
 }

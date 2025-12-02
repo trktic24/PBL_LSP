@@ -18,7 +18,7 @@ class AsesorSeeder extends Seeder
         if ($asesorUsers->isEmpty()) {
             // kalau belum ada user asesor, buat beberapa dummy user
             $asesorUsers = User::factory()->count(5)->create([
-                'role_id' => 2, // pastikan id 2 = role asesor
+                'role_id' => 3, // pastikan id 2 = role asesor
             ]);
         }
 
