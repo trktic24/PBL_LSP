@@ -21,6 +21,7 @@ use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\Ak04API\APIBandingController;
+use App\Http\Controllers\Ia02Controller;
 /*
 |--------------------------------------------------------------------------
 | API Routes (VERSION 1)
@@ -157,7 +158,14 @@ Route::prefix('v1')->group(function () {
 });
 
 
+// Route::prefix('ia02')->group(function () {
 
+//     // GET: Ambil data IA.02 (READ ONLY)
+//     Route::get('/{id_data_sertifikasi_asesi}', 
+//         [Ia02Controller::class, 'getData']
+//     )->name('api.v1.get.ia02');
+
+// });
 // ==============================================================
 // 🛠️ RUTE KHUSUS DEV: UPDATE STATUS MANUAL (CHEAT)
 // ==============================================================

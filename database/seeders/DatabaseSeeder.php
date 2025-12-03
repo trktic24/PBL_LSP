@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
         $this->call(BuktiAk01Seeder::class);
         $this->call(SoalDanKunciSeeder::class);
         $this->call(PoinAk03Seeder::class);
-        
+        $this->call(SkenarioIa02Seeder::class);
+
         // Baris ini udah bener
         \App\Models\Asesi::factory(20)->create();
         \App\Models\Skema::factory(20)->create();
@@ -37,5 +38,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\DataPekerjaanAsesi::factory(20)->create();
         \App\Models\ResponBuktiAk01::factory(20)->create();
         \App\Models\IA03::factory(20)->create();
+        \App\Models\Ia02::factory(20)->create();
     }
 }

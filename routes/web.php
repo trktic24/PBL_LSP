@@ -34,6 +34,7 @@ use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\Ak04API\APIBandingController;
 use App\Http\Controllers\IA03Controller;
 use App\Http\Controllers\Ia07Controller;
+use App\Http\Controllers\Ia02Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -229,6 +230,27 @@ Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'down
     ->name('payment.invoice');
 
 Route::middleware(['auth'])->group(function () {
+    // --- IA.01 sementara (biar tidak error) ---
+    Route::get('/ia01/{id_sertifikasi}', function ($id_sertifikasi) {
+        return "HALAMAN IA01 BELUM DIBUAT — ID: " . $id_sertifikasi;
+    })->name('ia01.index');
+
+    // --- ROUTE FR.IA.02 (TUGAS PRAKTIK / DEMONSTRASI) ---
+
+    // 1. Menampilkan halaman IA02 (READ-ONLY)
+    // id_sertifikasi = ID Data Sertifikasi Asesi
+    Route::get('/ia02/{id_sertifikasi}', [Ia02Controller::class, 'index'])
+        ->name('ia02.index');
+
+    // !!! BAGIAN YANG HILANG (API ENDPOINT) !!!
+    // 1b. Endpoint API untuk data IA02 yang dipanggil oleh JavaScript
+    Route::get('/api/v1/ia02/{id_sertifikasi}', [Ia02Controller::class, 'getData']); 
+
+    // 2. Tombol "Selanjutnya" → redirect ke IA03
+    Route::post('/ia02/{id_sertifikasi}/next', [Ia02Controller::class, 'next'])
+        ->name('ia02.next');
+});
+    Route::middleware(['auth'])->group(function () {
 
     // Halaman utama IA03 (list pertanyaan + identitas lengkap)
     Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])
