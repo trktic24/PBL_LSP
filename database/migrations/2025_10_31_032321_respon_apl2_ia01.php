@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-<<<<<<< HEAD
+
         Schema::create('respon_apl02_ia01', function (Blueprint $table) {
             $table->id('id_respon_apl02'); // Sesuai ERD primary key-nya ini
 
@@ -32,7 +32,7 @@ return new class extends Migration {
             // 3. Penilaian Lanjut
             $table->text('penilaian_lanjut_ia01')->nullable()->comment('Catatan tambahan dari asesor');
 
-=======
+
         Schema::create('respon_apl2_ia01', function (Blueprint $table) {
             $table->id('id_respon_apl2');
 
@@ -54,10 +54,10 @@ return new class extends Migration {
             $table->text('bukti_asesi_apl02')->nullable();
             $table->boolean('pencapaian_ia01')->nullable(); // K/BK
             $table->boolean('penilaian_lanjut_ia01')->nullable(); // V/A/T
->>>>>>> 867fbf1f11206d464c9dfc53537a3ebf60030101
+
             $table->timestamps();
         });
-    }
+    });
 
     /**
      * Reverse the migrations.

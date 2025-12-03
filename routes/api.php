@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 // use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\UmpanBalikController;
+use App\Http\Controllers\BandingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,6 +118,19 @@ Route::prefix('v1')->group(function () {
         ->name('api.v1.umpan_balik.update');
     Route::delete('/delete/{id}', [\App\Http\Controllers\UmpanBalikController::class, 'destroy'])
         ->name('api.v1.umpan_balik.delete');
+    });
+
+    Route::prefix('banding')->group(function () {
+        Route::get('/', [\App\Http\Controllers\BandingController::class, 'index'])
+            ->name('api.v1.banding.index');
+        Route::get('/{id}', [App\Http\Controllers\BandingController::class, 'show'])
+            ->name('api.v1.banding.show');
+        Route::post('/store', [App\Http\Controllers\BandingController::class, 'store'])
+            ->name('api.v1.banding.store');
+        Route::put('/update/{id}', [App\Http\Controllers\BandingController::class, 'update'])
+            ->name('api.v1.banding.update');
+        Route::delete('/delete/{id}', [App\Http\Controllers\BandingController::class, 'destroy'])
+            ->name('api.v1.banding.destroy');
     });
 
 });

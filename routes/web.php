@@ -6,6 +6,7 @@ use App\Http\Controllers\UmpanBalikController;
 use App\Http\Controllers\BandingController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\ResponApl2Ia01Controller;
 
 
 Route::get('/', function () {
@@ -161,5 +162,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Tampilkan semua respon milik asesi yang login
+Route::get('/respon-apl2', [ResponApl2Ia01Controller::class, 'index'])
+    ->name('respon_apl2.index')
+    ->middleware('auth');
+
+// Tampilkan detail respon tertentu
+Route::get('/respon-apl2/{id}', [ResponApl2Ia01Controller::class, 'show'])
+    ->name('respon_apl2.show')
+    ->middleware('auth');
 
 require __DIR__.'/auth.php';
