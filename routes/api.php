@@ -158,14 +158,26 @@ Route::prefix('v1')->group(function () {
 });
 
 
-// Route::prefix('ia02')->group(function () {
+Route::prefix('v1')->group(function () {
+    
+    // =================================================================
+    // ROUTE FR.IA.02 (API - DATA FETCH)
+    // =================================================================
+    
+    // Prefix penuh: /api/v1/ia02/...
+    Route::prefix('ia02')->group(function () {
 
-//     // GET: Ambil data IA.02 (READ ONLY)
-//     Route::get('/{id_data_sertifikasi_asesi}', 
-//         [Ia02Controller::class, 'getData']
-//     )->name('api.v1.get.ia02');
+        // GET: Ambil data IA.02 (API)
+        // Jalur Penuh: /api/v1/ia02/{id_data_sertifikasi_asesi}/data
+        // Catatan: Menggunakan method 'apiIndex' yang ada di Ia02Controller Anda
+        Route::get('/{id_data_sertifikasi_asesi}/data', 
+            [Ia02Controller::class, 'apiDetail'] 
+        )->name('api.v1.ia02.detail');
+    });
 
-// });
+    // TIDAK ADA ROUTE IA03 di sini (Sesuai permintaan)
+    
+});
 // ==============================================================
 // 🛠️ RUTE KHUSUS DEV: UPDATE STATUS MANUAL (CHEAT)
 // ==============================================================

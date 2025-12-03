@@ -242,14 +242,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ia02/{id_sertifikasi}', [Ia02Controller::class, 'index'])
         ->name('ia02.index');
 
-    // !!! BAGIAN YANG HILANG (API ENDPOINT) !!!
-    // 1b. Endpoint API untuk data IA02 yang dipanggil oleh JavaScript
-    Route::get('/api/v1/ia02/{id_sertifikasi}', [Ia02Controller::class, 'getData']); 
-
+   
     // 2. Tombol "Selanjutnya" → redirect ke IA03
     Route::post('/ia02/{id_sertifikasi}/next', [Ia02Controller::class, 'next'])
         ->name('ia02.next');
 });
+
     Route::middleware(['auth'])->group(function () {
 
     // Halaman utama IA03 (list pertanyaan + identitas lengkap)
