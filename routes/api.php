@@ -26,11 +26,13 @@ use App\Http\Controllers\Api\AsesiController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ScheduleController;
 
+use App\Http\Controllers\Api\SoalIa06Controller;
+
 // =======================================================
 // 🔓 RUTE PUBLIK (tidak butuh token)
 // =======================================================
 Route::prefix('v1')->group(function() {
-  
+
     // ==========================
     // AUTHENTICATION ROUTES
     // ==========================
@@ -54,12 +56,12 @@ Route::prefix('v1')->group(function() {
     // ==========================
     // DATA RESOURCES ROUTES (Public/Unprotected - Bisa diakses tanpa token)
     // ==========================
-    
+
     // Skema Index
     Route::get('/skema', [SkemaController::class, 'index']);
-    
+
     // Detail Skema
-    Route::get('/skema/{id}', [DetailSkemaController::class, 'show']); 
+    Route::get('/skema/{id}', [DetailSkemaController::class, 'show']);
 
     // Daftar Asesor
     Route::get('/asesor', [AsesorTableApiController::class, 'index']);
@@ -117,7 +119,7 @@ Route::prefix('v1')->group(function() {
         // =======================================================
         // 🏗️ DETAIL SKEMA (KELOMPOK & UNIT)
         // =======================================================
-        
+
         // Kelompok Pekerjaan
         Route::get('/kelompokpekerjaan', [KelompokPekerjaanController::class, 'index']);
         Route::get('/kelompokpekerjaan/{id}', [KelompokPekerjaanController::class, 'show']);
@@ -163,6 +165,8 @@ Route::prefix('v1')->group(function() {
         Route::delete('/jadwal/{id}', [ScheduleController::class, 'destroy']);
 
 
+
+
     });
 });
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
@@ -179,3 +183,11 @@ Route::get('/ia-10/{id}', [Ia10ApiController::class, 'show']);
 
 // Mengirim jawaban penilaian
 Route::post('/ia-10', [Ia10ApiController::class, 'store']);
+
+
+ // =======================================================
+        // 📝 MODUL IA-06 (SISIPKAN DI SINI)
+        // =======================================================
+        Route::apiResource('soal-ia06', SoalIa06Controller::class);
+        Route::post('soal-ia06/umpan-balik', [SoalIa06Controller::class, 'storeUmpanBalikAsesi']);
+        Route::get('soal-ia06/umpan-balik/{id_data_sertifikasi_asesi}', [SoalIa06Controller::class, 'getUmpanBalikAsesi']);

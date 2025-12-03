@@ -10,8 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('respon_hasil_ak03', function (Blueprint $table) {
-            $table->id('id_respon_hasil_ak03');
+        Schema::create('ak03', function (Blueprint $table) {
+            $table->id('id_ak03');
             $table->foreignId('id_poin_ak03')->constrained('poin_ak03', 'id_poin_ak03')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
@@ -26,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('respon_hasil_ak03');
+        Schema::dropIfExists('ak03');
     }
 };
