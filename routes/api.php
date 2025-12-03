@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\TukController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\JadwalController;
 use App\Http\Controllers\Api\AsesorApiController;
+use App\Http\Controllers\Api\Ia10ApiController;
 use App\Http\Controllers\Api\V1\DetailSkemaController;
 use App\Http\Controllers\Api\V1\BeritaController;
 use App\Http\Controllers\Api\V1\StrukturOrganisasiController;
@@ -171,3 +172,10 @@ Route::apiResource('jadwal', JadwalController::class, ['as' => 'api']);
 
 // Rute API Asesor
 Route::get('/asesor/{id}', [AsesorApiController::class, 'show']);
+
+
+// Menampilkan soal untuk dinilai (butuh ID data sertifikasi)
+Route::get('/ia-10/{id}', [Ia10ApiController::class, 'show']);
+
+// Mengirim jawaban penilaian
+Route::post('/ia-10', [Ia10ApiController::class, 'store']);
