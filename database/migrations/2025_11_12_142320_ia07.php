@@ -6,27 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('ia07', function (Blueprint $table) {
-    $table->id('id_ia07');
-    // FK ke Asesi
-    $table->foreignId('id_data_sertifikasi_asesi')->constrained(...);
-    // FK ke Master Soal (BUKAN menyimpan teks soal lagi)
-    $table->foreignId('id_pertanyaan_lisan')->constrained('master_pertanyaan_lisan', 'id_pertanyaan_lisan');
-    // Jawaban & Hasil
-    $table->text('jawaban_asesi')->nullable(); // Ringkasan dari asesor
-    $table->enum('rekomendasi', ['K', 'BK'])->nullable();
-    $table->timestamps();
+            $table->id('id_ia07');
+            
+            // 1. Relasi ke Data Sertifikasi Asesi
+            // Perhatikan: table name = 'data_sertifikasi_asesi', PK = 'id_data_sertifikasi_asesi'
+            $table->foreignId('id_data_sertifikasi_asesi')
+                  ->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')
+                  ->onDelete('cascade');
+
+            // 2. Relasi ke Master Pertanyaan
+            // Perhatikan: table name = 'master_pertanyaan_lisan', PK = 'id_pertanyaan_lisan'
+            $table->foreignId('id_pertanyaan_lisan')
+                  ->constrained('master_pertanyaan_lisan', 'id_pertanyaan_lisan')
+                  ->onDelete('cascade');
+
+            // 3. Kolom Jawaban
+            $table->text('jawaban_asesi')->nullable(); 
+            
+            // Rekomendasi (Kompeten/Belum Kompeten), default null dulu
+            $table->enum('rekomendasi', ['K', 'BK'])->nullable(); 
+            
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('ia07');

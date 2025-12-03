@@ -33,6 +33,7 @@ use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\Ak04API\APIBandingController;
 use App\Http\Controllers\IA03Controller;
+use App\Http\Controllers\Ia07Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -236,6 +237,20 @@ Route::middleware(['auth'])->group(function () {
     // Halaman detail satu pertanyaan (opsional)
     Route::get('/ia03/detail/{id}', [IA03Controller::class, 'show'])
          ->name('ia03.show');
-
 });
 
+Route::middleware(['auth'])->group(function () {
+
+    // --- ROUTE FR.IA.07 (PERTANYAAN LISAN) ---
+
+    // 1. Route untuk Menampilkan Form (GET)
+    // Parameter {id_sertifikasi} diperlukan agar Controller tahu data siapa yang ditampilkan
+    Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07Controller::class, 'index'])
+        ->name('ia07.index');
+
+    // 2. Route untuk Menyimpan Jawaban (POST)
+    // Nama route 'ia07.store' harus sama persis dengan action di form blade
+    Route::post('/asesi/ia07/store', [Ia07Controller::class, 'store'])
+        ->name('ia07.store');
+
+});
