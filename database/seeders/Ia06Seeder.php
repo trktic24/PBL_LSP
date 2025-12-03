@@ -2,38 +2,47 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\SoalIa06;
+use App\Models\JawabanIa06;
 use App\Models\UmpanBalikIa06;
-use App\Models\DataSertifikasiAsesi;
+use App\Models\DataSertifikasiAsesi; // Pastikan model ini ada di project Anda
 
 class Ia06Seeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // 1. Buat 10 Soal Dummy
-        SoalIa06::factory()->count(10)->create();
-        $this->command->info('Berhasil membuat 10 Soal IA-06!');
+        // 1. Buat 5 Soal Baru
+        $daftarSoal = SoalIa06::factory()->count(5)->create();
+        $this->command->info('Berhasil membuat 5 Soal IA-06.');
 
-        // 2. Buat Umpan Balik Dummy
-        // Cek dulu apakah ada data sertifikasi asesi di database?
-        // Karena umpan balik butuh foreign key ke tabel data_sertifikasi_asesi
-
+        // 2. Ambil 1 Asesi (User) yang ada di database
+        // Pastikan tabel 'data_sertifikasi_asesi' tidak kosong!
         $asesi = DataSertifikasiAsesi::first();
 
         if ($asesi) {
+            $this->command->info('Menyiapkan jawaban simulasi untuk Asesi ID: ' . $asesi->id_data_sertifikasi_asesi);
+
+            // 3. Loop setiap soal untuk dibuatkan jawabannya oleh si Asesi
+            foreach ($daftarSoal as $soal) {
+                JawabanIa06::factory()->create([
+                    'id_soal_ia06'              => $soal->id_soal_ia06,
+                    'id_data_sertifikasi_asesi' => $asesi->id_data_sertifikasi_asesi,
+                    'jawaban_asesi'             => 'Ini adalah jawaban simulasi untuk soal: ' . substr($soal->soal_ia06, 0, 20) . '...',
+                    'pencapaian'                => rand(0, 1), // Random Lulus/Gagal
+                ]);
+            }
+            $this->command->info('Jawaban berhasil di-generate.');
+
+            // 4. Buat Umpan Balik untuk Asesi tersebut
             UmpanBalikIa06::factory()->create([
-                'id_data_sertifikasi_asesi' => $asesi->id_data_sertifikasi_asesi, // Ambil ID yang valid
-                'umpan_balik' => 'Kompetensi asesi sudah sangat baik, namun perlu pendalaman di bagian teknis.',
+                'id_data_sertifikasi_asesi' => $asesi->id_data_sertifikasi_asesi,
+                'umpan_balik'               => 'Secara umum jawaban asesi cukup baik dan memenuhi standar kompetensi.',
             ]);
-            $this->command->info('Berhasil membuat contoh Umpan Balik untuk Asesi ID: ' . $asesi->id_data_sertifikasi_asesi);
+            $this->command->info('Umpan balik berhasil di-generate.');
+
         } else {
-            $this->command->warn('SKIP: Tidak bisa membuat dummy Umpan Balik karena tabel data_sertifikasi_asesi masih kosong.');
-            $this->command->warn('Silakan buat data asesi manual terlebih dahulu atau jalankan seeder asesi.');
+            $this->command->error('SKIP: Tidak ditemukan data asesi. Harap isi tabel data_sertifikasi_asesi terlebih dahulu.');
         }
     }
 }
