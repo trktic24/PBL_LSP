@@ -14,7 +14,8 @@ return new class extends Migration {
             $table->id('id_bukti_ak01');
 
             // isi kolom bukti ak01
-            $table->string('bukti');
+            $table->string('bukti')->comment('template bukti ak01 dari seeder');
+            $table->string('bukti_lainnya')->nullable()->default(null)->comment('bukti ak01 dari user');
             $table->timestamps();
         });
     }

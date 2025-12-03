@@ -10,14 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('respon_ia10', function (Blueprint $table) {
-            $table->id('id_respon_ia10');
+        Schema::create('umpan_balik_ia06', function (Blueprint $table) {
+            $table->id('id_umpan_balik_ia06');
+            $table->foreignId('id_soal_ia06')->constrained('soal_ia06', 'id_soal_ia06')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_ia10')->constrained('ia10', 'id_ia10')->onUpdate('cascade')->onDelete('cascade');
 
-            // isi kolom Database respon_ia10
-            $table->boolean('jawaban_pilihan_iya_tidak')->default(null)->comment('1 untuk Iya, 0 untuk Tidak');
-            $table->text('jawaban_isian')->nullable()->comment('Isian jawaban jika ada');
+            // isi dari database umpan_balik_ia06
+            $table->text('umpan_balik')->nullable()->comment('Berisi umpan balik dari penilai');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('respon_ia10');
+        Schema::dropIfExists('umpan_balik_ia06');
     }
 };

@@ -16,6 +16,8 @@ return new class extends Migration {
             // isi dari database soal_ia06
             $table->text('soal_ia06')->comment('Soal IA06')->default(null);
             $table->text('isi_jawaban_ia06')->nullable()->comment('Isi Jawaban IA06');
+            $table->boolean('pencapaian')->nullable()->comment('Pencapaian')->default(null);
+            $table->text('kunci_jawaban_ia06')->nullable()->comment('Kunci Jawaban IA06');
             $table->timestamps();
         });
     }

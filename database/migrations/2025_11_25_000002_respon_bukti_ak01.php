@@ -12,11 +12,11 @@ return new class extends Migration {
     {
         Schema::create('respon_bukti_ak01', function (Blueprint $table) {
             $table->id('id_respon_bukti_ak01');
+            $table->foreignId('id_bukti_ak01')->constrained('bukti_ak01', 'id_bukti_ak01')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
             // isi kolom tabel respon_bukti_ak01
-            $table->string('bukti')->comment('isi sesuai dengan yang dibutuhkan');
-            $table->boolean('respon')->default(false)->nullable()->comment('1 = ya, 0 = tidak');
+            $table->boolean('respon')->default(null)->nullable()->comment('1 = ya, 0 = tidak');
             $table->timestamps();
         });
     }
