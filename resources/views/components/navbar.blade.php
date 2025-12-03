@@ -7,12 +7,10 @@
                       request()->is('edit_asesor*');
     $isAsesiActive = request()->is('master/asesi*');
     $isMasterScheduleActive = request()->is('master/schedule*');
-    
-    // [PERUBAHAN 1] Menggunakan 'category' (dengan 'c')
     $isCategoryActive = request()->is('master/category*'); 
+    $isBeritaActive = request()->is('master/berita*');
 
-    // [PERUBAHAN 2] Menggunakan variabel baru
-    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive;
+    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive;
     
     $isScheduleActive = request()->routeIs('schedule_admin');
     $isTukActive = request()->is('master/tuk*'); 
@@ -78,6 +76,10 @@
                         <a href="{{ route('master_asesi') }}" 
                             class="block px-4 py-2 {{ $isAsesiActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Asesi
+                        </a>
+                        <a href="{{ route('master_berita') }}" 
+                            class="block px-4 py-2 {{ $isBeritaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Berita
                         </a>
                         </div>
                 </div>

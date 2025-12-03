@@ -8,6 +8,8 @@ use App\Models\Asesi;
 use App\Models\Tuk; // Pastikan Model Tuk ada
 use App\Models\Skema;
 use App\Models\Schedule;
+use App\Models\Berita;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -34,5 +36,7 @@ class DatabaseSeeder extends Seeder
         Schedule::factory(50)->create();
 
         $this->call(DataSertifikasiAsesiSeeder::class);
+
+        Berita::factory(15)->create();
     }
 }

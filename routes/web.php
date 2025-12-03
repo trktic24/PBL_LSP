@@ -9,6 +9,7 @@ use App\Http\Controllers\AsesiController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\DaftarHadirController;
 use App\Http\Controllers\DetailSkemaController;
 use App\Http\Controllers\DashboardController;
@@ -141,7 +142,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete/{id}', 'destroy')->name('delete_tuk');
     });
 
-    // 9. Master - Category (RUTE BARU - Konsisten pakai 'category')
+    // 9. Category
     Route::controller(CategoryController::class)->prefix('master/category')->group(function () {
         Route::get('/', 'index')->name('master_category');
         Route::get('/add', 'create')->name('add_category');
@@ -151,7 +152,17 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete/{category}', 'destroy')->name('delete_category');
     });
 
-    // 10. Profile Asesi
+    // 10. Berita Terbaru
+    Route::controller(BeritaController::class)->prefix('master/berita')->group(function () {
+        Route::get('/', 'index')->name('master_berita');
+        Route::get('/add', 'create')->name('add_berita');
+        Route::post('/add', 'store')->name('add_berita.store');
+        Route::get('/edit/{id}', 'edit')->name('edit_berita');
+        Route::patch('/update/{id}', 'update')->name('update_berita');
+        Route::delete('/delete/{id}', 'destroy')->name('delete_berita');
+    });
+
+    // 11. Profile Asesi
     Route::controller(AsesiProfileController::class)->prefix('asesi/{id_asesi}')->group(function () {
         Route::get('/settings', 'settings')->name('asesi.profile.settings');
         Route::get('/form', 'form')->name('asesi.profile.form');
@@ -159,7 +170,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
     });
 
-    // 11. Profile Asesor
+    // 12. Profile Asesor
     Route::get('/asesor/{id_asesor}/bukti', [AsesorController::class, 'showBukti'])->name('asesor.bukti');
     Route::get('/asesor/{id_asesor}/profile', [AsesorController::class, 'showProfile'])->name('asesor.profile');
     Route::get('/asesor_profile_tinjauan', function () { return view('profile_asesor.asesor_profile_tinjauan'); })->name('asesor_profile_tinjauan');
