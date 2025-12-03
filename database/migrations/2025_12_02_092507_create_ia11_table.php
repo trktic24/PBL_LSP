@@ -11,27 +11,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ia11', function (Blueprint $table) {
-            $table->id('id_ia11'); // Primary Key
+            $table->id('id_ia11');
 
-            // Kolom Relasi (Wajib ada datanya agar showSingle bisa mencari)
+            // Kolom Relasi (M:1 ke Data Sertifikasi Asesi)
             $table->unsignedBigInteger('id_data_sertifikasi_asesi');
-            $table->unsignedBigInteger('id_spesifikasi_produk_ia11')->nullable();
-
-            // Kolom Form Normal (Bisa diisi Asesi)
+            
+            // Kolom Form Normal
+            $table->longText('rancangan_produk')->nullable(); 
             $table->string('nama_produk')->nullable();
             $table->string('standar_industri')->nullable();
             $table->date('tanggal_pengoperasian')->nullable();
             $table->string('gambar_produk')->nullable();
             
-            // Kolom JSON untuk data Asesor dan data spesifik Asesi
-            // Menggunakan longText atau json() disarankan
-            $table->longText('rancangan_produk')->nullable(); 
-
             // Timestamps
             $table->timestamps();
 
-            // Opsional: Foreign Key (sesuaikan dengan nama tabel yang benar)
-            // $table->foreign('id_data_sertifikasi_asesi')->references('id_sertifikasi')->on('data_sertifikasi_asesi')->onDelete('cascade');
+            $table->foreign('id_data_sertifikasi_asesi')
+                  ->references('id_data_sertifikasi_asesi') 
+                  ->on('data_sertifikasi_asesi')
+                  ->onDelete('cascade');
         });
     }
 
