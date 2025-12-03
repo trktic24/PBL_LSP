@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('asesor', function (Blueprint $table) {
             // Sesuai permintaan: id_asesor (primary) (bigint)
             $table->id('id_asesor');
-            $table->foreignId('id_user')
+            $table->foreignId('user_id')
                   ->constrained('users', 'id_user') // <-- Tambahkan 'id_user' di sini
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
-            $table->foreignId('id_skema')->nullable()->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('restrict');
 
             // Data Pribadi Asesor
             $table->string('nomor_regis', 50)->unique();
@@ -54,7 +53,7 @@ return new class extends Migration
             $table->string('sertifikat_asesor')->comment('Path ke file sertifikat');
             $table->string('sertifikasi_kompetensi')->comment('Path ke file sertifikasi');
             $table->string('tanda_tangan')->comment('Path ke file tanda tangan');
-            $table->enum('status_verifikasi', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->boolean('is_verified')->default(false)->comment('Status verifikasi asesor');
 
             // Standar timestamp seperti di tabel users
             $table->timestamps();

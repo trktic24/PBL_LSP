@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,12 +16,12 @@ return new class extends Migration
             $table->foreignId('id_ia08')->constrained('ia08', 'id_ia08')->onUpdate('cascade')->onDelete('cascade');
 
             // isi dari database bukti_portofolio_ia08_ia09
-            $table->boolean('is_valid')->default(false);      // ya/tidak
-            $table->boolean('is_asli')->default(false);       // ya/tidak
-            $table->boolean('is_terkini')->default(false);    // ya/tidak
-            $table->boolean('is_memadai')->default(false);    // ya/tidak
+            $table->boolean('is_valid')->default(null)->comment('ya/tidak');      // ya/tidak
+            $table->boolean('is_asli')->default(null)->comment('ya/tidak');       // ya/tidak
+            $table->boolean('is_terkini')->default(null)->comment('ya/tidak');    // ya/tidak
+            $table->boolean('is_memadai')->default(null)->comment('ya/tidak');    // ya/tidak
             $table->text('kesimpulan_jawaban_asesi')->nullable();
-            $table->boolean('pencapaian_ia09')->default(false)->comment('Apakah asesi mencapai IA09 berdasarkan bukti portofolio yang diajukan');
+            $table->boolean('pencapaian_ia09')->default(null)->comment('Apakah asesi mencapai IA09 berdasarkan bukti portofolio yang diajukan');
             $table->timestamps();
         });
     }

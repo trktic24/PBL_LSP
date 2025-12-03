@@ -15,7 +15,7 @@ return new class extends Migration
             // Sesuai ERD: id_skema (PK)
             // Ini akan membuat kolom BIGINT UNSIGNED AUTO_INCREMENT
             $table->id('id_skema');
-            $table->foreignId('category_id')->constrained('categories', 'id')->onUpdate('cascade')->onDelete('cascade')->nullable();
+            $table->foreignId('categorie_id')->constrained('categories', 'id')->onUpdate('cascade')->onDelete('cascade')->nullable();
 
             // kode_unit (int) - Saya ubah jadi string
             // Alasan: Kode unit seringkali mengandung titik atau huruf (misal: J.620100.001.01)

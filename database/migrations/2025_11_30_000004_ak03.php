@@ -10,13 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('respon_bukti_ak01', function (Blueprint $table) {
-            $table->id('id_respon_bukti_ak01');
-            $table->foreignId('id_bukti_ak01')->constrained('bukti_ak01', 'id_bukti_ak01')->onUpdate('cascade')->onDelete('cascade');
+        Schema::create('respon_hasil_ak03', function (Blueprint $table) {
+            $table->id('id_respon_hasil_ak03');
+            $table->foreignId('id_poin_ak03')->constrained('poin_ak03', 'id_poin_ak03')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
-            // isi kolom tabel respon_bukti_ak01
-            $table->boolean('respon')->default(null)->nullable()->comment('1 = ya, 0 = tidak');
+            // isi kolom tabel respon_hasil_ak03
+            $table->text('komentar_lainnya')->nullable()->comment('isi sesuai komentar jika ada');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('respon_bukti_ak01');
+        Schema::dropIfExists('respon_hasil_ak03');
     }
 };
