@@ -14,17 +14,15 @@ class UmpanBalikIa06 extends Model
     protected $primaryKey = 'id_umpan_balik_ia06';
 
     protected $fillable = [
-        'id_data_sertifikasi_asesi', // Hapus id_soal_ia06 dari sini
+        'id_data_sertifikasi_asesi',
         'umpan_balik',
     ];
 
     /**
-     * Relasi ke Data Sertifikasi Asesi
-     * Asumsi Anda nanti akan membuat model DataSertifikasiAsesi
+     * Relasi: Umpan balik ini ditujukan untuk asesi siapa?
      */
-    public function dataSertifikasiAsesi(): BelongsTo
+    public function asesi(): BelongsTo
     {
-        // Pastikan Model DataSertifikasiAsesi sudah dibuat
         return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }

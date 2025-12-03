@@ -170,6 +170,21 @@ Route::prefix('v1')->group(function () {
         // 🗓️ JADWAL ASESOR (CRUD & FILTERING)
         // =======================================================
         Route::apiResource('jadwal-asesor', JadwalAsesorApiController::class);
+
+        // =======================================================
+        // IA 06
+        // =======================================================
+        // 1. Bank Soal (CRUD)
+        Route::apiResource('soal-ia06', SoalIa06Controller::class);
+
+        // 2. Asesi: Jawab & Lihat Jawaban
+        Route::post('soal-ia06/jawab', [SoalIa06Controller::class, 'storeJawabanAsesi']);
+        Route::get('soal-ia06/jawaban/{id_data_sertifikasi_asesi}', [SoalIa06Controller::class, 'getJawabanAsesi']);
+
+        // 3. Asesor: Penilaian & Umpan Balik
+        Route::post('soal-ia06/penilaian', [SoalIa06Controller::class, 'storePenilaianAsesor']);
+        Route::post('soal-ia06/umpan-balik', [SoalIa06Controller::class, 'storeUmpanBalikAsesi']);
+        Route::get('soal-ia06/umpan-balik/{id_data_sertifikasi_asesi}', [SoalIa06Controller::class, 'getUmpanBalikAsesi']);
     });
 });
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
@@ -186,11 +201,3 @@ Route::get('/ia-10/{id}', [Ia10ApiController::class, 'show']);
 
 // Mengirim jawaban penilaian
 Route::post('/ia-10', [Ia10ApiController::class, 'store']);
-
-
-// =======================================================
-// 📝 MODUL IA-06 (SISIPKAN DI SINI)
-// =======================================================
-Route::apiResource('soal-ia06', SoalIa06Controller::class);
-Route::post('soal-ia06/umpan-balik', [SoalIa06Controller::class, 'storeUmpanBalikAsesi']);
-Route::get('soal-ia06/umpan-balik/{id_data_sertifikasi_asesi}', [SoalIa06Controller::class, 'getUmpanBalikAsesi']);

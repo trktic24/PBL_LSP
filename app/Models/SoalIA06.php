@@ -10,27 +10,23 @@ class SoalIa06 extends Model
 {
     use HasFactory;
 
-    // 1. Definisikan nama tabel secara eksplisit (karena tidak jamak/plural standar)
+    // Nama tabel spesifik
     protected $table = 'soal_ia06';
 
-    // 2. Definisikan primary key (karena bukan 'id')
+    // Primary key custom
     protected $primaryKey = 'id_soal_ia06';
 
-    // 3. Tentukan field yang boleh diisi (Mass Assignment)
+    // Kolom yang boleh diisi
     protected $fillable = [
         'soal_ia06',
-        'isi_jawaban_ia06',
-        'pencapaian',
         'kunci_jawaban_ia06',
     ];
 
     /**
-     * Relasi ke Umpan Balik
-     * Satu Soal bisa memiliki banyak umpan balik (tergantung asesi)
+     * Relasi: Satu soal bisa memiliki banyak jawaban (dari banyak asesi)
      */
-    public function umpanBalik(): HasMany
+    public function jawabans(): HasMany
     {
-        // Parameter: (Model Tujuan, Foreign Key di tabel tujuan, Local Key di tabel ini)
-        return $this->hasMany(UmpanBalikIa06::class, 'id_soal_ia06', 'id_soal_ia06');
+        return $this->hasMany(JawabanIa06::class, 'id_soal_ia06', 'id_soal_ia06');
     }
 }
