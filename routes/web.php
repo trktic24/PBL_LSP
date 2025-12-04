@@ -90,6 +90,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
     Route::get('/FR-IA-10-view', fn() => view('frontend.FR_IA_10'))->name('FR-IA-10'); 
 
+    // Tambahkan Route ini:
+    Route::get('/asesi/apl01/print/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.print');
+
+    // Jangan lupa untuk MAPA 01 juga jika nanti error yang sama muncul:
+    Route::get('/asesi/mapa01/print/{id}', [MAPA01Controller::class, 'cetakPDF'])->name('mapa01.print');
+
+
     // FR.IA.06 (Statis/View)
     Route::get('/fr-ia-06-c', fn() => view('frontend.fr_IA_06_c'))->name('fr_IA_06_c');
     Route::get('/fr-ia-06-a', fn() => view('frontend.fr_IA_06_a'))->name('fr_IA_06_a');
@@ -174,8 +181,6 @@ Route::middleware(['auth'])->prefix('asesor')->group(function () {
     //Route::get('/tracker', fn() => view('frontend.tracker'))->name('tracker');
 
 });
-
-
 
 /*
 |--------------------------------------------------------------------------
