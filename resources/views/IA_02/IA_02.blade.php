@@ -295,7 +295,7 @@
                             <div
                                 class="h-32 bg-white mt-4 rounded border-2 border-dashed border-gray-300 flex items-center justify-center italic text-gray-500 overflow-hidden">
                                 @if ($sertifikasi->jadwal->asesor->tanda_tangan)
-                                    <img src="{{ asset($sertifikasi->asesor->tanda_tangan) }}"
+                                    <img src="{{ asset($sertifikasi->jadwal->asesor->tanda_tangan) }}"
                                         alt="Tanda Tangan Asesor" class="max-w-full max-h-full object-contain">
                                 @else
                                     Tanda Tangan Digital Asesor
