@@ -16,15 +16,15 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'username' => 'required|string',
+            'email' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // Cari user berdasarkan username
-        $user = User::where('username', $credentials['username'])->first();
+        // Cari user berdasarkan email
+        $user = User::where('email', $credentials['email'])->first();
 
         // Cek user & password
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Username atau Password salah'
@@ -65,4 +65,4 @@ class LoginController extends Controller
         // Kembalikan data user yang sedang login
         return response()->json($request->user());
     }
-} 
+}

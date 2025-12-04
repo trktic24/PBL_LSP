@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo; // Tambahkan ini jika Mode
 
 // Pastikan semua Model relasi di-import di sini:
 use App\Models\Category;
-use App\Models\Asesor; 
-use App\Models\Jadwal; 
+use App\Models\Asesor;
+use App\Models\Jadwal;
 
 class Skema extends Model
 {
@@ -38,7 +38,7 @@ class Skema extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'categorie_id',
+        'category_id',
         'id_kelompok_pekerjaan',
         'nomor_skema',
         'nama_skema',
@@ -69,7 +69,7 @@ class Skema extends Model
     public function jadwal(): HasMany // Gunakan HasMany untuk ketepatan tipe
     {
         return $this->hasMany(Jadwal::class, 'id_skema', 'id_skema');
-    // --- Relasi yang sudah ada di kode Anda (tetap valid) ---
+        // --- Relasi yang sudah ada di kode Anda (tetap valid) ---
     }
     /**
      * Relasi ke UnitKompetensi.

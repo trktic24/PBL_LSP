@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('_ak05', function (Blueprint $table) {
+        Schema::create('ak05', function (Blueprint $table) {
             $table->id('id_ak05');
 
             // isi kolom tabel ak05
@@ -26,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('_ak05');
+        Schema::dropIfExists('ak05');
     }
 };

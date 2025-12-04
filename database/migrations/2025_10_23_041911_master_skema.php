@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,7 +14,7 @@ return new class extends Migration
             // Sesuai ERD: id_skema (PK)
             // Ini akan membuat kolom BIGINT UNSIGNED AUTO_INCREMENT
             $table->id('id_skema');
-            $table->foreignId('categorie_id')->constrained('categories', 'id')->onUpdate('cascade')->onDelete('cascade')->nullable();
+            $table->foreignId('category_id')->constrained('categories', 'id')->onUpdate('cascade')->onDelete('cascade')->nullable();
 
             // kode_unit (int) - Saya ubah jadi string
             // Alasan: Kode unit seringkali mengandung titik atau huruf (misal: J.620100.001.01)
