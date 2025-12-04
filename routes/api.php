@@ -2,13 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
 use App\Http\Controllers\Api\SkemaController;
-use App\Http\Controllers\Api\TukController; // <-- TAMBAHKAN INI
-use App\Http\Controllers\Api\AsesorTableApiController;
+use App\Http\Controllers\Api\v1\TukController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\Api\JadwalController;
 use App\Http\Controllers\Api\AsesorApiController;
 use App\Http\Controllers\Api\Ia10ApiController;
@@ -16,6 +15,7 @@ use App\Http\Controllers\Api\V1\DetailSkemaController;
 use App\Http\Controllers\Api\V1\BeritaController;
 use App\Http\Controllers\Api\V1\StrukturOrganisasiController;
 use App\Http\Controllers\Api\V1\JadwalControllerAPI; // Sudah benar
+use App\Http\Controllers\Api\V1\AsesorTableApiController;
 use App\Http\Controllers\Api\Asesor\JadwalAsesorApiController;
 use App\Http\Controllers\Api\Asesor\ProfilAsesorApiController;
 
@@ -89,7 +89,14 @@ Route::prefix('v1')->group(function () {
         Route::get('/me', [LoginController::class, 'me']);
 
         // =======================================================
-        // 📌 MASTER ASESOR
+        // � PROFIL ASESOR (Harus sebelum /asesor/{id})
+        // =======================================================
+        Route::get('/asesor/profil', [ProfilAsesorApiController::class, 'show']);
+        Route::post('/asesor/profil', [ProfilAsesorApiController::class, 'update']);
+        Route::put('/asesor/profil', [ProfilAsesorApiController::class, 'update']);
+
+        // =======================================================
+        // �📌 MASTER ASESOR
         // =======================================================
         Route::get('/asesor', [AsesorController::class, 'index']);
         Route::get('/asesors', [AsesorController::class, 'index']);
@@ -170,6 +177,8 @@ Route::prefix('v1')->group(function () {
         // 🗓️ JADWAL ASESOR (CRUD & FILTERING)
         // =======================================================
         Route::apiResource('jadwal-asesor', JadwalAsesorApiController::class);
+
+
 
         // =======================================================
         // IA 06
