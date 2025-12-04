@@ -2,25 +2,23 @@
 
 namespace App\Models\IA11;
 
+use App\Models\IA11\SpesifikasiIA11;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PerformaIA11 extends Model
+class PencapaianSpesifikasiIA11 extends Model
 {
     use HasFactory;
 
-    protected $table = 'performa_ia11';
-    protected $primaryKey = 'id_performa_ia11';
-    
-    protected $guarded = []; 
+    protected $table = 'pencapaian_spesifikasi_ia11';
+    protected $primaryKey = 'id_pencapaian_spesifikasi_ia11';
+    public $timestamps = true;
 
-    protected $fillable = [
-        'deskripsi_performa',
-    ];
+    protected $fillable = ['id_ia11', 'id_spesifikasi_ia11', 'hasil_reviu', 'catatan_temuan'];
 
-    public function pencapaianPerforma(): HasMany
+    public function spesifikasiItem(): BelongsTo
     {
-        return $this->hasMany(PencapaianPerformaIA11::class, 'id_performa_ia11', 'id_performa_ia11');
+        return $this->belongsTo(SpesifikasiIA11::class, 'id_spesifikasi_ia11', 'id_spesifikasi_ia11');
     }
 }

@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\IA11\SpesifikasiProdukIA11;
 use App\Models\IA11\BahanProdukIA11;
 use App\Models\IA11\SpesifikasiTeknisIA11;
 use App\Models\IA11\SpesifikasiIA11;
 use App\Models\IA11\PerformaIA11;
+use App\Models\IA11\PencapaianSpesifikasiIA11;
+use App\Models\IA11\PencapaianPerformaIA11;
 
 class IA11 extends Model
 {
@@ -25,24 +26,16 @@ class IA11 extends Model
     /**
      * Atribut yang dapat diisi.
      */
-    protected $fillable = [
-        'id_data_sertifikasi_asesi',
-        'rancangan_produk',
-        'nama_produk',
-        'standar_industri',
-        'tanggal_pengoperasian',
-        'gambar_produk',
-    ];
+    protected $fillable = ['id_data_sertifikasi_asesi', 'rancangan_produk', 'nama_produk', 'standar_industri', 'tanggal_pengoperasian', 'gambar_produk', 'rekomendasi'];
 
     // --- DEFINISI RELASI (RELATIONSHIPS) ---
 
     /**
-     * Relasi ke Data Sertifikasi Asesi (Parent)
-     * Relasi: Many-to-One (M:1)
+     * Relasi ke Data Sertifikasi Asesi (Header IA.11)
+     * Relasi: One-to-One (1:1)
      */
     public function dataSertifikasiAsesi(): BelongsTo
     {
-        // Asumsi DataSertifikasiAsesi ada di App\Models\
         return $this->belongsTo(\App\Models\DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
@@ -73,27 +66,54 @@ class IA11 extends Model
         return $this->hasMany(SpesifikasiTeknisIA11::class, 'id_ia11', 'id_ia11');
     }
 
+    // --- RELASI PENCAPAIAN DENGAN MASTER DATA ---
+
+    /**
+     * Relasi ke Pencapaian Spesifikasi (Data Transaksi Detail)
+     * Ini adalah data yang menyimpan HASIL REVIU & CATATAN TEMUAN.
+     */
+    public function pencapaianSpesifikasi(): HasMany
+    {
+        return $this->hasMany(PencapaianSpesifikasiIA11::class, 'id_ia11', 'id_ia11');
+    }
+
+    /**
+     * Relasi ke Pencapaian Performa (Data Transaksi Detail)
+     * Ini adalah data yang menyimpan HASIL REVIU & CATATAN TEMUAN.
+     */
+    public function pencapaianPerforma(): HasMany
+    {
+        return $this->hasMany(PencapaianPerformaIA11::class, 'id_ia11', 'id_ia11');
+    }
+
+    // --- RELASI MANY-TO-MANY (TIDAK DIPAKAI DI CONTROLLER UNTUK MENGAMBIL DATA REVIU) ---
+
     /**
      * Relasi ke Spesifikasi Master (Melalui Tabel Pencapaian)
      * Relasi: Many-to-Many (M:M)
+     * Catatan: Relasi di bawah ini hanya untuk mengambil item master, bukan data reviu.
      */
-    public function pencapaianSpesifikasi(): BelongsToMany
+    public function spesifikasiMaster()
     {
-        // Menggunakan withPivot untuk mengambil kolom hasil_reviu dan catatan_temuan
-        return $this->belongsToMany(SpesifikasiIA11::class, 'pencapaian_spesifikasi_ia11', 'id_ia11', 'id_spesifikasi_ia11')
-                    ->withPivot(['hasil_reviu', 'catatan_temuan'])
-                    ->withTimestamps();
+        return $this->belongsToMany(
+            SpesifikasiIA11::class,
+            'pencapaian_spesifikasi_ia11',
+            'id_ia11',
+            'id_spesifikasi_ia11' 
+        )->withPivot('hasil_reviu', 'catatan_temuan'); 
     }
 
     /**
      * Relasi ke Performa Master (Melalui Tabel Pencapaian)
      * Relasi: Many-to-Many (M:M)
      */
-    public function pencapaianPerforma(): BelongsToMany
+    public function performaMaster()
     {
-        // Menggunakan withPivot untuk mengambil kolom hasil_reviu dan catatan_temuan
-        return $this->belongsToMany(PerformaIA11::class, 'pencapaian_performa_ia11', 'id_ia11', 'id_performa_ia11')
-                    ->withPivot(['hasil_reviu', 'catatan_temuan'])
-                    ->withTimestamps();
+        return $this->belongsToMany(
+            PerformaIA11::class,
+            'pencapaian_performa_ia11',
+            'id_ia11',
+            'id_performa_ia11' 
+        )->withPivot('hasil_reviu', 'catatan_temuan');
     }
 }

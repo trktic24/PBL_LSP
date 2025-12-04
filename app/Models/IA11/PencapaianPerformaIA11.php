@@ -4,6 +4,7 @@ namespace App\Models\IA11;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\IA11\PerformaIA11;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PencapaianPerformaIA11 extends Model
