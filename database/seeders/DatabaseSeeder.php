@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PoinAk03Seeder::class);
         $this->call(SpesifikasiIA11Seeder::class);
         $this->call(PerformaIA11Seeder::class);
+        $this->call(SkenarioIa02Seeder::class);
 
         // Baris ini udah bener
         \App\Models\Asesi::factory(20)->create();
@@ -48,5 +49,6 @@ class DatabaseSeeder extends Seeder
                 'id_data_sertifikasi_asesi' => $id,
             ]);
         }
+        \App\Models\Ia02::factory(20)->create();
     }
 }

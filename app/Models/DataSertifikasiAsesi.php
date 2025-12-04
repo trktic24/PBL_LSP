@@ -6,6 +6,7 @@ use App\Models\Asesi;
 use App\Models\Jadwal;
 use App\Models\BuktiDasar;
 use App\Models\BuktiKelengkapan;
+use App\Models\Ia02;
 
 // Pastikan semua model yang direlasikan di-import
 use Illuminate\Database\Eloquent\Model;
@@ -170,6 +171,11 @@ class DataSertifikasiAsesi extends Model
     public function getTanggalPelaksanaanAttribute()
     {
         return $this->jadwal?->tanggal_pelaksanaan;
+    }
+
+     public function Ia02(): HasMany
+    {
+        return $this->hasMany(Ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
 }

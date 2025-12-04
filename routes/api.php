@@ -21,6 +21,7 @@ use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\Ak04API\APIBandingController;
+use App\Http\Controllers\Ia02Controller;
 /*
 |--------------------------------------------------------------------------
 | API Routes (VERSION 1)
@@ -157,7 +158,26 @@ Route::prefix('v1')->group(function () {
 });
 
 
+Route::prefix('v1')->group(function () {
+    
+    // =================================================================
+    // ROUTE FR.IA.02 (API - DATA FETCH)
+    // =================================================================
+    
+    // Prefix penuh: /api/v1/ia02/...
+    Route::prefix('ia02')->group(function () {
 
+        // GET: Ambil data IA.02 (API)
+        // Jalur Penuh: /api/v1/ia02/{id_data_sertifikasi_asesi}/data
+        // Catatan: Menggunakan method 'apiIndex' yang ada di Ia02Controller Anda
+        Route::get('/{id_data_sertifikasi_asesi}/data', 
+            [Ia02Controller::class, 'apiDetail'] 
+        )->name('api.v1.ia02.detail');
+    });
+
+    // TIDAK ADA ROUTE IA03 di sini (Sesuai permintaan)
+    
+});
 // ==============================================================
 // 🛠️ RUTE KHUSUS DEV: UPDATE STATUS MANUAL (CHEAT)
 // ==============================================================
