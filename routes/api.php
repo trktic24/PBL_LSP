@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\TukController;
 use App\Http\Controllers\Api\AsesiController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\BeritaController;
 
 // =======================================================
 // 🔓 RUTE PUBLIK (tidak butuh token)
@@ -109,6 +110,15 @@ Route::prefix('v1')->group(function() {
         Route::put('/jadwal/{id}', [ScheduleController::class, 'update']);
         Route::delete('/jadwal/{id}', [ScheduleController::class, 'destroy']);
 
+        // =======================================================
+        // MASTER Berita (CRUD LENGKAP)
+        // =======================================================
+        // MASTER Berita (CRUD LENGKAP)
+        Route::get('/berita', [BeritaController::class, 'index']);
+        Route::get('/berita/{id}', [BeritaController::class, 'show']);
+        Route::post('/berita', [BeritaController::class, 'store']);
+        Route::put('/berita/{id}', [BeritaController::class, 'update']);
+        Route::delete('/berita/{id}', [BeritaController::class, 'destroy']);
 
     });
 });
