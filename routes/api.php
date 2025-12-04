@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\V1\DetailSkemaController;
 use App\Http\Controllers\Api\V1\BeritaController;
 use App\Http\Controllers\Api\V1\StrukturOrganisasiController;
 use App\Http\Controllers\Api\V1\JadwalControllerAPI; // Sudah benar
-
+use App\Http\Controllers\Api\V1\MitraController;
 
 use App\Http\Controllers\Api\KelompokPekerjaanController;
 use App\Http\Controllers\Api\UnitKompetensiController;
@@ -74,6 +74,10 @@ Route::prefix('v1')->group(function() {
 
     // Jadwal API
     Route::apiResource('jadwal', JadwalControllerAPI::class);
+
+    //Mitra API
+    // Menggunakan apiResource (otomatis membuat route index, store, show, update, destroy)
+    Route::apiResource('mitra', MitraController::class);
     // =======================================================
     // 🔐 RUTE TERPROTEKSI (Harus pakai token Bearer)
     // =======================================================
@@ -167,7 +171,7 @@ Route::prefix('v1')->group(function() {
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
 
 // Rute API Jadwal
-Route::apiResource('jadwal', JadwalController::class, ['as' => 'api']);
+Route::apiResource('jadwal', JadwalControllerAPI::class, ['as' => 'api']);
 
 // Rute API Asesor
 Route::get('/asesor/{id}', [AsesorApiController::class, 'show']);

@@ -15,6 +15,7 @@ use App\Http\Controllers\TukAdminController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Api\V1\MitraController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,9 +70,7 @@ Route::get('/struktur', function () {
     return view('landing_page.page_profil.struktur');
 })->name('profil.struktur');
 
-Route::get('/mitra', function () {
-    return view('landing_page.page_profil.mitra');
-})->name('profil.mitra');
+Route::get('/mitra', [MitraController::class, 'index'])->name('profil.mitra');
 
 /*
 |--------------------------------------------------------------------------
