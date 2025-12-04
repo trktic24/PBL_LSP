@@ -13,41 +13,41 @@ use Illuminate\Support\Facades\DB;
 class SoalIa06Controller extends Controller
 {
     // =================================================================
-    // 1. ADMIN/MASTER DATA: CRUD BANK SOAL
+    // 1. ADMIN (Role ID: 1): MENGELOLA BANK SOAL
     // =================================================================
 
-    // GET /api/v1/soal-ia06
     public function index()
     {
+        // Semua role boleh melihat soal
         $data = SoalIa06::all();
         return response()->json(['success' => true, 'data' => $data], 200);
     }
 
-    // POST /api/v1/soal-ia06
     public function store(Request $request)
     {
+        // PROTEKSI: Hanya Admin (1)
+        if ($request->user()->role_id !== 1) {
+            return response()->json(['message' => 'Akses Ditolak. Hanya Admin.'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'soal_ia06'          => 'required|string',
-            'kunci_jawaban_ia06' => 'nullable|string',
+            'kunci_jawaban_ia06' => 'required|string',
         ]);
 
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
 
         $soal = SoalIa06::create($request->all());
-        return response()->json(['success' => true, 'message' => 'Soal dibuat', 'data' => $soal], 201);
+        return response()->json(['success' => true, 'message' => 'Soal berhasil dibuat', 'data' => $soal], 201);
     }
 
-    // GET /api/v1/soal-ia06/{id}
-    public function show($id)
-    {
-        $soal = SoalIa06::find($id);
-        if (!$soal) return response()->json(['message' => 'Soal tidak ditemukan'], 404);
-        return response()->json(['success' => true, 'data' => $soal], 200);
-    }
-
-    // PUT /api/v1/soal-ia06/{id}
     public function update(Request $request, $id)
     {
+        // PROTEKSI: Hanya Admin (1)
+        if ($request->user()->role_id !== 1) {
+            return response()->json(['message' => 'Akses Ditolak. Hanya Admin.'], 403);
+        }
+
         $soal = SoalIa06::find($id);
         if (!$soal) return response()->json(['message' => 'Soal tidak ditemukan'], 404);
 
@@ -55,9 +55,13 @@ class SoalIa06Controller extends Controller
         return response()->json(['success' => true, 'message' => 'Soal diupdate', 'data' => $soal], 200);
     }
 
-    // DELETE /api/v1/soal-ia06/{id}
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        // PROTEKSI: Hanya Admin (1)
+        if ($request->user()->role_id !== 1) {
+            return response()->json(['message' => 'Akses Ditolak. Hanya Admin.'], 403);
+        }
+
         $soal = SoalIa06::find($id);
         if (!$soal) return response()->json(['message' => 'Soal tidak ditemukan'], 404);
 
@@ -66,34 +70,30 @@ class SoalIa06Controller extends Controller
     }
 
     // =================================================================
-    // 2. FITUR ASESI: MENJAWAB SOAL
+    // 2. ASESI (Role ID: 2): MENJAWAB SOAL
     // =================================================================
 
-    /**
-     * POST /api/v1/soal-ia06/jawab
-     * Asesi mengirim jawaban (bisa banyak sekaligus dalam array)
-     */
     public function storeJawabanAsesi(Request $request)
     {
-        // Validasi Array Jawaban
+        // PROTEKSI: Hanya Asesi (2)
+        if ($request->user()->role_id !== 2) {
+            return response()->json(['message' => 'Akses Ditolak. Hanya Asesi yang boleh menjawab.'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
-            'jawabans'                  => 'required|array', // Wajib array
+            'jawabans'                  => 'required|array',
             'jawabans.*.id_soal_ia06'   => 'required|exists:soal_ia06,id_soal_ia06',
             'jawabans.*.jawaban_asesi'  => 'required|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
-
-        $savedAnswers = [];
+        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
 
         try {
-            DB::beginTransaction(); // Pakai transaction biar aman
+            DB::beginTransaction();
+            $savedAnswers = [];
 
             foreach ($request->jawabans as $item) {
-                // updateOrCreate: Kalau asesi sudah jawab soal ini, update. Kalau belum, create.
                 $jawaban = JawabanIa06::updateOrCreate(
                     [
                         'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
@@ -101,53 +101,36 @@ class SoalIa06Controller extends Controller
                     ],
                     [
                         'jawaban_asesi' => $item['jawaban_asesi']
-                        // Pencapaian tidak di-update di sini (tugas asesor)
+                        // Asesi dilarang mengisi 'pencapaian'
                     ]
                 );
                 $savedAnswers[] = $jawaban;
             }
 
             DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Jawaban berhasil disimpan',
-                'data' => $savedAnswers
-            ], 201);
+            return response()->json(['success' => true, 'message' => 'Jawaban tersimpan', 'data' => $savedAnswers], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Gagal menyimpan: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
 
-    /**
-     * GET /api/v1/soal-ia06/jawaban/{id_asesi}
-     * Melihat jawaban asesi + soalnya (Dipakai Asesi & Asesor)
-     */
-    public function getJawabanAsesi($id_asesi)
-    {
-        // Mengambil jawaban dan join otomatis dengan tabel soal
-        $data = JawabanIa06::with('soal') // Load relasi soal
-                ->where('id_data_sertifikasi_asesi', $id_asesi)
-                ->get();
-
-        return response()->json(['success' => true, 'data' => $data], 200);
-    }
-
     // =================================================================
-    // 3. FITUR ASESOR: MENILAI & UMPAN BALIK
+    // 3. ASESOR (Role ID: 3): REVIEW & PENILAIAN
     // =================================================================
 
-    /**
-     * POST /api/v1/soal-ia06/penilaian
-     * Asesor memberikan conteng kompeten (1) atau tidak (0) per soal
-     */
     public function storePenilaianAsesor(Request $request)
     {
+        // PROTEKSI: Hanya Asesor (3)
+        if ($request->user()->role_id !== 3) {
+            return response()->json(['message' => 'Akses Ditolak. Hanya Asesor yang boleh menilai.'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'penilaian'                    => 'required|array',
             'penilaian.*.id_jawaban_ia06'  => 'required|exists:jawaban_ia06,id_jawaban_ia06',
-            'penilaian.*.pencapaian'       => 'required|boolean', // 1 or 0
+            'penilaian.*.pencapaian'       => 'required|boolean', // 1 = Ya, 0 = Tidak
         ]);
 
         if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
@@ -161,15 +144,16 @@ class SoalIa06Controller extends Controller
             }
         }
 
-        return response()->json(['success' => true, 'message' => "$count jawaban telah dinilai."], 200);
+        return response()->json(['success' => true, 'message' => "$count jawaban dinilai."], 200);
     }
 
-    /**
-     * POST /api/v1/soal-ia06/umpan-balik
-     * Asesor memberikan komentar akhir
-     */
     public function storeUmpanBalikAsesi(Request $request)
     {
+        // PROTEKSI: Hanya Asesor (3)
+        if ($request->user()->role_id !== 3) {
+            return response()->json(['message' => 'Akses Ditolak. Hanya Asesor.'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
             'umpan_balik'               => 'required|string',
@@ -182,16 +166,29 @@ class SoalIa06Controller extends Controller
             ['umpan_balik' => $request->umpan_balik]
         );
 
-        return response()->json(['success' => true, 'message' => 'Umpan balik disimpan', 'data' => $feedback], 200);
+        return response()->json(['success' => true, 'message' => 'Umpan balik tersimpan', 'data' => $feedback], 200);
     }
 
-    // GET /api/v1/soal-ia06/umpan-balik/{id_asesi}
-    public function getUmpanBalikAsesi($id_asesi)
-    {
-        $data = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $id_asesi)->first();
+    // =================================================================
+    // UMUM: LIHAT DATA (Bisa Asesi/Asesor)
+    // =================================================================
 
-        if(!$data) return response()->json(['message' => 'Belum ada umpan balik'], 404);
+    public function getJawabanAsesi($id_asesi) {
+        // Bisa diakses Asesi (2) atau Asesor (3)
+        // (Opsional: Tambahkan pengecekan jika ingin strict)
 
+        $data = JawabanIa06::with('soal')->where('id_data_sertifikasi_asesi', $id_asesi)->get();
         return response()->json(['success' => true, 'data' => $data], 200);
+    }
+
+    public function getUmpanBalikAsesi($id_asesi) {
+        $data = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $id_asesi)->first();
+        return response()->json(['success' => true, 'data' => $data], 200);
+    }
+
+    public function show($id) {
+         $soal = SoalIa06::find($id);
+         if (!$soal) return response()->json(['message' => 'Soal tidak ditemukan'], 404);
+         return response()->json(['success' => true, 'data' => $soal], 200);
     }
 }
