@@ -2,14 +2,14 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Auth\LoginController;
-use App\Http\Controllers\Api\Auth\RegisterController;
-use App\Http\Controllers\Api\Auth\LogoutController;
-use App\Http\Controllers\Api\Auth\GoogleApiController;
-use App\Http\Controllers\Api\SkemaController;
-use App\Http\Controllers\Api\TukController; // <-- TAMBAHKAN INI
-use App\Http\Controllers\Api\AsesorTableApiController;
-use App\Http\Controllers\Api\JadwalController;
+use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\RegisterController;
+use App\Http\Controllers\Api\V1\Auth\LogoutController;
+use App\Http\Controllers\Api\V1\Auth\GoogleApiController;
+use App\Http\Controllers\Api\V1\SkemaController;
+use App\Http\Controllers\Api\V1\TukController; // <-- TAMBAHKAN INI
+use App\Http\Controllers\Api\V1\AsesorTableApiController;
+use App\Http\Controllers\Api\V1\JadwalController;
 use App\Http\Controllers\Api\AsesorApiController;
 use App\Http\Controllers\Api\V1\DetailSkemaController;
 use App\Http\Controllers\Api\V1\BeritaController;
