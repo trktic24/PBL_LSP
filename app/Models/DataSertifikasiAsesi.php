@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\ResponIa10;
 use App\Models\Ia10; // Model Master Soal
 
@@ -108,6 +109,21 @@ class DataSertifikasiAsesi extends Model
         // Tentukan foreign key dan local key karena tidak standar
         return $this->hasMany(ResponBuktiAk01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }    
+
+    /**
+     * Mendapatkan daftar hadir asesi yang terkait dengan data sertifikasi ini.
+     * Relasi: HasOne (Satu DataSertifikasiAsesi memiliki satu DaftarHadirAsesi)
+     */
+    public function daftarHadirAsesi(): HasOne
+    {
+        // Foreign Key: id_data_sertifikasi_asesi (di tabel daftar_hadir_asesi)
+        // Local Key: id_data_sertifikasi_asesi (di tabel data_sertifikasi_asesi)
+        return $this->hasOne(
+            DaftarHadirAsesi::class,
+            'id_data_sertifikasi_asesi',
+            'id_data_sertifikasi_asesi'
+        );
+    }     
 
     /**
      * ACCESSOR: Menghitung 'Level Virtual' berdasarkan isi kolom database.

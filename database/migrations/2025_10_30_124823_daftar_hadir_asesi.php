@@ -13,9 +13,13 @@ return new class extends Migration
     {
         Schema::create('daftar_hadir_asesi', function (Blueprint $table) {
             $table->id('id_daftar_hadir_asesi');
-            $table->foreignId('id_jadwal')->constrained('jadwal', 'id_jadwal')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('id_data_sertifikasi_asesi')
+              ->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')
+              ->onUpdate('cascade')
+              ->onDelete('cascade');
 
             // isi kolom Database daftar_hadir_asesi
+            $table->boolean('hadir')->default(false)->comment('jika 1(hadir), jika 0(tidak hadir)');
             $table->string('tanda_tangan_asesi')->comment('Path ke file tanda tangan asesi');
             $table->timestamps();
         });

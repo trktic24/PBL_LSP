@@ -17,6 +17,7 @@ use App\Http\Controllers\IA02Controller; // Ditambahkan karena ada route IA-02 d
 use App\Http\Controllers\APL01Controller;
 use App\Http\Controllers\FrMapa01Controller;
 use App\Http\Controllers\Mapa02Controller;
+use App\Http\Controllers\DaftarHadirController;
 
 /*
 |--------------------------------------------------------------------------
@@ -168,6 +169,9 @@ Route::middleware(['auth'])->prefix('asesor')->group(function () {
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
     Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])->name('daftar_asesi');
     Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker'); 
+    Route::get('/daftar_hadir/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('daftar_hadir');  
+    Route::post('/daftar-hadir/{id_jadwal}/simpan', [DaftarHadirController::class, 'simpan'])->name('simpan_kehadiran');
+  
     
     // Tools
     Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');

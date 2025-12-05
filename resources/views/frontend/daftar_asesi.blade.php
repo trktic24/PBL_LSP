@@ -97,18 +97,18 @@
                 </div>
 
                 <div class="flex gap-4 justify-between">
-                    <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                    <a href="{{ route('daftar_hadir', $jadwal->id_jadwal) }}" class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
                         Daftar Hadir
-                    </button>
+                    </a>
                     <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
                         Laporan Asesmen
                     </button>
                     <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
                         Tinjauan Asesmen
                     </button>
-                    <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                    <a href="#" class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
                         Berita Acara
-                    </button>
+                    </a>
                 </div>
             </div> 
         </div> 
