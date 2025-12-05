@@ -160,6 +160,33 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/mapa02/store/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');     
 });
 
+/*
+|--------------------------------------------------------------------------
+| ROUTE CETAK DOKUMEN PDF (Bisa diakses Semua Role: Asesi, Asesor, Admin)
+|--------------------------------------------------------------------------
+| Kita taruh diluar prefix 'asesi'/'asesor' agar URL-nya netral.
+*/
+Route::middleware(['auth', 'role:asesi,asesor,admin'])->group(function () {
+
+    // Cetak APL-01
+    Route::get('/dokumen/apl01/print/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.print');
+
+    // Cetak MAPA-01
+    Route::get('/dokumen/mapa01/print/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.print');
+
+});
+
+/*
+    |--------------------------------------------------------------------------
+    | ZONA KHUSUS ASESI (NEW MIDDLEWARE)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:asesi'])->prefix('asesi')->group(function () {
+        
+        // 1. Tracker Asesi (Halaman Progress)
+        Route::get('/tracker/{id}', [AsesiTrackerController::class, 'show'])->name('tracker');
+    });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -174,8 +201,10 @@ Route::middleware(['auth'])->prefix('asesor')->group(function () {
     // Manajemen Jadwal & Asesi
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
     Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])->name('daftar_asesi');
-    Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker'); 
-    
+
+
+    // Tracker VIEW Asesor (Melihat progress milik asesi)
+    Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('asesor.tracker');
     // Tools
     Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
     //Route::get('/tracker', fn() => view('frontend.tracker'))->name('tracker');
