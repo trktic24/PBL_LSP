@@ -91,6 +91,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
     Route::get('/FR-IA-10-view', fn() => view('frontend.FR_IA_10'))->name('FR-IA-10'); 
 
+    // Tambahkan Route ini:
+    Route::get('/asesi/apl01/print/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.print');
+
+    // Jangan lupa untuk MAPA 01 juga jika nanti error yang sama muncul:
+    Route::get('/asesi/mapa01/print/{id}', [MAPA01Controller::class, 'cetakPDF'])->name('mapa01.print');
+
+
     // FR.IA.06 (Statis/View)
     Route::get('/fr-ia-06-c', fn() => view('frontend.fr_IA_06_c'))->name('fr_IA_06_c');
     Route::get('/fr-ia-06-a', fn() => view('frontend.fr_IA_06_a'))->name('fr_IA_06_a');
@@ -154,6 +161,33 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/mapa02/store/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');     
 });
 
+/*
+|--------------------------------------------------------------------------
+| ROUTE CETAK DOKUMEN PDF (Bisa diakses Semua Role: Asesi, Asesor, Admin)
+|--------------------------------------------------------------------------
+| Kita taruh diluar prefix 'asesi'/'asesor' agar URL-nya netral.
+*/
+Route::middleware(['auth', 'role:asesi,asesor,admin'])->group(function () {
+
+    // Cetak APL-01
+    Route::get('/dokumen/apl01/print/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.print');
+
+    // Cetak MAPA-01
+    Route::get('/dokumen/mapa01/print/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.print');
+
+});
+
+/*
+    |--------------------------------------------------------------------------
+    | ZONA KHUSUS ASESI (NEW MIDDLEWARE)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:asesi'])->prefix('asesi')->group(function () {
+        
+        // 1. Tracker Asesi (Halaman Progress)
+        Route::get('/tracker/{id}', [AsesiTrackerController::class, 'show'])->name('tracker');
+    });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -168,18 +202,18 @@ Route::middleware(['auth'])->prefix('asesor')->group(function () {
     // Manajemen Jadwal & Asesi
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
     Route::get('/daftar-asesi/{id_jadwal}', [JadwalController::class, 'showAsesi'])->name('daftar_asesi');
-    Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker'); 
+
     Route::get('/daftar_hadir/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('daftar_hadir');  
     Route::post('/daftar-hadir/{id_jadwal}/simpan', [DaftarHadirController::class, 'simpan'])->name('simpan_kehadiran');
   
-    
+
+    // Tracker VIEW Asesor (Melihat progress milik asesi)
+    Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('asesor.tracker');
     // Tools
     Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
     //Route::get('/tracker', fn() => view('frontend.tracker'))->name('tracker');
 
 });
-
-
 
 /*
 |--------------------------------------------------------------------------

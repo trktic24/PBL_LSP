@@ -54,21 +54,21 @@
                                     {{-- Pra Asesmen --}}
                                     <td class="p-4 text-center">
                                         {{-- Menggunakan tag <a> agar bisa diklik --}}
-                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
                                             Dalam Proses
                                         </a>
                                     </td>
 
                                     {{-- Asesmen --}}
                                     <td class="p-4 text-center">
-                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}#asesmen" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}#asesmen" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
                                             Dalam Proses
                                         </a>
                                     </td>
 
                                     {{-- Semua --}}
                                     <td class="p-4 text-center">
-                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
                                             Dalam Proses
                                         </a>
                                     </td>

@@ -276,10 +276,10 @@ class IA05Controller extends Controller
                 }
             }
 
-            if ($request->has('umpan_balik')) {
-                LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                               ->update(['umpan_balik_ia05' => $request->umpan_balik]);
-            }
+            // if ($request->has('umpan_balik')) {
+            //     LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+            //                    ->update(['umpan_balik_ia05' => $request->umpan_balik]);
+            // }
 
             DB::commit();
             return redirect()->back()->with('success', 'Penilaian (IA-05 C) berhasil disimpan.');
