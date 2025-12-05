@@ -10,7 +10,6 @@ use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\V1\TukController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\Api\JadwalController;
 use App\Http\Controllers\Api\AsesorApiController;
-<<<<<<< Updated upstream
 use App\Http\Controllers\Api\Ia10ApiController;
 use App\Http\Controllers\Api\V1\DetailSkemaController;
 use App\Http\Controllers\Api\V1\BeritaController;
@@ -19,8 +18,7 @@ use App\Http\Controllers\Api\V1\JadwalControllerAPI; // Sudah benar
 use App\Http\Controllers\Api\V1\AsesorTableApiController;
 use App\Http\Controllers\Api\Asesor\JadwalAsesorApiController;
 use App\Http\Controllers\Api\Asesor\ProfilAsesorApiController;
-
-
+use App\Http\Controllers\Api\SoalIA05ApiController;
 use App\Http\Controllers\Api\KelompokPekerjaanController;
 use App\Http\Controllers\Api\UnitKompetensiController;
 use App\Http\Controllers\Api\AsesorController;
@@ -197,8 +195,6 @@ Route::prefix('v1')->group(function () {
         Route::get('soal-ia06/umpan-balik/{id_data_sertifikasi_asesi}', [SoalIa06Controller::class, 'getUmpanBalikAsesi']);
     });
 });
-=======
-use App\Http\Controllers\Api\SoalIA05ApiController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
@@ -240,7 +236,6 @@ Route::apiResource('tuks', TukController::class); // <-- BARIS BARU
 // Rute API Skema
 Route::get('/skema', [SkemaController::class, 'index']);
 
->>>>>>> Stashed changes
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
 
 // Rute API Jadwal
