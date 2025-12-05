@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\V1\TukController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\Api\JadwalController;
 use App\Http\Controllers\Api\AsesorApiController;
+<<<<<<< Updated upstream
 use App\Http\Controllers\Api\Ia10ApiController;
 use App\Http\Controllers\Api\V1\DetailSkemaController;
 use App\Http\Controllers\Api\V1\BeritaController;
@@ -196,6 +197,50 @@ Route::prefix('v1')->group(function () {
         Route::get('soal-ia06/umpan-balik/{id_data_sertifikasi_asesi}', [SoalIa06Controller::class, 'getUmpanBalikAsesi']);
     });
 });
+=======
+use App\Http\Controllers\Api\SoalIA05ApiController;
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'User data retrieved successfully',
+        'data' => $request->user()
+    ]); 
+});
+
+Route::post('/login', [LoginController::class, 'login']);
+Route::prefix('register')->group(function () {
+    Route::post('/asesi', [RegisterController::class, 'registerAsesi']);
+    Route::post('/asesor', [RegisterController::class, 'registerAsesor']);
+});
+Route::middleware('auth:sanctum')->post('/logout', [LogoutController::class, 'logout']);
+Route::prefix('auth/google')->group(function () {
+    Route::get('redirect', [GoogleApiController::class, 'redirect']);
+    Route::get('callback', [GoogleApiController::class, 'callback']);
+});
+
+Route::prefix('ia-05')->group(function () {
+    
+    // GET: Ambil daftar soal (Dipakai di Mobile/Frontend load via AJAX)
+    Route::get('/soal', [SoalIA05ApiController::class, 'index']);
+
+    // POST: Admin tambah soal baru
+    Route::post('/soal', [SoalIA05ApiController::class, 'storeSoal']);
+
+    // POST: Asesi kirim jawaban
+    Route::post('/submit', [SoalIA05ApiController::class, 'submitJawaban']);
+
+});
+
+
+// Rute API TUK (Tempat Uji Kompetensi)
+// Menggunakan apiResource untuk mendaftarkan semua metode CRUD (index, show, store, update, destroy)
+Route::apiResource('tuks', TukController::class); // <-- BARIS BARU
+
+// Rute API Skema
+Route::get('/skema', [SkemaController::class, 'index']);
+
+>>>>>>> Stashed changes
 Route::get('/asesor', [AsesorTableApiController::class, 'index']);
 
 // Rute API Jadwal
