@@ -140,12 +140,12 @@
                                         <input type="checkbox" disabled {{ $tuk == 'Tempat Kerja' ? 'checked' : '' }}
                                             class="w-4 h-4 rounded border-gray-300 mr-2 opacity-100 cursor-default">
                                         Tempat Kerja
-                                    </label>
+                                        {{-- </label>
                                     <label class="flex items-center text-gray-900 font-medium text-sm cursor-default">
                                         <input type="checkbox" disabled {{ $tuk == 'Mandiri' ? 'checked' : '' }}
                                             class="w-4 h-4 rounded border-gray-300 mr-2 opacity-100 cursor-default">
                                         Mandiri
-                                    </label>
+                                    </label> --}}
                                 </div>
                             </div>
                         </div>
