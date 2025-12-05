@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Asesor;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DataSertifikasiAsesi; // <-- Panggil model pivot-mu
 use App\Models\Asesor;
+
+use App\Http\Controllers\Controller;
 
 class AsesiTrackerController extends Controller
 {
@@ -28,7 +30,7 @@ class AsesiTrackerController extends Controller
         
         // --- Tambahan: Otorisasi (Sangat Penting) ---
         // Pastikan Asesor yang login adalah asesor yang benar
-        $asesor = Asesor::where('user_id', Auth::id())->first();
+        $asesor = Asesor::where('id_user', Auth::id())->first();
         if (!$asesor || $dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
              abort(403, 'Anda tidak berhak mengakses data ini.');
         }
@@ -40,7 +42,7 @@ class AsesiTrackerController extends Controller
         $jadwal = $dataSertifikasi->jadwal;
 
         // 3. Kirim data ke view 'tracker'
-        return view('frontend.tracker', [
+        return view('asesor.tracker', [
             'asesi' => $asesi,
             'jadwal' => $jadwal,
             'dataSertifikasi' => $dataSertifikasi // Ini berisi semua status (pra_asesmen, dll)

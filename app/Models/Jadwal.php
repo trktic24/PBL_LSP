@@ -104,14 +104,7 @@ class Jadwal extends Model
 
     public function asesor()
     {
-        return $this->belongsToMany(
-            Asesor::class,
-            'transaksi_asesor_skema', // Pivot table
-            'id_skema',               // Foreign key on pivot table related to the parent model (Jadwal's id_skema effectively)
-            'id_asesor',              // Foreign key on pivot table related to the related model (Asesor)
-            'id_skema',               // Local key on parent model (Jadwal)
-            'id_asesor'               // Local key on related model (Asesor)
-        );
+        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
     }
 }
     

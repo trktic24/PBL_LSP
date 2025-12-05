@@ -3,9 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
-use App\Http\Controllers\Api\Auth\RegisterController;
-use App\Http\Controllers\Api\Auth\LogoutController;
-use App\Http\Controllers\Api\Auth\GoogleApiController;
+use App\Http\Controllers\Api\V1\Auth\RegisterController;
+use App\Http\Controllers\Api\V1\Auth\LogoutController;
+use App\Http\Controllers\Api\V1\Auth\GoogleApiController;
 use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\V1\TukController; // <-- TAMBAHKAN INI
 use App\Http\Controllers\Api\JadwalController;
@@ -25,7 +25,7 @@ use App\Http\Controllers\Api\AsesorController;
 use App\Http\Controllers\Api\TukAdminController;
 use App\Http\Controllers\Api\AsesiController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\ScheduleController;
+
 
 use App\Http\Controllers\Api\SoalIa06Controller;
 
@@ -163,14 +163,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/category/{id}', [CategoryController::class, 'destroy']);
 
 
-        // =======================================================
-        // MASTER Schedule (CRUD LENGKAP)
-        // =======================================================
-        Route::get('/jadwal', [ScheduleController::class, 'index']);
-        Route::get('/jadwal/{id}', [ScheduleController::class, 'show']);
-        Route::post('/jadwal', [ScheduleController::class, 'store']);
-        Route::put('/jadwal/{id}', [ScheduleController::class, 'update']);
-        Route::delete('/jadwal/{id}', [ScheduleController::class, 'destroy']);
+
 
         // =======================================================
         // 🗓️ JADWAL ASESOR (CRUD & FILTERING)

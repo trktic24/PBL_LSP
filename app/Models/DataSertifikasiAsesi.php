@@ -86,7 +86,7 @@ class DataSertifikasiAsesi extends Model
     public function jadwal(): BelongsTo
     {
         // Pastikan nama modelnya Schedule (sesuai controller Anda) atau Jadwal
-        return $this->belongsTo(Schedule::class, 'id_jadwal', 'id_jadwal');
+        return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
     }
 
     /**

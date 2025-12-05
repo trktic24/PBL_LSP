@@ -258,4 +258,111 @@ class AsesorJadwalController extends Controller
     {
         //
     }
+    public function daftarHadir(Request $request, $id_jadwal)
+    {
+        // 1. Ambil Data Jadwal Utama
+        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+
+        // 2. Cek Otorisasi Asesor
+        $asesor = Asesor::where('id_user', Auth::id())->first();
+        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+             abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+        }
+
+        // 3. Setup Default Sorting
+        $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');
+        $sortDirection = $request->input('direction', 'asc');
+        
+        // 4. Base Query ke tabel Pivot (DataSertifikasiAsesi)
+        $query = DataSertifikasiAsesi::query()
+                    ->with(['asesi.user', 'asesi.dataPekerjaan'])
+                    ->where('id_jadwal', $id_jadwal)
+                    ->select('data_sertifikasi_asesi.*');
+
+        // 5. Logic Sorting Lanjutan (Join Table)
+        if (in_array($sortColumn, ['nama_lengkap', 'alamat_rumah', 'pekerjaan', 'nomor_hp'])) {
+            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
+                  ->orderBy('asesi.' . $sortColumn, $sortDirection);
+        } 
+        elseif ($sortColumn == 'institusi') {
+            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
+                  ->leftJoin('data_pekerjaan_asesi', 'asesi.id_asesi', '=', 'data_pekerjaan_asesi.id_asesi')
+                  ->orderBy('data_pekerjaan_asesi.nama_institusi_pekerjaan', $sortDirection);
+        } 
+        else {
+            $query->orderBy('id_data_sertifikasi_asesi', $sortDirection);
+        }
+
+        // 6. Search Logic
+        if ($request->has('search') && $request->input('search') != '') {
+            $searchTerm = $request->input('search');
+            $query->whereHas('asesi', function($q) use ($searchTerm) {
+                $q->where('nama_lengkap', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('alamat_rumah', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('nomor_hp', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('pekerjaan', 'like', '%' . $searchTerm . '%')
+                  ->orWhereHas('dataPekerjaan', function($q2) use ($searchTerm) {
+                      $q2->where('nama_institusi_pekerjaan', 'like', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+
+        // 7. Pagination
+        $perPage = $request->input('per_page', 10);
+        $pendaftar = $query->paginate($perPage)->appends($request->query());
+
+        // 8. Ambil Data Kehadiran (ID Data Sertifikasi Asesi yang hadir = 1)
+        $hadirIds = \App\Models\DaftarHadirAsesi::whereHas('dataSertifikasiAsesi', function($q) use ($id_jadwal) {
+                            $q->where('id_jadwal', $id_jadwal);
+                        })
+                        ->where('hadir', 1)
+                        ->pluck('id_data_sertifikasi_asesi')
+                        ->toArray();
+
+        return view('asesor.daftar_hadir', [
+            'jadwal' => $jadwal,
+            'pendaftar' => $pendaftar,
+            'perPage' => $perPage,
+            'sortColumn' => $sortColumn,
+            'sortDirection' => $sortDirection,
+            'hadirIds' => $hadirIds, // Kirim array ID Data Sertifikasi Asesi yang hadir
+        ]);
+    }
+
+    public function storeKehadiran(Request $request, $id_jadwal)
+    {
+        $jadwal = Jadwal::findOrFail($id_jadwal);
+
+        // Cek Otorisasi
+        $asesor = Asesor::where('id_user', Auth::id())->first();
+        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+             abort(403, 'Anda tidak berhak mengubah data ini.');
+        }
+
+        $dataPresensi = json_decode($request->input('data_presensi'), true);
+
+        if (!is_array($dataPresensi)) {
+            return back()->with('error', 'Data presensi tidak valid.');
+        }
+
+        foreach ($dataPresensi as $item) {
+            // Cari data sertifikasi
+            $dataSertifikasi = DataSertifikasiAsesi::with('asesi')->find($item['id_data_sertifikasi_asesi']);
+            
+            if (!$dataSertifikasi) continue;
+
+            // Update atau Create data di DaftarHadirAsesi
+            \App\Models\DaftarHadirAsesi::updateOrCreate(
+                [
+                    'id_data_sertifikasi_asesi' => $item['id_data_sertifikasi_asesi']
+                ],
+                [
+                    'hadir' => $item['hadir'] ? 1 : 0,
+                    'tanda_tangan_asesi' => $dataSertifikasi->asesi->tanda_tangan ?? 'default.png'
+                ]
+            );
+        }
+
+        return back()->with('success', 'Data kehadiran berhasil disimpan.');
+    }
 }

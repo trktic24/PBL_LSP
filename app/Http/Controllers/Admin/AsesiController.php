@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Models\Asesi;
 use App\Models\User;
@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File; // [PENTING] Gunakan File Facade
 use Illuminate\Validation\Rules\Password;
+
+use App\Http\Controllers\Controller;
 
 class AsesiController extends Controller
 {

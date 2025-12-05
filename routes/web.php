@@ -8,12 +8,12 @@ use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\Api\V1\CountryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\Admin\SkemaController;
 use App\Http\Controllers\AsesorController; 
-use App\Http\Controllers\AsesiController; 
-use App\Http\Controllers\TukAdminController;
-use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Admin\AsesiController; 
+use App\Http\Controllers\Admin\TukAdminController;
+
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
 /*
@@ -85,6 +85,13 @@ Route::get('/sertifikasi', function () {
 
 Route::get('/sertifikasi', fn() => "Halaman Sertifikasi")->name('sertifikasi');
 Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
+
+/*
+|--------------------------------------------------------------------------
+| ASESOR ROUTES
+|--------------------------------------------------------------------------
+*/
+
 
 // Register User Baru
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');

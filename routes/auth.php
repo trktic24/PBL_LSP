@@ -18,14 +18,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LoginController as AdminLoginController;
-use App\Http\Controllers\SkemaController;
+use App\Http\Controllers\Admin\SkemaController;
 use App\Http\Controllers\AsesorController;
-use App\Http\Controllers\AsesiController;
-use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\DaftarHadirController;
-use App\Http\Controllers\TukAdminController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\AsesiProfileController;
+use App\Http\Controllers\Admin\AsesiController;
+use App\Http\Controllers\Admin\JadwalController as AdminJadwalController;
+use App\Http\Controllers\Admin\DaftarHadirController;
+use App\Http\Controllers\Admin\TukAdminController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\AsesiProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA10Controller;
@@ -34,7 +34,7 @@ use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\APL01Controller;
 use App\Http\Controllers\FrMapa01Controller;
 use App\Http\Controllers\Mapa02Controller;
-use App\Http\Controllers\AsesiTrackerController;
+use App\Http\Controllers\Asesor\AsesiTrackerController;
 use App\Http\Controllers\JadwalController;
 
 // ======================================================
@@ -208,7 +208,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
         });
 
-        Route::controller(\App\Http\Controllers\DetailSkemaController::class)
+        Route::controller(\App\Http\Controllers\Admin\DetailSkemaController::class)
              ->prefix('master/skema/detail')
              ->group(function () {
                 Route::get('/{id_skema}', 'index')->name('skema.detail');
@@ -246,17 +246,17 @@ Route::middleware('auth')->group(function () {
             Route::delete('/delete/{id_asesi}', 'destroy')->name('delete_asesi');
         });
 
-        // Master - Schedule
-        Route::controller(ScheduleController::class)->prefix('master/schedule')->group(function () {
-            Route::get('/', 'index')->name('master_schedule');
-            Route::get('/add', 'create')->name('add_schedule');
-            Route::post('/add', 'store')->name('add_schedule.store');
-            Route::get('/edit/{id_jadwal}', 'edit')->name('edit_schedule');
-            Route::patch('/update/{id_jadwal}', 'update')->name('update_schedule');
-            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_schedule');
-            Route::get('/attendance/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('schedule.attendance');
+        // Master - Jadwal
+        Route::controller(AdminJadwalController::class)->prefix('master/jadwal')->group(function () {
+            Route::get('/', 'index')->name('master_jadwal');
+            Route::get('/add', 'create')->name('add_jadwal');
+            Route::post('/add', 'store')->name('add_jadwal.store');
+            Route::get('/edit/{id_jadwal}', 'edit')->name('edit_jadwal');
+            Route::patch('/update/{id_jadwal}', 'update')->name('update_jadwal');
+            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_jadwal');
+            Route::get('/attendance/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('jadwal.attendance');
         });
-        Route::get('/schedule_admin', [ScheduleController::class, 'showCalendar'])->name('schedule_admin');
+        Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('jadwal_admin');
 
         // TUK
         Route::controller(TukAdminController::class)->prefix('master/tuk')->group(function () {
@@ -293,6 +293,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/jadwal', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'index'])->name('jadwal.index');
         Route::get('/daftar-asesi/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
         Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker'); 
+        Route::get('/daftar-hadir/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'daftarHadir'])->name('daftar_hadir');
+        Route::post('/daftar-hadir/{id_jadwal}/simpan', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeKehadiran'])->name('simpan_kehadiran'); 
         
         // Tools
         Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');

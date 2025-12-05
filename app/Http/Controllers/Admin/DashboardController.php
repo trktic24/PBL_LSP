@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Models\Asesi;
 use App\Models\Asesor;
+
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {

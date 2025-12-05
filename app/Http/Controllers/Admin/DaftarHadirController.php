@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Models\Schedule;
+use App\Models\Jadwal;
 use App\Models\DataSertifikasiAsesi;
+
+use App\Http\Controllers\Controller;
 
 class DaftarHadirController extends Controller
 {
@@ -14,7 +16,7 @@ class DaftarHadirController extends Controller
     public function index(Request $request, $id_jadwal)
     {
         // 1. Ambil Data Jadwal Utama
-        $jadwal = Schedule::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
 
         // 2. Setup Default Sorting
         $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');
@@ -59,7 +61,7 @@ class DaftarHadirController extends Controller
         $perPage = $request->input('per_page', 10);
         $pendaftar = $query->paginate($perPage)->appends($request->query());
 
-        return view('master.schedule.daftar_hadir', [
+        return view('master.jadwal.daftar_hadir', [
             'jadwal' => $jadwal,
             'pendaftar' => $pendaftar,
             'perPage' => $perPage,

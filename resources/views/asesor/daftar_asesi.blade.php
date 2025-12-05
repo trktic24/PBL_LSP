@@ -54,21 +54,21 @@
                                     {{-- Pra Asesmen --}}
                                     <td class="p-4 text-center">
                                         {{-- Menggunakan tag <a> agar bisa diklik --}}
-                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
                                             Dalam Proses
                                         </a>
                                     </td>
 
                                     {{-- Asesmen --}}
                                     <td class="p-4 text-center">
-                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}#asesmen" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}#asesmen" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
                                             Dalam Proses
                                         </a>
                                     </td>
 
                                     {{-- Semua --}}
                                     <td class="p-4 text-center">
-                                        <a href="{{ route('tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
                                             Dalam Proses
                                         </a>
                                     </td>
@@ -80,9 +80,8 @@
                                     
                                     {{-- Tombol Penyesuaian --}}
                                     <td class="p-4 text-center">
-                                        <button class="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-yellow-700 whitespace-nowrap">
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}#penyesuaian" class="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-yellow-700 whitespace-nowrap">
                                             Lakukan Penyesuaian
-                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -97,9 +96,9 @@
                 </div>
 
                 <div class="flex gap-4 justify-between">
-                    <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                    <a href="{{ route('asesor.daftar_hadir', $jadwal->id_jadwal) }}" class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow text-center flex items-center justify-center">
                         Daftar Hadir
-                    </button>
+                    </a>
                     <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
                         Laporan Asesmen
                     </button>
