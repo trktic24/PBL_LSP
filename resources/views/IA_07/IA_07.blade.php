@@ -126,6 +126,20 @@
                         </div>
                         @endforeach
                     </div>
+                    {{-- REVISI TOMBOL: Hanya tombol Selanjutnya --}}
+                    <div class="flex justify-end items-center mt-12">
+                        {{-- Hapus tombol Kembali --}}
+                        
+                        <button type="submit" class="px-10 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl">
+                            Selanjutnya &rarr;
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </main>
+    </div>
 
                    
 

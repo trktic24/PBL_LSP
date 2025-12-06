@@ -78,6 +78,6 @@ class Ia07Controller extends Controller
             }
         });
 
-        return redirect()->back()->with('success', 'Jawaban berhasil disimpan!');
+        return redirect()->route('dashboard')->with('success', 'Jawaban FR.IA.07 berhasil disimpan. Silakan lanjutkan ke tahap berikutnya.');
     }
 }
