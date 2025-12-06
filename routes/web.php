@@ -34,6 +34,10 @@ use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\Ak04API\APIBandingController;
 use App\Http\Controllers\IA03Controller;
 use App\Http\Controllers\Ia07Controller;
+use App\Http\Controllers\IA11\IA11Controller;
+use App\Http\Controllers\IA11\SpesifikasiIA11Controller;
+use App\Http\Controllers\IA11\PerformaIA11Controller;
+use App\Http\Controllers\Ia02Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -202,55 +206,91 @@ Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])->nam
 // 3. Route Batal/Cancel
 Route::get('/pembayaran_batal', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
 
-Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])
-       ->name('kerahasiaan.fr_ak01');
+Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
 
-Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])  ->name('show.jadwal_tuk');
+Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
 
 // Route Web AK.04 (DISESUAIKAN)
-Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show']) 
-    ->name('banding.fr_ak04'); // KRITIS: Menggunakan fr-ak04
+Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04'); // KRITIS: Menggunakan fr-ak04
 
 // Route Placeholder untuk Umpan Balik (AK.03)
-Route::get('/asesi/umpan-balik/{id_sertifikasi}', function($id_sertifikasi) {
+Route::get('/asesi/umpan-balik/{id_sertifikasi}', function ($id_sertifikasi) {
     // Arahkan kembali ke halaman banding (saat ini) atau halaman data utama
     return redirect()->route('banding.show', ['id_sertifikasi' => $id_sertifikasi]);
 })->name('umpan.balik');
-Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])
-    ->name('show.jadwal_tuk');
+Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
 
-Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])
-        ->name('asesmen.ia05.view');
+Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');
 
-Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])
-    ->name('asesmen.ia06.view');
+Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])->name('asesmen.ia06.view');
 
-Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'downloadInvoice'])
-    ->name('payment.invoice');
+Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'downloadInvoice'])->name('payment.invoice');
 
 Route::middleware(['auth'])->group(function () {
+    // --- IA.01 sementara (biar tidak error) ---
+    Route::get('/ia01/{id_sertifikasi}', function ($id_sertifikasi) {
+        return "HALAMAN IA01 BELUM DIBUAT — ID: " . $id_sertifikasi;
+    })->name('ia01.index');
+
+    // --- ROUTE FR.IA.02 (TUGAS PRAKTIK / DEMONSTRASI) ---
+
+    // 1. Menampilkan halaman IA02 (READ-ONLY)
+    // id_sertifikasi = ID Data Sertifikasi Asesi
+    Route::get('/ia02/{id_sertifikasi}', [Ia02Controller::class, 'index'])
+        ->name('ia02.index');
+
+   
+    // 2. Tombol "Selanjutnya" → redirect ke IA03
+    Route::post('/ia02/{id_sertifikasi}/next', [Ia02Controller::class, 'next'])
+        ->name('ia02.next');
+});
+
+    Route::middleware(['auth'])->group(function () {
 
     // Halaman utama IA03 (list pertanyaan + identitas lengkap)
-    Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])
-         ->name('ia03.index');
+    Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
 
     // Halaman detail satu pertanyaan (opsional)
-    Route::get('/ia03/detail/{id}', [IA03Controller::class, 'show'])
-         ->name('ia03.show');
+    Route::get('/ia03/detail/{id}', [IA03Controller::class, 'show'])->name('ia03.show');
 });
 
 Route::middleware(['auth'])->group(function () {
-
     // --- ROUTE FR.IA.07 (PERTANYAAN LISAN) ---
 
     // 1. Route untuk Menampilkan Form (GET)
     // Parameter {id_sertifikasi} diperlukan agar Controller tahu data siapa yang ditampilkan
-    Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07Controller::class, 'index'])
-        ->name('ia07.index');
+    Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07Controller::class, 'index'])->name('ia07.index');
 
     // 2. Route untuk Menyimpan Jawaban (POST)
     // Nama route 'ia07.store' harus sama persis dengan action di form blade
-    Route::post('/asesi/ia07/store', [Ia07Controller::class, 'store'])
-        ->name('ia07.store');
+    Route::post('/asesi/ia07/store', [Ia07Controller::class, 'store'])->name('ia07.store');
 
+    // --- ROUTE FR.IA.11 (CEKLIS REVIU PRODUK) ---
+    // 1. Route untuk Menampilkan Data (READ)
+    Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
+
+    // 2. Route untuk Menyimpan Data Baru (POST)
+    Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+
+    // 3. Route untuk Memperbarui Data (PUT/PATCH)
+    // Menggunakan ID primary key dari tabel IA11, bukan ID sertifikasi
+    Route::put('/ia11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
+
+    // 4. Route untuk Menghapus Data (DELETE)
+    Route::delete('/ia11/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
 });
+
+// ====================================================
+// ROUTE ADMIN (MASTER DATA IA.11)
+// ====================================================
+
+// Asumsi route ini berada di belakang middleware Admin
+Route::prefix('admin/master/ia11')
+    ->name('admin.master.ia11.')
+    ->group(function () {
+        // --- Spesifikasi Produk Master ---
+        Route::resource('spesifikasi', SpesifikasiIA11Controller::class)->except(['create', 'edit']) ->middleware('user.type:admin');
+
+        // --- Performa Produk Master ---
+        Route::resource('performa', PerformaIA11Controller::class)->except(['create', 'edit'])->middleware('user.type:admin');
+    });

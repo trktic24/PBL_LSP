@@ -42,7 +42,7 @@ class IA03Controller extends Controller
         $kelompokPekerjaan = $skema?->kelompokPekerjaan ?? collect();
         $unitKompetensi = $kelompokPekerjaan->first()?->unitKompetensi ?? collect();
 
-        $trackerUrl = $sertifikasi->jadwal?->id ? '/tracker/' . $sertifikasi->jadwal->id : '/dashboard';
+        $trackerUrl = $sertifikasi->jadwal?->id_jadwal ? '/tracker/' . $sertifikasi->jadwal->id_jadwal : '/dashboard';
         $backUrl = session('backUrl', $trackerUrl);
         
         return view('ia03.index', compact('sertifikasi', 'asesi', 'asesor', 'skema', 'jenisTuk', 'tuk', 'tanggal', 'kelompokPekerjaan', 'unitKompetensi', 'pertanyaanIA03', 'trackerUrl', 'backUrl', 'catatanUmpanBalik'));
