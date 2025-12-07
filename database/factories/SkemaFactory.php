@@ -28,7 +28,7 @@ class SkemaFactory extends Factory
     {
         return [
             // Sesuai dengan migration 'categorie_id'
-            'categorie_id' => Categorie::factory(),
+            'category_id' => Categorie::factory(),
 
             // Diubah dari 'kode_unit' menjadi 'nomor_skema' (DIUBAH)
             // Ditambahkan unique() karena ada constraint ->unique() di migration

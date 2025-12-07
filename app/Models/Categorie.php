@@ -30,7 +30,7 @@ class Categorie extends Model
         // Jika primary key Anda di 'skema' BUKAN 'id_skema', sesuaikan di sini.
         // Tapi karena foreign key ('categorie_id') dan local key ('id')
         // sudah sesuai konvensi, ini saja sudah cukup.
-        return $this->hasMany(Skema::class, 'categorie_id');
+        return $this->hasMany(Skema::class, 'category_id');
     }
 
     /**

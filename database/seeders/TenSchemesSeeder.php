@@ -60,7 +60,7 @@ class TenSchemesSeeder extends Seeder
                 $skema = Skema::firstOrCreate(
                     ['nama_skema' => $namaSkema],
                     [
-                        'categorie_id' => $kategori->id,
+                        'category_id' => $kategori->id,
                         'nomor_skema' => $nomorSkema,
                         'deskripsi_skema' => "Skema sertifikasi untuk $namaSkema",
                         'harga' => 500000 + ($index * 50000),

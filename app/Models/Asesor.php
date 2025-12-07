@@ -11,6 +11,7 @@ class Asesor extends Model
     protected $table = 'asesor';
     protected $primaryKey = 'id_asesor';
     protected $guarded = ['id_asesor'];
+    
 
     public function user()
     {

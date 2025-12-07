@@ -10,7 +10,7 @@ class AsesorFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
+            'id_user' => User::factory(),
             'nomor_regis' => 'MET.' . fake()->unique()->numberBetween(1000000, 9999999),
             'nama_lengkap' => fake()->name(),
             'nik' => fake()->unique()->numerify('################'),
@@ -39,7 +39,7 @@ class AsesorFactory extends Factory
             'sertifikasi_kompetensi' => 'uploads/kompetensi/dummy.pdf',
             'tanda_tangan' => 'uploads/ttd/dummy.png',
 
-            'is_verified' => 1,
+            'status_verifikasi' => $this->faker->boolean(80) ? 'approved' : $this->faker->randomElement(['pending', 'rejected']),
         ];
     }
 }

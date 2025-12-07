@@ -31,7 +31,7 @@ class Skema extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'categorie_id',
+        'category_id',
         'nomor_skema',
         'nama_skema',
         'deskripsi_skema',
@@ -41,13 +41,13 @@ class Skema extends Model
     ];
 
     /**
-     * Relasi ke Categorie (Berdasarkan foreignId 'categorie_id').
+     * Relasi ke Categorie (Berdasarkan foreignId 'category_id').
      * Menandakan bahwa Skema ini 'milik' satu Categorie.
      */
     public function categorie()
     {
         // Model, foreign_key, owner_key
-        return $this->belongsTo(Categorie::class, 'categorie_id', 'id');
+        return $this->belongsTo(Categorie::class, 'category_id', 'id');
     }
 
     /**
