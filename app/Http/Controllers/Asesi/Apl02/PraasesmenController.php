@@ -38,7 +38,7 @@ class PraasesmenController extends Controller
                 ->keyBy('id_kriteria'); 
 
             // 3. Kirim Data ke View
-            return view('pra-assesmen.praasesmen', [
+            return view('asesi.pra-assesmen.praasesmen', [
                 'sertifikasi'       => $sertifikasi, // Dikirim untuk Sidebar
                 'skema'             => $skema,
                 'asesi'             => $sertifikasi->asesi,

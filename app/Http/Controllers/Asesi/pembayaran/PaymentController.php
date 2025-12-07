@@ -187,7 +187,7 @@ class PaymentController extends Controller
         }
 
         // Kirim semua data ke View
-        return view('pembayaran.pembayaran_berhasil', [ 
+        return view('asesi.pembayaran.pembayaran_berhasil', [ 
             'order_id'      => $orderId,
             'status'        => $status,
             'status_code'   => $statusCode,

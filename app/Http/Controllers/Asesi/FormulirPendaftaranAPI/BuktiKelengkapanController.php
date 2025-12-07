@@ -144,7 +144,7 @@ class BuktiKelengkapanController extends Controller
          // Load 'asesi' buat sidebar
         $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
 
-        return view('formulir_pendaftaran.bukti_pemohon', [
+        return view('asesi.formulir_pendaftaran.bukti_pemohon', [
             'sertifikasi' => $sertifikasi, // Data pendaftaran
             'asesi' => $sertifikasi->asesi, // Data orangnya
         ]);

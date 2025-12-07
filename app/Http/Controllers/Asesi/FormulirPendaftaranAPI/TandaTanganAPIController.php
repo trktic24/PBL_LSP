@@ -114,7 +114,7 @@ class TandaTanganAPIController extends Controller
             // Load asesi beserta data pekerjaannya
             $sertifikasi = DataSertifikasiAsesi::with('asesi.dataPekerjaan')->findOrFail($id_sertifikasi);
 
-            return view('formulir_pendaftaran.tanda_tangan_pemohon', [
+            return view('asesi.formulir_pendaftaran.tanda_tangan_pemohon', [
                 'sertifikasi' => $sertifikasi,
                 'asesi' => $sertifikasi->asesi,
             ]);

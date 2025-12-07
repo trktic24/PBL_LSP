@@ -38,7 +38,7 @@ class APIBandingController extends Controller
             if ($sudahIsi) {
                 // Jika sudah, langsung tampilkan halaman universal "Sudah Mengisi"
                 // Kita gunakan view yang sama dengan umpan balik seperti permintaan
-                return view('tunggu_or_berhasil.berhasil', [
+                return view('asesi.tunggu_or_berhasil.berhasil', [
                     'id_sertifikasi' => $id_sertifikasi,
                     // Opsional: bisa kirim variabel judul agar halaman universalnya lebih spesifik
                     // 'page_title' => 'Banding Asesmen' 
@@ -65,7 +65,7 @@ class APIBandingController extends Controller
             $idAsesi = $asesi->id_asesi;
             
             // --- Kirim data ke View Form Banding ---
-            return view('banding.banding', [
+            return view('asesi.banding.banding', [
                 'id_sertifikasi' => $id_sertifikasi,
                 'sertifikasi'    => $dataSertifikasi,
                 'asesor'         => $asesorData,

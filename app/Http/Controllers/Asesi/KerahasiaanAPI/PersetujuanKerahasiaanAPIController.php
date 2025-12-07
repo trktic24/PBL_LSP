@@ -16,7 +16,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
     {
         try {
             $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
-            return view('persetujuan_assesmen_dan_kerahasiaan.fr_ak01', [
+            return view('asesi.persetujuan_assesmen_dan_kerahasiaan.fr_ak01', [
                 'id_sertifikasi' => $id_sertifikasi,
                 'asesi'          => $sertifikasi->asesi,
                 'sertifikasi'    => $sertifikasi

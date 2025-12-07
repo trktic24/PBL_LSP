@@ -29,7 +29,7 @@ class AsesmenEsaiController extends Controller
         }
 
         // Pastikan nama file bladenya nanti 'asesmen_esai.blade.php'
-        return view('assesmen.asesmen_esai', [ 
+        return view('asesi.assesmen.asesmen_esai', [ 
             'asesi' => $user->asesi,
             'sertifikasi' => $sertifikasi,
         ]);

@@ -31,7 +31,7 @@ class Ak03Controller extends Controller
         $sudahIsi = ResponHasilAk03::where('id_data_sertifikasi_asesi', $id)->exists();
 
         if ($sudahIsi) {
-            return view('tunggu_or_berhasil.berhasil', [
+            return view('asesi.tunggu_or_berhasil.berhasil', [
                 'id_sertifikasi' => $id
             ]); 
         }
@@ -51,7 +51,7 @@ class Ak03Controller extends Controller
         $komponen = PoinAk03::all();
 
         // Kirim data ke View Form
-        return view('umpan_balik.umpan_balik', [
+        return view('asesi.umpan_balik.umpan_balik', [
             'komponen'    => $komponen,
             'sertifikasi' => $sertifikasi,
             'asesi'       => $asesi,

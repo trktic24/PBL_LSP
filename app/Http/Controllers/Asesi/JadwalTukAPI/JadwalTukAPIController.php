@@ -23,7 +23,7 @@ class JadwalTukAPIController extends Controller
             ])->findOrFail($id_sertifikasi);
             
             // Return View
-            return view('jadwal_dan_tuk.jadwal_dan_tuk', [
+            return view('asesi.jadwal_dan_tuk.jadwal_dan_tuk', [
                 'id_sertifikasi' => $id_sertifikasi,
                 'asesi'          => $sertifikasi->asesi,
                 'sertifikasi'    => $sertifikasi

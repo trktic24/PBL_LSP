@@ -31,7 +31,7 @@ class AsesmenPilihanGandaController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        return view('assesmen.pertanyan_pilgan', [ // Pastikan nama file blade sesuai
+        return view('asesi.assesmen.pertanyan_pilgan', [ // Pastikan nama file blade sesuai
             'asesi' => $user->asesi,
             'sertifikasi' => $sertifikasi,
         ]);

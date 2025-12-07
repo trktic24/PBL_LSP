@@ -168,7 +168,7 @@ class IA11Controller extends Controller
         $trackerUrl = $sertifikasi->jadwal?->id_jadwal ? '/tracker/' . $sertifikasi->jadwal->id_jadwal : '/dashboard';
 
         // Ganti 'ia11.show' menjadi 'ia11.IA11' sesuai nama file blade
-        return view('ia11.IA11', compact('ia11', 'sertifikasi', 'asesi', 'asesor', 'skema', 'jenisTuk', 'tuk', 'tanggal', 'spesifikasi', 'performa', 'trackerUrl'));
+        return view('asesi.ia11.IA11', compact('ia11', 'sertifikasi', 'asesi', 'asesor', 'skema', 'jenisTuk', 'tuk', 'tanggal', 'spesifikasi', 'performa', 'trackerUrl'));
     }
 
     // --- UPDATE ---

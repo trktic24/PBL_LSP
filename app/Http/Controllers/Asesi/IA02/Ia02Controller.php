@@ -44,7 +44,7 @@ class Ia02Controller extends Controller
         // $isAdmin = auth()->check() ? auth()->user()->isAdmin() : false; 
         // Anda mungkin perlu menambahkan variabel lain yang hilang di sini
 
-        return view('IA_02.IA_02', [
+        return view('asesi.IA_02.IA_02', [
             'sertifikasi' => $dataSertifikasi,
             'asesi' => $asesi, // Tambahkan variabel asesi
             'daftarUnitKompetensi' => $daftarUnitKompetensi,

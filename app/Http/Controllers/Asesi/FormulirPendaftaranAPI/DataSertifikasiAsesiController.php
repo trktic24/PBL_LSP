@@ -121,7 +121,7 @@ class DataSertifikasiAsesiController extends Controller
             $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
 
             // Return ke View (Blade), bukan JSON
-            return view('formulir_pendaftaran.data_sertifikasi', [
+            return view('asesi.formulir_pendaftaran.data_sertifikasi', [
                 'id_sertifikasi_untuk_js' => $sertifikasi->id_data_sertifikasi_asesi,
                 'asesi' => $sertifikasi->asesi,
                 'sertifikasi' => $sertifikasi,

@@ -26,6 +26,6 @@ class Ia07Controller extends Controller
 
         $asesi = $sertifikasi->asesi;
 
-        return view('IA_07.IA_07', compact('sertifikasi','asesi'));
+        return view('asesi.IA_07.IA_07', compact('sertifikasi','asesi'));
     }
 }

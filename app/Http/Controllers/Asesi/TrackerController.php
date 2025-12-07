@@ -148,7 +148,7 @@ class TrackerController extends Controller
         }
 
         // [UPDATE 2] Kirim variabel flags ke View
-        return view('tracker', [
+        return view('asesi.tracker', [
             'sertifikasi' => $sertifikasi,
             'showPortofolio' => $showPortofolio,
             'showObservasi' => $showObservasi,
