@@ -6,27 +6,29 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('ia07', function (Blueprint $table) {
             $table->id('id_ia07');
-            $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
+            
+            // 1. Relasi ke Data Sertifikasi Asesi
+            // Perhatikan: table name = 'data_sertifikasi_asesi', PK = 'id_data_sertifikasi_asesi'
+            $table->foreignId('id_data_sertifikasi_asesi')
+                  ->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
 
-            // Isi kolom lainnya sesuai kebutuhan
-            $table->text('pertanyaan');
-            $table->string('jawaban_asesi', 255)->nullable()->unique();
-            $table->text('jawaban_diharapkan');
-            $table->boolean('pencapaian')->default(null)->comment('1 untuk Ya, 0 untuk Tidak');
+            // 3. Kolom Jawaban
+            $table->text('pertanyaan')->nullable(); 
+            $table->text('jawaban_asesi')->nullable(); 
+            $table->text('jawaban_yang_diharapkan')->nullable(); 
+            $table->enum('pencapaian', ['ya', 'tidak'])->nullable()->comment('Apakah jawaban asesi sesuai dengan yang diharapkan?');
+            
+            
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('ia07');

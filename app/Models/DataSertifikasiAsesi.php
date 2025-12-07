@@ -6,6 +6,7 @@ use App\Models\Asesi;
 use App\Models\Jadwal;
 use App\Models\BuktiDasar;
 use App\Models\BuktiKelengkapan;
+use App\Models\Ia02;
 
 // Pastikan semua model yang direlasikan di-import
 use Illuminate\Database\Eloquent\Model;
@@ -118,6 +119,37 @@ class DataSertifikasiAsesi extends Model
     {
         return $this->hasMany(ResponAk04::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+    
+    // shortcut relasi untuk ia03
+    public function getAsesorAttribute()
+    {
+        return $this->jadwal?->asesor;
+    }
+    
+    public function getSkemaAttribute()
+    {
+        return $this->jadwal?->skema;
+    }
+
+    public function getTukAtrribute()
+    {
+        return $this->jadwal?->tuk;
+    }
+
+    public function getJenisTukAttribute()
+    {
+        return $this->jadwal?->jenisTuk;
+    }
+
+    public function getTanggalPelaksanaanAttribute()
+    {
+        return $this->jadwal?->tanggal_pelaksanaan;
+    }
+
+     public function Ia02(): HasMany
+    {
+        return $this->hasMany(Ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
 
     public function daftarHadir()
     {
@@ -128,5 +160,10 @@ class DataSertifikasiAsesi extends Model
     {
         // Cek apakah relasi ada DAN kolom ttd terisi
         return $this->daftarHadir && !empty($this->daftarHadir->tanda_tangan_asesi);
+    }
+
+    public function ia07(): HasMany
+    {
+        return $this->hasMany(Ia07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }

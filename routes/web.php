@@ -3,27 +3,33 @@
 use Illuminate\Support\Facades\Route;
 
 // --- Controllers Import ---
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Api\CountryController;
 
-// --- Controllers Asesi & Asesor Import ---
+// --- Controllers Asesi Import ---
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Asesi\Apl01PdfController;
+use App\Http\Controllers\Asesi\IA02\Ia02Controller;
+use App\Http\Controllers\Asesi\IA03\IA03Controller;
+use App\Http\Controllers\Asesi\IA07\Ia07Controller;
+use App\Http\Controllers\Asesi\IA11\IA11Controller;
 use App\Http\Controllers\Asesor\AsesorTableController;
 use App\Http\Controllers\Asesi\Apl02\PraasesmenController;
 use App\Http\Controllers\Asesi\umpan_balik\Ak03Controller;
+use App\Http\Controllers\Asesi\IA11\PerformaIA11Controller;
 use App\Http\Controllers\Asesi\Ak04API\APIBandingController;
 use App\Http\Controllers\Asesi\pembayaran\PaymentController;
 use App\Http\Controllers\Asesi\asesmen\AsesmenEsaiController;
+use App\Http\Controllers\Asesi\IA11\SpesifikasiIA11Controller;
 use App\Http\Controllers\Asesi\JadwalTukAPI\JadwalTukAPIController;
 use App\Http\Controllers\Asesi\asesmen\AsesmenPilihanGandaController;
+use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
-use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,6 +145,52 @@ Route::middleware(['auth'])->group(function () {
 
     // --- H. Utilities (PDF & Cetak) ---
     Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
+
+    // --- IA.01 sementara (biar tidak error) ---
+    Route::get('/ia01/{id_sertifikasi}', function ($id_sertifikasi) {
+        return "HALAMAN IA01 BELUM DIBUAT — ID: " . $id_sertifikasi;
+    })->name('ia01.index');
+
+    // --- ROUTE FR.IA.02 (TUGAS PRAKTIK / DEMONSTRASI) ---
+
+    // 1. Menampilkan halaman IA02 (READ-ONLY)
+    // id_sertifikasi = ID Data Sertifikasi Asesi
+    Route::get('/ia02/{id_sertifikasi}', [Ia02Controller::class, 'index'])
+        ->name('ia02.index');
+
+   
+    // 2. Tombol "Selanjutnya" → redirect ke IA03
+    Route::post('/ia02/{id_sertifikasi}/next', [Ia02Controller::class, 'next'])
+        ->name('ia02.next');
+
+    // Halaman utama IA03 (list pertanyaan + identitas lengkap)
+    Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
+
+    // Halaman detail satu pertanyaan (opsional)
+    Route::get('/ia03/detail/{id}', [IA03Controller::class, 'show'])->name('ia03.show');
+
+
+
+    // --- ROUTE FR.IA.07 (PERTANYAAN LISAN) ---
+
+    // 1. Route untuk Menampilkan Form (GET)
+    // Parameter {id_sertifikasi} diperlukan agar Controller tahu data siapa yang ditampilkan
+    Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07Controller::class, 'index'])->name('ia07.index');
+
+    // --- ROUTE FR.IA.11 (CEKLIS REVIU PRODUK) ---
+    // 1. Route untuk Menampilkan Data (READ)
+    Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
+
+    // 2. Route untuk Menyimpan Data Baru (POST)
+    Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+
+    // 3. Route untuk Memperbarui Data (PUT/PATCH)
+    // Menggunakan ID primary key dari tabel IA11, bukan ID sertifikasi
+    Route::put('/ia11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
+
+    // 4. Route untuk Menghapus Data (DELETE)
+    Route::delete('/ia11/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
+
 }); // End of Middleware Auth
 
 // ====================================================
@@ -152,3 +204,18 @@ Route::get('/keep-alive', function () {
 
 // API Wilayah
 Route::get('/api/search-countries', [CountryController::class, 'search'])->name('api.countries.search');
+
+// ====================================================
+// ROUTE ADMIN (MASTER DATA IA.11)
+// ====================================================
+
+// Asumsi route ini berada di belakang middleware Admin
+Route::prefix('admin/master/ia11')
+    ->name('admin.master.ia11.')
+    ->group(function () {
+        // --- Spesifikasi Produk Master ---
+        Route::resource('spesifikasi', SpesifikasiIA11Controller::class)->except(['create', 'edit']) ->middleware('user.type:admin');
+
+        // --- Performa Produk Master ---
+        Route::resource('performa', PerformaIA11Controller::class)->except(['create', 'edit'])->middleware('user.type:admin');
+    });

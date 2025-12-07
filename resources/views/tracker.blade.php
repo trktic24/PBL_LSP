@@ -458,7 +458,7 @@
                                             @endif
 
                                             @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                <a href="{{ route('ia02.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                     class="font-medium text-gray-800">Tugas Praktik Demonstrasi</a>
                                             @else
                                                 <h4 class="{{ $linkClassDisabled }} font-medium">Tugas Praktik Demonstrasi</h4>
@@ -477,7 +477,7 @@
                                             @endif
 
                                             @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                <a href="{{ route('ia03.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                     class="font-medium text-gray-800">Pertannyaan Mendukung Observasi</a>
                                             @else
                                                 <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan Mendukung Observasi</h4>
@@ -503,7 +503,7 @@
                                     <div class="flex justify-between items-start space-x-4">
                                         <div>
                                             @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                <a href="{{ route('ia11.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                     class="font-medium text-gray-800">Ceklis Reviu Produk</a>
                                             @else
                                                 <h4 class="{{ $linkClassDisabled }} font-medium">Ceklis Reviu Produk</h4>
@@ -596,7 +596,7 @@
                                     <div class="flex justify-between items-start space-x-4">
                                         <div>
                                             @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                <a href="{{ route('ia07.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                     class="font-medium text-gray-800">Pertannyaan Lisan</a>
                                             @else
                                                 <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan Lisan</h4>
