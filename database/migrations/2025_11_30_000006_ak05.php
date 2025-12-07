@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->text('aspek_negatif_positif')->nullable();
             $table->text('penolakan_hasil_asesmen')->nullable();
             $table->text('saran_perbaikan')->nullable()->comment('kasih pilihan (Asesor/Personil Terkait)');
+            $table->text('catatan')->nullable()->comment('isi catatan dari asesor untuk asesi');
             $table->timestamps();
         });
     }
