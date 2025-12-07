@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\KelompokPekerjaan; // <-- 1. Panggil Model-nya
+use App\Models\Skema;             // <-- 2. Panggil Model Skema (buat FK)
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\KelompokPekerjaan;
-use App\Models\UnitKompetensi; // <-- PENTING: Import model ini
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\KelompokPekerjaan>
@@ -26,12 +26,14 @@ class KelompokPekerjaanFactory extends Factory
     public function definition(): array
     {
         return [
-            // Kolom 'nama_kelompok_pekerjaan'
-            'nama_kelompok_pekerjaan' => fake()->jobTitle(),
-
-            // Kolom 'id_unit_kompetensi' (WAJIB ADA)
-            //'id_unit_kompetensi' => UnitKompetensi::factory(),
-            'id_skema' => Skema::factory(),
+            // --- INI KUNCINYA ---
+            // Ambil 'id_skema' SECARA ACAK dari tabel 'skema'
+            // Ini WAJIB dijalanin SETELAH SkemaFactory
+            'id_skema' => Skema::all()->random()->id_skema,
+            
+            // Bikin data palsu sesuai migrasi lu
+            'kode_unit' => 'K.' . fake()->numerify('450100.0##.0#'),
+            'judul_unit' => 'Unit ' . fake()->words(3, true),
         ];
     }
 }

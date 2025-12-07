@@ -10,6 +10,7 @@ class Ia07 extends Model
 {
     use HasFactory;
 
+<<<<<<< HEAD
     /**
      * Nama tabel yang terkait dengan model.
      *
@@ -55,4 +56,18 @@ class Ia07 extends Model
         // karena keduanya tidak mengikuti konvensi standar Laravel.
         return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+=======
+    protected $table = 'ia07';
+    protected $primaryKey = 'id_ia07';
+    protected $guarded = [];
+
+    /**
+     * Relasi ke Data Sertifikasi (Parent)
+     */
+    public function dataSertifikasiAsesi(): BelongsTo
+    {
+        return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+>>>>>>> Main_dev
 }

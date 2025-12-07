@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Asesi;
+use App\Models\Jadwal;
+use App\Models\BuktiDasar;
+use App\Models\BuktiKelengkapan;
+use App\Models\Ia02;
+
+// Pastikan semua model yang direlasikan di-import
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\ResponIa10;
-use App\Models\Ia10; // Model Master Soal
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DataSertifikasiAsesi extends Model
 {
@@ -60,34 +65,76 @@ class DataSertifikasiAsesi extends Model
         'rekomendasi1_AK06',
         'rekomendasi2_AK06',
         'rekomendasi_ia01',
+        'status_sertifikasi',
     ];
 
     /**
-     * Atribut yang harus di-cast.
+     * Atribut yang tidak dapat diisi secara massal.
      *
-     * @var array<string, string>
+     * @var array<int, string>
+     */
+    protected $guarded = [];
+
+    /**
+     * Atribut yang dapat diisi.
+     */
+
+    // Tahap Pendaftaran & Bayar (Asesi)
+    public const STATUS_SEDANG_MENDAFTAR = 'sedang_mendaftar';
+    public const STATUS_PENDAFTARAN_SELESAI = 'pendaftaran_selesai';
+    public const STATUS_TUNGGU_VERIFIKASI_BAYAR = 'menunggu_verifikasi_bayar';
+    public const STATUS_PEMBAYARAN_LUNAS = 'pembayaran_lunas';
+
+    // Tahap Pra-Asesmen (Asesi)
+    public const STATUS_PRA_ASESMEN_SELESAI = 'pra_asesmen_selesai';
+    public const STATUS_PERSETUJUAN_ASESMEN_OK = 'persetujuan_asesmen_disetujui';
+
+    // Tahap Asesmen (Asesor)
+    public const STATUS_ASESMEN_PRAKTEK_SELESAI = 'asesmen_praktek_selesai';
+    public const STATUS_ASESMEN_LISAN_SELESAI = 'asesmen_lisan_selesai';
+
+    // Tahap Pasca-Asesmen (Asesi)
+    public const STATUS_UMPAN_BALIK_SELESAI = 'umpan_balik_selesai';
+    public const STATUS_BANDING_SELESAI = 'banding_selesai'; // Jika ada banding
+
+    // Tahap Final (Admin/Komite)
+    public const STATUS_DIREKOMENDASIKAN = 'direkomendasikan';
+    public const STATUS_TIDAK_DIREKOMENDASIKAN = 'tidak_direkomendasikan';
+
+    /**
+     * Atribut yang harus di-cast.
      */
     protected $casts = [
         'tanggal_daftar' => 'date',
     ];
 
-    /**
-     * Mendapatkan data asesi yang memiliki data sertifikasi ini.
-     */
-    public function asesi(): BelongsTo
+    public function getProgresLevelAttribute(): int
     {
-        // Tentukan foreign key dan owner key karena tidak standar
-        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
+        return match ($this->status_sertifikasi) {
+            self::STATUS_SEDANG_MENDAFTAR => 5,
+            self::STATUS_PENDAFTARAN_SELESAI => 10,
+            self::STATUS_TUNGGU_VERIFIKASI_BAYAR => 20,
+            self::STATUS_PEMBAYARAN_LUNAS => 30,
+            self::STATUS_PRA_ASESMEN_SELESAI => 40,
+            self::STATUS_PERSETUJUAN_ASESMEN_OK => 50,
+            self::STATUS_ASESMEN_PRAKTEK_SELESAI => 60,
+            self::STATUS_ASESMEN_LISAN_SELESAI => 70,
+            self::STATUS_UMPAN_BALIK_SELESAI => 80,
+            self::STATUS_BANDING_SELESAI => 90,
+            self::STATUS_DIREKOMENDASIKAN => 100,
+            self::STATUS_TIDAK_DIREKOMENDASIKAN => 101,
+            default => 0, // Default case kalau statusnya aneh
+        };
     }
 
     /**
-     * Relasi: Data ini milik satu Jadwal.
+     * Relasi ke Asesi (parent)
      */
-    public function jadwal(): BelongsTo
+    public function asesi(): BelongsTo
     {
-        // Pastikan nama modelnya Schedule (sesuai controller Anda) atau Jadwal
-        return $this->belongsTo(Schedule::class, 'id_jadwal', 'id_jadwal');
+        return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
     }
+
 
     /**
      * Mendapatkan semua data IA07 yang terkait dengan data sertifikasi ini.
@@ -193,5 +240,72 @@ class DataSertifikasiAsesi extends Model
 
         // Jika sampai sini, berarti ada status aneh yang tidak terhandle
         return 0; // Default Unknown
-    }    
+    }   
+
+    public function jadwal(): BelongsTo
+    {
+        return $this->belongsTo(Jadwal::class, 'id_jadwal', 'id_jadwal');
+    }
+
+    public function buktiKelengkapan(): HasMany
+    {
+        return $this->hasMany(BuktiKelengkapan::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function buktiDasar(): HasMany
+    {
+        return $this->hasMany(BuktiDasar::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function lembarJawabIA05(): HasMany
+    {
+        return $this->hasMany(LembarJawabIA05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function responAk04(): HasMany
+    {
+        return $this->hasMany(ResponAk04::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+    
+    // shortcut relasi untuk ia03
+    public function getAsesorAttribute()
+    {
+        return $this->jadwal?->asesor;
+    }
+    
+    public function getSkemaAttribute()
+    {
+        return $this->jadwal?->skema;
+    }
+
+    public function getTukAtrribute()
+    {
+        return $this->jadwal?->tuk;
+    }
+
+    public function getJenisTukAttribute()
+    {
+        return $this->jadwal?->jenisTuk;
+    }
+
+    public function getTanggalPelaksanaanAttribute()
+    {
+        return $this->jadwal?->tanggal_pelaksanaan;
+    }
+
+     public function Ia02(): HasMany
+    {
+        return $this->hasMany(Ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function daftarHadir()
+    {
+        return $this->hasOne(DaftarHadir::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function getIsSudahHadirAttribute()
+    {
+        // Cek apakah relasi ada DAN kolom ttd terisi
+        return $this->daftarHadir && !empty($this->daftarHadir->tanda_tangan_asesi);
+    }
 }

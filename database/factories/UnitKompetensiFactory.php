@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
+// [1] Panggil Model-model yang diperlukan
+use App\Models\UnitKompetensi;  // <-- Model kamu
+use App\Models\KelompokPekerjaan; // <-- Model Induk (Parent)
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\KelompokPekerjaan;
-use App\Models\UnitKompetensi;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UnitKompetensi>

@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId('id_unit_kompetensi')->constrained('unit_kompetensi', 'id_unit_kompetensi')->onUpdate('cascade')->onDelete('cascade');
             // 'elemen' lebih baik pakai text() karena bisa jadi deskripsi panjang
             $table->text('elemen');
-            $table->timestamps();
+            $table->timestamps(); //
         });
     }
 

@@ -34,4 +34,4 @@ class Ia07Factory extends Factory
             'pencapaian' => fake()->boolean(), // Menghasilkan nilai true (1) atau false (0)
         ];
     }
-}
+}                         

@@ -5,24 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Tambahkan ini jika Model Category menggunakan BelongsTo
-
-// Pastikan semua Model relasi di-import di sini:
 use App\Models\Category;
 use App\Models\Asesor; 
 use App\Models\Jadwal; 
 
+
 class Skema extends Model
 {
     use HasFactory;
-
+    
     /**
      * Nama tabel yang terhubung dengan model.
      *
      * @var string
      */
     protected $table = 'skema';
-
     /**
      * Primary key untuk model ini.
      * Sesuai migration: $table->id('id_skema');
@@ -71,16 +68,6 @@ class Skema extends Model
         return $this->hasMany(Jadwal::class, 'id_skema', 'id_skema');
     // --- Relasi yang sudah ada di kode Anda (tetap valid) ---
     }
-    /**
-     * Relasi ke UnitKompetensi.
-     * Skema ini 'memiliki banyak' UnitKompetensi.
-     */
-    public function unitKompetensi()
-    {
-        // Asumsi foreign key di tabel 'unit_kompetensi' adalah 'skema_id'
-        // dan primary key di 'skema' adalah 'id_skema' (sesuai $primaryKey di atas)
-        return $this->hasMany(UnitKompetensi::class, 'skema_id', 'id_skema');
-    }
 
     /**
      * Relasi ke Asesor (Many-to-Many).
@@ -93,6 +80,22 @@ class Skema extends Model
             'transaksi_asesor_skema', // Nama tabel pivot
             'id_skema',               // Foreign key di pivot untuk model ini (Skema)
             'id_asesor'               // Foreign key di pivot untuk model tujuan (Asesor)
+        );
+    }
+    
+    /**
+     * Relasi "Jalan Pintas" (HasManyThrough)
+     * Skema -> (lewat KelompokPekerjaan) -> UnitKompetensi
+     */
+    public function unitKompetensi()
+    {
+        return $this->hasManyThrough(
+            UnitKompetensi::class,      // 1. Model Tujuan (Unit)
+            KelompokPekerjaan::class,   // 2. Model Perantara (Kelompok)
+            'id_skema',                 // 3. FK di tabel perantara (kelompok_pekerjaan)
+            'id_kelompok_pekerjaan',    // 4. FK di tabel tujuan (unit_kompetensi)
+            'id_skema',                 // 5. PK di tabel ini (skema)
+            'id_kelompok_pekerjaan'     // 6. PK di tabel perantara (kelompok_pekerjaan)
         );
     }
 }

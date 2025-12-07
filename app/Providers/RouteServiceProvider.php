@@ -29,13 +29,12 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->routes(function () {
-            // INI BAGIAN PENTING YANG HILANG
-            // Ini memberi tahu Laravel untuk memuat file routes/api.php
+            // Memuat rute API dari file routes/api.php
             Route::middleware('api')
-                ->prefix('api') // Ini yang memberi prefix /api/
+                ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
-            // Ini memberi tahu Laravel untuk memuat file routes/web.php
+            // Memuat rute Web dari file routes/web.php
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KriteriaUnjukKerja extends Model
 {
@@ -30,5 +32,11 @@ class KriteriaUnjukKerja extends Model
     public function elemen()
     {
         return $this->belongsTo(Elemen::class, 'id_elemen', 'id_elemen');
+    }
+
+    public function responApl02Ia01s(): HasMany
+    {
+        // Pastiin lu punya Model 'ResponApl2Ia01'
+        return $this->hasMany(ResponApl2Ia01::class, 'id_kriteria', 'id_kriteria');
     }
 }

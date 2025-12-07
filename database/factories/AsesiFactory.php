@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Asesi;
+use App\Models\Asesi; // <-- 1. JANGAN LUPA USE MODELNYA
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 use App\Models\DataPekerjaanAsesi;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Asesi>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<Asesi> // <-- 2. BENERIN INI
  */
 
 class AsesiFactory extends Factory
@@ -38,7 +38,7 @@ class AsesiFactory extends Factory
             'kabupaten_kota' => $this->faker->city(),
             'provinsi'       => $this->faker->state(),
             'nomor_hp'       => $this->faker->numerify('082#########'),
-            'tanda_tangan'   => 'images/kelengkapan_asesi/tanda_tangan/dummy_ttd.png',
+            'tanda_tangan'   => 'null',
         ];
     }
 

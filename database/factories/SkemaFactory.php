@@ -26,6 +26,7 @@ class SkemaFactory extends Factory
      */
     public function definition(): array
     {
+        $nomorGambar = fake()->numberBetween(1, 12);
         return [
             // Sesuai dengan migration 'categorie_id'
             'category_id' => Category::factory(),
@@ -54,7 +55,7 @@ class SkemaFactory extends Factory
             'SKKNI' => '/storage/files/dummy_skkni.pdf',
 
             // Gambar (tetap sama)
-            'gambar' => fake()->imageUrl(640, 480, 'technology', true),
+            'gambar' => 'skema' . $nomorGambar . '.jpg',
         ];
     }
 }

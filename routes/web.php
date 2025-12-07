@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+
+// --- Controllers Import ---
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Asesor\AsesorTableController;
@@ -16,12 +17,9 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Api\V1\MitraController;
+use App\Http\Controllers\Asesi\TrackerController;
+use App\Http\Controllers\HomeController;
 
-/*
-|--------------------------------------------------------------------------
-| 1. HALAMAN PUBLIK (Landing Page, Info, Jadwal Umum)
-|--------------------------------------------------------------------------
-*/
 
 // Landing Page
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -99,3 +97,17 @@ Route::get('/api/search-countries', [CountryController::class, 'search'])->name(
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
+
+// ====================================================
+// 4. API & UTILITIES (NON-AUTH / MIXED)
+// ====================================================
+
+// Keep Alive Session
+Route::get('/keep-alive', function () {
+    return response()->json(['status' => 'session_refreshed']);
+});
+
+// API Wilayah
+Route::get('/api/search-countries', [CountryController::class, 'search'])->name('api.countries.search');
+
+Route::post('/api/jadwal/daftar', [TrackerController::class, 'daftarJadwal'])->name('api.jadwal.daftar');

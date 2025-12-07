@@ -9,37 +9,14 @@ class JenisTuk extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang terkait dengan model.
-     *
-     * @var string
-     */
     protected $table = 'jenis_tuk';
+    protected $primaryKey = 'id_jenis_tuk'; // PENTING: Sesuaikan PK
 
-    /**
-     * Primary key yang terkait dengan tabel.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id_jenis_tuk';
+    protected $guarded = [];
 
-    /**
-     * Kolom yang dapat diisi secara massal (mass assignable).
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'sewaktu',
-        'tempat_kerja',
-        'mandiri',
-    ];
-
-    /**
-     * Mendefinisikan relasi one-to-many ke model Jadwal.
-     */
-    public function jadwal()
+    // Relasi ke Jadwal (Satu Jenis TUK bisa dipakai di banyak Jadwal)
+    public function jadwals()
     {
-        // Satu JenisTuk bisa memiliki banyak Jadwal
         return $this->hasMany(Jadwal::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
 }

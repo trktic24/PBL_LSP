@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\BuktiAk01;
-use App\Models\DataSertifikasiAsesi;
+// Import Model yang dibutuhkan
 use App\Models\ResponBuktiAk01;
+use App\Models\DataSertifikasiAsesi;
+use App\Models\BuktiAk01;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,16 +21,27 @@ class ResponBuktiAk01Factory extends Factory
      */
     public function definition(): array
     {
-        return [
-            // OPSI 1: Bukti tetap buat baru atau ambil acak
-            'id_bukti_ak01' => BuktiAk01::inRandomOrder()->first()?->id_bukti_ak01 ?? BuktiAk01::factory(),
+        // 1. Ambil satu Master Bukti secara acak dari database
+        // (Pastikan BuktiAk01Seeder sudah dijalankan sebelumnya)
+        $buktiMaster = BuktiAk01::inRandomOrder()->first();
 
-            // OPSI 2 (PERBAIKAN): 
-            // Coba ambil satu ID acak dari tabel data_sertifikasi_asesi yang SUDAH ADA.
-            // Jika tabel kosong (null), baru jalankan factory().
-            'id_data_sertifikasi_asesi' => DataSertifikasiAsesi::inRandomOrder()->first()?->id_data_sertifikasi_asesi ?? DataSertifikasiAsesi::factory(),
-            
-            'respon' => $this->faker->randomElement(['Memenuhi', 'Tidak Memenuhi', 'Valid']),
+        // Jaga-jaga kalau tabel master kosong, kita buat satu dummy
+        if (!$buktiMaster) {
+            $buktiMaster = BuktiAk01::create(['bukti' => 'Bukti Dummy Factory']);
+        }
+
+        return [
+            // 2. Bikin Data Sertifikasi Baru (Induknya)
+            // Ini otomatis bikin 1 pendaftaran asesi
+            'id_data_sertifikasi_asesi' => DataSertifikasiAsesi::factory(),
+
+            // 3. Pakai ID dari Master Bukti yang kita ambil tadi
+            'id_bukti_ak01' => $buktiMaster->id_bukti_ak01,
+
+            // 4. Isi kolom 'respon' (keterangan tambahan)
+            // optional(0.3) artinya 30% kemungkinan ada isinya, 70% null.
+            // Ini simulasi kalau user pilih "Lainnya" dan ngetik sesuatu.
+            'respon' => $this->faker->optional(0.3)->sentence(3), 
         ];
     }
 }

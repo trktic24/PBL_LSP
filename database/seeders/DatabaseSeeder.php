@@ -2,13 +2,17 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Storage; // <<< IMPORT STORAGE
+use App\Models\Tuk; 
+use App\Models\Asesi;
 use App\Models\Skema;
 use App\Models\Asesor;
-use App\Models\Asesi;
-use App\Models\Tuk; // Pastikan Model Tuk ada
 use App\Models\Schedule;
+use Illuminate\Database\Seeder;
+use App\Models\DataSertifikasiAsesi;
+use Database\Seeders\SoalDanKunciSeeder;
+use Database\Seeders\IA11\PerformaIA11Seeder;
+use Database\Seeders\IA11\SpesifikasiIA11Seeder;
+use Illuminate\Support\Facades\Storage; // <<< IMPORT STORAGE
 
 class DatabaseSeeder extends Seeder
 {
@@ -53,6 +57,11 @@ class DatabaseSeeder extends Seeder
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
             StrukturOrganisasiSeeder::class,
+            BuktiAk01Seeder::class,
+            SoalDanKunciSeeder::class,
+            SpesifikasiIA11Seeder::class,
+            PerformaIA11Seeder::class,
+            SkenarioIa02Seeder::class,
         ]);
 
         // Panggil seeder Role dan User (Admin)
@@ -70,6 +79,6 @@ class DatabaseSeeder extends Seeder
 
         Asesi::factory(20)->create();
 
-        $this->call(DataSertifikasiAsesiSeeder::class);
+        
     }
 }

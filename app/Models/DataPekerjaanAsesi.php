@@ -1,13 +1,25 @@
 <?php
 
+
+
 namespace App\Models;
 
+
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+
+
 class DataPekerjaanAsesi extends Model
+
 {
+
+    // 1. (Opsional) Boleh ditambahin kalo lu mau bikin factory-nya juga
+
     use HasFactory;
 
     /**
@@ -44,5 +56,7 @@ class DataPekerjaanAsesi extends Model
     public function asesi()
     {
         return $this->belongsTo(Asesi::class, 'id_asesi', 'id_asesi');
+
     }
+
 }

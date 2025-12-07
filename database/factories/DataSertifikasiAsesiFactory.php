@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\DataSertifikasiAsesi;
+
 use App\Models\Asesi;
 use App\Models\Jadwal;
+use App\Models\DataSertifikasiAsesi;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class DataSertifikasiAsesiFactory extends Factory

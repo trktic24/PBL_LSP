@@ -23,4 +23,25 @@ class LembarJawabIA05 extends Model
         'pencapaian_ia05_iya', // <-- Ini untuk penilaian
         'pencapaian_ia05_tidak', // <-- Ini untuk penilaian
     ];
+
+    // ================= RELASI =================
+
+    /**
+     * Relasi ke Peserta (Data Sertifikasi Asesi).
+     * Lembar jawab ini MILIK siapa?
+     */
+    public function dataSertifikasiAsesi()
+    {
+        // Pastikan nama model induk dan foreign key-nya benar
+        return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    /**
+     * Relasi ke Master Soal yang sedang dijawab.
+     * Ini penting untuk mengambil teks pertanyaan dan opsi jawaban.
+     */
+    public function soal()
+    {
+        return $this->belongsTo(SoalIa05::class, 'id_soal_ia05', 'id_soal_ia05');
+    }
 }

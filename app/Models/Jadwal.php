@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Asesor;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon; // PENTING: Import Carbon
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\belongsToMany;
 use Illuminate\Database\Eloquent\Relations\belongsTo;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon; // PENTING: Import Carbon
 class Jadwal extends Model
 {
     use HasFactory;
@@ -66,24 +65,19 @@ class Jadwal extends Model
         return $value ? Carbon::parse($value) : null;
     }
 
-    // --- RELASI (Relationships) ---
+    // --- Relasi ke Parent (Many-to-One) ---
 
-    public function jenisTuk()
+    public function jenisTuk(): BelongsTo
     {
         return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
 
-    public function masterTuk()
+    public function tuk(): BelongsTo
     {
-        return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk');
+        return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk'); 
     }
 
-    public function tuk()
-    {
-        return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk');
-    }
-
-    public function skema()
+    public function skema(): BelongsTo
     {
         return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
     }
@@ -102,16 +96,9 @@ class Jadwal extends Model
         return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
     }
 
-    public function asesor()
+    public function asesor(): BelongsTo
     {
-        return $this->belongsToMany(
-            Asesor::class,
-            'transaksi_asesor_skema', // Pivot table
-            'id_skema',               // Foreign key on pivot table related to the parent model (Jadwal's id_skema effectively)
-            'id_asesor',              // Foreign key on pivot table related to the related model (Asesor)
-            'id_skema',               // Local key on parent model (Jadwal)
-            'id_asesor'               // Local key on related model (Asesor)
+        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor'
         );
     }
 }
-    

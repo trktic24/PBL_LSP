@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\JenisTuk;
+use App\Models\JenisTuk; // Pastikan kamu udah bikin model ini
 
 class JenisTukSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Jalankan database seeds.
      */
     public function run(): void
     {

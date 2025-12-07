@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,10 +35,8 @@ class Role extends Model
         'nama_role',
     ];
 
-    /**
-     * Relasi one-to-many: Satu Role memiliki banyak User
-     */
-    public function users(): HasMany
+    // Relasi: 1 Role dipake banyak User
+    public function users()
     {
         return $this->hasMany(User::class, 'role_id','id_role');
     }

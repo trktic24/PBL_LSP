@@ -42,7 +42,7 @@ return new class extends Migration
             $table->text('rekomendasi1_AK06')->nullable();
             $table->text('rekomendasi2_AK06')->nullable();
             $table->string('rekomendasi_ia01')->nullable();
-            $table->string('status_sertifikasi', 50)->default('pendaftaran_selesai');
+            $table->string('status_sertifikasi', 50)->default('sedang_mendaftar');
             $table->timestamps();
         });
     }

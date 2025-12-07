@@ -10,10 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('bukti_ak01', function (Blueprint $table) {
-            $table->id('id_bukti_ak01');
-            $table->string('bukti');
-            $table->timestamps();
+        Schema::table('ia11', function (Blueprint $table) {
+            $table->string('rekomendasi')->nullable()->after('gambar_produk');
         });
     }
 
@@ -22,6 +20,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('bukti_ak01');
+        Schema::table('ia11', function (Blueprint $table) {
+            $table->dropColumn('rekomendasi');
+        });
     }
 };
