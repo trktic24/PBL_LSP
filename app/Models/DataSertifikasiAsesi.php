@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\ResponIa10;
+use App\Models\DetailIa10;
+use App\Models\PertanyaanIa10;
 use App\Models\Ia10; // Model Master Soal
 
 class DataSertifikasiAsesi extends Model
@@ -117,26 +118,49 @@ class DataSertifikasiAsesi extends Model
             return 100; // $LVL_SERTIFIKAT
         }
 
-        // 1. Target Soal (Misal: 10 Soal)
-        $idSkema = $this->jadwal->id_skema; 
-        $totalSoal = Ia10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)->count(); 
+        // =========================================================================
+        // --- [START] PERBAIKAN LOGIKA IA.10 (SESUAI DATABASE BARU 3 TABEL) ---
+        // =========================================================================
+
+        // 1. Target Soal (Checklist + Essay)
+        // Checklist diambil dari tabel PertanyaanIa10
+        $jmlChecklist = PertanyaanIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)->count();
+        // Essay dianggap 7 (Sesuai form standar IA.10)
+        $jmlEssay = 7; 
+        $totalSoal = $jmlChecklist + $jmlEssay; 
 
         // 2. Hitung Jawaban Asesi yang VALID (Isinya tidak kosong)
-        // Di sini kita pakai ide kamu: Kita filter hanya yang kolomnya TERISI.
-        $jawabanValid = ResponIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
-                            ->where(function($query) {
-                                // Logic: Dianggap terisi jika (Ya/Tidak dipilih) ATAU (Isian ada textnya)
-                                $query->where('jawaban_pilihan_iya', 1)
-                                    ->orWhere('jawaban_pilihan_tidak', 1)
-                                    ->orWhereNotNull('jawaban_isian');
-                            })
+        $jawabanValid = 0;
+
+        // Cek dulu apakah Header IA.10 (Data Supervisor) sudah ada?
+        $headerIa10 = Ia10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)->first();
+
+        if ($headerIa10) {
+            // A. Hitung Checklist yang sudah dipilih (0 atau 1 dianggap sudah isi, NULL belum)
+            // Diambil dari tabel 'pertanyaan_ia10'
+            $isiChecklist = PertanyaanIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
+                            ->whereNotNull('jawaban_pilihan_iya_tidak') 
                             ->count();
 
+            // B. Hitung Essay yang sudah diisi
+            // Diambil dari tabel 'detail_ia10' lewat ID Header (karena detail ga punya id_asesi langsung)
+            $isiEssay = DetailIa10::where('id_ia10', $headerIa10->id_ia10)
+                        ->whereNotNull('jawaban')
+                        ->where('jawaban', '!=', '') // Pastikan tidak string kosong
+                        ->count();
+
+            $jawabanValid = $isiChecklist + $isiEssay;
+        }
+
         // 3. Bandingkan
-        // Apakah jumlah jawaban valid SAMA DENGAN jumlah soal?
-        if ($jawabanValid > 0 && $jawabanValid >= $totalSoal) {
+        // Apakah jumlah jawaban valid SAMA DENGAN (atau lebih dari) jumlah soal?
+        if ($totalSoal > 0 && $jawabanValid >= $totalSoal) {
             return 90; // ASESMEN SELESAII YEEE
         }
+
+        // =========================================================================
+        // --- [END] PERBAIKAN LOGIKA IA.10 ---
+        // =========================================================================
 
         // --- FASE ASESMEN REAL (Level 70) ---
         
@@ -149,8 +173,8 @@ class DataSertifikasiAsesi extends Model
         // Karena kolom terbatas, kita pakai indikator yang ada.
 
         $ak01valid = ResponBuktiAk01::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
-                                ->where('respon', 'Valid')                    
-                                ->exists();        
+                                        ->where('respon', 'Valid')                    
+                                        ->exists();        
 
         if ($ak01valid && $this->rekomendasi_apl02 == 'diterima') {
             return 40; // LANJUT KE ASESMENN
