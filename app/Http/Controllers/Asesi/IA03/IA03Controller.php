@@ -46,7 +46,7 @@ class IA03Controller extends Controller
         $trackerUrl = $sertifikasi->jadwal?->id_jadwal ? '/tracker/' . $sertifikasi->jadwal->id_jadwal : '/dashboard';
         $backUrl = session('backUrl', $trackerUrl);
         
-        return view('asesi.ia03.index', compact('sertifikasi', 'asesi', 'asesor', 'skema', 'jenisTuk', 'tuk', 'tanggal', 'kelompokPekerjaan', 'unitKompetensi', 'pertanyaanIA03', 'trackerUrl', 'backUrl', 'catatanUmpanBalik'));
+        return view('asesi.IA_03.IA_03', compact('sertifikasi', 'asesi', 'asesor', 'skema', 'jenisTuk', 'tuk', 'tanggal', 'kelompokPekerjaan', 'unitKompetensi', 'pertanyaanIA03', 'trackerUrl', 'backUrl', 'catatanUmpanBalik'));
     }
 
     /**
@@ -56,6 +56,6 @@ class IA03Controller extends Controller
     {
         $ia03 = IA03::with('dataSertifikasiAsesi')->findOrFail($id);
 
-        return view('asesi/ia03.show', compact('ia03'));
+        return view('asesi/IA_03.show', compact('ia03'));
     }
 }
