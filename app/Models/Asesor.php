@@ -36,4 +36,9 @@ class Asesor extends Model
             'id_skema'              // Foreign key di pivot untuk model tujuan
         );
     }
+
+    public function jadwal()
+    {
+        return $this->hasMany(Jadwal::class, 'id_asesor', 'id_asesor');
+    }
 }

@@ -35,7 +35,11 @@ class DatabaseSeeder extends Seeder
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
+            PenyusunSeeder::class, 
+            ValidatorSeeder::class,
+            PenyusunValidatorSeeder::class,
             Ia07Seeder::class,
+            Ia08Seeder::class,
 
                 // 4. Data Transaksi (Jalankan PALING AKHIR)
             CategorieSeeder::class,
@@ -47,6 +51,7 @@ class DatabaseSeeder extends Seeder
             TenSchemesSeeder::class, // <-- NEW COMPREHENSIVE SEEDER
             FrAk07MasterSeeder::class, // <-- Added FR_AK_07 Master Seeder
             PoinAk02Seeder::class, // <-- Added PoinAk02Seeder
+            PortofolioSeeder::class,
         ]);
     }
 }

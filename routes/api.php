@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\FrAk07ApiController;
 use App\Http\Controllers\Api\Mapa02ApiController;
 use App\Http\Controllers\Api\Ia02ApiController;
+use App\Http\Controllers\Api\IA09Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,3 +39,8 @@ use App\Http\Controllers\Api\Ia01ApiController;
 
 Route::get('/ia-01/{id}', [Ia01ApiController::class, 'show']);
 Route::post('/ia-01/{id}', [Ia01ApiController::class, 'store']);
+
+// API untuk mendapatkan data IA09
+Route::get('/ia09/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'getIA09Data']);
+// API untuk menyimpan data IA09 (opsional)
+Route::post('/ia09/store', [IA09Controller::class, 'storeWawancara']);

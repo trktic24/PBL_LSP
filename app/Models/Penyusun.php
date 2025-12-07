@@ -17,4 +17,9 @@ class Penyusun extends Model
         'no_MET_penyusun',
         'ttd',
     ];
+
+    public function penyusunValidators()
+    {
+        return $this->hasMany(PenyusunValidator::class, 'id_penyusun');
+    }
 }

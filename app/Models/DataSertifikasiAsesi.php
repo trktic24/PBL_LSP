@@ -135,4 +135,21 @@ class DataSertifikasiAsesi extends Model
     {
         return $this->hasOne(PenyusunValidator::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+
+    public function portofolio()
+    {
+        return $this->hasMany(Portofolio::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function buktiPortofolioIA08IA09()
+    {
+        return $this->hasManyThrough(
+            BuktiPortofolioIA08IA09::class,
+            Portofolio::class,
+            'id_data_sertifikasi_asesi', // Foreign key di tabel portofolio
+            'id_portofolio',             // Foreign key di tabel bukti_portofolio_ia08_ia09
+            'id_data_sertifikasi_asesi', // Local key di tabel data_sertifikasi_asesi
+            'id_portofolio'              // Local key di tabel portofolio
+        );
+    }
 }

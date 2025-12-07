@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Register middleware alias
+        $middleware->alias([
+            'ia09.mode' => \App\Http\Middleware\IA09ViewMode::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

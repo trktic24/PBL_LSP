@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\Portofolio;
-use App\Models\BuktiPortofolioIA08IA09; 
+use App\Models\BuktiPortofolioIA08IA09;
 use Log;
 
 class IA09Controller extends Controller
@@ -32,7 +33,7 @@ class IA09Controller extends Controller
     ];
 
     /**
-     * Pengekstrak data utama yang digunakan oleh Asesor dan Admin.
+     * Pengekstrak data utama
      */
     protected function prepareIA09Data($id_data_sertifikasi_asesi)
     {
@@ -47,12 +48,7 @@ class IA09Controller extends Controller
         ])->findOrFail($id_data_sertifikasi_asesi);
 
         $portofolio = $dataSertifikasi->portofolio->first();
-    
-        // FIX: Inisialisasi $penyusunValidator dengan pengecekan
-        $penyusunValidator = null;
-        if ($dataSertifikasi->penyusunValidator) {
-            $penyusunValidator = $dataSertifikasi->penyusunValidator;
-        }
+        $penyusunValidator = $dataSertifikasi->penyusunValidator;
 
         // Pemetaan Unit Kompetensi
         $unitKompetensi = [];
@@ -104,7 +100,7 @@ class IA09Controller extends Controller
         $pertanyaan = [];
         foreach ($this->pertanyaanDummy as $item) {
             $saved = $existingAnswers->firstWhere('id_bukti_portofolio', $item['no']); 
-        
+            
             $pertanyaan[] = [
                 'no' => $item['no'],
                 'pertanyaan' => $item['pertanyaan'],
@@ -131,26 +127,19 @@ class IA09Controller extends Controller
             'ttd' => [
                 'asesi' => $dataSertifikasi->asesi->tanda_tangan ?? null,
                 'asesor' => $dataSertifikasi->jadwal->asesor->tanda_tangan ?? null,
-            ],  
-            // FIX: Gunakan null coalescing operator untuk semua akses $penyusunValidator
+            ],
             'penyusun' => [
-                'nama' => $penyusunValidator?->penyusun?->penyusun ?? 
-                        $penyusunValidator?->penyusun?->nama ?? 
-                        'Data Penyusun tidak ditemukan',
-                'no_reg_met' => $penyusunValidator?->penyusun?->no_MET_penyusun ?? 
-                                $penyusunValidator?->penyusun?->no_reg_met ?? '-',
+                'nama' => $penyusunValidator?->penyusun?->penyusun ?? 'Data Penyusun tidak ditemukan',
+                'no_reg_met' => $penyusunValidator?->penyusun?->no_MET_penyusun ?? '-',
                 'ttd' => $penyusunValidator?->penyusun?->tanda_tangan ?? 
-                        $penyusunValidator?->penyusun?->ttd ?? null,
+                         $penyusunValidator?->penyusun?->ttd ?? null,
                 'tanggal' => $penyusunValidator?->penyusun?->tanggal ?? null,
             ],
             'validator' => [
-                'nama' => $penyusunValidator?->validator?->nama_validator ?? 
-                        $penyusunValidator?->validator?->nama ?? 
-                        'Data Validator tidak ditemukan',
-                'no_reg_met' => $penyusunValidator?->validator?->no_MET_validator ?? 
-                                $penyusunValidator?->validator?->no_reg_met ?? '-',
+                'nama' => $penyusunValidator?->validator?->nama_validator ?? 'Data Validator tidak ditemukan',
+                'no_reg_met' => $penyusunValidator?->validator?->no_MET_validator ?? '-',
                 'ttd' => $penyusunValidator?->validator?->tanda_tangan ?? 
-                        $penyusunValidator?->validator?->ttd ?? null,
+                         $penyusunValidator?->validator?->ttd ?? null,
                 'tanggal' => $penyusunValidator?->validator?->tanggal ?? null,
                 'tanggal_validasi' => $penyusunValidator?->tanggal_validasi?->format('d F Y') ?? '-',
             ],
@@ -169,25 +158,32 @@ class IA09Controller extends Controller
 
         return $dataIA09;
     }
-    
+
     /**
-     * Menampilkan form IA09 (mode ditentukan oleh middleware)
-     * Satu method untuk kedua mode: edit (asesor) dan view (admin)
+     * API: Get IA09 Data
      */
-    public function showWawancara(Request $request, $id_data_sertifikasi_asesi)
+    public function getIA09Data($id_data_sertifikasi_asesi)
     {
-        // Ambil mode dari middleware
-        $mode = $request->attributes->get('ia09_mode', 'view');
-        
-        // Prepare data
-        $dataIA09 = $this->prepareIA09Data($id_data_sertifikasi_asesi);
-        
-        // Return view dengan mode
-        return view('frontend.IA09', compact('dataIA09', 'mode'));
+        try {
+            $dataIA09 = $this->prepareIA09Data($id_data_sertifikasi_asesi);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Data IA09 berhasil diambil',
+                'data' => $dataIA09
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Menyimpan data wawancara (hanya untuk mode edit)
+     * API: Store IA09 Data
      */
     public function storeWawancara(Request $request)
     {
@@ -198,44 +194,33 @@ class IA09Controller extends Controller
             'pertanyaan.*.pertanyaan' => 'required|string',
             'pertanyaan.*.jawaban' => 'required|string|min:10',
             'pertanyaan.*.pencapaian' => 'required|in:Ya,Tidak',
-            'pertanyaan.*.id_jawaban' => 'nullable|integer', 
         ]);
 
         try {
-            // DEBUG: Cek data sertifikasi
             $idDataSertifikasi = $request->id_data_sertifikasi_asesi;
-
-            $dataSertifikasi = DataSertifikasiAsesi::with(['penyusunValidator'])->find($idDataSertifikasi);
-            Log::info('Data Sertifikasi:', ['data' => $dataSertifikasi]);
-            Log::info('Penyusun Validator:', ['pv' => $dataSertifikasi?->penyusunValidator]);
-
             $portofolio = Portofolio::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->first();
             
             if (!$portofolio) {
-                Log::error("IA09 Save Failed: Portofolio data not found for id_data_sertifikasi_asesi: {$idDataSertifikasi}");
-                return redirect()->back()->with('error', 'Data portofolio tidak ditemukan untuk asesi ini.')->withInput();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data portofolio tidak ditemukan'
+                ], 404);
             }
             
             $idPortofolio = $portofolio->id_portofolio;
             
-            // Ambil id_ia08
-            $namaTabelIA08 = 'ia08';
-            $id_ia08_value = DB::table($namaTabelIA08)
+            $id_ia08_value = DB::table('ia08')
                 ->where('id_data_sertifikasi_asesi', $idDataSertifikasi) 
                 ->value('id_ia08');
             
             if (!$id_ia08_value) {
-                Log::error("IA09 Save Failed: id_data_sertifikasi_asesi: {$idDataSertifikasi} not found in ia08 table."); 
-                return redirect()->back()->with('error', "Gagal menyimpan: Data FR-IA.08 untuk asesi ini belum ada di tabel '$namaTabelIA08'. Mohon pastikan data IA.08 sudah dibuat.")->withInput();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data FR-IA.08 belum ada'
+                ], 404);
             }
 
-            // Loop dan simpan/update
             foreach ($request->pertanyaan as $item) {
-                $searchCriteria = [];
-                if (isset($item['id_jawaban']) && $item['id_jawaban']) {
-                    $searchCriteria['id_bukti_portofolio'] = $item['id_jawaban']; 
-                } 
-                
                 $pencapaian_value = ($item['pencapaian'] === 'Ya') ? 1 : 0; 
 
                 $updateData = [
@@ -249,30 +234,24 @@ class IA09Controller extends Controller
                     'is_memadai' => true, 
                 ];
 
-                if (isset($searchCriteria['id_bukti_portofolio'])) {
-                    BuktiPortofolioIA08IA09::where('id_bukti_portofolio', $searchCriteria['id_bukti_portofolio'])->update($updateData);
-                    Log::info("IA09 Record Updated: ID {$searchCriteria['id_bukti_portofolio']} for Portofolio {$idPortofolio}");
+                if (isset($item['id_jawaban']) && $item['id_jawaban']) {
+                    BuktiPortofolioIA08IA09::where('id_bukti_portofolio', $item['id_jawaban'])->update($updateData);
                 } else {
-                    try {
-                        BuktiPortofolioIA08IA09::create($updateData);
-                        Log::info("IA09 Record Created for Portofolio {$idPortofolio}");
-                    } catch (\Exception $e) {
-                         Log::error("IA09 INSERT FAILED: " . $e->getMessage() . " with data: " . json_encode($updateData));
-                         throw $e;
-                    }
+                    BuktiPortofolioIA08IA09::create($updateData);
                 }
             }
 
-            return redirect()
-                ->route('ia09.admin', ['id_data_sertifikasi_asesi' => $idDataSertifikasi]) 
-                ->with('success', 'Data hasil wawancara berhasil disimpan!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Data wawancara berhasil disimpan'
+            ], 200);
                 
         } catch (\Exception $e) {
-            Log::error("IA09 General Exception: " . $e->getMessage()); 
-            return redirect()
-                ->back()
-                ->with('error', 'Terjadi kesalahan umum saat menyimpan data: ' . $e->getMessage())
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

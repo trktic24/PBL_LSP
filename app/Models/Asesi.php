@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Asesi extends Model
 {
@@ -46,5 +47,10 @@ class Asesi extends Model
     public function pekerjaan(): HasOne
     {
         return $this->hasOne(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
+    }
+
+    public function dataSertifikasi(): HasMany
+    {
+        return $this->hasMany(DataSertifikasiAsesi::class, 'id_asesi', 'id_asesi');
     }
 }

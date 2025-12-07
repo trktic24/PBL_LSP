@@ -106,25 +106,20 @@ Route::post('/PORTOFOLIO', [PortofolioController::class, 'store'])->name('portof
 Route::get('/FR_IA_07', [IA07Controller::class, 'index'])->name('ia07.asesor');
 Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
 
-Route::prefix('IA09')->group(function () {
-    
-    // Rute Asesor (Tampilan Form)
-    // Akses di Browser: http://127.0.0.1:8000/IA09/asesor
-    Route::get('/asesor', [IA09Controller::class, 'showWawancaraAsesor'])
-        ->name('ia09.asesor');
-    
-    // Rute Penyimpanan Data (POST)
-    // Digunakan oleh Form HTML untuk mengirim data wawancara
-    // Aksi ini akan dipanggil dari Form di rute 'ia09.asesor'
-    Route::post('/store', [IA09Controller::class, 'storeWawancara'])
-        ->name('ia09.store');
-    
-    // Rute Admin (Tampilan Read-only)
-    // Akses di Browser: http://127.0.0.1:8000/IA09/admin
-    Route::get('/admin', [IA09Controller::class, 'showWawancaraAdmin'])
-        ->name('ia09.admin');
-});
+// Route untuk Asesor (mode input/edit)
+Route::get('/ia09/asesor/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'showWawancara'])
+    ->name('ia09.asesor')
+    ->middleware(['auth', 'ia09.mode:edit']);
 
+Route::post('/ia09/store', [IA09Controller::class, 'storeWawancara'])
+    ->name('ia09.store')
+    ->middleware(['auth']);
+
+// Route untuk Admin (mode read-only)
+Route::get('/ia09/admin/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'showWawancara'])
+    ->name('ia09.admin')
+    ->middleware(['auth', 'ia09.mode:view']);
+    
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
