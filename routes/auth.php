@@ -36,6 +36,7 @@ use App\Http\Controllers\FrMapa01Controller;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\Asesor\AsesiTrackerController;
 use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\Ia06Controller;
 
 // ======================================================
 // --- RUTE GUEST (YANG BELUM LOGIN) ---
@@ -121,7 +122,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fr-ia-06-a', fn() => view('frontend.fr_IA_06_a'))->name('fr_IA_06_a');
     Route::get('/fr-ia-06-b', fn() => view('frontend.fr_IA_06_b'))->name('fr_IA_06_b');
 
-    // FR.IA.07 
+    // FR.IA.07
     Route::get('/fr-ia-07', fn() => view('frontend.FR_IA_07'))->name('FR_IA_07');
 
     /*
@@ -332,6 +333,33 @@ Route::middleware('auth')->group(function () {
             Route::get('/tracker', 'tracker')->name('profile.tracker');
         });
     });
+
+    // ==========================
+    // AREA ADMIN
+    // ==========================
+    Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+        Route::get('/bank-soal-ia06', [Ia06Controller::class, 'adminIndex'])->name('admin.ia06.index');
+        Route::post('/bank-soal-ia06', [Ia06Controller::class, 'adminStoreSoal'])->name('admin.ia06.store');
+        Route::put('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminUpdateSoal'])->name('admin.ia06.update');
+        Route::delete('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminDestroySoal'])->name('admin.ia06.destroy');
+    });
+
+    // ==========================
+    // AREA ASESI
+    // ==========================
+    Route::middleware(['auth', 'role:asesi'])->prefix('asesi')->group(function () {
+        Route::get('/asesmen/ia-06/{id}', [Ia06Controller::class, 'asesiShow'])->name('asesi.ia06.index');
+        Route::put('/asesmen/ia-06/{id}', [Ia06Controller::class, 'asesiStoreJawaban'])->name('asesi.ia06.update');
+    });
+
+    // ==========================
+    // AREA ASESOR
+    // ==========================
+    Route::middleware(['auth', 'role:asesor'])->prefix('asesor')->group(function () {
+        Route::get('/penilaian/ia-06/{id}', [Ia06Controller::class, 'asesorShow'])->name('asesor.ia06.edit');
+        Route::put('/penilaian/ia-06/{id}', [Ia06Controller::class, 'asesorStorePenilaian'])->name('asesor.ia06.update');
+    });
+
 
 
     // ======================================================

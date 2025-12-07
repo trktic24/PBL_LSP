@@ -2,166 +2,246 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SoalIA06;   // Model untuk tabel 'soal_ia06'
-use App\Models\KunciIA06;   // Model untuk tabel 'kunci_ia06' (Jawaban Asesi)
+use App\Models\SoalIa06;
+use App\Models\JawabanIa06;
+use App\Models\UmpanBalikIa06;
+use App\Models\DataSertifikasiAsesi;
+use App\Models\Skema;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth; // Anda akan perlu ini nanti untuk ID Asesi
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class SoalController extends Controller
+class Ia06Controller extends Controller
 {
-    /**
-     * UNTUK ADMIN (FR.IA.06A - Daftar Pertanyaan)
-     * Menampilkan view: 'frontend/fr_IA_06_a.blade.php'
-     */
-    public function index()
-    {
-        // Mengambil semua soal dari tabel 'soal_ia06'
-        $soals = SoalIA06::all();
+    // =======================================================================
+    // BAGIAN 1: ADMIN (MANAJEMEN BANK SOAL)
+    // =======================================================================
 
-        // Mengirim data ke view
-        // 'soalItems' adalah nama variabel yang dipakai di view Anda
-        return view('frontend.fr_IA_06_a', ['soalItems' => $soals]);
+    /**
+     * Menampilkan Halaman Bank Soal (Admin)
+     */
+    public function adminIndex(Request $request)
+    {
+        $this->authorizeRole(1); // Cek apakah Admin
+
+        $skemas = Skema::all();
+        $selectedSkema = $request->query('skema_id');
+
+        $soals = [];
+        if ($selectedSkema) {
+            $soals = SoalIa06::where('id_skema', $selectedSkema)->get();
+        }
+
+        // Pastikan Anda punya view: resources/views/admin/bank_soal/ia06/index.blade.php
+        return view('admin.ia06', compact('skemas', 'soals', 'selectedSkema'));
     }
 
     /**
-     * UNTUK ADMIN (FR.IA.06B - Kunci Jawaban Master)
-     * Menampilkan view: 'frontend/fr_IA_06_b.blade.php'
+     * Menyimpan Soal Baru (Admin)
      */
-    public function kunciIndex()
+    public function adminStoreSoal(Request $request)
     {
-        // Mengambil semua soal, yang sekarang juga berisi kunci jawaban master
-        $soals = SoalIA06::all();
+        $this->authorizeRole(1);
 
-        // Mengirim data ke view
-        // View 'fr_IA_06_b' Anda bisa menampilkan
-        // $soal->soal_ia06 dan $soal->kunci_jawaban_ia06
-        return view('frontend.fr_IA_06_b', ['soalItems' => $soals]);
+        $request->validate([
+            'id_skema' => 'required|exists:skema,id_skema',
+            'soal_ia06' => 'required|string',
+            'kunci_jawaban_ia06' => 'required|string',
+        ]);
+
+        SoalIa06::create($request->all());
+
+        return back()->with('success', 'Soal berhasil ditambahkan.');
     }
 
     /**
-     * UNTUK ASESI (FR.IA.06C - Form Ujian)
-     * Menampilkan view: 'frontend/fr_IA_06_c.blade.php'
+     * Update Soal (Admin)
      */
-    public function jawabIndex()
+    public function adminUpdateSoal(Request $request, $id)
     {
-        // Mengambil semua soal untuk ditampilkan ke asesi
-        $soals = SoalIA06::all();
-        return view('frontend.fr_IA_06_c', compact('soals'));
+        $this->authorizeRole(1);
+
+        $soal = SoalIa06::findOrFail($id);
+        $soal->update($request->only(['soal_ia06', 'kunci_jawaban_ia06']));
+
+        return back()->with('success', 'Soal berhasil diperbarui.');
     }
 
     /**
-     * UNTUK ASESI: Menyimpan jawaban dari 'fr_IA_06_c'
-     * Ini akan menyimpan ke tabel 'kunci_ia06' (Tabel Jawaban Asesi)
+     * Hapus Soal (Admin)
      */
-    public function jawabStore(Request $request)
+    public function adminDestroySoal($id)
     {
-        $validated = $request->validate([
-            // 'jawaban' berasal dari name="jawaban[...]" di view Anda
+        $this->authorizeRole(1);
+        SoalIa06::destroy($id);
+        return back()->with('success', 'Soal dihapus.');
+    }
+
+
+    // =======================================================================
+    // BAGIAN 2: ASESI (MENGERJAKAN SOAL)
+    // =======================================================================
+
+    /**
+     * Menampilkan Lembar Soal (Asesi)
+     */
+    public function asesiShow($idSertifikasi)
+    {
+        $this->authorizeRole(2); // Cek apakah Asesi
+        $user = Auth::user();
+
+        // 1. Validasi Kepemilikan Data
+        $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'asesi'])->findOrFail($idSertifikasi);
+
+        // Asumsi: Relasi user ke asesi menggunakan 'user_id' di tabel asesi
+        if ($sertifikasi->asesi->user_id !== $user->id_user) {
+            abort(403, 'Akses Ditolak. Ini bukan lembar ujian Anda.');
+        }
+
+        // 2. Generate Lembar Jawab (Jika belum ada)
+        $this->generateLembarJawab($sertifikasi);
+
+        // 3. Ambil Jawaban
+        $daftar_soal = JawabanIa06::with('soal')
+            ->where('id_data_sertifikasi_asesi', $idSertifikasi)
+            ->get();
+
+        $role = 2; // Kita set manual angka 2 karena ini function khusus Asesi
+
+        // Tentukan URL tujuan submit form
+        $formAction = route('asesi.ia06.update', $idSertifikasi);
+
+        // Kita juga butuh variabel umpanBalik agar view tidak error (meski asesi cuma baca)
+        $umpanBalik = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
+
+        // Panggil View UNIFIED (Satu untuk semua)
+        return view('frontend.fr_IA_06_a', compact('sertifikasi', 'daftar_soal', 'role', 'formAction', 'umpanBalik'));
+    }
+
+    /**
+     * Menyimpan Jawaban (Asesi)
+     */
+    public function asesiStoreJawaban(Request $request, $idSertifikasi)
+    {
+        $this->authorizeRole(2);
+
+        $request->validate([
             'jawaban' => 'required|array',
             'jawaban.*' => 'nullable|string',
         ]);
 
-        // GANTI INI: Dapatkan ID Asesi yang sedang login
-        // $id_sertifikasi_asesi = Auth::user()->id_data_sertifikasi_asesi;
-        $id_sertifikasi_asesi = 1; // Placeholder, ganti dengan ID asesi yang valid
-
-        // Hapus jawaban lama asesi ini (jika ada, agar bisa mengulang)
-        KunciIA06::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->delete();
-
-        // Simpan jawaban baru
-        foreach ($validated['jawaban'] as $id_soal => $teks_jawaban) {
-
-            // Hanya simpan jika asesi benar-benar menjawab (tidak kosong)
-            if ($teks_jawaban) {
-                KunciIA06::create([
-                    'id_soal_ia06' => $id_soal,
-                    'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                    'teks_jawaban_ia06' => $teks_jawaban // <-- Menyimpan ke kolom yang benar
-                ]);
+        DB::transaction(function () use ($request, $idSertifikasi) {
+            foreach ($request->jawaban as $idJawaban => $teks) {
+                JawabanIa06::where('id_jawaban_ia06', $idJawaban)
+                    ->where('id_data_sertifikasi_asesi', $idSertifikasi) // Security check extra
+                    ->update(['jawaban_asesi' => $teks]);
             }
+        });
+
+        return back()->with('success', 'Jawaban berhasil disimpan.');
+    }
+
+
+    // =======================================================================
+    // BAGIAN 3: ASESOR (PENILAIAN)
+    // =======================================================================
+
+    /**
+     * Menampilkan Form Penilaian (Asesor)
+     */
+    public function asesorShow($idSertifikasi)
+    {
+        $this->authorizeRole(3); // Cek apakah Asesor
+
+        $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'asesi'])->findOrFail($idSertifikasi);
+
+        $daftar_soal = JawabanIa06::with('soal')
+            ->where('id_data_sertifikasi_asesi', $idSertifikasi)
+            ->get();
+
+        $umpanBalik = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
+
+        $role = 3; // Kita set manual angka 3 karena ini function khusus Asesor
+
+        // Tentukan URL tujuan submit form (Ke Route Update Asesor)
+        $formAction = route('asesor.ia06.update', $idSertifikasi);
+
+        // Panggil View UNIFIED yang SAMA dengan Asesi
+        return view('frontend.fr_IA_06_a', compact('sertifikasi', 'daftar_soal', 'umpanBalik', 'role', 'formAction'));
+    }
+
+
+    /**
+     * Menyimpan Nilai & Feedback (Asesor)
+     */
+    public function asesorStorePenilaian(Request $request, $idSertifikasi)
+    {
+        $this->authorizeRole(3);
+
+        $request->validate([
+            'penilaian' => 'required|array',
+            'penilaian.*' => 'required|boolean', // 1=K, 0=BK
+            'umpan_balik' => 'required|string',
+        ]);
+
+        DB::transaction(function () use ($request, $idSertifikasi) {
+            // 1. Simpan Nilai Per Soal
+            foreach ($request->penilaian as $idJawaban => $nilai) {
+                JawabanIa06::where('id_jawaban_ia06', $idJawaban)
+                    ->update(['pencapaian' => $nilai]);
+            }
+
+            // 2. Simpan Umpan Balik
+            UmpanBalikIa06::updateOrCreate(
+                ['id_data_sertifikasi_asesi' => $idSertifikasi],
+                ['umpan_balik' => $request->umpan_balik]
+            );
+        });
+
+        return back()->with('success', 'Penilaian berhasil disimpan.');
+    }
+
+
+    // =======================================================================
+    // HELPER FUNCTIONS (PRIVATE)
+    // =======================================================================
+
+    /**
+     * Fungsi Helper untuk proteksi Role ID manual (Backup Middleware)
+     */
+    private function authorizeRole($roleId)
+    {
+        if (Auth::user()->role_id != $roleId) {
+            abort(403, 'Unauthorized Action.');
         }
-
-        // Redirect kembali ke halaman form ujian (sesuai nama rute Anda)
-        return redirect()->route('fr_IA_06_c')
-                         ->with('success', 'Jawaban Anda berhasil disimpan.');
-    }
-
-
-    // =================================================================
-    // FUNGSI ADMIN CRUD (Soal & Kunci Jawaban Master)
-    // =================================================================
-
-    /**
-     * Menampilkan form untuk membuat soal baru
-     * (Memerlukan view 'soal.create')
-     */
-    public function create()
-    {
-        return view('soal.create'); // (View admin terpisah)
     }
 
     /**
-     * Menyimpan soal BARU beserta Kunci Jawabannya ke tabel 'soal_ia06'
+     * Generate Lembar Jawab Kosong Otomatis
      */
-    public function store(Request $request)
+    private function generateLembarJawab($sertifikasi)
     {
-        $validated = $request->validate([
-            'soal_ia06' => 'required|string',
-            'kunci_jawaban_ia06' => 'nullable|string', // <-- Kunci Master
-        ]);
+        // Cek apakah jawaban sudah ada?
+        $exists = JawabanIa06::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)->exists();
 
-        SoalIA06::create($validated);
+        if (!$exists) {
+            // Ambil soal berdasarkan skema jadwal
+            $soals = SoalIa06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
 
-        // Redirect ke halaman daftar pertanyaan admin
-        return redirect()->route('fr_IA_06_a')->with('success', 'Soal berhasil ditambahkan.');
-    }
+            if ($soals->isEmpty()) return; // Tidak ada soal, skip
 
-    /**
-     * Menampilkan form untuk mengedit soal
-     * (Memerlukan view 'soal.edit')
-     */
-    public function edit($id)
-    {
-        $soal = SoalIA06::findOrFail($id);
-        return view('soal.edit', compact('soal')); // (View admin terpisah)
-    }
-
-    /**
-     * Update soal beserta Kunci Jawabannya di tabel 'soal_ia06'
-     */
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'soal_ia06' => 'required|string',
-            'kunci_jawaban_ia06' => 'nullable|string', // <-- Kunci Master
-        ]);
-
-        $soal = SoalIA06::findOrFail($id);
-        $soal->update($validated);
-
-        // Redirect ke halaman daftar pertanyaan admin
-        return redirect()->route('fr_IA_06_a')->with('success', 'Soal berhasil diperbarui.');
-    }
-
-    /**
-     * Hapus soal dari tabel 'soal_ia06'
-     */
-    public function destroy($id)
-    {
-        // Saat Soal dihapus, jawaban asesi (dari tabel 'kunci_ia06')
-        // akan ikut terhapus otomatis karena 'onDelete('cascade')' di migrasi Anda.
-        $soal = SoalIA06::findOrFail($id);
-        $soal->delete();
-
-        return redirect()->route('fr_IA_06_a')->with('success', 'Soal berhasil dihapus.');
-    }
-
-    /**
-     * Fungsi duplikat, sama dengan index()
-     */
-    public function onlySoal()
-    {
-        $soals = SoalIA06::all();
-        return view('frontend.fr_IA_06_a', ['soalItems' => $soals]);
+            $dataInsert = [];
+            foreach ($soals as $soal) {
+                $dataInsert[] = [
+                    'id_soal_ia06' => $soal->id_soal_ia06,
+                    'id_data_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi,
+                    'jawaban_asesi' => null,
+                    'pencapaian' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            JawabanIa06::insert($dataInsert);
+        }
     }
 }

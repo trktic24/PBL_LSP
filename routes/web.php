@@ -9,8 +9,8 @@ use App\Http\Controllers\Api\V1\CountryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Admin\SkemaController;
-use App\Http\Controllers\AsesorController; 
-use App\Http\Controllers\Admin\AsesiController; 
+use App\Http\Controllers\AsesorController;
+use App\Http\Controllers\Admin\AsesiController;
 use App\Http\Controllers\Admin\TukAdminController;
 
 use App\Http\Controllers\Admin\CategoryController;
