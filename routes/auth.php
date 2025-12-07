@@ -107,14 +107,14 @@ Route::middleware('auth')->group(function () {
     */
 
     // FR.IA.02
-    Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])->name('fr-ia-02.show');  
+    Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])->name('fr-ia-02.show');
     Route::post('/fr-ia-02/{id}', [IA02Controller::class, 'store'])->name('fr-ia-02.store');
     Route::get('/fr-ia-02', fn() => view('frontend.FR_IA_02'))->name('FR_IA_02');
 
     // FR.IA.10
     Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
-    Route::get('/FR-IA-10-view', fn() => view('frontend.FR_IA_10'))->name('FR-IA-10'); 
+    Route::get('/FR-IA-10-view', fn() => view('frontend.FR_IA_10'))->name('FR-IA-10');
 
     // FR.IA.06 (Statis/View)
     Route::get('/fr-ia-06-c', fn() => view('frontend.fr_IA_06_c'))->name('fr_IA_06_c');
@@ -158,28 +158,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/apl-01-1/view/{id}', [APL01Controller::class, 'step1'])->name('APL_01_1');
     Route::post('/apl-01-1/store', [APL01Controller::class, 'storeStep1'])->name('apl01_1.store');
     Route::get('/apl-01-2/view/{id}', [APL01Controller::class, 'step2'])->name('APL_01_2');
-    Route::post('/apl-01-2/store', [APL01Controller::class, 'storeStep2'])->name('apl01_2.store');    
+    Route::post('/apl-01-2/store', [APL01Controller::class, 'storeStep2'])->name('apl01_2.store');
     Route::get('/apl-01-3/view/{id}', [APL01Controller::class, 'step3'])->name('APL_01_3');
 
     //MAPA01
     Route::get('/mapa01/show/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
-    Route::post('/mapa01/store', [FrMapa01Controller::class, 'store'])->name('mapa01.store'); 
-    
+    Route::post('/mapa01/store', [FrMapa01Controller::class, 'store'])->name('mapa01.store');
+
     //MAPA02
-    Route::get('/mapa02/show/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');    
-    Route::post('/mapa02/store/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');     
+    Route::get('/mapa02/show/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');
+    Route::post('/mapa02/store/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');
 
 
     // ======================================================
     // 3. ROLE: ADMIN
     // ======================================================
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        
+
         // Dashboard
         Route::controller(DashboardController::class)->group(function () {
-            Route::get('/dashboard', 'index')->name('dashboard');    
+            Route::get('/dashboard', 'index')->name('dashboard');
         });
-        
+
         // Notification
         Route::get('/notifications', function () {
             return view('notifications.notifications_admin');
@@ -189,7 +189,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile_admin', function () {
             return view('profile.profile_admin');
         })->name('profile_admin');
-        
+
         // Rute profil bawaan Laravel (Admin context)
         Route::controller(ProfileController::class)->group(function () {
             Route::get('/profile', 'edit')->name('profile.edit');
@@ -209,8 +209,8 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::controller(\App\Http\Controllers\Admin\DetailSkemaController::class)
-             ->prefix('master/skema/detail')
-             ->group(function () {
+            ->prefix('master/skema/detail')
+            ->group(function () {
                 Route::get('/{id_skema}', 'index')->name('skema.detail');
                 Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
                 Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
@@ -218,7 +218,7 @@ Route::middleware('auth')->group(function () {
                 Route::put('/kelompok/{id_kelompok}', 'updateKelompok')->name('skema.detail.update_kelompok');
                 Route::delete('/kelompok/{id_kelompok}', 'destroyKelompok')->name('skema.detail.destroy_kelompok');
                 Route::delete('/unit/{id_unit}', 'destroyUnit')->name('skema.detail.destroy_unit');
-        });
+            });
 
         // Master - Asesor
         Route::get('/master_asesor', [AsesorController::class, 'index'])->name('master_asesor');
@@ -235,7 +235,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit-asesor-step-3/{id_asesor}', [AsesorController::class, 'editStep3'])->name('edit_asesor3');
         Route::patch('/update-asesor-step-3/{id_asesor}', [AsesorController::class, 'updateStep3'])->name('asesor.update.step3');
         Route::delete('/asesor/{id_asesor}', [AsesorController::class, 'destroy'])->name('asesor.destroy');
-        
+
         // Master - Asesi
         Route::controller(AsesiController::class)->prefix('master/asesi')->group(function () {
             Route::get('/', 'index')->name('master_asesi');
@@ -284,18 +284,19 @@ Route::middleware('auth')->group(function () {
     // 4. ROLE: ASESOR
     // ======================================================
     Route::middleware(['role:asesor'])->prefix('asesor')->name('asesor.')->group(function () {
-        
+
         // Dashboard
         Route::get('/dashboard', [AsesorDashboardController::class, 'index'])->name('dashboard');
         Route::get('/home', [AsesorDashboardController::class, 'index'])->name('home.index'); // Keep for backward compatibility if needed
-        
+        Route::get('/notifikasi', [AsesorDashboardController::class, 'semuaNotifikasi'])->name('notifikasi.index');
+
         // Manajemen Jadwal & Asesi
         Route::get('/jadwal', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'index'])->name('jadwal.index');
         Route::get('/daftar-asesi/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
-        Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker'); 
+        Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker');
         Route::get('/daftar-hadir/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'daftarHadir'])->name('daftar_hadir');
-        Route::post('/daftar-hadir/{id_jadwal}/simpan', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeKehadiran'])->name('simpan_kehadiran'); 
-        
+        Route::post('/daftar-hadir/{id_jadwal}/simpan', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeKehadiran'])->name('simpan_kehadiran');
+
         // Tools
         Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
 
@@ -303,9 +304,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/profil', [\App\Http\Controllers\Asesor\ProfileController::class, 'show'])->name('profil');
         Route::get('/{id_asesor}/bukti', [AsesorController::class, 'showBukti'])->name('bukti');
         // Route::get('/{id_asesor}/profile', [AsesorController::class, 'showProfile'])->name('profile'); // Replaced by /profil
-        Route::get('/profile_tinjauan', function () { return view('profile_asesor.asesor_profile_tinjauan'); })->name('profile_tinjauan');
-        Route::get('/profile_tracker', function () { return view('profile_asesor.asesor_profile_tracker'); })->name('profile_tracker');
-        
+        Route::get('/profile_tinjauan', function () {
+            return view('profile_asesor.asesor_profile_tinjauan');
+        })->name('profile_tinjauan');
+        Route::get('/profile_tracker', function () {
+            return view('profile_asesor.asesor_profile_tracker');
+        })->name('profile_tracker');
+
         // Update Profile Asesor (Ajax)
         Route::post('/update', [\App\Http\Controllers\Asesor\ProfileController::class, 'updateAsesorAjax'])->name('update.ajax');
     });
@@ -315,7 +320,7 @@ Route::middleware('auth')->group(function () {
     // 5. ROLE: ASESI
     // ======================================================
     Route::middleware(['role:asesi'])->prefix('asesi')->name('asesi.')->group(function () {
-        
+
         // Dashboard (Redirected here usually)
         // Route::get('/dashboard', [AsesiDashboardController::class, 'index'])->name('dashboard');
 
@@ -367,9 +372,7 @@ Route::middleware('auth')->group(function () {
         // 4. JIKA ROLE TIDAK DIKENALI
         Auth::logout();
         return redirect('/login')->with('error', 'Role Anda tidak terdefinisi.');
-
     })->name('home.index');
-
 });
 
 // Halaman tunggu verifikasi (Opsional, jika Anda ingin redirect ke sini alih-alih logout)
