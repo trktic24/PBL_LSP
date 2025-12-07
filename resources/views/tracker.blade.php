@@ -40,7 +40,7 @@
     $statusClassSelesai = 'text-xs text-green-600 font-medium';
     $statusClassProses = 'text-xs text-blue-600 font-medium';
     $statusClassTunggu = 'text-xs text-yellow-600 font-medium';
-    $statusClassTerkunci = 'text-xs text-gray-400 font-medium';
+    $statusClassTerkunci = 'text-xs text-gray-400 font-medium'; 
 
     // BUTTON STYLES
     $btnBase = 'mt-2 px-4 py-1.5 text-xs font-semibold rounded-md inline-block transition-all';
