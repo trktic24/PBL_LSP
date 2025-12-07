@@ -28,6 +28,7 @@ return new class extends Migration
             $table->dateTime('tanggal_selesai')->comment('tanggal Selesai pendaftaran');
             $table->date('tanggal_pelaksanaan')->comment('tanggal pelaksanaan');
             $table->time('waktu_mulai')->comment('Waktu Mulai pelaksanaan');
+            $table->time('waktu_selesai')->comment('Waktu Selesai asesmen');
             $table->enum('Status_jadwal', ['Terjadwal', 'Selesai', 'Dibatalkan'])->comment('Status jadwal saat ini');
             $table->timestamps();
         });

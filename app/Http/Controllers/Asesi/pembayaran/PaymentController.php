@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Asesi\pembayaran;
 
 use Midtrans\Snap;
 use Midtrans\Config;
@@ -8,6 +8,7 @@ use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
 use Illuminate\Support\Facades\Auth;
 

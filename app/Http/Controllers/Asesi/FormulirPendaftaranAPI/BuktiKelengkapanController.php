@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\FormulirPendaftaranAPI;
+namespace App\Http\Controllers\Asesi\FormulirPendaftaranAPI;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -137,5 +137,16 @@ class BuktiKelengkapanController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false], 500);
         }
+    }
+
+    public function showBuktiPemohon($id_sertifikasi)
+    {
+         // Load 'asesi' buat sidebar
+        $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
+
+        return view('formulir_pendaftaran.bukti_pemohon', [
+            'sertifikasi' => $sertifikasi, // Data pendaftaran
+            'asesi' => $sertifikasi->asesi, // Data orangnya
+        ]);
     }
 }

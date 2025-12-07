@@ -1,216 +1,154 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TukController;
 
-use App\Http\Controllers\Ak03Controller;
+// --- Controllers Import ---
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\TukController;
 use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\JadwalController;
-use App\Http\Controllers\AsesmenController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TrackerController;
-use App\Http\Controllers\Apl01PdfController;
-use App\Http\Controllers\SkemaWebController;
 use App\Http\Controllers\Api\CountryController;
-use App\Http\Controllers\Apl02\PraasesmenController;
+
+// --- Controllers Asesi & Asesor Import ---
+use App\Http\Controllers\Asesi\TrackerController;
+use App\Http\Controllers\Asesi\Apl01PdfController;
 use App\Http\Controllers\Asesor\AsesorTableController;
-use App\Http\Controllers\asesmen\AsesmenEsaiController;
-use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
-use App\Http\Controllers\asesmen\AsesmenPilihanGandaController;
-use App\Http\Controllers\FormulirPendaftaran\TandaTanganController;
-use App\Http\Controllers\FormulirPendaftaran\BuktiKelengkapanController;
-use App\Models\DataSertifikasiAsesi; // <-- [PENTING] Saya tambahkan ini
-use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
-use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
-use App\Http\Controllers\Ak04API\APIBandingController;
+use App\Http\Controllers\Asesi\Apl02\PraasesmenController;
+use App\Http\Controllers\Asesi\umpan_balik\Ak03Controller;
+use App\Http\Controllers\Asesi\Ak04API\APIBandingController;
+use App\Http\Controllers\Asesi\pembayaran\PaymentController;
+use App\Http\Controllers\Asesi\asesmen\AsesmenEsaiController;
+use App\Http\Controllers\Asesi\JadwalTukAPI\JadwalTukAPIController;
+use App\Http\Controllers\Asesi\asesmen\AsesmenPilihanGandaController;
+use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController;
+use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
+use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
+use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
+| Struktur:
+| 1. Public Routes (Landing Page, Info, dll)
+| 2. Authentication (Login/Register)
+| 3. Authenticated Routes (Harus Login)
+|    a. Dashboard & Tracker
+|    b. Formulir APL-01 (Pendaftaran)
+|    c. Formulir APL-02 (Pra-Asesmen)
+|    d. Asesmen & Ujian (IA.05, IA.06)
+|    e. Persetujuan & Banding (AK.01, AK.04)
+|    f. Pembayaran
+|    g. Utilities (PDF, dll)
+| 4. API & Utilities
 */
 
 // ====================================================
-// GRUP 1: LANDING PAGE & HALAMAN INFO UTAMA
+// 1. PUBLIC ROUTES (GUEST ALLOWED)
 // ====================================================
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+// Landing Page & Skema
+Route::controller(HomeController::class)->group(function () {
+    Route::get('/', 'index')->name('home');
+    Route::get('/skema/{id}', 'show')->name('skema.detail');
+    Route::get('/detail_skema/{id}', 'show')->name('detail_skema'); // Alias
+    Route::get('/detail_jadwal/{id}', 'showJadwalDetail')->name('detail_jadwal');
+    Route::get('/jadwal/{id}', 'showJadwalDetail')->name('jadwal.detail'); // Alias
+});
 
-// Rute Halaman Utama
+// Info Jadwal & Asesor
 Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal');
 Route::get('/daftar-asesor', [AsesorTableController::class, 'index'])->name('info.daftar-asesor');
-Route::get('/sertifikasi', function () {
-    return 'Halaman Sertifikasi'; // Placeholder
-})->name('sertifikasi');
 
-// Rute Detail Skema & Jadwal
-Route::get('/skema/{id}', [HomeController::class, 'show'])->name('skema.detail');
-Route::get('/detail_skema/{id}', [HomeController::class, 'show'])->name('detail_skema'); // Alias
-Route::get('/detail_jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('detail_jadwal');
-Route::get('/jadwal/{id}', [HomeController::class, 'showJadwalDetail'])->name('jadwal.detail'); // Alias
+// Info TUK
+Route::controller(TukController::class)->group(function () {
+    Route::get('/info-tuk', 'index')->name('info.tuk');
+    Route::get('/detail-tuk/{id}', 'showDetail')->name('info.tuk.detail');
+});
 
-// Rute Halaman Info Profil & TUK
-Route::get('/alur-sertifikasi', function () {
-    return view('landing_page.page_info.alur-sertifikasi');
-})->name('info.alur');
-Route::get('/info-tuk', [TukController::class, 'index'])->name('info.tuk');
-Route::get('/detail-tuk/{id}', [TukController::class, 'showDetail'])->name('info.tuk.detail');
+// Halaman Statis (Profil & Info)
+Route::prefix('info')
+    ->name('info.')
+    ->group(function () {
+        Route::get('/alur-sertifikasi', fn() => view('landing_page.page_info.alur-sertifikasi'))->name('alur');
+    });
 
-Route::get('/visimisi', function () {
-    return view('landing_page.page_profil.visimisi');
-})->name('profil.visimisi');
-Route::get('/struktur', function () {
-    return view('landing_page.page_profil.struktur');
-})->name('profil.struktur');
-Route::get('/mitra', function () {
-    return view('landing_page.page_profil.mitra');
-})->name('profil.mitra');
+Route::prefix('profil')
+    ->name('profil.')
+    ->group(function () {
+        Route::get('/visimisi', fn() => view('landing_page.page_profil.visimisi'))->name('visimisi');
+        Route::get('/struktur', fn() => view('landing_page.page_profil.struktur'))->name('struktur');
+        Route::get('/mitra', fn() => view('landing_page.page_profil.mitra'))->name('mitra');
+    });
+
+// Placeholder Sertifikasi
+Route::get('/sertifikasi', fn() => 'Halaman Sertifikasi')->name('sertifikasi');
 
 // ====================================================
-// GRUP 2: AUTENTIKASI & DASHBOARD
+// 2. AUTHENTICATION
 // ====================================================
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-// Route untuk file auth.php
 require __DIR__ . '/auth.php';
 
 // ====================================================
-// GRUP 3: TRACKER ASESI (WAJIB LOGIN)
+// 3. AUTHENTICATED ROUTES (USER HARUS LOGIN)
 // ====================================================
+Route::middleware(['auth'])->group(function () {
+    // --- A. Dashboard & Tracker ---
+    Route::get('/dashboard', fn() => view('dashboard'))->middleware('verified')->name('dashboard');
 
-Route::get('/tracker/{jadwal_id?}', [TrackerController::class, 'index'])
-    ->middleware('auth')
-    ->name('tracker');
+    Route::controller(TrackerController::class)->group(function () {
+        Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
+        Route::post('/api/jadwal/daftar', 'daftarJadwal')->name('api.jadwal.daftar');
+    });
 
-// API (AJAX) untuk mendaftar ke jadwal
-Route::post('/api/jadwal/daftar', [TrackerController::class, 'daftarJadwal'])
-    ->middleware('auth')
-    ->name('api.jadwal.daftar');
+    // --- B. Formulir APL-01 (Pendaftaran) ---
+    // Menggunakan Controller yang baru saja kita rapikan
+    Route::get('/data_sertifikasi/{id_sertifikasi}', [DataSertifikasiAsesiController::class, 'showFormulir'])->name('data.sertifikasi');
+    Route::get('/bukti_pemohon/{id_sertifikasi}', [BuktiKelengkapanController::class, 'showBuktiPemohon'])->name('bukti.pemohon');
+    Route::get('/halaman-tanda-tangan/{id_sertifikasi}', [TandaTanganAPIController::class, 'showTandaTangan'])->name('show.tandatangan');
 
-// ====================================================
-// GRUP 4: FORMULIR PENDAFTARAN (APL-01, APL-02, DLL)
-// ====================================================
+    Route::get('/formulir-selesai', fn() => 'BERHASIL DISIMPAN! Ini halaman selanjutnya.')->name('form.selesai');
 
-// --- Formulir APL-01: Data Sertifikasi ---
-// INI ADALAH ROUTE YANG BENAR (YANG LAMA SUDAH SAYA HAPUS)
-Route::get('/data_sertifikasi/{id_sertifikasi}', function ($id_sertifikasi) {
-    try {
-        // Kita cari data pendaftarannya (sertifikasi), BUKAN asesinya
-        $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
+    // --- C. Formulir APL-02 (Pra-Asesmen) ---
+    Route::get('/pra-asesmen/{id_sertifikasi}', [PraasesmenController::class, 'index'])->name('apl02.view');
 
-        // Kirim ID pendaftaran dan data asesi (untuk sidebar) ke Blade
-        return view('formulir_pendaftaran/data_sertifikasi', [
-            'id_sertifikasi_untuk_js' => $sertifikasi->id_data_sertifikasi_asesi,
-            'asesi' => $sertifikasi->asesi,
-            'sertifikasi' => $sertifikasi,
-        ]);
-    } catch (\Exception $e) {
-        // Kalo gak ketemu, balikin ke tracker
-        return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
-    }
-})->name('data.sertifikasi');
+    // --- D. Persetujuan & Jadwal TUK ---
+    // Persetujuan Kerahasiaan (FR.AK.01)
+    Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
+    // Konfirmasi Jadwal TUK
+    Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
 
-Route::get('/bukti_pemohon/{id_sertifikasi}', function ($id_sertifikasi) {
-    try {
-        // [PERBAIKAN] Ambil data berdasarkan ID Sertifikasi (Pendaftaran), bukan ID Asesi
-        // Kita juga load 'asesi'-nya biar sidebar tetep jalan
-        $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
+    // --- E. Asesmen / Ujian (IA.05 & IA.06) ---
+    Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');
+    Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])->name('asesmen.ia06.view');
 
-        return view('formulir_pendaftaran/bukti_pemohon', [
-            'sertifikasi' => $sertifikasi, // Kirim data pendaftaran lengkap
-            'asesi' => $sertifikasi->asesi, // Kirim data orangnya buat sidebar
-        ]);
-    } catch (\Exception $e) {
-        return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
-    }
-})->name('bukti.pemohon');
+    // --- F. Pasca Asesmen (Banding & Umpan Balik) ---
+    // Umpan Balik (AK.03)
+    Route::get('/umpan-balik/{id}', [Ak03Controller::class, 'index'])->name('ak03.index');
+    Route::post('/umpan-balik/store/{id}', [Ak03Controller::   class, 'store'])->name('ak03.store');
+    // Banding (AK.04)
+    Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04');
 
-Route::get('/halaman-tanda-tangan/{id_sertifikasi}', function ($id_sertifikasi) {
-    try {
-        // 1. Cari Data Pendaftaran berdasarkan ID Pendaftaran (BUKAN ID Asesi)
-        $sertifikasi = DataSertifikasiAsesi::with('asesi.dataPekerjaan')->findOrFail($id_sertifikasi);
+    // --- G. Pembayaran (Midtrans) ---
+    Route::controller(PaymentController::class)->group(function () {
+        Route::get('/bayar/{id_sertifikasi}', 'createTransaction')->name('payment.create');
+        Route::get('/pembayaran_diproses', 'processed')->name('pembayaran_diproses'); // Callback sukses
+        Route::get('/pembayaran_batal', 'paymentCancel')->name('payment.cancel'); // Callback batal
+        Route::get('/payment/{id_sertifikasi}/invoice', 'downloadInvoice')->name('payment.invoice');
+    });
 
-        return view('formulir_pendaftaran/tanda_tangan_pemohon', [
-            'sertifikasi' => $sertifikasi,
-            'asesi' => $sertifikasi->asesi,
-        ]);
-    } catch (\Exception $e) {
-        // 2. INI YANG BIKIN KAMU MENTAL.
-        // Kalau ID Sertifikasi salah kirim (misal kirim ID Asesi padahal butuh ID Sertifikasi),
-        // findOrFail akan gagal dan masuk ke sini.
-        return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
-    }
-})->name('show.tandatangan');
-
-// --- Halaman Statis Formulir ---
-Route::get('/tunggu_upload_dokumen', function () {
-    return view('formulir_pendaftaran/tunggu_upload_dokumen');
-});
-Route::get('/belum_memenuhi', function () {
-    return view('formulir_pendaftaran/dokumen_belum_memenuhi');
-});
-Route::get('/formulir-selesai', function () {
-    return 'BERHASIL DISIMPAN! Ini halaman selanjutnya.';
-})->name('form.selesai');
-
-Route::get('/pra-asesmen/{id_sertifikasi}', [PraasesmenController::class, 'index'])
-    ->middleware('auth')
-    ->name('apl02.view');
-
-// --- Asesmen Lainnya Views ---
-// --- PDF Download ---
-Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
-
-//umpan balik (ak03)
-Route::get('/umpan-balik', [Ak03Controller::class, 'index'])->name('ak03.index');
-Route::post('/umpan-balik/store', [Ak03Controller::class, 'store'])->name('ak03.store');
+    // --- H. Utilities (PDF & Cetak) ---
+    Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
+}); // End of Middleware Auth
 
 // ====================================================
-// GRUP 6: ROUTE LAIN-LAIN (API & KEEP ALIVE)
+// 4. API & UTILITIES (NON-AUTH / MIXED)
 // ====================================================
 
+// Keep Alive Session
 Route::get('/keep-alive', function () {
     return response()->json(['status' => 'session_refreshed']);
 });
+
+// API Wilayah
 Route::get('/api/search-countries', [CountryController::class, 'search'])->name('api.countries.search');
-
-// 1. Route Klik Bayar
-Route::get('/bayar/{id_sertifikasi}', [PaymentController::class, 'createTransaction'])
-    ->middleware('auth')
-    ->name('payment.create');
-
-// 2. Route Sukses/Finish (Callback Midtrans)
-// [PERBAIKAN] Nama route disesuaikan dengan config Midtrans di controller
-Route::get('/pembayaran_diproses', [PaymentController::class, 'processed'])->name('pembayaran_diproses');
-
-// 3. Route Batal/Cancel
-Route::get('/pembayaran_batal', [PaymentController::class, 'paymentCancel'])->name('payment.cancel');
-
-Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])
-       ->name('kerahasiaan.fr_ak01');
-
-Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])  ->name('show.jadwal_tuk');
-
-// Route Web AK.04 (DISESUAIKAN)
-Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show']) 
-    ->name('banding.fr_ak04'); // KRITIS: Menggunakan fr-ak04
-
-Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])
-    ->name('show.jadwal_tuk');
-
-Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])
-        ->name('asesmen.ia05.view');
-
-Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])
-    ->name('asesmen.ia06.view');
-
-Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'downloadInvoice'])
-    ->name('payment.invoice');
-

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\FormulirPendaftaranAPI;
+namespace App\Http\Controllers\Asesi\FormulirPendaftaranAPI;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -105,6 +105,34 @@ class DataSertifikasiAsesiController extends Controller
         } catch (\Exception $e) {
             Log::error('API: Gagal ambil detail sertifikasi - ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
+        }
+    }
+
+    /**
+     * ==========================================================
+     * METHOD VIEW: TAMPILKAN HALAMAN FORMULIR (BLADE)
+     * ==========================================================
+     * Ini yang mindahin logic dari Route::get tadi.
+     */
+    public function showFormulir($id_sertifikasi)
+    {
+        try {
+            // Kita cari data pendaftarannya (sertifikasi) beserta asesinya
+            $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
+
+            // Return ke View (Blade), bukan JSON
+            return view('formulir_pendaftaran.data_sertifikasi', [
+                'id_sertifikasi_untuk_js' => $sertifikasi->id_data_sertifikasi_asesi,
+                'asesi' => $sertifikasi->asesi,
+                'sertifikasi' => $sertifikasi,
+            ]);
+
+        } catch (\Exception $e) {
+            // Log errornya biar tau kenapa
+            Log::error('Gagal memuat halaman formulir: ' . $e->getMessage());
+
+            // Balikin ke tracker kalo data gak ketemu
+            return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
         }
     }
 }

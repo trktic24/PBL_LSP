@@ -77,32 +77,6 @@
 
             </div>
 
-            {{-- TOMBOL NAVIGASI (DI BAGIAN BAWAH) --}}
-            {{-- TOMBOL NAVIGASI (SERASI DENGAN HALAMAN LAIN) --}}
-            <div class="max-w-3xl mx-auto w-full mt-10">
-                <div class="flex justify-between items-center pt-6 border-t border-gray-200">
-
-                    {{-- TOMBOL KEMBALI --}}
-                    @if (isset($id_sertifikasi))
-                        <a href="{{ route('show.tandatangan', ['id_sertifikasi' => $id_sertifikasi]) }}"
-                            class="w-48 text-center px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-all shadow-sm">
-                            Kembali
-                        </a>
-                    @else
-                        <a href="/dashboard"
-                            class="w-48 text-center px-8 py-3 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition-all shadow-sm">
-                            Dashboard
-                        </a>
-                    @endif
-
-                    {{-- TOMBOL SELANJUTNYA (KE TRACKER) --}}
-                    <a href="{{ route('apl02.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                        class="w-48 text-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 shadow-md transition-all">
-                        Selanjutnya
-                    </a>
-                </div>
-            </div>
-
         </main>
 
     </div>

@@ -8,19 +8,19 @@ use App\Http\Controllers\Api\TukController;
 use App\Http\Controllers\Api\SkemaController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
-use App\Http\Controllers\PaymentCallbackController;
-use App\Http\Controllers\Apl02\PraasesmenController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\AsesorTableApiController;
 use App\Http\Controllers\Api\Auth\GoogleApiController;
-use App\Http\Controllers\asesmen\AsesmenEsaiController;
-use App\Http\Controllers\JadwalTukAPI\JadwalTukAPIController;
-use App\Http\Controllers\asesmen\AsesmenPilihanGandaController;
-use App\Http\Controllers\FormulirPendaftaranAPI\TandaTanganAPIController;
-use App\Http\Controllers\FormulirPendaftaranAPI\BuktiKelengkapanController;
-use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
-use App\Http\Controllers\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
-use App\Http\Controllers\Ak04API\APIBandingController;
+use App\Http\Controllers\Asesi\Apl02\PraasesmenController;
+use App\Http\Controllers\Asesi\Ak04API\APIBandingController;
+use App\Http\Controllers\Asesi\asesmen\AsesmenEsaiController;
+use App\Http\Controllers\Asesi\JadwalTukAPI\JadwalTukAPIController;
+use App\Http\Controllers\Asesi\pembayaran\PaymentCallbackController;
+use App\Http\Controllers\Asesi\asesmen\AsesmenPilihanGandaController;
+use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
+use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController;
+use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
+use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 /*
 |--------------------------------------------------------------------------
 | API Routes (VERSION 1)
@@ -105,6 +105,8 @@ Route::prefix('v1')->group(function () {
     // --- 6. MIDTRANS PAYMENT CALLBACK ---
     Route::post('/midtrans-callback', [PaymentCallbackController::class, 'receive']);
 
+
+    // ======================= PRA ASESMEN (APL.02) =======================
     Route::prefix('pra-asesmen')->group(function () {
         
         // Simpan Jawaban & File Bukti
@@ -113,6 +115,8 @@ Route::prefix('v1')->group(function () {
             ->name('api.v1.apl02.store');
 
     });
+
+    // ======================= KERAHASIAAN (AK.01) =======================
 
     Route::prefix('kerahasiaan')->group(function () {
     
@@ -144,44 +148,16 @@ Route::prefix('v1')->group(function () {
         
         });
 
-
+    // ======================= ASESMEN PILGAN (IA-05) =======================
     // GET: Ambil daftar soal
     Route::get('/asesmen-teori/{id_sertifikasi}/soal', [AsesmenPilihanGandaController::class, 'getQuestions']);
 
     // POST: Simpan jawaban
     Route::post('/asesmen-teori/{id_sertifikasi}/submit', [AsesmenPilihanGandaController::class, 'submitAnswers']);
 
+
+    // ======================= ASESMEN ESSAI (IA-06) =======================
     // API Asesmen Essai (IA-06)
     Route::get('/asesmen-esai/{id_sertifikasi}/soal', [AsesmenEsaiController::class, 'getQuestions']);
     Route::post('/asesmen-esai/{id_sertifikasi}/submit', [AsesmenEsaiController::class, 'submitAnswers']);
-});
-
-
-
-// ==============================================================
-// 🛠️ RUTE KHUSUS DEV: UPDATE STATUS MANUAL (CHEAT)
-// ==============================================================
-// HAPUS RUTE INI KALAU SUDAH PRODUCTION YA!
-Route::post('/dev/update-status', function (Illuminate\Http\Request $request) {
-    
-    // 1. Cari Data
-    $sertifikasi = \App\Models\DataSertifikasiAsesi::find($request->id);
-    
-    if (!$sertifikasi) {
-        return response()->json(['message' => 'Data tidak ditemukan'], 404);
-    }
-
-    // 2. Update Status Sesuai Request
-    $sertifikasi->status_sertifikasi = $request->status;
-    $sertifikasi->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Status berhasil diubah paksa!',
-        'data' => [
-            'id' => $sertifikasi->id_data_sertifikasi_asesi,
-            'status_baru' => $sertifikasi->status_sertifikasi,
-            'level_baru' => $sertifikasi->progres_level // Biar lu bisa cek levelnya juga
-        ]
-    ]);
 });

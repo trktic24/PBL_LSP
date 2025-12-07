@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Asesi\pembayaran;
 
+use Midtrans\Config;
+use App\Models\Pembayaran;
+use Midtrans\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Models\Pembayaran;
+use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
-use Midtrans\Config;
-use Midtrans\Notification;
 
 class PaymentCallbackController extends Controller
 {

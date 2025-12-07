@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\asesmen;
+namespace App\Http\Controllers\Asesi\asesmen;
 
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;

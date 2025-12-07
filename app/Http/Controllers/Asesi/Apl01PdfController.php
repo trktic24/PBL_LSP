@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Asesi;
 
-use Illuminate\Http\Request;
-use App\Models\DataSertifikasiAsesi;
 use App\Models\Admin;
-use PDF; // Pastikan alias PDF sudah terdaftar
+use Barryvdh\DomPDF\PDF;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\DataSertifikasiAsesi;
 
 class Apl01PdfController extends Controller
 {

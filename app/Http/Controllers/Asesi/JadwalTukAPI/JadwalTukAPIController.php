@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\JadwalTukAPI;
+namespace App\Http\Controllers\Asesi\JadwalTukAPI;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

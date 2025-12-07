@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\FormulirPendaftaranAPI;
+namespace App\Http\Controllers\Asesi\FormulirPendaftaranAPI;
 
 use App\Models\Asesi;
 use Illuminate\Http\Request;
@@ -105,6 +105,23 @@ class TandaTanganAPIController extends Controller
 
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+    public function showTandaTangan($id_sertifikasi)
+    {
+        try {
+            // 1. Cari Data Pendaftaran berdasarkan ID Pendaftaran
+            // Load asesi beserta data pekerjaannya
+            $sertifikasi = DataSertifikasiAsesi::with('asesi.dataPekerjaan')->findOrFail($id_sertifikasi);
+
+            return view('formulir_pendaftaran.tanda_tangan_pemohon', [
+                'sertifikasi' => $sertifikasi,
+                'asesi' => $sertifikasi->asesi,
+            ]);
+
+        } catch (\Exception $e) {
+            // 2. Handle jika data tidak ditemukan atau error lain
+            return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
         }
     }
 }

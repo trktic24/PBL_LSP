@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\KerahasiaanAPI;
+namespace App\Http\Controllers\Asesi\KerahasiaanAPI;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
