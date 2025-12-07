@@ -9,8 +9,16 @@ use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\FrAk07Controller;
-use App\Http\Controllers\Ia11Controller; 
+use App\Http\Controllers\Ia11Controller;
 use App\Http\Controllers\IA09Controller;
+
+// --- TAMBAHAN DARI PENGGABUNGAN SEBELUMNYA (Controller) ---
+use App\Http\Controllers\FrAk06Controller;
+use App\Http\Controllers\IA06Controller;
+use App\Http\Controllers\IA10Controller;
+use App\Http\Controllers\IA05Controller;
+use App\Http\Controllers\FrMapa01Controller;
+use App\Http\Controllers\AssessmentController;
 
 // ==========================================================
 // RUTE DASAR UNTUK MENGATASI ERROR (DASHBOARD & ROOT)
@@ -24,7 +32,7 @@ Route::get('/', function () {
 // Rute Dashboard: HARUS ADA untuk mengatasi 'Route [dashboard] not defined'
 Route::get('/dashboard', function () {
     // Ganti dengan tampilan dashboard yang sesungguhnya jika ada
-    return view('frontend/home'); 
+    return view('frontend/home');
 })->name('dashboard');
 
 // ==========================================================
@@ -44,7 +52,7 @@ Route::get('/profil', function () {
     return view('frontend/profil');
 })->name('profil');
 Route::get('/daftar_asesi', function () {
-return view('frontend/daftar_asesi');
+    return view('frontend/daftar_asesi');
 })->name('daftar_asesi');
 Route::get('/tracker', function () {
     return view('frontend/tracker');
@@ -69,25 +77,26 @@ Route::get('/FR_AK_01', function () {
     return view('frontend/FR_AK_01');
 })->name('FR_AK_01');
 Route::get('/FR_AK_02', function () {
-    return view('frontend/AK_02/FR_AK_02');
+    return view('frontend/AK_02/FR_AK_02'); // Path Updated
 })->name('FR_AK_02');
 Route::get('/FR_AK_03', function () {
-    return view('frontend/AK_03/FR_AK_03');
+    return view('frontend/AK_03/FR_AK_03'); // Path Updated
 })->name('FR_AK_03');
 Route::get('/FR_AK_04', function () {
     return view('frontend/FR_AK_04');
 })->name('FR_AK_04');
 Route::get('/FR_AK_05', function () {
-    return view('frontend/AK_05/FR_AK_05');
+    return view('frontend/AK_05/FR_AK_05'); // Path Updated
 })->name('FR_AK_05');
 Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
+
 
 Route::get('/IA_08', function () {
     return view('frontend/IA_08/IA_08');
 })->name('IA08');
 
 // ==========================================================
-// RUTE FR.IA.11 (CEKLIST REVIU PRODUK) - MODIFIKASI INI
+// RUTE FR.IA.11 (CEKLIST REVIU PRODUK) - DIPERBARUI
 // ==========================================================
 Route::get('/FR_IA_11', [Ia11Controller::class, 'showSingle'])->name('ia11.show.single');
 // Rute Tampilan (show) sekarang memerlukan ID data IA11
@@ -96,10 +105,9 @@ Route::get('/FR_IA_11/{ia11}', [Ia11Controller::class, 'show'])->name('ia11.show
 Route::put('/FR_IA_11/{ia11}', [Ia11Controller::class, 'update'])->name('ia11.update');
 // ==========================================================
 
-
 // porto
 Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
-// Route untuk menyimpan data upload
+// Route untuk menyimpan data upload (DITAMBAHKAN)
 Route::post('/PORTOFOLIO', [PortofolioController::class, 'store'])->name('portofolio.store');
 
 // IA07
@@ -110,6 +118,20 @@ Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.sto
 Route::get('/ia09/asesor/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'showWawancara'])
     ->name('ia09.asesor')
     ->middleware(['auth', 'ia09.mode:edit']);
+Route::prefix('IA09')->group(function () {
+
+    // Rute Asesor (Tampilan Form)
+    Route::get('/asesor', [IA09Controller::class, 'showWawancaraAsesor'])
+        ->name('ia09.asesor');
+
+    // Rute Penyimpanan Data (POST)
+    Route::post('/store', [IA09Controller::class, 'storeWawancara'])
+        ->name('ia09.store');
+
+    // Rute Admin (Tampilan Read-only)
+    Route::get('/admin', [IA09Controller::class, 'showWawancaraAdmin'])
+        ->name('ia09.admin');
+});
 
 Route::post('/ia09/store', [IA09Controller::class, 'storeWawancara'])
     ->name('ia09.store')
@@ -125,6 +147,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/ia02-test', function () {
+        return "Route IA02 Terhubung! Silakan akses dengan ID, misal: /ia02/1";
+    });
 
     // Route Utama (Memerlukan ID)
     Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');
@@ -135,9 +160,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');
 
     //Ak07
-
     Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
-
     Route::post('/FR_AK_07/{id}', [FrAk07Controller::class, 'store'])->name('fr-ak-07.store');
 });
 
@@ -160,8 +183,9 @@ Route::get('/jawab', [SoalController::class, 'jawabIndex'])->name('jawab.index')
 // Menyimpan jawaban user
 Route::post('/jawab', [SoalController::class, 'jawabStore'])->name('jawab.store');
 
-//IA 01
-
+// ==========================================================
+// FR.IA.01 (DIPERBARUI DENGAN id_sertifikasi & ADMIN)
+// ==========================================================
 Route::get('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
 Route::post('/ia01/{id_sertifikasi}/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
 
@@ -170,10 +194,74 @@ Route::post('/ia01/{id_sertifikasi}/step/{urutan}', [IA01Controller::class, 'sto
 
 Route::get('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
 Route::post('/ia01/{id_sertifikasi}/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+
+// Route Admin Read-Only
 Route::get('/ia01/{id_sertifikasi}/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
 
-Route::get('/ia01/success', function() {
+Route::get('/ia01/success', function () {
     return view('frontend.IA_01.success');
 })->name('ia01.success_page');
 
-require __DIR__.'/auth.php';
+
+// ==========================================================
+// TAMBAHAN ROUTE (IA06, IA04, AK06, MAPA01, IA10, IA05)
+// (Dipertahankan dari penggabungan sebelumnya)
+// ==========================================================
+
+// --- IA06 Routes ---
+Route::get('/IA_06_A', function () {
+    return view('frontend/fr_IA_06_a');
+})->name('IA06-a');
+
+Route::get('/IA_06_B', function () {
+    return view('frontend/fr_IA_06_b');
+})->name('IA06-b');
+
+Route::get('/IA_06_C', function () {
+    return view('frontend/fr_IA_06_c');
+})->name('IA06-c');
+
+// --- ROUTE UNTUK ADMIN (FR.IA.06.A) ---
+Route::get('/IA_06_A', [IA06Controller::class, 'index'])->name('fr_IA_06_a');
+Route::get('/IA_06_B', [IA06Controller::class, 'kunciIndex'])->name('fr_IA_06_b');
+Route::get('/IA_06_C', [IA06Controller::class, 'jawabIndex'])->name('fr_IA_06_c');
+Route::post('/IA_06_C', [IA06Controller::class, 'jawabStore'])->name('fr_IA_06_c.store');
+
+// --- FR.AK.06 ---
+Route::get('/FR_AK_06', function () {
+    return view('frontend.FR_AK_06');
+});
+Route::get('/asesmen/ak-06', [FrAk06Controller::class, 'index'])->name('ak06.index');
+Route::post('/asesmen/ak-06', [FrAk06Controller::class, 'store'])->name('ak06.store');
+
+// --- FR.IA.04 ---
+Route::get('/FR_IA_04A', function () {
+    return view('frontend.FR_IA_04A');
+});
+Route::get('/FR_IA_04B', [AssessmentController::class, 'index'])->name('fr_ia_04b.index');
+Route::post('/FR_IA_04B/store', [AssessmentController::class, 'store'])->name('fr_ia_04b.store');
+
+// --- MAPA 01 ---
+Route::get('/asesmen/mapa-01', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
+Route::post('/asesmen/mapa-01', [FrMapa01Controller::class, 'store'])->name('mapa01.store');
+
+// --- IA 10 (Verifikasi Pihak Ketiga) ---
+Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
+Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
+
+// --- IA 05 (Pertanyaan Tertulis Pilihan Ganda) ---
+// Form A (Soal/Jawab)
+Route::get('/fr-ia-05-a/{id_asesi}', [IA05Controller::class, 'showSoalForm'])->name('FR_IA_05_A');
+Route::post('/fr-ia-05-a/store-soal', [IA05Controller::class, 'storeSoal'])->name('ia-05.store.soal');
+Route::post('/fr-ia-05-a/store-jawaban/{id_asesi}', [IA05Controller::class, 'storeJawabanAsesi'])->name('ia-05.store.jawaban');
+
+// Form B (Kunci)
+Route::get('/fr-ia-05-b', [IA05Controller::class, 'showKunciForm'])->name('FR_IA_05_B');
+Route::post('/fr-ia-05-b', [IA05Controller::class, 'storeKunci'])->name('ia-05.store.kunci');
+
+// Form C (Penilaian)
+Route::get('/fr-ia-05-c/{id_asesi}', [IA05Controller::class, 'showJawabanForm'])->name('FR_IA_05_C');
+Route::post('/fr-ia-05-c/store-penilaian/{id_asesi}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia-05.store.penilaian');
+
+
+require __DIR__ . '/auth.php';
