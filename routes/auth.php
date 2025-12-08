@@ -23,10 +23,9 @@ use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\AsesiController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\DaftarHadirController;
-use App\Http\Controllers\TukAdminController;
+use App\Http\Controllers\Admin\TukAdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AsesiProfileController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\IA05Controller;
@@ -176,7 +175,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         
         // Dashboard
-        Route::controller(DashboardController::class)->group(function () {
+        Route::controller(AdminDashboardController::class)->group(function () {
             Route::get('/dashboard', 'index')->name('dashboard');    
         });
         

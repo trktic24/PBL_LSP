@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Schedule;
+use App\Models\Jadwal;
 use App\Models\Asesi;
 use App\Models\Asesor;
 
@@ -15,8 +16,8 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         // 1. Hitung Statistik (Tetap Sama)
-        $asesmenBerlangsung = Schedule::where('Status_jadwal', 'Terjadwal')->count();
-        $asesmenSelesai     = Schedule::where('Status_jadwal', 'Selesai')->count();
+        $asesmenBerlangsung = Jadwal::where('Status_jadwal', 'Terjadwal')->count();
+        $asesmenSelesai     = Jadwal::where('Status_jadwal', 'Selesai')->count();
         $jumlahAsesi        = Asesi::count();
         $jumlahAsesor       = Asesor::count();
         
@@ -36,7 +37,7 @@ class DashboardController extends Controller
         if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
 
         // Base Query dengan Eager Loading
-        $query = Schedule::with(['skema', 'tuk', 'jenisTuk', 'asesor']);
+        $query = Jadwal::with(['skema', 'tuk', 'jenisTuk', 'asesor']);
 
         // [PERBAIKAN UTAMA DI SINI]
         // Logic Filter Status
