@@ -1,183 +1,295 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Asesi\IA11;
 
 use Illuminate\Http\Request;
-use App\Models\Ia11;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
-class Ia11Controller extends Controller
+// Import semua Models TRANSAKSI dan DETAIL yang dibutuhkan
+use App\Models\IA11\IA11;
+use App\Models\IA11\SpesifikasiProdukIA11;
+use App\Models\IA11\BahanProdukIA11;
+use App\Models\IA11\SpesifikasiTeknisIA11;
+// Model Pivot M:M tidak perlu di-import jika menggunakan relasi IA11->pencapaianSpesifikasi()->create()
+// use App\Models\IA11\PencapaianSpesifikasiIA11;
+// use App\Models\IA11\PencapaianPerformaIA11;
+use App\Models\DataSertifikasiAsesi;
+
+class IA11Controller extends Controller
 {
-    /**
-     * Helper untuk mendapatkan ID Sertifikasi Asesi yang aktif.
-     * Logika ini harus disesuaikan dengan struktur relasi User Anda.
-     */
-    private function getSertifikasiId() {
-        // PERHATIAN: GANTI '1' dengan logika nyata untuk mendapatkan ID sertifikasi aktif
-        // Misalnya: return Auth::user()->asesi->id_data_sertifikasi_aktif;
-        // Untuk tujuan demonstrasi dan uji coba, kita gunakan ID dummy:
-        return 1; 
-    }
-
-    /**
-     * Menampilkan formulir FR.IA.11 berdasarkan ID IA11 (Akses dengan parameter {ia11}).
-     * Digunakan oleh Admin/Asesor untuk melihat form Asesi spesifik.
-     */
-    public function show($id)
+    // --- CREATE ---
+    public function store(Request $request)
     {
-        // Mencari berdasarkan ID formulir yang dilewatkan di URL
-        $ia11 = Ia11::findOrFail($id); 
-        $user = Auth::user(); 
-        
-        // Mengambil data JSON dari kolom 'rancangan_produk'
-        $asesor_data = $ia11->rancangan_produk ?? [];
-        
-        $data = [
-            'ia11' => $ia11, 
-            'user' => $user, 
-            'asesor_data' => $asesor_data,
-            
-            // --- Data Dummy (Ganti dengan relasi yang sebenarnya) ---
-            'judul_skema' => 'Web Developer Profesional',
-            'nomor_skema' => 'SKM-WD-01',
-            'nama_asesor' => 'Budi Santoso', 
-            'nama_asesi' => 'Siti Aminah', 
-            // Mengambil tanggal dari DB, jika kosong ambil tanggal hari ini
-            'tanggal_sekarang' => $ia11->tanggal_pengoperasian ?? Carbon::now()->toDateString(),
-        ];
+        // 1. Validasi Input (WAJIB)
+        $request->validate([
+            'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
+            'nama_produk' => 'required|string|max:255',
+            'spesifikasi_umum' => 'required|array',
+            'bahan_produk' => 'required|array',
+            'spesifikasi_teknis' => 'required|array',
+            'pencapaian_spesifikasi' => 'required|array',
+            'pencapaian_performa' => 'required|array',
+            'rekomendasi' => 'nullable|string|max:50',
+            // Tambahkan validasi untuk fields lain di IA11 yang dikirim
+            'rancangan_produk' => 'nullable|string',
+            'standar_industri' => 'nullable|string',
+            'tanggal_pengoperasian' => 'nullable|date',
+            'gambar_produk' => 'nullable|string', // Asumsi ini adalah path/URL gambar
+        ]);
 
-        return view('frontend.FR_IA_11', $data); 
+        DB::beginTransaction();
+
+        try {
+            // STEP 1: Simpan Data IA11 (Header)
+            $path = $request->gambar_produk ? 'images/' . $request->gambar_produk : null;
+            $ia11 = IA11::create([
+                'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
+                'rancangan_produk' => $request->rancangan_produk,
+                'nama_produk' => $request->nama_produk,
+                'standar_industri' => $request->standar_industri,
+                'tanggal_pengoperasian' => $request->tanggal_pengoperasian,
+                'gambar_produk' => $path, // pakai path baru
+                'rekomendasi' => $request->rekomendasi,
+            ]);
+
+            // STEP 2: Simpan Relasi 1:1 (Spesifikasi Produk Umum)
+            $ia11->spesifikasiProduk()->create([
+                'dimensi_produk' => $request->spesifikasi_umum['dimensi_produk'] ?? null,
+                'berat_produk' => $request->spesifikasi_umum['berat_produk'] ?? null,
+            ]);
+
+            // STEP 3: Simpan Relasi 1:M (Bahan Produk dan Spesifikasi Teknis)
+            $bahanData = collect($request->bahan_produk)
+                ->map(function ($item) {
+                    return ['nama_bahan' => $item['nama_bahan']];
+                })
+                ->toArray();
+            $ia11->bahanProduk()->createMany($bahanData);
+
+            $teknisData = collect($request->spesifikasi_teknis)
+                ->map(function ($item) {
+                    return ['data_teknis' => $item['data_teknis']];
+                })
+                ->toArray();
+            $ia11->spesifikasiTeknis()->createMany($teknisData);
+
+            // STEP 4: Simpan Relasi M:M (Pencapaian Spesifikasi & Performa)
+            // Menggunakan relasi HasMany (lebih bersih dan otomatis set id_ia11)
+            foreach ($request->pencapaian_spesifikasi as $pencapaian) {
+                $ia11->pencapaianSpesifikasi()->create([
+                    'id_spesifikasi_ia11' => $pencapaian['id_spesifikasi_ia11'],
+                    'hasil_reviu' => $pencapaian['hasil_reviu'] ?? null,
+                    'catatan_temuan' => $pencapaian['catatan_temuan'] ?? null,
+                ]);
+            }
+
+            foreach ($request->pencapaian_performa as $pencapaian) {
+                $ia11->pencapaianPerforma()->create([
+                    'id_performa_ia11' => $pencapaian['id_performa_ia11'],
+                    'hasil_reviu' => $pencapaian['hasil_reviu'] ?? null,
+                    'catatan_temuan' => $pencapaian['catatan_temuan'] ?? null,
+                ]);
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Data IA.11 berhasil disimpan!', 'id' => $ia11->id_ia11], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal menyimpan IA.11: ' . $e->getMessage());
+            return response()->json(['message' => 'Gagal menyimpan data.', 'error' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Menampilkan formulir FR.IA.11 berdasarkan ID Sertifikasi Asesi yang aktif (Akses tanpa ID parameter).
-     * Digunakan oleh Asesi/Asesor untuk mengakses form mereka sendiri dengan cepat.
-     */
-    public function showSingle()
+    // --- READ ---
+    public function show($id_data_sertifikasi_asesi)
     {
-        $idSertifikasi = $this->getSertifikasiId();
+        // Panggil data IA11 berdasarkan FK (id_data_sertifikasi_asesi)
+        $ia11 = IA11::with([
+            'spesifikasiProduk',
+            'bahanProduk',
+            'spesifikasiTeknis',
+            // Eager loading bersarang: Pivot -> Master
+            'pencapaianSpesifikasi.spesifikasiItem',
+            'pencapaianPerforma.performaItem',
+            // Eager loading data header asesi
+            'dataSertifikasiAsesi.asesi',
+            'dataSertifikasiAsesi.jadwal.asesor',
+            'dataSertifikasiAsesi.jadwal.skema',
+            'dataSertifikasiAsesi.jadwal.jenisTuk',
+            'dataSertifikasiAsesi.jadwal.tuk',
+            // Relasi ini sudah di-eager load di atas, tapi tidak masalah diulang untuk memastikan
+            'dataSertifikasiAsesi.jadwal.skema.kelompokPekerjaan',
+            'dataSertifikasiAsesi.jadwal.skema.kelompokPekerjaan.unitKompetensi',
+        ])
+            ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
+            ->first();
 
-        // Mencari berdasarkan id_data_sertifikasi_asesi yang terkait dengan pengguna/sesi
-        $ia11 = Ia11::where('id_data_sertifikasi_asesi', $idSertifikasi)->firstOrFail();
-        
-        $user = Auth::user(); 
-        $asesor_data = $ia11->rancangan_produk ?? [];
-        
-        $data = [
-            'ia11' => $ia11, 
-            'user' => $user, 
-            'asesor_data' => $asesor_data,
-            
-            // --- Data Dummy (Ganti dengan relasi yang sebenarnya) ---
-            'judul_skema' => 'Web Developer Profesional',
-            'nomor_skema' => 'SKM-WD-01',
-            'nama_asesor' => 'Budi Santoso', 
-            'nama_asesi' => 'Siti Aminah', 
-            'tanggal_sekarang' => $ia11->tanggal_pengoperasian ?? Carbon::now()->toDateString(),
-        ];
+        // Jika data IA11 belum ada, inisiasi dengan data kosong (NULL) dan ambil data header asesi
+        if (!$ia11) {
+            $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk', 'jadwal.tuk'])->find($id_data_sertifikasi_asesi);
 
-        return view('frontend.FR_IA_11', $data); 
+            if (!$sertifikasi) {
+                return response()->json(['message' => 'Data Sertifikasi Asesi tidak ditemukan.'], 404);
+            }
+
+            // Inisialisasi variabel kosong agar view tidak error
+            $ia11 = new IA11([
+                'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
+                'rancangan_produk' => null,
+                'nama_produk' => null,
+                'standar_industri' => null,
+                'tanggal_pengoperasian' => null,
+                'gambar_produk' => null,
+                'rekomendasi' => null,
+            ]);
+            $ia11->setRelation('spesifikasiProduk', null);
+            $ia11->setRelation('bahanProduk', collect());
+            $ia11->setRelation('spesifikasiTeknis', collect());
+            $ia11->setRelation('pencapaianSpesifikasi', collect());
+            $ia11->setRelation('pencapaianPerforma', collect());
+        } else {
+            $sertifikasi = $ia11->dataSertifikasiAsesi;
+        }
+
+        // Ambil data header untuk view
+        $asesi = $sertifikasi->asesi;
+        $asesor = $sertifikasi->asesor;
+        $skema = $sertifikasi->skema;
+        $jenisTuk = $sertifikasi->jenis_tuk;
+        $tuk = $sertifikasi->tuk;
+        $tanggal = $sertifikasi->tanggal_pelaksanaan;
+
+        // Data yang sudah dimuat (sudah ada di $ia11)
+        $spesifikasi = $ia11->pencapaianSpesifikasi;
+        $performa = $ia11->pencapaianPerforma;
+
+        $trackerUrl = $sertifikasi->jadwal?->id_jadwal ? '/tracker/' . $sertifikasi->jadwal->id_jadwal : '/dashboard';
+
+        // Ganti 'ia11.show' menjadi 'ia11.IA11' sesuai nama file blade
+        return view('asesi.ia11.IA11', compact('ia11', 'sertifikasi', 'asesi', 'asesor', 'skema', 'jenisTuk', 'tuk', 'tanggal', 'spesifikasi', 'performa', 'trackerUrl'));
     }
 
-    /**
-     * Memperbarui data FR.IA.11. Otorisasi berdasarkan peran (Admin, Asesi, Asesor).
-     */
+    // --- UPDATE ---
     public function update(Request $request, $id)
     {
-        $ia11 = Ia11::findOrFail($id);
-        $user = Auth::user();
-        $role = $user->role ?? 'guest';
+        // ... (Validasi tetap sama)
+        $request->validate([
+            'nama_produk' => 'required|string|max:255',
+            'spesifikasi_umum' => 'required|array',
+            'bahan_produk' => 'required|array',
+            'spesifikasi_teknis' => 'required|array',
+            'pencapaian_spesifikasi' => 'required|array',
+            'pencapaian_performa' => 'required|array',
+            'rekomendasi' => 'nullable|string|max:50',
+            // Tambahkan validasi untuk fields lain di IA11 yang dikirim
+            'rancangan_produk' => 'nullable|string',
+            'standar_industri' => 'nullable|string',
+            'tanggal_pengoperasian' => 'nullable|date',
+            'gambar_produk' => 'nullable|string',
+        ]);
 
-        // 1. Otorisasi Admin (View Only)
-        if ($role === 'admin') {
-            return back()->with('error', 'Admin hanya memiliki hak lihat (view-only).');
+        $ia11 = IA11::find($id);
+        if (!$ia11) {
+            return response()->json(['message' => 'Data IA.11 tidak ditemukan.'], 404);
         }
 
-        // Ambil data JSON yang sudah ada dari kolom rancangan_produk
-        $rancanganProdukData = $ia11->rancangan_produk ?? [];
+        DB::beginTransaction();
+        try {
+            $path = $request->gambar_produk ? 'images/' . $request->gambar_produk : $ia11->gambar_produk;
+            // STEP 1: Update Data IA11 (Header)
+            $ia11->update([
+                'rancangan_produk' => $request->rancangan_produk,
+                'nama_produk' => $request->nama_produk,
+                'standar_industri' => $request->standar_industri,
+                'tanggal_pengoperasian' => $request->tanggal_pengoperasian,
+                'gambar_produk' => $path, // <-----
+                'rekomendasi' => $request->rekomendasi,
+            ]);
 
-        // 2. Data yang dapat diubah oleh ASESI & ASESOR (Kolom DB normal & Data Produk JSON)
-        if ($role === 'asesi' || $role === 'asesor') {
-            // Kolom DB Normal
-            $ia11->nama_produk = $request->input('nama_produk');
-            $ia11->standar_industri = $request->input('standar_industri');
-            $ia11->tanggal_pengoperasian = $request->input('tanggal_pengoperasian');
-            $ia11->gambar_produk = $request->input('gambar_produk');
+            // STEP 2: Update Relasi 1:1 (Spesifikasi Produk Umum) - menggunakan updateOrCreate
+            $ia11->spesifikasiProduk()->updateOrCreate(
+                ['id_ia11' => $ia11->id_ia11],
+                [
+                    'dimensi_produk' => $request->spesifikasi_umum['dimensi_produk'] ?? null,
+                    'berat_produk' => $request->spesifikasi_umum['berat_produk'] ?? null,
+                ],
+            );
 
-            // Data Produk yang tersimpan di dalam JSON
-            $rancanganProdukData['spesifikasi_umum'] = $request->input('spesifikasi_umum');
-            $rancanganProdukData['dimensi_produk'] = $request->input('dimensi_produk');
-            $rancanganProdukData['bahan_produk'] = $request->input('bahan_produk');
-            $rancanganProdukData['spesifikasi_teknis'] = $request->input('spesifikasi_teknis');
-        }
+            // STEP 3: Update Relasi 1:M (Bahan Produk dan Spesifikasi Teknis) - Strategi: Hapus & Buat Baru
 
-        // 3. Data yang HANYA dapat diubah oleh ASESI (TTD Asesi)
-        if ($role === 'asesi') {
-            $rancanganProdukData['ttd_asesi'] = $request->input('ttd_asesi');
-            
-            // Simpan model setelah pembaruan Asesi
-            $ia11->rancangan_produk = $rancanganProdukData;
-            $ia11->save();
-            
-            return back()->with('success', 'Formulir FR.IA.11 berhasil diperbarui oleh Asesi.');
-        }
+            // Bahan Produk
+            $ia11->bahanProduk()->delete();
+            $bahanData = collect($request->bahan_produk)
+                ->map(function ($item) {
+                    return ['nama_bahan' => $item['nama_bahan']];
+                })
+                ->toArray();
+            $ia11->bahanProduk()->createMany($bahanData);
 
-        // 4. Data yang HANYA dapat diubah oleh ASESOR (Penilaian, Rekomendasi, TTD Asesor)
-        if ($role === 'asesor') {
-            // Data Asesmen
-            $rancanganProdukData['tuk_type'] = $request->input('tuk_type');
-            $rancanganProdukData['tanggal_asesmen'] = $request->input('tanggal_asesmen');
+            // Spesifikasi Teknis
+            $ia11->spesifikasiTeknis()->delete();
+            $teknisData = collect($request->spesifikasi_teknis)
+                ->map(function ($item) {
+                    return ['data_teknis' => $item['data_teknis']];
+                })
+                ->toArray();
+            $ia11->spesifikasiTeknis()->createMany($teknisData);
 
-            // Penilaian Checkbox
-            $rancanganProdukData['penilaian'] = $this->extractPenilaianData($request); 
+            // STEP 4: Update Relasi M:M (Pencapaian Spesifikasi & Performa) - Strategi: Hapus & Buat Baru
 
-            // Rekomendasi & Catatan
-            $rancanganProdukData['rekomendasi_kelompok'] = $request->input('rekomendasi_kelompok');
-            $rancanganProdukData['rekomendasi_unit'] = $request->input('rekomendasi_unit');
-            $rancanganProdukData['catatan_asesor'] = $request->input('catatan_asesor');
-
-            // Tanda Tangan, Penyusun, Validator
-            $rancanganProdukData['ttd_asesor'] = $request->input('ttd_asesor');
-            
-            for ($i = 1; $i <= 2; $i++) {
-                $rancanganProdukData["penyusun_nama_{$i}"] = $request->input("penyusun_nama_{$i}");
-                $rancanganProdukData["penyusun_nomor_met_{$i}"] = $request->input("penyusun_nomor_met_{$i}");
-                $rancanganProdukData["penyusun_ttd_{$i}"] = $request->input("penyusun_ttd_{$i}");
-                $rancanganProdukData["validator_nama_{$i}"] = $request->input("validator_nama_{$i}");
-                $rancanganProdukData["validator_nomor_met_{$i}"] = $request->input("validator_nomor_met_{$i}");
-                $rancanganProdukData["validator_ttd_{$i}"] = $request->input("validator_ttd_{$i}");
+            // Pencapaian Spesifikasi
+            // Menggunakan relasi hasMany (dari IA11 Model)
+            $ia11->pencapaianSpesifikasi()->delete();
+            foreach ($request->pencapaian_spesifikasi as $pencapaian) {
+                // Menggunakan relasi HasMany->create() lebih disarankan
+                $ia11->pencapaianSpesifikasi()->create([
+                    'id_spesifikasi_ia11' => $pencapaian['id_spesifikasi_ia11'],
+                    'hasil_reviu' => $pencapaian['hasil_reviu'] ?? null,
+                    'catatan_temuan' => $pencapaian['catatan_temuan'] ?? null,
+                ]);
             }
-            
-            // Simpan model setelah pembaruan Asesor
-            $ia11->rancangan_produk = $rancanganProdukData;
-            $ia11->save();
-            return back()->with('success', 'Formulir FR.IA.11 berhasil diperbarui oleh Asesor.');
+
+            // Pencapaian Performa
+            $ia11->pencapaianPerforma()->delete();
+            foreach ($request->pencapaian_performa as $pencapaian) {
+                $ia11->pencapaianPerforma()->create([
+                    'id_performa_ia11' => $pencapaian['id_performa_ia11'],
+                    'hasil_reviu' => $pencapaian['hasil_reviu'] ?? null,
+                    'catatan_temuan' => $pencapaian['catatan_temuan'] ?? null,
+                ]);
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Data IA.11 berhasil diperbarui!'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal memperbarui IA.11: ' . $e->getMessage());
+            return response()->json(['message' => 'Gagal memperbarui data.', 'error' => $e->getMessage()], 500);
         }
-        
-        return back()->with('error', 'Anda tidak memiliki otorisasi untuk mengubah data ini.');
     }
-    
-    /**
-     * Helper function untuk mengumpulkan semua data checklist penilaian dari request.
-     */
-    protected function extractPenilaianData(Request $request)
+
+    // --- DELETE ---
+    // Logika sudah benar, karena onDelete('cascade') seharusnya menangani semua relasi.
+    public function destroy($id)
     {
-        $penilaian = [];
-        $fields = [
-            'h1a_ya', 'h1a_tidak', 'p1a_ya', 'p1a_tidak',
-            'h1b_ya', 'h1b_tidak', 'p1b_ya', 'p1b_tidak',
-            'h2a_ya', 'h2a_tidak', 'p2a_ya', 'p2a_tidak',
-            'h3a_ya', 'h3a_tidak', 'p3a_ya', 'p3a_tidak',
-            'h3b_ya', 'h3b_tidak', 'p3b_ya', 'p3b_tidak',
-            'h3c_ya', 'h3c_tidak', 'p3c_ya', 'p3c_tidak',
-        ];
-        
-        foreach ($fields as $field) {
-            
-            $penilaian[$field] = $request->has($field);
+        $ia11 = IA11::find($id);
+        if (!$ia11) {
+            return response()->json(['message' => 'Data IA.11 tidak ditemukan.'], 404);
         }
 
-        return $penilaian;
+        DB::beginTransaction();
+        try {
+            // Menghapus data IA11 header. Semua detail akan terhapus karena onDelete('cascade').
+            $ia11->delete();
+
+            DB::commit();
+            return response()->json(['message' => 'Data IA.11 dan semua detailnya berhasil dihapus!'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal menghapus IA.11: ' . $e->getMessage());
+            return response()->json(['message' => 'Gagal menghapus data.', 'error' => $e->getMessage()], 500);
+        }
     }
 }
