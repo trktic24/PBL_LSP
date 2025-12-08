@@ -132,9 +132,9 @@ Route::get('/laporan', function () {
 Route::get('/profil', function () {
     return view('frontend/profil');
 })->name('profil');
-Route::get('/terimakasih/{id?}', function ($id = null) {
-    return view('terimakasih', compact('id'));
-})->name('terimakasih');
+Route::get('/terimakasih_umpan_balik/{id?}', function ($id = null) {
+    return view('terimakasih_umpan_balik', compact('id'));
+})->name('terimakasih_umpan_balik');
 Route::get('/terimakasih_banding/{id?}', function ($id = null) {
     return view('terimakasih_banding', compact('id'));
 })->name('terimakasih_banding');

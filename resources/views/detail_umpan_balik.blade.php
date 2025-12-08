@@ -157,7 +157,7 @@
 
             <!-- Tombol -->
             <div class="flex justify-end mt-6">
-                <a href="{{ route('terimakasih', ['id' => $respon->dataSertifikasiAsesi->id_data_sertifikasi_asesi]) }}"
+                <a href="{{ route('terimakasih_umpan_balik', ['id' => $respon->dataSertifikasiAsesi->id_data_sertifikasi_asesi]) }}"
                    class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold">
                    Kembali
                 </a>

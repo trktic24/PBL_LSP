@@ -65,7 +65,7 @@ class UmpanBalikController extends Controller
             ]);
         }
 
-        return redirect()->route('terimakasih', ['id' => $item->id_umpan_balik]);
+        return redirect()->route('terimakasih_umpan_balik', ['id' => $item->id_umpan_balik]);
     }
 
     public function update(Request $request, $id)
