@@ -24,7 +24,7 @@ class DaftarHadirController extends Controller
         
         // 3. Base Query ke tabel Pivot (DataSertifikasiAsesi)
         $query = DataSertifikasiAsesi::query()
-                    ->with(['asesi.user', 'asesi.dataPekerjaan'])
+                    ->with(['asesi.user', 'asesi.dataPekerjaan', 'presensi'])
                     ->where('id_jadwal', $id_jadwal)
                     ->select('data_sertifikasi_asesi.*'); // Penting agar ID tidak tertimpa
 
@@ -61,12 +61,14 @@ class DaftarHadirController extends Controller
         $perPage = $request->input('per_page', 10);
         $pendaftar = $query->paginate($perPage)->appends($request->query());
 
-        return view('master.jadwal.daftar_hadir', [
+        return view('asesor.daftar_hadir', [
             'jadwal' => $jadwal,
             'pendaftar' => $pendaftar,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
             'sortDirection' => $sortDirection,
+            'role' => Auth::user()->role,
+            'mode' => 'view',
         ]);
     }
 }

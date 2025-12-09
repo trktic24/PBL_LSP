@@ -13,9 +13,9 @@
                 <div class="font-semibold text-gray-700">Nomor</div>
                 <div>:   {{ $jadwal->skema->nomor_skema ?? 'Nomor Skema' }}</div>
                 <div class="font-semibold text-gray-700">Tanggal</div>
-                <div>:   {{ $jadwal->tanggal_pelaksanaan ?? 'Tanggal' }}</div>
+                <div>:   {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</div>
                 <div class="font-semibold text-gray-700">Waktu</div>
-                <div>:   {{ $jadwal->waktu_mulai ?? 'Waktu' }}</div>
+                <div>:   {{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }}</div>
                 <div class="font-semibold text-gray-700">TUK</div>
                 <div>:   {{ $jadwal->tuk->nama_lokasi ?? 'Nama Skema' }}</div>
             </div>
@@ -95,23 +95,81 @@
                     </table>
                 </div>
 
-                <div class="flex gap-4 justify-between">
-                    <a href="{{ route('asesor.daftar_hadir', $jadwal->id_jadwal) }}" class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow text-center flex items-center justify-center">
-                        Daftar Hadir
-                    </a>
-                    <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
-                        Laporan Asesmen
+            <div class="flex gap-4 justify-between">
+
+                <!-- Daftar Hadir -->
+                <div class="relative flex-1">
+                    <button type="button" onclick="toggleDropdown('daftar-hadir-dropdown')" 
+                        class="w-full bg-yellow-600 text-white px-5 py-5 rounded-md shadow hover:bg-yellow-700 flex items-center justify-center relative">
+                        
+                        <!-- Teks di tengah -->
+                        <span class="absolute left-1/2 transform -translate-x-1/2">Daftar Hadir</span>
+
+                        <!-- Ikon di kanan -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                     </button>
-                    <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
-                        Tinjauan Asesmen
-                    </button>
-                    <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
-                        Berita Acara
-                    </button>
+
+                    <div id="daftar-hadir-dropdown" class="hidden absolute right-0 top-full mt-2 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
+                        <a href="{{ route('asesor.daftar_hadir', $jadwal->id_jadwal) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                            Lihat File
+                        </a>
+                        <a href="{{ route('asesor.daftar_hadir.pdf', $jadwal->id_jadwal) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                            Unduh PDF
+                        </a>
+                    </div>
                 </div>
+
+                <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                    Laporan Asesmen
+                </button>
+                <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                    Tinjauan Asesmen
+                </button>                
+
+                <!-- Berita Acara -->
+                <div class="relative flex-1">
+                    <button type="button" onclick="toggleDropdown('berita-acara-dropdown')" 
+                        class="w-full bg-yellow-600 text-white px-5 py-5 rounded-md shadow hover:bg-yellow-700 flex items-center justify-center relative">
+                        
+                        <!-- Teks di tengah -->
+                        <span class="absolute left-1/2 transform -translate-x-1/2">Berita Acara</span>
+
+                        <!-- Ikon di kanan -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div id="berita-acara-dropdown" class="hidden absolute right-0 top-full mt-2 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
+                        <a href="{{ route('asesor.berita_acara', $jadwal->id_jadwal) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                            Lihat File
+                        </a>
+                        <a href="{{ route('asesor.berita_acara.pdf', $jadwal->id_jadwal) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                            Unduh PDF
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
             </div> 
         </div> 
     </div>
+
+    <script>
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        dropdown.classList.toggle('hidden'); // toggle muncul / sembunyi
+
+        // tutup dropdown lain yang mungkin terbuka
+        document.querySelectorAll('.relative div[id]').forEach(d => {
+            if(d.id !== id) d.classList.add('hidden');
+        });
+    }
+    </script>
+
 </main>
 
 @endsection

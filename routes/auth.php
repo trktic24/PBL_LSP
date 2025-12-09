@@ -296,7 +296,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/daftar-asesi/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
         Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker');
         Route::get('/daftar-hadir/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'daftarHadir'])->name('daftar_hadir');
-        Route::post('/daftar-hadir/{id_jadwal}/simpan', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeKehadiran'])->name('simpan_kehadiran');
+        Route::post('/daftar-hadir/{id_jadwal}/simpan', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeKehadiran'])->name('simpan_kehadiran'); 
+        Route::get('/daftar-hadir/pdf/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'exportPdfdaftarhadir'])->name('daftar_hadir.pdf');
+
+
+        Route::get('/berita-acara/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'beritaAcara'])->name('berita_acara');
+        Route::get('/berita-acara/pdf/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'exportPdfberitaAcara'])->name('berita_acara.pdf');        
 
         // Tools
         Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');

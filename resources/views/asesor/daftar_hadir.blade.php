@@ -162,27 +162,59 @@
                             <td class="px-6 py-4">
                                 {{ $data->asesi->nomor_hp }}
                             </td>         
-                            
+  
                             <td class="px-6 py-4">
-                                <input type="checkbox" class="kehadiran h-5 w-5 rounded text-gray-500 mx-auto block" data-id="{{ $data->id_data_sertifikasi_asesi }}" data-ttd="{{ $data->asesi->tanda_tangan }}" {{ in_array($data->id_data_sertifikasi_asesi, $hadirIds) ? 'checked' : '' }}>
-                            </td>                              
+                                @if ($mode == 'view')
+                                    @if ($data->presensi)
+                                        {{-- Jika presensi sudah tersimpan, tampilkan teks --}}
+                                        <div class="text-center w-full">
+                                            @if ($data->presensi->hadir == 1)
+                                                <span class="text-green-600 font-semibold">Hadir</span>
+                                            @else
+                                                <span class="text-red-600 font-semibold">Tidak Hadir</span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        {{-- Jika belum tersimpan, tampilkan pesan --}}
+                                        <span class="text-red-600 font-semibold">Asesor belum mengisi daftar hadir</span>
+                                    @endif 
+                                @endif 
+
+                                @if ($mode == 'edit')      
+                                    @if ($data->presensi)
+                                        {{-- Jika presensi sudah tersimpan, tampilkan teks --}}
+                                        <div class="text-center w-full">
+                                            @if ($data->presensi->hadir == 1)
+                                                <span class="text-green-600 font-semibold">Hadir</span>
+                                            @else
+                                                <span class="text-red-600 font-semibold">Tidak Hadir</span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        {{-- Jika belum tersimpan, tampilkan checkbox --}}
+                                        <input type="checkbox" 
+                                            class="kehadiran h-5 w-5 rounded text-gray-500 mx-auto block" 
+                                            data-id="{{ $data->id_data_sertifikasi_asesi }}" 
+                                            data-ttd="{{ $data->asesi->tanda_tangan }}"
+                                            {{ $data->presensi && $data->presensi->hadir == 1 ? 'checked' : '' }}>
+                                    @endif
+                                @endif
+                            </td>                            
                             
                             <td class="px-6 py-4 text-center">
                                 <div class="flex justify-center">
                                     <div id="ttd-{{ $data->id_data_sertifikasi_asesi }}" 
-                                        class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-white relative group-img hidden">
-
+                                        class="h-32 w-32 rounded-md overflow-hidden border bg-white group-img
+                                        {{ ($data->presensi && $data->presensi->hadir == 1) ? '' : 'hidden' }}">
+                                        
                                         <img src="{{ asset($data->asesi->tanda_tangan) }}"
-                                            class="w-full h-full object-contain p-1 hover:scale-110 transition-transform duration-200 cursor-pointer"
-                                            alt="TTD"
+                                            class="w-full h-full object-contain p-1 hover:scale-110 transition cursor-pointer"
                                             onclick="window.open(this.src, '_blank')">
                                     </div>
                                 </div>
                             </td>
-
-                        </tr>
-                        @empty
-                        <tr>
+                            
+                            @empty
                             <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fas fa-users-slash text-4xl mb-3 text-gray-300"></i>
@@ -206,129 +238,153 @@
                         {{ $pendaftar->links('components.pagination') }}
                     </div>
                 </div>
-                <div class="form-footer flex justify-end mt-10">
-                    <button type="button" id="btnOpenConfirm"
-                            class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">
-                        Simpan Kehadiran
-                    </button>
-                </div>
+                    @if ($mode !== 'view')
+                        @if ($pendaftar->contains(fn($d) => !$d->presensi))
+                            <div class="form-footer flex justify-end mt-10">
+                                <button type="button" id="btnOpenConfirm"
+                                        class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">
+                                    Simpan Kehadiran
+                                </button>
+                            </div>
+                        @endif
+                    @endif
             </div>
         </main>
     </div>
 
-    <!-- Modal Konfirmasi -->
-    <div id="modalPresensi"
-        x-data="{ open: false, peserta: [] }"
-        x-cloak
-        x-on:open-modal.window="
-            console.log('Event diterima:', $event.detail);
-            peserta = $event.detail.peserta;
-            $nextTick(() => open = true)
-        ">
+    @if ($mode !== 'view')
+        <!-- Modal Konfirmasi -->
+        <div id="modalPresensi"
+            x-data="{ open: false, peserta: [] }"
+            x-cloak
+            x-on:open-modal.window="
+                console.log('Event diterima:', $event.detail);
+                peserta = $event.detail.peserta;
+                $nextTick(() => open = true)
+            ">
 
-        <!-- BACKDROP -->
-        <div x-show="open"
-            class="fixed inset-0 bg-black bg-opacity-50 z-40"
-            x-transition>
-        </div>
+            <!-- BACKDROP -->
+            <div x-show="open"
+                class="fixed inset-0 bg-black bg-opacity-50 z-40"
+                x-transition>
+            </div>
 
-        <!-- MODAL -->
-        <div x-show="open"
-            class="fixed inset-0 flex items-center justify-center z-50"
-            x-transition>
-            <div class="bg-white p-6 rounded-lg w-full max-w-xl shadow-lg">
-                <h2 class="text-xl font-bold mb-4">Konfirmasi Penyimpanan Presensi</h2>
-                <p class="text-gray-600 mb-4">
-                    Apakah Anda yakin ingin menyimpan presensi? <br>
-                    <strong>Presensi tidak dapat diedit setelah Anda simpan.</strong>
-                </p>
+            <!-- MODAL -->
+            <div x-show="open"
+                class="fixed inset-0 flex items-center justify-center z-50"
+                x-transition>
+                <div class="bg-white p-6 rounded-lg w-full max-w-xl shadow-lg">
+                    <h2 class="text-xl font-bold mb-4">Konfirmasi Penyimpanan Presensi</h2>
+                    <p class="text-gray-600 mb-4">
+                        Apakah Anda yakin ingin menyimpan presensi? <br>
+                        <strong>Presensi tidak dapat diedit setelah Anda simpan.</strong>
+                    </p>
 
-                <div class="border rounded-md max-h-60 overflow-y-auto mb-4">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-3 py-2 text-left">Nama Peserta</th>
-                                <th class="px-3 py-2 text-center">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="p in peserta" :key="p.id_data_sertifikasi_asesi">
+                    <div class="border rounded-md max-h-60 overflow-y-auto mb-4">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-100">
                                 <tr>
-                                    <td class="px-3 py-2" x-text="p.nama"></td>
-                                    <td class="px-3 py-2 text-center">
-                                        <span x-show="p.hadir == 1" class="text-green-600 font-semibold">Hadir</span>
-                                        <span x-show="p.hadir == 0" class="text-red-600 font-semibold">Tidak Hadir</span>
-                                    </td>
+                                    <th class="px-3 py-2 text-left">Nama Peserta</th>
+                                    <th class="px-3 py-2 text-center">Status</th>
                                 </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-
-                <form id="formPresensi" method="POST" action="{{ route('asesor.simpan_kehadiran', $jadwal->id_jadwal) }}" x-on:submit.prevent="$el.querySelector('button[type=submit]').setAttribute('disabled', true); $el.submit()">
-                    @csrf
-                    <input type="hidden" name="data_presensi" id="data_presensi">
-                    <div class="flex justify-end gap-3">
-                        <button type="button" @click="open = false"
-                                class="px-4 py-2 bg-gray-300 rounded-md">Batal</button>
-
-                        <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md">
-                            Simpan Presensi
-                        </button>
+                            </thead>
+                            <tbody>
+                                <template x-for="p in peserta" :key="p.id_data_sertifikasi_asesi">
+                                    <tr>
+                                        <td class="px-3 py-2" x-text="p.nama"></td>
+                                        <td class="px-3 py-2 text-center">
+                                            <span x-show="p.hadir == 1" class="text-green-600 font-semibold">Hadir</span>
+                                            <span x-show="p.hadir == 0" class="text-red-600 font-semibold">Tidak Hadir</span>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
                     </div>
-                </form>
+
+                    <form id="formPresensi" method="POST" action="{{ route('asesor.simpan_kehadiran', $jadwal->id_jadwal) }}" x-on:submit.prevent="$el.querySelector('button[type=submit]').setAttribute('disabled', true); $el.submit()">
+                        @csrf
+                        <input type="hidden" name="data_presensi" id="data_presensi">
+                        <div class="flex justify-end gap-3">
+                            <button type="button" @click="open = false"
+                                    class="px-4 py-2 bg-gray-300 rounded-md">Batal</button>
+
+                            <button type="submit"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-md">
+                                Konfirmasi Simpan Kehadiran
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.kehadiran').forEach(chk => {
+                chk.addEventListener('change', function () {
+                    let id = this.dataset.id;
+                    let ttdPath = this.dataset.ttd;
+                    let ttdBox = document.getElementById('ttd-' + id);
 
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll('.kehadiran').forEach(chk => {
-            chk.addEventListener('change', function () {
-                let id = this.dataset.id;
-                let ttdPath = this.dataset.ttd;
-                let ttdBox = document.getElementById('ttd-' + id);
-
-                if (this.checked && ttdPath) {
-                    ttdBox.classList.remove('hidden');
-                } else {
-                    ttdBox.classList.add('hidden');
-                }
-            });
-        });
-    });
-    </script>
-
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const btn = document.getElementById("btnOpenConfirm");
-        if (!btn) return;
-
-        btn.addEventListener("click", function () {
-            const peserta = [];
-
-            document.querySelectorAll(".kehadiran").forEach(chk => {
-                peserta.push({
-                    id_data_sertifikasi_asesi: chk.dataset.id,
-                    nama: chk.closest("tr").querySelector("td:nth-child(2)").innerText.trim(),
-                    hadir: chk.checked ? 1 : 0
+                    if (this.checked && ttdPath) {
+                        ttdBox.classList.remove('hidden');
+                    } else {
+                        ttdBox.classList.add('hidden');
+                    }
                 });
             });
-
-            // isi hidden input untuk dikirim saat submit
-            const hidden = document.getElementById("data_presensi");
-            if (hidden) hidden.value = JSON.stringify(peserta);
-
-            console.log("Peserta dikirim:", peserta);
-            // Kirim CustomEvent yang ditangkap Alpine
-            window.dispatchEvent(new CustomEvent('open-modal', { detail: { peserta } }));
         });
-    });
-    </script>
+        </script>
 
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btn = document.getElementById("btnOpenConfirm");
+            if (!btn) return;
 
+            btn.addEventListener("click", function () {
+                const peserta = [];
 
+                document.querySelectorAll(".kehadiran").forEach(chk => {
+                    peserta.push({
+                        id_data_sertifikasi_asesi: chk.dataset.id,
+                        nama: chk.closest("tr").querySelector("td:nth-child(2)").innerText.trim(),
+                        hadir: chk.checked ? 1 : 0
+                    });
+                });
+
+                // isi hidden input untuk dikirim saat submit
+                const hidden = document.getElementById("data_presensi");
+                if (hidden) hidden.value = JSON.stringify(peserta);
+
+                console.log("Peserta dikirim:", peserta);
+                // Kirim CustomEvent yang ditangkap Alpine
+                window.dispatchEvent(new CustomEvent('open-modal', { detail: { peserta } }));
+            });
+        });
+        </script>
+
+        @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                timer: 2000,
+                showConfirmButton: false
+            });
+        </script>
+        @endif
+
+        @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: "{{ session('error') }}",
+            });
+        </script>
+        @endif
+    @endif
 
 @endsection

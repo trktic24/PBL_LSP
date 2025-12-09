@@ -20,6 +20,9 @@
           font-family: 'Poppins', sans-serif;
       }
   </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body x-data x-cloak class="bg-gray-50 min-h-screen flex">

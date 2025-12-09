@@ -37,7 +37,7 @@ class AsesorFactory extends Factory
             'ijazah' => 'uploads/ijazah/dummy.pdf',
             'sertifikat_asesor' => 'uploads/sertifikat/dummy.pdf',
             'sertifikasi_kompetensi' => 'uploads/kompetensi/dummy.pdf',
-            'tanda_tangan' => 'uploads/ttd/dummy.png',
+            'tanda_tangan' => 'images/ttd_asesii.png',
 
             'status_verifikasi' => $this->faker->boolean(80) ? 'approved' : $this->faker->randomElement(['pending', 'rejected']),
         ];

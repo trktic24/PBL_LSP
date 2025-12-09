@@ -53,6 +53,7 @@ class DatabaseSeeder extends Seeder
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
             StrukturOrganisasiSeeder::class,
+            KomentarAk05Seeder::class,
         ]);
 
         // Panggil seeder Role dan User (Admin)
