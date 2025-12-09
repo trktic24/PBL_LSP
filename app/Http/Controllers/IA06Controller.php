@@ -33,7 +33,7 @@ class Ia06Controller extends Controller
         }
 
         // Pastikan Anda punya view: resources/views/admin/bank_soal/ia06/index.blade.php
-        return view('admin.ia06', compact('skemas', 'soals', 'selectedSkema'));
+        return view('frontend.IA_06.FR_IA_06_admin', compact('skemas', 'soals', 'selectedSkema'));
     }
 
     /**
@@ -115,7 +115,7 @@ class Ia06Controller extends Controller
         $umpanBalik = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
 
         // Panggil View UNIFIED (Satu untuk semua)
-        return view('frontend.fr_IA_06_a', compact('sertifikasi', 'daftar_soal', 'role', 'formAction', 'umpanBalik'));
+        return view('frontend.IA_06.FR_IA_06', compact('sertifikasi', 'daftar_soal', 'role', 'formAction', 'umpanBalik'));
     }
 
     /**
@@ -167,7 +167,7 @@ class Ia06Controller extends Controller
         $formAction = route('asesor.ia06.update', $idSertifikasi);
 
         // Panggil View UNIFIED yang SAMA dengan Asesi
-        return view('frontend.fr_IA_06_a', compact('sertifikasi', 'daftar_soal', 'umpanBalik', 'role', 'formAction'));
+        return view('frontend.IA_06.FR_IA_06', compact('sertifikasi', 'daftar_soal', 'umpanBalik', 'role', 'formAction'));
     }
 
 
