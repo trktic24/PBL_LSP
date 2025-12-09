@@ -10,6 +10,7 @@ use App\Models\KunciJawabanIA05;
 use App\Models\LembarJawabIA05;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\Skema;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IA05Controller extends Controller
 {
@@ -287,5 +288,42 @@ class IA05Controller extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan penilaian: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * CETAK PDF FR.IA.05 (Hasil Jawaban & Penilaian)
+     */
+    public function cetakPDF($id_asesi)
+    {
+        // 1. Ambil Data Asesi Lengkap
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.tuk',
+            'jadwal.skema.asesor',
+        ])->findOrFail($id_asesi);
+
+        // 2. Ambil Soal (Urut ID)
+        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+
+        // 3. Ambil Jawaban & Penilaian
+        $lembar_jawab = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+            ->get()
+            ->keyBy('id_soal_ia05');
+
+        // 4. Ambil Umpan Balik (Ambil dari salah satu record jawaban)
+        $contoh_jawaban = $lembar_jawab->first();
+        $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
+
+        // 5. Render PDF
+        $pdf = Pdf::loadView('pdf.ia_05', [
+            'asesi'        => $asesi,
+            'semua_soal'   => $semua_soal,
+            'lembar_jawab' => $lembar_jawab,
+            'umpan_balik'  => $umpan_balik
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR_IA_05_' . $asesi->asesi->nama_lengkap . '.pdf');
     }
 }

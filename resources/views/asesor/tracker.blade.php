@@ -216,16 +216,17 @@
                             <div class="flex space-x-2 ml-4">
                                 {{-- Tombol Dinamis --}}
                                 <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Lihat File</a>
-                            <a href="#" 
-                            class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                
-                                {{-- Ikon SVG Dokumen --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                </svg>
-                                
-                                <span>Lihat PDF</span>
-                            </a>
+                            {{-- Tombol 2: Lihat PDF (Ini yang diupdate) --}}
+                                <a href="{{ route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                    
+                                    {{-- Ikon SVG Dokumen --}}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    
+                                    <span>Lihat PDF</span>
+                                </a>
                             </div>
                         </div>
                         {{-- Status Badge --}}
@@ -336,10 +337,14 @@
                                     </a>
 
                                     {{-- Tombol 2: Lihat PDF --}}
-                                    <a href="#" class="{{ $isAsesmenActive ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                    {{-- Tombol 2: Lihat PDF (Updated) --}}
+                                    <a href="{{ route('ia05.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                        
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
+                                        
                                         <span>Lihat PDF</span>
                                     </a>
                                 </div>

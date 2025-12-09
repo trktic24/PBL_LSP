@@ -12,7 +12,8 @@ use App\Http\Controllers\Admin\SkemaController;
 use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\Admin\AsesiController;
 use App\Http\Controllers\Admin\TukAdminController;
-
+use App\Http\Controllers\Mapa02Controller;
+use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
@@ -100,6 +101,10 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 Route::get('/keep-alive', fn() => response()->json(['status' => 'session_refreshed']));
 Route::get('/api/search-countries', [CountryController::class, 'search'])->name('api.countries.search');
 
+
+//ROUTES PDF
+Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF'])->name('mapa02.cetak_pdf');
+Route::get('/ia05/cetak/{id_asesi}', [IA05Controller::class, 'cetakPDF'])->name('ia05.cetak_pdf');
 
 /*
 |--------------------------------------------------------------------------

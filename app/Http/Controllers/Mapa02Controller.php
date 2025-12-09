@@ -6,6 +6,7 @@ use App\Models\Mapa02;
 use App\Models\DataSertifikasiAsesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class Mapa02Controller extends Controller
 {
@@ -97,5 +98,40 @@ class Mapa02Controller extends Controller
         return redirect()
             ->back()
             ->with('success', 'Data MAPA 02 berhasil disimpan.');
+    }
+
+    public function cetakPDF($id_data_sertifikasi_asesi)
+    {
+        // 1. Ambil Data Utama dengan LENGKAP (Eager Loading)
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi',                                          // Data Asesi
+            'jadwal.tuk',                                     // Data TUK
+            'jadwal.skema.asesor',                            // Data Asesor
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi',  // Data Unit Kompetensi
+        ])->find($id_data_sertifikasi_asesi);
+
+        if (!$sertifikasi) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+
+        // 2. Ambil Data Isian MAPA-02 (Centang/Checklist)
+        $mapa02Collection = Mapa02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
+        
+        // Mapping data agar mudah dicek di View PDF
+        $mapa02Map = [];
+        foreach ($mapa02Collection as $item) {
+            $mapa02Map[$item->id_kelompok_pekerjaan][$item->instrumen_asesmen] = $item->potensi_asesi;
+        }
+
+        // 3. Render PDF
+        $pdf = Pdf::loadView('pdf.mapa_02', [
+            'sertifikasi' => $sertifikasi,
+            'mapa02Map'   => $mapa02Map
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        // 4. Stream (Preview di browser)
+        return $pdf->stream('FR_MAPA_02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
     }
 }
