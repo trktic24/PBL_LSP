@@ -54,6 +54,7 @@ class DatabaseSeeder extends Seeder
             PemenuhanDimensiAk06Seeder::class,
             StrukturOrganisasiSeeder::class,
             KomentarAk05Seeder::class,
+            Ia06Seeder::class,
         ]);
 
         // Panggil seeder Role dan User (Admin)
