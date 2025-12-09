@@ -132,15 +132,15 @@
         <div class="mt-8 flex justify-between">
             {{-- Tombol Kembali --}}
             <a href="{{ url()->previous() }}"> {{-- Kembali ke halaman sebelumnya --}}
-                <x-secondary-button type="button">
+                <button type="button" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring ring-blue-300 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition ease-in-out duration-150">
                     {{ __('Kembali') }}
-                </x-secondary-button>
+                </button>
             </a>
             
             {{-- Tombol Simpan --}}
-            <x-primary-button type="submit">
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                 {{ __('Simpan Form') }}
-            </x-primary-button>
+            </button>
         </div>
 
     </form> {{-- Akhir dari Form --}}

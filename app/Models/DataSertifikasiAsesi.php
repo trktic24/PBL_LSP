@@ -99,11 +99,32 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(Ia07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
+    public function ia10(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Ia10::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    /**
+     * Relasi ke FR.IA.02 (Tugas Praktik Demonstrasi)
+     */
+    public function ia02(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    /**
+     * Relasi ke Jawaban FR.IA.06 (Pertanyaan Lisan)
+     */
+    public function ia06Answers(): HasMany
+    {
+        return $this->hasMany(JawabanIa06::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
     public function responbuktiAk01(): HasMany
     {
         // Tentukan foreign key dan local key karena tidak standar
         return $this->hasMany(ResponBuktiAk01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
-    }    
+    }
 
     /**
      * ACCESSOR: Menghitung 'Level Virtual' berdasarkan isi kolom database.
@@ -112,7 +133,7 @@ class DataSertifikasiAsesi extends Model
     public function getLevelStatusAttribute()
     {
         // --- FASE AKHIR (Level 100 - 80) ---
-        
+
         // 1. Level 100: Sertifikat Terbit (AK-05 sudah ada rekomendasi)
         if ($this->rekomendasi_hasil_asesmen_AK02 == 'kompeten') {
             return 100; // $LVL_SERTIFIKAT
@@ -126,8 +147,8 @@ class DataSertifikasiAsesi extends Model
         // Checklist diambil dari tabel PertanyaanIa10
         $jmlChecklist = PertanyaanIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)->count();
         // Essay dianggap 7 (Sesuai form standar IA.10)
-        $jmlEssay = 7; 
-        $totalSoal = $jmlChecklist + $jmlEssay; 
+        $jmlEssay = 7;
+        $totalSoal = $jmlChecklist + $jmlEssay;
 
         // 2. Hitung Jawaban Asesi yang VALID (Isinya tidak kosong)
         $jawabanValid = 0;
@@ -139,15 +160,15 @@ class DataSertifikasiAsesi extends Model
             // A. Hitung Checklist yang sudah dipilih (0 atau 1 dianggap sudah isi, NULL belum)
             // Diambil dari tabel 'pertanyaan_ia10'
             $isiChecklist = PertanyaanIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
-                            ->whereNotNull('jawaban_pilihan_iya_tidak') 
-                            ->count();
+                ->whereNotNull('jawaban_pilihan_iya_tidak')
+                ->count();
 
             // B. Hitung Essay yang sudah diisi
             // Diambil dari tabel 'detail_ia10' lewat ID Header (karena detail ga punya id_asesi langsung)
             $isiEssay = DetailIa10::where('id_ia10', $headerIa10->id_ia10)
-                        ->whereNotNull('jawaban')
-                        ->where('jawaban', '!=', '') // Pastikan tidak string kosong
-                        ->count();
+                ->whereNotNull('jawaban')
+                ->where('jawaban', '!=', '') // Pastikan tidak string kosong
+                ->count();
 
             $jawabanValid = $isiChecklist + $isiEssay;
         }
@@ -163,18 +184,18 @@ class DataSertifikasiAsesi extends Model
         // =========================================================================
 
         // --- FASE ASESMEN REAL (Level 70) ---
-        
+
         // 4. Level 70: Sedang Ujian
         // Asumsi: Kalau AK-02 belum diisi TAPI AK-01 (Persetujuan) sudah ada (catatan_asesi_AK03 atau kolom lain yang relevan)
         // TAPI, karena di tabelmu tidak ada kolom spesifik "status_AK01", kita pakai logika:
         // "Kalau APL-02 sudah diterima, berarti sudah masuk fase Asesmen/Persiapan Asesmen"
-        
+
         // Kita perlu cek lebih detail untuk membedakan level 30, 45, 50, 70.
         // Karena kolom terbatas, kita pakai indikator yang ada.
 
         $ak01valid = ResponBuktiAk01::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
-                                        ->where('respon', 'Valid')                    
-                                        ->exists();        
+            ->where('respon', 'Valid')
+            ->exists();
 
         if ($ak01valid && $this->rekomendasi_apl02 == 'diterima') {
             return 40; // LANJUT KE ASESMENN
@@ -186,7 +207,7 @@ class DataSertifikasiAsesi extends Model
             // Jika APL-02 diterima, kita anggap sudah melewati fase verifikasi APL-02.
             // Karena tidak ada kolom khusus TUK atau AK-01 di tabel utama ini (mungkin ada di tabel lain atau hardcode flow),
             // Kita bisa return level tertinggi sebelum Asesmen Real.
-            
+
             // Opsional: Cek tabel lain (TUK/AK01) disini kalau mau presisi level 30/45/50.
             // Tapi untuk simpelnya, jika APL-02 OK, anggap siap Asesmen Real (atau setidaknya TUK).
             return 30; // $LVL_VERIF_TUK (Minimal sampai sini kalau APL-02 beres)
@@ -195,7 +216,7 @@ class DataSertifikasiAsesi extends Model
         // Cek Level 20 (APL-02 Submit) -> Tapi kolom rekomendasi masih NULL
         // Susah dicek dari tabel ini saja karena tidak ada kolom "tanggal_submit_apl02".
         // Tapi kita bisa berasumsi: Jika APL-01 diterima, user ada di tahap APL-02.
-        
+
         // Cek Level 15 (Verifikasi Admin / APL-01 Diterima)
         if ($this->rekomendasi_apl01 == 'diterima') {
             // Jika APL-01 diterima, tapi APL-02 belum diterima (null/tidak),
@@ -217,5 +238,5 @@ class DataSertifikasiAsesi extends Model
 
         // Jika sampai sini, berarti ada status aneh yang tidak terhandle
         return 0; // Default Unknown
-    }    
+    }
 }

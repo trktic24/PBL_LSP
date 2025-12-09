@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ia02;
-use App\Models\SkenarioIa02;
-// Ann-Note: Pastikan Anda meng-import model DataSertifikasiAsesi Anda
-// use App\Models\DataSertifikasiAsesi; 
+// use App\Models\SkenarioIa02; // Removed as it doesn't exist
+use App\Models\DataSertifikasiAsesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -23,45 +22,32 @@ class IA02Controller extends Controller
      */
     public function show(string $id): View
     {
-        // Ann-Note: Asumsi $id adalah 'id_data_sertifikasi_asesi'
-        // dan model 'DataSertifikasiAsesi' Anda sudah memiliki relasi
-        // ke 'asesi', 'asesor', dan 'skema'.
-
-        /*
-        // --- CONTOH PENGAMBILAN DATA ---
         // 1. Cari data sertifikasi utama berdasarkan ID
         $sertifikasi = DataSertifikasiAsesi::with([
-                            'asesi', 
-                            'asesor', 
-                            'skema', 
-                            'skema.unitKompetensis' // Asumsi ada relasi ini
-                        ])
-                        ->findOrFail($id);
+            'asesi.user',
+            'jadwal.asesor',
+            'jadwal.skema.unitKompetensi', // Relasi ke Unit Kompetensi via Skema
+            'jadwal.tuk'
+        ])
+            ->findOrFail($id);
 
-        // 2. Cek apakah asesor yang login berhak mengakses
-        // (Tambahkan logika keamanan ini nanti)
-        // if ($sertifikasi->asesor->user_id !== Auth::id()) {
-        //     abort(403, 'Tidak diizinkan');
-        // }
-
-        // 3. Cari data skenario IA.02 yang sudah ada, atau buat objek baru jika belum
-        $skenario = SkenarioIa02::firstOrNew([
+        // 2. Cari data skenario IA.02 yang sudah ada, atau buat objek baru jika belum
+        $skenario = ia02::firstOrNew([
             'id_data_sertifikasi_asesi' => $id
         ]);
 
+        // 3. Ambil data unit kompetensi untuk ditampilkan di tabel
+        $unitKompetensis = $sertifikasi->jadwal->skema->unitKompetensi ?? collect();
+
         // 4. Kirim semua data ke View
-        return view('asesor.fr_ia_02', [
+        return view('frontend.FR_IA_02', [
             'sertifikasi' => $sertifikasi,
             'skenario' => $skenario,
-            // 'unitKompetensis' => $sertifikasi->skema->unitKompetensis, // Untuk tabel Kelompok Pekerjaan
+            'jadwal' => $sertifikasi->jadwal,
+            'asesi' => $sertifikasi->asesi,
+            'skema' => $sertifikasi->jadwal->skema,
+            'unitKompetensis' => $unitKompetensis,
         ]);
-        */
-        
-        // --- UNTUK SEKARANG (STATIC VIEW) ---
-        // Karena kita belum punya model DataSertifikasiAsesi,
-        // kita akan tampilkan view statis seperti yang sudah Anda buat.
-        // Hapus komentar di atas dan hapus baris di bawah ini jika model Anda sudah siap.
-        return view('asesor.fr_ia_02');
     }
 
     /**
@@ -78,23 +64,20 @@ class IA02Controller extends Controller
             'skenario' => 'required|string',
             'peralatan' => 'required|string',
             'waktu' => 'required|string|max:100',
-            // Tambahkan validasi untuk tabel Kelompok Pekerjaan jika perlu
         ]);
 
         // 2. Gunakan updateOrCreate()
-        // - Jika data dengan id_data_sertifikasi_asesi = $id sudah ada, data akan di-update.
-        // - Jika belum ada, data baru akan dibuat.
         ia02::updateOrCreate(
-            ['id_data_sertifikasi_asesi' => $id], // Kunci pencarian
+            ['id_data_sertifikasi_asesi' => $id],
             [
                 'skenario' => $validated['skenario'],
                 'peralatan' => $validated['peralatan'],
                 'waktu' => $validated['waktu'],
-            ] // Data yang akan di-update atau di-create
+            ]
         );
 
         // 3. Kembalikan ke halaman sebelumnya dengan pesan sukses
         return redirect()->back()
-                         ->with('success', 'Data Skenario FR.IA.02 berhasil disimpan!');
+            ->with('success', 'Data Skenario FR.IA.02 berhasil disimpan!');
     }
 }

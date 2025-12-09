@@ -21,18 +21,22 @@ class AsesiTrackerController extends Controller
         // 1. Cari data pivot berdasarkan Primary Key-nya
         // Kita eager load relasi 'asesi' dan 'jadwal' (beserta skema-nya)
         $dataSertifikasi = DataSertifikasiAsesi::with([
-                                'asesi.user', // Ambil data asesi & user-nya
-                                'jadwal.skema', // Ambil data jadwal & skema-nya
-                                'jadwal.tuk',    // Ambil data TUK-nya juga
-                                'responbuktiAk01',
-                            ])
-                            ->findOrFail($id_sertifikasi_asesi);
-        
+            'asesi.user', // Ambil data asesi & user-nya
+            'jadwal.skema', // Ambil data jadwal & skema-nya
+            'jadwal.tuk',    // Ambil data TUK-nya juga
+            'responbuktiAk01',
+            'ia10', // <-- Load data IA10
+            'ia02',
+            'ia07',
+            'ia06Answers',
+        ])
+            ->findOrFail($id_sertifikasi_asesi);
+
         // --- Tambahan: Otorisasi (Sangat Penting) ---
         // Pastikan Asesor yang login adalah asesor yang benar
         $asesor = Asesor::where('id_user', Auth::id())->first();
         if (!$asesor || $dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
-             abort(403, 'Anda tidak berhak mengakses data ini.');
+            abort(403, 'Anda tidak berhak mengakses data ini.');
         }
         // --- Selesai Otorisasi ---
 

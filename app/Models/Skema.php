@@ -77,9 +77,14 @@ class Skema extends Model
      */
     public function unitKompetensi()
     {
-        // Asumsi foreign key di tabel 'unit_kompetensi' adalah 'skema_id'
-        // dan primary key di 'skema' adalah 'id_skema' (sesuai $primaryKey di atas)
-        return $this->hasMany(UnitKompetensi::class, 'skema_id', 'id_skema');
+        return $this->hasManyThrough(
+            UnitKompetensi::class,
+            KelompokPekerjaan::class,
+            'id_skema',              // FK di tabel kelompok_pekerjaan
+            'id_kelompok_pekerjaan', // FK di tabel unit_kompetensi
+            'id_skema',              // PK di tabel skema
+            'id_kelompok_pekerjaan'  // PK di tabel kelompok_pekerjaan
+        );
     }
 
     /**

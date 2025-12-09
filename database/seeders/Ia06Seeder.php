@@ -26,20 +26,27 @@ class Ia06Seeder extends Seeder
             // 3. Loop setiap soal untuk dibuatkan jawabannya oleh si Asesi
             foreach ($daftarSoal as $soal) {
                 JawabanIa06::factory()->create([
-                    'id_soal_ia06'              => $soal->id_soal_ia06,
+                    'id_soal_ia06' => $soal->id_soal_ia06,
                     'id_data_sertifikasi_asesi' => $asesi->id_data_sertifikasi_asesi,
-                    'jawaban_asesi'             => 'Ini adalah jawaban simulasi untuk soal: ' . substr($soal->soal_ia06, 0, 20) . '...',
-                    'pencapaian'                => rand(0, 1), // Random Lulus/Gagal
+                    'jawaban_asesi' => 'Ini adalah jawaban simulasi untuk soal: ' . substr($soal->soal_ia06, 0, 20) . '...',
+                    'pencapaian' => rand(0, 1), // Random Lulus/Gagal
                 ]);
             }
             $this->command->info('Jawaban berhasil di-generate.');
 
             // 4. Buat Umpan Balik untuk Asesi tersebut
-            UmpanBalikIa06::factory()->create([
-                'id_data_sertifikasi_asesi' => $asesi->id_data_sertifikasi_asesi,
-                'umpan_balik'               => 'Secara umum jawaban asesi cukup baik dan memenuhi standar kompetensi.',
-            ]);
-            $this->command->info('Umpan balik berhasil di-generate.');
+            // 4. Buat Umpan Balik untuk Asesi tersebut (Cek duplikasi dulu)
+            $cekUmpanBalik = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $asesi->id_data_sertifikasi_asesi)->first();
+
+            if (!$cekUmpanBalik) {
+                UmpanBalikIa06::factory()->create([
+                    'id_data_sertifikasi_asesi' => $asesi->id_data_sertifikasi_asesi,
+                    'umpan_balik' => 'Secara umum jawaban asesi cukup baik dan memenuhi standar kompetensi.',
+                ]);
+                $this->command->info('Umpan balik berhasil di-generate.');
+            } else {
+                $this->command->info('Umpan balik sudah ada untuk asesi ini. Skip pembuatan umpan balik baru.');
+            }
 
         } else {
             $this->command->error('SKIP: Tidak ditemukan data asesi. Harap isi tabel data_sertifikasi_asesi terlebih dahulu.');

@@ -15,7 +15,7 @@ class ia02 extends Model
      *
      * @var string
      */
-    protected $table = 'id_ia02';
+    protected $table = 'ia02';
 
     /**
      * Menentukan primary key untuk tabel ini.
@@ -46,7 +46,7 @@ class ia02 extends Model
         // Sesuaikan 'App\Models\DataSertifikasiAsesi' jika nama model Anda berbeda
         // Sesuaikan 'id_data_sertifikasi_asesi' jika nama foreign key Anda berbeda
         return $this->belongsTo(
-            DataSertifikasiAsesi::class, 
+            DataSertifikasiAsesi::class,
             'id_data_sertifikasi_asesi', // Foreign key di tabel skenario_ia02
             'id_data_sertifikasi_asesi'  // Primary key di tabel data_sertifikasi_asesi
         );

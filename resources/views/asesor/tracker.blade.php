@@ -316,6 +316,7 @@
                 @endphp
 
                 {{-- ITEM: FR.IA.01 dst --}}
+                {{-- ITEM: FR.IA.05 --}}
                 <div class="relative pl-20 pb-8">
                     <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
                         {{ $stAsesmen == 'DONE' ? 'bg-green-500 text-white' : ($isAsesmenActive ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
@@ -357,6 +358,163 @@
                         @elseif($isAsesmenActive)
                              <p class="text-xs text-blue-600 mt-1">Asesi sedang menjalankan asesmen</p>
                         @endif
+                    </div>
+                </div>
+
+                {{-- ITEM: FR.IA.10 (Verifikasi Pihak Ketiga) --}}
+                @php 
+                    // Cek apakah Data IA.10 sudah ada
+                    $ia10Done = $dataSertifikasi->ia10()->exists(); 
+                    $stIa10 = $ia10Done ? 'DONE' : ($isAsesmenActive ? 'ACTIVE' : 'LOCKED');
+                @endphp
+                
+                <div class="relative pl-20 pb-8">
+                    {{-- Connector Line to Next Item (if not last) --}}
+                    {{-- <div class="absolute left-6 top-4 h-full w-0.5 bg-gray-200 z-0"></div> --}}
+
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                        {{ $stIa10 == 'DONE' ? 'bg-green-500 text-white' : ($stIa10 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                        <span class="font-bold text-xs">IA.10</span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-semibold {{ $stIa10 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.10 - Verifikasi Pihak Ketiga</h3>
+                            
+                            <div class="flex flex-col gap-2 ml-4">
+                                
+                                {{-- BARIS 1: Tombol Lihat File & PDF --}}
+                                <div class="flex gap-2">
+                                    <a href="{{ route('fr-ia-10.create', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
+                                       class="{{ $stIa10 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
+                                        Lihat File
+                                    </a>
+
+                                    <a href="#" class="{{ $stIa10 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>Lihat PDF</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Status Text --}}
+                        @if($stIa10 == 'DONE')
+                            <p class="text-xs text-green-500 mt-1">Sudah Diverifikasi</p>
+                        @elseif($stIa10 == 'ACTIVE')
+                            <p class="text-xs text-yellow-600 mt-1">Menunggu Verifikasi Asesor</p>
+                        @else
+                             <p class="text-xs text-gray-400 mt-1">Belum Terbuka</p>
+                        @endif
+                    </div>
+                </div>
+
+                
+                {{-- ITEM: FR.IA.02 (Tugas Praktik Demonstrasi) --}}
+                @php 
+                    $ia02Done = $dataSertifikasi->ia02()->exists(); 
+                    $stIa02 = $ia02Done ? 'DONE' : ($isAsesmenActive ? 'ACTIVE' : 'LOCKED');
+                @endphp
+                
+                <div class="relative pl-20 pb-8">
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                        {{ $stIa02 == 'DONE' ? 'bg-green-500 text-white' : ($stIa02 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                        <span class="font-bold text-xs">IA.02</span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-semibold {{ $stIa02 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.02 - Tugas Praktik Demonstrasi</h3>
+                            
+                            <div class="flex flex-col gap-2 ml-4">
+                                <div class="flex gap-2">
+                                    <a href="{{ route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
+                                       class="{{ $stIa02 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
+                                        Lihat File
+                                    </a>
+                                    <a href="#" class="{{ $stIa02 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>Lihat PDF</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @if($stIa02 == 'DONE') <p class="text-xs text-green-500 mt-1">Sudah Diisi</p> @endif
+                    </div>
+                </div>
+
+                {{-- ITEM: FR.IA.06 (Pertanyaan Lisan) --}}
+                @php 
+                    $ia06Count = $dataSertifikasi->ia06Answers()->count(); 
+                    $ia06Done = $ia06Count > 0;
+                    $stIa06 = $ia06Done ? 'DONE' : ($isAsesmenActive ? 'ACTIVE' : 'LOCKED');
+                @endphp
+                
+                <div class="relative pl-20 pb-8">
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                        {{ $stIa06 == 'DONE' ? 'bg-green-500 text-white' : ($stIa06 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                        <span class="font-bold text-xs">IA.06</span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-semibold {{ $stIa06 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.06 - Pertanyaan Lisan</h3>
+                            
+                            <div class="flex flex-col gap-2 ml-4">
+                                <div class="flex gap-2">
+                                    <a href="{{ route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
+                                       class="{{ $stIa06 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
+                                        Lihat File
+                                    </a>
+                                    <a href="#" class="{{ $stIa06 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>Lihat PDF</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @if($stIa06 == 'DONE') <p class="text-xs text-green-500 mt-1">Sudah Dinilai</p> @endif
+                    </div>
+                </div>
+
+                {{-- ITEM: FR.IA.07 (Daftar Pertanyaan Lisan) --}}
+                @php 
+                    $ia07Done = $dataSertifikasi->ia07()->exists(); 
+                    $stIa07 = $ia07Done ? 'DONE' : ($isAsesmenActive ? 'ACTIVE' : 'LOCKED');
+                @endphp
+                
+                <div class="relative pl-20 pb-8">
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                        {{ $stIa07 == 'DONE' ? 'bg-green-500 text-white' : ($stIa07 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                        <span class="font-bold text-xs">IA.07</span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-semibold {{ $stIa07 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.07 - Daftar Pertanyaan Lisan</h3>
+                            
+                            <div class="flex flex-col gap-2 ml-4">
+                                <div class="flex gap-2">
+                                    <a href="{{ route('FR_IA_07') }}" 
+                                       class="{{ $stIa07 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
+                                        Lihat File
+                                    </a>
+                                    <a href="#" class="{{ $stIa07 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>Lihat PDF</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @if($stIa07 == 'DONE') <p class="text-xs text-green-500 mt-1">Sudah Diverifikasi</p> @endif
                     </div>
                 </div>
 

@@ -26,9 +26,9 @@ class DatabaseSeeder extends Seeder
 
         // Panggil seeder
         $this->call([
-            // Pindahkan CategorySeeder ke atas agar data kategori tersedia lebih dulu
+                // Pindahkan CategorySeeder ke atas agar data kategori tersedia lebih dulu
             CategorySeeder::class,
-            
+
             RoleSeeder::class,
             JenisTukSeeder::class,
             MasterTukSeeder::class,  // <-- PINDAHKAN KE ATAS
@@ -37,8 +37,8 @@ class DatabaseSeeder extends Seeder
                 // 2. Data User & Profil (Mungkin RoleSeeder harus dijalankan dulu)
             UserSeeder::class,
             CountrySeeder::class,
-            JenisTukSeeder::class,
-            MasterTukSeeder::class,
+                // JenisTukSeeder::class, // Duplicate removed
+                // MasterTukSeeder::class, // Duplicate removed
             SkemaSeeder::class, // SkemaSeeder akan memanggil SkemaFactory yang membuat gambar
             AsesiSeeder::class,
             AsesorSeeder::class,
@@ -46,9 +46,9 @@ class DatabaseSeeder extends Seeder
                 // 3. Data pendukung lainnya
             JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
             DataSertifikasiAsesiSeeder::class,
-            // TujuanAssesmenMapa01::class,
-            // MasterPoinSiapaAsesmenSeeder::class,
-            // PoinHubunganStandarSeeder::class,
+                // TujuanAssesmenMapa01::class,
+                // MasterPoinSiapaAsesmenSeeder::class,
+                // PoinHubunganStandarSeeder::class,
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
@@ -56,17 +56,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Panggil seeder Role dan User (Admin)
-        $this->call([
-            // RoleSeeder::class, // Duplicate
-            // UserSeeder::class, // Duplicate
-            // JenisTukSeeder::class, // Duplicate
-            // CategorySeeder::class, // Duplicate
-        ]);
+        // $this->call([
+        //     // RoleSeeder::class, // Duplicate
+        //     // UserSeeder::class, // Duplicate
+        //     // JenisTukSeeder::class, // Duplicate
+        //     // CategorySeeder::class, // Duplicate
+        // ]);
 
         Asesor::factory(20)->create();
         Skema::factory(20)->create();
 
-        $this->call(SkemaDetailSeeder::class); 
+        $this->call(SkemaDetailSeeder::class);
 
         Asesi::factory(20)->create();
 
