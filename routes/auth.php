@@ -301,7 +301,17 @@ Route::middleware('auth')->group(function () {
 
 
         Route::get('/berita-acara/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'beritaAcara'])->name('berita_acara');
-        Route::get('/berita-acara/pdf/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'exportPdfberitaAcara'])->name('berita_acara.pdf');        
+        Route::get('/berita-acara/pdf/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'exportPdfberitaAcara'])->name('berita_acara.pdf');
+
+        // AK Forms
+        Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak05'])->name('ak05');
+        Route::get('/jadwal/{id_jadwal}/ak06', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak06'])->name('ak06');
+        Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak07'])->name('ak07');
+
+        // Store Routes for AK Forms
+        Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk05'])->name('ak05.store');
+        Route::post('/ak06/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk06'])->name('ak06.store');
+        Route::post('/ak07/store/{id_sertifikasi_asesi}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk07'])->name('fr-ak-07.store');
 
         // Tools
         Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');

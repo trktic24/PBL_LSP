@@ -80,7 +80,7 @@
                                     
                                     {{-- Tombol Penyesuaian --}}
                                     <td class="p-4 text-center">
-                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}#penyesuaian" class="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-yellow-700 whitespace-nowrap">
+                                        <a href="{{ route('asesor.ak07', $item->id_data_sertifikasi_asesi) }}" class="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-yellow-700 whitespace-nowrap">
                                             Lakukan Penyesuaian
                                     </td>
                                 </tr>
@@ -121,12 +121,12 @@
                     </div>
                 </div>
 
-                <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                <a href="{{ route('asesor.ak05', $jadwal->id_jadwal) }}" class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow text-center flex items-center justify-center">
                     Laporan Asesmen
-                </button>
-                <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                </a>
+                <a href="{{ route('asesor.ak06', $jadwal->id_jadwal) }}" class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow text-center flex items-center justify-center">
                     Tinjauan Asesmen
-                </button>                
+                </a>                
 
                 <!-- Berita Acara -->
                 <div class="relative flex-1">

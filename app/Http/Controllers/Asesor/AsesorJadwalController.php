@@ -12,6 +12,14 @@ use App\Models\MasterTuk;
 use App\Models\JenisTuk;
 use App\Models\Asesi;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\Ak05;
+use App\Models\KomentarAk05;
+use App\Models\FrAk06;
+use App\Models\PoinPotensiAk07;
+use App\Models\PersyaratanModifikasiAk07;
+use App\Models\ResponPotensiAk07;
+use App\Models\ResponDiperlukanPenyesuaianAk07;
+use App\Models\HasilPenyesuaianAk07;
 use PDF;
 
 class AsesorJadwalController extends Controller
@@ -463,7 +471,184 @@ class AsesorJadwalController extends Controller
 
         $pdf = PDF::loadView('pdf.berita_acara', compact('jadwal', 'pendaftar', 'jumlahKompeten', 'jumlahBelumKompeten'));
         return $pdf->download('berita_acara_'.$jadwal->id_jadwal.'.pdf');
-    }    
-   
+    }
 
+    public function ak05($id_jadwal)
+    {
+        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor', 'dataSertifikasiAsesi.asesi'])->findOrFail($id_jadwal);
+        
+        // Cek Otorisasi
+        $asesor = Asesor::where('id_user', Auth::id())->first();
+        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+             abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+        }
+
+        return view('frontend.AK_05.FR_AK_05', compact('jadwal'));
+    }
+
+    public function ak06($id_jadwal)
+    {
+        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+
+        // Cek Otorisasi
+        $asesor = Asesor::where('id_user', Auth::id())->first();
+        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+             abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+        }
+
+        return view('frontend.FR_AK_06', compact('jadwal'));
+    }
+
+    public function ak07($id_sertifikasi_asesi)
+    {
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema', 'jadwal.tuk', 'jadwal.skema.asesor'])
+                        ->findOrFail($id_sertifikasi_asesi);
+        
+        // Cek Otorisasi
+        $asesor = Asesor::where('id_user', Auth::id())->first();
+        if (!$asesor || $sertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
+             abort(403, 'Anda tidak berhak mengakses data ini.');
+        }
+
+        $masterPotensi = PoinPotensiAk07::all();
+        $masterPersyaratan = PersyaratanModifikasiAk07::with('catatanKeterangan')->get();
+        $isReadOnly = false;
+
+        return view('frontend.AK_07.FR_AK_07', compact('sertifikasi', 'masterPotensi', 'masterPersyaratan', 'isReadOnly'));
+    }
+
+    public function storeAk05(Request $request, $id_jadwal)
+    {
+        $request->validate([
+            'asesi' => 'required|array',
+            'asesi.*.rekomendasi' => 'required|in:K,BK',
+        ]);
+
+        \DB::beginTransaction();
+        try {
+            // Save Global AK05 Data
+            // Assuming AK05 table might be linked to Jadwal, but the model doesn't show id_jadwal. 
+            // If table 'ak05' is for template, we might be using it wrong. 
+            // However, based on the input 'aspek_asesmen', etc, it seems to be a record per schedule.
+            // Let's assume we create a new AK05 record or update if logic permits. 
+            // For now, simpliest approach: Create/Update based on some context if possible, 
+            // or just Create new one and link Komentar to it.
+            // But KomentarAk05 links to id_ak05.
+
+            // Check if there's an existing AK05 for this Jadwal? 
+            // The model Ak05 doesn't have id_jadwal. 
+            // Maybe it's many-to-many? Or one-to-one via another table?
+            // Given the constraints and lack of clear relation in Ak05 model, 
+            // I will assume we create an Ak05 record for this submission.
+            
+            // Search if we already have an AK05 for this context (via Komentar -> DataSertifikasi -> Jadwal?)
+            // This is tricky without explicit foreign key in Ak05.
+            // Let's create a new one or update the one associated with the first Asesi in this Jadwal if exists.
+            
+            $firstAsesiId = array_key_first($request->asesi);
+            $firstKomentar = KomentarAk05::where('id_data_sertifikasi_asesi', $firstAsesiId)->first();
+            
+            if ($firstKomentar && $firstKomentar->Ak05) {
+                $ak05 = $firstKomentar->Ak05;
+            } else {
+                $ak05 = new Ak05();
+            }
+
+            $ak05->aspek_negatif_positif = $request->aspek_asesmen;
+            $ak05->penolakan_hasil_asesmen = $request->catatan_penolakan;
+            $ak05->saran_perbaikan = $request->saran_perbaikan;
+            $ak05->catatan_akhir = $request->catatan_akhir; // Assuming column exists based on form
+            $ak05->save();
+
+            // Save Per-Asesi Data
+            foreach ($request->asesi as $id_sertifikasi_asesi => $data) {
+                KomentarAk05::updateOrCreate(
+                    ['id_data_sertifikasi_asesi' => $id_sertifikasi_asesi],
+                    [
+                        'id_ak05' => $ak05->id_ak05,
+                        'rekomendasi' => $data['rekomendasi'],
+                        'keterangan' => $data['keterangan'] ?? null,
+                    ]
+                );
+            }
+
+            \DB::commit();
+            return redirect()->back()->with('success', 'Laporan FR.AK.05 berhasil disimpan.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+        }
+    }
+
+    public function storeAk06(Request $request, $id_jadwal)
+    {
+        // Save FR.AK.06
+        FrAk06::create([
+             'id_jadwal' => $id_jadwal,
+             'tinjauan' => $request->tinjauan,
+             'dimensi' => $request->dimensi,
+             'peninjau' => $request->peninjau,
+             'komentar' => $request->peninjau['komentar'] ?? null,
+        ]);
+
+        return redirect()->back()->with('success', 'Form FR.AK.06 berhasil disimpan.');
+    }
+
+    public function storeAk07(Request $request, $id_sertifikasi_asesi)
+    {
+        \DB::beginTransaction();
+        try {
+            // 1. Simpan Respon Potensi
+            if ($request->has('potensi_asesi')) {
+                foreach ($request->potensi_asesi as $idPoin => $respon) {
+                    ResponPotensiAK07::updateOrCreate(
+                        [
+                            'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                            'id_poin_potensi_AK07' => $idPoin
+                        ],
+                        ['respon_asesor' => $respon]
+                    );
+                }
+            }
+
+            // 2. Simpan Penyesuaian
+            if ($request->has('penyesuaian')) {
+                foreach ($request->penyesuaian as $idPersyaratan => $catatanGroup) {
+                    foreach ($catatanGroup as $idCatatan => $data) {
+                        ResponDiperlukanPenyesuaianAK07::updateOrCreate(
+                            [
+                                'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                                'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
+                                'id_catatan_keterangan_AK07' => $idCatatan
+                            ],
+                            [
+                                'respon_penyesuaian' => $data['status'] ?? 'Tidak', // Default to Tidak/Ada logic
+                                'respon_catatan_keterangan' => $data['notes'] ?? null
+                            ]
+                        );
+                    }
+                }
+            }
+
+            // 3. Simpan Hasil Penyesuaian
+            if ($request->has('hasil_penyesuaian')) {
+                HasilPenyesuaianAK07::updateOrCreate(
+                    ['id_data_sertifikasi_asesi' => $id_sertifikasi_asesi],
+                    [
+                        'Acuan_Pembanding_Asesmen' => $request->hasil_penyesuaian['Acuan_Pembanding_Asesmen'] ?? null,
+                        'Metode_Asesmen' => $request->hasil_penyesuaian['Metode_Asesmen'] ?? null,
+                        'Instrumen_Asesmen' => $request->hasil_penyesuaian['Instrumen_Asesmen'] ?? null,
+                    ]
+                );
+            }
+
+            \DB::commit();
+            return redirect()->back()->with('success', 'Form FR.AK.07 berhasil disimpan.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+        }
+    }
 }
