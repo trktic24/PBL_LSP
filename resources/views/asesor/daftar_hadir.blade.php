@@ -176,7 +176,7 @@
                                         </div>
                                     @else
                                         {{-- Jika belum tersimpan, tampilkan pesan --}}
-                                        <span class="text-red-600 font-semibold">Asesor belum mengisi daftar hadir</span>
+                                        <span class="text-gray-500 font-semibold">Belum diisi</span>
                                     @endif 
                                 @endif 
 

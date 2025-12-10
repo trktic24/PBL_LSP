@@ -23,7 +23,7 @@ class AsesorSeeder extends Seeder
         }
 
         foreach ($asesorUsers as $user) {
-            Asesor::factory()->create([
+            Asesor::factory(10)->create([
                 'id_user' => $user->id_user, // gunakan id_user bukan id
                 'status_verifikasi' => 'approved', // Force approved for testing
             ]);

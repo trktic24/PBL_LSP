@@ -377,7 +377,7 @@ class AsesorJadwalController extends Controller
         
         // 4. Base Query ke tabel Pivot (DataSertifikasiAsesi)
         $query = DataSertifikasiAsesi::query()
-                    ->with(['asesi.user', 'asesi.dataPekerjaan', 'presensi'])
+                    ->with(['asesi.user', 'asesi.dataPekerjaan', 'presensi', 'komentarAk05'])
                     ->where('id_jadwal', $id_jadwal)
                     ->select('data_sertifikasi_asesi.*');
 
@@ -413,6 +413,14 @@ class AsesorJadwalController extends Controller
         $perPage = $request->input('per_page', 10);
         $pendaftar = $query->paginate($perPage)->appends($request->query());
 
+        $jumlahKompeten = $jadwal->dataSertifikasiAsesi
+            ->filter(fn($d) => $d->komentarAk05?->rekomendasi === 'K')
+            ->count();
+
+        $jumlahBelumKompeten = $jadwal->dataSertifikasiAsesi
+            ->filter(fn($d) => $d->komentarAk05?->rekomendasi === 'BK')
+            ->count();        
+
         return view('asesor.berita_acara',[
             'asesor' => $asesor,
             'jadwal' => $jadwal,
@@ -420,6 +428,8 @@ class AsesorJadwalController extends Controller
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
             'sortDirection' => $sortDirection,
+            'jumlahKompeten' => $jumlahKompeten,
+            'jumlahBelumKompeten' => $jumlahBelumKompeten,
             'role' => Auth::user()->role,
         ]);
     }    
@@ -439,11 +449,19 @@ class AsesorJadwalController extends Controller
     public function exportPdfberitaAcara($id_jadwal)
     {
         $jadwal = Jadwal::with(['skema', 'asesor', 'tuk'])->findOrFail($id_jadwal);
-        $pendaftar = DataSertifikasiAsesi::with('asesi.dataPekerjaan', 'presensi')
+        $pendaftar = DataSertifikasiAsesi::with('asesi.dataPekerjaan', 'presensi', 'komentarAk05')
                         ->where('id_jadwal', $id_jadwal)
                         ->get();
 
-        $pdf = PDF::loadView('pdf.berita_acara', compact('jadwal', 'pendaftar'));
+        $jumlahKompeten = $jadwal->dataSertifikasiAsesi
+            ->filter(fn($d) => $d->komentarAk05?->rekomendasi === 'K')
+            ->count();
+
+        $jumlahBelumKompeten = $jadwal->dataSertifikasiAsesi
+            ->filter(fn($d) => $d->komentarAk05?->rekomendasi === 'BK')
+            ->count();                         
+
+        $pdf = PDF::loadView('pdf.berita_acara', compact('jadwal', 'pendaftar', 'jumlahKompeten', 'jumlahBelumKompeten'));
         return $pdf->download('berita_acara_'.$jadwal->id_jadwal.'.pdf');
     }    
    

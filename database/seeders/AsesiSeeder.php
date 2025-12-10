@@ -26,7 +26,7 @@ class AsesiSeeder extends Seeder
 
             // 3. Buatkan profile Asesi untuk setiap user tadi
             foreach ($asesiUsers as $user) {
-                Asesi::factory()->create([
+                Asesi::factory(50)->create([
                     'id_user' => $user->id_user, // <- Ini kuncinya
                 ]);
             }

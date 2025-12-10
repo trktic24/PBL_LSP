@@ -69,7 +69,12 @@
 <body>
 
     {{-- LOGO --}}
-    <img src="{{ public_path('images/Logo_LSP_No_BG.png') }}" class="logo">
+    <div style="text-align: center; width: 100%; margin-bottom: 10px;">
+        <img 
+            src="{{ public_path('images/Logo_LSP_No_BG.png') }}" 
+            style="width: 130px;"
+        >
+    </div>
 
     <div class="title">Berita Acara Asesmen</div>
 
@@ -80,11 +85,11 @@
             Waktu: Pukul {{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }} s/d Selesai, 
             bertempat di TUK {{ $jadwal->tuk->nama_lokasi }}, telah dilaksanakan proses asesmen terhadap asesi 
             pada sektor/sub sektor/bidang profesi <strong>{{ $jadwal->skema->nama_skema }}</strong> 
-            yang diikuti oleh <strong>{{ $pendaftar->total() }} orang peserta</strong>.
+            yang diikuti oleh <strong>{{ $pendaftar->count() }} orang peserta</strong>.
             <br><br>
             Dari hasil asesmen, peserta yang dinyatakan <strong>kompeten</strong> adalah 
-            <strong>belum dihitung</strong> dan yang <strong>belum kompeten</strong> 
-            adalah <strong>belum dihitung</strong> dengan perincian sebagai berikut:
+            <strong>{{ $jumlahKompeten > 0 ? $jumlahKompeten . ' orang peserta' : 'tidak ada' }}</strong> dan yang <strong>belum kompeten</strong> 
+            adalah <strong>{{ $jumlahBelumKompeten > 0 ? $jumlahBelumKompeten . ' orang peserta' : 'tidak ada' }}</strong> dengan perincian sebagai berikut:
         </p>
     </div>
 
@@ -94,9 +99,9 @@
             <tr>
                 <th style="width: 40px;">ID</th>
                 <th>Nama Peserta</th>
-                <th>Institusi</th>
-                <th>Alamat</th>
-                <th>Pekerjaan</th>
+                <th>Hasil Asesmen</th>
+                <th>Rekomendasi/Tindak Lanjut</th>
+                <th>Keterangan</th>
             </tr>
         </thead>
 
@@ -105,9 +110,9 @@
                 <tr>
                     <td style="text-align: center;">{{ $data->id_data_sertifikasi_asesi }}</td>
                     <td>{{ $data->asesi->nama_lengkap }}</td>
-                    <td>{{ $data->asesi->pekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
-                    <td>{{ $data->asesi->alamat_rumah }}</td>
-                    <td>{{ $data->asesi->pekerjaan }}</td>
+                    <td>{{ $data->komentarAk05->rekomendasi === 'K' ? 'Kompeten' : 'Belum Kompeten' }}</td>
+                    <td>{{ $data->komentarAk05->rekomendasi === 'K' ? 'Terbitkan Sertifikat' : 'Pengulangan Asesmen' }}</td>
+                    <td>{{ $data->komentarAk05->keterangan }}</td>
                 </tr>
             @empty
                 <tr>
@@ -140,14 +145,14 @@
                         <tr>
                             <td style="width: 120px; border: none;">Nama</td>
                             <td style="width: 10px; border: none;">:</td>
-                            <td style="border: none;">{{ $asesor->nama_lengkap }}</td>
+                            <td style="border: none;">{{ $jadwal->asesor->nama_lengkap }}</td>
                         </tr>
 
                         <tr>
                             <td style="border: none;">Tanda Tangan</td>
                             <td style="border: none;">:</td>
                             <td style="border: none;">
-                                <img src="{{ public_path($asesor->tanda_tangan) }}" class="signature-img">
+                                <img src="{{ public_path($jadwal->asesor->tanda_tangan) }}" class="signature-img">
                             </td>
                         </tr>
                     </table>
@@ -155,20 +160,20 @@
 
                 {{-- PJ KEGIATAN --}}
                 <td style="width: 50%; border: none; vertical-align: top;">
-                    <div class="section-title">Penanggungjawab Kegiatan</div>
+                    <div class="section-title" style="margin-top: 30px;">Penanggungjawab Kegiatan</div>
 
                     <table style="border: none;">
                         <tr>
                             <td style="width: 120px; border: none;">Nama</td>
                             <td style="width: 10px; border: none;">:</td>
-                            <td style="border: none;">{{ $asesor->nama_lengkap }}</td>
+                            <td style="border: none;">Ajeng Febria H.</td>
                         </tr>
 
                         <tr>
                             <td style="border: none;">Tanda Tangan</td>
                             <td style="border: none;">:</td>
                             <td style="border: none;">
-                                <img src="{{ public_path($asesor->tanda_tangan) }}" class="signature-img">
+                                <img src="{{ public_path($jadwal->asesor->tanda_tangan) }}" class="signature-img">
                             </td>
                         </tr>
                     </table>

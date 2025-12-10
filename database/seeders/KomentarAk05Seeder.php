@@ -2,48 +2,60 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\Ak05;
 use App\Models\KomentarAk05;
+use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class KomentarAk05Seeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // 1. Ambil semua ID yang sudah ada dari tabel induk
-        
-        // Ambil semua ID Asesi. Jika datanya sangat banyak, pertimbangkan menggunakan chunk().
-        $asesiIds = DataSertifikasiAsesi::pluck('id_data_sertifikasi_asesi')->all();
-        
-        // Ambil semua ID Ak05.
-        $ak05Ids = Ak05::pluck('id_ak05')->all();
+        $faker = Faker::create();
 
-        // Pilihan untuk enum 'rekomendasi'
-        $rekomendasiPilihan = ['K', 'BK']; 
+        // 1. Ambil semua ID Asesi
+        $allAsesi = DataSertifikasiAsesi::pluck('id_data_sertifikasi_asesi');
+        $jumlahAsesi = $allAsesi->count();
+                       $this->command->info("Mengambil $jumlahAsesi data sertifikasi asesi...");
 
-        // 2. Lakukan perulangan bersarang (Nested Loop) untuk membuat semua kombinasi
-        
-        // Loop melalui setiap ID Asesi
-        foreach ($asesiIds as $idAsesi) {
-            
-            // Untuk setiap Asesi, loop melalui setiap ID Ak05
-            foreach ($ak05Ids as $idAk05) {
-                
-                // Gunakan KomentarAk05 Factory untuk membuat record baru
-                KomentarAk05::factory()->create([
-                    'id_data_sertifikasi_asesi' => $idAsesi, // ID Asesi yang sedang di-loop
-                    'id_ak05' => $idAk05,                 // ID Ak05 yang sedang di-loop
-                    
-                    // Isi kolom lain dengan data palsu atau acak:
-                    'rekomendasi' => array_rand($rekomendasiPilihan) ? 'K' : 'BK',
-                    'keterangan' => $this->faker->optional(0.9)->text(500), 
-                ]);
-            }
+        // 2. Hitung jumlah Ak05 yang tersedia
+        $jumlahAk05 = Ak05::count();
+
+        // Jika Ak05 kurang dari jumlah asesi → buat sisanya
+        if ($jumlahAk05 < $jumlahAsesi) {
+            $kurang = $jumlahAsesi - $jumlahAk05;
+            $this->command->info("Menambahkan $kurang data Ak05 baru...");
+
+            Ak05::factory()->count($kurang)->create();
         }
+
+        // 3. Ambil semua ID Ak05 lalu acak urutannya
+        $allAk05 = Ak05::pluck('id_ak05')->shuffle();
+
+        $this->command->info("Memulai seeding KomentarAk05 (1 asesi = 1 Ak05 unik)...");
+
+        // 4. Loop untuk pairing unik
+        foreach ($allAsesi as $idAsesi) {
+
+            // Ambil Ak05 paling atas (unik)
+            $idAk05 = $allAk05->shift();
+
+            if (!$idAk05) break; // Safety check
+
+            // Hindari duplikasi (seeder dijalankan lebih dari sekali)
+            $exists = KomentarAk05::where('id_data_sertifikasi_asesi', $idAsesi)->exists();
+            if ($exists) continue;
+
+            // 5. Create KomentarAk05
+            KomentarAk05::create([
+                'id_data_sertifikasi_asesi' => $idAsesi,
+                'id_ak05' => $idAk05,
+                'rekomendasi' => $faker->randomElement(['K', 'BK']),
+                'keterangan' => $faker->optional(0.8)->text(300),
+            ]);
+        }
+
+        $this->command->info("Berhasil! $jumlahAsesi KomentarAk05 telah dipasangkan secara unik.");
     }
 }

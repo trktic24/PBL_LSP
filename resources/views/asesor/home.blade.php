@@ -337,7 +337,7 @@
                                 @if($jadwal->Status_jadwal == 'Dibatalkan')
                                 {{-- Tampilan Tombol Detail (Abu-abu) --}}
                                 <a href="{{ route('asesor.daftar_asesi', $jadwal->id_jadwal) }}"
-                                    class="text-sm bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500 transition duration-150">
+                                    class="text-sm bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500 pointer-events-none cursor-not-allowed transition duration-150">
                                     Detail
                                 </a>
                                 @else
