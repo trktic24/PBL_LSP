@@ -42,7 +42,7 @@
             :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'"
             :image="$gambarSkema"
             :sertifikasi="$sertifikasi"
-            backUrl="{{ route('bukti.pemohon', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+            backUrl="{{ route('asesi.bukti.pemohon', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
         />
 
         {{-- 3. MAIN CONTENT --}}
@@ -136,7 +136,7 @@
                 {{-- TOMBOL NAVIGASI (UPDATED: Sama persis layout halaman Bukti Pemohon) --}}
                 {{-- flex-row: Biar tombolnya jejer kiri-kanan (tidak tumpuk) --}}
                 <div class="flex justify-between items-center mt-12 pt-6 border-t border-gray-100 pb-10 md:pb-0">
-                    <a href="{{ route('bukti.pemohon', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                    <a href="{{ route('asesi.bukti.pemohon', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                         class="w-32 md:w-48 text-center px-4 md:px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-full hover:bg-gray-300 transition-all shadow-sm text-sm md:text-base">
                         Kembali
                     </a>
@@ -228,7 +228,7 @@
                     const result = await response.json();
                     if (response.ok && result.success) {
                         alert('Berhasil! Data tersimpan.');
-                        window.location.href = "{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
+                        window.location.href = "{{ route('asesi.payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
                     } else {
                         throw new Error(result.message || 'Gagal menyimpan');
                     }

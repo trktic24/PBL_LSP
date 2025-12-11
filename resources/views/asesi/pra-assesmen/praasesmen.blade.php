@@ -254,7 +254,7 @@
                         <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center pb-8">
                             
                             {{-- 1. TOMBOL SEBELUMNYA (Lebar Tetap w-48) --}}
-                            <a href="{{ route('payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                            <a href="{{ route('asesi.payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
                                class="w-48 py-3 bg-gray-300 text-gray-700 font-bold rounded-full shadow-sm hover:bg-gray-400 transition duration-200 focus:outline-none transform hover:-translate-y-0.5 text-center inline-block">
                                 Sebelumnya
                             </a>
@@ -285,7 +285,7 @@
 
     {{-- JAVASCRIPT (MENGGUNAKAN LOGIC KITA YANG SUDAH STABIL) --}}
     <script>
-        const nextUrl = "{{ route('show.jadwal_tuk', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+        const nextUrl = "{{ route('asesi.show.jadwal_tuk', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
         // --- Custom Alert Function (Style Temanmu, Logic Kita) ---
         function showCustomAlert(title, message, isError = false, buttonText = 'Kembali') {
             const modal = document.getElementById('message-modal');

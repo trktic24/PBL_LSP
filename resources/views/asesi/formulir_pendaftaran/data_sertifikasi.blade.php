@@ -140,13 +140,13 @@
                 {{-- TOMBOL NAVIGASI --}}
                 {{-- Flex row: Biar tombolnya jejer Kiri-Kanan --}}
                 <div class="flex justify-between items-center pb-20 md:pb-0 gap-4 mt-8 border-t border-gray-100 pt-6">
-                    <a href="{{ route('tracker', ['jadwal_id' => $sertifikasi->id_jadwal]) }}" 
+                    <a href="{{ route('asesi.tracker', ['jadwal_id' => $sertifikasi->id_jadwal]) }}" 
                         class="w-32 md:w-48 text-center px-4 md:px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-full hover:bg-gray-300 transition-all shadow-sm text-sm md:text-base">
                         Kembali
                     </a>
 
                     <button type="button" id="btn-selanjutnya" 
-                        data-next-url="{{ route('bukti.pemohon', ['id_sertifikasi' => $id_sertifikasi_untuk_js]) }}"
+                        data-next-url="{{ route('asesi.bukti.pemohon', ['id_sertifikasi' => $id_sertifikasi_untuk_js]) }}"
                         class="w-32 md:w-48 text-center px-4 md:px-8 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base shadow-blue-200">
                         Selanjutnya
                     </button>

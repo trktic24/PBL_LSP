@@ -12,7 +12,7 @@
 
         {{-- 1. TOMBOL KEMBALI --}}
         <div class="mb-6 flex-shrink-0">
-            <a href="{{ $backUrl ?? ($sertifikasi ? '/tracker/' . $sertifikasi->id_jadwal : '/dashboard') }}" 
+            <a href="{{ $backUrl ?? ($sertifikasi ? '/asesi/tracker/' . $sertifikasi->id_jadwal : '/dashboard') }}" 
                class="flex items-center text-gray-700 hover:text-gray-900 transition-colors">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -34,7 +34,7 @@
         <div class="flex justify-center my-6 flex-shrink-0">
             <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-800 shadow-lg border-4 border-white">
                 @if($sertifikasi && $sertifikasi->jadwal && $sertifikasi->jadwal->skema)
-                    <img src="{{ asset('images/' . ($sertifikasi->jadwal->skema->gambar ?? 'default_skema.jpg')) }}" 
+                    <img src="{{ asset('images/skema/' . ($sertifikasi->jadwal->skema->gambar ?? 'default_skema.jpg')) }}" 
                          alt="Logo Skema" 
                          class="w-full h-full object-cover"
                          onerror="this.src='https://ui-avatars.com/api/?name=Skema&background=random'">

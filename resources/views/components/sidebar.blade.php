@@ -13,7 +13,7 @@
 
         {{-- 1. TOMBOL KEMBALI --}}
         <div class="mb-6">
-            <a href="{{ $backUrl ?? ($sertifikasi ? '/tracker/' . $sertifikasi->id_jadwal : '/dashboard') }}" 
+            <a href="{{ $backUrl ?? ($sertifikasi ? '/asesi/tracker/' . $sertifikasi->id_jadwal : '/dashboard') }}" 
             class="flex items-center text-gray-700 hover:text-gray-900 transition-colors">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />

@@ -42,7 +42,7 @@
             :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'"
             :image="$gambarSkema"
             :sertifikasi="$sertifikasi"
-            backUrl="{{ route('data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+            backUrl="{{ route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
         />
 
         {{-- ====================================================================== --}}
@@ -300,7 +300,7 @@
 
                 {{-- Navigation Buttons (Sesuai Palet Warna) --}}
                 <div class="flex justify-between items-center mt-12 pb-10 md:pb-0">
-                    <a href="{{ route('data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                    <a href="{{ route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                         class="w-32 md:w-48 text-center px-4 md:px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-full hover:bg-gray-300 transition-all shadow-sm text-sm md:text-base">
                         Kembali
                     </a>
@@ -323,7 +323,7 @@
             const idDataSertifikasi = mainEl ? mainEl.dataset.sertifikasiId : null;
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-            const nextUrl = "{{ route('show.tandatangan', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
+            const nextUrl = "{{ route('asesi.show.tandatangan', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
 
             if (!idDataSertifikasi) {
                 console.error("ID Sertifikasi tidak ditemukan.");

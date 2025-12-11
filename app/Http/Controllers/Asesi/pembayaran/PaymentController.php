@@ -62,7 +62,7 @@ class PaymentController extends Controller
                 ->first();
 
             if ($successPayment) {
-                return redirect()->route('pembayaran_diproses', [
+                return redirect()->route('asesi.pembayaran_diproses', [
                     'order_id' => $successPayment->order_id,
                     'transaction_status' => $successPayment->status_transaksi,
                     'status_code' => '200'
@@ -102,9 +102,9 @@ class PaymentController extends Controller
                 'name' => substr($skema->nama_skema, 0, 50) 
             ]],
             'callbacks' => [
-                'finish'   => route('pembayaran_diproses'),
-                'unfinish' => route('payment.cancel'),
-                'error'    => route('payment.cancel'),
+                'finish'   => route('asesi.pembayaran_diproses'),
+                'unfinish' => route('asesi.payment.cancel'),
+                'error'    => route('asesi.payment.cancel'),
             ]
         ];
         // [END KODE LAMA]

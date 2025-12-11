@@ -19,7 +19,7 @@
                 $finalBackUrl = $backUrl;
             } elseif ($sertifikasi && isset($sertifikasi->id_jadwal)) {
                  // Asumsi route tracker menggunakan parameter 'jadwal_id', sesuaikan jika beda
-                $finalBackUrl = route('tracker', ['jadwal_id' => $sertifikasi->id_jadwal]);
+                $finalBackUrl = route('asesi.tracker', ['jadwal_id' => $sertifikasi->id_jadwal]);
             } else {
                 $finalBackUrl = '/';
             }
