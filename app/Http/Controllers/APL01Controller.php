@@ -18,7 +18,6 @@ class APL01Controller extends Controller
             'asesi'       => $sertifikasi->asesi,
             'skema'       => $sertifikasi->jadwal->skema,
             'jadwal'      => $sertifikasi->jadwal,
-            'backUrl' => route('tracker', $sertifikasi->id_data_sertifikasi_asesi),
         ]);
     }
 

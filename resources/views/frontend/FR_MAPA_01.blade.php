@@ -4,6 +4,11 @@
 --}}
 
 @extends('layouts.app-sidebar-asesi')
+@php
+    $jadwal = $sertifikasi->jadwal;
+    $asesi = $sertifikasi->asesi;
+    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);  
+@endphp
 
 @section('content')
 

@@ -1,4 +1,9 @@
 @extends('layouts.app-sidebar-asesi')
+@php
+    $jadwal = $sertifikasi->jadwal;
+    $asesi = $sertifikasi->asesi;
+    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);  
+@endphp
 
 @section('content')
     <div class="p-3 sm:p-6 md:p-8">
@@ -181,7 +186,7 @@
         <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 border-t border-gray-200 pt-4">
             @csrf
 
-            <a href="{{ route('tracker', $sertifikasi->id_data_sertifikasi_asesi) }}"
+            <a href="{{ route('asesor.tracker', $sertifikasi->id_data_sertifikasi_asesi) }}"
                 class="bg-gray-200 text-gray-700 font-medium py-2.5 sm:py-3 px-4 sm:px-6 md:px-8 rounded-lg hover:bg-gray-300 transition flex items-center justify-center text-sm">
                 <i class="fas fa-arrow-left mr-2 text-xs sm:text-sm"></i> Kembali
             </a>

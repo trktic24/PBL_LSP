@@ -22,8 +22,7 @@ class FrMapa01Controller extends Controller
             'sertifikasi' => $sertifikasi,
             'asesi'       => $sertifikasi->asesi,
             'skema'       => $sertifikasi->jadwal->skema,
-            'jadwal'      => $sertifikasi->jadwal,
-            'backUrl' => route('tracker', $sertifikasi->id_data_sertifikasi_asesi),            
+            'jadwal'      => $sertifikasi->jadwal,            
         ]);
     }    
 

@@ -37,6 +37,7 @@ use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\Asesor\AsesiTrackerController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Ia06Controller;
+use App\Http\Controllers\PraasesmenController;
 
 // ======================================================
 // --- RUTE GUEST (YANG BELUM LOGIN) ---
@@ -319,15 +320,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/berita-acara/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'beritaAcara'])->name('berita_acara');
         Route::get('/berita-acara/pdf/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'exportPdfberitaAcara'])->name('berita_acara.pdf');
 
-        // AK Forms
+        // Forms
         Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak05'])->name('ak05');
         Route::get('/jadwal/{id_jadwal}/ak06', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak06'])->name('ak06');
         Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak07'])->name('ak07');
+        Route::get('/apl02/{idDataSertifikasi}', [AsesiTrackerController::class, 'showApl02'])->name('apl02');
 
         // Store Routes for AK Forms
         Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk05'])->name('ak05.store');
         Route::post('/ak06/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk06'])->name('ak06.store');
-        Route::post('/ak07/store/{id_sertifikasi_asesi}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk07'])->name('fr-ak-07.store');
+        Route::post('/ak07/store/{id_sertifikasi_asesi}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk07'])->name('fr-ak-07.store');      
 
         // Tools
         Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
