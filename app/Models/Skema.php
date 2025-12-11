@@ -6,14 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Category;
-use App\Models\Asesor; 
-use App\Models\Jadwal; 
-
+use App\Models\Asesor;
+use App\Models\Jadwal;
 
 class Skema extends Model
 {
     use HasFactory;
-    
+
     /**
      * Nama tabel yang terhubung dengan model.
      *
@@ -34,16 +33,7 @@ class Skema extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'categorie_id',
-        'id_kelompok_pekerjaan',
-        'nomor_skema',
-        'nama_skema',
-        'deskripsi_skema',
-        'harga',
-        'SKKNI',
-        'gambar',
-    ];
+    protected $fillable = ['categorie_id', 'nomor_skema', 'nama_skema', 'deskripsi_skema', 'harga', 'SKKNI', 'gambar'];
 
     /**
      * Relasi ke Categorie (Berdasarkan foreignId 'categorie_id').
@@ -57,16 +47,20 @@ class Skema extends Model
 
     public function kelompokPekerjaan()
     {
-        // Model, foreign_key, owner_key
-        // Key kedua ('id_kelompok_pekerjaan') dispesifikkan karena 
-        // nama kolom di tabel parent (kelompok_pekerjaan) tidak 'id'.
-        return $this->hasMany(KelompokPekerjaan::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
+        // LOGIC BENAR:
+        // Skema punya BANYAK KelompokPekerjaan.
+        // Penghubungnya adalah 'id_skema' yang ada di tabel 'kelompok_pekerjaan'.
+
+        return $this->hasMany(
+            KelompokPekerjaan::class,
+            'id_skema', // Foreign Key (Kolom di tabel kelompok_pekerjaan yang nyimpen ID skema)
+            'id_skema', // Local Key (Kolom ID asli di tabel skema ini)
+        );
     }
 
-    public function jadwal(): HasMany // Gunakan HasMany untuk ketepatan tipe
+    public function jadwal(): HasMany
     {
         return $this->hasMany(Jadwal::class, 'id_skema', 'id_skema');
-    // --- Relasi yang sudah ada di kode Anda (tetap valid) ---
     }
 
     /**
@@ -78,11 +72,11 @@ class Skema extends Model
         return $this->belongsToMany(
             Asesor::class,
             'transaksi_asesor_skema', // Nama tabel pivot
-            'id_skema',               // Foreign key di pivot untuk model ini (Skema)
-            'id_asesor'               // Foreign key di pivot untuk model tujuan (Asesor)
+            'id_skema', // Foreign key di pivot untuk model ini (Skema)
+            'id_asesor', // Foreign key di pivot untuk model tujuan (Asesor)
         );
     }
-    
+
     /**
      * Relasi "Jalan Pintas" (HasManyThrough)
      * Skema -> (lewat KelompokPekerjaan) -> UnitKompetensi
@@ -90,12 +84,12 @@ class Skema extends Model
     public function unitKompetensi()
     {
         return $this->hasManyThrough(
-            UnitKompetensi::class,      // 1. Model Tujuan (Unit)
-            KelompokPekerjaan::class,   // 2. Model Perantara (Kelompok)
-            'id_skema',                 // 3. FK di tabel perantara (kelompok_pekerjaan)
-            'id_kelompok_pekerjaan',    // 4. FK di tabel tujuan (unit_kompetensi)
-            'id_skema',                 // 5. PK di tabel ini (skema)
-            'id_kelompok_pekerjaan'     // 6. PK di tabel perantara (kelompok_pekerjaan)
+            UnitKompetensi::class, // 1. Model Tujuan (Unit)
+            KelompokPekerjaan::class, // 2. Model Perantara (Kelompok)
+            'id_skema', // 3. FK di tabel perantara (kelompok_pekerjaan)
+            'id_kelompok_pekerjaan', // 4. FK di tabel tujuan (unit_kompetensi)
+            'id_skema', // 5. PK di tabel ini (skema)
+            'id_kelompok_pekerjaan', // 6. PK di tabel perantara (kelompok_pekerjaan)
         );
     }
 }

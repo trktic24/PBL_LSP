@@ -182,14 +182,17 @@ Route::middleware('auth')->group(function () {
     // ======================================================
     // 3. ROLE: ADMIN
     // ======================================================
-    Route::middleware(['role:admin'])
-        ->prefix('admin')
-        ->name('admin.')
-        ->group(function () {
-            // Dashboard
-            Route::controller(DashboardController::class)->group(function () {
-                Route::get('/dashboard', 'index')->name('dashboard');
-            });
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        
+        // Dashboard
+        Route::controller(AdminDashboardController::class)->group(function () {
+            Route::get('/dashboard', 'index')->name('dashboard');    
+        });
+        
+        // Notification
+        Route::get('/notifications', function () {
+            return view('notifications.notifications_admin');
+        })->name('notifications');
 
             // Notification
             Route::get('/notifications', function () {

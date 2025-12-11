@@ -14,7 +14,7 @@
                 <h1 class="text-4xl font-bold text-gray-900 mb-10">Umpan Balik dan Catatan Asesmen</h1>
 
                 {{-- Tambahkan ID pada form agar mudah dipilih oleh JavaScript --}}
-                <form id="form-umpan-balik" action="{{ route('ak03.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+                <form id="form-umpan-balik" action="{{ route('asesi.ak03.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-y-4 text-sm mb-8">

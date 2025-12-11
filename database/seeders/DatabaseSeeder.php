@@ -62,6 +62,9 @@ class DatabaseSeeder extends Seeder
             SpesifikasiIA11Seeder::class,
             PerformaIA11Seeder::class,
             SkenarioIa02Seeder::class,
+
+            // Asesir
+            PoinAk03Seeder::class,
         ]);
 
         // Panggil seeder Role dan User (Admin)

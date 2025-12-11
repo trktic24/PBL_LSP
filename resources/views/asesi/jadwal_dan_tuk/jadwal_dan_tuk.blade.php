@@ -156,7 +156,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const idSertifikasi = document.querySelector('main').dataset.sertifikasiId;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            const nextUrl = "{{ route('kerahasiaan.fr_ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
+            const nextUrl = "{{ route('asesi.kerahasiaan.fr_ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
 
 
             if (!idSertifikasi) {
@@ -203,7 +203,7 @@
                         if (data.foto_gedung) {
                             // Pastikan path-nya bener (kalau cuma nama file, tambah /images/tuk/)
                             // Asumsi: data.foto_gedung adalah path lengkap atau nama file
-                            // Kalau nama file doang: `{{ asset('images/tuk') }}/${data.foto_gedung}`
+                            // Kalau nama file doang: `{{ asset('images/') }}/${data.foto_gedung}`
                             // Di sini saya asumsi path lengkap/url
                             const imgEl = document.getElementById('img_gedung');
                             imgEl.src = `/${data.foto_gedung}`; // Tambah slash depan buat root

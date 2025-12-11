@@ -133,7 +133,7 @@
 
             const ttdContainer = document.getElementById('ttd_container');
             const btnSelanjutnya = document.getElementById('tombol-selanjutnya');
-            const prevUrl = "{{ route('show.jadwal_tuk', ['id_sertifikasi' => $id_sertifikasi]) }}";
+            const prevUrl = "{{ route('asesi.show.jadwal_tuk', ['id_sertifikasi' => $id_sertifikasi]) }}";
             const containerBukti = document.getElementById('container_bukti');
 
             if (!idSertifikasi) {
