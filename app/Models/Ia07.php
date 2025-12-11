@@ -22,12 +22,4 @@ class Ia07 extends Model
         return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
-    /**
-     * Relasi ke Master Pertanyaan (Untuk mengambil teks soal)
-     * DISESUAIKAN: Menggunakan model PertanyaanLisan
-     */
-    public function pertanyaanLisan(): BelongsTo
-    {
-        return $this->belongsTo(PertanyaanLisan::class, 'id_pertanyaan_lisan', 'id_pertanyaan_lisan');
-    }
 }
