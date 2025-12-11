@@ -18,6 +18,7 @@ class AsesiTTDResource extends JsonResource
             'id_asesi' => $this->id_asesi,
             'nama_lengkap' => $this->nama_lengkap,
             'tanda_tangan' => $this->tanda_tangan,
+            'alamat_rumah' => $this->alamat_rumah,
             'data_pekerjaan' => $this->whenLoaded('dataPekerjaan')
         ];
     }

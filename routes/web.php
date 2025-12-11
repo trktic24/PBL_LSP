@@ -33,11 +33,14 @@ use App\Http\Controllers\FormulirPendaftaran\DataSertifikasiAsesiController;
 use App\Http\Controllers\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\Ak04API\APIBandingController;
 use App\Http\Controllers\IA03Controller;
+use App\Http\Controllers\asesmen\AssessmenFRIA04tController;
 use App\Http\Controllers\Ia07Controller;
 use App\Http\Controllers\IA11\IA11Controller;
 use App\Http\Controllers\IA11\SpesifikasiIA11Controller;
 use App\Http\Controllers\IA11\PerformaIA11Controller;
 use App\Http\Controllers\Ia02Controller;
+use App\Http\Controllers\PortofolioController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -184,6 +187,35 @@ Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'ge
 //umpan balik (ak03)
 Route::get('/umpan-balik', [Ak03Controller::class, 'index'])->name('ak03.index');
 Route::post('/umpan-balik/store', [Ak03Controller::class, 'store'])->name('ak03.store');
+
+// Route untuk menampilkan form FR.IA.04A (GET) - ASESOR
+// TIDAK ADA PARAMETER ID
+Route::get('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
+
+// Route untuk menangani submit form FR.IA.04A (POST) - ASESOR
+Route::post('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
+
+
+// --- ASESI VIEW & SUBMIT ---
+// Route baru untuk menampilkan form (GET) - ASESI (READ-ONLY + INPUT TANGGAPAN)
+// TIDAK ADA PARAMETER ID
+Route::get('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'showIA04AAsesi'])->name('fria04a.asesi.show');
+
+// Route baru untuk menyimpan input ASESI (Hanya Tanggapan)
+Route::post('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'storeIA04AAsesi'])->name('fria04a.asesi.store');
+
+// Route untuk menampilkan Form Portofolio (Halaman Awal)
+Route::get('/portofolio', [PortofolioController::class, 'index'])
+    ->name('portofolio.index');
+
+// Route untuk memproses/menyimpan file yang diunggah Asesi
+Route::post('/portofolio/store', [PortofolioController::class, 'store'])
+    ->name('portofolio.store');
+
+// Route untuk menghapus/membatalkan dokumen (jika Anda ingin mengimplementasikan fungsi hapus)
+Route::delete('/portofolio/delete', [PortofolioController::class, 'destroyBukti'])
+    ->name('portofolio.destroy');
+
 
 // ====================================================
 // GRUP 6: ROUTE LAIN-LAIN (API & KEEP ALIVE)

@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 // [PERBAIKAN] Model yang di-use sudah dirapikan
 use App\Models\Jadwal;
 use App\Models\Category; // <-- [PENTING] Ganti dari 'categorie' ke 'category'
 use App\Models\KelompokPekerjaan;
 use App\Models\UnitKompetensi; // <-- [ASUMSI] Nama modelmu ini
+use App\Models\Asesor;
+use App\Models\AsesorSkemaTransaksi;
 
 class Skema extends Model
 {
@@ -79,5 +82,30 @@ class Skema extends Model
             'id_skema',                 // 5. PK di tabel ini (skema)
             'id_kelompok_pekerjaan'     // 6. PK di tabel perantara (kelompok_pekerjaan)
         );
+    }
+    
+
+    
+    /**
+     * Relasi Many-to-Many dengan model Asesor.
+     * (Skema punya BANYAK Asesor melalui tabel pivot 'Transaksi_asesor_skema')
+     */
+    public function asesors(): BelongsToMany
+    {
+        // belongsToMany(ModelTerkait, NamaTabelPivot, FKModelIniDiPivot, FKModelTerkaitDiPivot)
+        return $this->belongsToMany(Asesor::class, 'Transaksi_asesor_skema', 'id_skema', 'id_asesor')
+                    // Menggunakan model pivot khusus untuk mengakses kolom tambahan
+                    ->using(AsesorSkemaTransaksi::class)
+                    // Karena tabel pivot memiliki timestamps
+                    ->withTimestamps(); 
+    }
+    
+    /**
+     * Relasi One-to-Many ke model pivot (AsesorSkemaTransaksi).
+     * (Opsional, untuk mengakses record transaksi secara langsung)
+     */
+    public function transaksiAsesorSkema(): HasMany
+    {
+        return $this->hasMany(AsesorSkemaTransaksi::class, 'id_skema', 'id_skema');
     }
 }
