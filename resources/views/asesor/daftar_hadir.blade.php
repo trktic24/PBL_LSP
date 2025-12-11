@@ -148,7 +148,7 @@
                             </td>
                             
                             <td class="px-6 py-4">
-                                {{ $data->asesi->pekerjaan->nama_institusi_pekerjaan ?? '-' }}
+                                {{ $data->asesi->dataPekerjaan->nama_institusi_pekerjaan ?? '-' }}
                             </td>
                             
                             <td class="px-6 py-4 truncate max-w-xs" title="{{ $data->asesi->alamat_rumah }}">

@@ -76,16 +76,28 @@
                             </td>
                             
                             <td class="px-6 py-4">
-                                {{ $data->komentarAk05->rekomendasi === 'K' ? 'Kompeten' : 'Belum Kompeten' }}
-                            </td>
-                            
-                            <td class="px-6 py-4 truncate max-w-xs" title="{{ $data->asesi->alamat_rumah }}">
-                                {{ $data->komentarAk05->rekomendasi === 'K' ? 'Terbitkan Sertifikat' : 'Pengulangan Asesmen' }}
+                                @if ($data->komentarAk05 === null)
+                                    -
+                                @else
+                                    {{ $data->komentarAk05->rekomendasi === 'K' ? 'Kompeten' : 'Belum Kompeten' }}
+                                @endif
                             </td>
                             
                             <td class="px-6 py-4">
-                                {{ $data->komentarAk05->keterangan }}
-                            </td>        
+                                @if ($data->komentarAk05 === null)
+                                    -
+                                @else
+                                    {{ $data->komentarAk05->rekomendasi === 'K' ? 'Terbitkan Sertifikat' : 'Mengulang Asesmen' }}
+                                @endif
+                            </td>
+                            
+                            <td class="px-6 py-4">
+                                @if ($data->komentarAk05 === null)
+                                    -
+                                @else
+                                    {{ $data->komentarAk05->rekomendasi }}
+                                @endif
+                            </td>     
                             
                             @empty
                             <td colspan="7" class="px-6 py-8 text-center text-gray-500">
@@ -121,8 +133,7 @@
                                 <span class="font-medium text-gray-700">{{ $asesor->nama_lengkap }}</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ asset($asesor->tanda_tangan) }}"
-                                $jadwal->asesor->tanda_tangan
+                                <img src="{{ asset($asesor->tanda_tangan) }}" 
                                     class="w-20 h-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
                             </div>
                         </div>

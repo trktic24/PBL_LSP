@@ -26,6 +26,7 @@ class KomentarAk05Factory extends Factory
 
             'rekomendasi' => $faker->randomElement(['K', 'BK']),
             'keterangan' => $faker->optional(0.9)->text(500),
+            'verifikasi_validator' => 1,
         ];
     }
 }

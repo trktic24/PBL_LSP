@@ -254,10 +254,26 @@ Route::middleware('auth')->group(function () {
             Route::post('/add', 'store')->name('add_jadwal.store');
             Route::get('/edit/{id_jadwal}', 'edit')->name('edit_jadwal');
             Route::patch('/update/{id_jadwal}', 'update')->name('update_jadwal');
-            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_jadwal');
-            Route::get('/attendance/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('jadwal.attendance');
+            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_jadwal');        
         });
         Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('jadwal_admin');
+
+        // Daftar Hadir dan Berita Acara
+        Route::controller(DaftarHadirController::class)->prefix('master/jadwal')->group(function () {
+            // Daftar Hadir
+            Route::get('/{id_jadwal}/daftar-hadir', 'daftarHadir')
+                ->name('attendance.show');
+
+            Route::get('/{id_jadwal}/daftar-hadir/pdf', 'exportPdfdaftarhadir')
+                ->name('attendance.pdf');
+
+            // Berita Acara
+            Route::get('/{id_jadwal}/berita-acara', 'beritaAcara')
+                ->name('berita_acara');
+
+            Route::get('/{id_jadwal}/berita-acara/pdf', 'exportPdfberitaAcara')
+                ->name('berita_acara.pdf');          
+        });        
 
         // TUK
         Route::controller(TukAdminController::class)->prefix('master/tuk')->group(function () {

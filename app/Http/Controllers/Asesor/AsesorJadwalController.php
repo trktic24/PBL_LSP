@@ -199,6 +199,10 @@ class AsesorJadwalController extends Controller
              abort(403, 'Anda tidak berhak mengakses jadwal ini.');
         }
 
+        $semuaSudahAdaKomentar = !DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
+            ->whereDoesntHave('komentarAk05')
+            ->exists();       
+
         // 3. (MODIFIKASI UTAMA) Dapatkan daftar Asesi secara manual
         //    melalui tabel 'data_sertifikasi_asesi'
 
@@ -216,6 +220,7 @@ class AsesorJadwalController extends Controller
         //    (Struktur data yang dikirim tetap sama, jadi view tidak perlu diubah)
         return view('asesor.daftar_asesi', [
             'jadwal' => $jadwal,
+            'semuaSudahAdaKomentar' => $semuaSudahAdaKomentar,
             //'asesis' => $asesis, // <-- Variabel $asesis berhasil kita buat
         ]);
     }
@@ -272,10 +277,13 @@ class AsesorJadwalController extends Controller
         // 1. Ambil Data Jadwal Utama
         $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
 
-        // 2. Cek Otorisasi Asesor
-        $asesor = Asesor::where('id_user', Auth::id())->first();
-        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
-             abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+        // 2. Cek Otorisasi HANYA jika role asesor
+        if (Auth::user()->role === 'asesor') {
+            $asesor = Asesor::where('id_user', Auth::id())->first();
+
+            if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
         }
 
         // 3. Setup Default Sorting
@@ -319,6 +327,9 @@ class AsesorJadwalController extends Controller
         // 7. Pagination
         $perPage = $request->input('per_page', 10);
         $pendaftar = $query->paginate($perPage)->appends($request->query());
+        
+        // Filter Role
+        $mode = Auth::user()->role === 'admin' ? 'view' : 'edit';
 
         return view('asesor.daftar_hadir',[
             'jadwal' => $jadwal,
@@ -327,7 +338,7 @@ class AsesorJadwalController extends Controller
             'sortColumn' => $sortColumn,
             'sortDirection' => $sortDirection,
             'role' => Auth::user()->role,
-            'mode' => 'edit',
+            'mode' => $mode,
         ]);
     }
 
@@ -373,11 +384,27 @@ class AsesorJadwalController extends Controller
         // 1. Ambil Data Jadwal Utama
         $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
 
-        // 2. Cek Otorisasi Asesor
-        $asesor = Asesor::where('id_user', Auth::id())->first();
-        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
-             abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+         // 2. Cek Otorisasi HANYA jika role asesor
+        if (Auth::user()->role === 'asesor') {
+            $asesor = Asesor::where('id_user', Auth::id())->first();
+
+            if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
         }
+
+        $asesor = Asesor::where('id_user', Auth::id())->first();
+
+        // 2.5 Cek apakah seluruh AK05 sudah diverifikasi validator
+        $adaBelumDiverifikasi = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
+            ->whereHas('komentarAk05', function ($q) {
+                $q->whereNull('verifikasi_validator'); // kolom verifikasi validator
+            })
+            ->exists();
+
+        if ($adaBelumDiverifikasi) {
+            abort(403, 'Berita Acara belum dapat diakses karena hasil asesmen belum diverifikasi.');
+        }        
 
         // 3. Setup Default Sorting
         $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');
