@@ -25,7 +25,7 @@ class PoinAk03Seeder extends Seeder
 
         foreach ($pertanyaan as $p) {
             DB::table('poin_ak03')->insert([
-                'komponen' => $pertanyaan,
+                'komponen' => $p,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\JenisTuk; // Pastikan kamu udah bikin model ini
+use App\Models\JenisTUK;
 
 class JenisTukSeeder extends Seeder
 {
@@ -12,7 +12,7 @@ class JenisTukSeeder extends Seeder
      */
     public function run(): void
     {
-        JenisTuk::insert([
+        JenisTUK::insert([
             ['jenis_tuk' => 'Sewaktu', 'created_at' => now(), 'updated_at' => now()],
             ['jenis_tuk' => 'Tempat Kerja', 'created_at' => now(), 'updated_at' => now()],
         ]);
