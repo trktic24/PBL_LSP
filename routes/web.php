@@ -98,13 +98,6 @@ Route::get('/api/search-countries', [CountryController::class, 'search'])->name(
 |--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
-
-// Route untuk download Invoice
-Route::middleware(['auth'])->group(function () {
-    Route::get('/asesi/payment/{id}/invoice', [PaymentController::class, 'downloadInvoice'])
-        ->name('payment.invoice');
-});
-
 // ====================================================
 // 4. API & UTILITIES (NON-AUTH / MIXED)
 // ====================================================
