@@ -40,7 +40,7 @@
     $statusClassSelesai = 'text-xs text-green-600 font-medium';
     $statusClassProses = 'text-xs text-blue-600 font-medium';
     $statusClassTunggu = 'text-xs text-yellow-600 font-medium';
-    $statusClassTerkunci = 'text-xs text-gray-400 font-medium'; 
+    $statusClassTerkunci = 'text-xs text-gray-400 font-medium';
 
     // BUTTON STYLES
     $btnBase = 'mt-2 px-4 py-1.5 text-xs font-semibold rounded-md inline-block transition-all';
@@ -126,11 +126,15 @@
                                 @php
                                     // Cek apakah user sudah selesai daftar (sudah TTD)
                                     $isSelesai = $sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI;
-                                    
+
                                     // Jika selesai, arahkan ke halaman berhasil. Jika belum, ke form input.
-                                    $targetUrl = $isSelesai 
-                                        ? route('asesi.pendaftaran.selesai') 
-                                        : route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]);
+                                    $targetUrl = $isSelesai
+                                        ? route('asesi.pendaftaran.selesai', [
+                                            'id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi,
+                                        ])
+                                        : route('asesi.data.sertifikasi', [
+                                            'id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi,
+                                        ]);
                                 @endphp
 
                                 <a href="{{ $targetUrl }}" class="{{ $linkClassEnabled }}">
@@ -250,9 +254,25 @@
                             </div>
 
                             <div class="{{ $responsiveCardClass }}">
-                                @if ($level >= $LVL_LUNAS && $unlockAPL02)
+
+                                @php
+                                    // Kita buat variabelnya dulu biar gak Undefined Variable
+                                    $isPraAsesmenSelesai = $level >= $LVL_PRA_ASESMEN;
+                                    $isPraAsesmenOpen = $level >= $LVL_LUNAS && $unlockAPL02;
+                                @endphp
+                                
+                                @if ($isPraAsesmenSelesai)
+                                    {{-- PERBAIKAN: Kirim parameter id_sertifikasi --}}
+                                    <a href="{{ route('asesi.pra_asesmen.selesai', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        class="{{ $linkClassEnabled }}">
+                                        Pra-Asesmen
+                                    </a>
+                                @elseif ($isPraAsesmenOpen)
+                                    {{-- Link ke Form Input (tetap) --}}
                                     <a href="{{ route('asesi.apl02.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                        class="{{ $linkClassEnabled }}">Pra-Asesmen</a>
+                                        class="{{ $linkClassEnabled }}">
+                                        Pra-Asesmen
+                                    </a>
                                 @else
                                     <span class="{{ $linkClassDisabled }}">Pra-Asesmen</span>
                                 @endif
@@ -420,238 +440,250 @@
 
                                 <div class="space-y-4">
                                     {{-- Sub 1: Portofolio --}}
-                                    @if($showPortofolio)
-                                    <div class="flex justify-between items-start space-x-4">
-                                        <div>
-                                            @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Verifikasi Portofolio</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Verifikasi Portofolio</h4>
-                                            @endif
+                                    @if ($showPortofolio)
+                                        <div class="flex justify-between items-start space-x-4">
+                                            <div>
+                                                @if ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Verifikasi Portofolio</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Verifikasi
+                                                        Portofolio</h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
-                                            @elseif ($level >= $LVL_SETUJU)
-                                                <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
+                                                @elseif ($level >= $LVL_SETUJU)
+                                                    <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
                                     @endif
 
                                     {{-- Sub 2: Observasi --}}
-                                    @if($showObservasi)
-                                    <div class="flex justify-between items-start space-x-4">
-                                        <div>
-                                            @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Ceklis Observasi</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Ceklis Observasi</h4>
-                                            @endif
+                                    @if ($showObservasi)
+                                        <div class="flex justify-between items-start space-x-4">
+                                            <div>
+                                                @if ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Ceklis Observasi</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Ceklis Observasi
+                                                    </h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
-                                            @elseif ($level >= $LVL_SETUJU)
-                                                <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
+                                                @elseif ($level >= $LVL_SETUJU)
+                                                    <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                                @endif
 
-                                            @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesi.ia02.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Tugas Praktik Demonstrasi</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Tugas Praktik Demonstrasi</h4>
-                                            @endif
+                                                @if ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <a href="{{ route('asesi.ia02.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Tugas Praktik Demonstrasi</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Tugas Praktik
+                                                        Demonstrasi</h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
-                                            @elseif ($level >= $LVL_SETUJU)
-                                                <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
+                                                @elseif ($level >= $LVL_SETUJU)
+                                                    <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                                @endif
 
-                                            @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesi.ia03.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Pertannyaan Mendukung Observasi</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan Mendukung Observasi</h4>
-                                            @endif
+                                                @if ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <a href="{{ route('asesi.ia03.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Pertannyaan Mendukung
+                                                        Observasi</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan
+                                                        Mendukung Observasi</h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
-                                            @elseif ($level >= $LVL_SETUJU)
-                                                <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
+                                                @elseif ($level >= $LVL_SETUJU)
+                                                    <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
                                     @endif
 
                                     {{-- Sub 3: Reviu Produk --}}
-                                    @if($showReviuProduk)
-                                    <div class="flex justify-between items-start space-x-4">
-                                        <div>
-                                            @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesi.ia11.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Ceklis Reviu Produk</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Ceklis Reviu Produk</h4>
-                                            @endif
+                                    @if ($showReviuProduk)
+                                        <div class="flex justify-between items-start space-x-4">
+                                            <div>
+                                                @if ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <a href="{{ route('asesi.ia11.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Ceklis Reviu Produk</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Ceklis Reviu
+                                                        Produk</h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
-                                            @elseif ($level >= $LVL_SETUJU)
-                                                <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
+                                                @elseif ($level >= $LVL_SETUJU)
+                                                    <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
                                     @endif
 
                                     {{-- Sub 4: Kegiatan --}}
-                                    @if($showKegiatan)
-                                    <div class="flex justify-between items-start space-x-4">
-                                        <div>
-                                            @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Daftar Instruksi Terstruktur</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Daftar Instruksi Terstruktur</h4>
-                                            @endif
+                                    @if ($showKegiatan)
+                                        <div class="flex justify-between items-start space-x-4">
+                                            <div>
+                                                @if ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Daftar Instruksi
+                                                        Terstruktur</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Daftar Instruksi
+                                                        Terstruktur</h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
-                                            @elseif ($level >= $LVL_SETUJU)
-                                                <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
+                                                @elseif ($level >= $LVL_SETUJU)
+                                                    <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
                                     @endif
 
                                     {{-- Sub 5: Tertulis --}}
-                                    @if($showTertulis)
-                                    <div class="flex justify-between items-start space-x-4">
-                                        <div>
-                                            @if ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Pertannyaan Pilihan Ganda</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan Pilihan Ganda</h4>
-                                            @endif
+                                    @if ($showTertulis)
+                                        <div class="flex justify-between items-start space-x-4">
+                                            <div>
+                                                @if ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Pertannyaan Pilihan Ganda</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan
+                                                        Pilihan Ganda</h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Silahkan Dikerjakan!</p>
-                                            @elseif ($pesanWaktu)
-                                                <p class="{{ $statusClassProses }}"> {{ $pesanWaktu }} </p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Menunggu Jadwal Asesmen</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Dikerjakan!</p>
+                                                @elseif ($pesanWaktu)
+                                                    <p class="{{ $statusClassProses }}"> {{ $pesanWaktu }} </p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Menunggu Jadwal Asesmen</p>
+                                                @endif
 
-                                            @if ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Pertannyaan Esai</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan Esai</h4>
-                                            @endif
+                                                @if ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Pertannyaan Esai</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan Esai
+                                                    </h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Silahkan Dikerjakan!</p>
-                                            @elseif ($pesanWaktu)
-                                                <p class="{{ $statusClassProses }}"> {{ $pesanWaktu }} </p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Menunggu Jadwal Asesmen</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Dikerjakan!</p>
+                                                @elseif ($pesanWaktu)
+                                                    <p class="{{ $statusClassProses }}"> {{ $pesanWaktu }} </p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Menunggu Jadwal Asesmen</p>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
                                     @endif
 
                                     {{-- Sub 6: Lisan --}}
-                                    @if($showLisan)
-                                    <div class="flex justify-between items-start space-x-4">
-                                        <div>
-                                            @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesi.ia07.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Pertannyaan Lisan</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan Lisan</h4>
-                                            @endif
+                                    @if ($showLisan)
+                                        <div class="flex justify-between items-start space-x-4">
+                                            <div>
+                                                @if ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <a href="{{ route('asesi.ia07.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Pertannyaan Lisan</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan
+                                                        Lisan</h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
-                                            @elseif ($level >= $LVL_SETUJU)
-                                                <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
+                                                @elseif ($level >= $LVL_SETUJU)
+                                                    <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
                                     @endif
 
                                     {{-- Sub 7: Wawancara --}}
-                                    @if($showWawancara)
-                                    <div class="flex justify-between items-start space-x-4">
-                                        <div>
-                                            @if ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                                    class="font-medium text-gray-800">Pertannyaan Wawancara</a>
-                                            @else
-                                                <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan Wawancara</h4>
-                                            @endif
+                                    @if ($showWawancara)
+                                        <div class="flex justify-between items-start space-x-4">
+                                            <div>
+                                                @if ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="font-medium text-gray-800">Pertannyaan Wawancara</a>
+                                                @else
+                                                    <h4 class="{{ $linkClassDisabled }} font-medium">Pertannyaan
+                                                        Wawancara</h4>
+                                                @endif
 
-                                            @if ($level >= $LVL_ASESMEN)
-                                                <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
-                                                <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
-                                            @elseif ($level >= $LVL_SETUJU && $unlockHasil)
-                                                <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
-                                            @elseif ($level >= $LVL_SETUJU)
-                                                <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
-                                            @else
-                                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
-                                            @endif
+                                                @if ($level >= $LVL_ASESMEN)
+                                                    <p class="{{ $statusClassSelesai }}">Rekomendasi Kompeten</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockAsesmen)
+                                                    <p class="{{ $statusClassProses }}">Sedang Asesmen</p>
+                                                @elseif ($level >= $LVL_SETUJU && $unlockHasil)
+                                                    <p class="{{ $statusClassProses }}">Silahkan Lihat Hasil Anda</p>
+                                                @elseif ($level >= $LVL_SETUJU)
+                                                    <p class="{{ $statusClassProses }}">Menunggu Jadwal Asesmen</p>
+                                                @else
+                                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
                                     @endif
 
                                 </div>
@@ -694,7 +726,8 @@
 
                             <div class="{{ $responsiveCardClass }}">
                                 @if ($unlockAK03)
-                                    <a href="{{ route('asesi.ak03.index', $sertifikasi->id_data_sertifikasi_asesi) }}" class="{{ $linkClassEnabled }}">Keputusan dan Umpan Balik
+                                    <a href="{{ route('asesi.ak03.index', $sertifikasi->id_data_sertifikasi_asesi) }}"
+                                        class="{{ $linkClassEnabled }}">Keputusan dan Umpan Balik
                                         Asesor</a>
                                 @else
                                     <span class="{{ $linkClassDisabled }}">Keputusan dan Umpan Balik Asesor</span>
@@ -747,7 +780,8 @@
 
                             <div class="{{ $responsiveCardClass }}">
                                 @if ($level >= $LVL_UMPAN_BALIK)
-                                    <a href="{{ route('asesi.banding.fr_ak04', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $linkClassEnabled }}">Umpan Balik Peserta /
+                                    <a href="{{ route('asesi.banding.fr_ak04', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        class="{{ $linkClassEnabled }}">Umpan Balik Peserta /
                                         Banding</a>
                                 @else
                                     <span class="{{ $linkClassDisabled }}">Umpan Balik Peserta / Banding</span>

@@ -359,7 +359,8 @@ Route::middleware('auth')->group(function () {
             // --- A. Tracker ---
             Route::controller(TrackerController::class)->group(function () {
                 Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
-                Route::get('/pendaftaran-selesai', 'pendaftaranSelesai')->name('pendaftaran.selesai');
+                Route::get('/pendaftaran-selesai/{id_sertifikasi}', 'pendaftaranSelesai')->name('pendaftaran.selesai');
+                Route::get('/pra-asesmen-selesai/{id_sertifikasi}', 'praAsesmenSelesai')->name('pra_asesmen.selesai');
             });
 
             // --- Riwayat Sertifikasi (REPLACEMENT FOR DASHBOARD) ---

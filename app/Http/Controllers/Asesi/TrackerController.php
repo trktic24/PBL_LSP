@@ -253,9 +253,36 @@ class TrackerController extends Controller
         }
     }
 
-    public function pendaftaranSelesai()
+    public function pendaftaranSelesai($id_sertifikasi)
     {
-        // Pastikan path view sesuai dengan folder kamu: views/tunggu_or_berhasil/berhasil.blade.php
-        return view('asesi.tunggu_or_berhasil.berhasil');
+        $user = Auth::user();
+        
+        // Ambil sertifikasi spesifik berdasarkan ID & User yang login (biar aman)
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
+            ->where('id_asesi', $user->asesi->id_asesi) // Pastikan punya dia
+            ->findOrFail($id_sertifikasi);
+
+        return view('asesi.tunggu_or_berhasil.berhasil', [
+            'sertifikasi' => $sertifikasi,
+            'asesi'       => $sertifikasi->asesi
+        ]);
+    }
+
+    /**
+     * Menampilkan halaman BERHASIL untuk Pra-Asesmen (APL-02)
+     */
+    public function praAsesmenSelesai($id_sertifikasi)
+    {
+        $user = Auth::user();
+
+        // Ambil sertifikasi spesifik
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
+            ->where('id_asesi', $user->asesi->id_asesi)
+            ->findOrFail($id_sertifikasi);
+
+        return view('asesi.tunggu_or_berhasil.berhasil', [
+            'sertifikasi' => $sertifikasi,
+            'asesi'       => $sertifikasi->asesi
+        ]);
     }
 }
