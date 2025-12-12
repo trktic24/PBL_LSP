@@ -146,7 +146,7 @@
 
                     <button type="button" id="save-submit-btn"
                         class="w-32 md:w-48 text-center px-4 md:px-8 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 shadow-md transition-all text-sm md:text-base shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Selanjutnya
+                        Simpan
                     </button>
                 </div>
 

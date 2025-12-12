@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Asesi;
 
 use App\Models\Admin;
-use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
+
+// ✅ TAMBAHAN PENTING: Import Facade PDF agar tidak error
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class Apl01PdfController extends Controller
 {
@@ -72,7 +74,9 @@ class Apl01PdfController extends Controller
             'logoLspBase64' => $logoLspBase64,
         ];
 
-        $pdf = PDF::loadView('pdf.apl01', $data);
+        // Kode pembuatan PDF
+        $pdf = PDF::loadView('pdf.apl_01', $data);
+        
         $nama = $dataSertifikasi->asesi->nama_lengkap;
         $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
         $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
