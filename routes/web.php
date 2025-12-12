@@ -16,6 +16,12 @@ use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\IA10Controller;
+use App\Http\Controllers\IA02Controller;
+use App\Http\Controllers\Ia06Controller;
+use App\Http\Controllers\IA07Controller;
+use App\Http\Controllers\APL01Controller;
+use App\Http\Controllers\FrMapa01Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +111,13 @@ Route::get('/api/search-countries', [CountryController::class, 'search'])->name(
 //ROUTES PDF
 Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF'])->name('mapa02.cetak_pdf');
 Route::get('/ia05/cetak/{id_asesi}', [IA05Controller::class, 'cetakPDF'])->name('ia05.cetak_pdf');
+Route::get('/ia10/cetak/{id_asesi}', [IA10Controller::class, 'cetakPDF'])->name('ia10.cetak_pdf');
+Route::get('/ia02/cetak/{id}', [IA02Controller::class, 'cetakPDF'])->name('ia02.cetak_pdf');
+Route::get('/ia06/cetak/{id}', [Ia06Controller::class, 'cetakPDF'])->name('ia06.cetak_pdf');
+Route::get('/ia07/cetak/{id}', [IA07Controller::class, 'cetakPDF'])->name('ia07.cetak_pdf');
+Route::get('/apl01/cetak/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.cetak_pdf');
+Route::get('/mapa01/cetak/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.cetak_pdf');
+
 
 /*
 |--------------------------------------------------------------------------

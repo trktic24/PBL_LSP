@@ -10,6 +10,7 @@ use App\Models\Skema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class Ia06Controller extends Controller
 {
@@ -199,6 +200,36 @@ class Ia06Controller extends Controller
         });
 
         return back()->with('success', 'Penilaian berhasil disimpan.');
+    }
+
+    public function cetakPDF($idSertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'jadwal.skema', 
+            'jadwal.asesor',
+            'jadwal.tuk',
+            'asesi'
+        ])->findOrFail($idSertifikasi);
+
+        // 2. Ambil Jawaban & Soal
+        $daftar_soal = JawabanIa06::with('soal')
+            ->where('id_data_sertifikasi_asesi', $idSertifikasi)
+            ->get();
+
+        // 3. Ambil Umpan Balik
+        $umpanBalik = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
+
+        // 4. Render PDF
+        $pdf = Pdf::loadView('pdf.ia_06', [
+            'sertifikasi' => $sertifikasi,
+            'daftar_soal' => $daftar_soal,
+            'umpanBalik'  => $umpanBalik
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR_IA_06_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
     }
 
 

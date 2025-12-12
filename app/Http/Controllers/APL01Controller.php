@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class APL01Controller extends Controller
 {
@@ -74,5 +75,31 @@ class APL01Controller extends Controller
 
         // 2. Redirect ke halaman selanjutnya (misal APL-02)
         return redirect()->route('APL_01_3', ['id' => $id_sertifikasi]); 
-    }       
+    }   
+    
+    public function cetakPDF($id)
+    {
+        // 1. Ambil Data Lengkap (Asesi, Skema, Unit Kompetensi, Pekerjaan)
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi.user',
+            'asesi.dataPekerjaan', // Pastikan relasi ini ada di model Asesi
+            'jadwal.skema.unitKompetensi' // Ambil unit kompetensi dari skema
+        ])->findOrFail($id);
+
+        $asesi = $sertifikasi->asesi;
+        $skema = $sertifikasi->jadwal->skema;
+        $unitKompetensi = $skema->unitKompetensi ?? collect();
+
+        // 2. Render PDF
+        $pdf = Pdf::loadView('pdf.apl_01', [
+            'sertifikasi'    => $sertifikasi,
+            'asesi'          => $asesi,
+            'skema'          => $skema,
+            'unitKompetensi' => $unitKompetensi
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR_APL_01_' . $asesi->nama_lengkap . '.pdf');
+    }
 }

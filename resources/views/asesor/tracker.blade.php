@@ -63,16 +63,16 @@
                             <div class="flex space-x-2 ml-4">
                                 {{-- Tombol Dinamis --}}
                                 <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Lihat File</a>
-                            <a href="#" 
-                            class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                
-                                {{-- Ikon SVG Dokumen --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                </svg>
-                                
-                                <span>Lihat PDF</span>
-                            </a>
+                            {{-- Tombol 2: Lihat PDF (FR.APL.01) --}}
+                                <a href="{{ route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                    
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    
+                                    <span>Lihat PDF</span>
+                                </a>
                             </div>
                         </div>
                         {{-- Status Badge --}}
@@ -168,16 +168,16 @@
                             <div class="flex space-x-2 ml-4">
                                 {{-- Tombol Dinamis --}}
                                 <a href="{{ route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Lihat File</a>
-                            <a href="#" 
-                            class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                
-                                {{-- Ikon SVG Dokumen --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                </svg>
-                                
-                                <span>Lihat PDF</span>
-                            </a>
+                            {{-- Tombol 2: Lihat PDF (MAPA.01) --}}
+                                <a href="{{ route('mapa01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                    
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    
+                                    <span>Lihat PDF</span>
+                                </a>
                             </div>
                         </div>
                         {{-- Status Badge --}}
@@ -395,10 +395,14 @@
                                         Lihat File
                                     </a>
 
-                                    <a href="#" class="{{ $stIa10 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                    {{-- Tombol 2: Lihat PDF --}}
+                                    <a href="{{ route('ia10.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                        
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
+                                        
                                         <span>Lihat PDF</span>
                                     </a>
                                 </div>
@@ -439,10 +443,14 @@
                                        class="{{ $stIa02 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
                                         Lihat File
                                     </a>
-                                    <a href="#" class="{{ $stIa02 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                    {{-- Tombol 2: Lihat PDF (IA.02) --}}
+                                    <a href="{{ route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                        
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
+                                        
                                         <span>Lihat PDF</span>
                                     </a>
                                 </div>
@@ -475,10 +483,14 @@
                                        class="{{ $stIa06 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
                                         Lihat File
                                     </a>
-                                    <a href="#" class="{{ $stIa06 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                    {{-- Tombol 2: Lihat PDF (IA.06) --}}
+                                    <a href="{{ route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                        
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
+                                        
                                         <span>Lihat PDF</span>
                                     </a>
                                 </div>
@@ -510,10 +522,14 @@
                                        class="{{ $stIa07 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
                                         Lihat File
                                     </a>
-                                    <a href="#" class="{{ $stIa07 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700' }} text-xs font-bold py-1 px-3 rounded-md transition flex items-center gap-1">
+                                    {{-- Tombol 2: Lihat PDF (IA.07) --}}
+                                    <a href="{{ route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                        
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
+                                        
                                         <span>Lihat PDF</span>
                                     </a>
                                 </div>

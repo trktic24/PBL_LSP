@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FR.MAPA.01 MERENCANAKAN AKTIVITAS DAN PROSES ASESMEN</title>
+    <title>FR.MAPA.01 - Merencanakan Aktivitas dan Proses Asesmen</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 10pt; }
-        .header { font-weight: bold; font-size: 12pt; text-align: center; margin-bottom: 10px; border-bottom: 2px solid black; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; page-break-inside: avoid; }
+        body { font-family: Arial, sans-serif; font-size: 11px; }
+        .header { font-size: 14px; font-weight: bold; margin-bottom: 20px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
         th, td { border: 1px solid black; padding: 4px; vertical-align: top; }
-        .no-border { border: none !important; }
-        .no-border td { border: none !important; }
+        th { background-color: #e2e8f0; text-align: center; font-weight: bold; }
+        .no-border, .no-border td { border: none !important; }
         .text-center { text-align: center; }
         .font-bold { font-weight: bold; }
-        .bg-gray { background-color: #f0f0f0; }
-        .checkbox { display: inline-block; width: 12px; height: 12px; border: 1px solid black; margin-right: 5px; position: relative; top: 2px; }
-        .checkbox.checked { background-color: black; }
-        .input-line { border-bottom: 1px solid black; display: inline-block; min-width: 100px; }
-        .text-sm { font-size: 9pt; }
+        .bg-gray { background-color: #f3f4f6; }
+        .section-title { font-weight: bold; font-size: 12px; margin-top: 15px; margin-bottom: 5px; }
+        
+        /* Simbol Checklist */
+        .check-mark { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -24,318 +24,253 @@
         FR.MAPA.01. MERENCANAKAN AKTIVITAS DAN PROSES ASESMEN
     </div>
 
-    {{-- INFO SKEMA --}}
     <table class="no-border" style="margin-bottom: 15px;">
         <tr>
-            <td width="200" class="font-bold">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)</td>
+            <td width="200"><strong>Skema Sertifikasi (KKNI/Okupasi/Klaster)</strong></td>
             <td width="10">:</td>
             <td>
-                <strong>Judul:</strong> Junior Web Programmer<br>
-                <strong>Nomor:</strong> -
+                <strong>Judul:</strong> {{ $sertifikasi->jadwal->skema->judul_skema ?? '-' }} <br>
+                <strong>Nomor:</strong> {{ $sertifikasi->jadwal->skema->kode_skema ?? '-' }}
             </td>
         </tr>
     </table>
 
-    {{-- 1. MENENTUKAN PENDEKATAN ASESMEN --}}
-    <div class="font-bold" style="margin-bottom: 5px;">1. Menentukan Pendekatan Asesmen</div>
+    <div class="section-title">1. Menentukan Pendekatan Asesmen</div>
     <table>
         <tr>
-            <td rowspan="5" class="text-center font-bold" width="30">1.1</td>
-            <td rowspan="5" class="font-bold" width="100">Asesi</td>
+            <td rowspan="5" width="5%" class="text-center font-bold">1.1</td>
+            <td rowspan="5" width="20%" class="font-bold">Asesi</td>
             <td>
-                <div class="checkbox"></div> Hasil pelatihan dan / atau pendidikan, dimana Kurikulum dan fasilitas praktek mampu telusur terhadap standar kompetensi
+                <span class="check-mark">[{!! in_array('Hasil pelatihan dan atau pendidikan, Kurikulum & fasilitas telusur', $mapa01->pendekatan_asesmen ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> 
+                Hasil pelatihan dan / atau pendidikan...
             </td>
         </tr>
         <tr>
             <td>
-                <div class="checkbox"></div> Hasil pelatihan dan / atau pendidikan, dimana kurikulum belum berbasis kompetensi.
+                <span class="check-mark">[{!! in_array('Hasil pelatihan - belum berbasis kompetensi', $mapa01->pendekatan_asesmen ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> 
+                Hasil pelatihan - belum berbasis kompetensi
             </td>
         </tr>
         <tr>
             <td>
-                <div class="checkbox"></div> Pekerja berpengalaman, dimana berasal dari industri/tempat kerja yang dalam operasionalnya mampu telusur dengan standar kompetensi
+                <span class="check-mark">[{!! in_array('Pekerja berpengalaman - telusur', $mapa01->pendekatan_asesmen ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> 
+                Pekerja berpengalaman - telusur
             </td>
         </tr>
         <tr>
             <td>
-                <div class="checkbox"></div> Pekerja berpengalaman, dimana berasal dari industri/tempat kerja yang dalam operasionalnya belum berbasis kompetensi.
+                <span class="check-mark">[{!! in_array('Pekerja berpengalaman - belum berbasis kompetensi', $mapa01->pendekatan_asesmen ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> 
+                Pekerja berpengalaman - belum berbasis kompetensi
             </td>
         </tr>
         <tr>
             <td>
-                <div class="checkbox"></div> Pelatihan / belajar mandiri atau otodidak.
+                <span class="check-mark">[{!! in_array('Pelatihan / belajar mandiri', $mapa01->pendekatan_asesmen ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> 
+                Pelatihan / belajar mandiri atau otodidak
             </td>
         </tr>
-        {{-- Tujuan Sertifikasi --}}
+
         <tr>
             <td></td>
             <td class="font-bold">Tujuan Sertifikasi</td>
             <td>
-                <span style="margin-right: 15px;"><div class="checkbox checked"></div> Sertifikasi</span>
-                <span style="margin-right: 15px;"><div class="checkbox"></div> PKT</span>
-                <span style="margin-right: 15px;"><div class="checkbox"></div> RPL</span>
-                <span style="margin-right: 15px;"><div class="checkbox"></div> Lainnya</span>
+                @php $tujuan = $mapa01->tujuan_sertifikasi ?? 'Sertifikasi'; @endphp
+                [{!! $tujuan == 'Sertifikasi' ? 'V' : '&nbsp;&nbsp;' !!}] Sertifikasi &nbsp;&nbsp;
+                [{!! $tujuan == 'PKT' ? 'V' : '&nbsp;&nbsp;' !!}] PKT &nbsp;&nbsp;
+                [{!! $tujuan == 'RPL' ? 'V' : '&nbsp;&nbsp;' !!}] RPL &nbsp;&nbsp;
+                [{!! $tujuan == 'Lainnya' ? 'V' : '&nbsp;&nbsp;' !!}] Lainnya
             </td>
         </tr>
-        {{-- Konteks Asesmen --}}
+
         <tr>
             <td rowspan="3"></td>
             <td rowspan="3" class="font-bold">Konteks Asesmen</td>
             <td>
-                <strong>Lingkungan:</strong>
-                <span style="margin-left: 10px;"><div class="checkbox"></div> Tempat kerja nyata</span>
-                <span style="margin-left: 10px;"><div class="checkbox"></div> Tempat kerja simulasi</span>
+                <strong>Lingkungan:</strong><br>
+                <span class="check-mark">[{!! in_array('Tempat kerja nyata', $mapa01->konteks_lingkungan ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Tempat kerja nyata &nbsp;&nbsp;
+                <span class="check-mark">[{!! in_array('Tempat kerja simulasi', $mapa01->konteks_lingkungan ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Tempat kerja simulasi
             </td>
         </tr>
         <tr>
             <td>
-                <strong>Peluang mengumpulkan bukti:</strong>
-                <span style="margin-left: 10px;"><div class="checkbox"></div> Tersedia</span>
-                <span style="margin-left: 10px;"><div class="checkbox"></div> Terbatas</span>
+                <strong>Peluang mengumpulkan bukti:</strong><br>
+                <span class="check-mark">[{!! in_array('Tersedia', $mapa01->peluang_bukti ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Tersedia &nbsp;&nbsp;
+                <span class="check-mark">[{!! in_array('Terbatas', $mapa01->peluang_bukti ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Terbatas
             </td>
         </tr>
         <tr>
             <td>
                 <strong>Siapa yang melakukan asesmen:</strong><br>
-                <div class="checkbox"></div> Lembaga Sertifikasi<br>
-                <div class="checkbox"></div> Organisasi Pelatihan<br>
-                <div class="checkbox"></div> Asesor Perusahaan
+                <span class="check-mark">[{!! in_array('Lembaga Sertifikasi', $mapa01->pelaksana_asesmen ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Lembaga Sertifikasi<br>
+                <span class="check-mark">[{!! in_array('Organisasi Pelatihan', $mapa01->pelaksana_asesmen ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Organisasi Pelatihan<br>
+                <span class="check-mark">[{!! in_array('Asesor Perusahaan', $mapa01->pelaksana_asesmen ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Asesor Perusahaan
             </td>
         </tr>
-        {{-- Konfirmasi Orang Relevan --}}
+        
         <tr>
             <td rowspan="4"></td>
-            <td rowspan="4" class="font-bold">Konfirmasi dengan orang yang relevan</td>
-            <td><div class="checkbox"></div> Manajer sertifikasi LSP</td>
+            <td rowspan="4" class="font-bold">Konfirmasi dengan orang relevan</td>
+            <td><span class="check-mark">[{!! in_array('Manajer sertifikasi LSP', $mapa01->konfirmasi_relevan ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Manajer sertifikasi LSP</td>
         </tr>
+        <tr><td><span class="check-mark">[{!! in_array('Master Asesor / Master Trainer / Lead Asesor Kompetensi', $mapa01->konfirmasi_relevan ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Master Asesor...</td></tr>
+        <tr><td><span class="check-mark">[{!! in_array('Manajer Pelatihan Lembaga Training terakreditasi / Lembaga Training terdaftar', $mapa01->konfirmasi_relevan ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Manajer Pelatihan...</td></tr>
+        <tr><td><span class="check-mark">[{!! in_array('Manajer atau Supervisor ditempat kerja', $mapa01->konfirmasi_relevan ?? []) ? 'V' : '&nbsp;&nbsp;' !!}]</span> Manajer atau Supervisor...</td></tr>
+
         <tr>
-            <td><div class="checkbox"></div> Master Asesor / Master Trainer / Lead Asesor Kompetensi</td>
-        </tr>
-        <tr>
-            <td><div class="checkbox"></div> Manajer Pelatihan Lembaga Training terakreditasi / Lembaga Training terdaftar</td>
-        </tr>
-        <tr>
-            <td><div class="checkbox"></div> Manajer atau Supervisor ditempat kerja</td>
-        </tr>
-        {{-- 1.2 Standar Industri --}}
-        <tr>
-            <td class="text-center font-bold">1.2</td>
-            <td class="font-bold">Standar Industri / Tempat Kerja</td>
+            <td class="font-bold text-center">1.2</td>
+            <td class="font-bold">Standar Industri</td>
             <td>
-                <div style="margin-bottom: 5px;"><strong>Standar Kompetensi:</strong> SKKNI Junior Web Programmer</div>
-                <div style="margin-bottom: 5px;"><strong>Spesifikasi Produk:</strong> Aplikasi Web Sederhana</div>
-                <div><strong>Pedoman Khusus:</strong> SOP Pengembangan Perangkat Lunak</div>
+                <strong>Standar Kompetensi:</strong> {{ $mapa01->standar_kompetensi ?? '-' }} <br>
+                <strong>Spesifikasi Produk:</strong> {{ $mapa01->spesifikasi_produk ?? '-' }} <br>
+                <strong>Pedoman Khusus:</strong> {{ $mapa01->pedoman_khusus ?? '-' }}
             </td>
         </tr>
     </table>
 
-    {{-- 2. PERENCANAAN ASESMEN --}}
-    <div class="font-bold" style="margin-bottom: 5px; margin-top: 15px;">2. Perencanaan Asesmen</div>
+    <div class="section-title">2. Perencanaan Asesmen</div>
     
-    <div style="font-size: 9pt; font-weight: bold; margin-bottom: 5px;">Kelompok Pekerjaan 1</div>
-    <table style="background-color: #f9f9f9; width: 60%;">
+    <div style="font-weight: bold; margin-bottom: 5px;">Kelompok Pekerjaan 1</div>
+    <table>
         <thead>
             <tr>
-                <th width="30">No.</th>
-                <th>Kode Unit</th>
-                <th>Judul Unit</th>
+                <th width="10%">No.</th>
+                <th width="30%">Kode Unit</th>
+                <th width="60%">Judul Unit</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td class="text-center">1.</td>
-                <td class="text-center">J.620100.004.02</td>
-                <td>Mengimplementasikan User Interface</td>
-            </tr>
-            <tr>
-                <td class="text-center">2.</td>
-                <td class="text-center">J.620100.011.01</td>
-                <td>Melakukan Debugging</td>
-            </tr>
+            @if(isset($mapa01->kelompok1) && count($mapa01->kelompok1) > 0)
+                @foreach($mapa01->kelompok1 as $idx => $unit)
+                <tr>
+                    <td class="text-center">{{ $idx + 1 }}.</td>
+                    <td class="text-center">{{ $unit['kode_unit'] ?? '-' }}</td>
+                    <td>{{ $unit['judul_unit'] ?? '-' }}</td>
+                </tr>
+                @endforeach
+            @else
+                <tr><td colspan="3" class="text-center">Data Unit belum diisi.</td></tr>
+            @endif
         </tbody>
     </table>
 
-    {{-- TABEL CHECKLIST BESAR --}}
-    <table style="font-size: 8pt;">
+    <div style="margin-top: 10px;"></div>
+    <table>
         <thead>
-            <tr class="bg-gray">
-                <th rowspan="2" width="15%">Unit Kompetensi</th>
-                <th rowspan="2" width="25%">Bukti-Bukti<br><i>(Kinerja, Produk, Portofolio, dan / atau Pengetahuan)</i></th>
+            <tr>
+                <th rowspan="2" width="25%">Unit Kompetensi</th>
+                <th rowspan="2" width="25%">Bukti-Bukti</th>
                 <th colspan="3">Jenis Bukti</th>
                 <th colspan="6">Metode dan Perangkat Asesmen</th>
             </tr>
-            <tr class="bg-gray">
-                <th width="3%">L</th>
-                <th width="3%">TL</th>
-                <th width="3%">T</th>
-                <th width="8%">Observasi langsung</th>
-                <th width="8%">Kegiatan Terstruktur</th>
-                <th width="8%">Tanya Jawab</th>
-                <th width="8%">Verifikasi Portofolio</th>
-                <th width="8%">Reviu Produk</th>
-                <th width="8%">Verifikasi Pihak Ketiga</th>
+            <tr>
+                <th width="5%">L</th>
+                <th width="5%">TL</th>
+                <th width="5%">T</th>
+                <th width="5%">Obs</th>
+                <th width="5%">Keg</th>
+                <th width="5%">Tny</th>
+                <th width="5%">Ver</th>
+                <th width="5%">Rev</th>
+                <th width="5%">VPK</th>
             </tr>
         </thead>
         <tbody>
-            {{-- Unit 1 --}}
-            <tr>
-                <td><strong>1. Mengimplementasikan User Interface</strong></td>
-                <td>
-                    {{-- Area untuk Bukti --}}
-                    <div style="height: 50px; border-bottom: 1px dotted #ccc;"></div>
-                </td>
-                
-                <td class="text-center"><div class="checkbox"></div></td> {{-- L --}}
-                <td class="text-center"><div class="checkbox"></div></td> {{-- TL --}}
-                <td class="text-center"><div class="checkbox"></div></td> {{-- T --}}
-
-                <td class="text-center"><div class="checkbox checked"></div></td> {{-- Observasi (Checked) --}}
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td class="text-center"><div class="checkbox checked"></div></td> {{-- Reviu Produk (Checked) --}}
-                <td class="text-center"><div class="checkbox"></div></td>
-            </tr>
-
-            {{-- Unit 2 --}}
-            <tr>
-                <td><strong>2. Melakukan Debugging</strong></td>
-                <td>
-                    <div style="height: 50px; border-bottom: 1px dotted #ccc;"></div>
-                </td>
-                
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td class="text-center"><div class="checkbox"></div></td>
-
-                <td class="text-center"><div class="checkbox checked"></div></td> {{-- Observasi (Checked) --}}
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td class="text-center"><div class="checkbox checked"></div></td> {{-- Tanya Jawab (Checked) --}}
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td class="text-center"><div class="checkbox"></div></td>
-            </tr>
+            @if(isset($mapa01->unit_kompetensi) && count($mapa01->unit_kompetensi) > 0)
+                @foreach($mapa01->unit_kompetensi as $idx => $u)
+                <tr>
+                    <td>{{ $idx + 1 }}. {{ $u['judul_unit'] ?? 'Unit ' . ($idx+1) }}</td> <td>{{ $u['bukti'] ?? '-' }}</td>
+                    
+                    <td class="text-center check-mark">{{ isset($u['L']) ? 'V' : '' }}</td>
+                    <td class="text-center check-mark">{{ isset($u['TL']) ? 'V' : '' }}</td>
+                    <td class="text-center check-mark">{{ isset($u['T']) ? 'V' : '' }}</td>
+                    
+                    <td class="text-center check-mark">{{ isset($u['observasi']) ? 'V' : '' }}</td>
+                    <td class="text-center check-mark">{{ isset($u['kegiatan_terstruktur']) ? 'V' : '' }}</td>
+                    <td class="text-center check-mark">{{ isset($u['tanya_jawab']) ? 'V' : '' }}</td>
+                    <td class="text-center check-mark">{{ isset($u['verifikasi_portofolio']) ? 'V' : '' }}</td>
+                    <td class="text-center check-mark">{{ isset($u['reviu_produk']) ? 'V' : '' }}</td>
+                    <td class="text-center check-mark">{{ isset($u['verifikasi_pihak_ketiga']) ? 'V' : '' }}</td>
+                </tr>
+                @endforeach
+            @else
+                <tr><td colspan="11" class="text-center">Belum ada data bukti.</td></tr>
+            @endif
         </tbody>
     </table>
 
-    {{-- 3. MODIFIKASI DAN KONTEKSTUALISASI --}}
-    <div class="font-bold" style="margin-bottom: 5px; margin-top: 15px;">3. Mengidentifikasi Persyaratan Modifikasi dan Kontekstualisasi</div>
+    <div class="section-title">3. Modifikasi dan Kontekstualisasi</div>
     <table>
-        {{-- 3.1 a --}}
         <tr>
-            <td rowspan="2" class="text-center font-bold" width="30">3.1</td>
-            <td width="200">a. Karakteristik Kandidat</td>
+            <td width="5%" class="text-center font-bold">3.1</td>
+            <td width="35%">a. Karakteristik Kandidat</td>
             <td>
-                <div style="margin-bottom: 5px;"><div class="checkbox"></div> Ada / Tidak ada karakteristik khusus:</div>
-                <div style="border: 1px solid #ccc; height: 40px;"></div>
+                <strong>[{!! ($mapa01->karakteristik_ada_checkbox ?? false) ? 'V' : '&nbsp;&nbsp;' !!}] Ada</strong> <br>
+                {{ $mapa01->karakteristik_kandidat ?? '-' }}
             </td>
         </tr>
-        {{-- 3.1 b --}}
         <tr>
-            <td>b. Kebutuhan kontekstualisasi</td>
+            <td></td>
+            <td>b. Kebutuhan Kontekstualisasi</td>
             <td>
-                <div style="margin-bottom: 5px;"><div class="checkbox"></div> Ada / Tidak ada kebutuhan kontekstualisasi:</div>
-                <div style="border: 1px solid #ccc; height: 40px;"></div>
+                <strong>[{!! ($mapa01->kebutuhan_kontekstualisasi_checkbox ?? false) ? 'V' : '&nbsp;&nbsp;' !!}] Ada</strong> <br>
+                {{ $mapa01->kebutuhan_kontekstualisasi ?? '-' }}
             </td>
         </tr>
-        {{-- 3.2 --}}
         <tr>
             <td class="text-center font-bold">3.2</td>
-            <td>Saran dari paket pelatihan / pengembang</td>
+            <td>Saran dari paket pelatihan</td>
             <td>
-                <div style="margin-bottom: 5px;"><div class="checkbox"></div></div>
-                <div style="border: 1px solid #ccc; height: 40px;"></div>
+                <strong>[{!! ($mapa01->saran_paket_checkbox ?? false) ? 'V' : '&nbsp;&nbsp;' !!}] Ada</strong> <br>
+                {{ $mapa01->saran_paket_pelatihan ?? '-' }}
             </td>
         </tr>
-        {{-- 3.3 --}}
         <tr>
             <td class="text-center font-bold">3.3</td>
             <td>Penyesuaian perangkat asesmen</td>
             <td>
-                <div style="margin-bottom: 5px;"><div class="checkbox"></div></div>
-                <div style="border: 1px solid #ccc; height: 40px;"></div>
+                <strong>[{!! ($mapa01->penyesuaian_perangkat_checkbox ?? false) ? 'V' : '&nbsp;&nbsp;' !!}] Ada</strong> <br>
+                {{ $mapa01->penyesuaian_perangkat_asesmen ?? '-' }}
             </td>
         </tr>
     </table>
 
-    {{-- KONFIRMASI DENGAN ORANG RELEVAN --}}
-    <div class="font-bold" style="margin-bottom: 5px; margin-top: 15px;">Konfirmasi dengan orang yang relevan</div>
+    <div class="section-title">Penyusun dan Validator</div>
     <table>
-        <thead class="bg-gray">
+        <thead>
             <tr>
-                <th colspan="2">Orang yang relevan</th>
-                <th>Nama</th>
-                <th>Tandatangan dan Tanggal</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="text-center" width="30"><div class="checkbox"></div></td>
-                <td>Manajer sertifikasi LSP</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td>Master Asesor / Master Trainer / Lead Asesor Kompetensi</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td>Manajer pelatihan Lembaga Training terakreditasi</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="text-center"><div class="checkbox"></div></td>
-                <td>Manajer atau supervisor ditempat kerja</td>
-                <td></td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
-
-    {{-- PENYUSUN DAN VALIDATOR --}}
-    <div class="font-bold" style="margin-bottom: 5px; margin-top: 15px;">PENYUSUN DAN VALIDATOR</div>
-    <table>
-        <thead class="bg-gray">
-            <tr>
-                <th width="15%">STATUS</th>
-                <th width="5%">NO</th>
-                <th width="30%">NAMA</th>
-                <th width="20%">NOMOR MET</th>
+                <th>STATUS</th>
+                <th>NO</th>
+                <th>NAMA</th>
+                <th>NOMOR MET</th>
                 <th>TANDA TANGAN DAN TANGGAL</th>
             </tr>
         </thead>
         <tbody>
-            {{-- Penyusun --}}
             <tr>
-                <td rowspan="2" class="text-center font-bold align-middle bg-gray">PENYUSUN</td>
+                <td rowspan="2" class="text-center font-bold">PENYUSUN</td>
                 <td class="text-center">1</td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{ $mapa01->penyusun[0]['nama'] ?? '-' }}</td>
+                <td>{{ $mapa01->penyusun[0]['nomor_met'] ?? '-' }}</td>
+                <td>{{ $mapa01->penyusun[0]['ttd_tanggal'] ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="text-center">2</td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{ $mapa01->penyusun[1]['nama'] ?? '-' }}</td>
+                <td>{{ $mapa01->penyusun[1]['nomor_met'] ?? '-' }}</td>
+                <td>{{ $mapa01->penyusun[1]['ttd_tanggal'] ?? '-' }}</td>
             </tr>
-            {{-- Validator --}}
             <tr>
-                <td rowspan="2" class="text-center font-bold align-middle bg-gray">VALIDATOR</td>
+                <td rowspan="2" class="text-center font-bold">VALIDATOR</td>
                 <td class="text-center">1</td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{ $mapa01->validator[0]['nama'] ?? '-' }}</td>
+                <td>{{ $mapa01->validator[0]['nomor_met'] ?? '-' }}</td>
+                <td>{{ $mapa01->validator[0]['ttd_tanggal'] ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="text-center">2</td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{ $mapa01->validator[1]['nama'] ?? '-' }}</td>
+                <td>{{ $mapa01->validator[1]['nomor_met'] ?? '-' }}</td>
+                <td>{{ $mapa01->validator[1]['ttd_tanggal'] ?? '-' }}</td>
             </tr>
         </tbody>
     </table>

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IA02Controller extends Controller
 {
@@ -80,4 +81,33 @@ class IA02Controller extends Controller
         return redirect()->back()
             ->with('success', 'Data Skenario FR.IA.02 berhasil disimpan!');
     }
+
+    public function cetakPDF($id)
+    {
+        // 1. Ambil Data Sertifikasi Lengkap
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.tuk',
+            'jadwal.skema.asesor',
+            'jadwal.skema.unitKompetensi.kelompokPekerjaan' // Pastikan relasi ini ada di model Skema/Unit
+        ])->findOrFail($id);
+
+        // 2. Ambil Data Skenario (IA02)
+        $skenario = ia02::where('id_data_sertifikasi_asesi', $id)->first();
+
+        // 3. Ambil Unit Kompetensi
+        $unitKompetensis = $sertifikasi->jadwal->skema->unitKompetensi ?? collect();
+
+        // 4. Render PDF
+        $pdf = Pdf::loadView('pdf.ia_02', [
+            'sertifikasi'     => $sertifikasi,
+            'skenario'        => $skenario,
+            'unitKompetensis' => $unitKompetensis
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR_IA_02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    }
+
 }

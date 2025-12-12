@@ -8,6 +8,7 @@ use App\Models\Ia10;
 use App\Models\PertanyaanIa10;
 use App\Models\DetailIa10;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IA10Controller extends Controller
 {
@@ -121,4 +122,43 @@ class IA10Controller extends Controller
             return redirect()->back()->with('error', 'Terjadi Kesalahan: ' . $e->getMessage());
         }
     }
+
+    public function cetakPDF($id_asesi)
+    {
+        // 1. Ambil Data Asesi Lengkap
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.tuk',
+            'jadwal.skema.asesor',
+        ])->findOrFail($id_asesi);
+
+        // 2. Ambil Header IA10
+        $header_ia10 = Ia10::where('id_data_sertifikasi_asesi', $id_asesi)->first();
+
+        // 3. Ambil Checklist Pertanyaan
+        $daftar_soal = PertanyaanIa10::where('id_data_sertifikasi_asesi', $id_asesi)->get();
+
+        // 4. Ambil Jawaban Essay dan Mapping kuncinya
+        $essay_answers = [];
+        if ($header_ia10) {
+            $details = DetailIa10::where('id_ia10', $header_ia10->id_ia10)->get();
+            foreach($details as $dt) {
+                // Key array = Pertanyaan, Value = Jawaban
+                $essay_answers[$dt->isi_detail] = $dt->jawaban;
+            }
+        }
+
+        // 5. Render PDF
+        $pdf = Pdf::loadView('pdf.ia_10', [
+            'asesi'         => $asesi,
+            'header'        => $header_ia10,
+            'daftar_soal'   => $daftar_soal,
+            'essay_answers' => $essay_answers
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR_IA_10_' . $asesi->asesi->nama_lengkap . '.pdf');
+    }
+
 }
