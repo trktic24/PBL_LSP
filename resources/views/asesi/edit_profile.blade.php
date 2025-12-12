@@ -36,82 +36,248 @@
                 <p>Profile berhasil diperbarui!</p>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <form action="{{ route('asesi.profile.update') }}" method="POST">
+                @csrf
+                @method('PATCH')
                 
-                <div class="md:flex">
-                    <!-- Left Side: Profile Card -->
-                    <div class="w-full md:w-1/3 bg-blue-600 p-8 text-white flex flex-col items-center justify-center text-center">
-                        <div class="relative mb-6">
-                            <div class="h-32 w-32 rounded-full bg-white text-blue-600 flex items-center justify-center text-5xl font-bold shadow-lg border-4 border-blue-200">
-                                @php
-                                    $user = Auth::user();
-                                    $nama = $user->asesi->nama_lengkap ?? $user->username;
-                                    $initials = collect(explode(' ', $nama))->take(2)->map(fn($w) => substr($w,0,1))->join('');
-                                @endphp
-                                {{ strtoupper($initials) }}
-                            </div>
+                <div class="max-w-6xl mx-auto mt-8 bg-white p-8 rounded-lg shadow-md relative pb-24">
+                
+                    <!-- Foto Profil -->
+                    <div class="flex flex-col items-center space-y-2 mb-10">
+                        <div class="h-32 w-32 rounded-full bg-white text-blue-600 flex items-center justify-center text-5xl font-bold shadow-lg border-4 border-blue-500 overflow-hidden relative group">
+                             @php
+                                $user = Auth::user();
+                                $nama = $user->asesi->nama_lengkap ?? $user->username;
+                                // Simple Initials
+                                $initials = collect(explode(' ', $nama))->take(2)->map(fn($w) => substr($w,0,1))->join('');
+                            @endphp
+                            <!-- Placeholder Initials if no image (can be replaced with actual image logic later) -->
+                            <span class="z-0">{{ strtoupper($initials) }}</span>
+                            
+                            {{-- Optional: Upload Overlay --}}
+                            <!-- <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <i class="fas fa-camera text-white text-2xl"></i>
+                            </div> -->
                         </div>
-                        <h2 class="text-xl font-bold mb-1">{{ $nama }}</h2>
-                        <p class="text-blue-100 text-sm mb-4">{{ $user->email }}</p>
-                        <div class="bg-blue-700 rounded-full px-4 py-1 text-xs font-semibold">
-                            Role: {{ ucfirst($user->role->nama_role ?? 'Asesi') }}
-                        </div>
+                        <h2 class="text-xl font-bold">{{ $nama }}</h2>
+                        <p class="text-gray-500 text-sm">{{ $user->email }}</p>
                     </div>
 
-                    <!-- Right Side: Form -->
-                    <div class="w-full md:w-2/3 p-8">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-2xl font-bold text-gray-800">Edit Profile</h3>
-                            <button @click="editMode = !editMode" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                <span x-text="editMode ? 'Batal' : 'Edit Data'"></span>
-                            </button>
-                        </div>
-
-                        <form action="{{ route('asesi.profile.update') }}" method="POST" class="space-y-5">
-                            @csrf
-                            @method('PATCH')
-
+                    <!-- Layout Grid 2 Kolom -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-10 w-full">
+                        
+                        {{-- KOLOM KIRI --}}
+                        <div class="flex flex-col space-y-8 w-full">
+                            
+                            {{-- Section: Data Akun & Pribadi --}}
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                                <input name="username" type="text" value="{{ old('username', $user->username) }}" 
-                                       :readonly="!editMode"
-                                       :class="editMode ? 'border-blue-500 bg-white ring-2 ring-blue-100' : 'border-gray-200 bg-gray-50 text-gray-500'"
-                                       class="w-full rounded-lg border px-4 py-2 focus:outline-none transition-all">
-                                @error('username') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
+                                <h2 class="text-lg font-semibold mb-3">Data Pribadi</h2>
+                                <div class="space-y-3">
+                                    {{-- NIK --}}
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
+                                        <input name="nik" type="text" value="{{ old('nik', $asesi->nik ?? '') }}" 
+                                               :readonly="!editMode"
+                                               :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                               class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        @error('nik') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                    </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input name="email" type="email" value="{{ old('email', $user->email) }}" 
-                                       :readonly="!editMode"
-                                       :class="editMode ? 'border-blue-500 bg-white ring-2 ring-blue-100' : 'border-gray-200 bg-gray-50 text-gray-500'"
-                                       class="w-full rounded-lg border px-4 py-2 focus:outline-none transition-all">
-                                @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
+                                    {{-- Nama --}}
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                        <input name="nama_lengkap" type="text" value="{{ old('nama_lengkap', $asesi->nama_lengkap ?? '') }}"
+                                               :readonly="!editMode"
+                                               :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                               class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        @error('nama_lengkap') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                    </div>
 
-                            <div x-show="editMode" class="flex justify-end pt-4" style="display: none;">
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-md transition">
-                                    Simpan Perubahan
-                                </button>
-                            </div>
-                        </form>
+                                    {{-- TTL --}}
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tempat Lahir</label>
+                                            <input name="tempat_lahir" type="text" value="{{ old('tempat_lahir', $asesi->tempat_lahir ?? '') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+                                            <input name="tanggal_lahir" type="date" value="{{ old('tanggal_lahir', optional($asesi->tanggal_lahir ?? null)->format('Y-m-d') ?? '') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                    </div>
 
-                        <!-- Change Password Section -->
-                        <div class="mt-8 pt-8 border-t border-gray-100">
-                             <div class="flex justify-between items-center">
-                                <div>
-                                    <h4 class="font-semibold text-gray-800">Keamanan</h4>
-                                    <p class="text-xs text-gray-500">Ganti password akun anda</p>
+                                    {{-- Gender & Kebangsaan --}}
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
+                                            <select name="jenis_kelamin" 
+                                                    :disabled="!editMode"
+                                                    :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                    class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none disabled:text-gray-600 disabled:opacity-100">
+                                                <option value="">Pilih...</option>
+                                                <option value="Laki-laki" {{ old('jenis_kelamin', $asesi->jenis_kelamin ?? '') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                                <option value="Perempuan" {{ old('jenis_kelamin', $asesi->jenis_kelamin ?? '') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kebangsaan</label>
+                                            <input name="kebangsaan" type="text" value="{{ old('kebangsaan', $asesi->kebangsaan ?? 'Indonesia') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                    </div>
+
+                                    {{-- Pendidikan & Pekerjaan --}}
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Pendidikan Terakhir</label>
+                                        <input name="pendidikan" type="text" value="{{ old('pendidikan', $asesi->pendidikan ?? '') }}"
+                                               :readonly="!editMode"
+                                               :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                               class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan (Pribadi)</label>
+                                        <input name="pekerjaan_pribadi" type="text" value="{{ old('pekerjaan_pribadi', $asesi->pekerjaan ?? '') }}"
+                                               :readonly="!editMode"
+                                               :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                               class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                    </div>
                                 </div>
-                                <button @click="passwordModal = true" class="text-gray-600 hover:text-blue-600 text-sm font-medium flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition">
-                                    <i class="fas fa-key"></i> Ganti Password
-                                </button>
                             </div>
+
                         </div>
 
+                        {{-- KOLOM KANAN --}}
+                        <div class="flex flex-col space-y-8 w-full">
+                            
+                            {{-- Section: Kontak & Alamat --}}
+                            <div>
+                                <h2 class="text-lg font-semibold mb-3">Kontak & Alamat</h2>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Rumah</label>
+                                        <textarea name="alamat_rumah" rows="3"
+                                                  :readonly="!editMode"
+                                                  :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                  class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">{{ old('alamat_rumah', $asesi->alamat_rumah ?? '') }}</textarea>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kab/Kota</label>
+                                            <input name="kabupaten_kota" type="text" value="{{ old('kabupaten_kota', $asesi->kabupaten_kota ?? '') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
+                                            <input name="provinsi" type="text" value="{{ old('provinsi', $asesi->provinsi ?? '') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kode Pos</label>
+                                            <input name="kode_pos" type="text" value="{{ old('kode_pos', $asesi->kode_pos ?? '') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nomor HP</label>
+                                            <input name="nomor_hp" type="text" value="{{ old('nomor_hp', $asesi->nomor_hp ?? '') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {{-- Section: Data Pekerjaan --}}
+                            <div class="pt-4 border-t">
+                                <h2 class="text-lg font-semibold mb-3">Data Institusi</h2>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Institusi</label>
+                                        <input name="nama_institusi_pekerjaan" type="text" value="{{ old('nama_institusi_pekerjaan', $pekerjaan->nama_institusi_pekerjaan ?? '') }}"
+                                               :readonly="!editMode"
+                                               :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                               class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Jabatan di Institusi</label>
+                                        <input name="jabatan_institusi" type="text" value="{{ old('jabatan_institusi', $pekerjaan->jabatan ?? '') }}"
+                                               :readonly="!editMode"
+                                               :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                               class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Institusi</label>
+                                        <textarea name="alamat_institusi" rows="2"
+                                                  :readonly="!editMode"
+                                                  :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                  class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">{{ old('alamat_institusi', $pekerjaan->alamat_institusi ?? '') }}</textarea>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Telp Institusi</label>
+                                            <input name="no_telepon_institusi" type="text" value="{{ old('no_telepon_institusi', $pekerjaan->no_telepon_institusi ?? '') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Pos Institusi</label>
+                                            <input name="kode_pos_institusi" type="text" value="{{ old('kode_pos_institusi', $pekerjaan->kode_pos_institusi ?? '') }}"
+                                                   :readonly="!editMode"
+                                                   :class="editMode ? 'bg-white border-blue-500 ring-1 ring-blue-500' : 'bg-gray-100 border-gray-300'"
+                                                   class="w-full border rounded-md px-3 py-2 transition-all focus:outline-none">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
+
+                    {{-- TOMBOL ACTION --}}
+                    <div class="absolute bottom-6 right-6 flex space-x-4">
+                        {{-- Tombol Edit/Simpan Toggle --}}
+                        <button type="button" @click="editMode = !editMode; if(!editMode) $el.closest('form').submit()"
+                                :class="editMode ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'"
+                                class="flex items-center text-white px-5 py-2 rounded-full transition shadow-md">
+                            <template x-if="!editMode">
+                                <span class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 11l6-6m2 2L9 19H5v-4L15 7z" />
+                                    </svg>
+                                    Edit
+                                </span>
+                            </template>
+                            <template x-if="editMode">
+                                <button type="submit" class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Simpan
+                                </button>
+                            </template>
+                        </button>
+                    </div>
+
                 </div>
-            </div>
+            </form>
 
             <!-- Modal Change Password -->
             <div x-show="passwordModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"

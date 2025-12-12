@@ -22,7 +22,7 @@ use App\Http\Controllers\Admin\TukAdminController;
 use App\Http\Controllers\Admin\DaftarHadirController;
 use App\Http\Controllers\Asesi\ProfileController as AsesiProfileController;
 use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
-use App\Http\Controllers\AsesiTrackerController;
+
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Asesi\Apl01PdfController;
@@ -329,7 +329,7 @@ Route::middleware('auth')->group(function () {
             // Manajemen Jadwal & Asesi
             Route::get('/jadwal', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'index'])->name('jadwal.index');
             Route::get('/daftar-asesi/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
-            Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker');
+            Route::get('/tracker/{id_sertifikasi_asesi}', [TrackerController::class, 'show'])->name('tracker');
 
             // Tools
             Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
@@ -370,6 +370,7 @@ Route::middleware('auth')->group(function () {
             // --- A. Tracker ---
             Route::controller(TrackerController::class)->group(function () {
                 Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
+                Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
                 Route::get('/pendaftaran-selesai', 'pendaftaranSelesai')->name('pendaftaran.selesai');
             });
 
