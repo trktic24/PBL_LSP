@@ -2,7 +2,7 @@
     'title' => 'Judul Halaman',
     'code' => null,
     'name' => null,
-    'image' => null,
+    'image' =>null,
     'sertifikasi' => null,
 ])
 

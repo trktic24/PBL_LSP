@@ -35,7 +35,7 @@
         {{-- 2. HEADER MOBILE (Component Baru) --}}
         @php
             $gambarSkema = ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) 
-                ? asset('images/' . $sertifikasi->jadwal->skema->gambar) 
+                ? asset('images/skema/' . $sertifikasi->jadwal->skema->gambar) 
                 : null;
         @endphp
 
@@ -114,23 +114,24 @@
                 <div class="mb-10">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Daftar Unit Kompetensi</h3>
                     
-                    {{-- PERBAIKAN DI SINI: Tambah overflow-x-auto di wrapper --}}
                     <div class="border border-gray-200 rounded-lg shadow-sm overflow-x-auto">
-                        
-                        {{-- PERBAIKAN DI SINI: Hapus table-fixed, biarkan lebar otomatis --}}
+                        {{-- PERUBAHAN DI SINI: Kolom jenis dihapus, width tetap full --}}
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-black text-white">
                                 <tr>
-                                    {{-- PERBAIKAN DI SINI: Hapus width fixed, pakai whitespace-nowrap --}}
-                                    <th class="px-4 py-3 text-center text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap">No</th>
-                                    <th class="px-4 py-3 text-left text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap">Kode</th>
+                                    {{-- Kolom NO --}}
+                                    <th class="px-4 py-3 text-center text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap w-16">No</th>
+                                    {{-- Kolom KODE --}}
+                                    <th class="px-4 py-3 text-left text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap w-1/4">Kode</th>
+                                    {{-- Kolom JUDUL UNIT --}}
                                     <th class="px-4 py-3 text-left text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap">Judul Unit</th>
-                                    <th class="px-4 py-3 text-center text-xs md:text-sm font-bold uppercase tracking-wider whitespace-nowrap">Jenis</th>
+                                    {{-- Kolom JENIS SUDAH DIHAPUS DARI SINI --}}
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200" id="unit-kompetensi-body">
                                 <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Memuat data...</td>
+                                    {{-- Colspan jadi 3 karena sisa 3 kolom --}}
+                                    <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">Memuat data...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -227,22 +228,19 @@
                 tbody.innerHTML = ''; 
                 if (units && units.length > 0) {
                     units.forEach((unit, index) => {
-                        // FIX TAMPILAN TABEL DI SINI:
-                        // - break-words & whitespace-normal: Biar teks panjang turun ke bawah.
-                        // - align-top: Biar teks selalu rata atas kalau barisnya tinggi.
-                        // - leading-snug: Jarak antar baris teks lebih rapat biar gak terlalu tinggi.
+                        // PERUBAHAN JS: TD Jenis dihapus
                         const row = `
                             <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100 hover:bg-gray-100 transition-colors">
                                 <td class="px-2 py-3 text-center text-xs md:text-sm text-gray-900 font-medium align-top">${index + 1}</td>
                                 <td class="px-2 py-3 text-xs md:text-sm text-gray-700 font-mono align-top break-words leading-snug">${unit.kode_unit || '-'}</td>
                                 <td class="px-2 py-3 text-xs md:text-sm text-gray-700 align-top whitespace-normal break-words leading-snug">${unit.judul_unit || '-'}</td>
-                                <td class="px-2 py-3 text-center text-xs md:text-sm text-gray-700 align-top leading-snug">${unit.jenis_standar || '-'}</td>
                             </tr>
                         `;
                         tbody.innerHTML += row;
                     });
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada unit kompetensi terdaftar.</td></tr>`;
+                    // Update colspan jadi 3
+                    tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada unit kompetensi terdaftar.</td></tr>`;
                 }
             }
         });
