@@ -67,4 +67,32 @@ class DaftarHadirController extends Controller
             'sortDirection' => $sortDirection,
         ]);
     }
+
+    public function destroy($id)
+    {
+        try {
+            // 1. Cari data pendaftaran berdasarkan PK-nya
+            // Gunakan findOrFail agar otomatis 404 jika data tidak ada
+            $dataSertifikasi = DataSertifikasiAsesi::findOrFail($id);
+
+            // 2. Ambil Nama Asesi dan ID Jadwal sebelum dihapus untuk keperluan redirect dan pesan
+            $namaAsesi = $dataSertifikasi->asesi->nama_lengkap ?? 'Peserta';
+            $idJadwal = $dataSertifikasi->id_jadwal;
+
+            // 3. Lakukan penghapusan
+            $dataSertifikasi->delete();
+
+            // 4. Redirect kembali ke halaman daftar hadir jadwal tersebut dengan pesan sukses
+            // Asumsi nama route index adalah 'schedule.attendance'
+            return redirect()->route('schedule.attendance', $idJadwal)
+                             ->with('success', "Peserta atas nama '{$namaAsesi}' berhasil dihapus dari jadwal ini.");
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Handle jika ID tidak ditemukan
+            return redirect()->back()->with('error', 'Data peserta tidak ditemukan.');
+        } catch (\Exception $e) {
+            // Handle error umum lainnya
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus peserta: ' . $e->getMessage());
+        }
+    }
 }

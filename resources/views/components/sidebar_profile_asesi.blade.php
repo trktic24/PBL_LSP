@@ -10,7 +10,7 @@
         <span class="ml-2 font-medium text-sm">Kembali</span>
     </a>
 
-    <h2 class="text-xl font-bold text-gray-900 mb-3 mt-8">Biodata Peserta</h2>
+    <h2 class="text-xl font-semibold text-gray-900 mb-3 mt-8">Biodata Peserta</h2>
 
     <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] mb-4 bg-purple-300 flex items-center justify-center relative z-10">
         <span class="text-4xl font-bold text-white select-none">
