@@ -121,6 +121,11 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(JawabanIa06::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
+    public function lembarJawabIa05(): HasOne
+    {
+        return $this->hasOne(LembarJawabIa05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }    
+
     public function responbuktiAk01(): HasMany
     {
         // Tentukan foreign key dan local key karena tidak standar

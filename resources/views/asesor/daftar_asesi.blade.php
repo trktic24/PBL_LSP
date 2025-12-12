@@ -35,7 +35,6 @@
                             <th class="p-4 w-2/12 text-left text-sm font-semibold">Nama Asesi</th>
                             <th class="p-4 w-[12%] text-center text-sm font-semibold">Pra Asesmen</th>
                             <th class="p-4 w-[12%] text-center text-sm font-semibolde">Asesmen</th>
-                            <th class="p-4 w-[12%] text-center text-sm font-semibold">Semua</th>
                             <th class="p-4 w-[12%] text-center text-sm font-semibold">Asesmen Mandiri</th>
                             <th class="p-4 w-[14%] text-center text-sm font-semibold">Penyesuaian</th>
                         </thead>
@@ -52,24 +51,44 @@
                                     </td>
                                     
                                     {{-- Pra Asesmen --}}
+                                    @php
+                                        if (!$item->responApl2Ia01 && !$item->responBuktiAk01) {
+                                            $status = 'Belum Direview';
+                                            $color = 'text-red-600 hover:text-blue-800';
+                                        } elseif ($item->responApl2Ia01 && !$item->responBuktiAk01) {
+                                            $status = 'Dalam Proses';
+                                            $color = 'text-yellow-600 hover:text-yellow-800';
+                                        } else {
+                                            $status = 'Sudah Direview';
+                                            $color = 'text-green-600 hover:text-green-800';
+                                        }
+                                    @endphp
+
                                     <td class="p-4 text-center">
-                                        {{-- Menggunakan tag <a> agar bisa diklik --}}
-                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
-                                            Dalam Proses
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}"
+                                        class="font-medium hover:underline cursor-pointer {{ $color }}">
+                                        {{ $status }}
                                         </a>
                                     </td>
 
                                     {{-- Asesmen --}}
-                                    <td class="p-4 text-center">
-                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}#asesmen" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
-                                            Dalam Proses
-                                        </a>
-                                    </td>
+                                    @php
+                                        if (!$item->lembarJawabIa05 && !$item->komentarAk05) {
+                                            $status = 'Belum Direview';
+                                            $color = 'text-blue-600 hover:text-blue-800';
+                                        } elseif ($item->lembarJawabIa05 && !$item->komentarAk05) {
+                                            $status = 'Dalam Proses';
+                                            $color = 'text-yellow-600 hover:text-yellow-800';
+                                        } else{
+                                            $status = 'Sudah Direview';
+                                            $color = 'text-green-600 hover:text-green-800';
+                                        }
+                                    @endphp
 
-                                    {{-- Semua --}}
                                     <td class="p-4 text-center">
-                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}" class="text-yellow-600 font-medium hover:text-yellow-800 hover:underline cursor-pointer">
-                                            Dalam Proses
+                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}#asesmen"
+                                        class="font-medium hover:underline cursor-pointer {{ $color }}">
+                                        {{ $status }}
                                         </a>
                                     </td>
                                     
