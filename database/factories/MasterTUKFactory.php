@@ -5,7 +5,7 @@ namespace Database\Factories;
 use App\Models\MasterTuk;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class MasterTukFactory extends Factory
+class MasterTUKFactory extends Factory
 {
     protected $model = MasterTuk::class;
 

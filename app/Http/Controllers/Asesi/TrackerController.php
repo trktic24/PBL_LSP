@@ -252,4 +252,10 @@ class TrackerController extends Controller
             );
         }
     }
+
+    public function pendaftaranSelesai()
+    {
+        // Pastikan path view sesuai dengan folder kamu: views/tunggu_or_berhasil/berhasil.blade.php
+        return view('asesi.tunggu_or_berhasil.berhasil');
+    }
 }

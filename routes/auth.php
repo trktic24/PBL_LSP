@@ -350,6 +350,7 @@ Route::middleware('auth')->group(function () {
             // --- A. Tracker ---
             Route::controller(TrackerController::class)->group(function () {
                 Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
+                Route::get('/pendaftaran-selesai', 'pendaftaranSelesai')->name('pendaftaran.selesai');
             });
 
             // --- B. Formulir APL-01 (Pendaftaran) ---

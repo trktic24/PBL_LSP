@@ -69,12 +69,12 @@ class Jadwal extends Model
 
     public function jenisTuk(): BelongsTo
     {
-        return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
+        return $this->belongsTo(JenisTUK::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
 
     public function tuk(): BelongsTo
     {
-        return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk'); 
+        return $this->belongsTo(MasterTUK::class, 'id_tuk', 'id_tuk'); 
     }
 
     public function skema(): BelongsTo

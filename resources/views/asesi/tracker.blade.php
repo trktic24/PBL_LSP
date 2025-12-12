@@ -122,14 +122,25 @@
                             </div>
 
                             <div class="{{ $responsiveCardClass }}">
-                                <a href="{{ route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                    class="{{ $linkClassEnabled }}">
+                                {{-- LOGIC GANTI LINK --}}
+                                @php
+                                    // Cek apakah user sudah selesai daftar (sudah TTD)
+                                    $isSelesai = $sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI;
+                                    
+                                    // Jika selesai, arahkan ke halaman berhasil. Jika belum, ke form input.
+                                    $targetUrl = $isSelesai 
+                                        ? route('asesi.pendaftaran.selesai') 
+                                        : route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]);
+                                @endphp
+
+                                <a href="{{ $targetUrl }}" class="{{ $linkClassEnabled }}">
                                     Formulir Pendaftaran Sertifikasi
                                 </a>
+
                                 <p class="text-sm text-gray-500">{{ $sertifikasi->tanggal_daftar->format('l, d F Y') }}
                                 </p>
 
-                                @if ($sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI)
+                                @if ($isSelesai)
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
                                     <a href="{{ route('asesi.pdf.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         target="_blank" class="{{ $btnBlue }}">

@@ -13,6 +13,10 @@
     <title>Tanda Tangan Pemohon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    
+    {{-- TAMBAHAN: SweetAlert2 untuk Pop Up Cantik --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         canvas { touch-action: none; }
@@ -32,7 +36,7 @@
         {{-- 2. HEADER MOBILE (Component Baru) --}}
         @php
             $gambarSkema = ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) 
-                ? asset('images/' . $sertifikasi->jadwal->skema->gambar) 
+                ? asset('images/skema' . $sertifikasi->jadwal->skema->gambar) 
                 : null;
         @endphp
 
@@ -133,8 +137,7 @@
                     </div>
                 </div>
 
-                {{-- TOMBOL NAVIGASI (UPDATED: Sama persis layout halaman Bukti Pemohon) --}}
-                {{-- flex-row: Biar tombolnya jejer kiri-kanan (tidak tumpuk) --}}
+                {{-- TOMBOL NAVIGASI --}}
                 <div class="flex justify-between items-center mt-12 pt-6 border-t border-gray-100 pb-10 md:pb-0">
                     <a href="{{ route('asesi.bukti.pemohon', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                         class="w-32 md:w-48 text-center px-4 md:px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-full hover:bg-gray-300 transition-all shadow-sm text-sm md:text-base">
@@ -196,18 +199,43 @@
                 signaturePad.clear();
             });
 
+            // --- LOGIC TOMBOL SIMPAN (MODIFIKASI KAK GEM) ---
             btnSimpan.addEventListener('click', async () => {
                 let dataUrl = null;
+
+                // 1. Cek validasi tanda tangan
                 if (hasSignature && !imgContainer.classList.contains('hidden')) {
-                    dataUrl = null;
+                    // Pakai gambar lama, dataUrl biarkan null
+                    dataUrl = null; 
                 } else {
                     if (signaturePad.isEmpty()) {
-                        alert("Harap tanda tangan terlebih dahulu!");
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Peringatan',
+                            text: 'Harap tanda tangan terlebih dahulu!',
+                            confirmButtonColor: '#d33'
+                        });
                         return;
                     }
                     dataUrl = signaturePad.toDataURL('image/png');
                 }
 
+                // 2. TAMPILKAN POP UP KONFIRMASI SESUAI REQUEST
+                const result = await Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    text: "Jawaban anda hanya dapat di kirim sekali dan tidak dapat di ganti!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2563EB', // Blue-600
+                    cancelButtonColor: '#d33',     // Red
+                    confirmButtonText: 'Ya, Kirim',
+                    cancelButtonText: 'Batal'
+                });
+
+                // Jika user klik Batal, berhenti di sini (return)
+                if (!result.isConfirmed) return;
+
+                // 3. Kalau klik "Ya", lanjut proses simpan
                 const originalText = btnSimpan.innerText;
                 btnSimpan.innerText = 'Menyimpan...';
                 btnSimpan.disabled = true;
@@ -225,16 +253,28 @@
                             id_data_sertifikasi_asesi: idSertifikasi
                         })
                     });
-                    const result = await response.json();
-                    if (response.ok && result.success) {
-                        alert('Berhasil! Data tersimpan.');
+                    const resultData = await response.json();
+                    
+                    if (response.ok && resultData.success) {
+                        // Optional: Kasih notif sukses bentar sebelum pindah
+                        await Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Data tersimpan.',
+                            timer: 1000,
+                            showConfirmButton: false
+                        });
                         window.location.href = "{{ route('asesi.payment.create', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
                     } else {
-                        throw new Error(result.message || 'Gagal menyimpan');
+                        throw new Error(resultData.message || 'Gagal menyimpan');
                     }
                 } catch (error) {
                     console.error(error);
-                    alert('Terjadi kesalahan: ' + error.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Terjadi kesalahan: ' + error.message,
+                    });
                     btnSimpan.innerText = originalText;
                     btnSimpan.disabled = false;
                 }

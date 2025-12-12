@@ -32,7 +32,7 @@
         {{-- ====================================================================== --}}
         @php
             $gambarSkema = ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) 
-                ? asset('images/' . $sertifikasi->jadwal->skema->gambar) 
+                ? asset('images/skema/' . $sertifikasi->jadwal->skema->gambar) 
                 : null;
         @endphp
 
