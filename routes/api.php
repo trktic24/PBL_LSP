@@ -25,7 +25,8 @@ use App\Http\Controllers\Api\AsesorController;
 use App\Http\Controllers\Api\TukAdminController;
 use App\Http\Controllers\Api\AsesiController;
 use App\Http\Controllers\Api\CategoryController;
-
+use App\Http\Controllers\Api\BeritaAcaraController;
+use App\Http\Controllers\Api\DaftarHadirController;
 
 use App\Http\Controllers\Api\SoalIa06Controller;
 
@@ -169,8 +170,9 @@ Route::prefix('v1')->group(function () {
         // 🗓️ JADWAL ASESOR (CRUD & FILTERING)
         // =======================================================
         Route::apiResource('jadwal-asesor', JadwalAsesorApiController::class);
-
-
+        Route::get('/jadwal/{id}/berita-acara', [BeritaAcaraController::class, 'beritaAcara']);
+        Route::get('/jadwal/{id_jadwal}/daftar-hadir',[DaftarHadirController::class, 'showKehadiran']);
+        Route::post('/jadwal/{id_jadwal}/daftar-hadir',[DaftarHadirController::class, 'storeKehadiran']);
 
         // =======================================================
         // IA 06

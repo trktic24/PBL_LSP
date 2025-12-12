@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
 
                 // 3. Data pendukung lainnya
             JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
-            DataSertifikasiAsesiSeeder::class,
+            //DataSertifikasiAsesiSeeder::class,
                 // TujuanAssesmenMapa01::class,
                 // MasterPoinSiapaAsesmenSeeder::class,
                 // PoinHubunganStandarSeeder::class,
@@ -53,7 +53,10 @@ class DatabaseSeeder extends Seeder
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
             StrukturOrganisasiSeeder::class,
+            SkemaDetailSeeder::class,
+            DataSertifikasiAsesiSeeder::class,
             KomentarAk05Seeder::class,
+            Ia06Seeder::class,
         ]);
 
         // Panggil seeder Role dan User (Admin)
@@ -64,13 +67,14 @@ class DatabaseSeeder extends Seeder
         //     // CategorySeeder::class, // Duplicate
         // ]);
 
-        Asesor::factory(20)->create();
-        Skema::factory(20)->create();
+        //Asesor::factory(20)->create();
+        //Skema::factory(20)->create();
 
-        $this->call(SkemaDetailSeeder::class);
+        //$this->call(SkemaDetailSeeder::class);
 
-        Asesi::factory(20)->create();
+        //Asesi::factory(50)->create();
 
-        $this->call(DataSertifikasiAsesiSeeder::class);
+        //$this->call(DataSertifikasiAsesiSeeder::class);
+        //$this->call(KomentarAk05Seeder::class);
     }
 }

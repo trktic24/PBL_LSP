@@ -106,30 +106,19 @@
                     <div>
                         <div class="flex justify-between items-start">
                             <h3 class="text-lg font-semibold {{ $stAPL02 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.APL.02 - Asesmen Mandiri</h3>
-                            <div class="flex flex-col gap-2 ml-4"> {{-- Container Vertikal --}}
+
+                            <div class="flex space-x-2 ml-4">
+                                {{-- Tombol Dinamis --}}
+                                <a href="{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                <a href="#" class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
                                 
-                                {{-- BARIS 1: Tombol Lihat File & PDF (Horizontal) --}}
-                                <div class="flex gap-2">
-                                    {{-- Tombol 1: Lihat File --}}
-                                    <a href="#" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Lihat File
-                                    </a>
-
-                                    {{-- Tombol 2: Lihat PDF --}}
-                                    <a href="#" class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        <span>Lihat PDF</span>
-                                    </a>
-                                </div>
-
-                                {{-- BARIS 2: Tombol Verifikasi (Full Width) --}}
-                                {{-- w-full akan membuatnya selebar container di atasnya --}}
-                                <a href="#" class="w-full block bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1 rounded-md text-center transition shadow-sm">
-                                    Verifikasi
+                                {{-- Ikon SVG Dokumen --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                
+                                <span>Lihat PDF</span>
                                 </a>
-
                             </div>
                         </div>
                         {{-- Status Badge --}}
@@ -215,7 +204,7 @@
                             <h3 class="text-lg font-semibold text-gray-800">FR.MAPA.02 - Peta Instrumen Asesmen</h3>
                             <div class="flex space-x-2 ml-4">
                                 {{-- Tombol Dinamis --}}
-                                <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Lihat File</a>
+                                <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md">Lihat File</a>
                             {{-- Tombol 2: Lihat PDF (Ini yang diupdate) --}}
                                 <a href="{{ route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
                                 class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
@@ -265,7 +254,7 @@
                                 {{-- BARIS 1: Tombol Lihat File & PDF (Horizontal) --}}
                                 <div class="flex gap-2">
                                     {{-- Tombol 1: Lihat File --}}
-                                    <a href="#" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md text-center">
+                                    <a href="#" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md text-center">
                                         Lihat File
                                     </a>
 
@@ -332,7 +321,7 @@
                                 {{-- BARIS 1: Tombol Lihat File & PDF (Horizontal) --}}
                                 <div class="flex gap-2">
                                     {{-- Tombol 1: Lihat File --}}
-                                    <a href="{{ route('FR_IA_05_A', $asesi->id_asesi) }}" class="{{ $isAsesmenActive ? ' bg-gray-300 text-gray-600' : 'bg-blue-100 text-blue-600 ' }} text-xs font-bold py-1 px-3 rounded-md text-center">
+                                    <a href="{{ route('FR_IA_05_A', $asesi->id_asesi) }}" class="{{ $isAsesmenActive ? ' bg-gray-300 text-gray-600' : 'bg-blue-100 text-blue-600 hover:bg-blue-200 ' }} text-xs font-bold py-1 px-3 rounded-md text-center">
                                         Lihat File
                                     </a>
 

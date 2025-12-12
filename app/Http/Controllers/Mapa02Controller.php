@@ -53,8 +53,7 @@ class Mapa02Controller extends Controller
         return view('frontend.FR_MAPA_02', [
             'sertifikasi' => $sertifikasi,
             'mapa02Map'   => $mapa02Map,
-            'canEdit'     => $canEdit,
-            'backUrl'     => route('tracker', $sertifikasi->id_data_sertifikasi_asesi), 
+            'canEdit'     => $canEdit, 
             'jadwal'      => $sertifikasi->jadwal,   
             'asesi'      => $sertifikasi->asesi,                    
         ]);

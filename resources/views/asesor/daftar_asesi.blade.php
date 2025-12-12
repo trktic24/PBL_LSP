@@ -80,7 +80,7 @@
                                     
                                     {{-- Tombol Penyesuaian --}}
                                     <td class="p-4 text-center">
-                                        <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}#penyesuaian" class="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-yellow-700 whitespace-nowrap">
+                                        <a href="{{ route('asesor.ak07', $item->id_data_sertifikasi_asesi) }}" class="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-yellow-700 whitespace-nowrap">
                                             Lakukan Penyesuaian
                                     </td>
                                 </tr>
@@ -121,36 +121,50 @@
                     </div>
                 </div>
 
-                <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                <a href="{{ route('asesor.ak05', $jadwal->id_jadwal) }}" class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow text-center flex items-center justify-center">
                     Laporan Asesmen
-                </button>
-                <button class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow">
+                </a>
+                <a href="{{ route('asesor.ak06', $jadwal->id_jadwal) }}" class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow text-center flex items-center justify-center">
                     Tinjauan Asesmen
-                </button>                
+                </a>                
 
                 <!-- Berita Acara -->
                 <div class="relative flex-1">
-                    <button type="button" onclick="toggleDropdown('berita-acara-dropdown')" 
-                        class="w-full bg-yellow-600 text-white px-5 py-5 rounded-md shadow hover:bg-yellow-700 flex items-center justify-center relative">
-                        
-                        <!-- Teks di tengah -->
-                        <span class="absolute left-1/2 transform -translate-x-1/2">Berita Acara</span>
+                    <button 
+                        type="button"
+                        onclick="{{ $semuaSudahAdaKomentar ? "toggleDropdown('berita-acara-dropdown')" : "showWarning()" }}"
+                        class="w-full px-5 py-5 rounded-md shadow flex items-center justify-center relative
+                            {{ $semuaSudahAdaKomentar ? 'bg-yellow-600 text-white hover:bg-yellow-700' : 'bg-gray-300 text-gray-600' }}"
+                    >
 
-                        <!-- Ikon di kanan -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
+                        <span class="absolute left-1/2 transform -translate-x-1/2">
+                            Berita Acara
+                        </span>
+
+                        @if($semuaSudahAdaKomentar)
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        @endif
                     </button>
 
-                    <div id="berita-acara-dropdown" class="hidden absolute right-0 top-full mt-2 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
-                        <a href="{{ route('asesor.berita_acara', $jadwal->id_jadwal) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
-                            Lihat File
-                        </a>
-                        <a href="{{ route('asesor.berita_acara.pdf', $jadwal->id_jadwal) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
-                            Unduh PDF
-                        </a>
-                    </div>
+                    @if($semuaSudahAdaKomentar)
+                        <div id="berita-acara-dropdown" 
+                            class="hidden absolute right-0 top-full mt-2 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
+
+                            <a href="{{ route('asesor.berita_acara', $jadwal->id_jadwal) }}" 
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                Lihat File
+                            </a>
+
+                            <a href="{{ route('asesor.berita_acara.pdf', $jadwal->id_jadwal) }}" 
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                Unduh PDF
+                            </a>
+                        </div>
+                    @endif
                 </div>
+
 
             </div>
 
@@ -169,6 +183,16 @@
         });
     }
     </script>
+
+    <script>
+        function showWarning() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Berita Acara belum diterbitkan',
+                text: 'Asesmen masih dalam proses'
+            });
+        }
+    </script>   
 
 </main>
 

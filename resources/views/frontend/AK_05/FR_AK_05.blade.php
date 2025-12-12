@@ -19,7 +19,7 @@
         <x-header_form.header_form title="FR.AK.05. LAPORAN ASESMEN" /><br>
 
         {{-- FORM WRAPPER (Statis: action="#") --}}
-        <form action="#" method="POST">
+        <form action="{{ route('asesor.ak05.store', $jadwal->id_jadwal) }}" method="POST">
             @csrf
 
             {{-- 1. IDENTITAS SKEMA (Menggunakan Component yang sudah ada) --}}
@@ -49,37 +49,39 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
                             {{-- Loop 4 baris sesuai dokumen --}}
-                            @for ($i = 1; $i <= 4; $i++)
+                            {{-- Loop dinamis dari data asesi --}}
+                            @foreach ($jadwal->dataSertifikasiAsesi as $index => $item)
                                 <tr class="hover:bg-blue-50 transition-colors">
-                                    <td class="px-4 py-3 text-center font-bold text-gray-700 border-r border-gray-200">{{ $i }}.</td>
+                                    <td class="px-4 py-3 text-center font-bold text-gray-700 border-r border-gray-200">{{ $index + 1 }}.</td>
                                     
                                     {{-- Nama Asesi --}}
                                     <td class="px-4 py-3 border-r border-gray-200">
-                                        <input type="text" name="asesi[{{ $i }}][nama]"
-                                            class="block w-full text-sm border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                                            placeholder="Nama Asesi...">
+                                        <input type="hidden" name="asesi[{{ $item->id_data_sertifikasi_asesi }}][id]" value="{{ $item->id_data_sertifikasi_asesi }}">
+                                        <input type="text" value="{{ $item->asesi->nama_lengkap ?? $item->asesi->nama }}"
+                                            class="block w-full text-sm border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed shadow-sm"
+                                            readonly>
                                     </td>
 
                                     {{-- Checkbox K --}}
                                     <td class="px-2 py-3 text-center align-middle border-r border-gray-200">
-                                        <input type="radio" name="asesi[{{ $i }}][rekomendasi]" value="K"
+                                        <input type="radio" name="asesi[{{ $item->id_data_sertifikasi_asesi }}][rekomendasi]" value="K"
                                             class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer transition">
                                     </td>
 
                                     {{-- Checkbox BK --}}
                                     <td class="px-2 py-3 text-center align-middle border-r border-gray-200">
-                                        <input type="radio" name="asesi[{{ $i }}][rekomendasi]" value="BK"
+                                        <input type="radio" name="asesi[{{ $item->id_data_sertifikasi_asesi }}][rekomendasi]" value="BK"
                                             class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer transition">
                                     </td>
 
                                     {{-- Keterangan --}}
                                     <td class="px-4 py-3">
-                                        <input type="text" name="asesi[{{ $i }}][keterangan]"
+                                        <input type="text" name="asesi[{{ $item->id_data_sertifikasi_asesi }}][keterangan]"
                                             class="block w-full text-sm border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
                                             placeholder="Keterangan...">
                                     </td>
                                 </tr>
-                            @endfor
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -171,7 +173,7 @@
                 <a href="#" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
                     Kembali
                 </a>
-                <button type="button" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
+                <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
                     Simpan Laporan FR.AK.05
                 </button>
             </div>

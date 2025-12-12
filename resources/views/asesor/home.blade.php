@@ -92,7 +92,7 @@
 
             <div class="bg-blue-600 rounded-xl shadow-lg p-6 text-white flex items-center justify-between">
                 <div class="flex flex-col">
-                    <span class="text-5xl font-bold">5</span>
+                    <span class="text-5xl font-bold">{{ $blmreview }}</span>
                     <span class="text-base font-medium mt-1">Asesmen<br>Belum Direview</span>
                 </div>
                 <div class="text-6xl opacity-70">
@@ -104,7 +104,7 @@
 
             <div class="bg-blue-600 rounded-xl shadow-lg p-6 text-white flex items-center justify-between">
                 <div class="flex flex-col">
-                    <span class="text-5xl font-bold">7</span>
+                    <span class="text-5xl font-bold">{{ $dlmproses }}</span>
                     <span class="text-base font-medium mt-1">Asesmen<br>Dalam Proses</span>
                 </div>
                 <div class="text-6xl opacity-70">
@@ -116,7 +116,7 @@
 
             <div class="bg-blue-600 rounded-xl shadow-lg p-6 text-white flex items-center justify-between">
                 <div class="flex flex-col">
-                    <span class="text-5xl font-bold">4</span>
+                    <span class="text-5xl font-bold">{{ $sdhreview }}</span>
                     <span class="text-base font-medium mt-1">Asesmen<br>Telah Direview</span>
                 </div>
                 <div class="text-6xl opacity-70">
@@ -128,7 +128,7 @@
 
             <div class="bg-blue-600 rounded-xl shadow-lg p-6 text-white flex items-center justify-between">
                 <div class="flex flex-col">
-                    <span class="text-5xl font-bold">18</span>
+                    <span class="text-5xl font-bold">{{ $totalAsesi }}</span>
                     <span class="text-base font-medium mt-1">Jumlah<br>Asesi</span>
                 </div>
                 <div class="text-6xl opacity-70">
@@ -337,7 +337,7 @@
                                 @if($jadwal->Status_jadwal == 'Dibatalkan')
                                 {{-- Tampilan Tombol Detail (Abu-abu) --}}
                                 <a href="{{ route('asesor.daftar_asesi', $jadwal->id_jadwal) }}"
-                                    class="text-sm bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500 transition duration-150">
+                                    class="text-sm bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500 pointer-events-none cursor-not-allowed transition duration-150">
                                     Detail
                                 </a>
                                 @else

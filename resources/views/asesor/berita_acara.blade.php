@@ -27,7 +27,7 @@
                             <div class="w-full flex flex-col items-center text-sm text-gray-600">
                                 <p>Pada hari ini, Hari/Tanggal: {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }} , Waktu: Pukul {{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }} s/d Selesai, bertempat di TUK {{ $jadwal->tuk->nama_lokasi }}, 
                                     telah dilaksanakan proses asesmen terhadap asesi pada sektor / sub sektor / bidang profesi {{ $jadwal->skema->nama_skema }} yang diikuti oleh <strong>{{ $pendaftar->total() }} orang peserta</strong>. Dari hasil asesmen, peserta yang dinyatakan <strong>kompeten</strong>
-                                    adalah <strong>belom tau</strong> dan yang <strong>belum kompeten juga belom tau</strong> dengan perincian sebagai berikut:
+                                    adalah <strong>{{ $jumlahKompeten > 0 ? $jumlahKompeten . ' orang peserta' : 'tidak ada' }}</strong> dan yang <strong>belum kompeten</strong> adalah <strong>{{ $jumlahBelumKompeten > 0 ? $jumlahBelumKompeten . ' orang peserta' : 'tidak ada' }}</strong> dengan perincian sebagai berikut:
                                 </p>
                             </div>
                         </div>
@@ -41,38 +41,23 @@
                     <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
                         <tr class="divide-x divide-gray-200 border-b border-gray-200">
                             <th class="px-4 py-3 font-semibold w-16 text-center">
-                                <a href= "#" class="flex w-full items-center justify-center gap-1">
-                                    <span>ID</span>
-                                    <div class="flex flex-col -space-y-1 text-[10px]"></div>
-                                </a>
+                                <span>ID</span>
                             </th>
                             
                             <th class="px-6 py-3 font-semibold">
-                                <a href= "#" class="flex w-full items-center justify-between">
-                                    <span>Nama Peserta</span>
-                                    <div class="flex flex-col -space-y-1 text-[10px]"></div>
-                                </a>
+                                <span>Nama Peserta</span>
                             </th>
                             
                             <th class="px-6 py-3 font-semibold">
-                                <a href="#" class="flex w-full items-center justify-between">
-                                    <span>Hasil Asesmen</span>
-                                    <div class="flex flex-col -space-y-1 text-[10px]"></div>
-                                </a>
+                                <span>Hasil Asesmen</span>
                             </th>
 
                             <th class="px-6 py-3 font-semibold">
-                                <a href="#" class="flex w-full items-center justify-between">
-                                    <span>Rekomendasi/ Tindak Lanjut</span>
-                                    <div class="flex flex-col -space-y-1 text-[10px]"></div>
-                                </a>
+                                <span>Rekomendasi/ Tindak Lanjut</span>
                             </th>
 
                             <th class="px-6 py-3 font-semibold">
-                                <a href="#" class="flex w-full items-center justify-between">
-                                    <span>Keterangan</span>
-                                    <div class="flex flex-col -space-y-1 text-[10px]"></div>
-                                </a>
+                                <span>Keterangan</span>
                             </th>
                         </tr>
                     </thead>
@@ -91,16 +76,28 @@
                             </td>
                             
                             <td class="px-6 py-4">
-                                {{ $data->asesi->pekerjaan->nama_institusi_pekerjaan ?? '-' }}
-                            </td>
-                            
-                            <td class="px-6 py-4 truncate max-w-xs" title="{{ $data->asesi->alamat_rumah }}">
-                                {{ Str::limit($data->asesi->alamat_rumah, 30) }}
+                                @if ($data->komentarAk05 === null)
+                                    -
+                                @else
+                                    {{ $data->komentarAk05->rekomendasi === 'K' ? 'Kompeten' : 'Belum Kompeten' }}
+                                @endif
                             </td>
                             
                             <td class="px-6 py-4">
-                                {{ $data->asesi->pekerjaan }}
-                            </td>        
+                                @if ($data->komentarAk05 === null)
+                                    -
+                                @else
+                                    {{ $data->komentarAk05->rekomendasi === 'K' ? 'Terbitkan Sertifikat' : 'Mengulang Asesmen' }}
+                                @endif
+                            </td>
+                            
+                            <td class="px-6 py-4">
+                                @if ($data->komentarAk05 === null)
+                                    -
+                                @else
+                                    {{ $data->komentarAk05->rekomendasi }}
+                                @endif
+                            </td>     
                             
                             @empty
                             <td colspan="7" class="px-6 py-8 text-center text-gray-500">
@@ -136,7 +133,7 @@
                                 <span class="font-medium text-gray-700">{{ $asesor->nama_lengkap }}</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ asset($asesor->tanda_tangan) }}"
+                                <img src="{{ asset($asesor->tanda_tangan) }}" 
                                     class="w-20 h-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
                             </div>
                         </div>
@@ -148,7 +145,7 @@
                                 <!-- Baris Nama -->
                                 <span class="font-medium text-gray-700">Nama</span>
                                 <span class="font-medium">:</span>
-                                <span class="font-medium text-gray-700">{{ $asesor->nama_lengkap }}</span>
+                                <span class="font-medium text-gray-700">Ajeng Febria H.</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
                                 <img src="{{ asset($asesor->tanda_tangan) }}"

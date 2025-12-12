@@ -121,12 +121,18 @@
 
     {{-- TOMBOL SUBMIT STICKY BOTTOM --}}
     @if($role != 1)
-    <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 flex justify-end shadow-lg z-50">
-        <button type="submit" class="px-8 py-3 rounded-lg font-bold text-white shadow-lg transition transform hover:scale-105
-            {{ $role == 2 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700' }}">
-            {{ $role == 2 ? 'Simpan Jawaban Saya' : 'Simpan Penilaian' }}
-        </button>
-    </div>
+            <div class="mt-12 flex justify-end pb-10 border-t border-gray-200 pt-6">
+
+                {{-- Info Text Opsional --}}
+                <div class="mr-auto text-sm text-gray-500 italic hidden md:block">
+                    * Pastikan semua jawaban sudah terisi sebelum menyimpan.
+                </div>
+
+                <button type="submit" class="px-8 py-3 rounded-lg font-bold text-white shadow-lg transition transform hover:scale-105 active:scale-95
+                    {{ $role == 2 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700' }}">
+                    {{ $role == 2 ? 'Simpan Jawaban Saya' : 'Simpan Penilaian' }}
+                </button>
+            </div>
     </form>
     @endif
 

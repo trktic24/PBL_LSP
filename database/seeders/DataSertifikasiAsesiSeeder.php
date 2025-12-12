@@ -15,22 +15,48 @@ class DataSertifikasiAsesiSeeder extends Seeder
      */
     public function run(): void
     {
-        $allAsesi = Asesi::all();   // Jumlah 200
-        $allJadwal = Jadwal::all(); // Jumlah 60 (10 asesor x 6)
+        $allAsesi = Asesi::all();
+        $allJadwal = Jadwal::all();
 
-        if ($allAsesi->isEmpty() || $allJadwal->isEmpty()) return;
+        if ($allAsesi->isEmpty() || $allJadwal->isEmpty()) {
+            return;
+        }
 
-        $totalJadwal = $allJadwal->count();
+        // Shuffle asesi agar pengambilannya acak
+        $shuffledAsesi = $allAsesi->shuffle();
+        $asesiIterator = 0;
+        $totalAsesi = $shuffledAsesi->count();
 
-        // Bagi rata 200 asesi ke 60 jadwal
-        foreach ($allAsesi as $index => $asesi) {
-            
-            $jadwal = $allJadwal[$index % $totalJadwal];
+        foreach ($allJadwal as $jadwal) {
 
-            DataSertifikasiAsesi::factory()->create([
-                'id_asesi'  => $asesi->id_asesi,
-                'id_jadwal' => $jadwal->id_jadwal,
-            ]);
+            // Bersihkan data lama agar sesuai requirement (5-6 per jadwal)
+            // Hati-hati: ini akan menghapus data sertifikasi lama untuk jadwal ini
+            if ($jadwal->dataSertifikasiAsesi()->exists()) {
+                $jadwal->dataSertifikasiAsesi()->delete();
+            }
+
+            // Tentukan jumlah asesi untuk jadwal ini (5 atau 6)
+            $jumlahAsesi = rand(5, 6);
+
+            for ($i = 0; $i < $jumlahAsesi; $i++) {
+                // Jika stok asesi habis, recycle (ulang dari awal)
+                if ($asesiIterator >= $totalAsesi) {
+                    $asesiIterator = 0;
+                    $shuffledAsesi = $allAsesi->shuffle(); // Acak ulang biar variatif
+                }
+
+                $asesi = $shuffledAsesi[$asesiIterator];
+                $asesiIterator++;
+
+                // Cek agar tidak duplikat asesi di jadwal yang sama (meski kecil kemungkinan setelah shuffle)
+                // Tapi karena kita delete() di atas, aman untuk insert baru.
+                // Namun, kita perlu pastikan $asesi tidak dipilih 2x dalam loop $i ini (sudah dihandle oleh iterator linear)
+
+                DataSertifikasiAsesi::factory()->create([
+                    'id_asesi' => $asesi->id_asesi,
+                    'id_jadwal' => $jadwal->id_jadwal,
+                ]);
+            }
         }
     }
 }

@@ -37,6 +37,7 @@ use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\Asesor\AsesiTrackerController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Ia06Controller;
+use App\Http\Controllers\PraasesmenController;
 
 // ======================================================
 // --- RUTE GUEST (YANG BELUM LOGIN) ---
@@ -254,10 +255,26 @@ Route::middleware('auth')->group(function () {
             Route::post('/add', 'store')->name('add_jadwal.store');
             Route::get('/edit/{id_jadwal}', 'edit')->name('edit_jadwal');
             Route::patch('/update/{id_jadwal}', 'update')->name('update_jadwal');
-            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_jadwal');
-            Route::get('/attendance/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('jadwal.attendance');
+            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_jadwal');        
         });
         Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('jadwal_admin');
+
+        // Daftar Hadir dan Berita Acara
+        Route::controller(DaftarHadirController::class)->prefix('master/jadwal')->group(function () {
+            // Daftar Hadir
+            Route::get('/{id_jadwal}/daftar-hadir', 'daftarHadir')
+                ->name('attendance.show');
+
+            Route::get('/{id_jadwal}/daftar-hadir/pdf', 'exportPdfdaftarhadir')
+                ->name('attendance.pdf');
+
+            // Berita Acara
+            Route::get('/{id_jadwal}/berita-acara', 'beritaAcara')
+                ->name('berita_acara');
+
+            Route::get('/{id_jadwal}/berita-acara/pdf', 'exportPdfberitaAcara')
+                ->name('berita_acara.pdf');          
+        });        
 
         // TUK
         Route::controller(TukAdminController::class)->prefix('master/tuk')->group(function () {
@@ -301,7 +318,18 @@ Route::middleware('auth')->group(function () {
 
 
         Route::get('/berita-acara/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'beritaAcara'])->name('berita_acara');
-        Route::get('/berita-acara/pdf/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'exportPdfberitaAcara'])->name('berita_acara.pdf');        
+        Route::get('/berita-acara/pdf/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'exportPdfberitaAcara'])->name('berita_acara.pdf');
+
+        // Forms
+        Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak05'])->name('ak05');
+        Route::get('/jadwal/{id_jadwal}/ak06', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak06'])->name('ak06');
+        Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak07'])->name('ak07');
+        Route::get('/apl02/{idDataSertifikasi}', [AsesiTrackerController::class, 'showApl02'])->name('apl02');
+
+        // Store Routes for AK Forms
+        Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk05'])->name('ak05.store');
+        Route::post('/ak06/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk06'])->name('ak06.store');
+        Route::post('/ak07/store/{id_sertifikasi_asesi}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk07'])->name('fr-ak-07.store');      
 
         // Tools
         Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
