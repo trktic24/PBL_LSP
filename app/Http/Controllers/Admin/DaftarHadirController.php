@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Schedule;
+use App\Models\Jadwal;
 use App\Models\DataSertifikasiAsesi;
 
 class DaftarHadirController extends Controller
@@ -14,7 +14,7 @@ class DaftarHadirController extends Controller
     public function index(Request $request, $id_jadwal)
     {
         // 1. Ambil Data Jadwal Utama
-        $jadwal = Schedule::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor'])->findOrFail($id_jadwal);
 
         // 2. Setup Default Sorting
         $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');

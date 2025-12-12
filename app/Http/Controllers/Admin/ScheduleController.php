@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tuk;
+use App\Models\MasterTUK;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Jadwal;
-use App\Models\JenisTuk; 
+use App\Models\JenisTUK; 
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
     public function showCalendar()
     {
-        $schedules = Jadwal::with(['skema', 'tuk', 'asesor', 'jenisTuk'])
+        $schedules = Jadwal::with(['skema', 'masterTuk', 'asesor', 'jenisTuk'])
                              ->orderBy('tanggal_pelaksanaan', 'asc')
                              ->get();
 
@@ -39,7 +39,7 @@ class ScheduleController extends Controller
         if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
 
         // 3. Mulai query dengan Eager Loading
-        $query = Jadwal::with(['skema', 'tuk', 'asesor', 'jenisTuk']);
+        $query = Jadwal::with(['skema', 'masterTuk', 'asesor', 'jenisTuk']);
 
         // 4. Terapkan 'search' (Filter)
         if ($request->has('search') && $request->input('search') != '') {
@@ -54,7 +54,7 @@ class ScheduleController extends Controller
                 $q->orWhereHas('asesor', function($aq) use ($searchTerm) {
                     $aq->where('nama_lengkap', 'like', '%' . $searchTerm . '%');
                 });
-                $q->orWhereHas('tuk', function($tq) use ($searchTerm) {
+                $q->orWhereHas('masterTuk', function($tq) use ($searchTerm) {
                     $tq->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
                 });
             });
@@ -118,9 +118,9 @@ class ScheduleController extends Controller
     public function create()
     {
         $skemas = Skema::all();
-        $tuks = Tuk::all();
+        $tuks = MasterTUK::all();
         $asesors = Asesor::all();
-        $jenisTuks = JenisTuk::all(); 
+        $jenisTuks = JenisTUK::all(); 
 
         return view('master.schedule.add_schedule', [
             'skemas' => $skemas,
@@ -175,9 +175,9 @@ class ScheduleController extends Controller
         $jadwal = Jadwal::findOrFail($id_jadwal);
         
         $skemas = Skema::all();
-        $tuks = Tuk::all();
+        $tuks = MasterTUK::all();
         $asesors = Asesor::all();
-        $jenisTuks = JenisTuk::all();
+        $jenisTuks = JenisTUK::all();
 
         return view('master.schedule.edit_schedule', [
             'jadwal' => $jadwal,

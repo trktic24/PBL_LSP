@@ -118,7 +118,7 @@ class IA11Controller extends Controller
             'dataSertifikasiAsesi.jadwal.asesor',
             'dataSertifikasiAsesi.jadwal.skema',
             'dataSertifikasiAsesi.jadwal.jenisTuk',
-            'dataSertifikasiAsesi.jadwal.tuk',
+            'dataSertifikasiAsesi.jadwal.masterTuk',
             // Relasi ini sudah di-eager load di atas, tapi tidak masalah diulang untuk memastikan
             'dataSertifikasiAsesi.jadwal.skema.kelompokPekerjaan',
             'dataSertifikasiAsesi.jadwal.skema.kelompokPekerjaan.unitKompetensi',
@@ -128,7 +128,7 @@ class IA11Controller extends Controller
 
         // Jika data IA11 belum ada, inisiasi dengan data kosong (NULL) dan ambil data header asesi
         if (!$ia11) {
-            $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk', 'jadwal.tuk'])->find($id_data_sertifikasi_asesi);
+            $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk', 'jadwal.masterTuk'])->find($id_data_sertifikasi_asesi);
 
             if (!$sertifikasi) {
                 return response()->json(['message' => 'Data Sertifikasi Asesi tidak ditemukan.'], 404);

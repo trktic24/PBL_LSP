@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Tuk;
-use App\Models\Schedule;
+use App\Models\MasterTUK;
+use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File; // [PENTING] Pakai File Facade, bukan Storage
 use Illuminate\Database\QueryException; 
@@ -26,7 +26,7 @@ class TukAdminController extends Controller
         if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
 
         // 3. Mulai query
-        $query = Tuk::query();
+        $query = MasterTUK::query();
 
         // 4. Terapkan 'search'
         if ($request->has('search') && $request->input('search') != '') {
@@ -97,7 +97,7 @@ class TukAdminController extends Controller
         // 5. Simpan path relatif ke database
         $validatedData['foto_tuk'] = 'images/foto_tuk/' . $filename; 
 
-        $tuk = Tuk::create($validatedData); 
+        $tuk = MasterTUK::create($validatedData); 
 
         return redirect()->route('master_tuk')
                          ->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil ditambahkan!");
@@ -108,7 +108,7 @@ class TukAdminController extends Controller
      */
     public function edit($id)
     {
-        $tuk = Tuk::findOrFail($id);
+        $tuk = MasterTUK::findOrFail($id);
         return view('tuk.edit_tuk', ['tuk' => $tuk]);
     }
 
@@ -117,7 +117,7 @@ class TukAdminController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $tuk = Tuk::findOrFail($id);
+        $tuk = MasterTUK::findOrFail($id);
 
         $validatedData = $request->validate([
             'nama_lokasi' => 'required|string|max:255',
@@ -154,12 +154,12 @@ class TukAdminController extends Controller
      */
     public function destroy($id)
     {
-        $tuk = Tuk::findOrFail($id);
+        $tuk = MasterTUK::findOrFail($id);
         $id_tuk = $tuk->id_tuk;
         $nama_lokasi = $tuk->nama_lokasi;
 
         // Cek relasi ke jadwal
-        $conflictingSchedule = Schedule::where('id_tuk', $id_tuk)->first();
+        $conflictingSchedule = Jadwal::where('id_tuk', $id_tuk)->first();
 
         if ($conflictingSchedule) {
             return back()->with('error', 

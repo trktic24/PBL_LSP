@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Schedule;
+use App\Models\Jadwal;
 use Illuminate\Support\Facades\Validator;
 
 class ScheduleController extends Controller
@@ -14,7 +14,7 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $jadwal = Schedule::with(['skema', 'tuk', 'asesor', 'jenisTuk'])->get();
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor', 'jenisTuk'])->get();
 
         return response()->json([
             'status' => 'success',
@@ -27,7 +27,7 @@ class ScheduleController extends Controller
      */
     public function show($id)
     {
-        $jadwal = Schedule::with(['skema', 'tuk', 'asesor', 'jenisTuk'])->find($id);
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor', 'jenisTuk'])->find($id);
 
         if (!$jadwal) {
             return response()->json([
@@ -74,7 +74,7 @@ class ScheduleController extends Controller
             ], 422);
         }
 
-        $jadwal = Schedule::create($request->all());
+        $jadwal = Jadwal::create($request->all());
 
         return response()->json([
             'status' => 'success',
@@ -88,7 +88,7 @@ class ScheduleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $jadwal = Schedule::find($id);
+        $jadwal = Jadwal::find($id);
 
         if (!$jadwal) {
             return response()->json([
@@ -138,7 +138,7 @@ class ScheduleController extends Controller
      */
     public function destroy($id)
     {
-        $jadwal = Schedule::find($id);
+        $jadwal = Jadwal::find($id);
 
         if (!$jadwal) {
             return response()->json([

@@ -37,7 +37,7 @@ class DashboardController extends Controller
         if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
 
         // Base Query dengan Eager Loading
-        $query = Jadwal::with(['skema', 'tuk', 'jenisTuk', 'asesor']);
+        $query = Jadwal::with(['skema', 'masterTuk', 'jenisTuk', 'asesor']);
 
         // [PERBAIKAN UTAMA DI SINI]
         // Logic Filter Status
@@ -68,7 +68,7 @@ class DashboardController extends Controller
                       $sq->where('nama_skema', 'like', '%' . $searchTerm . '%')
                          ->orWhere('nomor_skema', 'like', '%' . $searchTerm . '%');
                   })
-                  ->orWhereHas('tuk', function($tq) use ($searchTerm) {
+                  ->orWhereHas('masterTuk', function($tq) use ($searchTerm) {
                       $tq->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
                   })
                   ->orWhereHas('asesor', function($aq) use ($searchTerm) {
