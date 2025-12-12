@@ -23,19 +23,43 @@
   
   <div class="flex pt-0">
     
-    <x-sidebar_profile_asesi :asesi="$asesi" />
+    <x-sidebar_profile_asesi 
+        :asesi="$asesi" 
+        :backUrl="route('schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
+    />
 
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">
       
-      <div x-data="{ open: false, active: null }" class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-10 border border-gray-100">
+      <script>
+          // Ambil data dari controller, jika null/kosong jadikan array kosong []
+          window.activeFormsData = @json($activeForms ?: []);
+          console.log('--- DEBUG DATA FORM ---');
+          console.log('Data yang diterima View:', window.activeFormsData);
+          console.log('Jumlah Form:', window.activeFormsData.length);
+          console.log('-----------------------');
+      </script>
+
+      <div x-data="{ 
+            open: false, 
+            active: null, 
+            forms: window.activeFormsData 
+           }" 
+           class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-10 border border-gray-100">
         
         <div class="text-center mb-10">
             <h2 class="text-3xl font-bold text-gray-900">Formulir Pendaftaran</h2>
-            <p class="text-gray-500 text-sm mt-2">Pilih formulir di bawah untuk mengisi atau melihat detail.</p>
+            <p class="text-gray-500 text-sm mt-2">Silakan pilih formulir di bawah untuk melihat detail.</p>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <template x-for="form in ['FR.APL.01','FR.APL.02','FR.MAPA.01','FR.AK.01','FR.AK.02','FR.AK.03','FR.AK.04','FR.AK.05', 'FR.AK.06','FR.IA.01']" :key="form">
+          <template x-if="forms.length === 0">
+             <div class="col-span-full text-center text-gray-400 py-8 italic border-2 border-dashed rounded-xl">
+                 <i class="fas fa-folder-open text-3xl mb-2 text-gray-300"></i><br>
+                 Tidak ada formulir yang aktif untuk skema ini.
+             </div>
+          </template>
+
+          <template x-for="form in forms.slice(0, 10)" :key="form">
             <button @click="active = form"
               :class="active === form 
                 ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30 ring-2 ring-blue-500 ring-offset-2 transform scale-105' 
@@ -51,13 +75,14 @@
           </template>
         </div>
 
-        <div x-show="open" 
+        <div x-show="open && forms.length > 10" 
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 -translate-y-4"
              x-transition:enter-end="opacity-100 translate-y-0"
-             class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+             class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
+             x-cloak>
              
-          <template x-for="form in ['FR.IA.02','FR.IA.03','FR.IA.04','FR.IA.05','FR.IA.06','FR.IA.07','FR.IA.08','FR.IA.09','FR.IA.10','FR.IA.11']" :key="form">
+          <template x-for="form in forms.slice(10)" :key="form">
             <button @click="active = form"
               :class="active === form 
                 ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30 ring-2 ring-blue-500 ring-offset-2 transform scale-105' 
@@ -73,7 +98,7 @@
           </template>
         </div>
 
-        <div class="mt-8 flex justify-center relative">
+        <div class="mt-8 flex justify-center relative" x-show="forms.length > 10" x-cloak>
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="w-full border-t border-gray-200"></div>
             </div>
@@ -95,7 +120,7 @@
             <p class="text-sm">Silakan klik salah satu kartu di atas untuk melihat detail.</p>
           </div>
 
-          <div x-show="active === 'FR.APL.01'" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 translate-y-4" class="bg-white p-1">
+          <div x-show="active === 'FR.APL.01'" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 translate-y-4" class="bg-white p-1" x-cloak>
             <div class="flex items-center gap-3 mb-6 border-b pb-4">
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                     <i class="fas fa-file-invoice text-2xl"></i>
@@ -109,32 +134,10 @@
                 <p class="p-4 bg-blue-50 border border-blue-100 rounded-lg text-blue-800">
                     <i class="fas fa-info-circle mr-2"></i> Konten form APL-01 akan dimuat di sini.
                 </p>
-                </div>
-          </div>
-        
-          <div x-show="active === 'FR.APL.02'" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 translate-y-4" class="bg-white p-1">
-            <div class="flex items-center gap-3 mb-6 border-b pb-4">
-                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600">
-                    <i class="fas fa-check-double text-2xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-2xl font-bold text-gray-900">Formulir FR.APL.02</h3>
-                    <p class="text-gray-500 text-sm">Asesmen Mandiri</p>
-                </div>
-            </div>
-            <div class="prose max-w-none text-gray-600">
-                <p class="p-4 bg-green-50 border border-green-100 rounded-lg text-green-800">
-                    <i class="fas fa-info-circle mr-2"></i> Konten form APL-02 akan dimuat di sini.
-                </p>
             </div>
           </div>
 
-          <div x-show="active === 'FR.MAPA.01'" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 translate-y-4" class="bg-white p-1">
-            <h3 class="text-2xl font-bold text-gray-800 mb-4">Formulir FR.MAPA.01</h3>
-            <p>...Letakkan konten form FR.MAPA.01 Anda di sini...</p>
           </div>
-          
-        </div>
         
       </div>
     </main>

@@ -22,7 +22,10 @@
   
   <div class="flex pt-0">
     
-    <x-sidebar_profile_asesi :asesi="$asesi" />
+    <x-sidebar_profile_asesi 
+        :asesi="$asesi" 
+        :backUrl="route('schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
+    />
 
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">
       <div class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-10 border border-gray-100">

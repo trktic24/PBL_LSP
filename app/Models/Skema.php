@@ -35,4 +35,10 @@ class Skema extends Model
     {
         return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
     }
+
+    // Relasi ke List Form (Konfigurasi Formulir)
+    public function listForm()
+    {
+        return $this->hasOne(ListForm::class, 'id_skema', 'id_skema');
+    }
 }

@@ -93,65 +93,71 @@
         </div>
 
         <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8"
-            x-data="formConfigHandler()">
+             x-data="formConfigHandler()">
 
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h3 class="text-xl font-semibold text-gray-900">Konfigurasi Formulir Asesmen</h3>
-                    <p class="text-sm text-gray-500 mt-1">Centang formulir yang wajib digunakan pada skema ini.</p>
+            <form id="formConfigUpdate" action="{{ route('skema.detail.update_form', $skema->id_skema) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">Konfigurasi Formulir Asesmen</h3>
+                        <p class="text-sm text-gray-500 mt-1">Centang formulir yang wajib digunakan pada skema ini.</p>
+                    </div>
+
+                    <button type="submit"
+                        :class="hasChanges 
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow cursor-pointer transform hover:scale-105' 
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'"
+                        :disabled="!hasChanges"
+                        class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center">
+                        <i class="fas fa-save mr-2"></i>
+                        <span>Simpan Perubahan</span>
+                    </button>
                 </div>
 
-                <button :disabled="!hasChanges"
-                    :class="hasChanges 
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white shadow cursor-pointer transform hover:scale-105' 
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'"
-                    class="px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center">
-                    <i class="fas fa-save mr-2"></i>
-                    <span>Simpan Perubahan</span>
-                </button>
-            </div>
-
-            <div class="overflow-hidden border border-gray-200">
-                <table class="min-w-full text-sm text-left divide-y divide-gray-200">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold uppercase">
-                        <tr class="divide-x divide-gray-200">
-                            <th class="px-6 py-3 w-16 text-center">
-                                <input type="checkbox" x-model="checkAll" @change="toggleAll()"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
-                            </th>
-                            <th class="px-6 py-3">Kode Form</th>
-                            <th class="px-6 py-3">Nama Formulir</th>
-                            <th class="px-6 py-3 text-center w-32">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white">
-                        <template x-if="forms.length === 0">
-                            <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-400">Tidak ada data formulir.</td>
-                            </tr>
-                        </template>
-
-                        <template x-for="(form, index) in forms" :key="index">
-                            <tr class="hover:bg-gray-50 transition divide-x divide-gray-200" :class="form.checked ? '' : 'opacity-60 bg-gray-50'">
-                                <td class="px-6 py-3 text-center">
-                                    <input type="checkbox" x-model="form.checked" @change="updateCheckAll()"
+                <div class="overflow-hidden border border-gray-200 rounded-lg">
+                    <table class="min-w-full text-sm text-left divide-y divide-gray-200">
+                        <thead class="bg-gray-50 text-gray-700 font-semibold uppercase">
+                            <tr class="divide-x divide-gray-200">
+                                <th class="px-6 py-3 w-16 text-center">
+                                    <input type="checkbox" x-model="checkAll" @change="toggleAll()"
                                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
-                                </td>
-                                <td class="px-6 py-3 font-mono text-gray-800" x-text="form.code"></td>
-                                <td class="px-6 py-3 text-gray-800" x-text="form.name"></td>
-                                <td class="px-6 py-3 text-center">
-                                    <span x-show="form.checked" class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium border border-green-200">
-                                        Aktif
-                                    </span>
-                                    <span x-show="!form.checked" class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full font-medium border border-gray-200">
-                                        Non-Aktif
-                                    </span>
-                                </td>
+                                </th>
+                                <th class="px-6 py-3">Kode Form</th>
+                                <th class="px-6 py-3">Nama Formulir</th>
+                                <th class="px-6 py-3 text-center w-32">Status</th>
                             </tr>
-                        </template>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            <template x-for="(form, index) in forms" :key="index">
+                                <tr class="hover:bg-gray-50 transition divide-x divide-gray-200" :class="form.checked ? '' : 'opacity-60 bg-gray-50'">
+                                    
+                                    <td class="px-6 py-3 text-center">
+                                        <input type="checkbox" 
+                                               :name="form.db_field" 
+                                               x-model="form.checked" 
+                                               @change="updateCheckAll()"
+                                               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                                    </td>
+
+                                    <td class="px-6 py-3 font-mono text-gray-800" x-text="form.code"></td>
+                                    <td class="px-6 py-3 text-gray-800" x-text="form.name"></td>
+                                    
+                                    <td class="px-6 py-3 text-center">
+                                        <span x-show="form.checked" class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium border border-green-200">
+                                            Aktif
+                                        </span>
+                                        <span x-show="!form.checked" class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full font-medium border border-gray-200">
+                                            Non-Aktif
+                                        </span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
         </div>
 
         <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 overflow-x-auto">
@@ -272,24 +278,24 @@
     <script>
         function formConfigHandler() {
             return {
-                // [SOLUSI] Inject data langsung di dalam script JS, bukan di HTML
+                // Mengambil data yang sudah di-format dari Controller
                 forms: @json($formConfig ?? []),
 
-                checkAll: true,
+                checkAll: false,
                 originalForms: [],
 
                 init() {
-                    // Cek apakah data masuk
-                    console.log('Form Config:', this.forms);
-
                     if (!this.forms || this.forms.length === 0) return;
-
-                    // Simpan state awal (Deep copy)
+                    
+                    // Simpan state awal untuk deteksi perubahan
                     this.originalForms = JSON.parse(JSON.stringify(this.forms));
+                    
+                    // Set status Check All di awal
                     this.updateCheckAll();
                 },
 
                 get hasChanges() {
+                    // Bandingkan state saat ini dengan state awal
                     return JSON.stringify(this.forms) !== JSON.stringify(this.originalForms);
                 },
 
