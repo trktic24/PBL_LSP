@@ -17,9 +17,4 @@ class KunciJawabanIA05 extends Model
         'nomor_kunci_jawaban_ia05',
         'teks_kunci_jawaban_ia05', // <-- Ini kolom kuncinya
     ];
-    public function soal()
-    {
-        // belongsTo(RelatedModel, foreign_key_di_tabel_ini, owner_key_di_tabel_induk)
-        return $this->belongsTo(SoalIa05::class, 'id_soal_ia05', 'id_soal_ia05');
-    }
 }
