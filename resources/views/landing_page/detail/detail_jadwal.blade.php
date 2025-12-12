@@ -75,9 +75,25 @@
                         <span class="font-semibold text-gray-700">Jumlah Pendaftar :</span>
                         <span class="font-bold">{{ $jumlahPeserta ?? 0 }} Orang</span>
                     </div>
-                    <a href="{{ route('login') }}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
-                        Daftar Sekarang
-                    </a>
+                    @auth
+                        @if(Auth::user()->role->nama_role == 'asesi')
+                            <form action="{{ route('asesi.daftar.jadwal') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="id_jadwal" value="{{ $jadwal->id_jadwal }}">
+                                <button type="submit" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
+                                    Daftar Sekarang
+                                </button>
+                            </form>
+                        @else
+                             <button disabled class="block w-full bg-gray-300 text-center text-gray-500 font-semibold py-3 rounded-lg cursor-not-allowed mb-3">
+                                Khusus Asesi
+                            </button>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
+                            Daftar Sekarang
+                        </a>
+                    @endauth
                     
                     <p class="text-center text-gray-500 text-xs">
                         Pendaftaran ditutup tanggal 
