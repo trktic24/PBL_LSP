@@ -74,7 +74,7 @@
                                     </div>
                                     <div>
                                         <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider">Tempat Uji Kompetensi</span>
-                                        <span class="font-medium text-gray-900">{{ $jadwal->tuk->nama_lokasi }}</span>
+                                        <span class="font-medium text-gray-900">{{ $jadwal->masterTuk->nama_lokasi }}</span>
                                     </div>
                                 </div>
                             </div>

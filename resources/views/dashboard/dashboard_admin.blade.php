@@ -325,7 +325,7 @@
 
                   <!-- TUK -->
                   <td class="px-6 py-4 text-gray-700">
-                    {{ $jadwal->tuk->nama_lokasi ?? '-' }}
+                    {{ $jadwal->masterTuk->nama_lokasi ?? '-' }}
                   </td>
 
                   <!-- Jenis TUK -->

@@ -13,13 +13,14 @@ use App\Http\Controllers\SkemaController;
 use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Mapa02Controller;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FrMapa01Controller;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TukAdminController;
 use App\Http\Controllers\DaftarHadirController;
-use App\Http\Controllers\AsesiProfileController;
+use App\Http\Controllers\Asesi\ProfileController as AsesiProfileController;
+use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
 use App\Http\Controllers\AsesiTrackerController;
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -99,9 +100,7 @@ Route::middleware('auth')->group(function () {
     // ======================================================
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Route generic profile removed. Separate routes per role used instead.
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
@@ -205,7 +204,8 @@ Route::middleware('auth')->group(function () {
             })->name('profile_admin');
 
             // Rute profil bawaan Laravel (Admin context)
-            Route::controller(ProfileController::class)->group(function () {
+            // Rute profil bawaan Laravel (Admin context)
+            Route::controller(AdminProfileController::class)->group(function () {
                 Route::get('/profile', 'edit')->name('profile.edit');
                 Route::patch('/profile', 'update')->name('profile.update');
                 Route::delete('/profile', 'destroy')->name('profile.destroy');
@@ -347,11 +347,22 @@ Route::middleware('auth')->group(function () {
             // Dashboard (Redirected here usually)
             // Route::get('/dashboard', [AsesiDashboardController::class, 'index'])->name('dashboard');
 
+            // --- Profile Asesi ---
+            Route::controller(AsesiProfileController::class)->group(function () {
+                Route::get('/profile', 'edit')->name('profile.edit');
+                Route::patch('/profile', 'update')->name('profile.update');
+                Route::delete('/profile', 'destroy')->name('profile.destroy');
+                Route::put('/profile/password', 'updatePassword')->name('profile.password.update'); // Jika ada update PW
+            });
+
             // --- A. Tracker ---
             Route::controller(TrackerController::class)->group(function () {
                 Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
                 Route::get('/pendaftaran-selesai', 'pendaftaranSelesai')->name('pendaftaran.selesai');
             });
+
+            // --- Riwayat Sertifikasi (REPLACEMENT FOR DASHBOARD) ---
+            Route::get('/riwayat-sertifikasi', [RiwayatSertifikasiController::class, 'index'])->name('riwayat.index');
 
             // --- B. Formulir APL-01 (Pendaftaran) ---
             // Menggunakan Controller yang baru saja kita rapikan
@@ -446,7 +457,8 @@ Route::middleware('auth')->group(function () {
 
         // 1. JIKA ASESI
         if ($roleName === 'asesi') {
-            return app(AsesiDashboardController::class)->index($request);
+            // [MODIFIED] Asesi sekarang langsung ke Riwayat, bukan Dashboard
+            return redirect()->route('asesi.riwayat.index');
         }
 
         // 2. JIKA ASESOR

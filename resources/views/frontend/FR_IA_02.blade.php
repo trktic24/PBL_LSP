@@ -32,7 +32,7 @@
         <x-identitas_skema_form.identitas_skema_form
             :skema="$skema->nama_skema ?? ''"
             :nomorSkema="$skema->kode_unit ?? ''" 
-            :tuk="$jadwal->tuk->nama_lokasi ?? 'Tempat Kerja'" {{-- Asumsi relasi TUK di Jadwal --}}
+            :tuk="$jadwal->masterTuk->nama_lokasi ?? 'Tempat Kerja'" {{-- Asumsi relasi TUK di Jadwal --}}
             :namaAsesor="$jadwal->asesor->nama_lengkap ?? ''"
             :namaAsesi="$asesi->nama_lengkap ?? ''"
             :tanggal="optional($jadwal->tanggal_pelaksanaan)->format('d F Y') ?? date('d F Y')" 

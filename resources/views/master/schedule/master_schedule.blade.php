@@ -363,7 +363,7 @@
                             <td class="px-4 py-3">{{ $jadwal->id_jadwal }}</td>
                             <td class="px-4 py-3">{{ $jadwal->skema?->nama_skema ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $jadwal->asesor?->nama_lengkap ?? 'N/A' }}</td>
-                            <td class="px-4 py-3">{{ $jadwal->tuk?->nama_lokasi ?? 'N/A' }}</td>
+                            <td class="px-4 py-3">{{ $jadwal->masterTuk?->nama_lokasi ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $jadwal->tanggal_mulai?->format('d/m/Y') ?? 'N/A' }} - {{ $jadwal->tanggal_selesai?->format('d/m/Y') ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $jadwal->tanggal_pelaksanaan?->format('d/m/Y') ?? 'N/A' }} ({{ $jadwal->waktu_mulai?->format('H:i') ?? 'N/A' }})</td>
                             <td class="px-4 py-3">{{ $jadwal->jenisTuk?->jenis_tuk ?? 'N/A' }}</td>
