@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,19 +11,27 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        ::-webkit-scrollbar { width: 0; }
-        [x-cloak] { display: none !important; }
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 text-gray-800">
     <div class="min-h-screen flex flex-col">
 
-        <x-navbar.navbar-admin />
-        
+        <x-navbar />
+
         <main class="p-6">
-            
+
             <div class="flex flex-col xl:flex-row justify-between items-end mb-8 gap-6">
                 <div class="w-full xl:max-w-lg">
                     <p class="text-sm text-gray-500 mb-2">Master Schedule > Daftar Hadir</p>
@@ -44,7 +53,7 @@
                     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm w-full">
                         <div class="flex flex-col gap-3">
                             <div class="flex justify-between items-start gap-4">
-                            
+
                                 <div class="flex items-start text-blue-700 font-semibold text-lg flex-1">
                                     <i class="fas fa-certificate w-6 text-center mr-2 mt-1 shrink-0"></i>
                                     <span class="leading-tight">
@@ -74,7 +83,7 @@
                                     </div>
                                     <div>
                                         <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider">Tempat Uji Kompetensi</span>
-                                        <span class="font-medium text-gray-900">{{ $jadwal->masterTuk->nama_lokasi }}</span>
+                                        <span class="font-medium text-gray-900">{{ $jadwal->tuk->nama_lokasi }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +93,7 @@
             </div>
 
             <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 overflow-x-auto">
-                
+
                 <div x-data="{ perPage: '{{ $perPage }}', changePerPage() { let url = new URL(window.location.href); url.searchParams.set('per_page', this.perPage); url.searchParams.set('page', 1); window.location.href = url.href; } }" class="flex items-center space-x-2 mb-6">
                     <label for="per_page" class="text-sm text-gray-600">Show:</label>
                     <select id="per_page" x-model="perPage" @change="changePerPage()" class="bg-white text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -98,8 +107,9 @@
                 <table class="min-w-full text-xs text-left border border-gray-200">
                     <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
                         <tr class="divide-x divide-gray-200 border-b border-gray-200">
+
                             @php
-                                $baseParams = ['search' => request('search'), 'per_page' => request('per_page')];
+                            $baseParams = ['search' => request('search'), 'per_page' => request('per_page')];
                             @endphp
 
                             <th class="px-4 py-3 font-semibold w-16 text-center">
@@ -109,7 +119,7 @@
                                     <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-6 py-3 font-semibold">
                                 @php $isCurrent = $sortColumn == 'nama_lengkap'; @endphp
                                 <a href="{{ route('schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
@@ -117,7 +127,7 @@
                                     <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-6 py-3 font-semibold">
                                 @php $isCurrent = $sortColumn == 'institusi'; @endphp
                                 <a href="{{ route('schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'institusi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
@@ -151,59 +161,83 @@
                             </th>
 
                             <th class="px-6 py-3 font-semibold text-center">Tanda Tangan</th>
+
+                            <th class="px-4 py-3 font-semibold text-center">
+                                Checklist
+                            </th>
+
+                            <th class="px-6 py-3 font-semibold text-center w-24">Aksi</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody class="divide-y divide-gray-200">
                         @forelse ($pendaftar as $index => $data)
-                        
+
                         <tr class="hover:bg-blue-50 transition divide-x divide-gray-200 cursor-pointer group"
                             onclick="window.location='{{ route('asesi.profile.settings', $data->asesi->id_asesi) }}'">
-                            
+
                             <td class="px-4 py-4 text-center font-medium text-gray-500">
                                 {{ $data->id_data_sertifikasi_asesi }}
                             </td>
-                            
+
                             <td class="px-6 py-4 font-medium text-gray-900 group-hover:text-blue-700 transition-colors">
                                 {{ $data->asesi->nama_lengkap }}
                             </td>
-                            
+
                             <td class="px-6 py-4">
                                 {{ $data->asesi->dataPekerjaan->nama_institusi_pekerjaan ?? '-' }}
                             </td>
-                            
+
                             <td class="px-6 py-4 truncate max-w-xs" title="{{ $data->asesi->alamat_rumah }}">
                                 {{ Str::limit($data->asesi->alamat_rumah, 30) }}
                             </td>
-                            
+
                             <td class="px-6 py-4">
                                 {{ $data->asesi->pekerjaan }}
                             </td>
-                            
+
                             <td class="px-6 py-4">
                                 {{ $data->asesi->nomor_hp }}
                             </td>
-                            
+
                             <td class="px-6 py-4 text-center">
                                 <div onclick="event.stopPropagation()" class="flex justify-center">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-white relative group-img">
                                         @if($data->asesi->tanda_tangan)
-                                            <img src="{{ asset($data->asesi->tanda_tangan) }}" 
-                                                 class="w-full h-full object-contain p-1 hover:scale-110 transition-transform duration-200 cursor-pointer" 
-                                                 alt="TTD"
-                                                 onclick="window.open(this.src, '_blank')">
+                                        <img src="{{ asset($data->asesi->tanda_tangan) }}"
+                                            class="w-full h-full object-contain p-1 hover:scale-110 transition-transform duration-200 cursor-pointer"
+                                            alt="TTD"
+                                            onclick="window.open(this.src, '_blank')">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center text-gray-300">
-                                                <i class="fas fa-pen-nib"></i>
-                                            </div>
+                                        <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                            <i class="fas fa-pen-nib"></i>
+                                        </div>
                                         @endif
                                     </div>
                                 </div>
                             </td>
+
+                            <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                                <input type="checkbox"
+                                        name="selected_pendaftar[]"
+                                        value="{{ $data->id_data_sertifikasi_asesi }}"
+                                        class="w-6 h-6 rounded-full border-gray-300 shadow-sm accent-green-600 cursor-pointer focus:ring-0 focus:outline-none focus:border-gray-300">
+                            </td>
+
+                            <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                                <form action="{{ route('schedule.attendance.destroy', $data->id_data_sertifikasi_asesi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus peserta {{ $data->asesi->nama_lengkap }} dari jadwal ini?');" class="inline-block">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">
+                                        <i class="fas fa-trash"></i> <span>Delete</span>
+                                    </button>
+                                </form>
+                            </td>
+
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <td colspan="9" class="px-6 py-8 text-center text-gray-500">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fas fa-users-slash text-4xl mb-3 text-gray-300"></i>
                                     <p>Belum ada peserta yang mendaftar di jadwal ini.</p>
@@ -213,13 +247,13 @@
                         @endforelse
                     </tbody>
                 </table>
-                
+
                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
                     <div class="text-sm text-gray-500 font-bold">
                         @if ($pendaftar->total() > 0)
-                            Showing {{ $pendaftar->firstItem() }} - {{ $pendaftar->lastItem() }} of {{ $pendaftar->total() }} results
+                        Showing {{ $pendaftar->firstItem() }} - {{ $pendaftar->lastItem() }} of {{ $pendaftar->total() }} results
                         @else
-                            Showing 0 results
+                        Showing 0 results
                         @endif
                     </div>
                     <div>
@@ -231,4 +265,5 @@
         </main>
     </div>
 </body>
+
 </html>

@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Tuk; 
+use App\Models\Tuk;
 use App\Models\Asesi;
 use App\Models\Skema;
 use App\Models\Asesor;
+use App\Models\Berita;
 use App\Models\Schedule;
 use Illuminate\Database\Seeder;
-use App\Models\DataSertifikasiAsesi;
+use Illuminate\Support\Facades\Storage;
 use Database\Seeders\SoalDanKunciSeeder;
 use Database\Seeders\IA11\PerformaIA11Seeder;
 use Database\Seeders\IA11\SpesifikasiIA11Seeder;
-use Illuminate\Support\Facades\Storage; // <<< IMPORT STORAGE
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,38 +21,48 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 🛑 LOGIKA PEMBERSIHAN FOLDER GAMBAR SEBELUM SEEDING
+        // 1. LOGIKA PEMBERSIHAN FOLDER GAMBAR
+        // Menghapus dan membuat ulang folder agar seeding gambar mulai dari nol
         $imageFolder = 'skema_images';
-        // Hapus folder lama
         Storage::disk('public')->deleteDirectory($imageFolder);
-        // Buat folder baru (agar pasti ada)
         Storage::disk('public')->makeDirectory($imageFolder);
 
-        // Panggil seeder
+        // 2. SEEDER DASAR (Master Data Tanpa Dependensi Berat)
         $this->call([
-            // Pindahkan CategorySeeder ke atas agar data kategori tersedia lebih dulu
-            CategorySeeder::class,
-            
-            RoleSeeder::class,
-            JenisTukSeeder::class,
-            MasterTukSeeder::class,  // <-- PINDAHKAN KE ATAS
-                // SkemaSeeder::class,       // <-- TAMBAHKAN INI (jika ada)
+            RoleSeeder::class,          // Role dulu (Admin, Asesor, Asesi)
+            CategorySeeder::class,      // Kategori Skema
+            CountrySeeder::class,       // Data Negara
+            JenisTukSeeder::class,      // Jenis TUK (Mandiri, Sewaktu, dll)
+        ]);
 
-                // 2. Data User & Profil (Mungkin RoleSeeder harus dijalankan dulu)
-            UserSeeder::class,
-            CountrySeeder::class,
-            JenisTukSeeder::class,
-            MasterTukSeeder::class,
-            SkemaSeeder::class, // SkemaSeeder akan memanggil SkemaFactory yang membuat gambar
-            AsesiSeeder::class,
+        // 3. DATA USER & TEMPAT UJI
+        $this->call([
+            UserSeeder::class,          // User Admin/Staff
+            MasterTukSeeder::class,     // Data TUK utama
+        ]);
+
+        // 4. GENERATE DATA DENGAN FACTORY (Bulk Data)
+        // Kita buat data dasar menggunakan Factory untuk testing
+        Tuk::factory(20)->create();
+        Asesor::factory(20)->create();
+        Skema::factory(20)->create(); // SkemaFactory biasanya menghandle gambar
+
+        // 5. DATA DETAIL & SKEMA (Membutuhkan Skema & Asesor yang sudah ada)
+        $this->call([
+            SkemaSeeder::class,
+            SkemaDetailSeeder::class,
             AsesorSeeder::class,
+        ]);
 
-                // 3. Data pendukung lainnya
-            JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
+        // 6. DATA ASESI & JADWAL
+        // Pastikan User untuk asesi sudah ada atau dibuat di dalam factory
+        Asesi::factory(200)->create();
+        Schedule::factory(50)->create();
+
+        // 7. SEEDER FORMULIR & DOKUMEN TEKNIS (Urutan Logis sesuai Proses Sertifikasi)
+        $this->call([
+            JadwalSeeder::class,
             DataSertifikasiAsesiSeeder::class,
-            // TujuanAssesmenMapa01::class,
-            // MasterPoinSiapaAsesmenSeeder::class,
-            // PoinHubunganStandarSeeder::class,
             KonfirmasiOrangRelevanSeeder::class,
             StandarIndustriMapa01Seeder::class,
             PemenuhanDimensiAk06Seeder::class,
@@ -62,26 +72,10 @@ class DatabaseSeeder extends Seeder
             SpesifikasiIA11Seeder::class,
             PerformaIA11Seeder::class,
             SkenarioIa02Seeder::class,
-
-            // Asesir
             PoinAk03Seeder::class,
         ]);
 
-        // Panggil seeder Role dan User (Admin)
-        $this->call([
-            // RoleSeeder::class, // Duplicate
-            // UserSeeder::class, // Duplicate
-            // JenisTukSeeder::class, // Duplicate
-            // CategorySeeder::class, // Duplicate
-        ]);
-
-        Asesor::factory(20)->create();
-        Skema::factory(20)->create();
-
-        $this->call(SkemaDetailSeeder::class); 
-
-        Asesi::factory(20)->create();
-
-        
+        // 8. DATA TAMBAHAN LAINNYA
+        Berita::factory(15)->create();
     }
 }

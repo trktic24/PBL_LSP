@@ -302,6 +302,17 @@ Route::middleware('auth')->group(function () {
                     Route::patch('/update/{category}', 'update')->name('update_category');
                     Route::delete('/delete/{category}', 'destroy')->name('delete_category');
                 });
+
+            //Master - Berita Terbaru
+            // 10. Berita Terbaru
+            Route::controller(BeritaController::class)->prefix('master/berita')->group(function () {
+                Route::get('/', 'index')->name('master_berita');
+                Route::get('/add', 'create')->name('add_berita');
+                Route::post('/add', 'store')->name('add_berita.store');
+                Route::get('/edit/{id}', 'edit')->name('edit_berita');
+                Route::patch('/update/{id}', 'update')->name('update_berita');
+                Route::delete('/delete/{id}', 'destroy')->name('delete_berita');
+                });
         });
 
     // ======================================================

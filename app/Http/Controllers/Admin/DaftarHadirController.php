@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
-
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Jadwal;
+use App\Models\Schedule;
 use App\Models\DataSertifikasiAsesi;
 
 class DaftarHadirController extends Controller
@@ -16,7 +14,7 @@ class DaftarHadirController extends Controller
     public function index(Request $request, $id_jadwal)
     {
         // 1. Ambil Data Jadwal Utama
-        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor'])->findOrFail($id_jadwal);
+        $jadwal = Schedule::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
 
         // 2. Setup Default Sorting
         $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');
@@ -68,5 +66,33 @@ class DaftarHadirController extends Controller
             'sortColumn' => $sortColumn,
             'sortDirection' => $sortDirection,
         ]);
+    }
+
+    public function destroy($id)
+    {
+        try {
+            // 1. Cari data pendaftaran berdasarkan PK-nya
+            // Gunakan findOrFail agar otomatis 404 jika data tidak ada
+            $dataSertifikasi = DataSertifikasiAsesi::findOrFail($id);
+
+            // 2. Ambil Nama Asesi dan ID Jadwal sebelum dihapus untuk keperluan redirect dan pesan
+            $namaAsesi = $dataSertifikasi->asesi->nama_lengkap ?? 'Peserta';
+            $idJadwal = $dataSertifikasi->id_jadwal;
+
+            // 3. Lakukan penghapusan
+            $dataSertifikasi->delete();
+
+            // 4. Redirect kembali ke halaman daftar hadir jadwal tersebut dengan pesan sukses
+            // Asumsi nama route index adalah 'schedule.attendance'
+            return redirect()->route('schedule.attendance', $idJadwal)
+                             ->with('success', "Peserta atas nama '{$namaAsesi}' berhasil dihapus dari jadwal ini.");
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Handle jika ID tidak ditemukan
+            return redirect()->back()->with('error', 'Data peserta tidak ditemukan.');
+        } catch (\Exception $e) {
+            // Handle error umum lainnya
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus peserta: ' . $e->getMessage());
+        }
     }
 }
