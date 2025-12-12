@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\MasterTUK;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;

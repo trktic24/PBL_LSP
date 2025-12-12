@@ -8,17 +8,18 @@ use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\APL01Controller;
-use App\Http\Controllers\AsesiController;
-use App\Http\Controllers\SkemaController;
-use App\Http\Controllers\AsesorController;
+use App\Http\Controllers\Admin\DetailSkemaController;
+use App\Http\Controllers\Admin\AsesiController;
+use App\Http\Controllers\Admin\SkemaController;
+use App\Http\Controllers\Admin\AsesorController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\FrMapa01Controller;
-use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\TukAdminController;
-use App\Http\Controllers\DaftarHadirController;
+use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\TukAdminController;
+use App\Http\Controllers\Admin\DaftarHadirController;
 use App\Http\Controllers\Asesi\ProfileController as AsesiProfileController;
 use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
 use App\Http\Controllers\AsesiTrackerController;
@@ -224,7 +225,7 @@ Route::middleware('auth')->group(function () {
                     Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
                 });
 
-            Route::controller(\App\Http\Controllers\DetailSkemaController::class)
+            Route::controller(DetailSkemaController::class)
                 ->prefix('master/skema/detail')
                 ->group(function () {
                     Route::get('/{id_skema}', 'index')->name('skema.detail');
