@@ -20,7 +20,7 @@
 
   <div class="h-screen overflow-y-auto">
 
-    <x-navbar.navbar />
+    <x-navbar.navbar-admin />
     
     <main class="p-6">
       <!-- Statistik Filter (Hari, Minggu, Bulan, Tahun) -->

@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Schedule;
-use App\Models\Skema;
 use App\Models\Tuk;
+use App\Models\Skema;
 use App\Models\Asesor;
+use App\Models\Jadwal;
 use App\Models\JenisTuk; 
+use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
     public function showCalendar()
     {
-        $schedules = Schedule::with(['skema', 'tuk', 'asesor', 'jenisTuk'])
+        $schedules = Jadwal::with(['skema', 'tuk', 'asesor', 'jenisTuk'])
                              ->orderBy('tanggal_pelaksanaan', 'asc')
                              ->get();
 
