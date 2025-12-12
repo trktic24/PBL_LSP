@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Asesor;
 use App\Models\Jadwal;
 use App\Models\Skema;
+use App\Models\DataSertifikasiAsesi;
+use App\Models\ResponApl2a01;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -62,13 +64,28 @@ class DashboardController extends Controller
             'foto_url' => $asesor->url_foto ?? 'https://placehold.co/60x60/8B5CF6/ffffff?text=AF',
         ];
 
-        // 2. Data Ringkasan (Dummy)
-        $summary = [
-            'belum_direview' => 5,
-            'dalam_proses' => 7,
-            'telah_direview' => 4,
-            'jumlah_asesi' => 18,
-        ];
+        // Ringkasan
+        $blmreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereDoesntHave('responApl2Ia01')
+                ->whereDoesntHave('komentarAk05')
+                ->count();    
+        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereHas('responApl2Ia01')        // sudah mengisi APL02
+                ->whereDoesntHave('komentarAk05')
+                ->count();        
+        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereHas('komentarAk05')
+                ->count();
+        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+        ->count();
+        
+        // // 2. Data Ringkasan (Dummy)
+        // $summary = [
+        //     'belum_direview' => 5,
+        //     'dalam_proses' => 7,
+        //     'telah_direview' => 4,
+        //     'jumlah_asesi' => 18,
+        // ];
 
         // 3. Data Jadwal Asesmen
         $jadwal = Jadwal::where('id_asesor', $id_asesor)
@@ -151,11 +168,15 @@ class DashboardController extends Controller
         // Kirim ke view frontend.home (dashboard asesor)
         return view('asesor.home', [
             'profile' => $profile,
-            'summary' => $summary,
+            // 'summary' => $summary,
             'jadwals' => $jadwals,
             'listSkema' => $listSkema,
             'listStatus' => $listStatus,
             'notifications' => $notifications,
+            'totalAsesi' => $totalAsesi,
+            'blmreview' => $blmreview,
+            'dlmproses' => $dlmproses,
+            'sdhreview' => $sdhreview,
         ]);
     }
 

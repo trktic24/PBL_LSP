@@ -137,6 +137,11 @@ class DataSertifikasiAsesi extends Model
         return $this->hasOne(KomentarAk05::class, 'id_data_sertifikasi_asesi');
     }
 
+    public function responApl2Ia01()
+    {
+        return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi');
+    }    
+
     /**
      * ACCESSOR: Menghitung 'Level Virtual' berdasarkan isi kolom database.
      * Logika ini MAPPING dari DATA NYATA -> ANGKA LEVEL VIRTUAL.
