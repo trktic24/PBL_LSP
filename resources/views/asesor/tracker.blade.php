@@ -110,7 +110,7 @@
                             <div class="flex space-x-2 ml-4">
                                 {{-- Tombol Dinamis --}}
                                 <a href="{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
-                                <a href="#" class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                                <a href="{{ route('asesor.apl02.pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
                                 
                                 {{-- Ikon SVG Dokumen --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

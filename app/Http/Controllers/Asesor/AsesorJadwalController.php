@@ -189,7 +189,7 @@ class AsesorJadwalController extends Controller
     public function showAsesi($id_jadwal) // <-- Variabel ini datang dari URL
     {
         // 1. Dapatkan data jadwal (Hapus 'asesi' dari 'with')
-        $jadwal = Jadwal::with(['skema', 'tuk', 'dataSertifikasiAsesi.asesi']) // <-- Modifikasi 1: Hapus 'asesi'
+        $jadwal = Jadwal::with(['skema', 'tuk', 'dataSertifikasiAsesi.asesi', 'dataSertifikasiAsesi']) // <-- Modifikasi 1: Hapus 'asesi'
                         ->findOrFail($id_jadwal);
 
         // 2. PENTING: Cek apakah asesor ini berhak melihat jadwal ini

@@ -92,9 +92,9 @@
                                         </a>
                                     </td>
                                     
-                                    {{-- Checkbox Asesmen Mandiri (Statis Checked) --}}
+                                    {{-- Checkbox Asesmen Mandiri --}}
                                     <td class="p-4 text-center">
-                                        <input type="checkbox" class="h-5 w-5 rounded text-yellow-600 mx-auto block" checked>
+                                        <a href="{{ route('asesor.apl02', $item->id_data_sertifikasi_asesi) }}#btn-verifikasi" class="text-yellow-500 px-2 py-1 rounded-md text-xs">Verifikasi</a>
                                     </td>
                                     
                                     {{-- Tombol Penyesuaian --}}

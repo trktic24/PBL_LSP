@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Asesi\DashboardController as AsesiDashboardController;
+use App\Http\Controllers\Asesi\pembayaran\PaymentController;
 use App\Http\Controllers\Asesor\DashboardController as AsesorDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use Illuminate\Support\Facades\Route;
@@ -37,7 +38,7 @@ use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\Asesor\AsesiTrackerController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Ia06Controller;
-use App\Http\Controllers\PraasesmenController;
+use App\Http\Controllers\Asesi\Apl02\PraasesmenController;
 
 // ======================================================
 // --- RUTE GUEST (YANG BELUM LOGIN) ---
@@ -324,7 +325,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak05'])->name('ak05');
         Route::get('/jadwal/{id_jadwal}/ak06', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak06'])->name('ak06');
         Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak07'])->name('ak07');
-        Route::get('/apl02/{idDataSertifikasi}', [AsesiTrackerController::class, 'showApl02'])->name('apl02');
+        Route::get('/apl02/{idDataSertifikasi}', [PraasesmenController::class, 'view'])->name('apl02');
+        Route::get('/apl02/{idDataSertifikasi}/pdf', [PraasesmenController::class, 'generatePDF'])->name('apl02.pdf');
+        
+        Route::post('/apl02/{id_sertifikasi}/verifikasi', [PraasesmenController::class, 'verifikasi'])->name('apl02.verifikasi');
+
 
         // Store Routes for AK Forms
         Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk05'])->name('ak05.store');
@@ -365,6 +370,19 @@ Route::middleware('auth')->group(function () {
             Route::get('/bukti', 'bukti')->name('profile.bukti');
             Route::get('/tracker', 'tracker')->name('profile.tracker');
         });
+
+        // --- G. Pembayaran (Midtrans) ---
+        Route::controller(PaymentController::class)->group(function () {
+            Route::get('/bayar/{id_sertifikasi}', 'createTransaction')->name('payment.create');
+            Route::get('/pembayaran_diproses', 'processed')->name('pembayaran_diproses'); // Callback sukses
+            Route::get('/pembayaran_batal', 'paymentCancel')->name('payment.cancel'); // Callback batal
+            Route::get('/payment/{id_sertifikasi}/invoice', 'downloadInvoice')->name('payment.invoice');
+        });
+
+        Route::get('/apl02/{idDataSertifikasi}', [PraasesmenController::class, 'view'])->name('apl02');
+        Route::get('/apl02/{idDataSertifikasi}/pdf', [PraasesmenController::class, 'generatePDF'])->name('apl02.pdf');
+        
+        Route::post('/apl02/{id_sertifikasi}/verifikasi', [PraasesmenController::class, 'verifikasi'])->name('apl02.verifikasi');
     });
 
     // ==========================

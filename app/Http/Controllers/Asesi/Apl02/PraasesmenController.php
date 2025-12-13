@@ -4,19 +4,21 @@ namespace App\Http\Controllers\Asesi\Apl02;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\ResponApl2Ia01;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PraasesmenController extends Controller
 {
     /**
      * Menampilkan halaman Pra-Asesmen Mandiri (APL-02)
      */
-    public function index($idDataSertifikasi)
+    public function view($idDataSertifikasi)
     {
         // try {
             // 1. Ambil Data Sertifikasi dengan Relasi Lengkap
@@ -37,13 +39,17 @@ class PraasesmenController extends Controller
                 ->get()
                 ->keyBy('id_kriteria'); 
 
+            // Filter Role
+            $mode = Auth::user()->role->id_role === 2 ? 'edit' : 'view';                
+
             // 3. Kirim Data ke View
-            return view('frontend.APL_02', [
+            return view('frontend.apl02', [
                 'sertifikasi'       => $sertifikasi, // Dikirim untuk Sidebar
                 'skema'             => $skema,
                 'asesi'             => $sertifikasi->asesi,
                 'idDataSertifikasi' => $idDataSertifikasi,
                 'existingResponses' => $existingResponses,
+                'mode'              => $mode,
                 
                 // Kirim Data Asesor yang sudah dirapikan (Sesuai permintaanmu)
                 'asesor' => [
@@ -142,5 +148,56 @@ class PraasesmenController extends Controller
             Log::error("Gagal simpan APL-02: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
+    }
+
+    public function verifikasi(Request $request, $id_sertifikasi)
+    {
+        $data = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
+        $data->rekomendasi_apl02 = 'diterima';
+        $data->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Rekomendasi APL-02 berhasil diisi 'diterima'."
+        ]);
+    }
+
+    /**
+     * Generate PDF APL-02 untuk Asesi
+     */
+    public function generatePDF($idDataSertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi beserta relasi lengkap
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi.user',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteriaUnjukKerja',
+            'jadwal.asesor',
+        ])->findOrFail($idDataSertifikasi);
+
+        $skema = $sertifikasi->jadwal->skema;
+
+        // 2. Ambil Respon APL-02 Asesi
+        $responses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)
+            ->get()
+            ->keyBy('id_kriteria');
+
+        // 3. Tentukan mode (view selalu untuk PDF)
+        $mode = 'view';
+
+        // 4. Buat data untuk dikirim ke view PDF
+        $data = [
+            'sertifikasi' => $sertifikasi,
+            'skema' => $skema,
+            'asesi' => $sertifikasi->asesi,
+            'existingResponses' => $responses,
+            'mode' => $mode,
+        ];
+
+        // 5. Load view blade untuk PDF
+        $pdf = Pdf::loadView('pdf.apl02', $data);
+
+        // 6. Kirim file PDF langsung ke browser
+        $fileName = 'APL02_'.$sertifikasi->asesi->user->name.'_'.date('Ymd_His').'.pdf';
+        return $pdf->stream($fileName); // atau download($fileName) jika ingin di-download
     }
 }

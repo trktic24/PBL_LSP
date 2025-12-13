@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\AsesiController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BeritaAcaraController;
 use App\Http\Controllers\Api\DaftarHadirController;
+use App\Http\Controllers\Asesi\Apl02\PraasesmenController;
 
 use App\Http\Controllers\Api\SoalIa06Controller;
 
@@ -245,3 +246,9 @@ Route::get('/ia-10/{id}', [Ia10ApiController::class, 'show']);
 
 // Mengirim jawaban penilaian
 Route::post('/ia-10', [Ia10ApiController::class, 'store']);
+
+Route::prefix('pra-asesmen')->group(function () {
+    // Simpan Jawaban & File Bukti
+    // URL: POST /api/v1/pra-asesmen/{id_sertifikasi}
+    Route::post('/{id_sertifikasi}', [PraasesmenController::class, 'store'])->name('api.v1.apl02.store');
+});
