@@ -94,7 +94,13 @@
                                     
                                     {{-- Checkbox Asesmen Mandiri --}}
                                     <td class="p-4 text-center">
-                                        <a href="{{ route('asesor.apl02', $item->id_data_sertifikasi_asesi) }}#btn-verifikasi" class="text-yellow-500 px-2 py-1 rounded-md text-xs">Verifikasi</a>
+                                        @if ($item->rekomendasi_apl02 == 'diterima')
+                                            <span class="text-green-500 px-2 py-1 rounded-md text-s">Diterima</span>
+                                        @elseif ($item->rekomendasi_apl02 == 'tidak diterima')
+                                            <span class="text-reed-500 px-2 py-1 rounded-md text-s">Diterima</span>
+                                        @else
+                                            <a href="{{ route('asesor.apl02', $item->id_data_sertifikasi_asesi) }}#btn-verifikasi" class="text-yellow-500 px-2 py-1 rounded-md text-s">Verifikasi</a>
+                                        @endif
                                     </td>
                                     
                                     {{-- Tombol Penyesuaian --}}
