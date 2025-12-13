@@ -35,12 +35,12 @@
             <div class="flex flex-col xl:flex-row justify-between items-end mb-8 gap-6">
                 <div class="w-full xl:max-w-lg">
                     <p class="text-sm text-gray-500 mb-2">Master Schedule > Daftar Hadir</p>
-                    <a href="{{ route('master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-base font-medium w-fit transition mb-4">
+                    <a href="{{ route('admin.master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-base font-medium w-fit transition mb-4">
                         <i class="fas fa-arrow-left mr-2"></i> Kembali
                     </a>
                     <h2 class="text-3xl font-bold text-gray-900 mb-6">Daftar Hadir Peserta</h2>
 
-                    <form action="{{ route('schedule.attendance', $jadwal->id_jadwal) }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
+                    <form action="{{ route('admin.schedule.attendance', $jadwal->id_jadwal) }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
                         <div class="relative">
                             <input type="text" name="search" x-model="search" placeholder="Search..." class="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
                             <button type="submit" class="absolute left-3 top-0 h-full text-gray-400 hover:text-gray-600"><i class="fas fa-search"></i></button>
@@ -114,7 +114,7 @@
 
                             <th class="px-4 py-3 font-semibold w-16 text-center">
                                 @php $isCurrent = $sortColumn == 'id_data_sertifikasi_asesi'; @endphp
-                                <a href="{{ route('schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'id_data_sertifikasi_asesi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
+                                <a href="{{ route('admin.schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'id_data_sertifikasi_asesi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
                                     <span>ID</span>
                                     <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -122,7 +122,7 @@
 
                             <th class="px-6 py-3 font-semibold">
                                 @php $isCurrent = $sortColumn == 'nama_lengkap'; @endphp
-                                <a href="{{ route('schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>Nama Peserta</span>
                                     <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -130,7 +130,7 @@
 
                             <th class="px-6 py-3 font-semibold">
                                 @php $isCurrent = $sortColumn == 'institusi'; @endphp
-                                <a href="{{ route('schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'institusi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'institusi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>Institusi / Perusahaan</span>
                                     <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -138,7 +138,7 @@
 
                             <th class="px-6 py-3 font-semibold">
                                 @php $isCurrent = $sortColumn == 'alamat_rumah'; @endphp
-                                <a href="{{ route('schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'alamat_rumah', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'alamat_rumah', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>Alamat</span>
                                     <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -146,7 +146,7 @@
 
                             <th class="px-6 py-3 font-semibold">
                                 @php $isCurrent = $sortColumn == 'pekerjaan'; @endphp
-                                <a href="{{ route('schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'pekerjaan', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'pekerjaan', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>Pekerjaan</span>
                                     <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -154,7 +154,7 @@
 
                             <th class="px-6 py-3 font-semibold">
                                 @php $isCurrent = $sortColumn == 'nomor_hp'; @endphp
-                                <a href="{{ route('schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'nomor_hp', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.schedule.attendance', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'nomor_hp', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>No. HP</span>
                                     <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -174,7 +174,7 @@
                         @forelse ($pendaftar as $index => $data)
 
                         <tr class="hover:bg-blue-50 transition divide-x divide-gray-200 cursor-pointer group"
-                            onclick="window.location='{{ route('asesi.profile.settings', $data->asesi->id_asesi) }}'">
+                            onclick="window.location='{{ route('admin.asesi.profile.settings', $data->asesi->id_asesi) }}'">
 
                             <td class="px-4 py-4 text-center font-medium text-gray-500">
                                 {{ $data->id_data_sertifikasi_asesi }}
@@ -225,7 +225,7 @@
                             </td>
 
                             <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
-                                <form action="{{ route('schedule.attendance.destroy', $data->id_data_sertifikasi_asesi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus peserta {{ $data->asesi->nama_lengkap }} dari jadwal ini?');" class="inline-block">
+                                <form action="{{ route('admin.schedule.attendance.destroy', $data->id_data_sertifikasi_asesi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus peserta {{ $data->asesi->nama_lengkap }} dari jadwal ini?');" class="inline-block">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">

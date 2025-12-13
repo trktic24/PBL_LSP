@@ -168,7 +168,7 @@ class ScheduleController extends Controller
         $jadwal = Jadwal::create($validatedData);
         $skemaNama = Skema::find($jadwal->id_skema)->nama_skema;
 
-        return redirect()->route('master_schedule')
+        return redirect()->route('admin.master_schedule')
                          ->with('success', "Jadwal (ID: {$jadwal->id_jadwal}) untuk skema '{$skemaNama}' berhasil ditambahkan!");
     }
 
@@ -227,7 +227,7 @@ class ScheduleController extends Controller
         $jadwal->update($validatedData);
         $skemaNama = $jadwal->skema->nama_skema;
 
-        return redirect()->route('master_schedule')
+        return redirect()->route('admin.master_schedule')
                          ->with('success', "Jadwal (ID: {$jadwal->id_jadwal}) untuk skema '{$skemaNama}' berhasil diperbarui!");
     }
 
@@ -239,7 +239,7 @@ class ScheduleController extends Controller
             $skemaNama = $jadwal->skema ? $jadwal->skema->nama_skema : 'N/A';
 
             $jadwal->delete();
-            return redirect()->route('master_schedule')
+            return redirect()->route('admin.master_schedule')
                              ->with('success', "Jadwal (ID: {$id}) untuk skema '{$skemaNama}' berhasil dihapus.");
         
         } catch (\Exception $e) {

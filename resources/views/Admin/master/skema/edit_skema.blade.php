@@ -26,7 +26,7 @@
                 
                 <div class="flex justify-between items-start mb-10">
                     
-                    <a href="{{ route('skema.detail', $skema->id_skema) }}" 
+                    <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" 
                        class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium transition mt-1">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
@@ -52,7 +52,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('skema.detail.update_kelompok', $kelompok->id_kelompok_pekerjaan) }}" method="POST" 
+                <form action="{{ route('admin.skema.detail.update_kelompok', $kelompok->id_kelompok_pekerjaan) }}" method="POST" 
                       class="space-y-8" 
                       x-data="unitHandler()">
                     @csrf

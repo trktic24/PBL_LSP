@@ -108,7 +108,7 @@ class SkemaController extends Controller
 
         // [PENTING] Redirect langsung ke halaman DETAIL (Kelompok Pekerjaan)
         // Route 'skema.detail' ini akan ditangani oleh DetailSkemaController
-        return redirect()->route('skema.detail', $skema->id_skema)
+        return redirect()->route('admin.skema.detail', $skema->id_skema)
                          ->with('success', "Skema '{$skema->nama_skema}' (ID: {$skema->id_skema}) berhasil dibuat. Silakan lengkapi Kelompok Pekerjaan.");
     }
 
@@ -163,7 +163,7 @@ class SkemaController extends Controller
 
         $skema->update($validatedData);
 
-        return redirect()->route('master_skema')
+        return redirect()->route('admin.master_skema')
                          ->with('success', "Skema '{$skema->nama_skema}' (ID: {$skema->id_skema}) berhasil diperbarui.");
     }
 
@@ -186,7 +186,7 @@ class SkemaController extends Controller
 
         $skema->delete();
 
-        return redirect()->route('master_skema')
+        return redirect()->route('admin.master_skema')
                          ->with('success', "Skema '{$nama}' (ID: {$idSkema}) berhasil dihapus.");
     }
 }

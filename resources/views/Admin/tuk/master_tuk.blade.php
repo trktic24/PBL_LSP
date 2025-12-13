@@ -38,7 +38,7 @@
             
             <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
                 
-                <form action="{{ route('master_tuk') }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
+                <form action="{{ route('admin.master_tuk') }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
                     <div class="relative">
                         <input type="text" name="search" x-model="search" placeholder="Search..."
                             class="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -52,7 +52,7 @@
                     </div>
                 </form>
 
-                <a href="{{ route('add_tuk') }}"
+                <a href="{{ route('admin.add_tuk') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center">
                     <i class="fas fa-plus mr-2"></i> Tambah TUK
                 </a>
@@ -120,7 +120,7 @@
                                     $isCurrentColumn = request('sort', 'id_tuk') == 'id_tuk';
                                     $direction = request('direction', 'asc');
                                 @endphp
-                                <a href="{{ route('master_tuk', ['sort' => 'id_tuk', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
+                                <a href="{{ route('admin.master_tuk', ['sort' => 'id_tuk', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
                                     class="flex w-full items-center justify-between gap-2">
                                     <span>ID</span>
                                     <div class="flex flex-col -space-y-1 text-xs">
@@ -137,7 +137,7 @@
                                     $isCurrentColumn = request('sort') == 'nama_lokasi';
                                     $direction = request('direction', 'asc');
                                 @endphp
-                                <a href="{{ route('master_tuk', ['sort' => 'nama_lokasi', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
+                                <a href="{{ route('admin.master_tuk', ['sort' => 'nama_lokasi', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
                                     class="flex w-full items-center justify-between gap-2">
                                     <span>Nama TUK</span>
                                     <div class="flex flex-col -space-y-1 text-xs">
@@ -152,7 +152,7 @@
                                     $isCurrentColumn = request('sort') == 'alamat_tuk';
                                     $direction = request('direction', 'asc');
                                 @endphp
-                                <a href="{{ route('master_tuk', ['sort' => 'alamat_tuk', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
+                                <a href="{{ route('admin.master_tuk', ['sort' => 'alamat_tuk', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
                                     class="flex w-full items-center justify-between gap-2">
                                     <span>Alamat</span>
                                     <div class="flex flex-col -space-y-1 text-xs">
@@ -167,7 +167,7 @@
                                     $isCurrentColumn = request('sort') == 'kontak_tuk';
                                     $direction = request('direction', 'asc');
                                 @endphp
-                                <a href="{{ route('master_tuk', ['sort' => 'kontak_tuk', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
+                                <a href="{{ route('admin.master_tuk', ['sort' => 'kontak_tuk', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
                                     class="flex w-full items-center justify-between gap-2">
                                     <span>Kontak</span>
                                     <div class="flex flex-col -space-y-1 text-xs">
@@ -221,11 +221,11 @@
 
                                 <td class="px-6 py-4">
                                     <div class="flex justify-center space-x-2">
-                                        <a href="{{ route('edit_tuk', $tuk->id_tuk) }}"
+                                        <a href="{{ route('admin.edit_tuk', $tuk->id_tuk) }}"
                                             class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
                                             <i class="fas fa-pen"></i> <span>Edit</span>
                                         </a>
-                                        <form action="{{ route('delete_tuk', $tuk->id_tuk) }}" method="POST"
+                                        <form action="{{ route('admin.delete_tuk', $tuk->id_tuk) }}" method="POST"
                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus TUK (ID: {{ $tuk->id_tuk }}) - {{ addslashes($tuk->nama_lokasi) }}?');">
                                             @csrf
                                             @method('DELETE')

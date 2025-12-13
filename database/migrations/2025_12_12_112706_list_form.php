@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('list_form', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_form');
             // Hubungkan ke tabel skema
             $table->foreignId('id_skema')->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('cascade');
 

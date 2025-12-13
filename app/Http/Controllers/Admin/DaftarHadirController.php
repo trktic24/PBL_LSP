@@ -85,7 +85,7 @@ class DaftarHadirController extends Controller
 
             // 4. Redirect kembali ke halaman daftar hadir jadwal tersebut dengan pesan sukses
             // Asumsi nama route index adalah 'schedule.attendance'
-            return redirect()->route('schedule.attendance', $idJadwal)
+            return redirect()->route('admin.schedule.attendance', $idJadwal)
                              ->with('success', "Peserta atas nama '{$namaAsesi}' berhasil dihapus dari jadwal ini.");
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

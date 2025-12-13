@@ -119,7 +119,7 @@
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
                 
                 <!-- Search -->
-                <form action="{{ route('dashboard') }}" method="GET" class="w-full sm:w-96" x-data="{ search: '{{ request('search', '') }}' }">
+                <form action="{{ route('admin.dashboard') }}" method="GET" class="w-full sm:w-96" x-data="{ search: '{{ request('search', '') }}' }">
                     <!-- Input hidden untuk menjaga filter lain saat search -->
                     @if(request('per_page')) <input type="hidden" name="per_page" value="{{ request('per_page') }}"> @endif
                     @if(request('filter_jenis_tuk')) <input type="hidden" name="filter_jenis_tuk" value="{{ request('filter_jenis_tuk') }}"> @endif
@@ -183,11 +183,11 @@
                     <div class="p-2">
                         <div class="px-2 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pilih Jenis</div>
                         
-                        <a href="{{ route('dashboard', array_merge($allParams, ['filter_jenis_tuk' => ($filterJenisTuk == 1 ? null : 1), 'page' => 1])) }}"
+                        <a href="{{ route('admin.dashboard', array_merge($allParams, ['filter_jenis_tuk' => ($filterJenisTuk == 1 ? null : 1), 'page' => 1])) }}"
                            class="block w-full text-left px-3 py-2 rounded-md text-sm transition-colors {{ $filterJenisTuk == 1 ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
                            Sewaktu
                         </a>
-                        <a href="{{ route('dashboard', array_merge($allParams, ['filter_jenis_tuk' => ($filterJenisTuk == 2 ? null : 2), 'page' => 1])) }}"
+                        <a href="{{ route('admin.dashboard', array_merge($allParams, ['filter_jenis_tuk' => ($filterJenisTuk == 2 ? null : 2), 'page' => 1])) }}"
                            class="block w-full text-left px-3 py-2 rounded-md text-sm transition-colors {{ $filterJenisTuk == 2 ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
                            Tempat Kerja
                         </a>
@@ -195,7 +195,7 @@
 
                     @if($filterJenisTuk)
                         <div class="p-2 border-t border-gray-100 bg-gray-50 rounded-b-xl">
-                            <a href="{{ route('dashboard', array_merge($allParams, ['filter_jenis_tuk' => null, 'page' => 1])) }}" 
+                            <a href="{{ route('admin.dashboard', array_merge($allParams, ['filter_jenis_tuk' => null, 'page' => 1])) }}" 
                                class="block w-full text-center text-xs text-red-600 font-medium hover:underline">
                                 Hapus Filter
                             </a>
@@ -218,7 +218,7 @@
                   <!-- ID -->
                   <th class="px-4 py-3 font-semibold w-16 text-center">
                       @php $isCurrent = $sortColumn == 'id_jadwal'; @endphp
-                      <a href="{{ route('dashboard', array_merge($baseParams, ['sort' => 'id_jadwal', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
+                      <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'id_jadwal', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
                           <span>ID</span>
                           <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                       </a>
@@ -235,7 +235,7 @@
                   <!-- Nama Skema -->
                   <th class="px-6 py-3 font-semibold">
                       @php $isCurrent = $sortColumn == 'skema_nama'; @endphp
-                      <a href="{{ route('dashboard', array_merge($baseParams, ['sort' => 'skema_nama', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                      <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'skema_nama', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                           <span>Nama Skema</span>
                           <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                       </a>
@@ -244,7 +244,7 @@
                   <!-- TUK -->
                   <th class="px-6 py-3 font-semibold">
                       @php $isCurrent = $sortColumn == 'tuk_nama'; @endphp
-                      <a href="{{ route('dashboard', array_merge($baseParams, ['sort' => 'tuk_nama', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                      <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'tuk_nama', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                           <span>TUK</span>
                           <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                       </a>
@@ -253,7 +253,7 @@
                   <!-- Jenis TUK -->
                   <th class="px-6 py-3 font-semibold">
                       @php $isCurrent = $sortColumn == 'jenis_tuk'; @endphp
-                      <a href="{{ route('dashboard', array_merge($baseParams, ['sort' => 'jenis_tuk', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                      <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'jenis_tuk', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                           <span>Jenis TUK</span>
                           <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                       </a>
@@ -262,7 +262,7 @@
                   <!-- Sesi -->
                   <th class="px-4 py-3 font-semibold text-center">
                       @php $isCurrent = $sortColumn == 'sesi'; @endphp
-                      <a href="{{ route('dashboard', array_merge($baseParams, ['sort' => 'sesi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
+                      <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'sesi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
                           <span>Sesi</span>
                           <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                       </a>
@@ -271,7 +271,7 @@
                   <!-- Kuota -->
                   <th class="px-4 py-3 font-semibold text-center">
                       @php $isCurrent = $sortColumn == 'kuota_maksimal'; @endphp
-                      <a href="{{ route('dashboard', array_merge($baseParams, ['sort' => 'kuota_maksimal', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
+                      <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'kuota_maksimal', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
                           <span>Kuota</span>
                           <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                       </a>
@@ -280,7 +280,7 @@
                   <!-- Tanggal -->
                   <th class="px-4 py-3 font-semibold w-32">
                       @php $isCurrent = $sortColumn == 'tanggal_pelaksanaan'; @endphp
-                      <a href="{{ route('dashboard', array_merge($baseParams, ['sort' => 'tanggal_pelaksanaan', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                      <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'tanggal_pelaksanaan', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                           <span>Tgl Pelaksanaan</span>
                           <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                       </a>

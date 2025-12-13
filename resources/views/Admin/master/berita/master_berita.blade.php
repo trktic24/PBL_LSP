@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Str; // <-- TAMBAHKAN BARIS INI
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -31,7 +34,7 @@
             
             <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
                 
-                <form action="{{ route('master_berita') }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
+                <form action="{{ route('admin.master_berita') }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
                     <div class="relative">
                         <input type="text" name="search" x-model="search" placeholder="Cari Judul Berita..."
                             class="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -45,7 +48,7 @@
                     </div>
                 </form>
 
-                <a href="{{ route('add_berita') }}"
+                <a href="{{ route('admin.add_berita') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center">
                     <i class="fas fa-plus mr-2"></i> Tambah Berita
                 </a>
@@ -104,7 +107,7 @@
                                     // Logika default: Jika tidak ada request 'direction', anggap 'asc'
                                     $direction = request('direction', 'asc');
                                 @endphp
-                                <a href="{{ route('master_berita', ['sort' => 'id', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
+                                <a href="{{ route('admin.master_berita', ['sort' => 'id', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
                                     class="flex w-full items-center justify-between gap-2 group">
                                     <span>ID</span>
                                     <div class="flex flex-col -space-y-1 text-xs text-gray-400">
@@ -120,7 +123,7 @@
                                 @php
                                     $isCurrentColumn = request('sort') == 'judul';
                                 @endphp
-                                <a href="{{ route('master_berita', ['sort' => 'judul', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
+                                <a href="{{ route('admin.master_berita', ['sort' => 'judul', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
                                     class="flex w-full items-center justify-between gap-2 group">
                                     <span>Judul Berita</span>
                                     <div class="flex flex-col -space-y-1 text-xs text-gray-400">
@@ -134,7 +137,7 @@
                                 @php
                                     $isCurrentColumn = request('sort') == 'isi';
                                 @endphp
-                                <a href="{{ route('master_berita', ['sort' => 'isi', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
+                                <a href="{{ route('admin.master_berita', ['sort' => 'isi', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
                                     class="flex w-full items-center justify-between gap-2 group">
                                     <span>Deskripsi</span>
                                     <div class="flex flex-col -space-y-1 text-xs text-gray-400">
@@ -148,7 +151,7 @@
                                 @php
                                     $isCurrentColumn = request('sort') == 'created_at';
                                 @endphp
-                                <a href="{{ route('master_berita', ['sort' => 'created_at', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
+                                <a href="{{ route('admin.master_berita', ['sort' => 'created_at', 'direction' => $isCurrentColumn && $direction == 'asc' ? 'desc' : 'asc', 'search' => request('search'), 'per_page' => request('per_page')]) }}"
                                     class="flex w-full items-center justify-between gap-2 group">
                                     <span>Tanggal Publish</span>
                                     <div class="flex flex-col -space-y-1 text-xs text-gray-400">
@@ -197,11 +200,11 @@
 
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center space-x-2">
-                                        <a href="{{ route('edit_berita', $berita->id) }}"
+                                        <a href="{{ route('admin.edit_berita', $berita->id) }}"
                                             class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition shadow-sm">
                                             <i class="fas fa-pen"></i> <span>Edit</span>
                                         </a>
-                                        <form action="{{ route('delete_berita', $berita->id) }}" method="POST"
+                                        <form action="{{ route('admin.delete_berita', $berita->id) }}" method="POST"
                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita ini?');">
                                             @csrf
                                             @method('DELETE')

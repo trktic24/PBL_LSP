@@ -143,7 +143,7 @@ class DetailSkemaController extends Controller
             DB::commit(); // Simpan permanen jika sukses
 
             // 3. Redirect dengan Pesan Sukses (Ini yang memicu Pop-up Hijau)
-            return redirect()->route('skema.detail', $id_skema)
+            return redirect()->route('admin.skema.detail', $id_skema)
                              ->with('success', 'Kelompok Pekerjaan dan Unit Kompetensi berhasil ditambahkan!');
 
         } catch (\Exception $e) {
@@ -215,7 +215,7 @@ class DetailSkemaController extends Controller
             UnitKompetensi::destroy($idsToDelete);
 
             DB::commit();
-            return redirect()->route('skema.detail', $kelompok->id_skema)
+            return redirect()->route('admin.skema.detail', $kelompok->id_skema)
                              ->with('success', "Kelompok Pekerjaan dan Unit Kompetensi Skema'{$kelompok->skema->nama_skema}' (ID: {$kelompok->id_skema}) berhasil diperbarui.");
 
         } catch (\Exception $e) {
@@ -236,7 +236,7 @@ class DetailSkemaController extends Controller
         // Karena di migration sudah on delete cascade, unit otomatis terhapus
         $kelompok->delete();
 
-        return redirect()->route('skema.detail', $idSkema)
+        return redirect()->route('admin.skema.detail', $idSkema)
                          ->with('success', "Kelompok Pekerjaan dan semua unit kompetensi Skema'{$nama}' (ID: {$idSkema}) berhasil dihapus.");
     }
 

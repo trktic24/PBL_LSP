@@ -192,17 +192,12 @@ Route::middleware('auth')->group(function () {
 
         // Notification
         Route::get('/notifications', function () {
-            return view('notifications.notifications_admin');
-        })->name('notifications');
-
-        // Notification
-        Route::get('/notifications', function () {
-            return view('notifications.notifications_admin');
+            return view('admin.notifications.notifications_admin');
         })->name('notifications');
 
         // Profile Admin
         Route::get('/profile_admin', function () {
-            return view('profile.profile_admin');
+            return view('admin.profile.profile_admin');
         })->name('profile_admin');
 
         // Rute profil bawaan Laravel (Admin context)

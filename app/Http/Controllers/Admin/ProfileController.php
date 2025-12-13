@@ -42,7 +42,7 @@ class ProfileController extends Controller
         $request->user()->save();
 
         // [PERBAIKAN] Redirect ke route 'profile_admin' agar konsisten
-        return Redirect::route('profile_admin')->with('status', 'profile-updated');
+        return Redirect::route('admin.profile_admin')->with('status', 'profile-updated');
     }
 
     /**
