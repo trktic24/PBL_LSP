@@ -125,7 +125,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fr-ia-06-b', fn() => view('frontend.fr_IA_06_b'))->name('fr_IA_06_b');
 
     // FR.IA.07
-    Route::get('/fr-ia-07', fn() => view('frontend.FR_IA_07'))->name('FR_IA_07');
+    Route::get('/fr-ia-07', [IA07Controller::class, 'index'])->name('FR_IA_07');
 
     /*
     | FORMULIR IA-05 (Kompleks dengan Role Middleware)
@@ -256,7 +256,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/add', 'store')->name('add_jadwal.store');
             Route::get('/edit/{id_jadwal}', 'edit')->name('edit_jadwal');
             Route::patch('/update/{id_jadwal}', 'update')->name('update_jadwal');
-            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_jadwal');        
+            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_jadwal');
         });
         Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('jadwal_admin');
 
@@ -274,8 +274,8 @@ Route::middleware('auth')->group(function () {
                 ->name('berita_acara');
 
             Route::get('/{id_jadwal}/berita-acara/pdf', 'exportPdfberitaAcara')
-                ->name('berita_acara.pdf');          
-        });        
+                ->name('berita_acara.pdf');
+        });
 
         // TUK
         Route::controller(TukAdminController::class)->prefix('master/tuk')->group(function () {
@@ -314,7 +314,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/daftar-asesi/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
         Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker');
         Route::get('/daftar-hadir/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'daftarHadir'])->name('daftar_hadir');
-        Route::post('/daftar-hadir/{id_jadwal}/simpan', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeKehadiran'])->name('simpan_kehadiran'); 
+        Route::post('/daftar-hadir/{id_jadwal}/simpan', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeKehadiran'])->name('simpan_kehadiran');
         Route::get('/daftar-hadir/pdf/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'exportPdfdaftarhadir'])->name('daftar_hadir.pdf');
 
 
@@ -327,14 +327,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'ak07'])->name('ak07');
         Route::get('/apl02/{idDataSertifikasi}', [PraasesmenController::class, 'view'])->name('apl02');
         Route::get('/apl02/{idDataSertifikasi}/pdf', [PraasesmenController::class, 'generatePDF'])->name('apl02.pdf');
-        
+
         Route::post('/apl02/{id_sertifikasi}/verifikasi', [PraasesmenController::class, 'verifikasi'])->name('apl02.verifikasi');
 
 
         // Store Routes for AK Forms
         Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk05'])->name('ak05.store');
         Route::post('/ak06/store/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk06'])->name('ak06.store');
-        Route::post('/ak07/store/{id_sertifikasi_asesi}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk07'])->name('fr-ak-07.store');      
+        Route::post('/ak07/store/{id_sertifikasi_asesi}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'storeAk07'])->name('fr-ak-07.store');
 
         // Tools
         Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
@@ -381,7 +381,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/apl02/{idDataSertifikasi}', [PraasesmenController::class, 'view'])->name('apl02');
         Route::get('/apl02/{idDataSertifikasi}/pdf', [PraasesmenController::class, 'generatePDF'])->name('apl02.pdf');
-        
+
         Route::post('/apl02/{id_sertifikasi}/verifikasi', [PraasesmenController::class, 'verifikasi'])->name('apl02.verifikasi');
     });
 
@@ -459,8 +459,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/tunggu-verifikasi', function () {
     $user = Auth::user();
 
-    if (!$user) return redirect()->route('login');
-    if ($user->role->nama_role !== 'asesor') return redirect()->route('home.index');
+    if (!$user)
+        return redirect()->route('login');
+    if ($user->role->nama_role !== 'asesor')
+        return redirect()->route('home.index');
 
     // Cek status_verifikasi
     if ($user->asesor?->status_verifikasi === 'approved') {

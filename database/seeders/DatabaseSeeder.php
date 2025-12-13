@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
 
                 // 3. Data pendukung lainnya
             JadwalSeeder::class,     // <-- PINDAHKAN KE BAWAH
-            //DataSertifikasiAsesiSeeder::class,
+                //DataSertifikasiAsesiSeeder::class,
                 // TujuanAssesmenMapa01::class,
                 // MasterPoinSiapaAsesmenSeeder::class,
                 // PoinHubunganStandarSeeder::class,

@@ -62,7 +62,7 @@
                             <h3 class="text-lg font-semibold text-gray-800">FR.APL.01 - Permohonan Sertifikasi Kompetensi</h3>
                             <div class="flex space-x-2 ml-4">
                                 {{-- Tombol Dinamis --}}
-                                <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Lihat File</a>
+                                <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
                             {{-- Tombol 2: Lihat PDF (FR.APL.01) --}}
                                 <a href="{{ route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
                                 class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
@@ -156,7 +156,7 @@
                             <h3 class="text-lg font-semibold text-gray-800">FR.MAPA.01 - Merencanakan Aktivitas dan Proses Asesmen</h3>
                             <div class="flex space-x-2 ml-4">
                                 {{-- Tombol Dinamis --}}
-                                <a href="{{ route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Lihat File</a>
+                                <a href="{{ route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
                             {{-- Tombol 2: Lihat PDF (MAPA.01) --}}
                                 <a href="{{ route('mapa01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
                                 class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
@@ -204,7 +204,7 @@
                             <h3 class="text-lg font-semibold text-gray-800">FR.MAPA.02 - Peta Instrumen Asesmen</h3>
                             <div class="flex space-x-2 ml-4">
                                 {{-- Tombol Dinamis --}}
-                                <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md">Lihat File</a>
+                                <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
                             {{-- Tombol 2: Lihat PDF (Ini yang diupdate) --}}
                                 <a href="{{ route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
                                 class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
@@ -251,11 +251,11 @@
                             <h3 class="text-lg font-semibold {{ $stAK01 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.AK.01 - Persetujuan & Kerahasiaan</h3>
                             <div class="flex flex-col gap-2 ml-4"> {{-- Container Vertikal --}}
                                 
-                                {{-- BARIS 1: Tombol Lihat File & PDF (Horizontal) --}}
+                                {{-- BARIS 1: Tombol Verifikasi & PDF (Horizontal) --}}
                                 <div class="flex gap-2">
-                                    {{-- Tombol 1: Lihat File --}}
+                                    {{-- Tombol 1: Verifikasi --}}
                                     <a href="#" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Lihat File
+                                        Verifikasi
                                     </a>
 
                                     {{-- Tombol 2: Lihat PDF --}}
@@ -318,11 +318,11 @@
                             <h3 class="text-lg font-semibold {{ !$isAsesmenActive ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.05 - Pertanyaan Tertulis Pilihan Ganda</h3>
                             <div class="flex flex-col gap-2 ml-4"> {{-- Container Vertikal --}}
                                 
-                                {{-- BARIS 1: Tombol Lihat File & PDF (Horizontal) --}}
+                                {{-- BARIS 1: Tombol Verifikasi & PDF (Horizontal) --}}
                                 <div class="flex gap-2">
-                                    {{-- Tombol 1: Lihat File --}}
+                                    {{-- Tombol 1: Verifikasi --}}
                                     <a href="{{ route('FR_IA_05_A', $asesi->id_asesi) }}" class="{{ $isAsesmenActive ? ' bg-gray-300 text-gray-600' : 'bg-blue-100 text-blue-600 hover:bg-blue-200 ' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Lihat File
+                                        Verifikasi
                                     </a>
 
                                     {{-- Tombol 2: Lihat PDF --}}
@@ -377,11 +377,11 @@
                             
                             <div class="flex flex-col gap-2 ml-4">
                                 
-                                {{-- BARIS 1: Tombol Lihat File & PDF --}}
+                                {{-- BARIS 1: Tombol Verifikasi & PDF --}}
                                 <div class="flex gap-2">
                                     <a href="{{ route('fr-ia-10.create', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
                                        class="{{ $stIa10 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Lihat File
+                                        Verifikasi
                                     </a>
 
                                     {{-- Tombol 2: Lihat PDF --}}
@@ -430,7 +430,7 @@
                                 <div class="flex gap-2">
                                     <a href="{{ route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
                                        class="{{ $stIa02 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Lihat File
+                                        Verifikasi
                                     </a>
                                     {{-- Tombol 2: Lihat PDF (IA.02) --}}
                                     <a href="{{ route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
@@ -470,7 +470,7 @@
                                 <div class="flex gap-2">
                                     <a href="{{ route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
                                        class="{{ $stIa06 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Lihat File
+                                        Verifikasi
                                     </a>
                                     {{-- Tombol 2: Lihat PDF (IA.06) --}}
                                     <a href="{{ route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
@@ -509,7 +509,7 @@
                                 <div class="flex gap-2">
                                     <a href="{{ route('FR_IA_07') }}" 
                                        class="{{ $stIa07 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Lihat File
+                                        Verifikasi
                                     </a>
                                     {{-- Tombol 2: Lihat PDF (IA.07) --}}
                                     <a href="{{ route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
