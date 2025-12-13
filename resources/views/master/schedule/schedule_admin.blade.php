@@ -40,7 +40,7 @@
 <body class="bg-gray-50 text-gray-800">
     <div class="min-h-screen flex flex-col">
 
-        <x-navbar />
+        <x-navbar.navbar-admin />
 
         <main class="p-6" x-data="calendarApp()">
 
@@ -299,7 +299,7 @@
                                     <td class="px-4 py-4 font-bold text-gray-700 whitespace-nowrap" x-text="formatFullDate(jadwal.tanggal_pelaksanaan)"></td>
                                     <td class="px-4 py-4 font-medium" x-text="formatTime(jadwal.waktu_mulai)"></td>
                                     <td class="px-6 py-4 font-medium text-gray-900" x-text="jadwal.skema?.nama_skema || '-'"></td>
-                                    <td class="px-6 py-4" x-text="jadwal.tuk?.nama_lokasi || '-'"></td>
+                                    <td class="px-6 py-4" x-text="jadwal.master_tuk?.nama_lokasi || '-'"></td>
                                     <td class="px-6 py-4" x-text="jadwal.jenis_tuk?.jenis_tuk || '-'"></td>
                                     <td class="px-6 py-4" x-text="jadwal.asesor?.nama_lengkap || '-'"></td>
                                     <td class="px-4 py-4 text-center font-bold" x-text="jadwal.sesi"></td>
@@ -514,7 +514,7 @@
                                 (String(jadwal.id_jadwal)).toLowerCase().includes(q) ||
                                 (String(jadwal.sesi)).toLowerCase().includes(q) ||
                                 (jadwal.skema?.nama_skema || '').toLowerCase().includes(q) ||
-                                (jadwal.tuk?.nama_lokasi || '').toLowerCase().includes(q) ||
+                                (jadwal.master_tuk?.nama_lokasi || '').toLowerCase().includes(q) ||
                                 (jadwal.asesor?.nama_lengkap || '').toLowerCase().includes(q)
                             );
                             if (!match) return false;

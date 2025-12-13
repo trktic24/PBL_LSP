@@ -72,7 +72,7 @@ class DashboardController extends Controller
 
         // 3. Data Jadwal Asesmen
         $jadwal = Jadwal::where('id_asesor', $id_asesor)
-                            ->with('skema', 'tuk')
+                            ->with('skema', 'masterTuk')
                             ->orderBy('tanggal_pelaksanaan', 'asc');
 
         // A. Filter Pencarian (Search Input)

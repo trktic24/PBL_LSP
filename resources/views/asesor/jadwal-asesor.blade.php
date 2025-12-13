@@ -211,7 +211,7 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="py-3 px-4 text-center">{{ $jadwal->tuk->nama_lokasi ?? 'N/A' }}</td>
+                            <td class="py-3 px-4 text-center">{{ $jadwal->masterTuk->nama_lokasi ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-center">{{ $jadwal->jenisTuk->jenis_tuk ?? 'N/A' }}</td>
                             <td class="px-4 py-2 text-center space-x-2">
                                 {{-- 1. Cek apakah ID Jadwal tersedia (Safety Check) --}}

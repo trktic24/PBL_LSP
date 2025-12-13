@@ -23,13 +23,13 @@
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
 
-    <x-navbar />
+    <x-navbar.navbar-admin />
     
     <main class="flex-1 flex justify-center items-start pt-10 pb-12">
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
 
         <div class="flex items-center justify-between mb-10">
-          <a href="{{ route('master_tuk') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+          <a href="{{ route('admin.master_tuk') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
             <i class="fas fa-arrow-left mr-2"></i> Back
           </a>
           <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">TAMBAH TUK</h1>
@@ -48,7 +48,7 @@
         @endif
 
         {{-- === INI PERBAIKANNYA === --}}
-        <form action="{{ route('add_tuk.store') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
+        <form action="{{ route('admin.add_tuk.store') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
           @csrf
 
           <div>

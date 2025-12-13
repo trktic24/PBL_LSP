@@ -90,7 +90,7 @@ class HomeController extends Controller
      */
     public function jadwal(): View
     {
-        $jadwalList = \App\Models\Jadwal::with('skema', 'tuk')
+        $jadwalList = \App\Models\Jadwal::with('skema', 'masterTuk')
                     ->where('tanggal_mulai', '>=', now()) // Ambil jadwal mendatang
                     ->orderBy('tanggal_mulai', 'asc')
                     ->paginate(10); // Gunakan paginate untuk daftar panjang

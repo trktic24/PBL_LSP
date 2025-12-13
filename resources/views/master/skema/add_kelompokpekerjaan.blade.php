@@ -19,14 +19,14 @@
 <body class="bg-gray-50 text-gray-800">
     <div class="min-h-screen flex flex-col">
         
-        <x-navbar />
+        <x-navbar.navbar-admin />
         
         <main class="flex-1 flex justify-center items-start pt-10 pb-12">
             <div class="w-full max-w-5xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
                 
                 <div class="flex justify-between items-start mb-10">
                     
-                    <a href="{{ route('skema.detail', $skema->id_skema) }}" 
+                    <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" 
                        class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium transition mt-1">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
@@ -52,7 +52,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('skema.detail.store_kelompok', $skema->id_skema) }}" method="POST" 
+                <form action="{{ route('admin.skema.detail.store_kelompok', $skema->id_skema) }}" method="POST" 
                       class="space-y-8" 
                       x-data="{ 
                           // Inisialisasi data unit, minimal 1 baris

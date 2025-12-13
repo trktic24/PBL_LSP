@@ -21,7 +21,7 @@ class AsesiTrackerController extends Controller
         $dataSertifikasi = DataSertifikasiAsesi::with([
                                 'asesi.user', // Ambil data asesi & user-nya
                                 'jadwal.skema', // Ambil data jadwal & skema-nya
-                                'jadwal.tuk',    // Ambil data TUK-nya juga
+                                'jadwal.masterTuk',    // Ambil data TUK-nya juga
                                 'responbuktiAk01',
                             ])
                             ->findOrFail($id_sertifikasi_asesi);

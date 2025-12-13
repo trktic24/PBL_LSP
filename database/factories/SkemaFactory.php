@@ -29,7 +29,7 @@ class SkemaFactory extends Factory
         $nomorGambar = fake()->numberBetween(1, 12);
         return [
             // Sesuai dengan migration 'categorie_id'
-            'category_id' => Category::factory(),
+            'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
 
             // Diubah dari 'kode_unit' menjadi 'nomor_skema' (DIUBAH)
             // Ditambahkan unique() karena ada constraint ->unique() di migration

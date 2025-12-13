@@ -19,7 +19,7 @@
 <body class="bg-gray-50 text-gray-800">
     <div class="min-h-screen flex flex-col">
 
-        <x-navbar />
+        <x-navbar.navbar-admin />
         <main class="p-6">
             <div class="mb-6">
                 <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>
@@ -34,7 +34,7 @@
             <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
 
                 <form
-                    action="{{ route('master_schedule') }}"
+                    action="{{ route('admin.master_schedule') }}"
                     method="GET"
                     class="w-full max-w-sm"
                     x-data="{ search: '{{ request('search', '') }}' }"
@@ -82,21 +82,21 @@
                         >
                             <div class="px-4 py-2 text-xs text-gray-500 font-semibold uppercase">Filter Status</div>
                             <a 
-                                href="{{ route('master_schedule', array_merge($allParams, [
+                                href="{{ route('admin.master_schedule', array_merge($allParams, [
                                     'filter_status' => ($filterStatus == 'Terjadwal') ? null : 'Terjadwal', 
                                     'page' => 1
                                 ])) }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 {{ $filterStatus == 'Terjadwal' ? 'bg-blue-50 font-semibold' : '' }}"
                             >Status: Terjadwal</a>
                             <a 
-                                href="{{ route('master_schedule', array_merge($allParams, [
+                                href="{{ route('admin.master_schedule', array_merge($allParams, [
                                     'filter_status' => ($filterStatus == 'Selesai') ? null : 'Selesai', 
                                     'page' => 1
                                 ])) }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 {{ $filterStatus == 'Selesai' ? 'bg-blue-50 font-semibold' : '' }}"
                             >Status: Selesai</a>
                             <a 
-                                href="{{ route('master_schedule', array_merge($allParams, [
+                                href="{{ route('admin.master_schedule', array_merge($allParams, [
                                     'filter_status' => ($filterStatus == 'Dibatalkan') ? null : 'Dibatalkan', 
                                     'page' => 1
                                 ])) }}"
@@ -106,14 +106,14 @@
                             <div class="border-t border-gray-100 my-1"></div>
                             <div class="px-4 py-2 text-xs text-gray-500 font-semibold uppercase">Filter Jenis TUK</div>
                             <a 
-                                href="{{ route('master_schedule', array_merge($allParams, [
+                                href="{{ route('admin.master_schedule', array_merge($allParams, [
                                     'filter_jenis_tuk' => ($filterJenisTuk == '1') ? null : 1, 
                                     'page' => 1
                                 ])) }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 {{ $filterJenisTuk == '1' ? 'bg-blue-50 font-semibold' : '' }}"
                             >Jenis: Sewaktu</a>
                             <a 
-                                href="{{ route('master_schedule', array_merge($allParams, [
+                                href="{{ route('admin.master_schedule', array_merge($allParams, [
                                     'filter_jenis_tuk' => ($filterJenisTuk == '2') ? null : 2, 
                                     'page' => 1
                                 ])) }}"
@@ -123,7 +123,7 @@
                             @if($filterStatus || $filterJenisTuk)
                                 <div class="border-t border-gray-100 my-1"></div>
                                 <a 
-                                    href="{{ route('master_schedule', array_merge($allParams, ['filter_status' => null, 'filter_jenis_tuk' => null, 'page' => 1])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($allParams, ['filter_status' => null, 'filter_jenis_tuk' => null, 'page' => 1])) }}"
                                     class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                                 >
                                     <i class="fas fa-times-circle mr-1"></i> Hapus Semua Filter
@@ -133,7 +133,7 @@
                     </div>
 
                     <a
-                        href="{{ route('add_schedule') }}"
+                        href="{{ route('admin.add_schedule') }}"
                         class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium flex items-center shadow-md"
                     >
                         <i class="fas fa-plus mr-2"></i> Add Schedule
@@ -222,7 +222,7 @@
                                     $isCurrentColumn = $sortColumn == 'id_jadwal';
                                 @endphp
                                 <a
-                                    href="{{ route('master_schedule', array_merge($baseParams, ['sort' => 'id_jadwal', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($baseParams, ['sort' => 'id_jadwal', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>ID</span>
@@ -238,7 +238,7 @@
                                     $isCurrentColumn = $sortColumn == 'skema_nama';
                                 @endphp
                                 <a
-                                    href="{{ route('master_schedule', array_merge($baseParams, ['sort' => 'skema_nama', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($baseParams, ['sort' => 'skema_nama', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Skema</span>
@@ -254,7 +254,7 @@
                                     $isCurrentColumn = $sortColumn == 'asesor_nama';
                                 @endphp
                                 <a
-                                    href="{{ route('master_schedule', array_merge($baseParams, ['sort' => 'asesor_nama', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($baseParams, ['sort' => 'asesor_nama', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Asesor</span>
@@ -270,7 +270,7 @@
                                     $isCurrentColumn = $sortColumn == 'tuk_nama';
                                 @endphp
                                 <a
-                                    href="{{ route('master_schedule', array_merge($baseParams, ['sort' => 'tuk_nama', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($baseParams, ['sort' => 'tuk_nama', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>TUK</span>
@@ -286,7 +286,7 @@
                                     $isCurrentColumn = $sortColumn == 'tanggal_mulai';
                                 @endphp
                                 <a
-                                    href="{{ route('master_schedule', array_merge($baseParams, ['sort' => 'tanggal_mulai', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($baseParams, ['sort' => 'tanggal_mulai', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Pendaftaran</span>
@@ -302,7 +302,7 @@
                                     $isCurrentColumn = $sortColumn == 'tanggal_pelaksanaan';
                                 @endphp
                                 <a
-                                    href="{{ route('master_schedule', array_merge($baseParams, ['sort' => 'tanggal_pelaksanaan', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($baseParams, ['sort' => 'tanggal_pelaksanaan', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Pelaksanaan</span>
@@ -320,7 +320,7 @@
                                     $isCurrentColumn = $sortColumn == 'sesi';
                                 @endphp
                                 <a
-                                    href="{{ route('master_schedule', array_merge($baseParams, ['sort' => 'sesi', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($baseParams, ['sort' => 'sesi', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Sesi</span>
@@ -336,7 +336,7 @@
                                     $isCurrentColumn = $sortColumn == 'kuota_maksimal';
                                 @endphp
                                 <a
-                                    href="{{ route('master_schedule', array_merge($baseParams, ['sort' => 'kuota_maksimal', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_schedule', array_merge($baseParams, ['sort' => 'kuota_maksimal', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Kuota (Min/Max)</span>
@@ -363,7 +363,7 @@
                             <td class="px-4 py-3">{{ $jadwal->id_jadwal }}</td>
                             <td class="px-4 py-3">{{ $jadwal->skema?->nama_skema ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $jadwal->asesor?->nama_lengkap ?? 'N/A' }}</td>
-                            <td class="px-4 py-3">{{ $jadwal->tuk?->nama_lokasi ?? 'N/A' }}</td>
+                            <td class="px-4 py-3">{{ $jadwal->masterTuk?->nama_lokasi ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $jadwal->tanggal_mulai?->format('d/m/Y') ?? 'N/A' }} - {{ $jadwal->tanggal_selesai?->format('d/m/Y') ?? 'N/A' }}</td>
                             <td class="px-4 py-3">{{ $jadwal->tanggal_pelaksanaan?->format('d/m/Y') ?? 'N/A' }} ({{ $jadwal->waktu_mulai?->format('H:i') ?? 'N/A' }})</td>
                             <td class="px-4 py-3">{{ $jadwal->jenisTuk?->jenis_tuk ?? 'N/A' }}</td>
@@ -379,7 +379,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-center">
-                                <a href="{{ route('schedule.attendance', $jadwal->id_jadwal) }}" class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded-md transition">
+                                <a href="{{ route('admin.schedule.attendance', $jadwal->id_jadwal) }}" class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded-md transition">
                                     <i class="fas fa-list-check"></i> <span>Lihat</span>
                                 </a>
                             </td>
@@ -391,13 +391,13 @@
                             <td class="px-4 py-3 text-center whitespace-nowrap">
                                 <div class="flex justify-center space-x-2">
                                     <a
-                                        href="{{ route('edit_schedule', $jadwal->id_jadwal) }}"
+                                        href="{{ route('admin.edit_schedule', $jadwal->id_jadwal) }}"
                                         class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition"
                                     >
                                         <i class="fas fa-pen"></i> <span>Edit</span>
                                     </a>
                                     <form
-                                        action="{{ route('delete_schedule', $jadwal->id_jadwal) }}"
+                                        action="{{ route('admin.delete_schedule', $jadwal->id_jadwal) }}"
                                         method="POST"
                                         onsubmit="return confirm('Anda yakin ingin menghapus jadwal (ID: {{ $jadwal->id_jadwal }}) ini?');"
                                     >

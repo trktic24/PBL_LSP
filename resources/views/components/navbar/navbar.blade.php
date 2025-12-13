@@ -249,9 +249,9 @@
             @auth
               @if(auth()->user()->role->nama_role == 'asesi')
                 <li>
-                  <a href="{{ url('/riwayat-sertifikasi') }}"
+                  <a href="{{ route('asesi.riwayat.index') }}"
                     class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
-                    {{ request()->is('riwayat-sertifikasi') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+                    {{ request()->routeIs('asesi.riwayat.index') || request()->is('asesi*') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
                     Sertifikasi
                   </a>
                 </li>
@@ -318,8 +318,19 @@
                   <p class="text-sm text-gray-500 truncate">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                 </div>
 
-                <a href="{{ url('/dashboard') }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Dashboard</a>
-                <a href="{{ url('/profile') }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Profil Saya</a>
+                @if(Auth::user()->role->nama_role != 'asesi')
+                    <a href="{{ url('/dashboard') }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Dashboard</a>
+                @endif
+                @php
+                    $profileUrl = '#';
+                    if(Auth::check()){
+                         $role = Auth::user()->role->nama_role;
+                         if($role == 'admin') $profileUrl = route('admin.profile.edit');
+                         elseif($role == 'asesi') $profileUrl = route('asesi.profile.edit');
+                         elseif($role == 'asesor') $profileUrl = route('asesor.profil');
+                    }
+                @endphp
+                <a href="{{ $profileUrl }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Profil Saya</a>
 
                 <form action="{{ route('logout') }}" method="POST">
                   @csrf
@@ -371,8 +382,19 @@
                   <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                 </div>
                 <div class="py-1">
-                  <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
-                  <a href="{{ url('/profile') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
+                  @if(Auth::user()->role->nama_role != 'asesi')
+                    <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+                  @endif
+                  @php
+                    $profileUrlDesktop = '#';
+                    if(Auth::check()){
+                         $role = Auth::user()->role->nama_role;
+                         if($role == 'admin') $profileUrlDesktop = route('admin.profile.edit');
+                         elseif($role == 'asesi') $profileUrlDesktop = route('asesi.profile.edit');
+                         elseif($role == 'asesor') $profileUrlDesktop = route('asesor.profil');
+                    }
+                  @endphp
+                  <a href="{{ $profileUrlDesktop }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
                 </div>
                 <div class="py-1 border-t border-gray-200">
                   <form action="{{ route('logout') }}" method="POST">

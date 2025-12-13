@@ -72,7 +72,7 @@ class Jadwal extends Model
         return $this->belongsTo(JenisTUK::class, 'id_jenis_tuk', 'id_jenis_tuk');
     }
 
-    public function tuk(): BelongsTo
+    public function masterTuk(): BelongsTo
     {
         return $this->belongsTo(MasterTUK::class, 'id_tuk', 'id_tuk'); 
     }

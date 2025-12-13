@@ -27,7 +27,7 @@ class HomeController extends Controller
         // Ambil 3 jadwal terdekat dari database yang akan datang
         $today = Carbon::now()->startOfDay();
 
-        $jadwals = Jadwal::with(['skema', 'tuk']) // Load relasi
+        $jadwals = Jadwal::with(['skema', 'masterTuk']) // Load relasi
             ->where('tanggal_pelaksanaan', '>=', $today) // Hanya jadwal yang akan datang
             ->where('Status_jadwal', 'Terjadwal') // Hanya Jadwal dengan status Terjadwal aja yang ditampilkan
             ->orderBy('tanggal_pelaksanaan', 'asc') // Urutkan dari yang paling dekat
@@ -46,7 +46,7 @@ class HomeController extends Controller
     public function show($id): View
     {
         // Menggunakan Eager Loading untuk 'jadwal' dan relasi 'masterTuk' di dalamnya
-        $skema = Skema::with(['jadwal.tuk', 'category', 'asesor'])->findOrFail($id);
+        $skema = Skema::with(['jadwal.masterTuk', 'category', 'asesor'])->findOrFail($id);
         
         // --- INJEKSI DUMMY DATA UNTUK KONTEN (UNIT KOMPETENSI & SKKNI) ---
         $skema->unit_kompetensi = collect([
@@ -91,7 +91,7 @@ class HomeController extends Controller
     public function showJadwalDetail($id): View
     {
         // [KODE UTAMA]: MENGAMBIL DETAIL JADWAL DARI DATABASE (MODEL JADWAL)
-        $jadwal = Jadwal::with('skema', 'tuk')->findOrFail($id); 
+        $jadwal = Jadwal::with('skema', 'masterTuk')->findOrFail($id); 
         
         // Menggunakan accessor dari model Jadwal.php (sudah Carbon object)
         $tanggal_pelaksanaan = $jadwal->tanggal_pelaksanaan; 

@@ -20,7 +20,7 @@
 
 <div class="h-screen overflow-y-auto">
 
-    <x-navbar />
+    <x-navbar.navbar-admin />
     
     <main class="p-8" 
         x-data="{ 
@@ -103,7 +103,7 @@
                 <!-- [PERBAIKAN] Tombol Kamera dan Delete DIHAPUS di sini -->
             </div>
 
-            <form action="{{ route('profile.update') }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.profile.update') }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PATCH')
                 
@@ -183,7 +183,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('profile.password.update') }}" method="POST" class="space-y-4">
+                <form action="{{ route('admin.profile.password.update') }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
 

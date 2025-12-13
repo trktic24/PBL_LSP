@@ -18,14 +18,14 @@
 
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
-    <x-navbar />
+    <x-navbar.navbar-admin />
     
     <main class="flex-1 flex flex-col items-center pt-10 pb-12 px-4">
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
 
         <!-- PERBAIKAN: Tata letak header dirapikan -->
         <div class="flex items-center justify-between mb-10">
-          <a href="{{ route('master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+          <a href="{{ route('admin.master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
               <i class="fas fa-arrow-left mr-2"></i> Back
           </a>
           <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">ADD ASESOR</h1>
@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        <form action="{{ route('add_asesor1.post') }}" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
+        <form action="{{ route('admin.add_asesor1.post') }}" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
           @csrf
           <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Informasi Akun</h2>
           

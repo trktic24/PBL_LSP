@@ -11,7 +11,7 @@ class JadwalController extends Controller
     // Ambil semua jadwal
     public function index()
     {
-        $jadwals = Jadwal::with(['tuk', 'skema', 'asesor', 'jenisTuk'])->get();
+        $jadwals = Jadwal::with(['masterTuk', 'skema', 'asesor', 'jenisTuk'])->get();
 
         return response()->json([
             'success' => true,
@@ -22,7 +22,7 @@ class JadwalController extends Controller
     // Detail satu jadwal
     public function show($id)
     {
-        $jadwal = Jadwal::with(['tuk', 'skema', 'asesor', 'jenisTuk'])->find($id);
+        $jadwal = Jadwal::with(['masterTuk', 'skema', 'asesor', 'jenisTuk'])->find($id);
 
         if (!$jadwal) {
             return response()->json(['message' => 'Jadwal tidak ditemukan'], 404);

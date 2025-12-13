@@ -24,7 +24,7 @@ class Mapa02Controller extends Controller
         // Ambil data sertifikasi beserta relasinya
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'jadwal.skema',
             'jadwal.skema.asesor',
             'jadwal.skema.kelompokPekerjaan.unitKompetensi',            

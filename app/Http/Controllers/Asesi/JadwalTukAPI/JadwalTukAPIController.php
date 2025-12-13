@@ -43,7 +43,7 @@ class JadwalTukAPIController extends Controller
         
         try {
             $sertifikasi = DataSertifikasiAsesi::with([
-                'jadwal.tuk',
+                'jadwal.masterTuk',
                 'jadwal.jenisTuk'
             ])->findOrFail($id_sertifikasi);
 
@@ -58,7 +58,7 @@ class JadwalTukAPIController extends Controller
                 'data' => [
                     'jenis_tuk' => $jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu',
 
-                    'lokasi'      => $jadwal->tuk->nama_lokasi ?? '-',
+                    'lokasi'      => $jadwal->masterTuk->nama_lokasi ?? '-',
                     'alamat'      => $jadwal->tuk->alamat_tuk ?? '-',
                     'kontak'      => $jadwal->tuk->kontak_tuk ?? '-',
                     
