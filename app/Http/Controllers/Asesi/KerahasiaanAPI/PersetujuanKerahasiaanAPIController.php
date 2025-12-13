@@ -16,11 +16,12 @@ class PersetujuanKerahasiaanAPIController extends Controller
     public function show($id_sertifikasi)
     {
         try {
-            $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
-            return view('asesi.persetujuan_assesmen_dan_kerahasiaan.fr_ak01', [
+            $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal'])->findOrFail($id_sertifikasi);
+            return view('frontend.FR_AK_01', [
                 'id_sertifikasi' => $id_sertifikasi,
-                'asesi'          => $sertifikasi->asesi,
-                'sertifikasi'    => $sertifikasi
+                'asesi' => $sertifikasi->asesi,
+                'sertifikasi' => $sertifikasi,
+                'jadwal' => $sertifikasi->jadwal
             ]);
         } catch (\Exception $e) {
             return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
@@ -35,7 +36,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
         try {
             // 1. Ambil Data Sertifikasi
             $sertifikasi = DataSertifikasiAsesi::with([
-                'asesi', 
+                'asesi',
                 'jadwal.asesor',
                 'jadwal.jenisTuk'
             ])->findOrFail($id_sertifikasi);
@@ -46,15 +47,15 @@ class PersetujuanKerahasiaanAPIController extends Controller
             // 3. Ambil "Settingan Bukti"
             // Kita anggap data yang sudah ada di tabel respon (hasil factory) adalah settingan admin.
             $responBukti = ResponBuktiAk01::where('id_data_sertifikasi_asesi', $id_sertifikasi)
-                                          ->pluck('id_bukti_ak01')
-                                          ->toArray();
+                ->pluck('id_bukti_ak01')
+                ->toArray();
 
             $jenisTuk = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu';
 
             return response()->json([
                 'success' => true,
                 'asesi' => $sertifikasi->asesi,
-                'asesor' => $sertifikasi->jadwal->asesor ?? (object)['nama_lengkap' => '-'],
+                'asesor' => $sertifikasi->jadwal->asesor ?? (object) ['nama_lengkap' => '-'],
                 'tuk' => $jenisTuk,
                 'master_bukti' => $masterBukti,
                 'respon_bukti' => $responBukti, // ID Bukti yang akan tercentang
@@ -66,7 +67,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
-    
+
     /**
      * POST: Cuma Update Status (Setuju)
      */
@@ -74,7 +75,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
     {
         try {
             $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
-            
+
             // Validasi Tanda Tangan
             if (empty($sertifikasi->asesi->tanda_tangan)) {
                 return response()->json(['success' => false, 'message' => 'Tanda tangan belum ada.'], 422);
@@ -88,7 +89,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
             }
 
             return response()->json([
-                'success' => true, 
+                'success' => true,
                 'message' => 'Persetujuan berhasil disimpan.',
                 'id_jadwal' => $sertifikasi->id_jadwal
             ]);

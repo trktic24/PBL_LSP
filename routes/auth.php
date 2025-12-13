@@ -109,6 +109,11 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    // FR.AK.01
+    // Pastikan Controller Import sudah ada di atas: use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
+    Route::get('/fr-ak-01/{id}', [\App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController::class, 'show'])->name('ak01.index');
+    Route::post('/fr-ak-01/{id}', [\App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])->name('ak01.store');
+
     // FR.IA.02
     Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])->name('fr-ia-02.show');
     Route::post('/fr-ia-02/{id}', [IA02Controller::class, 'store'])->name('fr-ia-02.store');

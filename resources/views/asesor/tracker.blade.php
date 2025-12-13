@@ -255,7 +255,7 @@
                                 {{-- BARIS 1: Tombol Verifikasi & PDF (Horizontal) --}}
                                 <div class="flex gap-2">
                                     {{-- Tombol 1: Verifikasi --}}
-                                    <a href="#" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md text-center">
+                                    <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md text-center">
                                         Verifikasi
                                     </a>
 
@@ -273,9 +273,7 @@
 
                                 {{-- BARIS 2: Tombol Verifikasi (Full Width) --}}
                                 {{-- w-full akan membuatnya selebar container di atasnya --}}
-                                <a href="#" class="w-full block {{ $stAK01 == 'ACTIVE' ? 'bg-blue-100 text-blue-600' : 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' }} bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1 rounded-md text-center transition shadow-sm">
-                                    Verifikasi
-                                </a>
+                                {{-- BARIS 2: Tombol Verifikasi (Full Width) Dihapus --}}
 
                             </div>
                         </div>
