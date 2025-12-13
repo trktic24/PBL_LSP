@@ -15,6 +15,13 @@ class RiwayatSertifikasiController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        // Cek apakah user memiliki profil asesi
+        if (!$user->asesi) {
+            return redirect()->route('asesi.profile.edit')
+                ->with('error', 'Silakan lengkapi profil Anda terlebih dahulu sebelum mengakses riwayat sertifikasi.');
+        }
+
         $idAsesi = $user->asesi->id_asesi;
 
         // Ambil data sertifikasi peserta, termasuk relasi ke jadwal & skema
