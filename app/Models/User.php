@@ -34,8 +34,6 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        // 'name', // Ganti 'name' menjadi 'username' sesuai migrasi
-        'username', // <-- Sesuai migrasi users_table.php
         'email',
         'password',
         'role_id', // <-- Tambahkan ini

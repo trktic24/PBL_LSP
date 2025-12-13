@@ -12,13 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('mitras', function (Blueprint $table) {
-            $table->id(); // Primary Key
-            $table->string('nama_mitra'); // Wajib diisi
-            $table->text('alamat')->nullable(); // Boleh kosong
-            $table->string('no_telp')->nullable(); // Boleh kosong
-            $table->string('email')->nullable(); // Boleh kosong
+            $table->id(); 
+            $table->string('nama_mitra'); 
+            $table->string('url')->nullable(); // Menampung Link Website Mitra
             $table->string('logo')->nullable();
-            $table->timestamps(); // Membuat kolom created_at dan updated_at
+            $table->timestamps(); 
         });
     }
 
