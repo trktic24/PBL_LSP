@@ -182,6 +182,16 @@ class DataSertifikasiAsesi extends Model
      * Accessor 'skema' agar $asesi->skema di View bisa berjalan tanpa error.
      * Mengambil data skema melewati relasi 'jadwal'.
      */
+    public function getUserAttribute()
+    {
+        // Jika relasi asesi & user sudah diload, ambil langsung
+        if ($this->relationLoaded('asesi') && $this->asesi && $this->asesi->relationLoaded('user')) {
+            return $this->asesi->user;
+        }
+
+        // Fallback: Ambil manual
+        return $this->asesi ? $this->asesi->user : null;
+    }
     public function getSkemaAttribute()
     {
         // 1. Cek apakah relasi jadwal sudah di-load sebelumnya?

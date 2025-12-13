@@ -16,7 +16,7 @@ class Ak02Controller extends Controller
         // Gunakan 'jadwal.skema...' bukan 'skema...'
         $asesi = DataSertifikasiAsesi::with([
             'jadwal.skema.kelompokPekerjaan.unitKompetensi',
-            'user'
+            'asesi.user'
         ])->findOrFail($id_asesi);
 
         // Ambil data penilaian yang sudah ada
