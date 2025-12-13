@@ -11,8 +11,9 @@
     $isCategoryActive = request()->is('admin/master/category*'); 
     $isBeritaActive = request()->is('admin/master/berita*');
     $isTukActive = request()->is('admin/master/tuk*'); // Koreksi: Pastikan TUK juga punya /admin
+    $isMitraActive = request()->is('admin/master/mitra*');
 
-    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive;
+    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive || $isMitraActive;
     
     // PENTING: Menggunakan 'admin.' pada request()->routeIs() karena ini membandingkan NAMA route
     $isScheduleActive = request()->routeIs('admin.schedule_admin');
@@ -85,6 +86,10 @@
                         <a href="{{ route('admin.master_berita') }}" 
                             class="block px-4 py-2 {{ $isBeritaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Berita
+                        </a>
+                        <a href="{{ route('admin.master_mitra') }}" 
+                            class="block px-4 py-2 {{ $isMitraActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Mitra
                         </a>
                         </div>
                 </div>

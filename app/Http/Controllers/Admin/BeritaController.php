@@ -92,7 +92,7 @@ class BeritaController extends Controller
             'gambar' => $gambarPath,
         ]);
 
-        return redirect()->route('master_berita')
+        return redirect()->route('admin.master_berita')
                          ->with('success', "Berita '{$berita->judul}' (ID: {$berita->id}) berhasil ditambahkan.");
     }
 

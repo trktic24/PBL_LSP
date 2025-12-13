@@ -189,7 +189,7 @@
                                 <td class="px-6 py-4 font-medium text-gray-900">{{ $berita->judul }}</td>
                                 
                                 <td class="px-6 py-4 text-gray-600 text-xs leading-relaxed">
-                                    {{ Str::limit($berita->isi, 100, '...') }}
+                                    {{ \Illuminate\Support\Str::limit($berita->isi, 100, '...') }}
                                 </td>
                                 
                                 <td class="px-6 py-4 text-gray-600">
