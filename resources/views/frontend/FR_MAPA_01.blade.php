@@ -231,7 +231,6 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
             {{-- BAGIAN 2: PERENCANAAN ASESMEN --}}
             <div class="mb-8">
                 <h3 class="font-bold text-lg mb-4">2. Perencanaan Asesmen</h3>
-
                 <div class="mb-4">
                     <p class="font-bold text-sm mb-2">Kelompok Pekerjaan 1</p>
                     <table class="w-full text-sm form-table bg-gray-50">
@@ -279,7 +278,6 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                                     Metode dan Perangkat Asesmen
                                 </th>
                             </tr>
-
                             <tr class="text-xs">
                                 <th class="p-2 border border-black w-10 align-middle font-bold text-sm">L</th>
                                 <th class="p-2 border border-black w-10 align-middle font-bold text-sm">TL</th>

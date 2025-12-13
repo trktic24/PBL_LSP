@@ -3,9 +3,9 @@
     Deskripsi: Form FR.AK.06 - Meninjau Proses Asesmen (Layout Wizard)
 --}}
 
-@extends('layouts.app-sidebar')
+@extends('layouts.wizard')
 
-@section('content')
+@section('wizard-content')
 
     {{-- Style khusus untuk tabel border hitam --}}
     <style>
@@ -26,7 +26,7 @@
     </div>
 
     {{-- FORM START --}}
-    <form action="{{ route('asesor.ak06.store', $jadwal->id_jadwal) }}" method="POST">
+    <form action="{{ route('ak06.store') }}" method="POST">
         @csrf
         
         <div class="bg-white">

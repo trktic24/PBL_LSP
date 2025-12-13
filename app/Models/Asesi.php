@@ -33,9 +33,6 @@ class Asesi extends Model
         'tanda_tangan',
     ];
 
-    /**
-     * Tentukan kolom yang harus diperlakukan sebagai tanggal.
-     */
     protected $casts = [
         'tanggal_lahir' => 'date',
     ];

@@ -76,7 +76,7 @@ class Skema extends Model
      * Relasi ke UnitKompetensi.
      * Skema ini 'memiliki banyak' UnitKompetensi.
      */
-    public function unitKompetensi()
+    public function categorie()
     {
         return $this->hasManyThrough(
             UnitKompetensi::class,
@@ -101,4 +101,27 @@ class Skema extends Model
             'id_asesor'               // Foreign key di pivot untuk model tujuan (Asesor)
         );
     }
+
+    /**
+     * Relasi ke KelompokPekerjaan (Berdasarkan foreignId 'id_kelompok_pekerjaan').
+     * Menandakan bahwa Skema ini 'milik' satu KelompokPekerjaan.
+     */
+    public function kelompokPekerjaans()
+    {
+        return $this->hasMany(KelompokPekerjaan::class, 'id_skema', 'id_skema');
+    }
+
+    // --- Relasi yang sudah ada di kode Anda (tetap valid) ---
+
+    /**
+     * Relasi ke UnitKompetensi.
+     * Skema ini 'memiliki banyak' UnitKompetensi.
+     */
+    public function unitKompetensis()
+    {
+        // Asumsi foreign key di tabel 'unit_kompetensi' adalah 'skema_id'
+        // dan primary key di 'skema' adalah 'id_skema' (sesuai $primaryKey di atas)
+        return $this->hasMany(UnitKompetensi::class, 'skema_id', 'id_skema');
+    }
+
 }

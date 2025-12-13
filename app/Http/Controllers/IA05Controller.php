@@ -30,14 +30,6 @@ class IA05Controller extends Controller
      */
     public function showSoalForm(Request $request, $id_asesi)
     {
-        // --- [MATIKAN] MODIFIKASI BYPASS LOGIN (DUMMY USER) ---
-        // $user = new \stdClass();
-        // $user->id = 1; 
-        // $user->role_id = 1; 
-        // $user->role = 'admin'; 
-        // $user->name = 'User Testing Tanpa Login';
-        // ---------------------------------------------
-
         // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
         $user = Auth::user(); 
         $user = $this->assignRoleText($user); // Mapping ID ke Teks
@@ -67,7 +59,6 @@ class IA05Controller extends Controller
      */
     public function storeSoal(Request $request)
     {
-        // ... (KODE STORE SOAL BIARKAN SAMA, TIDAK ADA PERUBAHAN) ...
         $request->validate(['soal' => 'required|array']);
 
         DB::beginTransaction();
@@ -87,10 +78,11 @@ class IA05Controller extends Controller
                 }
             }
 
-            // 2. INSERT SOAL BARU
+            // 2. INSERT SOAL BARU (Dari Tombol Tambah Soal)
             if ($request->has('new_soal')) {
                 foreach ($request->new_soal as $index => $data) {
                     SoalIA05::create([
+                        // ID biasanya Auto Increment, jadi tidak perlu diisi
                         'soal_ia05' => $data['pertanyaan'],
                         'opsi_jawaban_a' => $data['opsi_a'],
                         'opsi_jawaban_b' => $data['opsi_b'],
@@ -112,7 +104,6 @@ class IA05Controller extends Controller
      */
     public function storeJawabanAsesi(Request $request, $id_asesi)
     {
-        // ... (KODE STORE JAWABAN BIARKAN SAMA) ...
         $request->validate(['jawaban' => 'required|array']);
 
         DB::beginTransaction();
@@ -125,8 +116,8 @@ class IA05Controller extends Controller
                     ],
                     [ 
                         'teks_jawaban_asesi_ia05' => $pilihan_jawaban,
-                        'pencapaian_ia05_iya' => 0, 
-                        'pencapaian_ia05_tidak' => 0, 
+                        'pencapaian_ia05_iya' => 0, // Reset penilaian
+                        'pencapaian_ia05_tidak' => 0, // Reset penilaian
                     ]
                 );
             }
@@ -145,14 +136,6 @@ class IA05Controller extends Controller
      */
     public function showKunciForm(Request $request)
     {
-        // --- [MATIKAN] MODIFIKASI BYPASS LOGIN (DUMMY USER) ---
-        // $user = new \stdClass();
-        // $user->id = 1; 
-        // $user->role_id = 1; 
-        // $user->role = 'admin';
-        // $user->name = 'User Testing';
-        // ---------------------------------------------
-
         // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
         $user = Auth::user(); 
         $user = $this->assignRoleText($user);
@@ -180,7 +163,6 @@ class IA05Controller extends Controller
      */
     public function storeKunci(Request $request)
     {
-        // ... (KODE STORE KUNCI BIARKAN SAMA) ...
         $request->validate(['kunci' => 'required|array']);
 
         DB::beginTransaction();
@@ -209,14 +191,6 @@ class IA05Controller extends Controller
      */
     public function showJawabanForm(Request $request, $id_asesi)
     {
-        // --- [MATIKAN] MODIFIKASI BYPASS LOGIN (DUMMY USER) ---
-        // $user = new \stdClass();
-        // $user->id = 3; 
-        // $user->role_id = 1; 
-        // $user->role = 'admin';
-        // $user->name = 'Asesor Testing';
-        // ---------------------------------------------
-
         // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
         $user = Auth::user(); 
         $user = $this->assignRoleText($user);
@@ -255,7 +229,6 @@ class IA05Controller extends Controller
      */
     public function storePenilaianAsesor(Request $request, $id_asesi)
     {
-        // ... (KODE STORE PENILAIAN BIARKAN SAMA DENGAN UPDATE TERAKHIR) ...
         $request->validate([
             'penilaian' => 'required|array',
             'penilaian.*' => 'required|in:ya,tidak',

@@ -1,11 +1,13 @@
 @extends('layouts.app-sidebar')
+
 @section('content')
 
 <div class="p-8">
 
+    {{-- ================= HEADER JUDUL ================= --}}
     <h1 class="text-2xl font-bold text-gray-800 mb-6">FR.IA.06.B. Lembar Kunci Jawaban Pertanyaan Tertulis Esai</h1>
 
-    <!-- Box Info Atas -->
+    {{-- ================= BOX INFO HEADER (STATIS) ================= --}}
     <div class="bg-gray-50 p-6 rounded-md shadow-sm mb-6 border border-gray-200">
 
         <!-- Baris 1: Skema & Judul -->
@@ -45,8 +47,7 @@
             <span class="font-medium text-gray-700">Tanggal</span><span class="font-medium">:</span>
             <input type="date" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent">
         </div>
-
-        <p class="text-xs text-gray-500 mt-4">*Coret yang tidak perlu</p>
+        <p class="text-xs text-gray-500 mt-4 italic">*Coret yang tidak perlu</p>
     </div>
 
     <!-- Box Kunci Jawaban & Penilaian -->
@@ -129,7 +130,7 @@
         <h3 class="font-semibold text-gray-700 mb-3 text-lg">Penyusun dan Validator</h3>
         <div class="overflow-x-auto border border-gray-300 rounded-md shadow-sm">
             <table class="w-full text-sm">
-                <thead class="bg-gray-100">
+                <thead class="bg-gray-100 border-b border-gray-200 text-gray-700">
                     <tr>
                         <th class="p-3 text-left font-medium border-b">Status</th>
                         <th class="p-3 text-left font-medium w-[5%] border-b">No</th>
@@ -139,7 +140,8 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                    <!-- Baris Penyusun -->
+
+                    {{-- BARIS PENYUSUN (STATIS) --}}
                     <tr>
                         <td class="p-3 font-medium align-top border-r" rowspan="2">PENYUSUN</td>
                         <td class="p-3 align-top pt-5">1</td>
@@ -148,10 +150,10 @@
                         <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
                     </tr>
                     <tr>
-                        <td class="p-3 align-top pt-5">2</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
+                        <td class="p-3 align-top pt-4 text-center">2</td>
+                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded focus:border-blue-500 outline-none"></td>
+                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded focus:border-blue-500 outline-none"></td>
+                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded focus:border-blue-500 outline-none"></td>
                     </tr>
                     <!-- Baris Validator -->
                     <tr>
@@ -161,15 +163,27 @@
                         <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
                         <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
                     </tr>
+                    @empty
                     <tr>
-                        <td class="p-3 align-top pt-5">2</td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
-                        <td class="p-3"><input type="text" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></td>
+                        <td class="p-3 font-bold align-top border-r bg-gray-50 text-gray-600">VALIDATOR</td>
+                        <td class="p-3 text-center">1</td>
+                        <td colspan="3" class="p-3 text-red-500 italic text-center bg-red-50">
+                            Data Validator kosong. Silakan jalankan seeder.
+                        </td>
                     </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
+        <x-kolom_ttd.penyusunvalidator :sertifikasi="$sertifikasi ?? null" />
+    </div>
+
+    {{-- ================= TOMBOL SIMPAN HASIL PENILAIAN ================= --}}
+    <div class="mt-8 flex justify-end">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            Simpan Hasil Penilaian
+        </button>
     </div>
 
 </div>

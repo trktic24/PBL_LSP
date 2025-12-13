@@ -16,7 +16,7 @@ return new class extends Migration {
 
             // Isi kolom lainnya sesuai kebutuhan
             $table->text('pertanyaan');
-            $table->text('jawaban_asesi')->nullable();
+            $table->text('jawaban_asesi')->nullable()->unique();
             $table->text('jawaban_diharapkan');
             $table->boolean('pencapaian')->default(null)->comment('1 untuk Ya, 0 untuk Tidak');
             $table->timestamps();

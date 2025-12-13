@@ -25,14 +25,16 @@ class Jadwal extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'tanggal_pelaksanaan',
+        'waktu_mulai',
         'Status_jadwal',
         'kuota_maksimal',
         'kuota_minimal',
     ];
 
     /**
-     * Kosongkan/hapus protected $casts untuk kolom datetime.
-     * Kita menggunakan Custom Accessor di bawah untuk Null Safety yang lebih baik.
+     * Atribut yang harus di-cast.
+     *
+     * @var array<string, string>
      */
     protected $casts = [
         'tanggal_mulai' => 'datetime',

@@ -59,7 +59,7 @@
     @endif
 
     {{-- 4. FORM UTAMA --}}
-    <form action="{{ route('asesor.fr-ak-07.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+    <form action="{{ route('fr-ak-07.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
         @csrf
 
         {{-- BAGIAN A: POTENSI ASESI (Looping Database) --}}

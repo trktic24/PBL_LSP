@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 // Import semua Models yang relevan
 use App\Models\Asesi;
 use App\Models\Asesor;
@@ -13,6 +13,7 @@ use App\Models\Jadwal;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\Ia07;
+use Illuminate\Support\Facades\DB;
 
 class IA07Controller extends Controller
 {
@@ -44,12 +45,8 @@ class IA07Controller extends Controller
         if (!$jadwal) {
             $jadwal = new Jadwal();
             // Set dummy relations if needed, or rely on view's null coalescing operator if improved
-            // But view calls $jadwal->skema directly in some places without ?->
-            // So let's attach the fetched skema/asesor to this dummy jadwal if possible,
-            // or just ensure the view handles it.
-            // For now, let's just make sure $jadwal->skema is accessible if we have $skema.
-            $jadwal->setRelation('skema', $skema);
-            $jadwal->setRelation('asesor', $asesor);
+            if ($skema) $jadwal->setRelation('skema', $skema);
+            if ($asesor) $jadwal->setRelation('asesor', $asesor);
         }
 
         // Ambil data Jenis TUK untuk radio button
@@ -87,21 +84,87 @@ class IA07Controller extends Controller
      */
     public function store(Request $request)
     {
-        // --- LOGIKA PENYIMPANAN DATA DIMULAI DI SINI ---
+        // --- LOGIKA PENYIMPANAN DATA DI SINI ---
+        
+        // 1. Validasi
+        //   - Pastikan ada input radio TUK
+        //   - Pastikan tanggal terisi
+        $request->validate([
+            'id_jenis_tuk' => 'required',
+            'tanggal_pelaksanaan' => 'required|date',
+            'umpan_balik_asesi' => 'nullable|string',
+        ]);
 
-        // Contoh: Ambil semua data yang disubmit
-        $data = $request->all();
+        // 2. Tentukan DataSertifikasiAsesi (Sementara ambil first() sesuai pola index)
+        //    Idealnya ini dikirim via hidden input atau parameter route
+        $sertifikasi = DataSertifikasiAsesi::first();
+        if (!$sertifikasi) {
+             return redirect()->back()->with('error', 'Data Sertifikasi tidak ditemukan (DB Kosong).');
+        }
+        $idSertifikasi = $sertifikasi->id_data_sertifikasi_asesi;
 
-        // Di sini Anda akan memasukkan logika untuk:
-        // 1. Validasi data ($request->validate([...]))
-        // 2. Memproses dan menyimpan data ke tabel database yang relevan (misalnya tabel 'IA07Assessment')
-        // 3. Mengambil ringkasan jawaban dan keputusan K/BK untuk setiap unit/pertanyaan.
+        DB::beginTransaction();
+        try {
+            // 3. Simpan Jawaban
+            //    Loop semua input yang polanya jawaban_{code}_q{num} dan keputusan_{code}_q{num}
+            //    Kita ambil semua data request
+            $allData = $request->all();
 
-        // Misalnya: menyimpan ke database, lalu redirect
-        // Assessment::create($data); 
+            // Regex untuk menangkap jawaban_CODE_qX
+            $unitCodes = [];
+            
+            // Loop data untuk mencari pattern jawaban
+            foreach ($allData as $key => $value) {
+                if (preg_match('/^jawaban_(.+)_q(\d+)$/', $key, $matches)) {
+                    $unitCode = $matches[1];
+                    $questionNum = $matches[2];
+                    
+                    $pertanyaan = "Pertanyaan No $questionNum Unit $unitCode"; // Atau ambil real text dari DB jika ada
+                    $jawabanKey = $key;
+                    $keputusanKey = "keputusan_{$unitCode}_q{$questionNum}";
+                    
+                    $jawabanDiharapkan = "Lihat Kunci Jawaban"; // Placeholder
 
-        // Untuk saat ini, kita hanya menampilkan data untuk verifikasi (dd)
-        return dd($data);
+                    $keputusanVal = $request->input($keputusanKey); // K atau BK
+                    $isKompeten = ($keputusanVal === 'K');
+
+                    // Simpan ke tabel ia07
+                    // Kita anggap satu record per pertanyaan
+                    // Cari record lama atau buat baru
+                    Ia07::updateOrCreate(
+                        [
+                            'id_data_sertifikasi_asesi' => $idSertifikasi,
+                            'pertanyaan' => $pertanyaan, // Identifier sederhana untuk soal
+                        ],
+                        [
+                            'jawaban_asesi' => $value, // Ringkasan jawaban asesi
+                            'jawaban_diharapkan' => $jawabanDiharapkan,
+                            'pencapaian' => $isKompeten ? 1 : 0,
+                        ]
+                    );
+
+                    $unitCodes[$unitCode] = true;
+                }
+            }
+            
+            // 4. Update Umpan Balik (Jika ada kolom di tabel sertifikasi/lainnya, atau simpan di tempat lain)
+            //    Model Ia07 sepertinya per-pertanyaan. Jika umpan balik global, mungkin masuk ke log activity atau field lain.
+            //    Sesuai struktur yang ada, kita biarkan dulu atau simpan di salah satu record jika terpaksa.
+            //    Tapi controller IA05 menyimpan umpan balik di tabel LembarJawab, di sini tabel Ia07 juga punya struktur mirip?
+            //    Cek Ia07 model: fillable ['id_data_sertifikasi_asesi', 'pertanyaan', 'jawaban_asesi', 'jawaban_diharapkan', 'pencapaian']
+            //    Tidak ada kolom umpan_balik khusus di Ia07.
+            
+            // 5. Update Jadwal / Jenis TUK (Opsional, karena jadwal biasanya master data)
+            //    Tapi kita bisa update id_jenis_tuk di sertifikasi/jadwal jika perlu.
+            
+            DB::commit();
+
+            return redirect()->route('ia07.cetak', $idSertifikasi)->with('success', 'Penilaian FR.IA.07 berhasil disimpan.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan penilaian: ' . $e->getMessage());
+        }
     }
 
     public function cetakPDF($idSertifikasi)

@@ -41,7 +41,7 @@ class ia02 extends Model
      * * Ann-Note: Asumsi nama model adalah 'DataSertifikasiAsesi'
      * dan foreign key adalah 'id_data_sertifikasi_asesi'.
      */
-    public function dataSertifikasiAsesi(): BelongsTo
+    public function DataSertifikasiAsesi(): BelongsTo
     {
         // Sesuaikan 'App\Models\DataSertifikasiAsesi' jika nama model Anda berbeda
         // Sesuaikan 'id_data_sertifikasi_asesi' jika nama foreign key Anda berbeda

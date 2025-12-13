@@ -18,6 +18,15 @@
         <form action="{{ route('fr_IA_06_c.store') }}" method="POST">
             @csrf
 
+        <!-- FORM PEMBUNGKUS UTAMA -->
+        <form action="{{ route('fr_IA_06_c.store') }}" method="POST">
+            @csrf
+
+            <!-- Box Info Atas -->
+            <div class="bg-gray-50 p-6 rounded-md shadow-sm mb-6 border border-gray-200">
+                <div class="grid grid-cols-[150px,10px,1fr] gap-x-2 gap-y-3 text-sm">
+                    <span class="font-medium text-gray-700">Skema Sertifikasi</span><span class="font-medium">:</span>
+                    <input type="text" name="skema" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="Junior Web Developer">
             <!-- Box Info Atas -->
             <div class="bg-gray-50 p-6 rounded-md shadow-sm mb-6 border border-gray-200">
                 <div class="grid grid-cols-[150px,10px,1fr] gap-x-2 gap-y-3 text-sm">
@@ -27,9 +36,26 @@
                     <span class="font-medium text-gray-700">Judul / Nomor</span><span class="font-medium">:</span>
                     <input type="text" name="judul" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="Sertifikasi KKNI II / 0341XXXXXXX">
                 </div>
+                    <span class="font-medium text-gray-700">Judul / Nomor</span><span class="font-medium">:</span>
+                    <input type="text" name="judul" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="Sertifikasi KKNI II / 0341XXXXXXX">
+                </div>
 
                 <hr class="my-4 border-gray-300">
+                <hr class="my-4 border-gray-300">
 
+                <div class="grid grid-cols-[150px,10px,1fr] gap-x-2 gap-y-3 text-sm items-center">
+                    <span class="font-medium text-gray-700">TUK</span><span class="font-medium">:</span>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="tuk_type" value="sewaktu" class="h-4 w-4 text-blue-600 focus:ring-blue-500"> Sewaktu
+                        </label>
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="tuk_type" value="tempat_kerja" class="h-4 w-4 text-blue-600 focus:ring-blue-500"> Tempat Kerja
+                        </label>
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="tuk_type" value="mandiri" class="h-4 w-4 text-blue-600 focus:ring-blue-500"> Mandiri
+                        </label>
+                    </div>
                 <div class="grid grid-cols-[150px,10px,1fr] gap-x-2 gap-y-3 text-sm items-center">
                     <span class="font-medium text-gray-700">TUK</span><span class="font-medium">:</span>
                     <div class="flex gap-4">
@@ -46,10 +72,19 @@
 
                     <span class="font-medium text-gray-700">Nama Asesor</span><span class="font-medium">:</span>
                     <input type="text" name="nama_asesor" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent">
+                    <span class="font-medium text-gray-700">Nama Asesor</span><span class="font-medium">:</span>
+                    <input type="text" name="nama_asesor" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent">
 
                     <span class="font-medium text-gray-700">Nama Asesi</span><span class="font-medium">:</span>
                     <input type="text" name="nama_asesi" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="John Doe">
+                    <span class="font-medium text-gray-700">Nama Asesi</span><span class="font-medium">:</span>
+                    <input type="text" name="nama_asesi" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="John Doe">
 
+                    <span class="font-medium text-gray-700">Tanggal</span><span class="font-medium">:</span>
+                    <input type="date" name="tanggal" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="{{ date('Y-m-d') }}">
+                </div>
+                <p class="text-xs text-gray-500 mt-4">*Coret yang tidak perlu</p>
+            </div>
                     <span class="font-medium text-gray-700">Tanggal</span><span class="font-medium">:</span>
                     <input type="date" name="tanggal" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="{{ date('Y-m-d') }}">
                 </div>
@@ -131,6 +166,9 @@
                             <span class="font-medium text-gray-700">Tanda Tangan</span><span class="font-medium">:</span>
                             <div class="text-xs text-gray-500 italic">[Ditandatangani Digital saat Submit]</div>
                         </div>
+                            <span class="font-medium text-gray-700">Tanda Tangan</span><span class="font-medium">:</span>
+                            <div class="text-xs text-gray-500 italic">[Ditandatangani Digital saat Submit]</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,6 +185,7 @@
     </div>
 
     <!-- ==================================== -->
+    <!-- BAGIAN NOTIFIKASI SUKSES (MODAL)    -->
     <!-- BAGIAN NOTIFIKASI SUKSES (MODAL)    -->
     <!-- ==================================== -->
     <div x-show="showNotif" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm">

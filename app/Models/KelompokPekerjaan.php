@@ -19,15 +19,13 @@ class KelompokPekerjaan extends Model
         'nama_kelompok_pekerjaan',
     ];
 
-    // Relasi ke atas (Skema)
     public function skema()
     {
         return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
     }
 
-    // Relasi ke bawah (Unit Kompetensi)
-    // Kelompok punya BANYAK Unit
-    public function unitKompetensi()
+    // Relasi ke Anak (Unit Kompetensi)
+    public function unitKompetensis()
     {
         return $this->hasMany(UnitKompetensi::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
     }

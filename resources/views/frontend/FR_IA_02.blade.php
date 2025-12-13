@@ -1,148 +1,164 @@
-{{-- Menggunakan layout sidebar yang sama --}}
 @extends('layouts.app-sidebar')
 
 @section('content')
-<main class="main-content">
-    {{-- 
-        Ann-Note: 
-        Variabel yang dikirim dari Controller:
-        - $sertifikasi (DataSertifikasiAsesi)
-        - $jadwal (Jadwal)
-        - $asesi (Asesi)
-        - $skema (Skema)
-        - $skenario (SkenarioIa02)
-        - $unitKompetensis (Kumpulan MasterUnitKompetensi)
-    --}}
-    
-    <x-header_form.header_form title="FR.IA.02. TPD - TUGAS PRAKTIK DEMONSTRASI" />
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    {{-- Pesan Sukses Setelah Menyimpan --}}
-    @if (session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
-            {{ session('success') }}
+    {{-- Notifikasi --}}
+    @if(session('success'))
+        <div class="bg-green-100 border-l-4 border-green-600 text-green-800 p-4 mb-6 rounded shadow-sm">
+            <strong class="font-bold">Berhasil!</strong>
+            <span class="ml-2">{{ session('success') }}</span>
         </div>
     @endif
 
-    {{-- Form di-wrap di sini, menunjuk ke route 'store' --}}
-    <form class="form-body" method="POST" action="{{ route('fr-ia-02.store', $sertifikasi->id_data_sertifikasi_asesi) }}">
-        @csrf 
+    @if(session('error'))
+        <div class="bg-red-100 border-l-4 border-red-600 text-red-800 p-4 mb-6 rounded shadow-sm">
+            <strong class="font-bold">Error!</strong>
+            <span class="ml-2">{{ session('error') }}</span>
+        </div>
+    @endif
 
-        <!-- Box Info Atas (Dinamis) -->
-        {{-- Menggunakan komponen identitas_skema_form dengan data dinamis --}}
-        <x-identitas_skema_form.identitas_skema_form
-            :skema="$skema->nama_skema ?? ''"
-            :nomorSkema="$skema->kode_unit ?? ''" 
-            :tuk="$jadwal->tuk->nama_lokasi ?? 'Tempat Kerja'" {{-- Asumsi relasi TUK di Jadwal --}}
-            :namaAsesor="$jadwal->asesor->nama_lengkap ?? ''"
-            :namaAsesi="$asesi->nama_lengkap ?? ''"
-            :tanggal="optional($jadwal->tanggal_pelaksanaan)->format('d F Y') ?? date('d F Y')" 
-        />
+    @if($sertifikasi)
+    <form action="{{ route('ia02.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+        @csrf
 
-        <!-- Box Petunjuk (Tetap Statis) -->
-        <div class="bg-blue-50 p-6 rounded-md shadow-sm mb-6 border border-blue-200">
-            <h3 class="text-lg font-bold text-blue-800 mb-3">Petunjuk</h3>
-            <ul class="list-disc list-inside space-y-2 text-sm text-gray-700">
-                <li>Baca dan pelajari setiap instruksi kerja di bawah ini dengan cermat sebelum melaksanakan praktek.</li>
-                <li>Klarifikasi kepada asesor kompetensi apabila ada hal-hal yang belum jelas.</li>
-                <li>Laksanakan pekerjaan sesuai dengan urutan proses yang sudah ditetapkan.</li>
-                <li>Seluruh proses kerja mengacu kepada SOP/WI yang dipersyaratkan (Jika Ada).</li>
+        {{-- HEADER --}}
+        <x-header_form.header_form title="FR.IA.02 - TUGAS PRAKTIK DEMONSTRASI" />
+
+        {{-- IDENTITAS SKEMA --}}
+        <div class="mb-8">
+            <x-identitas_skema_form.identitas_skema_form :sertifikasi="$sertifikasi" />
+        </div>
+
+        {{-- PETUNJUK --}}
+        <div class="bg-blue-50 border border-blue-300 p-6 mb-10 rounded shadow-sm">
+            <h2 class="text-lg font-bold text-blue-800 mb-3">Petunjuk</h2>
+            <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                <li>Baca instruksi kerja sebelum mulai.</li>
+                <li>Klarifikasi pada asesor jika ada yang kurang jelas.</li>
+                <li>Ikuti prosedur sesuai urutan.</li>
+                <li>Kerjakan sesuai SOP/WI yang dipersyaratkan (jika ada).</li>
             </ul>
         </div>
 
-        <!-- Box Skenario Tugas (Dinamis) -->
-        <div class="bg-white p-6 rounded-md shadow-sm mb-6 border border-gray-200">
-            <h3 class="text-black font-bold text-gray-800 mb-4">Skenario Tugas Praktik Demonstrasi</h3>
+        {{-- SKENARIO + TABEL UNIT --}}
+        <div class="mb-10">
 
-            <!-- Tabel Kelompok Pekerjaan (Dinamis) -->
-            <div class="overflow-x-auto border border-gray-300 rounded-md shadow-sm mb-6">
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-100">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Skenario Tugas Praktik Demonstrasi</h2>
+
+            {{-- TABEL UNIT KOMPETENSI STYLE IA-01 --}}
+            <div class="border-2 border-gray-800 rounded-sm overflow-x-auto mb-8 shadow-sm">
+
+                <table class="w-full text-left border-collapse min-w-[900px]">
+                    <thead class="bg-gray-100 border-b-2 border-gray-800">
                         <tr>
-                            {{-- TODO: Buat 'Kelompok Pekerjaan' dinamis jika perlu --}}
-                            <th class="p-3 text-left font-medium w-[25%]">Kelompok Pekerjaan ...</th> 
-                            <th class="p-3 text-left font-medium w-[10%]">No.</th>
-                            <th class="p-3 text-left font-medium w-[25%]">Kode Unit</th>
-                            <th class="p-3 text-left font-medium w-[40%]">Judul Unit</th>
+                            <th class="p-3 text-sm font-bold text-center border-r border-gray-800 w-1/12">No.</th>
+                            <th class="p-3 text-sm font-bold text-center border-r border-gray-800 w-1/4">Kode Unit</th>
+                            <th class="p-3 text-sm font-bold text-center">Judul Unit</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white">
-                        
-                        {{-- Loop data Unit Kompetensi --}}
-                        @forelse ($unitKompetensis as $index => $uk)
-                            <tr>
-                                @if ($loop->first)
-                                    {{-- Asumsi semua unit dari 1 kelompok, atau Anda bisa buat logika grouping --}}
-                                    <td class="p-3" rowspan="{{ $unitKompetensis->count() }}">
-                                        {{ $uk->kelompokPekerjaan->nama_kelompok ?? 'Kelompok Pekerjaan 1' }}
-                                    </td>
-                                @endif
-                                <td class="p-3 text-center">{{ $index + 1 }}.</td>
-                                <td class="p-3">
-                                    <input type="text" class="w-full p-2 border border-gray-300 rounded-md bg-gray-50" 
-                                           value="{{ $uk->kode_unit }}" readonly>
+
+                    <tbody class="bg-white text-gray-800">
+                        @forelse($daftarUnitKompetensi ?? [] as $unit)
+                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition">
+                                <td class="p-3 text-center border-r border-gray-200 font-semibold">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td class="p-3 font-mono border-r border-gray-200 text-center">
+                                    {{ $unit->kode_unit }}
                                 </td>
                                 <td class="p-3">
-                                    <input type="text" class="w-full p-2 border border-gray-300 rounded-md bg-gray-50" 
-                                           value="{{ $uk->judul_unit }}" readonly>
+                                    {{ $unit->judul_unit }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="p-3 text-center text-gray-500">
-                                    Data Unit Kompetensi tidak ditemukan untuk Skema ini.
-                                </td>
+                                <td colspan="3" class="p-4 text-center text-gray-500 italic">Tidak ada unit kompetensi.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
+
             </div>
 
-            <!-- Skenario, Perlengkapan, Waktu (Dinamis) -->
-            <div class="space-y-4">
-                <div>
-                    <label for="skenario" class="text-black font-medium mb-3">Skenario Tugas Praktik Demonstrasi:</label>
-                    <textarea id="skenario" name="skenario" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
-                              rows="4" placeholder="Jelaskan skenario tugas di sini...">{{ old('skenario', $skenario->skenario) }}</textarea>
-                    @error('skenario') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                </div>
-                <div>
-                    <label for="peralatan" class="text-black font-medium mb-3">Perlengkapan dan Peralatan:</label>
-                    <textarea id="peralatan" name="peralatan" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
-                              rows="2" placeholder="Contoh: Laptop, Teks Editor, Web Browser...">{{ old('peralatan', $skenario->peralatan) }}</textarea>
-                    @error('peralatan') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                </div>
-                <div>
-                    <label for="waktu" class="text-black font-medium mb-3">Waktu:</label>
-                    <input id="waktu" name="waktu" type="text" class="w-full p-2 border border-gray-300 rounded-md" 
-                           placeholder="Contoh: 120 Menit" value="{{ old('waktu', $skenario->waktu) }}">
-                    @error('waktu') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-                </div>
+            {{-- INPUT SKENARIO --}}
+            <div class="mb-6">
+                <label class="font-bold text-sm text-gray-700">Instruksi / Skenario *</label>
+
+                @if($isAdmin)
+                    <textarea name="skenario" rows="6"
+                        class="mt-2 w-full border border-gray-300 rounded shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">{{ old('skenario', $ia02->skenario ?? '') }}</textarea>
+                @else
+                    <div class="mt-2 bg-gray-50 border border-gray-300 rounded p-4 whitespace-pre-line min-h-[100px]">
+                        {!! nl2br(e($ia02->skenario ?? '-')) !!}
+                    </div>
+                @endif
             </div>
+
+            {{-- PERALATAN --}}
+            <div class="mb-6">
+                <label class="font-bold text-sm text-gray-700">Perlengkapan & Peralatan *</label>
+
+                @if($isAdmin)
+                    <textarea name="peralatan" rows="3"
+                        class="mt-2 w-full border border-gray-300 rounded shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500">{{ old('peralatan', $ia02->peralatan ?? '') }}</textarea>
+                @else
+                    <div class="mt-2 bg-gray-50 border border-gray-300 rounded p-4 whitespace-pre-line">
+                        {!! nl2br(e($ia02->peralatan ?? '-')) !!}
+                    </div>
+                @endif
+            </div>
+
+            {{-- WAKTU --}}
+            <div class="mb-6">
+                <label class="font-bold text-sm text-gray-700">Waktu Pengerjaan *</label>
+
+                @if($isAdmin)
+                    <input type="time" name="waktu"
+                        value="{{ old('waktu', isset($ia02->waktu) ? \Carbon\Carbon::parse($ia02->waktu)->format('H:i') : '') }}"
+                        class="mt-2 border border-gray-300 rounded shadow-sm p-3 focus:ring-blue-500 focus:border-blue-500 w-1/3">
+                @else
+                    <div class="mt-2 bg-gray-50 border border-gray-300 rounded p-3 w-1/3">
+                        {{ $ia02->waktu ?? '-' }}
+                    </div>
+                @endif
+            </div>
+
         </div>
 
-        {{-- Komponen Tanda Tangan (Masih Statis sesuai file Anda) --}}
-        {{-- TODO: Modifikasi komponen ini agar menerima data dinamis --}}
-        @include('components.kolom_ttd.asesiasesor')
-        
-        {{-- Komponen Penyusun & Validator (Masih Statis sesuai file Anda) --}}
-        {{-- TODO: Modifikasi komponen ini agar menerima data dinamis --}}
-        @include('components.kolom_ttd.penyusunvalidator')
+        {{-- TANDA TANGAN --}}
+        <div class="mb-10">
+            <x-kolom_ttd.asesiasesor 
+                :sertifikasi="$sertifikasi" 
+                :tanggal="\Carbon\Carbon::now()" 
+            />
+        </div>
 
-        <!-- Tombol Footer (Dinamis) -->
-        <div class="mt-8 flex justify-between">
-            {{-- Tombol Kembali --}}
-            <a href="{{ url()->previous() }}"> {{-- Kembali ke halaman sebelumnya --}}
-                <button type="button" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring ring-blue-300 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Kembali') }}
-                </button>
+        {{-- TOMBOL --}}
+        <div class="flex justify-end gap-4 pb-10">
+
+            <a href="{{ route('daftar_asesi') }}"
+                class="px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full shadow-sm transition">
+                Kembali
             </a>
-            
-            {{-- Tombol Simpan --}}
-            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
-                {{ __('Simpan Form') }}
+
+            @if($isAdmin)
+            <button type="submit"
+                class="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                Simpan Instruksi ✓
             </button>
+            @endif
+
         </div>
 
-    </form> {{-- Akhir dari Form --}}
-</main>
+    </form>
+
+    @else
+        <div class="bg-red-100 border border-red-400 text-red-700 p-6 text-center rounded-lg shadow-sm">
+            <h2 class="text-xl font-bold mb-2">Data Tidak Ditemukan</h2>
+            <a href="{{ route('daftar_asesi') }}" class="text-blue-600 font-bold">Kembali</a>
+        </div>
+    @endif
+
+</div>
 @endsection
