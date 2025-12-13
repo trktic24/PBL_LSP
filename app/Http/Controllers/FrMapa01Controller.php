@@ -48,12 +48,12 @@ class FrMapa01Controller extends Controller
             'jadwal.skema'
         ])->findOrFail($idSertifikasi);
 
-        // 2. Ambil Data Form MAPA 01 (Asumsi 1 sertifikasi = 1 form mapa01)
-        // Sesuaikan nama kolom foreign key di DB (misal: 'id_data_sertifikasi_asesi')
+        // 2. Ambil Data Form MAPA 01
         $mapa01 = FrMapa01::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
 
         // 3. Render PDF
-        $pdf = Pdf::loadView('pdf.MAPA_01', [
+        // Pastikan nama view sesuai dengan nama file yang kamu buat (misal: 'pdf.mapa01')
+        $pdf = Pdf::loadView('pdf.mapa01', [
             'sertifikasi' => $sertifikasi,
             'mapa01'      => $mapa01
         ]);

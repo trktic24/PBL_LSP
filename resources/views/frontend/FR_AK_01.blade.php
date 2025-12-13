@@ -88,22 +88,26 @@
         </div>
 
         {{-- 4. Komponen Kolom TTD (Jika diperlukan, atau hanya footer button) --}}
-        {{-- Jika FR.AK.01 memiliki kolom TTD khusus, gunakan komponen yang sesuai. 
+        {{-- Jika FR.AK.01 memiliki kolom TTD khusus, gunakan komponen yang sesuai.
         Jika tidak, kita hanya perlu tombol navigasi. --}}
 
         {{-- Tombol Navigasi --}}
-                <div class="mt-6 sm:mt-8 md:mt-12 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 border-t border-gray-200 pt-4 sm:pt-6">
-                    <a href="#"
-                        class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-gray-200 text-gray-700 font-semibold text-sm rounded-lg hover:bg-gray-300 transition shadow-sm text-center flex items-center justify-center">
-                        <i class="fas fa-arrow-left mr-2 text-xs sm:text-sm"></i> 
-                        <span>Kembali</span>
-                    </a>
-                    <button type="button" id="tombol-kirim-ak04"
-                        class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-blue-600 text-white font-semibold text-sm rounded-lg hover:bg-blue-700 shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center">
-                        <span>Setuju dan Lanjutkan</span>
-                        <i class="fas fa-arrow-right ml-2 text-xs sm:text-sm"></i>
-                    </button>
-                </div>
+        <div
+            class="mt-6 sm:mt-8 md:mt-12 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 border-t border-gray-200 pt-4 sm:pt-6">
+            <a href="{{ url()->previous() }}"
+                class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-gray-200 text-gray-700 font-semibold text-sm rounded-lg hover:bg-gray-300 transition shadow-sm text-center flex items-center justify-center">
+                <i class="fas fa-arrow-left mr-2 text-xs sm:text-sm"></i>
+                <span>Kembali</span>
+            </a>
+            <form action="{{ route('ak01.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+                @csrf
+                <button type="submit" id="tombol-kirim-ak04"
+                    class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-blue-600 text-white font-semibold text-sm rounded-lg hover:bg-blue-700 shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center">
+                    <span>Setuju dan Lanjutkan</span>
+                    <i class="fas fa-arrow-right ml-2 text-xs sm:text-sm"></i>
+                </button>
+            </form>
+        </div>
 
     </div>
 @endsection

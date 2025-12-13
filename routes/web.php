@@ -22,6 +22,8 @@ use App\Http\Controllers\Ia06Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\APL01Controller;
 use App\Http\Controllers\FrMapa01Controller;
+use App\Http\Controllers\Asesi\Apl02\PraasesmenController;
+use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,6 +119,8 @@ Route::get('/ia06/cetak/{id}', [Ia06Controller::class, 'cetakPDF'])->name('ia06.
 Route::get('/ia07/cetak/{id}', [IA07Controller::class, 'cetakPDF'])->name('ia07.cetak_pdf');
 Route::get('/apl01/cetak/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.cetak_pdf');
 Route::get('/mapa01/cetak/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.cetak_pdf');
+Route::get('/apl02/cetak/{id}', [PraasesmenController::class, 'generatePDF'])->name('apl02.cetak_pdf');
+Route::get('/ak01/cetak/{id}', [PersetujuanKerahasiaanAPIController::class, 'cetakPDF'])->name('ak01.cetak_pdf');
 
 
 /*

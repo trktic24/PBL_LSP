@@ -165,15 +165,15 @@
                         <!-- Berita Acara -->
                         <div class="relative flex-1">
                             <button type="button"
-                                onclick="{{ $semuaSudahAdaKomentar ? "toggleDropdown('berita-acara-dropdown')" : "showWarning()" }}"
+                                onclick="{{ $sudahVerifikasiValidator ? "toggleDropdown('berita-acara-dropdown')" : "showWarning()" }}"
                                 class="w-full px-5 py-5 rounded-md shadow flex items-center justify-center relative
-                                {{ $semuaSudahAdaKomentar ? 'bg-yellow-600 text-white hover:bg-yellow-700' : 'bg-gray-300 text-gray-600' }}">
+                                {{ $sudahVerifikasiValidator ? 'bg-yellow-600 text-white hover:bg-yellow-700' : 'bg-gray-300 text-gray-600' }}">
 
                                 <span class="absolute left-1/2 transform -translate-x-1/2">
                                     Berita Acara
                                 </span>
 
-                                @if($semuaSudahAdaKomentar)
+                                @if($sudahVerifikasiValidator)
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -182,7 +182,7 @@
                                 @endif
                             </button>
 
-                            @if($semuaSudahAdaKomentar)
+                            @if($sudahVerifikasiValidator)
                                 <div id="berita-acara-dropdown"
                                     class="hidden absolute right-0 top-full mt-2 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
 

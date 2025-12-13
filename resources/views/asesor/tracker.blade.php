@@ -3,553 +3,317 @@
 @section('content')
 
 @php
-    // 1. AMBIL LEVEL REAL DARI MODEL (ACCESSOR YANG KAMU BUAT)
+    // =========================================================================
+    // 1. SETUP LOGIKA UTAMA
+    // =========================================================================
+    
+    // Ambil Level
     $level = $dataSertifikasi->level_status; 
+    
+    // Cek apakah Asesmen sudah Final (Sudah ada keputusan AK.02)
+    $isFinalized = ($level >= 100);
 
-    // 2. DEFINISI BATAS LEVEL (Sesuai Logic Model Kamu)
-    $LVL_APL01_SUBMIT = 10;
-    $LVL_APL01_VERIF = 20; // Asumsi APL01 diterima
-    $LVL_APL02_VERIF    = 30; // APL02 diterima
-    $LVL_SIAP_ASESMEN = 40; // AK01 Valid / Siap Ujian
-    $LVL_SELESAI_IA   = 90; // Jawaban IA10 lengkap (Asesmen Selesai)
-    $LVL_LULUS        = 100; // Sertifikat Terbit
+    // =========================================================================
+    // 2. HELPER FUNCTION
+    // =========================================================================
 
-    // 3. HELPER FUNCTION UNTUK STATUS VISUAL
-    // Return: 'DONE' (Hijau), 'ACTIVE' (Kuning/Biru), 'LOCKED' (Abu)
-    function getStepStatus($currentLevel, $targetDone, $targetActive) {
-        if ($currentLevel >= $targetDone) return 'DONE';
-        if ($currentLevel >= $targetActive) return 'ACTIVE';
-        return 'LOCKED';
+    // Helper Tombol Verifikasi
+    function btnState($currentLevel, $requiredLevel, $isFinalized) {
+        if ($isFinalized) {
+            return 'bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed'; 
+        }
+        if ($currentLevel >= $requiredLevel) {
+            return 'bg-blue-100 text-blue-600 hover:bg-blue-200 cursor-pointer'; 
+        } else {
+            return 'bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed'; 
+        }
     }
+    
+    // Helper Tombol PDF
+    function pdfState($currentLevel, $requiredLevel) {
+        if ($currentLevel >= $requiredLevel) {
+            return 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'; 
+        } else {
+            return 'bg-gray-300 text-gray-500 pointer-events-none cursor-not-allowed'; 
+        }
+    }
+
+    // Helper Warna Icon
+    function iconColor($status) {
+        if ($status == 'DONE') return 'bg-green-500 text-white';
+        if ($status == 'ACTIVE') return 'bg-yellow-400 text-white';
+        return 'bg-gray-200 text-gray-400';
+    }
+
+    // =========================================================================
+    // 3. CEK STATUS PER ITEM (UNTUK AK.02 LOCK)
+    // =========================================================================
+
+    $ia05Done = $dataSertifikasi->lembarJawabIa05()->exists();
+    $stIa05 = $ia05Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+    $ia10Done = $dataSertifikasi->ia10()->exists();
+    $stIa10 = $ia10Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+    $ia02Done = $dataSertifikasi->ia02()->exists(); 
+    $stIa02 = $ia02Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+    $ia06Done = $dataSertifikasi->ia06Answers()->count() > 0;
+    $stIa06 = $ia06Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+    $ia07Done = $dataSertifikasi->ia07()->exists(); 
+    $stIa07 = $ia07Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+    // Semua IA Harus Selesai agar AK.02 Terbuka
+    $allIADone = ($ia05Done && $ia10Done && $ia02Done && $ia06Done && $ia07Done);
 @endphp
 
 <div class="max-w-6xl mx-auto">
-
-    {{-- HEADER INFO --}}
     <div class="mb-8 text-center">
         <h1 class="text-4xl font-bold text-gray-800">Pra Asesmen</h1>
+        <p class="text-sm text-gray-500 mt-2">Selesaikan langkah secara berurutan untuk membuka tahap Asesmen.</p>
     </div>
 
     {{-- SECTION 1: PRA-ASESMEN --}}
     <section id="pra-asesmen">
         <div class="bg-white rounded-2xl shadow-lg p-8">
             <div class="relative">
-                
-                {{-- GARIS VERTIKAL UTAMA (Background) --}}
                 <div class="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200" aria-hidden="true"></div>
 
-                {{-- ====================================================================== --}}
                 {{-- ITEM 1: FR.APL.01 --}}
-                {{-- ====================================================================== --}}
-                @php $stAPL01 = getStepStatus($level, 20, $LVL_APL01_SUBMIT); @endphp
-                
                 <div class="relative pl-20 pb-8 group">
-                    {{-- Garis Hijau Overlay (Progress) --}}
-                    @if($stAPL01 == 'DONE') <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
-
-                    {{-- ICON --}}
                     <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stAPL01 == 'DONE' ? 'bg-green-500 text-white' : ($stAPL01 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        @if($stAPL01 == 'DONE') 
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        @else
-                            <span class="font-bold text-xs">01</span>
-                        @endif
+                        {{ $level >= 20 ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white' }}">
+                        @if($level >= 20) <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">01</span> @endif
                     </div>
-
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold text-gray-800">FR.APL.01 - Permohonan Sertifikasi Kompetensi</h3>
+                            <h3 class="text-lg font-semibold text-gray-800">FR.APL.01 - Permohonan Sertifikasi</h3>
                             <div class="flex space-x-2 ml-4">
-                                {{-- Tombol Dinamis --}}
-                                <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
-                            {{-- Tombol 2: Lihat PDF (FR.APL.01) --}}
-                                <a href="{{ route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
-                                class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                    
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                    </svg>
-                                    
-                                    <span>Lihat PDF</span>
-                                </a>
+                                <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="text-xs font-bold py-1 px-3 rounded-md {{ btnState(100, 0, $isFinalized) }}">Verifikasi</a>
+                                <a href="{{ route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState(100, 0) }}"><span>Lihat PDF</span></a>
                             </div>
                         </div>
-                        {{-- Status Badge --}}
-                        @if($dataSertifikasi->rekomendasi_apl01 == 'diterima')
-                            <p class="text-xs text-green-500 mt-1">Diterima</p>
-                        @elseif($dataSertifikasi->rekomendasi_apl01 == 'tidak diterima')
-                            <p class="text-xs text-red-500 mt-1">Tidak Diterima</p>
-                        @else
-                            <p class="text-xs text-yellow-300 mt-1">Menunggu Verifikasi</p>
-                        @endif
+                        {{-- STATUS TEXT --}}
+                        @if($dataSertifikasi->rekomendasi_apl01 == 'diterima') <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                        @elseif($dataSertifikasi->rekomendasi_apl01 == 'tidak diterima') <p class="text-xs text-red-500 mt-1 font-semibold">Tidak Diterima</p>
+                        @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
                     </div>
                 </div>
 
-                {{-- ====================================================================== --}}
-                {{-- ITEM 2: FR.APL.02 --}}
-                {{-- ====================================================================== --}}
-                @php $stAPL02 = getStepStatus($level, $LVL_APL01_VERIF, $LVL_APL02_VERIF); @endphp
-
+                {{-- ITEM 2: FR.MAPA.01 --}}
                 <div class="relative pl-20 pb-8 group">
-                    @if($stAPL02 == 'DONE') <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
-
                     <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stAPL02 == 'DONE' ? 'bg-green-500 text-white' : ($stAPL02 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        @if($stAPL02 == 'DONE') 
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        @else
-                            <span class="font-bold text-xs">02</span>
-                        @endif
+                        {{ $level >= 20 ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white' }}">
+                        @if($level >= 20) <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">M1</span> @endif
                     </div>
-
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold {{ $stAPL02 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.APL.02 - Asesmen Mandiri</h3>
-
+                            <h3 class="text-lg font-semibold text-gray-800">FR.MAPA.01 - Merencanakan Aktivitas</h3>
                             <div class="flex space-x-2 ml-4">
-                                {{-- Tombol Dinamis --}}
-                                <a href="{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
-                                <a href="{{ route('asesor.apl02.pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                
-                                {{-- Ikon SVG Dokumen --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                </svg>
-                                
-                                <span>Lihat PDF</span>
-                                </a>
+                                <a href="{{ route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="text-xs font-bold py-1 px-3 rounded-md {{ btnState(100, 0, $isFinalized) }}">Verifikasi</a>
+                                <a href="{{ route('mapa01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState(100, 0) }}">Lihat PDF</a>
                             </div>
                         </div>
-                        {{-- Status Badge --}}
-                        @if($dataSertifikasi->rekomendasi_apl01 == 'diterima')
-                            <p class="text-xs text-green-500">Diterima</p>
-                        @elseif($dataSertifikasi->rekomendasi_apl01 == 'tidak diterima')
-                            <p class="text-xs text-red-500">Tidak Diterima</p>
-                        @else
-                            <p class="text-xs text-yellow-300">Menunggu Verifikasi</p>
-                        @endif                        
+                        @if($level >= 20) <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                        @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
                     </div>
                 </div>
 
-                {{-- ====================================================================== --}}
-                {{-- ITEM 3: FR.MAPA.01 --}}
-                {{-- ====================================================================== --}}
-                @php $stMAPA01 = getStepStatus($level, $LVL_APL01_VERIF, $LVL_APL02_VERIF); @endphp
-                
+                {{-- ITEM 3: FR.MAPA.02 --}}
                 <div class="relative pl-20 pb-8 group">
-                    {{-- Garis Hijau Overlay (Progress) --}}
-                    @if($stMAPA01 == 'DONE') <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
-
-                    {{-- ICON --}}
                     <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stMAPA01 == 'DONE' ? 'bg-green-500 text-white' : ($stMAPA01 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        @if($stMAPA01 == 'DONE') 
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        @else
-                            <span class="font-bold text-xs">01</span>
-                        @endif
+                        {{ $level >= 20 ? 'bg-green-500 text-white' : ($level >= 10 ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                        @if($level >= 20) <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">M2</span> @endif
                     </div>
-
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold text-gray-800">FR.MAPA.01 - Merencanakan Aktivitas dan Proses Asesmen</h3>
+                            <h3 class="text-lg font-semibold {{ $level < 10 ? 'text-gray-400' : 'text-gray-800' }}">FR.MAPA.02 - Peta Instrumen</h3>
                             <div class="flex space-x-2 ml-4">
-                                {{-- Tombol Dinamis --}}
-                                <a href="{{ route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
-                            {{-- Tombol 2: Lihat PDF (MAPA.01) --}}
-                                <a href="{{ route('mapa01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
-                                class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                    
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                    </svg>
-                                    
-                                    <span>Lihat PDF</span>
-                                </a>
+                                <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="text-xs font-bold py-1 px-3 rounded-md {{ btnState($level, 20, $isFinalized) }}">Verifikasi</a>
+                                <a href="{{ route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState($level, 20) }}">Lihat PDF</a>
                             </div>
                         </div>
-                        {{-- Status Badge --}}
-                        @if($dataSertifikasi->rekomendasi_apl01 == 'diterima')
-                            <p class="text-xs text-green-500 mt-1">Diterima</p>
-                        @elseif($dataSertifikasi->rekomendasi_apl01 == 'tidak diterima')
-                            <p class="text-xs text-red-500 mt-1">Tidak Diterima</p>
-                        @else
-                            <p class="text-xs text-yellow-300 mt-1">Menunggu Verifikasi</p>
-                        @endif
+                         @if($level >= 20) <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                         @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
                     </div>
-                </div> 
-                
-                {{-- ====================================================================== --}}
-                {{-- ITEM 4: FR.MAPA.02 --}}
-                {{-- ====================================================================== --}}
-                @php $stMAPA02 = getStepStatus($level, $LVL_APL01_VERIF, $LVL_APL02_VERIF); @endphp
-                
-                <div class="relative pl-20 pb-8 group">
-                    {{-- Garis Hijau Overlay (Progress) --}}
-                    @if($stMAPA02 == 'DONE') <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
-
-                    {{-- ICON --}}
-                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stMAPA02 == 'DONE' ? 'bg-green-500 text-white' : ($stMAPA01 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        @if($stMAPA02 == 'DONE') 
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        @else
-                            <span class="font-bold text-xs">01</span>
-                        @endif
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold text-gray-800">FR.MAPA.02 - Peta Instrumen Asesmen</h3>
-                            <div class="flex space-x-2 ml-4">
-                                {{-- Tombol Dinamis --}}
-                                <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
-                            {{-- Tombol 2: Lihat PDF (Ini yang diupdate) --}}
-                                <a href="{{ route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
-                                class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                    
-                                    {{-- Ikon SVG Dokumen --}}
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                    </svg>
-                                    
-                                    <span>Lihat PDF</span>
-                                </a>
-                            </div>
-                        </div>
-                        {{-- Status Badge --}}
-                        @if($dataSertifikasi->rekomendasi_apl01 == 'diterima')
-                            <p class="text-xs text-green-500 mt-1">Diterima</p>
-                        @elseif($dataSertifikasi->rekomendasi_apl01 == 'tidak diterima')
-                            <p class="text-xs text-red-500 mt-1">Tidak Diterima</p>
-                        @else
-                            <p class="text-xs text-yellow-300 mt-1">Menunggu Verifikasi</p>
-                        @endif
-                    </div>
-                </div>                 
-
-                {{-- ====================================================================== --}}
-                {{-- ITEM 5: FR.AK.01 (Persetujuan) --}}
-                {{-- ====================================================================== --}}
-                @php $stAK01 = getStepStatus($level, $LVL_SIAP_ASESMEN, $LVL_APL02_VERIF); @endphp
-
-                <div class="relative pl-20 pb-8 group">
-                    @if($stAK01 == 'DONE') <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
-
-                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stAK01 == 'DONE' ? 'bg-green-500 text-white' : ($stAK01 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        @if($stAK01 == 'DONE') 
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        @else
-                            <span class="font-bold text-xs">AK.01</span>
-                        @endif
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold {{ $stAK01 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.AK.01 - Persetujuan & Kerahasiaan</h3>
-                            <div class="flex flex-col gap-2 ml-4"> {{-- Container Vertikal --}}
-                                
-                                {{-- BARIS 1: Tombol Verifikasi & PDF (Horizontal) --}}
-                                <div class="flex gap-2">
-                                    {{-- Tombol 1: Verifikasi --}}
-                                    <a href="#" class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Verifikasi
-                                    </a>
-
-                                    {{-- Tombol 2: Lihat PDF --}}
-                                    <a href="#" class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        <span>Lihat PDF</span>
-                                    </a>
-                                </div>
-
-                                {{-- BARIS 2: Tombol Verifikasi (Full Width) --}}
-                                {{-- w-full akan membuatnya selebar container di atasnya --}}
-                                <a href="#" class="w-full block {{ $stAK01 == 'ACTIVE' ? 'bg-blue-100 text-blue-600' : 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' }} bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-1 rounded-md text-center transition shadow-sm">
-                                    Verifikasi
-                                </a>
-
-                            </div>
-                        </div>
-                    {{-- Status Badge --}}
-                    @if($dataSertifikasi->responbuktiAk01->contains('respon', 'Valid'))
-                        <p class="text-xs text-green-500 mt-1">Diterima</p>
-                    @elseif($dataSertifikasi->rekomendasi_apl01 == 'Tidak Memenuhi')
-                        <p class="text-xs text-red-500 mt-1">Tidak Diterima</p>
-                    @else
-                        <p class="text-xs text-yellow-300 mt-1">Menunggu Verifikasi</p>                        
-                    </div>
-                    @endif                    
                 </div>
 
+                {{-- ITEM 4: FR.APL.02 --}}
+                <div class="relative pl-20 pb-8 group">
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                        {{ $level >= 30 ? 'bg-green-500 text-white' : ($level >= 20 ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                        @if($level >= 30) <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">02</span> @endif
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-semibold {{ $level < 20 ? 'text-gray-400' : 'text-gray-800' }}">FR.APL.02 - Asesmen Mandiri</h3>
+                            <div class="flex space-x-2 ml-4">
+                                <a href="{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="text-xs font-bold py-1 px-3 rounded-md {{ btnState($level, 20, $isFinalized) }}">Verifikasi</a>
+                                <a href="{{ route('apl02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState($level, 20) }}">Lihat PDF</a>
+                            </div>
+                        </div>
+                        @if($dataSertifikasi->rekomendasi_apl02 == 'diterima') <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                        @elseif($level < 20) <p class="text-xs text-red-400 italic mt-1">Selesaikan APL.01 terlebih dahulu.</p> 
+                        @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
+                    </div>
+                </div>
+
+                {{-- ITEM 5: FR.AK.01 --}}
+                <div class="relative pl-20 pb-8 group">
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                        {{ $level >= 40 ? 'bg-green-500 text-white' : ($level >= 30 ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                        @if($level >= 40) <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">AK1</span> @endif
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-semibold {{ $level < 30 ? 'text-gray-400' : 'text-gray-800' }}">FR.AK.01 - Persetujuan & Kerahasiaan</h3>
+                            <div class="flex gap-2 ml-4">
+                                <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="text-xs font-bold py-1 px-3 rounded-md {{ btnState($level, 30, $isFinalized) }}">Verifikasi</a>
+                                <a href="{{ route('ak01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState($level, 30) }}">Lihat PDF</a>
+                            </div>
+                        </div>
+                        @if($level >= 40) <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                        @elseif($level < 30) <p class="text-xs text-red-400 italic mt-1">Selesaikan APL.02 terlebih dahulu.</p> 
+                        @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    {{-- SECTION 2: ASESMEN REAL (IA.xx) --}}
-    <section id="asesmen" class="mt-12">
-        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Asesmen</h1>
+    {{-- SECTION 2: ASESMEN --}}
+    <section id="asesmen" class="mt-12 transition-all duration-300 {{ $level < 40 ? 'opacity-60' : '' }}">
+        
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">
+            Asesmen 
+            @if($level < 40) <span class="text-sm font-normal text-red-500 block">(Terkunci: Selesaikan Pra Asesmen)</span> @endif
+        </h1>
 
-        <div class="bg-white rounded-2xl shadow-lg p-8">
+        <div class="bg-white rounded-2xl shadow-lg p-8 relative">
             <div class="relative">
                 <div class="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200" aria-hidden="true"></div>
 
-                {{-- LOGIC: Tombol Asesmen terbuka jika Level >= 40 (Siap Asesmen) --}}
-                {{-- Selesai jika Level >= 90 --}}
-                @php 
-                    $stAsesmen = getStepStatus($level, $LVL_SELESAI_IA, $LVL_SIAP_ASESMEN); 
-                    $isAsesmenActive = ($level >= $LVL_SIAP_ASESMEN);
-                @endphp
-
-                {{-- ITEM: FR.IA.01 dst --}}
                 {{-- ITEM: FR.IA.05 --}}
                 <div class="relative pl-20 pb-8">
-                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stAsesmen == 'DONE' ? 'bg-green-500 text-white' : ($isAsesmenActive ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        <span class="font-bold text-xs">IA.05</span>
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa05) }}">
+                        @if($stIa05 == 'DONE') <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">IA.05</span> @endif
                     </div>
-
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold {{ !$isAsesmenActive ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.05 - Pertanyaan Tertulis Pilihan Ganda</h3>
-                            <div class="flex flex-col gap-2 ml-4"> {{-- Container Vertikal --}}
-                                
-                                {{-- BARIS 1: Tombol Verifikasi & PDF (Horizontal) --}}
-                                <div class="flex gap-2">
-                                    {{-- Tombol 1: Verifikasi --}}
-                                    <a href="{{ route('FR_IA_05_A', $asesi->id_asesi) }}" class="{{ $isAsesmenActive ? ' bg-gray-300 text-gray-600' : 'bg-blue-100 text-blue-600 hover:bg-blue-200 ' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Verifikasi
-                                    </a>
-
-                                    {{-- Tombol 2: Lihat PDF --}}
-                                    {{-- Tombol 2: Lihat PDF (Updated) --}}
-                                    <a href="{{ route('ia05.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
-                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                        
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        
-                                        <span>Lihat PDF</span>
-                                    </a>
-                                </div>
-
-                                {{-- BARIS 2: Tombol Verifikasi (Full Width) --}}
-                                {{-- w-full akan membuatnya selebar container di atasnya --}}
-                                <a href="#" class="w-full block {{ $isAsesmenActive ? 'bg-gray-300 text-gray-600 pointer-events-none cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white' }} text-xs font-bold py-1 rounded-md text-center transition shadow-sm">
-                                    Lakukan Penilaian
-                                </a>
-
+                            <h3 class="text-lg font-semibold text-gray-800">FR.IA.05 - Pertanyaan Tertulis</h3>
+                            <div class="flex gap-2 ml-4">
+                                <a href="{{ route('FR_IA_05_A', $asesi->id_asesi) }}" class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                <a href="{{ route('ia05.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat PDF</a>
                             </div>
                         </div>
-                        
-                        @if($stAsesmen == 'DONE')
-                            <p class="text-xs text-green-600 font-bold mt-1">Asesmen telah selesai. Silahkan lakukan penilaian</p>
-                        @elseif($isAsesmenActive)
-                             <p class="text-xs text-blue-600 mt-1">Asesi sedang menjalankan asesmen</p>
-                        @endif
+                        @if($stIa05 == 'DONE') <p class="text-xs text-green-500 mt-1 font-semibold">Sudah Dinilai</p>
+                        @elseif($stIa05 == 'ACTIVE') <p class="text-xs text-yellow-600 mt-1 font-semibold">Belum Dinilai</p>
+                        @else <p class="text-xs text-gray-400 mt-1 italic">Belum Terbuka</p> @endif
                     </div>
                 </div>
 
-                {{-- ITEM: FR.IA.10 (Verifikasi Pihak Ketiga) --}}
-                @php 
-                    // Cek apakah Data IA.10 sudah ada
-                    $ia10Done = $dataSertifikasi->ia10()->exists(); 
-                    $stIa10 = $ia10Done ? 'DONE' : ($isAsesmenActive ? 'ACTIVE' : 'LOCKED');
-                @endphp
-                
+                {{-- ITEM: FR.IA.10 --}}
                 <div class="relative pl-20 pb-8">
-                    {{-- Connector Line to Next Item (if not last) --}}
-                    {{-- <div class="absolute left-6 top-4 h-full w-0.5 bg-gray-200 z-0"></div> --}}
-
-                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stIa10 == 'DONE' ? 'bg-green-500 text-white' : ($stIa10 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        <span class="font-bold text-xs">IA.10</span>
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa10) }}">
+                        @if($stIa10 == 'DONE') <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">IA.10</span> @endif
                     </div>
-
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold {{ $stIa10 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.10 - Verifikasi Pihak Ketiga</h3>
-                            
-                            <div class="flex flex-col gap-2 ml-4">
-                                
-                                {{-- BARIS 1: Tombol Verifikasi & PDF --}}
-                                <div class="flex gap-2">
-                                    <a href="{{ route('fr-ia-10.create', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                       class="{{ $stIa10 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Verifikasi
-                                    </a>
-
-                                    {{-- Tombol 2: Lihat PDF --}}
-                                    <a href="{{ route('ia10.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
-                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                        
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        
-                                        <span>Lihat PDF</span>
-                                    </a>
-                                </div>
+                            <h3 class="text-lg font-semibold text-gray-800">FR.IA.10 - Verifikasi Pihak Ketiga</h3>
+                            <div class="flex gap-2 ml-4">
+                                <a href="{{ route('fr-ia-10.create', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                <a href="{{ route('ia10.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat PDF</a>
                             </div>
                         </div>
-
-                        {{-- Status Text --}}
-                        @if($stIa10 == 'DONE')
-                            <p class="text-xs text-green-500 mt-1">Sudah Diverifikasi</p>
-                        @elseif($stIa10 == 'ACTIVE')
-                            <p class="text-xs text-yellow-600 mt-1">Menunggu Verifikasi Asesor</p>
-                        @else
-                             <p class="text-xs text-gray-400 mt-1">Belum Terbuka</p>
-                        @endif
+                         @if($stIa10 == 'DONE') <p class="text-xs text-green-500 mt-1 font-semibold">Sudah Dinilai</p>
+                        @elseif($stIa10 == 'ACTIVE') <p class="text-xs text-yellow-600 mt-1 font-semibold">Belum Dinilai</p>
+                        @else <p class="text-xs text-gray-400 mt-1 italic">Belum Terbuka</p> @endif
                     </div>
                 </div>
 
-                
-                {{-- ITEM: FR.IA.02 (Tugas Praktik Demonstrasi) --}}
-                @php 
-                    $ia02Done = $dataSertifikasi->ia02()->exists(); 
-                    $stIa02 = $ia02Done ? 'DONE' : ($isAsesmenActive ? 'ACTIVE' : 'LOCKED');
-                @endphp
-                
+                {{-- ITEM: FR.IA.02 --}}
                 <div class="relative pl-20 pb-8">
-                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stIa02 == 'DONE' ? 'bg-green-500 text-white' : ($stIa02 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        <span class="font-bold text-xs">IA.02</span>
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa02) }}">
+                        @if($stIa02 == 'DONE') <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">IA.02</span> @endif
                     </div>
-
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold {{ $stIa02 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.02 - Tugas Praktik Demonstrasi</h3>
-                            
-                            <div class="flex flex-col gap-2 ml-4">
-                                <div class="flex gap-2">
-                                    <a href="{{ route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                       class="{{ $stIa02 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Verifikasi
-                                    </a>
-                                    {{-- Tombol 2: Lihat PDF (IA.02) --}}
-                                    <a href="{{ route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
-                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                        
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        
-                                        <span>Lihat PDF</span>
-                                    </a>
-                                </div>
+                            <h3 class="text-lg font-semibold text-gray-800">FR.IA.02 - Tugas Praktik Demonstrasi</h3>
+                            <div class="flex gap-2 ml-4">
+                                <a href="{{ route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                <a href="{{ route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat PDF</a>
                             </div>
                         </div>
-                        @if($stIa02 == 'DONE') <p class="text-xs text-green-500 mt-1">Sudah Diisi</p> @endif
+                         @if($stIa02 == 'DONE') <p class="text-xs text-green-500 mt-1 font-semibold">Sudah Dinilai</p>
+                        @elseif($stIa02 == 'ACTIVE') <p class="text-xs text-yellow-600 mt-1 font-semibold">Belum Dinilai</p>
+                        @else <p class="text-xs text-gray-400 mt-1 italic">Belum Terbuka</p> @endif
                     </div>
                 </div>
 
-                {{-- ITEM: FR.IA.06 (Pertanyaan Lisan) --}}
-                @php 
-                    $ia06Count = $dataSertifikasi->ia06Answers()->count(); 
-                    $ia06Done = $ia06Count > 0;
-                    $stIa06 = $ia06Done ? 'DONE' : ($isAsesmenActive ? 'ACTIVE' : 'LOCKED');
-                @endphp
-                
+                {{-- ITEM: FR.IA.06 --}}
                 <div class="relative pl-20 pb-8">
-                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stIa06 == 'DONE' ? 'bg-green-500 text-white' : ($stIa06 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        <span class="font-bold text-xs">IA.06</span>
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa06) }}">
+                        @if($stIa06 == 'DONE') <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">IA.06</span> @endif
                     </div>
-
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold {{ $stIa06 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.06 - Pertanyaan Lisan</h3>
-                            
-                            <div class="flex flex-col gap-2 ml-4">
-                                <div class="flex gap-2">
-                                    <a href="{{ route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                       class="{{ $stIa06 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Verifikasi
-                                    </a>
-                                    {{-- Tombol 2: Lihat PDF (IA.06) --}}
-                                    <a href="{{ route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
-                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                        
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        
-                                        <span>Lihat PDF</span>
-                                    </a>
-                                </div>
+                            <h3 class="text-lg font-semibold text-gray-800">FR.IA.06 - Pertanyaan Lisan</h3>
+                            <div class="flex gap-2 ml-4">
+                                <a href="{{ route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                <a href="{{ route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat PDF</a>
                             </div>
                         </div>
-                        @if($stIa06 == 'DONE') <p class="text-xs text-green-500 mt-1">Sudah Dinilai</p> @endif
+                         @if($stIa06 == 'DONE') <p class="text-xs text-green-500 mt-1 font-semibold">Sudah Dinilai</p>
+                        @elseif($stIa06 == 'ACTIVE') <p class="text-xs text-yellow-600 mt-1 font-semibold">Belum Dinilai</p>
+                        @else <p class="text-xs text-gray-400 mt-1 italic">Belum Terbuka</p> @endif
                     </div>
                 </div>
 
-                {{-- ITEM: FR.IA.07 (Daftar Pertanyaan Lisan) --}}
-                @php 
-                    $ia07Done = $dataSertifikasi->ia07()->exists(); 
-                    $stIa07 = $ia07Done ? 'DONE' : ($isAsesmenActive ? 'ACTIVE' : 'LOCKED');
-                @endphp
-                
+                {{-- ITEM: FR.IA.07 --}}
                 <div class="relative pl-20 pb-8">
-                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stIa07 == 'DONE' ? 'bg-green-500 text-white' : ($stIa07 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                        <span class="font-bold text-xs">IA.07</span>
+                    <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa07) }}">
+                        @if($stIa07 == 'DONE') <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> @else <span class="font-bold text-xs">IA.07</span> @endif
                     </div>
-
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 class="text-lg font-semibold {{ $stIa07 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">FR.IA.07 - Daftar Pertanyaan Lisan</h3>
-                            
-                            <div class="flex flex-col gap-2 ml-4">
-                                <div class="flex gap-2">
-                                    <a href="{{ route('FR_IA_07') }}" 
-                                       class="{{ $stIa07 == 'LOCKED' ? 'bg-gray-300 text-gray-600 pointer-events-none' : 'bg-blue-100 text-blue-600 hover:bg-blue-200' }} text-xs font-bold py-1 px-3 rounded-md text-center">
-                                        Verifikasi
-                                    </a>
-                                    {{-- Tombol 2: Lihat PDF (IA.07) --}}
-                                    <a href="{{ route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
-                                    class="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-700 transition flex items-center gap-1">
-                                        
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        
-                                        <span>Lihat PDF</span>
-                                    </a>
-                                </div>
+                            <h3 class="text-lg font-semibold text-gray-800">FR.IA.07 - Daftar Pertanyaan Lisan</h3>
+                            <div class="flex gap-2 ml-4">
+                                <a href="{{ route('FR_IA_07') }}" class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                <a href="{{ route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat PDF</a>
                             </div>
                         </div>
-                        @if($stIa07 == 'DONE') <p class="text-xs text-green-500 mt-1">Sudah Diverifikasi</p> @endif
+                         @if($stIa07 == 'DONE') <p class="text-xs text-green-500 mt-1 font-semibold">Sudah Dinilai</p>
+                        @elseif($stIa07 == 'ACTIVE') <p class="text-xs text-yellow-600 mt-1 font-semibold">Belum Dinilai</p>
+                        @else <p class="text-xs text-gray-400 mt-1 italic">Belum Terbuka</p> @endif
                     </div>
                 </div>
 
-                {{-- ITEM: KEPUTUSAN AKHIR (AK.02) --}}
-                {{-- Muncul jika Level >= 90 --}}
-                @php $stAK02 = getStepStatus($level, 100, 90); @endphp
-                <div class="relative pl-20">
-                     <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                        {{ $stAK02 == 'DONE' ? 'bg-green-500 text-white' : ($stAK02 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                {{-- ITEM TERAKHIR: AK.02 (KEPUTUSAN) --}}
+                <div class="relative pl-20 pt-4 border-t mt-4">
+                    <div class="absolute left-0 top-6 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white 
+                        {{ $isFinalized ? 'bg-green-600 text-white' : ($allIADone ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
                         <span class="font-bold text-xs">AK.02</span>
                     </div>
-                    
                     <div>
-                         <h3 class="text-lg font-semibold {{ $stAK02 == 'LOCKED' ? 'text-gray-400' : 'text-gray-800' }}">Keputusan Asesmen (AK.02)</h3>
-                         @if($stAK02 == 'DONE')
-                            <div class="mt-2">
-                                @if($dataSertifikasi->rekomendasi_hasil_asesmen_AK02 == 'kompeten')
-                                    <span class="text-green-600 font-bold text-lg">✅ KOMPETEN</span>
-                                @else
-                                    <span class="text-red-600 font-bold text-lg">❌ BELUM KOMPETEN</span>
-                                @endif
+                        <h3 class="text-lg font-bold text-gray-800 mt-2">Keputusan Asesmen (AK.02)</h3>
+                        <p class="text-sm text-gray-500 mb-2">Pastikan seluruh instrumen asesmen (IA) telah dinilai sebelum mengisi keputusan ini.</p>
+                        
+                        {{-- Tombol AK.02 --}}
+                        @if($allIADone && !$isFinalized)
+                             <a href="{{-- ISI ROUTE KE CONTROLLER CREATE AK.02 --}}" class="inline-block bg-indigo-600 text-white hover:bg-indigo-700 py-2 px-6 rounded-lg shadow-md transition cursor-pointer">
+                                Isi Keputusan Asesmen
+                            </a>
+                        @elseif($isFinalized)
+                            <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="text-green-800 font-bold">✅ Keputusan telah dikirim ke Validator.</p>
                             </div>
-                         @elseif($stAK02 == 'ACTIVE')
-                            <p class="text-xs text-yellow-600 font-bold">Menunggu keputusan asesor...</p>
-                         @endif
+                        @else
+                            <button class="inline-block bg-gray-300 text-gray-500 py-2 px-6 rounded-lg shadow-none cursor-not-allowed" disabled>
+                                Isi Keputusan Asesmen
+                            </button>
+                            <p class="text-xs text-red-400 mt-2 italic">Selesaikan penilaian pada semua form di atas terlebih dahulu.</p>
+                        @endif
                     </div>
                 </div>
 

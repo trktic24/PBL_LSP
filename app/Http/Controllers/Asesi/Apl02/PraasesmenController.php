@@ -162,42 +162,44 @@ class PraasesmenController extends Controller
         ]);
     }
 
-    /**
+   /**
      * Generate PDF APL-02 untuk Asesi
      */
     public function generatePDF($idDataSertifikasi)
     {
-        // 1. Ambil Data Sertifikasi beserta relasi lengkap
+        // 1. Ambil Data Sertifikasi beserta relasi lengkap (Unit -> Elemen -> KUK)
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi.user',
-            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteriaUnjukKerja',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteriaUnjukKerja', // Deep nested relationship
             'jadwal.asesor',
         ])->findOrFail($idDataSertifikasi);
 
         $skema = $sertifikasi->jadwal->skema;
 
-        // 2. Ambil Respon APL-02 Asesi
+        // 2. Ambil Respon APL-02 Asesi (KeyBy ID Kriteria agar mudah dipanggil di view)
         $responses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)
             ->get()
-            ->keyBy('id_kriteria');
+            ->keyBy('id_kriteria'); // Pastikan nama kolom di DB adalah 'id_kriteria'
 
         // 3. Tentukan mode (view selalu untuk PDF)
         $mode = 'view';
 
         // 4. Buat data untuk dikirim ke view PDF
         $data = [
-            'sertifikasi' => $sertifikasi,
-            'skema' => $skema,
-            'asesi' => $sertifikasi->asesi,
+            'sertifikasi'       => $sertifikasi,
+            'skema'             => $skema,
+            'asesi'             => $sertifikasi->asesi,
             'existingResponses' => $responses,
-            'mode' => $mode,
+            'mode'              => $mode,
         ];
 
         // 5. Load view blade untuk PDF
+        // Pastikan nama file view sesuai: resources/views/pdf/apl02.blade.php
         $pdf = Pdf::loadView('pdf.apl02', $data);
+        $pdf->setPaper('A4', 'portrait');
 
         // 6. Kirim file PDF langsung ke browser
-        $fileName = 'APL02_'.$sertifikasi->asesi->user->name.'_'.date('Ymd_His').'.pdf';
-        return $pdf->stream($fileName); // atau download($fileName) jika ingin di-download
+        $fileName = 'APL02_' . $sertifikasi->asesi->nama_lengkap . '.pdf';
+        return $pdf->stream($fileName); 
     }
 }
