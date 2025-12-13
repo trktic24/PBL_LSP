@@ -22,7 +22,7 @@
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
     
-    <x-navbar />
+    <x-navbar.navbar-admin />
 
     <main class="p-6">
       <div class="mb-6">

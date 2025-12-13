@@ -8,19 +8,21 @@ use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\APL01Controller;
-use App\Http\Controllers\AsesiController;
-use App\Http\Controllers\SkemaController;
-use App\Http\Controllers\AsesorController;
+use App\Http\Controllers\Admin\DetailSkemaController;
+use App\Http\Controllers\Admin\AsesiController;
+use App\Http\Controllers\Admin\SkemaController;
+use App\Http\Controllers\Admin\AsesorController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Mapa02Controller;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\FrMapa01Controller;
-use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\TukAdminController;
-use App\Http\Controllers\DaftarHadirController;
-use App\Http\Controllers\AsesiProfileController;
-use App\Http\Controllers\AsesiTrackerController;
+use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\TukAdminController;
+use App\Http\Controllers\Admin\DaftarHadirController;
+use App\Http\Controllers\Asesi\ProfileController as AsesiProfileController;
+use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
+
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Asesi\Apl01PdfController;
@@ -99,9 +101,7 @@ Route::middleware('auth')->group(function () {
     // ======================================================
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Route generic profile removed. Separate routes per role used instead.
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
@@ -205,7 +205,8 @@ Route::middleware('auth')->group(function () {
             })->name('profile_admin');
 
             // Rute profil bawaan Laravel (Admin context)
-            Route::controller(ProfileController::class)->group(function () {
+            // Rute profil bawaan Laravel (Admin context)
+            Route::controller(AdminProfileController::class)->group(function () {
                 Route::get('/profile', 'edit')->name('profile.edit');
                 Route::patch('/profile', 'update')->name('profile.update');
                 Route::delete('/profile', 'destroy')->name('profile.destroy');
@@ -224,7 +225,7 @@ Route::middleware('auth')->group(function () {
                     Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
                 });
 
-            Route::controller(\App\Http\Controllers\DetailSkemaController::class)
+            Route::controller(DetailSkemaController::class)
                 ->prefix('master/skema/detail')
                 ->group(function () {
                     Route::get('/{id_skema}', 'index')->name('skema.detail');
@@ -301,6 +302,17 @@ Route::middleware('auth')->group(function () {
                     Route::patch('/update/{category}', 'update')->name('update_category');
                     Route::delete('/delete/{category}', 'destroy')->name('delete_category');
                 });
+
+            //Master - Berita Terbaru
+            // 10. Berita Terbaru
+            Route::controller(BeritaController::class)->prefix('master/berita')->group(function () {
+                Route::get('/', 'index')->name('master_berita');
+                Route::get('/add', 'create')->name('add_berita');
+                Route::post('/add', 'store')->name('add_berita.store');
+                Route::get('/edit/{id}', 'edit')->name('edit_berita');
+                Route::patch('/update/{id}', 'update')->name('update_berita');
+                Route::delete('/delete/{id}', 'destroy')->name('delete_berita');
+                });
         });
 
     // ======================================================
@@ -317,7 +329,7 @@ Route::middleware('auth')->group(function () {
             // Manajemen Jadwal & Asesi
             Route::get('/jadwal', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'index'])->name('jadwal.index');
             Route::get('/daftar-asesi/{id_jadwal}', [\App\Http\Controllers\Asesor\AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
-            Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker');
+            Route::get('/tracker/{id_sertifikasi_asesi}', [TrackerController::class, 'show'])->name('tracker');
 
             // Tools
             Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
@@ -347,11 +359,23 @@ Route::middleware('auth')->group(function () {
             // Dashboard (Redirected here usually)
             // Route::get('/dashboard', [AsesiDashboardController::class, 'index'])->name('dashboard');
 
+            // --- Profile Asesi ---
+            Route::controller(AsesiProfileController::class)->group(function () {
+                Route::get('/profile', 'edit')->name('profile.edit');
+                Route::patch('/profile', 'update')->name('profile.update');
+                Route::delete('/profile', 'destroy')->name('profile.destroy');
+                Route::put('/profile/password', 'updatePassword')->name('profile.password.update'); // Jika ada update PW
+            });
+
             // --- A. Tracker ---
             Route::controller(TrackerController::class)->group(function () {
                 Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
+                Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
                 Route::get('/pendaftaran-selesai', 'pendaftaranSelesai')->name('pendaftaran.selesai');
             });
+
+            // --- Riwayat Sertifikasi (REPLACEMENT FOR DASHBOARD) ---
+            Route::get('/riwayat-sertifikasi', [RiwayatSertifikasiController::class, 'index'])->name('riwayat.index');
 
             // --- B. Formulir APL-01 (Pendaftaran) ---
             // Menggunakan Controller yang baru saja kita rapikan
@@ -446,7 +470,8 @@ Route::middleware('auth')->group(function () {
 
         // 1. JIKA ASESI
         if ($roleName === 'asesi') {
-            return app(AsesiDashboardController::class)->index($request);
+            // [MODIFIED] Asesi sekarang langsung ke Riwayat, bukan Dashboard
+            return redirect()->route('asesi.riwayat.index');
         }
 
         // 2. JIKA ASESOR

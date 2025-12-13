@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Jadwal;
 use App\Models\Skema;
-use App\Models\MasterTuk;
+use App\Models\MasterTUK;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -43,7 +43,7 @@ class JadwalController extends Controller
         // Filter TUK (by nama_lokasi strings passed)
         if ($request->filled('tuk')) {
             $tukNames = (array) $request->tuk;
-            $tukIds = MasterTuk::whereIn('nama_lokasi', $tukNames)->pluck('id_tuk')->toArray();
+            $tukIds = MasterTUK::whereIn('nama_lokasi', $tukNames)->pluck('id_tuk')->toArray();
             if (!empty($tukIds)) {
                 $query->whereIn('id_tuk', $tukIds);
             }
@@ -85,7 +85,7 @@ class JadwalController extends Controller
             ->get();
 
 
-        $listTuk = MasterTuk::selectRaw('MIN(id_tuk) as id_tuk, TRIM(LOWER(nama_lokasi)) as nama_lokasi')
+        $listTuk = MasterTUK::selectRaw('MIN(id_tuk) as id_tuk, TRIM(LOWER(nama_lokasi)) as nama_lokasi')
             ->groupBy('nama_lokasi')
             ->orderBy('nama_lokasi')
             ->get();
@@ -155,7 +155,7 @@ class JadwalController extends Controller
      */
     public function detail($id)
     {
-        $jadwal = Jadwal::with(['jenisTuk', 'tuk', 'skema', 'asesor', 'asesi'])
+        $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor', 'asesi'])
                         ->findOrFail($id);
 
         $this->updateStatusJadwal($jadwal);

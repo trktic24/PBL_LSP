@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Skema;
+use App\Models\ListForm;
 use App\Models\KelompokPekerjaan;
 use App\Models\UnitKompetensi;
 use Illuminate\Http\Request;
@@ -16,30 +17,81 @@ class DetailSkemaController extends Controller
      */
     public function index($id_skema)
     {
-        $skema = Skema::with(['category'])->findOrFail($id_skema);
+        // 1. Load Skema & Config
+        $skema = Skema::with(['category', 'kelompokPekerjaan.unitKompetensi', 'listForm'])->findOrFail($id_skema);
 
-        // Daftar Form Default (Nanti bisa diambil dari database jika sudah ada tabel 'master_form')
-        // Status 'checked' => true (Default aktif)
+        // 2. Cek/Buat Config Default
+        if (!$skema->listForm) {
+            ListForm::create(['id_skema' => $skema->id_skema]);
+            $skema->refresh();
+        }
+
+        // 3. [PENTING] Mapping Data Database ke Array Frontend
+        // Ini agar frontend tabel Anda tetap jalan tanpa mengubah desainnya
+        $configDB = $skema->listForm;
+        
         $formConfig = [
-            ['code' => 'FR.APL.01', 'name' => 'Permohonan Sertifikasi Kompetensi', 'checked' => true],
-            ['code' => 'FR.APL.02', 'name' => 'Asesmen Mandiri', 'checked' => true],
-            ['code' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 'checked' => true],
-            ['code' => 'FR.AK.01', 'name' => 'Persetujuan Asesmen dan Kerahasiaan', 'checked' => true],
-            ['code' => 'FR.AK.02', 'name' => 'Rekaman Asesmen Kompetensi', 'checked' => true],
-            ['code' => 'FR.AK.03', 'name' => 'Umpan Balik dan Catatan Asesmen', 'checked' => true],
-            ['code' => 'FR.AK.04', 'name' => 'Banding Asesmen', 'checked' => true],
-            ['code' => 'FR.AK.05', 'name' => 'Laporan Asesmen', 'checked' => true],
-            ['code' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen', 'checked' => true],
-            ['code' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'checked' => true],
-            ['code' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi', 'checked' => true],
-            ['code' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi', 'checked' => true],
+            // FASE 1
+            ['code' => 'FR.APL.01', 'name' => 'Permohonan Sertifikasi Kompetensi', 'db_field' => 'apl_01', 'checked' => (bool)$configDB->apl_01],
+            ['code' => 'FR.APL.02', 'name' => 'Asesmen Mandiri', 'db_field' => 'apl_02', 'checked' => (bool)$configDB->apl_02],
+            // FASE 2
+            ['code' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 'db_field' => 'fr_mapa_01', 'checked' => (bool)$configDB->fr_mapa_01],
+            ['code' => 'FR.MAPA.02', 'name' => 'Peta Instrumen Asesmen', 'db_field' => 'fr_mapa_02', 'checked' => (bool)$configDB->fr_mapa_02],
+            // FASE 3 (IA)
+            ['code' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'db_field' => 'fr_ia_01', 'checked' => (bool)$configDB->fr_ia_01],
+            ['code' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi', 'db_field' => 'fr_ia_02', 'checked' => (bool)$configDB->fr_ia_02],
+            ['code' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi', 'db_field' => 'fr_ia_03', 'checked' => (bool)$configDB->fr_ia_03],
+            ['code' => 'FR.IA.04', 'name' => 'Ceklis Verifikasi Portofolio', 'db_field' => 'fr_ia_04', 'checked' => (bool)$configDB->fr_ia_04],
+            ['code' => 'FR.IA.05', 'name' => 'Pertanyaan Tertulis Pilihan Ganda', 'db_field' => 'fr_ia_05', 'checked' => (bool)$configDB->fr_ia_05],
+            ['code' => 'FR.IA.06', 'name' => 'Pertanyaan Tertulis Esai', 'db_field' => 'fr_ia_06', 'checked' => (bool)$configDB->fr_ia_06],
+            ['code' => 'FR.IA.07', 'name' => 'Pertanyaan Lisan', 'db_field' => 'fr_ia_07', 'checked' => (bool)$configDB->fr_ia_07],
+            ['code' => 'FR.IA.08', 'name' => 'Ceklis Verifikasi Pihak Ketiga', 'db_field' => 'fr_ia_08', 'checked' => (bool)$configDB->fr_ia_08],
+            ['code' => 'FR.IA.09', 'name' => 'Pertanyaan Wawancara', 'db_field' => 'fr_ia_09', 'checked' => (bool)$configDB->fr_ia_09],
+            ['code' => 'FR.IA.10', 'name' => 'Klarifikasi Bukti Pihak Ketiga', 'db_field' => 'fr_ia_10', 'checked' => (bool)$configDB->fr_ia_10],
+            ['code' => 'FR.IA.11', 'name' => 'Ceklis Meninjau Instrumen Asesmen', 'db_field' => 'fr_ia_11', 'checked' => (bool)$configDB->fr_ia_11],
+            // FASE 4 (AK)
+            ['code' => 'FR.AK.01', 'name' => 'Persetujuan Asesmen dan Kerahasiaan', 'db_field' => 'fr_ak_01', 'checked' => (bool)$configDB->fr_ak_01],
+            ['code' => 'FR.AK.02', 'name' => 'Rekaman Asesmen Kompetensi', 'db_field' => 'fr_ak_02', 'checked' => (bool)$configDB->fr_ak_02],
+            ['code' => 'FR.AK.03', 'name' => 'Umpan Balik dan Catatan Asesmen', 'db_field' => 'fr_ak_03', 'checked' => (bool)$configDB->fr_ak_03],
+            ['code' => 'FR.AK.04', 'name' => 'Banding Asesmen', 'db_field' => 'fr_ak_04', 'checked' => (bool)$configDB->fr_ak_04],
+            ['code' => 'FR.AK.05', 'name' => 'Laporan Asesmen', 'db_field' => 'fr_ak_05', 'checked' => (bool)$configDB->fr_ak_05],
+            ['code' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen', 'db_field' => 'fr_ak_06', 'checked' => (bool)$configDB->fr_ak_06],
         ];
 
-        // Kirim variabel $formConfig ke view
         return view('master.skema.detail_skema', [
             'skema' => $skema,
-            'formConfig' => $formConfig
+            'formConfig' => $formConfig // Kirim data yang sudah di-format
         ]);
+    }
+
+    /**
+     * Update Form Configuration (ListForm).
+     */
+    public function updateListForm(Request $request, $id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        // Define all the boolean fields in your ListForm table
+        $fields = [
+            'apl_01', 'apl_02',
+            'fr_ia_01', 'fr_ia_02', 'fr_ia_03', 'fr_ia_04', 'fr_ia_05',
+            'fr_ia_06', 'fr_ia_07', 'fr_ia_08', 'fr_ia_09', 'fr_ia_10', 'fr_ia_11',
+            'fr_ak_01', 'fr_ak_02', 'fr_ak_03', 'fr_ak_04', 'fr_ak_05', 'fr_ak_06',
+            'fr_mapa_01', 'fr_mapa_02'
+        ];
+
+        $dataToUpdate = [];
+        foreach ($fields as $field) {
+            // Checkboxes only send a value if checked. $request->has() checks for presence.
+            $dataToUpdate[$field] = $request->has($field);
+        }
+
+        // Update or create the record
+        ListForm::updateOrCreate(
+            ['id_skema' => $id_skema],
+            $dataToUpdate
+        );
+
+        return redirect()->back()->with('success', "Konfigurasi Formulir untuk Skema '{$skema->nama_skema}' (ID: {$skema->id_skema}) berhasil diperbarui.");
     }
 
     /**
@@ -195,40 +247,6 @@ class DetailSkemaController extends Controller
         $noUrut = $request->query('no', '-');
 
         return back()->with('success', "Unit Kompetensi No. {$noUrut} berhasil dihapus.");
-    }
-
-    /**
-     * TAB 2: Kelompok Pekerjaan & Unit Kompetensi
-     * View: master.skema.detail_kelompokpekerjaan
-     */
-    public function kelompok($id_skema)
-    {
-        // Load skema beserta kelompok pekerjaan dan unit kompetensinya
-        $skema = Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
-        
-        // [PERBAIKAN] Arahkan ke view yang benar & hapus variable yang tidak ada
-        return view('master.skema.detail_kelompokpekerjaan', compact('skema'));
-    }
-
-    /**
-     * TAB 3: Bank Soal / Form Asesmen
-     * View: master.skema.detail_banksoal
-     */
-    public function bankSoal($id_skema)
-    {
-        $skema = Skema::findOrFail($id_skema);
-        
-        // Data dummy Form Asesmen (Nanti diganti database real)
-        $formAsesmen = [
-            ['kode' => 'FR.APL.01', 'nama' => 'Permohonan Sertifikasi Kompetensi', 'warna' => 'bg-blue-600'],
-            ['kode' => 'FR.APL.02', 'nama' => 'Asesmen Mandiri', 'warna' => 'bg-blue-600'],
-            ['kode' => 'FR.MAPA.01', 'nama' => 'Merencanakan Aktivitas dan Proses Asesmen', 'warna' => 'bg-green-600'],
-            ['kode' => 'FR.AK.01', 'nama' => 'Persetujuan Asesmen dan Kerahasiaan', 'warna' => 'bg-yellow-500'],
-            ['kode' => 'FR.IA.01', 'nama' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'warna' => 'bg-purple-600'],
-            // ...
-        ];
-
-        return view('master.skema.detail_banksoal', compact('skema', 'formAsesmen'));
     }
 
 }

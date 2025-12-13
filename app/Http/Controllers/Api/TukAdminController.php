@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Tuk;
+use App\Models\MasterTUK;
 
 class TukAdminController extends Controller
 {
@@ -14,7 +14,7 @@ class TukAdminController extends Controller
      */
     public function index()
     {
-        $tuks = Tuk::all();
+        $tuks = MasterTUK::all();
 
         return response()->json([
             'status' => 'success',
@@ -51,7 +51,7 @@ class TukAdminController extends Controller
             $validated['foto_tuk'] = $filename;
         }
 
-        $tuk = Tuk::create($validated);
+        $tuk = MasterTUK::create($validated);
 
         return response()->json([
             'status' => 'success',
@@ -66,7 +66,7 @@ class TukAdminController extends Controller
      */
     public function show($id)
     {
-        $tuk = Tuk::find($id);
+        $tuk = MasterTUK::find($id);
 
         if (!$tuk) {
             return response()->json([
@@ -87,7 +87,7 @@ class TukAdminController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $tuk = Tuk::find($id);
+        $tuk = MasterTUK::find($id);
 
         if (!$tuk) {
             return response()->json([
@@ -137,7 +137,7 @@ class TukAdminController extends Controller
      */
     public function destroy($id)
     {
-        $tuk = Tuk::find($id);
+        $tuk = MasterTUK::find($id);
 
         if (!$tuk) {
             return response()->json([

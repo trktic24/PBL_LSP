@@ -9,11 +9,9 @@ class Berita extends Model
 {
     use HasFactory;
 
-    /**
-     * Atribut yang boleh diisi secara massal.
-     *
-     * @var array<int, string>
-     */
+    protected $table = 'beritas';
+    protected $primaryKey = 'id';   
+
     protected $fillable = [
         'judul',
         'isi',

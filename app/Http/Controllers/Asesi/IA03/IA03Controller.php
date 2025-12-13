@@ -15,7 +15,7 @@ class IA03Controller extends Controller
     public function index($id_data_sertifikasi_asesi)
     {
         // Ambil data sertifikasi asesi + relasi lengkap
-        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk', 'jadwal.tuk', 'jadwal.skema.kelompokPekerjaan', 'jadwal.skema.kelompokPekerjaan.unitKompetensi'])->findOrFail($id_data_sertifikasi_asesi);
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk', 'jadwal.masterTuk', 'jadwal.skema.kelompokPekerjaan', 'jadwal.skema.kelompokPekerjaan.unitKompetensi'])->findOrFail($id_data_sertifikasi_asesi);
 
         // Ambil seluruh pertanyaan IA03 milik asesi ini
         $pertanyaanIA03 = IA03::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();

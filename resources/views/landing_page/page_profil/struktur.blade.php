@@ -165,32 +165,51 @@
 
     {{-- ================= MODAL POPUP (Script Sama) ================= --}}
     <div id="orgModal" class="fixed inset-0 z-[200] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-gray-900 bg-opacity-60 transition-opacity backdrop-blur-sm" onclick="closeOrgModal()"></div>
+        {{-- Backdrop with Blur --}}
+        <div class="fixed inset-0 bg-slate-900/70 transition-opacity backdrop-blur-sm" onclick="closeOrgModal()"></div>
+        
         <div class="flex min-h-full items-center justify-center p-4 text-center">
-            <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-md scale-100 opacity-100">
-                <div class="bg-blue-600 px-4 py-6 sm:px-6 text-center relative">
-                    <button onclick="closeOrgModal()" class="absolute top-4 right-4 text-blue-200 hover:text-white z-20">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-md scale-100 opacity-100 ring-1 ring-black/5">
+                
+                {{-- Header with Gradient --}}
+                <div class="bg-gradient-to-br from-blue-700 to-blue-900 px-4 py-8 sm:px-8 text-center relative overflow-hidden">
+                    
+                    {{-- Abstract Background Pattern (Optional decoration) --}}
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-2xl"></div>
+                    <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-white/5 blur-2xl"></div>
+
+                    {{-- Close Button (X only) --}}
+                    <button onclick="closeOrgModal()" class="absolute top-4 right-4 text-white/70 hover:text-white bg-black/10 hover:bg-black/20 rounded-full p-2 transition-all z-20">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
-                    <button id="prevPersonBtn" onclick="prevPerson()" class="absolute top-1/2 left-4 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 hidden z-20">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+
+                    {{-- Navigation Buttons --}}
+                    <button id="prevPersonBtn" onclick="prevPerson()" class="absolute top-1/2 left-4 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 hidden z-20 transition-colors backdrop-blur-sm">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
                     </button>
-                    <button id="nextPersonBtn" onclick="nextPerson()" class="absolute top-1/2 right-4 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2 hidden z-20">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                    <button id="nextPersonBtn" onclick="nextPerson()" class="absolute top-1/2 right-4 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 hidden z-20 transition-colors backdrop-blur-sm">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
                     </button>
-                    <div class="mx-auto h-24 w-24 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white relative z-10">
+
+                    {{-- Profile Image --}}
+                    <div class="mx-auto h-28 w-28 rounded-full border-[6px] border-white/20 shadow-xl overflow-hidden bg-white relative z-10 ring-2 ring-white/50">
                         <img id="modal-img" src="" alt="Foto Profil" class="h-full w-full object-cover">
                     </div>
-                    <h3 class="mt-4 text-xl font-bold text-white" id="modal-nama">Nama Pejabat</h3>
-                    <p class="text-blue-200 text-sm font-medium uppercase tracking-wider" id="modal-jabatan">JABATAN</p>
-                    <div id="slide-indicators" class="flex justify-center gap-2 mt-4 hidden">
-                        <span id="dot-0" class="w-2 h-2 rounded-full bg-white"></span>
-                        <span id="dot-1" class="w-2 h-2 rounded-full bg-white/50"></span>
+
+                    {{-- Text Details --}}
+                    <h3 class="mt-5 text-2xl font-bold text-white tracking-tight leading-tight" id="modal-nama">Nama Pejabat</h3>
+                    <div class="mt-2 inline-block px-3 py-1 rounded-full bg-blue-500/30 border border-blue-400/30 backdrop-blur-md">
+                        <p class="text-blue-50 text-xs font-bold uppercase tracking-widest" id="modal-jabatan">JABATAN</p>
+                    </div>
+
+                    {{-- Indicators --}}
+                    <div id="slide-indicators" class="flex justify-center gap-2 mt-6 hidden">
+                        <span id="dot-0" class="w-2.5 h-2.5 rounded-full bg-white transition-all"></span>
+                        <span id="dot-1" class="w-2.5 h-2.5 rounded-full bg-white/40 transition-all"></span>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    <button type="button" onclick="closeOrgModal()" class="inline-flex w-full justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:w-auto transition-colors">Tutup</button>
-                </div>
+
+
             </div>
         </div>
     </div>

@@ -8,7 +8,9 @@
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <div class="bg-gray-100 w-full flex items-center justify-center py-5 min-h-screen">
+    <div class="bg-gray-100 w-full flex items-center justify-center py-5 min-h-screen"
+        @input.capture="handleInput($event)"
+        @focusout.capture="handleBlur($event)">
 
         @php
     // Tentukan role awal berdasarkan input lama (jika ada), atau default 'asesi'
@@ -268,6 +270,10 @@
                                                 :error="$errors->first('password_confirmation')" required autocomplete="new-password"
                                             />
                                         </div>
+                                        <p class="text-xs text-gray-500 mt-1 ml-1 leading-relaxed">
+                                            <i class="fa-solid fa-circle-info mr-1"></i>
+                                            Password minimal 8 karakter. Gunakan kombinasi huruf dan angka.
+                                        </p>
                                         <p x-show="conf.length > 0 && pass !== conf"
                                             class="text-sm text-red-600 mt-2"
                                             style="display: none;">
@@ -595,6 +601,78 @@ document.addEventListener('alpine:init', () => {
         showPass: false,
         pass: '',
         conf: '',
+        
+        errors: {},
+        touched: {},
+
+        validate(field, value) {
+            let error = null;
+            value = value || '';
+            
+            // Skip validation if field is not relevant to current flow or hidden
+            // (Optional optimization, but good ensuring we don't validate hidden fields prematurely if shared names existed)
+
+            if (field === 'email') {
+                if (!value) error = "Email wajib diisi";
+                else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = "Format email tidak valid";
+            }
+            if (field === 'password') {
+                if (!value) error = "Password wajib diisi";
+                else if (value.length < 8) error = "Password minimal 8 karakter";
+            }
+            if (field === 'password_confirmation') {
+                 // Ambil password dari binding 'pass' yang sudah ada
+                if (value !== this.pass) error = "Konfirmasi password tidak cocok";
+            }
+            if (field === 'nik') {
+                if (!value) error = "NIK wajib diisi";
+                else if (!/^\d*$/.test(value)) error = "NIK harus berupa angka";
+                else if (value.length !== 16) error = "NIK harus 16 digit";
+            }
+            if (field === 'no_hp') {
+                 if (!value) error = "Nomor HP wajib diisi";
+                 else if (!/^\d*$/.test(value)) error = "Nomor HP harus berupa angka";
+                 else if (value.length < 10 || value.length > 15) error = "Nomor HP tidak valid (10-15 digit)";
+            }
+            if (field === 'no_registrasi_asesor') {
+                if (!value) error = "No Registrasi wajib diisi";
+            }
+            if (field === 'skema') {
+                if (!value) error = "Skema wajib dipilih";
+            }
+             // Generic required fields
+            const requiredFields = [
+                'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin', 'kebangsaan', 
+                'kualifikasi', 'pekerjaan', 'alamat_rumah', 'kode_pos', 'kabupaten', 'provinsi', 
+                'nama_institusi', 'alamat_institusi', 'jabatan', 'kode_pos_institusi',
+                'npwp', 'nama_bank', 'nomor_rekening', 'asesor_kebangsaan'
+            ];
+            
+            if (requiredFields.includes(field)) {
+                if (!value.trim()) error = "Field ini wajib diisi";
+            }
+
+            this.errors[field] = error;
+        },
+
+        handleInput(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+                 // Khusus password confirmation kita trigger manual validasinya saat password berubah
+                if (e.target.name === 'password') {
+                     this.validate('password', e.target.value);
+                     if (this.conf) this.validate('password_confirmation', this.conf);
+                } else {
+                     this.validate(e.target.name, e.target.value);
+                }
+            }
+        },
+
+        handleBlur(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+                this.touched[e.target.name] = true;
+                this.validate(e.target.name, e.target.value);
+            }
+        },
 
         // FUNGSI UNTUK MENJAGA SESSION TETAP HIDUP
         keepAlive() {

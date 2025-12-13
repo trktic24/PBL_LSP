@@ -201,55 +201,49 @@ class TrackerController extends Controller
 
         // 2. Pastikan asesi ada
         if (!$asesi) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Data asesi Anda tidak ditemukan. Harap lengkapi profil Anda.',
-                ],
-                404,
-            );
+            $message = 'Data asesi Anda tidak ditemukan. Harap lengkapi profil Anda.';
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 404);
+            }
+            return redirect()->route('asesi.profile.edit')->with('error', $message);
         }
 
         // 3. Cek apakah user sudah mendaftar di jadwal ini?
         $existing = DataSertifikasiAsesi::where('id_asesi', $asesi->id_asesi)->where('id_jadwal', $id_jadwal)->first();
 
+        // Helper untuk redirect response
+        $redirectToTracker = function($jadwalId, $msg, $isError = false) use ($request) {
+            if ($request->expectsJson()) {
+                 return response()->json([
+                    'success' => !$isError,
+                    'redirect_url' => route('asesi.tracker', ['jadwal_id' => $jadwalId]),
+                    'message' => $msg,
+                ], $isError ? 409 : 200);
+            }
+            return redirect()->route('asesi.tracker', ['jadwal_id' => $jadwalId])->with($isError ? 'info' : 'success', $msg);
+        };
+
         if ($existing) {
-            return response()->json(
-                [
-                    'success' => false,
-                    // Arahkan ke tracker jadwal tersebut
-                    'redirect_url' => route('asesi.tracker', ['jadwal_id' => $existing->id_jadwal]),
-                    'message' => 'Anda sudah memiliki pendaftaran aktif. Mengarahkan ke data Anda...',
-                ],
-                409,
-            );
+            return $redirectToTracker($existing->id_jadwal, 'Anda sudah memiliki pendaftaran aktif. Mengarahkan ke data Anda...', true);
         }
 
         try {
             // 4. Buat pendaftaran baru
-            // Status default biasanya diatur di database ('sedang_mendaftar')
             $newSertifikasi = DataSertifikasiAsesi::create([
                 'id_asesi' => $asesi->id_asesi,
                 'id_jadwal' => $id_jadwal,
-                'tujuan_asesmen' => 'Sertifikasi', // Default, nanti diubah user di formulir
+                'tujuan_asesmen' => 'Sertifikasi', // Default
                 'tanggal_daftar' => Carbon::now(),
             ]);
 
-            // 5. Kirim respons sukses
-            return response()->json([
-                'success' => true,
-                // Arahkan ke tracker dengan ID JADWAL YANG BARU DIBUAT
-                'redirect_url' => route('asesi.tracker', ['jadwal_id' => $newSertifikasi->id_jadwal]),
-                'message' => 'Berhasil mendaftar! Mengarahkan Anda ke Tracker...',
-            ]);
+            return $redirectToTracker($newSertifikasi->id_jadwal, 'Berhasil mendaftar! Selamat datang di halaman Tracker.');
+
         } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan server saat mendaftar: ' . $e->getMessage(),
-                ],
-                500,
-            );
+            $msg = 'Terjadi kesalahan server saat mendaftar: ' . $e->getMessage();
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 500);
+            }
+            return back()->with('error', $msg);
         }
     }
 

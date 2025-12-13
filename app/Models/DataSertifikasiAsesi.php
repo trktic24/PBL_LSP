@@ -280,7 +280,7 @@ class DataSertifikasiAsesi extends Model
 
     public function getTukAtrribute()
     {
-        return $this->jadwal?->tuk;
+        return $this->jadwal?->masterTuk;
     }
 
     public function getJenisTukAttribute()

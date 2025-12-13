@@ -37,7 +37,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
     
-    <x-navbar /> 
+    <x-navbar.navbar-admin />  
     
     <aside class="fixed fixed-sidebar-icon bg-blue-600 shadow-xl rounded-2xl p-2 z-50">
         <nav class="flex flex-col space-y-4">

@@ -1,44 +1,73 @@
 @extends('layouts.app-profil')
 
+@push('meta')
+    <meta name="description" content="LSP Politeknik Negeri Semarang (LSP POLINES) adalah Lembaga Sertifikasi Profesi Pihak 1 (LSP-P1) yang terlisensi oleh BNSP. Kami menjamin kompetensi lulusan siap kerja dan bersaing di pasar global.">
+    <meta name="keywords" content="LSP Polines, Sertifikasi Profesi, BNSP, Politeknik Negeri Semarang, Uji Kompetensi, Sertifikasi Kompetensi, Asesor Kompetensi, Skema Sertifikasi">
+    <meta name="author" content="LSP Politeknik Negeri Semarang">
+    
+    {{-- Open Graph / Facebook --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="LSP Polines - Lembaga Sertifikasi Profesi Pihak 1">
+    <meta property="og:description" content="Jaminan kompetensi profesi mahasiswa Politeknik Negeri Semarang. Terlisensi BNSP, Terpercaya, dan Diakui Industri.">
+    <meta property="og:image" content="{{ asset('images/Gedung Polines.jpg') }}">
+
+    {{-- Twitter --}}
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="LSP Polines - Professional Certification Body">
+    <meta property="twitter:description" content="Official Certification Center of Politeknik Negeri Semarang. Ensuring global competitiveness through professional certification.">
+    <meta property="twitter:image" content="{{ asset('images/Gedung Polines.jpg') }}">
+
+    <link rel="canonical" href="{{ url()->current() }}">
+@endpush
+
 @section('content')
 
 {{-- ======================= HERO ======================= --}}
 {{-- ======================= HERO ======================= --}}
-<section class="relative min-h-screen flex items-center rounded-b-[3rem] overflow-hidden z-10 pb-20">
+<section class="relative min-h-screen flex items-center rounded-b-[4rem] overflow-hidden z-10 pb-20 shadow-2xl">
     {{-- Gambar Latar Belakang --}}
     <img src="{{ asset('images/Gedung Polines.jpg') }}"
         alt="Gedung Polines"
         class="absolute inset-0 w-full h-full object-cover">
     
-    {{-- Overlay Gradasi Biru --}}
-    <div class="absolute inset-0 bg-gradient-to-r from-[#96C9F4]/95 via-[#96C9F4]/60 to-transparent"></div>
+    {{-- Overlay Gradasi Biru yang Lebih Cerah & Segar --}}
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-700/90 via-blue-400/70 to-transparent"></div>
     
-    {{-- Gradasi Putih di Bawah --}}
-    <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white/80 via-white/30 to-transparent"></div>
+    {{-- Gradasi Putih di Bawah (Smooth Transition) --}}
+    <div class="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
     
     {{-- Konten Utama (Header Text dan Tombol) --}}
     <div class="relative w-full pt-32 pb-12">
         
-        <div class="container mx-auto px-8"> 
+        <div class="container mx-auto px-8 md:px-16"> 
             
-            <div class="text-black drop-shadow-lg max-w-xl">
-                <h1 class="text-4xl md:text-6xl font-bold mb-4 font-poppins">LSP POLINES</h1>
-                <p class="text-lg md:text-xl mb-6 leading-relaxed font-inter">Tempat sertifikasi resmi Politeknik Negeri Semarang.</p>
+            <div class="text-white drop-shadow-md max-w-2xl animate-fade-in-up">
+                
+                <h1 class="text-5xl md:text-7xl font-extrabold mb-6 font-poppins leading-tight tracking-tight">
+                    LSP <span class="text-yellow-500">POLINES</span>
+                </h1>
+                <p class="text-lg md:text-xl mb-8 leading-relaxed font-inter text-white/95 max-w-lg font-medium">
+                    Agensi sertifikasi profesi terpercaya, menjamin kompetensi lulusan Politeknik Negeri Semarang siap kerja dan bersaing global.
+                </p>
 
                 <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-8">
                     {{-- Tombol Daftar --}}
                     <a href="{{ route('login') }}"
-                           class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-lg shadow-lg
-                                  hover:bg-yellow-500 transition-all duration-300 ease-in-out
-                                  transform hover:scale-105 font-poppins w-full sm:w-auto text-center">
-                        Daftar
+                           class="bg-yellow-500 text-white font-bold px-10 py-4 rounded-2xl shadow-xl shadow-yellow-500/20
+                                  hover:bg-yellow-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-out
+                                  font-poppins w-full sm:w-auto text-center text-lg tracking-wide transform">
+                        Daftar Sekarang
                     </a>
                     {{-- Tombol Eksplore --}}
                     <a href="#skema-sertifikasi"
-                           class="text-black font-semibold text-lg flex items-center gap-2
-                                  hover:gap-3 transition-all duration-300 ease-in-out group font-poppins">
+                           class="text-white font-semibold text-lg flex items-center gap-3 px-8 py-4 rounded-2xl border border-white/30 backdrop-blur-md bg-white/5 hover:bg-white/10
+                                  hover:gap-4 transition-all duration-300 ease-in-out group font-poppins">
                         Eksplore Skema
-                        <span class="font-bold text-xl transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                        <span class="bg-white/20 text-white rounded-xl w-8 h-8 flex items-center justify-center transition-transform duration-300 group-hover:rotate-45 group-hover:bg-white group-hover:text-blue-700">
+                            <i class="fa-solid fa-arrow-right text-sm"></i>
+                        </span>
                     </a>
                 </div>
             </div>
@@ -148,19 +177,21 @@ html { scroll-behavior: smooth; }
                             $categoryName = $skema->category?->nama_kategori ?? 'Tidak Terkategori';
                         @endphp
                         
-                        <div class="transition hover:scale-105 skema-card" data-category="{{ $categoryName }}">
+                        <div class="transition-all duration-300 hover:scale-[1.02] skema-card group" data-category="{{ $categoryName }}">
                             <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
-                                <div class="rounded-2xl overflow-hidden shadow-md hover:shadow-lg mb-3">
-                                    {{-- Path gambar skema Anda sudah benar --}}
-                                    <img src="{{ asset('images/skema/' . ($skema->gambar && file_exists(public_path('images/skema/' . $skema->gambar)) ? $skema->gambar : 'default.jpg')) }}"
-                                        alt="Gambar Skema"
-                                        class="w-full h-48 object-cover">
+                                <div class="rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-shadow duration-300 bg-white border border-gray-100/50 mb-3">
+                                    <div class="overflow-hidden">
+                                        {{-- Path gambar skema Anda sudah benar --}}
+                                        <img src="{{ asset('images/skema/' . ($skema->gambar && file_exists(public_path('images/skema/' . $skema->gambar)) ? $skema->gambar : 'default.jpg')) }}"
+                                            alt="Gambar Skema"
+                                            class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                                    </div>
                                 </div>
                             </a>
                             <div class="px-2">
-                                <h2 class="text-lg font-bold text-gray-800">{{ $skema->nama_skema }}</h2>
-                                <p class="text-sm text-gray-500 mb-1">{{ $categoryName }}</p>
-                                <p class="text-gray-800 font-semibold">Rp {{ number_format($skema->harga, 0, ',', '.') }}</p>
+                                <h2 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-700 transition-colors">{{ $skema->nama_skema }}</h2>
+                                <p class="text-xs text-gray-500 mb-2 font-medium">{{ $categoryName }}</p>
+                                <p class="text-blue-600 font-bold text-lg">Rp {{ number_format($skema->harga, 0, ',', '.') }}</p>
                             </div>
                         </div>
                     @endforeach
@@ -334,23 +365,31 @@ if (scrollContainer) {
                         
                         @foreach($chunk as $jadwal)
                             {{-- KARTU JADWAL (Ukuran Dikecilkan) --}}
-                            <div class="card bg-white shadow-lg rounded-2xl">
-                                <div class="card-body flex flex-col p-6 text-left">
+                            <div class="card bg-white shadow-lg rounded-2xl border border-gray-100 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 h-full">
+                                <div class="card-body flex flex-col p-6 text-left h-full">
                                     
-                                    <p class="text-sm mb-1 font-bold">Sertifikasi:</p>
-                                    <p class="text-base font-semibold mb-3 h-12 line-clamp-2">{{ $jadwal->skema?->nama_skema ?? 'Skema tidak ditemukan' }}</p>
+                                    {{-- Header Label --}}
+                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Sertifikasi</p>
+                                    <h4 class="text-base font-bold text-gray-900 mb-4 h-12 line-clamp-2 leading-tight">
+                                        {{ $jadwal->skema?->nama_skema ?? 'Skema tidak ditemukan' }}
+                                    </h4>
 
-                                    <p class="text-sm mb-1 font-bold">TUK:</p>
-                                    {{-- PERBAIKAN: Menggunakan 'nama_lokasi' --}}
-                                    <p class="text-base mb-3">{{ $jadwal->masterTuk?->nama_lokasi ?? 'TUK tidak spesifik' }}</p>
+                                    <div class="mt-auto space-y-3 mb-6">
+                                        <div>
+                                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">LOKASI</p>
+                                            <p class="text-sm font-medium text-gray-700 truncate">{{ $jadwal->masterTuk?->nama_lokasi ?? 'TUK tidak spesifik' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">TANGGAL</p>
+                                            <p class="text-sm font-medium text-gray-700">{{ $jadwal->tanggal_pelaksanaan ? $jadwal->tanggal_pelaksanaan->format('d F Y') : 'TBA' }}</p>
+                                        </div>
+                                    </div>
 
-                                    <p class="text-sm mb-1 font-bold">Tanggal:</p>
-                                    <p class="text-base mb-6">{{ $jadwal->tanggal_pelaksanaan ? $jadwal->tanggal_pelaksanaan->format('d F Y') : 'TBA' }}</p>
-
-                                    {{-- PERBAIKAN: Tombol besar, di tengah, dan route 'jadwal.detail' --}}
                                     <a href="{{ route('jadwal.detail', ['id' => $jadwal->id_jadwal]) }}" 
-                                       class="btn bg-yellow-400 text-black font-semibold border-none 
-                                              hover:bg-yellow-300 px-8 py-3 rounded-full text-base mt-auto w-full text-center">Detail</a>
+                                       class="btn bg-yellow-400 text-black font-bold border-none 
+                                              hover:bg-yellow-500 hover:shadow-md transition-all duration-300 px-6 py-3 rounded-xl text-sm w-full text-center">
+                                        Lihat Detail
+                                    </a>
                                 </div>
                             </div>
                         @endforeach

@@ -20,7 +20,7 @@
 
   <div class="h-screen overflow-y-auto">
 
-    <x-navbar.navbar />
+    <x-navbar.navbar-admin />
     
     <main class="p-6">
       <!-- Statistik Filter (Hari, Minggu, Bulan, Tahun) -->
@@ -325,7 +325,7 @@
 
                   <!-- TUK -->
                   <td class="px-6 py-4 text-gray-700">
-                    {{ $jadwal->tuk->nama_lokasi ?? '-' }}
+                    {{ $jadwal->masterTuk->nama_lokasi ?? '-' }}
                   </td>
 
                   <!-- Jenis TUK -->
