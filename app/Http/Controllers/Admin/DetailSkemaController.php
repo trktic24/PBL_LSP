@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Skema;
 use App\Models\ListForm;
 use App\Models\KelompokPekerjaan;
@@ -58,7 +59,7 @@ class DetailSkemaController extends Controller
             ['code' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen', 'db_field' => 'fr_ak_06', 'checked' => (bool)$configDB->fr_ak_06],
         ];
 
-        return view('master.skema.detail_skema', [
+        return view('admin.master.skema.detail_skema', [
             'skema' => $skema,
             'formConfig' => $formConfig // Kirim data yang sudah di-format
         ]);
@@ -100,7 +101,7 @@ class DetailSkemaController extends Controller
     public function createKelompok($id_skema)
     {
         $skema = Skema::findOrFail($id_skema);
-        return view('master.skema.add_kelompokpekerjaan', compact('skema'));
+        return view('admin.master.skema.add_kelompokpekerjaan', compact('skema'));
     }
 
     /**
@@ -159,7 +160,7 @@ class DetailSkemaController extends Controller
         $kelompok = KelompokPekerjaan::with('unitKompetensi')->findOrFail($id_kelompok);
         $skema = $kelompok->skema; // Ambil parent skema untuk breadcrumb/info
         
-        return view('master.skema.edit_kelompokpekerjaan', compact('kelompok', 'skema'));
+        return view('admin.master.skema.edit_kelompokpekerjaan', compact('kelompok', 'skema'));
     }
 
     /**

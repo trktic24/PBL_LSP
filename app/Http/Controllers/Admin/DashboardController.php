@@ -111,7 +111,7 @@ class DashboardController extends Controller
         ]));
 
         // Kirim data ke View
-        return view('dashboard.dashboard_admin', [
+        return view('admin.dashboard.dashboard_admin', [
             'asesmenBerlangsung' => $asesmenBerlangsung,
             'asesmenSelesai'     => $asesmenSelesai,
             'jumlahAsesi'        => $jumlahAsesi,
