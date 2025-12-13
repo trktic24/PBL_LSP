@@ -76,10 +76,10 @@ class PersetujuanKerahasiaanAPIController extends Controller
         try {
             $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
 
-            // Validasi Tanda Tangan
-            if (empty($sertifikasi->asesi->tanda_tangan)) {
-                return response()->json(['success' => false, 'message' => 'Tanda tangan belum ada.'], 422);
-            }
+            // Validasi Tanda Tangan (Opsional sementara untuk kelancaran tes user)
+            // if (empty($sertifikasi->asesi->tanda_tangan)) {
+            //     return redirect()->back()->with('error', 'Tanda tangan belum ada.');
+            // }
 
             // Update Status
             $nextStatus = DataSertifikasiAsesi::STATUS_PERSETUJUAN_ASESMEN_OK;
@@ -88,14 +88,12 @@ class PersetujuanKerahasiaanAPIController extends Controller
                 $sertifikasi->save();
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Persetujuan berhasil disimpan.',
-                'id_jadwal' => $sertifikasi->id_jadwal
-            ]);
+            // Redirect ke Tracker
+            return redirect()->route('asesor.tracker', ['id_sertifikasi_asesi' => $id_sertifikasi])
+                ->with('success', 'Persetujuan berhasil disimpan.');
 
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 

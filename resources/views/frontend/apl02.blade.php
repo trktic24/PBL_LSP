@@ -29,6 +29,8 @@
     }
 </style>
 
+
+@section('content')
 {{-- MAIN CONTENT --}}
 <main class="main-content">
     <div class="p-4 md:p-8">
@@ -539,3 +541,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
+@endsection

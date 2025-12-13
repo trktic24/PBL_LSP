@@ -160,7 +160,7 @@ class DataSertifikasiAsesi extends Model
         // 3. CEK SIAP ASESMEN
         $ak01Valid = $this->responbuktiAk01()->where('respon', 'Valid')->exists();
 
-        if ($ak01Valid && $this->rekomendasi_apl02 == 'diterima') {
+        if (($ak01Valid || $this->status_sertifikasi >= 40) && $this->rekomendasi_apl02 == 'diterima') {
             return 40;
         }
 

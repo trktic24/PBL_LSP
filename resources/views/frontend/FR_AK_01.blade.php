@@ -33,11 +33,13 @@
 
                 {{-- Nama Asesor --}}
                 <dt class="col-span-1 font-medium text-gray-500">Nama Asesor</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="nama_asesor">[Memuat...]</span></dd>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: <span
+                        id="nama_asesor">{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '-' }}</span></dd>
 
                 {{-- Nama Asesi --}}
                 <dt class="col-span-1 font-medium text-gray-500">Nama Asesi</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="nama_asesi">[Memuat...]</span></dd>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: <span
+                        id="nama_asesi">{{ $asesi->nama_lengkap ?? '-' }}</span></dd>
 
                 {{-- Bukti yang dikumpulkan --}}
                 <dt class="col-span-1 font-medium text-gray-500">Bukti yang dikumpulkan</dt>
@@ -101,7 +103,7 @@
             </a>
             <form action="{{ route('ak01.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
                 @csrf
-                <button type="submit" id="tombol-kirim-ak04"
+                <button type="submit" id="btn-submit-ak01"
                     class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-blue-600 text-white font-semibold text-sm rounded-lg hover:bg-blue-700 shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center">
                     <span>Setuju dan Lanjutkan</span>
                     <i class="fas fa-arrow-right ml-2 text-xs sm:text-sm"></i>
