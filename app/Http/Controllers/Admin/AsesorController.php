@@ -61,7 +61,7 @@ class AsesorController extends Controller
         // 4. Query dasar dengan JOIN ke tabel users
         // Ini diperlukan agar kita bisa sorting berdasarkan 'email'
         $query = Asesor::with(['skemas']) // Tetap 'with' skemas untuk list di view
-            ->join('users', 'asesor.user_id', '=', 'users.id_user')
+            ->join('users', 'asesor.id_user', '=', 'users.id_user')
             ->select('asesor.*', 'users.email', 'users.username'); // Ambil kolom yg diperlukan
 
         // 5. Logika Pencarian (Diadaptasi untuk JOIN)
@@ -223,7 +223,7 @@ class AsesorController extends Controller
                 'username' => $asesorData->username,
                 'email' => $asesorData->email,
                 'password' => Hash::make($asesorData->password),
-                'role_id' => 2, // Asumsi '2' adalah ID untuk role Asesor
+                'role_id' => 3, // ID 3 adalah untuk role Asesor
             ]);
 
             $finalAsesorData = [

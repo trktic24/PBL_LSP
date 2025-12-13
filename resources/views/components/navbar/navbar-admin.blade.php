@@ -77,10 +77,10 @@
                             class="block px-4 py-2 {{ $isAsesiActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Asesi
                         </a>
-                        {{-- <a href="{{ route('master_berita') }}" 
+                        <a href="{{ route('admin.master_berita') }}" 
                             class="block px-4 py-2 {{ $isBeritaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Berita
-                        </a> --}}
+                        </a>
                         </div>
                 </div>
             </div>
@@ -121,7 +121,7 @@
             
             <button @click="open = !open" 
                     class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
-                            hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all z-20 relative">
+                            hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all z-20 relative">
                 <span class="{{ $isProfileActive ? 'text-blue-600' : 'text-gray-800' }} font-semibold text-base mr-5 whitespace-nowrap">
                     {{ Auth::check() ? (Auth::user()->role_id == 1 ? 'Admin LSP' : Auth::user()->username) : 'Guest' }}
                 </span>
@@ -132,8 +132,8 @@
                         $nama = 'User'; // Default
                 
                         if ($user) {
-                            // Cek Role ID (Asumsi 1=Admin, 3=Asesi)
-                            if ($user->role_id == 3 && $user->asesi) {
+                            // Cek Role ID (1=Admin, 2=Asesi, 3=Asesor, 4=Superadmin)
+                            if ($user->role_id == 2 && $user->asesi) {
                                 $nama = $user->asesi->nama_lengkap;
                             } else {
                                 $nama = ucfirst($user->username);

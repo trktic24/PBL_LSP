@@ -17,8 +17,8 @@ class AsesiFactory extends Factory
 
     public function definition():array
     {
-        // Buat User baru dengan role_id 3 (Asesi)
-        $user = User::factory()->create(['role_id' => 3]); 
+        // Buat User baru dengan role_id 2 (Asesi)
+        $user = User::factory()->create(['role_id' => 2]); 
         
         $gender_string = $this->faker->randomElement(['Laki-laki', 'Perempuan']);
         $fullName = $this->faker->firstName($gender_string) . ' ' . $this->faker->lastName();

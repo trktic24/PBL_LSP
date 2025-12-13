@@ -25,14 +25,14 @@
             </div>
 
             <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
-                <form action="{{ route('master_skema') }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
+                <form action="{{ route('admin.master_skema') }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
                     <div class="relative">
                         <input type="text" name="search" x-model="search" placeholder="Search..." class="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         <button type="submit" class="absolute left-3 top-0 h-full text-gray-400 hover:text-gray-600"><i class="fas fa-search"></i></button>
                         <button type="button" class="absolute right-3 top-0 h-full text-gray-400 hover:text-gray-600" x-show="search.length > 0" @click="search = ''; $nextTick(() => $el.form.submit())" x-cloak><i class="fas fa-times"></i></button>
                     </div>
                 </form>
-                <a href="{{ route('add_skema') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center">
+                <a href="{{ route('admin.add_skema') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center">
                     <i class="fas fa-plus mr-2"></i> Tambah Skema
                 </a>
             </div>
@@ -63,7 +63,7 @@
                             
                             <th class="px-4 py-3 font-semibold w-16">
                                 @php $isCurrentColumn = $sortColumn == 'id_skema'; @endphp
-                                <a href="{{ route('master_skema', array_merge($baseParams, ['sort' => 'id_skema', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.master_skema', array_merge($baseParams, ['sort' => 'id_skema', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>ID</span>
                                     <div class="flex flex-col -space-y-1 text-xs"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -73,7 +73,7 @@
 
                             <th class="px-4 py-3 font-semibold">
                                 @php $isCurrentColumn = $sortColumn == 'nomor_skema'; @endphp
-                                <a href="{{ route('master_skema', array_merge($baseParams, ['sort' => 'nomor_skema', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.master_skema', array_merge($baseParams, ['sort' => 'nomor_skema', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>No. Skema</span>
                                     <div class="flex flex-col -space-y-1 text-xs"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -81,7 +81,7 @@
 
                             <th class="px-4 py-3 font-semibold">
                                 @php $isCurrentColumn = $sortColumn == 'nama_skema'; @endphp
-                                <a href="{{ route('master_skema', array_merge($baseParams, ['sort' => 'nama_skema', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.master_skema', array_merge($baseParams, ['sort' => 'nama_skema', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>Nama Skema</span>
                                     <div class="flex flex-col -space-y-1 text-xs"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -89,7 +89,7 @@
 
                             <th class="px-4 py-3 font-semibold">
                                 @php $isCurrentColumn = $sortColumn == 'category_nama'; @endphp
-                                <a href="{{ route('master_skema', array_merge($baseParams, ['sort' => 'category_nama', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.master_skema', array_merge($baseParams, ['sort' => 'category_nama', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>Kategori</span>
                                     <div class="flex flex-col -space-y-1 text-xs"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -97,7 +97,7 @@
 
                             <th class="px-4 py-3 font-semibold">
                                 @php $isCurrentColumn = $sortColumn == 'harga'; @endphp
-                                <a href="{{ route('master_skema', array_merge($baseParams, ['sort' => 'harga', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                <a href="{{ route('admin.master_skema', array_merge($baseParams, ['sort' => 'harga', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                                     <span>Harga</span>
                                     <div class="flex flex-col -space-y-1 text-xs"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                 </a>
@@ -155,7 +155,7 @@
                                         <i class="fas fa-list"></i> <span>Detail</span>
                                     </a>
                                     
-                                    <a href="{{ route('edit_skema', $skema->id_skema) }}" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
+                                    <a href="{{ route('admin.edit_skema', $skema->id_skema) }}" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition">
                                         <i class="fas fa-pen"></i> <span>Edit</span>
                                     </a>
 

@@ -39,7 +39,7 @@
         
         {{-- Form Pencarian --}}
         <form 
-          action="{{ route('master_asesor') }}" method="GET" 
+          action="{{ route('admin.master_asesor') }}" method="GET" 
           class="w-full max-w-sm"
           x-data="{ search: '{{ $requestData['search'] ?? '' }}' }"
         >
@@ -133,7 +133,7 @@
 
                 @if ($filterCount > 0)
                 <div class="p-2 border-t bg-gray-50">
-                  <a href="{{ route('master_asesor', ['search' => $requestData['search'] ?? '', 'sort' => $sortColumn, 'direction' => $sortDirection, 'per_page' => $perPage]) }}" 
+                  <a href="{{ route('admin.master_asesor', ['search' => $requestData['search'] ?? '', 'sort' => $sortColumn, 'direction' => $sortDirection, 'per_page' => $perPage]) }}" 
                      class="block w-full text-center px-4 py-2 text-sm text-red-600 hover:bg-red-100 rounded">
                       Reset Semua Filter
                   </a>
@@ -144,9 +144,9 @@
               {{-- Sub-menu Skema --}}
               <div x-show="activeFilter === 'skema'" class="max-h-80 overflow-y-auto" x-transition>
                 <button @click="activeFilter = ''" class="flex items-center px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-gray-100 w-full"><i class="fas fa-chevron-left text-xs mr-2"></i>Kembali</button><hr>
-                <a href="{{ route('master_asesor', array_merge($allParams, ['skema_id' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Tampilkan Semua</a>
+                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['skema_id' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Tampilkan Semua</a>
                 @foreach ($skemas as $skema)
-                  <a href="{{ route('master_asesor', array_merge($allParams, ['skema_id' => $skema->id_skema, 'page' => 1])) }}" 
+                  <a href="{{ route('admin.master_asesor', array_merge($allParams, ['skema_id' => $skema->id_skema, 'page' => 1])) }}" 
                      class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['skema_id']) && $requestData['skema_id'] == $skema->id_skema) ? 'bg-blue-100' : '' }}">
                     {{ $skema->nama_skema }}
                   </a>
@@ -156,20 +156,20 @@
               {{-- Sub-menu Jenis Kelamin --}}
               <div x-show="activeFilter === 'jk'" x-transition>
                 <button @click="activeFilter = ''" class="flex items-center px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-gray-100 w-full"><i class="fas fa-chevron-left text-xs mr-2"></i>Kembali</button><hr>
-                <a href="{{ route('master_asesor', array_merge($allParams, ['jenis_kelamin' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Semua</a>
-                <a href="{{ route('master_asesor', array_merge($allParams, ['jenis_kelamin' => 'Laki-laki', 'page' => 1])) }}" 
+                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['jenis_kelamin' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Semua</a>
+                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['jenis_kelamin' => 'Laki-laki', 'page' => 1])) }}" 
                    class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['jenis_kelamin']) && $requestData['jenis_kelamin'] == 'Laki-laki') ? 'bg-blue-100' : '' }}">Laki-laki</a>
-                <a href="{{ route('master_asesor', array_merge($allParams, ['jenis_kelamin' => 'Perempuan', 'page' => 1])) }}" 
+                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['jenis_kelamin' => 'Perempuan', 'page' => 1])) }}" 
                    class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['jenis_kelamin']) && $requestData['jenis_kelamin'] == 'Perempuan') ? 'bg-blue-100' : '' }}">Perempuan</a>
               </div>
 
               {{-- Sub-menu Status --}}
               <div x-show="activeFilter === 'status'" x-transition>
                 <button @click="activeFilter = ''" class="flex items-center px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-gray-100 w-full"><i class="fas fa-chevron-left text-xs mr-2"></i>Kembali</button><hr>
-                <a href="{{ route('master_asesor', array_merge($allParams, ['is_verified' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Semua</a>
-                <a href="{{ route('master_asesor', array_merge($allParams, ['is_verified' => '1', 'page' => 1])) }}" 
+                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['is_verified' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Semua</a>
+                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['is_verified' => '1', 'page' => 1])) }}" 
                    class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['is_verified']) && $requestData['is_verified'] == '1') ? 'bg-blue-100' : '' }}">Terverifikasi</a>
-                <a href="{{ route('master_asesor', array_merge($allParams, ['is_verified' => '0', 'page' => 1])) }}" 
+                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['is_verified' => '0', 'page' => 1])) }}" 
                    class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['is_verified']) && $requestData['is_verified'] == '0') ? 'bg-blue-100' : '' }}">Belum</a>
               </div>
 
@@ -178,7 +178,7 @@
           {{-- Akhir Filter Gabungan --}}
 
           <a 
-            href="{{ route('add_asesor1') }}"
+            href="{{ route('admin.add_asesor1') }}"
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center"
           >
             <i class="fas fa-plus mr-2"></i> Tambah Asesor
@@ -249,7 +249,7 @@
               {{-- Kolom ID --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap w-16">
                 @php $isCurrentColumn = $sortColumn == 'id_asesor'; @endphp
-                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'id_asesor', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'id_asesor', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>ID</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
@@ -258,7 +258,7 @@
               {{-- Kolom Nama Asesor --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">
                 @php $isCurrentColumn = $sortColumn == 'nama_lengkap'; @endphp
-                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>Nama Asesor</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
@@ -267,7 +267,7 @@
               {{-- Kolom Email --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">
                 @php $isCurrentColumn = $sortColumn == 'email'; @endphp
-                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'email', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'email', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>Email</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
@@ -276,7 +276,7 @@
               {{-- Kolom No. Registrasi --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">
                 @php $isCurrentColumn = $sortColumn == 'nomor_regis'; @endphp
-                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'nomor_regis', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'nomor_regis', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>No. Registrasi</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
@@ -285,7 +285,7 @@
               {{-- Kolom No. Telepon --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">
                 @php $isCurrentColumn = $sortColumn == 'nomor_hp'; @endphp
-                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'nomor_hp', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'nomor_hp', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>No. Telepon</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>

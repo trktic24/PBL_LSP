@@ -183,12 +183,12 @@ Route::middleware('auth')->group(function () {
     // 3. ROLE: ADMIN
     // ======================================================
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        
+
         // Dashboard
         Route::controller(AdminDashboardController::class)->group(function () {
-            Route::get('/dashboard', 'index')->name('dashboard');    
+            Route::get('/dashboard', 'index')->name('dashboard');
         });
-        
+
         // Notification
         Route::get('/notifications', function () {
             return view('notifications.notifications_admin');
@@ -301,6 +301,17 @@ Route::middleware('auth')->group(function () {
                     Route::get('/edit/{category}', 'edit')->name('edit_category');
                     Route::patch('/update/{category}', 'update')->name('update_category');
                     Route::delete('/delete/{category}', 'destroy')->name('delete_category');
+                });
+
+            //Master - Berita Terbaru
+            // 10. Berita Terbaru
+            Route::controller(BeritaController::class)->prefix('master/berita')->group(function () {
+                Route::get('/', 'index')->name('master_berita');
+                Route::get('/add', 'create')->name('add_berita');
+                Route::post('/add', 'store')->name('add_berita.store');
+                Route::get('/edit/{id}', 'edit')->name('edit_berita');
+                Route::patch('/update/{id}', 'update')->name('update_berita');
+                Route::delete('/delete/{id}', 'destroy')->name('delete_berita');
                 });
         });
 
@@ -460,6 +471,13 @@ Route::middleware('auth')->group(function () {
 
         // 1. JIKA ASESI
         if ($roleName === 'asesi') {
+            // Cek apakah profil asesi sudah ada
+            if (!$user->asesi) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')->with('error', 'Profil Anda belum lengkap. Silakan daftar terlebih dahulu untuk melengkapi data profil.');
+            }
             // [MODIFIED] Asesi sekarang langsung ke Riwayat, bukan Dashboard
             return redirect()->route('asesi.riwayat.index');
         }

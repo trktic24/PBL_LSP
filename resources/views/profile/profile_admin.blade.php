@@ -83,8 +83,8 @@
                         $nama = 'User'; // Default
 
                         if ($user) {
-                            // Cek Role ID (Asumsi 1=Admin, 3=Asesi)
-                            if ($user->role_id == 3 && $user->asesi) {
+                            // Cek Role ID (1=Admin, 2=Asesi, 3=Asesor, 4=Superadmin)
+                            if ($user->role_id == 2 && $user->asesi) {
                                 $nama = $user->asesi->nama_lengkap;
                             } else {
                                 $nama = ucfirst($user->username);

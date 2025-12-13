@@ -45,6 +45,13 @@ class GoogleAuthController extends Controller
                     }
                 }
 
+                // Khusus untuk asesi: cek apakah profil sudah ada
+                if ($user->role?->nama_role === 'asesi') {
+                    if (!$user->asesi) {
+                        return redirect()->route('login')->with('error', 'Profil Anda belum lengkap. Silakan daftar terlebih dahulu untuk melengkapi data profil.');
+                    }
+                }
+
                 Auth::login($user);
                 return redirect()->intended(route('dashboard'));
             }

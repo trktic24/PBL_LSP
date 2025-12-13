@@ -27,7 +27,7 @@
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
 
         <div class="flex items-center justify-between mb-10 relative">
-          <a href="{{ route('master_asesi') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+          <a href="{{ route('admin.master_asesi') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
             <i class="fas fa-arrow-left mr-2"></i> Back
           </a> 
           <h1 class="text-3xl font-bold text-gray-900 text-center absolute left-1/2 -translate-x-1/2">
@@ -47,7 +47,7 @@
           </div>
         @endif
 
-        <form action="{{ route('add_asesi.store') }}" method="POST" class="space-y-8" enctype="multipart/form-data">
+        <form action="{{ route('admin.add_asesi.store') }}" method="POST" class="space-y-8" enctype="multipart/form-data">
           @csrf
           
           <section>
