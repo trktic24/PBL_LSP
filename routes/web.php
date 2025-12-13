@@ -11,6 +11,7 @@ use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\FrAk07Controller;
 use App\Http\Controllers\Ia11Controller;
 use App\Http\Controllers\IA09Controller;
+use App\Http\Controllers\IA08Controller;
 
 // --- TAMBAHAN DARI PENGGABUNGAN SEBELUMNYA (Controller) ---
 use App\Http\Controllers\FrAk06Controller;
@@ -90,10 +91,17 @@ Route::get('/FR_AK_05', function () {
 })->name('FR_AK_05');
 Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
 
+/*
+|--------------------------------------------------------------------------
+| ROUTES IA08
+|--------------------------------------------------------------------------
+*/
+Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])
+     ->name('ia08.show');
+Route::post('/ia08/store', [IA08Controller::class, 'store'])
+    ->name('ia08.store');
 
-Route::get('/IA_08', function () {
-    return view('frontend/IA_08/IA_08');
-})->name('IA08');
+
 
 // ==========================================================
 // RUTE FR.IA.11 (CEKLIST REVIU PRODUK) - DIPERBARUI
