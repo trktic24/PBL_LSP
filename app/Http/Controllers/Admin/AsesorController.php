@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Asesor;
@@ -61,7 +60,7 @@ class AsesorController extends Controller
         // 4. Query dasar dengan JOIN ke tabel users
         // Ini diperlukan agar kita bisa sorting berdasarkan 'email'
         $query = Asesor::with(['skemas']) // Tetap 'with' skemas untuk list di view
-            ->join('users', 'asesor.id_user', '=', 'users.id_user')
+            ->join('users', 'asesor.user_id', '=', 'users.id_user')
             ->select('asesor.*', 'users.email', 'users.username'); // Ambil kolom yg diperlukan
 
         // 5. Logika Pencarian (Diadaptasi untuk JOIN)
@@ -110,7 +109,7 @@ class AsesorController extends Controller
         $asesors = $query->paginate($perPage)->appends($requestData); 
         
         // 10. Kirim semua data ke view
-        return view('master.asesor.master_asesor', compact(
+        return view('admin.master.asesor.master_asesor', compact(
             'asesors', 
             'skemas', 
             'requestData', 
@@ -126,19 +125,19 @@ class AsesorController extends Controller
         // Ambil data lama dari session jika ada (untuk tombol 'back')
         $asesor = $request->session()->get('asesor');
         $skemas = Skema::all();
-        return view('master.asesor.add_asesor1', compact('asesor', 'skemas'));
+        return view('admin.master.asesor.add_asesor1', compact('asesor', 'skemas'));
     }
 
     public function createStep2(Request $request)
     {
         $asesor = $request->session()->get('asesor');
-        return view('master.asesor.add_asesor2', compact('asesor'));
+        return view('admin.master.asesor.add_asesor2', compact('asesor'));
     }
 
     public function createStep3(Request $request)
     {
         $asesor = $request->session()->get('asesor');
-        return view('master.asesor.add_asesor3', compact('asesor'));
+        return view('admin.master.asesor.add_asesor3', compact('asesor'));
     }
 
     // ==========================================================
@@ -223,7 +222,7 @@ class AsesorController extends Controller
                 'username' => $asesorData->username,
                 'email' => $asesorData->email,
                 'password' => Hash::make($asesorData->password),
-                'role_id' => 3, // ID 3 adalah untuk role Asesor
+                'role_id' => 2, // Asumsi '2' adalah ID untuk role Asesor
             ]);
 
             $finalAsesorData = [
@@ -279,7 +278,7 @@ class AsesorController extends Controller
     {
         $asesor = Asesor::with(['user', 'skemas'])->findOrFail($id_asesor);
         $skemas = Skema::all(); 
-        return view('master.asesor.edit_asesor1', compact('asesor', 'skemas'));
+        return view('admin.master.asesor.edit_asesor1', compact('asesor', 'skemas'));
     }
 
     public function updateStep1(Request $request, $id_asesor)
@@ -319,7 +318,7 @@ class AsesorController extends Controller
     public function editStep2($id_asesor)
     {
         $asesor = Asesor::findOrFail($id_asesor);
-        return view('master.asesor.edit_asesor2', compact('asesor'));
+        return view('admin.master.asesor.edit_asesor2', compact('asesor'));
     }
 
     public function updateStep2(Request $request, $id_asesor)
@@ -368,7 +367,7 @@ class AsesorController extends Controller
     public function editStep3($id_asesor)
     {
         $asesor = Asesor::findOrFail($id_asesor);
-        return view('master.asesor.edit_asesor3', compact('asesor'));
+        return view('admin.master.asesor.edit_asesor3', compact('asesor'));
     }
 
     public function updateStep3(Request $request, $id_asesor)
@@ -438,7 +437,7 @@ class AsesorController extends Controller
     public function showProfile($id_asesor)
     {
         $asesor = Asesor::with('user')->findOrFail($id_asesor);
-        return view('profile_asesor.asesor_profile_settings', compact('asesor'));
+        return view('admin.profile_asesor.asesor_profile_settings', compact('asesor'));
     }
 
     public function showBukti($id_asesor)
@@ -455,6 +454,6 @@ class AsesorController extends Controller
             ['key' => 'sertifikasi_kompetensi', 'title' => 'Sertifikasi Kompetensi', 'subtitle' => 'Sertifikat teknis/pendukung', 'file_path' => $asesor->sertifikasi_kompetensi],
         ];
         
-        return view('profile_asesor.asesor_profile_bukti', compact('asesor', 'documents'));
+        return view('admin.profile_asesor.asesor_profile_bukti', compact('asesor', 'documents'));
     }
 }
