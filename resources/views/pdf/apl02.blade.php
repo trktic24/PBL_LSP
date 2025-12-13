@@ -28,12 +28,12 @@
         <tr>
             <td width="150"><strong>Skema Sertifikasi</strong></td>
             <td width="10">:</td>
-            <td>{{ $skema->judul_skema ?? '-' }}</td>
+            <td>{{ $skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Nomor Skema</strong></td>
             <td>:</td>
-            <td>{{ $skema->kode_skema ?? '-' }}</td>
+            <td>{{ $skema->nomor_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Nama Asesor</strong></td>
@@ -74,27 +74,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php $elemenNo = 1; @endphp
                     @foreach ($unit->elemen as $elemen)
+                        @php $elemenNum = $loop->iteration; @endphp
                         
                         <tr style="background-color: #f9fafb;">
-                            <td class="font-bold text-center">{{ $elemenNo++ }}</td>
-                            <td colspan="4" class="font-bold">Elemen: {{ $elemen->nama_elemen }}</td>
+                            <td class="font-bold text-center">{{ $elemenNum }}</td>
+                            <td colspan="4" class="font-bold">Elemen: {{ $elemen->elemen }}</td>
                         </tr>
 
                         @foreach ($elemen->kriteriaUnjukKerja as $kuk)
                             @php 
-                                $respon = $existingResponses[$kuk->id_kriteria_unjuk_kerja] ?? null; 
+                                $respon = $existingResponses[$kuk->id_kriteria] ?? null; 
                                 $isK = $respon && $respon->respon_asesi_apl02 == 1;
                                 $isBK = $respon && $respon->respon_asesi_apl02 === 0;
                             @endphp
                             <tr>
-                                <td class="text-center" style="font-size: 9px;">{{ $kuk->id_kriteria_unjuk_kerja }}</td> <td>
-                                    Kriteria Unjuk Kerja: <br>
-                                    {{ $kuk->kriteria_unjuk_kerja }} <br>
-                                    <span style="font-style: italic; color: #555;">(Pertanyaan: Apakah anda dapat {{ strtolower($kuk->kriteria_unjuk_kerja) }}?)</span>
+                                <td
+                                    class="p-3 text-sm text-gray-600 border-r border-gray-200 align-middle">
+                                    {{ $elemenNum }}.{{ $loop->iteration }}
+                                </td>                                
+                                <td class="p-3 text-sm text-gray-700 align-top">
+                                    <span
+                                        class="font-mono text-xs text-gray-500 mr-1">({{ $kuk->no_kriteria }})</span>
+                                    {{ $kuk->kriteria }}
                                 </td>
-                                
+
                                 <td class="check-mark bg-gray">{{ $isK ? 'V' : '' }}</td>
                                 <td class="check-mark bg-gray">{{ $isBK ? 'V' : '' }}</td>
                                 
@@ -127,20 +131,32 @@
             <td style="width: 50%; text-align: center;">
                 Asesi,
                 <br><br><br><br>
+                <img src="{{ $asesi->tanda_tangan }}" style="height: 100px; width: auto;">                
+                <br><br><br><br>
                 <strong>{{ $asesi->nama_lengkap ?? '(.......................)' }}</strong>
-                <br>Tanggal: {{ \Carbon\Carbon::now()->format('d-m-Y') }}
+                <br>{{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
             </td>
             <td style="width: 50%; text-align: center;">
-                Asesor Kompetensi,
+                Asesor,
+                <br><br><br><br>
+                <img src="{{ $sertifikasi->jadwal->asesor->tanda_tangan }}" style="height: 100px; width: auto;">
                 <br><br><br><br>
                 <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
-                <br>
-                @if($sertifikasi->rekomendasi_apl02 == 'diterima')
-                    <span style="font-weight: bold; border: 1px solid black; padding: 2px;">DITERIMA</span>
-                @else
-                    <span style="font-style: italic;">(Menunggu Verifikasi)</span>
-                @endif
+                <br>{{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
             </td>
+        </tr>
+        <tr>
+            <td colspan="3" style="padding: 5px;">
+                <div style="margin-top: 50px; border: 1px solid black; padding: 10px;">
+                    @if($sertifikasi->rekomendasi_apl02 == 'diterima')
+                        <span style="font-style: italic;">Berdasarkan hasil verifikasi Asesor, Asesmen Mandiri dinyatakan <strong>DITERIMA</strong></span>
+                    @elseif($sertifikasi->rekomendasi_apl02 == 'tidak diterima') 
+                        <span style="font-style: italic;">Berdasarkan hasil verifikasi Asesor, Asesmen Mandiri dinyatakan <strong>TIDAK DITERIMA</strong></span>
+                    @else
+                        <span style="font-style: italic;"><strong>Menunggu Verifikasi Asesor</strong></span> 
+                    @endif
+                </div> 
+            </td>         
         </tr>
     </table>
 

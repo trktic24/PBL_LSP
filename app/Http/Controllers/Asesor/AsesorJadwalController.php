@@ -199,9 +199,12 @@ class AsesorJadwalController extends Controller
             abort(403, 'Anda tidak berhak mengakses jadwal ini.');
         }
 
-        $semuaSudahAdaKomentar = !DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
-            ->whereDoesntHave('komentarAk05')
+        $sudahVerifikasiValidator = !DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
+            ->whereHas('komentarAk05', function ($q) {
+                $q->whereNull('verifikasi_validator');
+            })
             ->exists();
+
 
         // 3. (MODIFIKASI UTAMA) Dapatkan daftar Asesi secara manual
         //    melalui tabel 'data_sertifikasi_asesi'
@@ -220,7 +223,7 @@ class AsesorJadwalController extends Controller
         //    (Struktur data yang dikirim tetap sama, jadi view tidak perlu diubah)
         return view('asesor.daftar_asesi', [
             'jadwal' => $jadwal,
-            'semuaSudahAdaKomentar' => $semuaSudahAdaKomentar,
+            'sudahVerifikasiValidator' => $sudahVerifikasiValidator,
             //'asesis' => $asesis, // <-- Variabel $asesis berhasil kita buat
         ]);
     }
