@@ -74,16 +74,20 @@
 </style>
 
 <div class="container mx-auto px-6 mt-20 mb-12">
-    <div class="flex items-center space-x-5 mb-10">
-        <img src="{{ Auth::user()->asesor?->url_foto ?? asset('images/profil_asesor.jpeg') }}"
-            alt="Foto Profil"
-            class="w-20 h-20 rounded-full object-cover border-4 border-blue-500">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Selamat Datang {{ $profile['nama'] }}!</h1>
-            <p class="text-xl font-semibold text-gray-800 mt-1">{{ $profile['nama'] }}</p>
-            <p class="text-base text-gray-600">{{ $profile['nomor_registrasi'] }}</p>
-            <p class="text-base text-gray-600">{{ $profile['kompetensi'] }}</p>
+    <div class="flex items-center justify-between mb-10">
+        <div class="flex items-center space-x-5">
+            <img src="{{ Auth::user()->asesor?->url_foto ?? asset('images/profil_asesor.jpeg') }}"
+                alt="Foto Profil"
+                class="w-20 h-20 rounded-full object-cover border-4 border-blue-500">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Selamat Datang {{ $profile['nama'] }}!</h1>
+                <p class="text-xl font-semibold text-gray-800 mt-1">{{ $profile['nama'] }}</p>
+                <p class="text-base text-gray-600">{{ $profile['nomor_registrasi'] }}</p>
+                <p class="text-base text-gray-600">{{ $profile['kompetensi'] }}</p>
+            </div>
         </div>
+
+
     </div>
 
     <div class="mb-10">
@@ -140,65 +144,7 @@
         </div>
     </div>
 
-    {{-- SECTION NOTIFIKASI --}}
-    <div class="mb-10">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-semibold text-gray-800">Notifikasi Terbaru</h2>
-            {{-- Link ke halaman Lihat Semua --}}
-            <a href="{{ route('asesor.notifikasi.index') }}" class="text-sm text-blue-600 hover:underline font-medium">Lihat Semua</a>
-        </div>
 
-        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-            <div class="divide-y divide-gray-100 px-2 py-2">
-                @forelse ($notifications as $notification)
-                <div class="p-4 mb-2 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:bg-white border border-transparent hover:border-blue-100 group cursor-pointer {{ !$notification['is_read'] ? 'bg-blue-50/50' : 'bg-white' }}">
-                    <div class="flex items-start gap-4">
-                        <!-- Icon -->
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300 {{ !$notification['is_read'] ? 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white' : 'bg-gray-100 text-gray-500 group-hover:bg-gray-200' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        <!-- Content -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-start">
-                                <h3 class="text-sm font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-300 truncate pr-2">
-                                    {{ $notification['title'] }}
-                                </h3>
-                                <span class="text-xs font-medium text-gray-400 whitespace-nowrap bg-gray-50 px-2 py-1 rounded-full group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                                    {{ $notification['time'] }}
-                                </span>
-                            </div>
-                            <p class="text-sm text-gray-600 mt-1 line-clamp-2 leading-relaxed">
-                                {{ $notification['message'] }}
-                            </p>
-                        </div>
-
-                        <!-- Unread Indicator -->
-                        @if (!$notification['is_read'])
-                        <div class="flex-shrink-0 self-center">
-                            <span class="flex h-3 w-3 relative">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                            </span>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                @empty
-                <div class="p-8 text-center text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    <p>Tidak ada notifikasi saat ini.</p>
-                </div>
-                @endforelse
-            </div>
-        </div>
-    </div>
 
     <div>
         <div class="flex justify-between items-center mb-4">

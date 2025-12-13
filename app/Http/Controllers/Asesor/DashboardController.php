@@ -65,20 +65,28 @@ class DashboardController extends Controller
         ];
 
         // Ringkasan
-        $blmreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
-                ->whereDoesntHave('responApl2Ia01')
-                ->whereDoesntHave('komentarAk05')
-                ->count();    
-        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
-                ->whereHas('responApl2Ia01')        // sudah mengisi APL02
-                ->whereDoesntHave('komentarAk05')
-                ->count();        
-        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
-                ->whereHas('komentarAk05')
-                ->count();
-        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
-        ->count();
-        
+        $blmreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
+            $q->where('id_asesor', $id_asesor);
+        })
+            ->whereDoesntHave('responApl2Ia01')
+            ->whereDoesntHave('komentarAk05')
+            ->count();
+        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
+            $q->where('id_asesor', $id_asesor);
+        })
+            ->whereHas('responApl2Ia01')        // sudah mengisi APL02
+            ->whereDoesntHave('komentarAk05')
+            ->count();
+        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
+            $q->where('id_asesor', $id_asesor);
+        })
+            ->whereHas('komentarAk05')
+            ->count();
+        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
+            $q->where('id_asesor', $id_asesor);
+        })
+            ->count();
+
         // // 2. Data Ringkasan (Dummy)
         // $summary = [
         //     'belum_direview' => 5,
@@ -188,8 +196,25 @@ class DashboardController extends Controller
         $user = $request->user();
 
         // Ambil semua notifikasi dengan pagination (10 per halaman)
-        $notifications = $user->notifications()->latest()->paginate(10);
+        // Ambil semua notifikasi dengan pagination (10 per halaman)
+        $notificationsPagination = $user->notifications()->latest()->paginate(10);
 
-        return view('asesor.notification', compact('notifications'));
+        // Transform data untuk view (mempertahankan pagination object)
+        $notifications = $notificationsPagination->getCollection()->map(function ($n) {
+            return [
+                'title' => $n->data['title'] ?? 'Notifikasi',
+                'message' => $n->data['body'] ?? 'Pesan tidak tersedia',
+                'time' => $n->created_at->diffForHumans(),
+                'is_read' => !is_null($n->read_at),
+                'link' => $n->data['link'] ?? '#'
+            ];
+        });
+
+        // Set kembali collection yang sudah ditransform ke object pagination
+        $notificationsPagination->setCollection($notifications);
+
+        return view('notifications.notifications_asesor', [
+            'notifications' => $notificationsPagination
+        ]);
     }
 }
