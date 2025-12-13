@@ -39,6 +39,7 @@ use App\Http\Controllers\Asesor\AsesiTrackerController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Ia06Controller;
 use App\Http\Controllers\Asesi\Apl02\PraasesmenController;
+use App\Http\Controllers\Ak02Controller;
 
 // ======================================================
 // --- RUTE GUEST (YANG BELUM LOGIN) ---
@@ -177,6 +178,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/mapa02/show/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');
     Route::post('/mapa02/store/{id_data_sertifikasi_asesi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');
 
+    // FR.AK.02
+    Route::middleware(['auth', 'role:asesor'])->group(function () {
+
+        // ... (route asesor lainnya) ...
+
+        // === ROUTE FR.AK.02 ===
+
+        // 1. Menampilkan Form Penilaian (Method: GET)
+        // URL: /asesor/asesmen/ak02/{id_asesi}
+        Route::get('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])
+            ->name('ak02.edit');
+
+        // 2. Menyimpan Data Penilaian (Method: PUT)
+        // URL sama, tapi method beda
+        Route::put('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])
+            ->name('ak02.update');
+
+    });
 
     // ======================================================
     // 3. ROLE: ADMIN

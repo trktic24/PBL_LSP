@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 // Pastikan semua Model terimport
 use App\Models\DetailIa10;
 use App\Models\PertanyaanIa10;
-use App\Models\Ia10; 
-use App\Models\Ia02; // Tambahkan ini agar tidak error di relasi
+use App\Models\Ia10;
+use App\Models\Ia02;
 use App\Models\Ia07;
 use App\Models\JawabanIa06;
 use App\Models\LembarJawabIa05;
@@ -20,6 +20,7 @@ use App\Models\ResponBuktiAk01;
 use App\Models\DaftarHadirAsesi;
 use App\Models\KomentarAk05;
 use App\Models\ResponApl2Ia01;
+use App\Models\Skema; // Tambahan
 
 class DataSertifikasiAsesi extends Model
 {
@@ -64,7 +65,7 @@ class DataSertifikasiAsesi extends Model
         'tanggal_daftar' => 'date',
     ];
 
-    // --- RELASI (Saya rapihkan return type-nya biar standar) ---
+    // --- RELASI ---
 
     public function asesi(): BelongsTo
     {
@@ -88,7 +89,6 @@ class DataSertifikasiAsesi extends Model
 
     public function ia02(): HasOne
     {
-        // Perbaikan: Pakai Ia02::class (Huruf besar)
         return $this->hasOne(Ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
@@ -100,7 +100,7 @@ class DataSertifikasiAsesi extends Model
     public function lembarJawabIa05(): HasOne
     {
         return $this->hasOne(LembarJawabIa05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
-    }    
+    }
 
     public function responbuktiAk01(): HasMany
     {
@@ -120,28 +120,26 @@ class DataSertifikasiAsesi extends Model
     public function responApl2Ia01(): HasOne
     {
         return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi');
-    }    
+    }
 
     /**
      * ACCESSOR: Menghitung Level Status untuk Tracker
-     * Mapping Data Real -> Angka Level (10, 20, 30, 40, 90, 100)
      */
     public function getLevelStatusAttribute()
     {
-        // 1. CEK FINISH: Level 100 (Sertifikat Terbit / Keputusan AK.02 Ada)
+        // 1. CEK FINISH
         if (!is_null($this->rekomendasi_hasil_asesmen_AK02)) {
-            return 100; 
+            return 100;
         }
 
-        // 2. CEK ASESMEN SELESAI: Level 90 (Siap isi AK.02)
-        // Logika Khusus IA.10 (Sesuai kode kamu)
+        // 2. CEK ASESMEN SELESAI
         $jmlChecklist = PertanyaanIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)->count();
-        $jmlEssay = 7; 
+        $jmlEssay = 7;
         $totalSoal = $jmlChecklist + $jmlEssay;
         $jawabanValid = 0;
 
-        $headerIa10 = $this->ia10; // Menggunakan relasi yang sudah ada biar hemat query
-        
+        $headerIa10 = $this->ia10;
+
         if ($headerIa10) {
             $isiChecklist = PertanyaanIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
                 ->whereNotNull('jawaban_pilihan_iya_tidak')
@@ -155,32 +153,44 @@ class DataSertifikasiAsesi extends Model
             $jawabanValid = $isiChecklist + $isiEssay;
         }
 
-        // Jika IA.10 Selesai, kita anggap Level 90 (Siap Keputusan)
-        // Catatan: Jika ingin menambah syarat IA.02/IA.05 harus selesai juga, tambahkan && di sini.
         if ($totalSoal > 0 && $jawabanValid >= $totalSoal) {
-            return 90; 
+            return 90;
         }
 
-        // 3. CEK SIAP ASESMEN: Level 40 (AK.01 Valid)
-        // Menggunakan relasi hasMany untuk cek apakah ada respon 'Valid'
+        // 3. CEK SIAP ASESMEN
         $ak01Valid = $this->responbuktiAk01()->where('respon', 'Valid')->exists();
 
-        // Syarat masuk Asesmen: APL.02 Diterima DAN AK.01 Valid
         if ($ak01Valid && $this->rekomendasi_apl02 == 'diterima') {
-            return 40; // Tracker akan membuka bagian Asesmen (IA.xx)
+            return 40;
         }
 
-        // 4. CEK SIAP AK.01: Level 30 (APL.02 Diterima)
+        // 4. CEK SIAP AK.01
         if ($this->rekomendasi_apl02 == 'diterima') {
-            return 30; // Tracker membuka tombol Verifikasi AK.01
+            return 30;
         }
 
-        // 5. CEK SEDANG ISI APL.02: Level 20 (APL.01 Diterima)
+        // 5. CEK SEDANG ISI APL.02
         if ($this->rekomendasi_apl01 == 'diterima') {
-            return 20; // Tracker membuka tombol Verifikasi APL.02
+            return 20;
         }
 
-        // 6. DEFAULT: Level 10 (Baru Submit APL.01 / Menunggu Verifikasi APL.01)
-        return 10; 
+        return 10;
+    }
+
+    /**
+     * [WAJIB ADA]
+     * Accessor 'skema' agar $asesi->skema di View bisa berjalan tanpa error.
+     * Mengambil data skema melewati relasi 'jadwal'.
+     */
+    public function getSkemaAttribute()
+    {
+        // 1. Cek apakah relasi jadwal sudah di-load sebelumnya?
+        if ($this->relationLoaded('jadwal')) {
+            // Ambil skema dari object jadwal yang sudah ada di memori
+            return $this->jadwal->skema;
+        }
+
+        // 2. Jika belum, load manual (Lazy Loading)
+        return $this->jadwal ? $this->jadwal->skema : null;
     }
 }
