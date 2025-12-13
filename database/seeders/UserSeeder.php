@@ -56,20 +56,33 @@ class UserSeeder extends Seeder
                 \App\Models\Asesor::create([
                     'id_user' => $asesorUser->id_user,
                     'nama_lengkap' => 'Asesor Demo',
+                    'nomor_regis' => 'REG-001',
                     'nik' => '9876543210987654',
                     'tempat_lahir' => 'Bandung',
                     'tanggal_lahir' => '1990-01-01',
                     'jenis_kelamin' => 'Laki-laki',
                     'kebangsaan' => 'Indonesia',
-                    'pendidikan' => 'S2',
                     'alamat_rumah' => 'Jl. Asesor No. 1',
                     'kode_pos' => '40111',
                     'kabupaten_kota' => 'Bandung',
                     'provinsi' => 'Jawa Barat',
                     'nomor_hp' => '089876543210',
-                    'tanda_tangan' => null,
-                    'status_verifikasi' => 'approved', // IMPORTANT: Must be approved
-                    'status_rekomendasi' => 'diterima',
+                    'NPWP' => '12.345.678.9-000.000',
+                    'nama_bank' => 'Bank ABC',
+                    'norek' => '1234567890',
+                    'pekerjaan' => 'Dosen',
+                    'status_verifikasi' => 'approved',
+                    
+                    // FILE PATHS (Wajib diisi sesuai migration)
+                    'ktp' => 'dummy_ktp.pdf',
+                    'pas_foto' => 'dummy_foto.jpg',
+                    'NPWP_foto' => 'dummy_npwp.jpg',
+                    'rekening_foto' => 'dummy_rekening.jpg',
+                    'CV' => 'dummy_cv.pdf',
+                    'ijazah' => 'dummy_ijazah.pdf',
+                    'sertifikat_asesor' => 'dummy_sertifikat.pdf',
+                    'sertifikasi_kompetensi' => 'dummy_kompetensi.pdf',
+                    'tanda_tangan' => 'dummy_ttd.png',
                 ]);
             }
         }
