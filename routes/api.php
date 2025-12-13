@@ -23,7 +23,7 @@ use App\Http\Controllers\Api\TukAdminController;
 use App\Http\Controllers\Api\AsesiController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ScheduleController;
-use App\Http\Controllers\Asesi\IA02\Ia02Controller;
+use App\Http\Controllers\Asesi\IA02\Ia02AsesiController;
 use App\Http\Controllers\Asesi\Apl02\PraasesmenController;
 use App\Http\Controllers\Asesi\Ak04API\APIBandingController;
 use App\Http\Controllers\Asesi\asesmen\AsesmenEsaiController;
@@ -38,16 +38,7 @@ use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiContro
 // =======================================================
 // 🔓 RUTE PUBLIK (tidak butuh token)
 // =======================================================
-Route::prefix('v1')->group(function() {
-  
-    // ==========================
-    // AUTHENTICATION ROUTES
-    // ==========================
 
-    // Login
-    Route::post('/login', [LoginController::class, 'login']);
-
-    // Register
 /*
 |--------------------------------------------------------------------------
 | API Routes (VERSION 1)
@@ -289,6 +280,6 @@ Route::get('/asesor/{id}', [AsesorApiController::class, 'show']);
         // GET: Ambil data IA.02 (API)
         // Jalur Penuh: /api/v1/ia02/{id_data_sertifikasi_asesi}/data
         // Catatan: Menggunakan method 'apiIndex' yang ada di Ia02Controller Anda
-        Route::get('/{id_data_sertifikasi_asesi}/data', [Ia02Controller::class, 'apiDetail'])->name('api.v1.ia02.detail');
+        Route::get('/{id_data_sertifikasi_asesi}/data', [Ia02AsesiController::class, 'apiDetail'])->name('api.v1.ia02.detail');
     });
-});
+
