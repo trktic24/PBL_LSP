@@ -306,6 +306,18 @@ Route::middleware('auth')->group(function () {
                 Route::delete('/delete/{category}', 'destroy')->name('delete_category');
             });
 
+            // Master - Mitra
+            Route::controller(\App\Http\Controllers\Admin\MitraController::class)
+                ->prefix('master/mitra')
+                ->group(function () {
+                    Route::get('/', 'index')->name('master_mitra');
+                    Route::get('/add', 'create')->name('add_mitra');
+                    Route::post('/add', 'store')->name('add_mitra.store');
+                    Route::get('/edit/{id}', 'edit')->name('edit_mitra');
+                    Route::patch('/update/{id}', 'update')->name('update_mitra');
+                    Route::delete('/delete/{id}', 'destroy')->name('delete_mitra');
+                });
+
         //Master - Berita Terbaru
         // 10. Berita Terbaru
         Route::controller(BeritaController::class)->prefix('master/berita')->group(function () {

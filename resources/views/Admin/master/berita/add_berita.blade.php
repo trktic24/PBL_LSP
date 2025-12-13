@@ -22,7 +22,7 @@
             <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">
                 
                 <div class="flex items-center justify-between mb-10">
-                    <a href="{{ route('master_berita') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium transition">
+                    <a href="{{ route('admin.master_berita') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium transition">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
                     <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">TAMBAH BERITA</h1>
@@ -38,7 +38,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('add_berita.store') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
+                <form action="{{ route('admin.add_berita.store') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

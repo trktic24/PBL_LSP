@@ -9,8 +9,9 @@
     $isMasterScheduleActive = request()->is('master/schedule*');
     $isCategoryActive = request()->is('master/category*'); 
     $isBeritaActive = request()->is('master/berita*');
+    $isMitraActive = request()->is('admin/master/mitra*');
 
-    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive;
+    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive || $isMitraActive;
     
     $isScheduleActive = request()->routeIs('schedule_admin');
     $isTukActive = request()->is('master/tuk*'); 
@@ -80,6 +81,10 @@
                         <a href="{{ route('admin.master_berita') }}" 
                             class="block px-4 py-2 {{ $isBeritaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Berita
+                        </a>
+                        <a href="{{ route('admin.master_mitra') }}" 
+                            class="block px-4 py-2 {{ $isMitraActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Mitra
                         </a>
                         </div>
                 </div>
