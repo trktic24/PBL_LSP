@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Tuk;
+use App\Models\Jadwal;
+use App\Models\MasterTUK;
 use App\Models\Asesi;
 use App\Models\Skema;
 use App\Models\Asesor;
@@ -43,7 +44,7 @@ class DatabaseSeeder extends Seeder
 
         // 4. GENERATE DATA DENGAN FACTORY (Bulk Data)
         // Kita buat data dasar menggunakan Factory untuk testing
-        Tuk::factory(20)->create();
+        MasterTUK::factory(20)->create();
         Asesor::factory(20)->create();
         Skema::factory(20)->create(); // SkemaFactory biasanya menghandle gambar
 
@@ -57,8 +58,7 @@ class DatabaseSeeder extends Seeder
         // 6. DATA ASESI & JADWAL
         // Pastikan User untuk asesi sudah ada atau dibuat di dalam factory
         Asesi::factory(200)->create();
-        Schedule::factory(50)->create();
-
+        Jadwal::factory(20)->create();
         // 7. SEEDER FORMULIR & DOKUMEN TEKNIS (Urutan Logis sesuai Proses Sertifikasi)
         $this->call([
             JadwalSeeder::class,

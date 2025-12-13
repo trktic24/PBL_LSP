@@ -1,30 +1,33 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace Database\Factories;
 
-return new class extends Migration
+use App\Models\Berita;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Berita>
+ */
+class BeritaFactory extends Factory
 {
     /**
-     * Run the migrations.
+     * The name of the factory's corresponding model.
+     *
+     * @var string
      */
-    public function up(): void
-    {
-        Schema::create('beritas', function (Blueprint $table) {
-            $table->id(); // Kunci utama (Primary Key)
-            $table->string('judul'); // Judul berita
-            $table->longText('isi'); // Isi konten berita
-            $table->string('gambar')->nullable(); // Path/nama file gambar (nullable)
-            $table->timestamps(); // Otomatis membuat created_at dan updated_at
-        });
-    }
+    protected $model = Berita::class;
 
     /**
-     * Reverse the migrations.
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
      */
-    public function down(): void
+    public function definition(): array
     {
-        Schema::dropIfExists('beritas');
+        return [
+            'judul' => $this->faker->sentence(),
+            'isi' => $this->faker->paragraphs(3, true),
+            'gambar' => null, // Atau $this->faker->imageUrl() jika ingin dummy image
+        ];
     }
-};
+}

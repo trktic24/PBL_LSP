@@ -161,7 +161,7 @@ class AsesiController extends Controller
             $user = User::create([
                 'email' => $validatedData['email'],
                 'password' => Hash::make($validatedData['password']),
-                'role_id' => 3, 
+                'role_id' => 2, // ID 2 adalah untuk role Asesi
                 'username' => $validatedData['nik'],
             ]);
 

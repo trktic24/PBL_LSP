@@ -223,7 +223,7 @@ class AsesorController extends Controller
                 'username' => $asesorData->username,
                 'email' => $asesorData->email,
                 'password' => Hash::make($asesorData->password),
-                'role_id' => 2, // Asumsi '2' adalah ID untuk role Asesor
+                'role_id' => 3, // ID 3 adalah untuk role Asesor
             ]);
 
             $finalAsesorData = [
