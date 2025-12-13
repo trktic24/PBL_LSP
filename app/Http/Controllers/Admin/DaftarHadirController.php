@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Models\DataSertifikasiAsesi;
@@ -59,7 +60,7 @@ class DaftarHadirController extends Controller
         $perPage = $request->input('per_page', 10);
         $pendaftar = $query->paginate($perPage)->appends($request->query());
 
-        return view('master.schedule.daftar_hadir', [
+        return view('admin.master.schedule.daftar_hadir', [
             'jadwal' => $jadwal,
             'pendaftar' => $pendaftar,
             'perPage' => $perPage,

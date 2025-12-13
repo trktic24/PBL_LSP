@@ -44,7 +44,7 @@
 
 <body class="bg-gray-50 text-gray-800">
 
-    <x-navbar />
+    <x-navbar_admin/>
     
 
     <main class="content-area p-6">

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         // [PERBAIKAN] Arahkan ke view profile_admin yang sudah kita buat
-        return view('profile.profile_admin', [
+        return view('admin.profile.profile_admin', [
             'user' => $request->user(),
         ]);
     }

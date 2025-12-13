@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Asesi;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class AsesiProfileController extends Controller
     public function settings($id_asesi)
     {
         $asesi = $this->getAsesi($id_asesi);
-        return view('profile_asesi.asesi_profile_settings', compact('asesi'));
+        return view('admin.profile_asesi.asesi_profile_settings', compact('asesi'));
     }
 
    public function form($id_asesi)
@@ -80,19 +81,19 @@ class AsesiProfileController extends Controller
         // DEBUGGING SEMENTARA (Hapus tanda komentar // di bawah jika masih kosong)
         // dd($activeForms, $namaSkema, $pendaftaran);
 
-        return view('profile_asesi.asesi_profile_form', compact('asesi', 'activeForms', 'namaSkema'));
+        return view('admin.profile_asesi.asesi_profile_form', compact('asesi', 'activeForms', 'namaSkema'));
     }
     
     public function bukti($id_asesi)
     {
         $asesi = $this->getAsesi($id_asesi);
-        return view('profile_asesi.asesi_profile_bukti', compact('asesi'));
+        return view('admin.profile_asesi.asesi_profile_bukti', compact('asesi'));
     }
 
     public function tracker($id_asesi)
     {
         $asesi = $this->getAsesi($id_asesi);
-        return view('profile_asesi.asesi_profile_tracker', compact('asesi'));
+        return view('admin.profile_asesi.asesi_profile_tracker', compact('asesi'));
     }
 
 }

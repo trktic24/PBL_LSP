@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Models\Skema;
@@ -17,7 +18,7 @@ class ScheduleController extends Controller
                              ->orderBy('tanggal_pelaksanaan', 'asc')
                              ->get();
 
-        return view('master.schedule.schedule_admin', [
+        return view('admin.master.schedule.schedule_admin', [
             'schedules' => $schedules
         ]);
     }
@@ -105,7 +106,7 @@ class ScheduleController extends Controller
 
         
         // 10. Kirim data lengkap ke view
-        return view('master.schedule.master_schedule', [
+        return view('admin.master.schedule.master_schedule', [
             'jadwals' => $jadwals,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -122,7 +123,7 @@ class ScheduleController extends Controller
         $asesors = Asesor::all();
         $jenisTuks = JenisTuk::all(); 
 
-        return view('master.schedule.add_schedule', [
+        return view('admin.master.schedule.add_schedule', [
             'skemas' => $skemas,
             'tuks' => $tuks,
             'asesors' => $asesors,
@@ -179,7 +180,7 @@ class ScheduleController extends Controller
         $asesors = Asesor::all();
         $jenisTuks = JenisTuk::all();
 
-        return view('master.schedule.edit_schedule', [
+        return view('admin.master.schedule.edit_schedule', [
             'jadwal' => $jadwal,
             'skemas' => $skemas,
             'tuks' => $tuks,

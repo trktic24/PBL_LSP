@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,7 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        return view('login.login_admin'); 
+        return view('admin.login.login_admin'); 
     }
 
     /**
@@ -61,7 +62,7 @@ class LoginController extends Controller
      */
     public function showForgotPassword()
     {
-        return view('login.forgot_pass'); 
+        return view('admin.login.forgot_pass'); 
     }
 
     /**

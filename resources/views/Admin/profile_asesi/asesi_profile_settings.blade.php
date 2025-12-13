@@ -18,7 +18,7 @@
 
 <body class="text-gray-800">
 
-  <x-navbar />
+  <x-navbar_admin/>
   
   <div class="flex pt-0">
     

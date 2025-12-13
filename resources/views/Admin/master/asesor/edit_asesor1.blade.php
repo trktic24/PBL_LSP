@@ -18,7 +18,7 @@
 
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
-    <x-navbar />
+    <x-navbar_admin/>
     
     <main class="flex-1 flex flex-col items-center pt-10 pb-12 px-4">
 

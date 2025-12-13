@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -56,7 +57,7 @@ class CategoryController extends Controller
 
         
         // 9. Kirim data lengkap ke view (Path sudah benar)
-        return view('master.category.master_category', [ 
+        return view('admin.master.category.master_category', [ 
             'categories' => $categories,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -70,7 +71,7 @@ class CategoryController extends Controller
     public function create()
     {
         // Path view sudah benar
-        return view('master.category.add_category');
+        return view('admin.master.category.add_category');
     }
 
     /**
@@ -116,7 +117,7 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         // Path view sudah benar
-        return view('master.category.edit_category', compact('category')); 
+        return view('admin.master.category.edit_category', compact('category')); 
     }
 
     /**

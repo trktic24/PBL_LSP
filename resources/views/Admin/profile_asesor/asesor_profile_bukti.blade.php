@@ -21,7 +21,7 @@
 
 <body class="text-gray-800">
 
-  <x-navbar />
+  <x-navbar_admin/>
   <div class="flex pt-0">
     
     <aside class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-[22%] 

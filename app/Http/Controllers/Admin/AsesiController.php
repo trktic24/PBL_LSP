@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Asesi;
 use App\Models\User;
 use App\Models\DataPekerjaanAsesi;
@@ -85,7 +86,7 @@ class AsesiController extends Controller
         ]));
         
         // 10. Kirim data lengkap ke view
-        return view('master.asesi.master_asesi', [
+        return view('admin.master.asesi.master_asesi', [
             'asesis' => $asesis,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -96,7 +97,7 @@ class AsesiController extends Controller
 
     public function create()
     {
-        return view('master.asesi.add_asesi');
+        return view('admin.master.asesi.add_asesi');
     }
 
     /**
@@ -209,7 +210,7 @@ class AsesiController extends Controller
     public function edit($id_asesi)
     {
         $asesi = Asesi::with(['user', 'dataPekerjaan'])->findOrFail($id_asesi);
-        return view('master.asesi.edit_asesi', ['asesi' => $asesi]);
+        return view('admin.master.asesi.edit_asesi', ['asesi' => $asesi]);
     }
 
     public function update(Request $request, $id_asesi)

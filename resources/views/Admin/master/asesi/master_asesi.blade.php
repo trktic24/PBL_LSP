@@ -20,7 +20,7 @@
 <body class="bg-gray-50 text-gray-800">
     <div class="min-h-screen flex flex-col">
         
-        <x-navbar />
+        <x-navbar_admin/>
         <main class="p-6">
             <div class="mb-6">
                 <p class="text-sm text-gray-500 mb-1">Hi, Admin LSP</p>

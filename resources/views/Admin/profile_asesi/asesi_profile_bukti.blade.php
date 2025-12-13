@@ -24,7 +24,7 @@
 
 <body class="bg-gray-50 text-gray-800">
 
-  <x-navbar />
+  <x-navbar_admin/>
   <main class="flex min-h-[calc(100vh-80px)]">
     <x-sidebar_profile_asesi 
         :asesi="$asesi" 

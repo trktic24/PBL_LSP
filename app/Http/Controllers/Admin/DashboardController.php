@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Models\Asesi;
@@ -110,7 +111,7 @@ class DashboardController extends Controller
         ]));
 
         // Kirim data ke View
-        return view('dashboard.dashboard_admin', [
+        return view('admin.dashboard.dashboard_admin', [
             'asesmenBerlangsung' => $asesmenBerlangsung,
             'asesmenSelesai'     => $asesmenSelesai,
             'jumlahAsesi'        => $jumlahAsesi,

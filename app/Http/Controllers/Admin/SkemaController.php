@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Skema;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -51,7 +52,7 @@ class SkemaController extends Controller
         $skemas = $query->paginate($perPage)->onEachSide(0.5);
         $skemas->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
-        return view('master.skema.master_skema', [
+        return view('admin.master.skema.master_skema', [
             'skemas' => $skemas,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -65,7 +66,7 @@ class SkemaController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('master.skema.add_skema', compact('categories'));
+        return view('admin.master.skema.add_skema', compact('categories'));
     }
 
     /**
@@ -118,7 +119,7 @@ class SkemaController extends Controller
     {
         $skema = Skema::findOrFail($id);
         $categories = Category::all();
-        return view('master.skema.edit_skema', compact('skema', 'categories'));
+        return view('admin.master.skema.edit_skema', compact('skema', 'categories'));
     }
 
     /**

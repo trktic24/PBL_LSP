@@ -1,19 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\SkemaController;
-use App\Http\Controllers\AsesorController; 
-use App\Http\Controllers\AsesiController; 
-use App\Http\Controllers\TukController;
-use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\BeritaController;
-use App\Http\Controllers\DaftarHadirController;
-use App\Http\Controllers\DetailSkemaController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AsesiProfileController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\LoginController;
+use App\Http\Controllers\Admin\SkemaController;
+use App\Http\Controllers\Admin\AsesorController; 
+use App\Http\Controllers\Admin\AsesiController; 
+use App\Http\Controllers\Admin\TukController;
+use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\BeritaController;
+use App\Http\Controllers\Admin\DaftarHadirController;
+use App\Http\Controllers\Admin\DetailSkemaController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\AsesiProfileController;
 use App\Models\Skema;
 use App\Models\Asesor;
 use App\Models\Tuk;
@@ -76,7 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/update/{id_skema}', 'update')->name('update_skema');
         Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
     });
-    Route::controller(\App\Http\Controllers\DetailSkemaController::class)
+    Route::controller(DetailSkemaController::class)
          ->prefix('master/skema/detail')
          ->group(function () {
             Route::get('/{id_skema}', 'index')->name('skema.detail');

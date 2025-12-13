@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Tuk;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
@@ -55,7 +56,7 @@ class TukController extends Controller
         // 7. Appends parameter ke link pagination
         $tuks->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
-        return view('tuk.master_tuk', [
+        return view('admin.tuk.master_tuk', [
             'tuks' => $tuks,
             'perPage' => $perPage 
         ]);
@@ -66,7 +67,7 @@ class TukController extends Controller
      */
     public function create()
     {
-        return view('tuk.add_tuk');
+        return view('admin.tuk.add_tuk');
     }
 
     /**
@@ -109,7 +110,7 @@ class TukController extends Controller
     public function edit($id)
     {
         $tuk = Tuk::findOrFail($id);
-        return view('tuk.edit_tuk', ['tuk' => $tuk]);
+        return view('admin.tuk.edit_tuk', ['tuk' => $tuk]);
     }
 
     /**
