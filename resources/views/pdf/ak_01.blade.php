@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FR.AK.01 - Cetak PDF</title>
+    <title>FR.AK.01 - Persetujuan Asesmen dan Kerahasiaan</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; }
-        .header { text-align: center; font-weight: bold; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        td { vertical-align: top; padding: 5px; }
-        .border-table td, .border-table th { border: 1px solid black; }
-        .checkbox { display: inline-block; width: 12px; height: 12px; border: 1px solid #000; margin-right: 5px; text-align: center; line-height: 10px; font-size: 10px; }
-        .checked { background-color: #000; color: #fff; } /* Hitam jika dicentang */
-        .signature-box { height: 80px; border-bottom: 1px solid black; width: 200px; margin-top: 40px; }
+        body { font-family: Arial, sans-serif; font-size: 11px; }
+        .header { font-size: 14px; font-weight: bold; margin-bottom: 20px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid black; padding: 5px; vertical-align: top; }
+        th { background-color: #e2e8f0; text-align: center; font-weight: bold; }
+        .no-border, .no-border td { border: none !important; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: bold; }
+        .bg-gray { background-color: #f3f4f6; }
+        .check-mark { font-family: DejaVu Sans, sans-serif; font-size: 14px; text-align: center; }
+        
+        /* Box Persetujuan */
+        .agreement-box { border: 1px solid #ccc; background-color: #f9f9f9; padding: 10px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -19,67 +24,78 @@
         FR.AK.01. PERSETUJUAN ASESMEN DAN KERAHASIAAN
     </div>
 
-    <table>
+    <table class="no-border" style="margin-bottom: 15px;">
         <tr>
-            <td width="25%"><strong>TUK</strong></td>
+            <td width="150"><strong>TUK</strong></td>
+            <td width="10">:</td>
             <td>
-                <span class="checkbox">{{ $data->tuk == 'Sewaktu' ? 'X' : '' }}</span> Sewaktu
-                <span class="checkbox" style="margin-left: 15px;">{{ $data->tuk == 'Tempat Kerja' ? 'X' : '' }}</span> Tempat Kerja
-                <span class="checkbox" style="margin-left: 15px;">{{ $data->tuk == 'Mandiri' ? 'X' : '' }}</span> Mandiri
+                @php 
+                    $tuk = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu'; 
+                @endphp
+                [{!! $tuk == 'Sewaktu' ? 'V' : '&nbsp;&nbsp;' !!}] Sewaktu &nbsp;&nbsp;
+                [{!! $tuk == 'Tempat Kerja' ? 'V' : '&nbsp;&nbsp;' !!}] Tempat Kerja &nbsp;&nbsp;
+                [{!! $tuk == 'Mandiri' ? 'V' : '&nbsp;&nbsp;' !!}] Mandiri
             </td>
         </tr>
-        
         <tr>
             <td><strong>Nama Asesor</strong></td>
-            <td>: {{ $data->nama_asesor ?? '...........................' }}</td>
+            <td>:</td>
+            <td>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '-' }}</td>
         </tr>
-
         <tr>
             <td><strong>Nama Asesi</strong></td>
-            <td>: {{ $data->nama_asesi ?? 'Devi Ibnu Nabila' }}</td>
+            <td>:</td>
+            <td>{{ $sertifikasi->asesi->nama_lengkap ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Tanggal</strong></td>
+            <td>:</td>
+            <td>{{ \Carbon\Carbon::now()->format('d F Y') }}</td>
         </tr>
     </table>
 
-    <br>
+    <hr>
 
-    <table class="border-table">
-        <tr style="background-color: #f0f0f0;">
-            <th style="text-align: left;">Bukti yang akan dikumpulkan:</th>
-            <th width="10%" style="text-align: center;">Cek</th>
-        </tr>
-        {{-- Loop data bukti dari tabel respon_bukti_ak01 --}}
-        @foreach($bukti_list as $bukti)
+    <div style="margin-bottom: 5px; font-weight: bold; margin-top: 10px;">Bukti yang akan dikumpulkan:</div>
+    <table class="no-border">
         <tr>
-            <td>{{ $bukti->nama_bukti }}</td> <td style="text-align: center;">
-                {{ $bukti->respon == 1 ? 'X' : '' }}
+            <td>
+                @foreach($masterBukti as $bukti)
+                    @php
+                        // Cek apakah bukti ini ada di respon bukti yang dipilih
+                        $isChecked = in_array($bukti->id_bukti_ak01, $responBukti);
+                    @endphp
+                    <div style="margin-bottom: 3px;">
+                        <span class="check-mark">[{!! $isChecked ? 'V' : '&nbsp;&nbsp;' !!}]</span> {{ $bukti->bukti }}
+                    </div>
+                @endforeach
             </td>
         </tr>
-        @endforeach
     </table>
 
-    <br>
-
-    <div style="border: 1px solid #ccc; padding: 10px;">
-        <strong>Persetujuan dan Kerahasiaan:</strong>
-        <p>
-            Bahwa saya sudah mendapatkan penjelasan Hak dan Prosedur Banding oleh Asesor. 
-            Saya setuju mengikuti asesmen dengan pemahaman bahwa informasi yang dikumpulkan 
-            hanya digunakan untuk pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.
-        </p>
+    <div class="agreement-box">
+        <div style="font-weight: bold; margin-bottom: 5px; text-decoration: underline;">Persetujuan Asesmen dan Kerahasiaan:</div>
+        <ol style="padding-left: 20px; margin: 0;">
+            <li style="margin-bottom: 5px;">Saya setuju mengikuti asesmen dengan pemahaman bahwa informasi yang dikumpulkan hanya digunakan untuk pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.</li>
+            <li style="margin-bottom: 5px;">Saya menyatakan bahwa saya telah mendapatkan penjelasan mengenai Hak dan Prosedur Banding oleh Asesor.</li>
+            <li style="margin-bottom: 5px;">Saya bersedia mengikuti asesmen sesuai dengan jadwal yang telah ditetapkan.</li>
+        </ol>
     </div>
 
-    <table style="margin-top: 30px;">
+    <br><br>
+    <table class="no-border">
         <tr>
-            <td width="50%"></td>
-            <td align="center">
-                Semarang, {{ date('d-m-Y') }}<br>
-                Tanda Tangan Peserta,
-                <br><br>
-                {{-- Jika ada gambar TTD di database, gunakan tag img --}}
-                {{-- <img src="{{ public_path('storage/'.$data->ttd_path) }}" height="60"> --}}
-                
-                <div style="height: 60px;"></div> <hr style="width: 70%; border-top: 1px solid #000;">
-                <strong>{{ $data->nama_asesi }}</strong>
+            <td style="width: 50%; text-align: center;">
+                Asesi,
+                <br><br><br><br>
+                <strong>{{ $sertifikasi->asesi->nama_lengkap ?? '(.......................)' }}</strong>
+                <br>Tanggal: {{ date('d-m-Y') }}
+            </td>
+            <td style="width: 50%; text-align: center;">
+                Asesor Kompetensi,
+                <br><br><br><br>
+                <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
+                <br>No. Reg: -
             </td>
         </tr>
     </table>

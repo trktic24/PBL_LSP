@@ -15,6 +15,9 @@ class DataSertifikasiAsesi extends Model
 {
     use HasFactory;
 
+    const STATUS_PERSETUJUAN_ASESMEN_OK = 40;
+
+
     /**
      * Nama tabel yang terkait dengan model.
      *
