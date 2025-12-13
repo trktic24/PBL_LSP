@@ -30,10 +30,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DaftarHadirController;
 use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\MitraController;
-
-// --- Controllers Khusus (Dari Web.php) ---
-// Controller ini diperlukan untuk fitur 'Admin melihat detail Asesor'
-use App\Http\Controllers\AsesorProfileController; 
+use App\Http\Controllers\Admin\AsesorProfileController; 
 
 // --- Controllers Asesor (Role Asesor) ---
 use App\Http\Controllers\Asesor\DashboardController as AsesorDashboardController;
