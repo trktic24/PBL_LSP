@@ -15,7 +15,7 @@ class IA10Controller extends Controller
     public function create($id_asesi)
     {
         $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
-        
+
         // 1. Ambil Data Header (Jika sudah ada)
         $header_ia10 = Ia10::where('id_data_sertifikasi_asesi', $id_asesi)->first();
 
@@ -28,7 +28,7 @@ class IA10Controller extends Controller
         $essay_answers = [];
         if ($header_ia10) {
             $details = DetailIa10::where('id_ia10', $header_ia10->id_ia10)->get();
-            foreach($details as $dt) {
+            foreach ($details as $dt) {
                 // Kita map berdasarkan isi_detail (pertanyaannya) agar mudah dipanggil di view
                 // Contoh key: 'Apa hubungan Anda dengan asesi?' => 'Saya atasan langsungnya'
                 $essay_answers[$dt->isi_detail] = $dt->jawaban;
@@ -37,14 +37,16 @@ class IA10Controller extends Controller
 
         // Dummy User (Sesuai kodemu)
         $user = new \stdClass();
-        $user->id = 3; $user->role = 'admin'; $user->name = 'Asesor Testing';
+        $user->id = 3;
+        $user->role = 'admin';
+        $user->name = 'Asesor Testing';
 
         return view('frontend.FR_IA_10', [
-            'asesi'         => $asesi,
-            'daftar_soal'   => $daftar_soal,
-            'header'        => $header_ia10,
+            'asesi' => $asesi,
+            'daftar_soal' => $daftar_soal,
+            'header' => $header_ia10,
             'essay_answers' => $essay_answers, // Data jawaban essay
-            'user'          => $user
+            'user' => $user
         ]);
     }
 
@@ -53,7 +55,7 @@ class IA10Controller extends Controller
         $request->validate([
             'id_data_sertifikasi_asesi' => 'required',
             'supervisor_name' => 'required',
-            'workplace'       => 'required',
+            'workplace' => 'required',
             // Validasi lain sesuai kebutuhan
         ]);
 
@@ -66,9 +68,9 @@ class IA10Controller extends Controller
                 ['id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi],
                 [
                     'nama_pengawas' => $request->supervisor_name,
-                    'tempat_kerja'  => $request->workplace,
-                    'alamat'        => $request->address ?? '-',
-                    'telepon'       => $request->phone ?? '-',
+                    'tempat_kerja' => $request->workplace,
+                    'alamat' => $request->address ?? '-',
+                    'telepon' => $request->phone ?? '-',
                 ]
             );
 
@@ -88,11 +90,11 @@ class IA10Controller extends Controller
             // ---------------------------------------------------------
             // Kita mapping key dari form ke pertanyaan lengkap untuk disimpan di DB
             $essay_map = [
-                'relation'       => 'Apa hubungan Anda dengan asesi?',
-                'duration'       => 'Berapa lama Anda bekerja dengan asesi?',
-                'proximity'      => 'Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?',
-                'experience'     => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai? (termasuk asesmen atau kualifikasi pelatihan)',
-                'consistency'    => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar yang diminta oleh unit kompetensi secara konsisten?',
+                'relation' => 'Apa hubungan Anda dengan asesi?',
+                'duration' => 'Berapa lama Anda bekerja dengan asesi?',
+                'proximity' => 'Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?',
+                'experience' => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai? (termasuk asesmen atau kualifikasi pelatihan)',
+                'consistency' => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar yang diminta oleh unit kompetensi secara konsisten?',
                 'training_needs' => 'Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:',
                 'other_comments' => 'Ada komentar lain:'
             ];
@@ -104,11 +106,11 @@ class IA10Controller extends Controller
 
                     DetailIa10::updateOrCreate(
                         [
-                            'id_ia10'    => $ia10->id_ia10,
+                            'id_ia10' => $ia10->id_ia10,
                             'isi_detail' => $label_pertanyaan // Kunci pencarian adalah Label Pertanyaannya
                         ],
                         [
-                            'jawaban'    => $jawaban_user // Nilai yang diupdate
+                            'jawaban' => $jawaban_user // Nilai yang diupdate
                         ]
                     );
                 }
@@ -142,7 +144,7 @@ class IA10Controller extends Controller
         $essay_answers = [];
         if ($header_ia10) {
             $details = DetailIa10::where('id_ia10', $header_ia10->id_ia10)->get();
-            foreach($details as $dt) {
+            foreach ($details as $dt) {
                 // Key array = Pertanyaan, Value = Jawaban
                 $essay_answers[$dt->isi_detail] = $dt->jawaban;
             }
@@ -150,9 +152,9 @@ class IA10Controller extends Controller
 
         // 5. Render PDF
         $pdf = Pdf::loadView('pdf.ia_10', [
-            'asesi'         => $asesi,
-            'header'        => $header_ia10,
-            'daftar_soal'   => $daftar_soal,
+            'asesi' => $asesi,
+            'header' => $header_ia10,
+            'daftar_soal' => $daftar_soal,
             'essay_answers' => $essay_answers
         ]);
 
