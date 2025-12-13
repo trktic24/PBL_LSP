@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\Category;
 use App\Models\Asesor;
 use App\Models\Jadwal;
@@ -56,6 +57,16 @@ class Skema extends Model
             'id_skema', // Foreign Key (Kolom di tabel kelompok_pekerjaan yang nyimpen ID skema)
             'id_skema', // Local Key (Kolom ID asli di tabel skema ini)
         );
+    }
+
+    /**
+     * Relasi ke konfigurasi formulir skema (FR.APL.01, FR.IA.02, dll.)
+     */
+    public function listForm(): HasOne
+    {
+        // Asumsi: Model ListForm ada di App\Models\ListForm
+        // Asumsi: Foreign key di tabel 'list_form' adalah 'id_skema'
+        return $this->hasOne(ListForm::class, 'id_skema', 'id_skema');
     }
 
     public function jadwal(): HasMany
