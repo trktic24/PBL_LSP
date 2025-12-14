@@ -12,7 +12,16 @@ class SoalIa06MasterSeeder extends Seeder
      */
     public function run(): void
     {
-        // Data dummy soal essai umum dan kunci jawaban singkatnya
+        // 1. AMBIL SEMUA ID SKEMA DULU
+        // Kita butuh ini biar soalnya nyambung ke skema
+        $listSkema = DB::table('skema')->pluck('id_skema');
+
+        if ($listSkema->isEmpty()) {
+            $this->command->warn('⚠️ Data Skema kosong! Jalankan SkemaSeeder dulu.');
+            return;
+        }
+
+        // 2. DATA SOAL ESSAI (Punya Kelompok Lu)
         $dataSoal = [
             [
                 'q' => 'Jelaskan secara singkat apa yang dimaksud dengan "Kompetensi" dalam konteks sertifikasi profesi!',
@@ -37,19 +46,28 @@ class SoalIa06MasterSeeder extends Seeder
         ];
 
         $now = now();
-        $insertData = [];
+        $this->command->info('Memulai seeding Soal IA-06 ke ' . $listSkema->count() . ' skema...');
 
-        foreach ($dataSoal as $item) {
-            $insertData[] = [
-                'soal_ia06' => $item['q'],
-                'kunci_jawaban_ia06' => $item['k'], // Boleh null, tapi kita isi aja buat contoh
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
+        // 3. LOOPING PROSES INSERT
+        // Kita masukkan paket soal ini ke SETIAP skema
+        foreach ($listSkema as $idSkema) {
+            
+            $insertData = [];
+
+            foreach ($dataSoal as $item) {
+                $insertData[] = [
+                    'id_skema'           => $idSkema, // <--- INI PENTING (Biar gak error relasi)
+                    'soal_ia06'          => $item['q'],
+                    'kunci_jawaban_ia06' => $item['k'], 
+                    'created_at'         => $now,
+                    'updated_at'         => $now,
+                ];
+            }
+
+            // Masukkan ke database per skema (Bulk Insert biar cepat)
+            DB::table('soal_ia06')->insert($insertData);
         }
 
-        // Masukkan ke tabel master soal_ia06
-        DB::table('soal_ia06')->insert($insertData);
-        $this->command->info('Berhasil memasukkan ' . count($insertData) . ' soal master essai.');
+        $this->command->info('✅ Berhasil memasukkan soal master essai ke seluruh Skema!');
     }
 }

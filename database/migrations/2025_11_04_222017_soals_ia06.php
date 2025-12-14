@@ -11,12 +11,14 @@ return new class extends Migration {
             // Primary Key Custom
             $table->id('id_soal_ia06');
 
-            // Isi Pertanyaan
-            $table->text('soal_ia06')->comment('Pertanyaan Esai');
+            $table->foreignId('id_skema')
+                  ->constrained('skema', 'id_skema')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
 
-            // Kunci Jawaban (Untuk referensi Asesor)
-            $table->text('kunci_jawaban_ia06')->nullable()->comment('Kunci Jawaban');
-
+            // isi dari database soal_ia06
+            $table->text('soal_ia06');
+            $table->text('kunci_jawaban_ia06')->nullable();
             $table->timestamps();
         });
     }
