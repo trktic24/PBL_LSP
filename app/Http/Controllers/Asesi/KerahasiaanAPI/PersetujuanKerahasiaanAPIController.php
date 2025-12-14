@@ -76,24 +76,34 @@ class PersetujuanKerahasiaanAPIController extends Controller
         try {
             $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
 
-            // Validasi Tanda Tangan (Opsional sementara untuk kelancaran tes user)
-            // if (empty($sertifikasi->asesi->tanda_tangan)) {
-            //     return redirect()->back()->with('error', 'Tanda tangan belum ada.');
-            // }
+            // Tentukan Status Tujuan
+            $nextStatus = DataSertifikasiAsesi::STATUS_PERSETUJUAN_ASESMEN_OK; 
+            // (Isinya: 'persetujuan_asesmen_disetujui')
 
-            // Update Status
-            $nextStatus = DataSertifikasiAsesi::STATUS_PERSETUJUAN_ASESMEN_OK;
+            // Update Tanda Tangan (Jika ada input signature)
+            if($request->has('tanda_tangan') && !empty($request->tanda_tangan)){
+                 $sertifikasi->asesi->tanda_tangan = $request->tanda_tangan;
+                 $sertifikasi->asesi->save();
+            }
+
+            // LOGIKA UPDATE STATUS
+            // Jika status sekarang BELUM sesuai tujuan, baru kita update
             if ($sertifikasi->status_sertifikasi != $nextStatus) {
                 $sertifikasi->status_sertifikasi = $nextStatus;
                 $sertifikasi->save();
+                $pesan = 'Persetujuan FR.AK.01 berhasil disimpan.';
+            } else {
+                // Jika SUDAH sesuai (kasus kamu sekarang), kita update timestampnya saja biar ketahuan ada aktivitas
+                $sertifikasi->touch(); 
+                $pesan = 'Data sudah terverifikasi sebelumnya.';
             }
 
-            // Redirect ke Tracker
+            // Redirect Kembali ke Tracker
             return redirect()->route('asesor.tracker', ['id_sertifikasi_asesi' => $id_sertifikasi])
-                ->with('success', 'Persetujuan berhasil disimpan.');
+                ->with('success', $pesan);
 
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
     }
 

@@ -10,6 +10,14 @@
         // Ambil Level
         $level = $dataSertifikasi->level_status;
 
+        // Jika status teks sudah disetujui, kita paksa variabel level jadi 40 
+        // supaya bagian Asesmen di bawah otomatis terbuka.
+        if ($dataSertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui') {
+            if ($level < 40) {
+                $level = 40;
+            }
+        }
+
         // Cek apakah Asesmen sudah Final (Sudah ada keputusan AK.02)
         $isFinalized = ($level >= 100);
 
@@ -200,31 +208,54 @@
 
                     {{-- ITEM 5: FR.AK.01 --}}
                     <div class="relative pl-20 pb-8 group">
-                        <div
-                            class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                            {{ $level >= 40 ? 'bg-green-500 text-white' : ($level >= 30 ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                            @if($level >= 40) <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg> @else <span class="font-bold text-xs">AK1</span> @endif
+                        @php
+                            // Cek apakah statusnya sudah disetujui secara spesifik
+                            // Sesuaikan string 'persetujuan_asesmen_disetujui' dengan isi database kamu (lihat hasil debug tadi)
+                            $ak01Done = ($level >= 40 || $dataSertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui');
+                        @endphp
+
+                        {{-- Lingkaran Icon --}}
+                        <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                            {{ $ak01Done ? 'bg-green-500 text-white' : ($level >= 30 ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                            
+                            @if($ak01Done) 
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg> 
+                            @else 
+                                <span class="font-bold text-xs">AK1</span> 
+                            @endif
                         </div>
+
                         <div>
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold {{ $level < 30 ? 'text-gray-400' : 'text-gray-800' }}">
-                                    FR.AK.01 - Persetujuan & Kerahasiaan</h3>
+                                    FR.AK.01 - Persetujuan & Kerahasiaan
+                                </h3>
                                 <div class="flex gap-2 ml-4">
+                                    {{-- Tombol Verifikasi --}}
+                                    {{-- Hapus logika if-else disable, ganti jadi style biru permanen --}}
                                     <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
-                                        class="text-xs font-bold py-1 px-3 rounded-md {{ btnState($level, 30, $isFinalized) }}">Verifikasi</a>
+                                       class="text-xs font-bold py-1 px-3 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200">
+                                       Verifikasi
+                                    </a>
+
                                     <a href="{{ route('ak01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
-                                        target="_blank"
-                                        class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState($level, 30) }}">Lihat
-                                        PDF</a>
+                                       target="_blank"
+                                       class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState($level, 30) }}">
+                                       Lihat PDF
+                                    </a>
                                 </div>
                             </div>
-                            @if($level >= 40)
+
+                            {{-- Status Text --}}
+                            @if($ak01Done)
                                 <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
-                            @elseif($level < 30) <p class="text-xs text-red-400 italic mt-1">Selesaikan APL.02 terlebih
-                                dahulu.</p>
-                            @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
+                            @elseif($level < 30) 
+                                <p class="text-xs text-red-400 italic mt-1">Selesaikan APL.02 terlebih dahulu.</p>
+                            @else 
+                                <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> 
+                            @endif
                         </div>
                     </div>
                 </div>
