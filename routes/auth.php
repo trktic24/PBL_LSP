@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 // ======================================================
 // 1. CONTROLLERS UAMA & AUTH
 // ======================================================
-use App\Http\Controllers\ProfileController;
+// use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -80,7 +80,7 @@ use App\Http\Controllers\Ak02Controller;
 use App\Http\Controllers\FrMapa01Controller;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\IA02Controller;
-use App\Http\Controllers\IA03Controller;
+use App\Http\Controllers\Asesi\IA03\IA03Controller;
 use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\Ia06Controller;
 use App\Http\Controllers\IA07Controller;
@@ -353,6 +353,9 @@ Route::middleware('auth')->group(function () {
         // AK-02
         Route::get('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
         Route::put('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
+
+        // APL-02 (Verifikasi)
+        Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
 
         // IA-06 Penilaian
         Route::get('/penilaian/ia-06/{id}', [Ia06Controller::class, 'asesorShow'])->name('ia06.edit');

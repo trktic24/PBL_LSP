@@ -18,10 +18,8 @@ class LembarJawabIA05 extends Model
     protected $fillable = [
         'id_data_sertifikasi_asesi',
         'id_soal_ia05',
-        'id_kunci_jawaban_ia05', // <-- Ada di screenshot
-        'teks_jawaban_asesi_ia05', // <-- Ini kolom jawaban asesi
-        'pencapaian_ia05_iya', // <-- Ini untuk penilaian
-        'pencapaian_ia05_tidak', // <-- Ini untuk penilaian
+        'jawaban_asesi_ia05', // <-- Enum ['a', 'b', 'c', 'd']
+        'pencapaian_ia05',    // <-- Enum ['ya', 'tidak']
     ];
 
     // ================= RELASI =================

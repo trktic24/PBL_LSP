@@ -14,7 +14,7 @@ class KunciJawabanIA05 extends Model
 
     protected $fillable = [
         'id_soal_ia05',
-        'nomor_kunci_jawaban_ia05',
-        'teks_kunci_jawaban_ia05', // <-- Ini kolom kuncinya
+        'jawaban_benar_ia05', // <-- Enum ['a', 'b', 'c', 'd']
+        'penjelasan_ia05', 
     ];
 }

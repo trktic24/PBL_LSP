@@ -258,9 +258,9 @@
                 </li>
               @else
                 <li>
-                  <a href="{{ url('/dashboard') }}"
+                  <a href="{{ route('asesor.dashboard') }}"
                     class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
-                    {{ request()->is('dashboard') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+                    {{ request()->routeIs('asesor.dashboard') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
                     Dashboard
                   </a>
                 </li>
