@@ -5,9 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // ======================================================
-// 1. CONTROLLERS UAMA & AUTH
+// 1. CONTROLLERS UTAMA & AUTH
 // ======================================================
-// use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -30,7 +29,6 @@ use App\Http\Controllers\Admin\DetailSkemaController;
 use App\Http\Controllers\Admin\AsesorController;
 use App\Http\Controllers\Admin\AsesiController;
 use App\Http\Controllers\Admin\JadwalController as AdminJadwalController;
-// use App\Http\Controllers\Admin\ScheduleController; // Deprecated by JadwalController usually, but check
 use App\Http\Controllers\Admin\TukAdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DaftarHadirController;
@@ -290,13 +288,23 @@ Route::middleware('auth')->group(function () {
              Route::delete('/asesor/{id_asesor}', 'destroy')->name('asesor.destroy');
         });
 
-        // Detail Profil Asesor (Admin View)
+        // ==========================================================
+        // DETAIL PROFIL ASESOR (Admin View) - [UPDATED SECTION]
+        // ==========================================================
         Route::controller(AsesorProfileController::class)->prefix('asesor/{id_asesor}')->group(function () {
              Route::get('/profile', 'showProfile')->name('asesor.profile');
              Route::get('/bukti', 'showBukti')->name('asesor.bukti');
              Route::get('/tinjauan', 'showTinjauan')->name('asesor_profile_tinjauan');
-             Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.jadwal.asesi');
-             Route::get('/tracker', 'showTracker')->name('asesor_profile_tracker');
+             
+             // [FIX] Mengubah nama route agar sesuai dengan View (daftar_asesi)
+             Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.daftar_asesi'); 
+             
+             // [FIX] Parameter Tracker dibuat OPSIONAL (?) agar tidak error di Sidebar
+             Route::get('/tracker/{id_data_sertifikasi_asesi?}', 'showTracker')->name('asesor.tracker');
+
+             // Route untuk Tracker Skema (Timeline per Jadwal/Asesi)
+             Route::get('/tracker_skema/{id_jadwal}', 'showTrackerSkema')->name('asesor.tracker_skema');
+             
              Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
              Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
         });
@@ -313,9 +321,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/daftar_hadir', 'daftarHadir')->name('schedule.attendance');
             Route::delete('/attendance/delete/{id}', 'destroy')->name('schedule.attendance.destroy');
             Route::get('/daftar_hadir/pdf', 'exportPdfdaftarhadir')->name('attendance.pdf');
-            // Berita Acara untuk admin diakses melalui route asesor (readonly)
-            // Route::get('/berita-acara', 'beritaAcara')->name('berita_acara');
-            // Route::get('/berita-acara/pdf', 'exportPdfberitaAcara')->name('berita_acara.pdf');
         });
 
         // Bank Soal IA-06 (View Only for Admin, Full Access for Superadmin)
@@ -350,7 +355,7 @@ Route::middleware('auth')->group(function () {
         // Manajemen Jadwal & Asesi
         Route::get('/jadwal', [AsesorJadwalController::class, 'index'])->name('jadwal.index');
         Route::get('/daftar-asesi/{id_jadwal}', [AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
-        Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker'); // Note use of AsesiTrackerController here if different from Asesi\Tracker
+        Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker');
 
         // Daftar Hadir & BA
         Route::controller(AsesorJadwalController::class)->group(function() {
@@ -384,7 +389,6 @@ Route::middleware('auth')->group(function () {
     // ======================================================
     // Berita Acara - Shared Route (Asesor & Admin)
     // ======================================================
-    // Route ini di luar group role:asesor agar admin bisa akses (readonly)
     Route::middleware(['role:asesor,admin'])->prefix('asesor')->name('asesor.')->group(function () {
         Route::controller(AsesorJadwalController::class)->group(function() {
             Route::get('/berita-acara/{id_jadwal}', 'beritaAcara')->name('berita_acara');
@@ -399,7 +403,7 @@ Route::middleware('auth')->group(function () {
 
         // Dashboard / Riwayat
         Route::get('/riwayat-sertifikasi', [RiwayatSertifikasiController::class, 'index'])->name('riwayat.index');
-        Route::get('/dashboard', [AsesiDashboardController::class, 'index'])->name('dashboard'); // Redirect or View
+        Route::get('/dashboard', [AsesiDashboardController::class, 'index'])->name('dashboard');
 
         // Profil
         Route::controller(AsesiSelfProfileController::class)->group(function () {
@@ -466,9 +470,6 @@ Route::middleware('auth')->group(function () {
 
         // Cetak
         Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01'); 
-
-        // Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
-
         Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
         Route::get('/cetak/ak01/{id_sertifikasi}', [Ak01PdfController::class, 'generateAk01'])->name('cetak.ak01');
     });

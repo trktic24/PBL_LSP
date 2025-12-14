@@ -48,19 +48,82 @@
         </div>
 
         @php
-            $level = $dataSertifikasi->level_status; 
-            $LVL_APL01_SUBMIT = 10;
-            $LVL_APL01_VERIF = 20; 
-            $LVL_APL02_VERIF    = 30; 
-            $LVL_SIAP_ASESMEN = 40; 
-            $LVL_SELESAI_IA   = 90; 
-            $LVL_LULUS        = 100; 
+            // =========================================================================
+            // 1. SETUP LOGIKA UTAMA (Diadaptasi dari Tracker Asesi)
+            // =========================================================================
 
-            function getStepStatus($currentLevel, $targetDone, $targetActive) {
-                if ($currentLevel >= $targetDone) return 'DONE';
-                if ($currentLevel >= $targetActive) return 'ACTIVE';
-                return 'LOCKED';
+            $level = $dataSertifikasi->level_status;
+
+            // Logika bypass level jika status teks sudah disetujui
+            if ($dataSertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui') {
+                if ($level < 40) {
+                    $level = 40;
+                }
             }
+
+            // Cek Final (Sudah ada keputusan AK.02)
+            $isFinalized = ($level >= 100);
+
+            // =========================================================================
+            // 2. HELPER FUNCTION (Logic Only)
+            // =========================================================================
+
+            // Helper State Tombol Verifikasi
+            function btnState($currentLevel, $requiredLevel, $isFinalized) {
+                // Untuk Asesor, meskipun finalized, biasanya masih bisa lihat/edit (opsional). 
+                // Tapi kita samakan logikanya: jika finalized, disable (kecuali reset).
+                if ($isFinalized) return 'bg-gray-100 text-gray-400 pointer-events-none cursor-not-allowed';
+                
+                if ($currentLevel >= $requiredLevel) {
+                    return 'bg-blue-100 text-blue-600 hover:bg-blue-200 cursor-pointer';
+                } else {
+                    return 'bg-gray-100 text-gray-400 pointer-events-none cursor-not-allowed';
+                }
+            }
+
+            // Helper State Tombol PDF
+            function pdfState($currentLevel, $requiredLevel) {
+                if ($currentLevel >= $requiredLevel) {
+                    return 'bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer';
+                } else {
+                    return 'bg-gray-100 text-gray-300 pointer-events-none cursor-not-allowed';
+                }
+            }
+
+            // Helper Warna Icon Timeline
+            function iconColor($status) {
+                if ($status == 'DONE') return 'bg-green-500 text-white';
+                if ($status == 'ACTIVE') return 'bg-yellow-400 text-white';
+                return 'bg-gray-200 text-gray-400';
+            }
+
+            // =========================================================================
+            // 3. CEK STATUS PER ITEM (UNTUK AK.02 LOCK)
+            // =========================================================================
+            
+            // Cek ketersediaan relasi (menggunakan eager loading dari controller)
+            
+            // IA.05
+            $ia05Done = $dataSertifikasi->lembarJawabIa05()->whereNotNull('pencapaian_ia05')->exists();
+            $stIa05 = $ia05Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+            // IA.10
+            $ia10Done = $dataSertifikasi->ia10()->exists(); // Pastikan relasi 'ia10' ada di model
+            $stIa10 = $ia10Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+            // IA.02
+            $ia02Done = $dataSertifikasi->ia02()->exists();
+            $stIa02 = $ia02Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+            // IA.06 (Asumsi relasi ia06Answers atau ia06)
+            $ia06Done = $dataSertifikasi->ia06Answers()->whereNotNull('pencapaian')->exists(); 
+            $stIa06 = $ia06Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+            // IA.07
+            $ia07Done = $dataSertifikasi->ia07()->whereNotNull('pencapaian')->exists();
+            $stIa07 = $ia07Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+            $allIADone = ($ia05Done && $ia10Done && $ia02Done && $ia06Done && $ia07Done);
         @endphp
 
         <div class="max-w-6xl mx-auto">
@@ -74,107 +137,318 @@
                         <div class="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200" aria-hidden="true"></div>
 
                         {{-- ITEM 1: FR.APL.01 --}}
-                        @php $stAPL01 = getStepStatus($level, 20, $LVL_APL01_SUBMIT); @endphp
                         <div class="relative pl-20 pb-8 group">
-                            @if($stAPL01 == 'DONE') <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
+                            @php $isApl01Done = $dataSertifikasi->rekomendasi_apl01 == 'diterima'; @endphp
+                            @if($isApl01Done) <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
+                            
                             <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                                {{ $stAPL01 == 'DONE' ? 'bg-green-500 text-white' : ($stAPL01 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                                <span class="font-bold text-xs">01</span>
+                                {{ $isApl01Done ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white' }}">
+                                @if($isApl01Done) 
+                                    <i class="fas fa-check"></i>
+                                @else 
+                                    <span class="font-bold text-xs">01</span> 
+                                @endif
                             </div>
                             <div>
                                 <div class="flex flex-col justify-start items-start">
                                     <h3 class="text-lg font-semibold text-gray-800">FR.APL.01 - Permohonan Sertifikasi Kompetensi</h3>
                                     <div class="flex flex-wrap gap-2 mt-2">
-                                        <a href="#" class="bg-green-100 text-green-700 hover:bg-green-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-check"></i> Verifikasi</a>
-                                        <a href="#" class="bg-red-100 text-red-700 hover:bg-red-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-times"></i> Tolak</a>
-                                        <a href="#" class="bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-eye"></i> Lihat</a>
-                                        <a href="#" class="bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-file-pdf"></i> PDF</a>
+                                        {{-- Tombol Aksi --}}
+                                        <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
+                                           class="{{ btnState(100, 0, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                           <i class="fas fa-check-double"></i> Verifikasi
+                                        </a>
+                                        <a href="{{ route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" 
+                                           class="{{ pdfState(100, 0) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                           <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
                                     </div>
                                 </div>
-                                <p class="text-xs text-green-500 mt-1">Diterima</p>
+                                @if($isApl01Done) <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                                @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
                             </div>
                         </div>
 
-                        {{-- ITEM 2: FR.APL.02 --}}
-                        @php $stAPL02 = getStepStatus($level, $LVL_APL01_VERIF, $LVL_APL02_VERIF); @endphp
+                        {{-- ITEM 2: FR.MAPA.01 --}}
                         <div class="relative pl-20 pb-8 group">
-                            @if($stAPL02 == 'DONE') <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
+                            @php $isMapa01Done = $level >= 20; @endphp
+                            @if($isMapa01Done) <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
+                            
                             <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                                {{ $stAPL02 == 'DONE' ? 'bg-green-500 text-white' : ($stAPL02 == 'ACTIVE' ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
-                                <span class="font-bold text-xs">02</span>
-                            </div>
-                            <div>
-                                <div class="flex flex-col justify-start items-start">
-                                    <h3 class="text-lg font-semibold text-gray-800">FR.APL.02 - Asesmen Mandiri</h3>
-                                    <div class="flex flex-wrap gap-2 mt-2">
-                                        <a href="#" class="bg-green-100 text-green-700 hover:bg-green-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-check"></i> Verifikasi</a>
-                                        <a href="#" class="bg-red-100 text-red-700 hover:bg-red-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-times"></i> Tolak</a>
-                                        <a href="#" class="bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-eye"></i> Lihat</a>
-                                        <a href="#" class="bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-file-pdf"></i> PDF</a>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-green-500 mt-1">Diterima</p>
-                            </div>
-                        </div>
-
-                        {{-- ITEM: FR.MAPA.01 --}}
-                        <div class="relative pl-20 pb-8 group">
-                            <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div>
-                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white bg-green-500 text-white">
-                                <span class="font-bold text-xs">03</span>
+                                {{ $isMapa01Done ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white' }}">
+                                @if($isMapa01Done) <i class="fas fa-check"></i> @else <span class="font-bold text-xs">M1</span> @endif
                             </div>
                             <div>
                                 <div class="flex flex-col justify-start items-start">
                                     <h3 class="text-lg font-semibold text-gray-800">FR.MAPA.01 - Merencanakan Aktivitas</h3>
                                     <div class="flex flex-wrap gap-2 mt-2">
-                                        <a href="#" class="bg-green-100 text-green-700 hover:bg-green-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-check"></i> Verifikasi</a>
-                                        <a href="#" class="bg-red-100 text-red-700 hover:bg-red-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-times"></i> Tolak</a>
-                                        <a href="#" class="bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-eye"></i> Lihat</a>
-                                        <a href="#" class="bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-file-pdf"></i> PDF</a>
+                                        <a href="{{ route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                           class="{{ btnState(100, 0, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                           <i class="fas fa-check-double"></i> Verifikasi
+                                        </a>
+                                        <a href="{{ route('mapa01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                            class="{{ pdfState(100, 0) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
                                     </div>
                                 </div>
-                                <p class="text-xs text-green-500 mt-1">Diterima</p>
+                                @if($isMapa01Done) <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                                @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
                             </div>
                         </div>
+
+                        {{-- ITEM 3: FR.MAPA.02 --}}
+                        <div class="relative pl-20 pb-8 group">
+                            @php $isMapa02Done = $level >= 20; @endphp
+                            @if($isMapa02Done) <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
+
+                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                                {{ $isMapa02Done ? 'bg-green-500 text-white' : ($level >= 10 ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                                @if($isMapa02Done) <i class="fas fa-check"></i> @else <span class="font-bold text-xs">M2</span> @endif
+                            </div>
+                            <div>
+                                <div class="flex flex-col justify-start items-start">
+                                    <h3 class="text-lg font-semibold {{ $level < 10 ? 'text-gray-400' : 'text-gray-800' }}">FR.MAPA.02 - Peta Instrumen</h3>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                           class="{{ btnState($level, 20, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                           <i class="fas fa-check-double"></i> Verifikasi
+                                        </a>
+                                        <a href="{{ route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                            class="{{ pdfState($level, 20) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                    </div>
+                                </div>
+                                @if($isMapa02Done) <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                                @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
+                            </div>
+                        </div>
+
+                        {{-- ITEM 4: FR.APL.02 --}}
+                        <div class="relative pl-20 pb-8 group">
+                            @php $isApl02Done = $level >= 30; @endphp
+                            @if($isApl02Done) <div class="absolute left-6 top-4 h-full w-0.5 bg-green-500 z-0"></div> @endif
+
+                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                                {{ $isApl02Done ? 'bg-green-500 text-white' : ($level >= 20 ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                                @if($isApl02Done) <i class="fas fa-check"></i> @else <span class="font-bold text-xs">02</span> @endif
+                            </div>
+                            <div>
+                                <div class="flex flex-col justify-start items-start">
+                                    <h3 class="text-lg font-semibold {{ $level < 20 ? 'text-gray-400' : 'text-gray-800' }}">FR.APL.02 - Asesmen Mandiri</h3>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        {{-- Link ke verifikasi APL.02 Asesor --}}
+                                        <a href="{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                           class="{{ btnState($level, 20, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                           <i class="fas fa-check-double"></i> Verifikasi
+                                        </a>
+                                        <a href="{{ route('apl02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                            class="{{ pdfState($level, 20) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                    </div>
+                                </div>
+                                @if($dataSertifikasi->rekomendasi_apl02 == 'diterima') <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                                @elseif($level < 20) <p class="text-xs text-red-400 italic mt-1">Selesaikan item sebelumnya.</p>
+                                @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
+                            </div>
+                        </div>
+
+                         {{-- ITEM 5: FR.AK.01 --}}
+                         <div class="relative pl-20 pb-8 group">
+                            @php
+                                $ak01Done = ($level >= 40 || $dataSertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui');
+                            @endphp
+                            
+                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
+                                {{ $ak01Done ? 'bg-green-500 text-white' : ($level >= 30 ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                                @if($ak01Done) <i class="fas fa-check"></i> @else <span class="font-bold text-xs">AK1</span> @endif
+                            </div>
+
+                            <div>
+                                <div class="flex flex-col justify-start items-start">
+                                    <h3 class="text-lg font-semibold {{ $level < 30 ? 'text-gray-400' : 'text-gray-800' }}">FR.AK.01 - Persetujuan & Kerahasiaan</h3>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        {{-- AK01 hanya view untuk asesor (karena asesi yang setuju) --}}
+                                        <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                            class="bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                            <i class="fas fa-eye"></i> Tinjau
+                                        </a>
+                                        <a href="{{ route('ak01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                            class="{{ pdfState($level, 30) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                    </div>
+                                </div>
+                                @if($ak01Done) <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                                @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Persetujuan Asesi</p> @endif
+                            </div>
+                         </div>
 
                     </div>
                 </div>
             </section>
 
             {{-- SECTION 2: ASESMEN REAL --}}
-            <section id="asesmen" class="mt-8">
+            <section id="asesmen" class="mt-8 transition-all duration-300 {{ $level < 40 ? 'opacity-60' : '' }}">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                    <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Pelaksanaan Asesmen</h2>
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">
+                        Pelaksanaan Asesmen
+                        @if($level < 40) <span class="text-sm font-normal text-red-500 ml-2 inline-block">(Terkunci: Selesaikan Pra Asesmen)</span> @endif
+                    </h2>
+                    
                     <div class="relative">
                         <div class="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200" aria-hidden="true"></div>
 
                         {{-- IA.05 --}}
                         <div class="relative pl-20 pb-8">
-                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white bg-yellow-400 text-white">
-                                <span class="font-bold text-[10px]">IA.05</span>
+                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa05) }}">
+                                @if($stIa05 == 'DONE') <i class="fas fa-check"></i> @else <span class="font-bold text-[10px]">IA.05</span> @endif
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800">FR.IA.05 - Pertanyaan Tertulis</h3>
                                 <div class="flex flex-wrap gap-2 mt-2">
-                                    <a href="#" class="bg-green-100 text-green-700 hover:bg-green-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-check"></i> Verifikasi</a>
-                                    <a href="#" class="bg-red-100 text-red-700 hover:bg-red-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-times"></i> Tolak</a>
-                                    <a href="#" class="bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-eye"></i> Lihat</a>
-                                    <a href="#" class="bg-gray-100 text-gray-700 hover:bg-gray-200 text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition"><i class="fas fa-file-pdf"></i> PDF</a>
-                                    <a href="#" class="w-full mt-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2 rounded-md text-center">Lakukan Penilaian</a>
+                                    {{-- Mengarah ke halaman penilaian IA.05 Asesor (IA-05-C biasanya) --}}
+                                    <a href="{{ route('FR_IA_05_C', $asesi->id_asesi) }}"
+                                       class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                       <i class="fas fa-pen-nib"></i> Nilai
+                                    </a>
+                                    <a href="{{ route('ia05.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                        class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
+                                </div>
+                                @if($stIa05 == 'DONE') <p class="text-xs text-green-500 mt-1 font-semibold">Sudah Dinilai</p>
+                                @elseif($stIa05 == 'ACTIVE') <p class="text-xs text-yellow-600 mt-1 font-semibold">Belum Dinilai</p>
+                                @else <p class="text-xs text-gray-400 mt-1 italic">Belum Terbuka</p> @endif
+                            </div>
+                        </div>
+
+                        {{-- IA.10 --}}
+                        <div class="relative pl-20 pb-8">
+                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa10) }}">
+                                @if($stIa10 == 'DONE') <i class="fas fa-check"></i> @else <span class="font-bold text-[10px]">IA.10</span> @endif
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">FR.IA.10 - Verifikasi Pihak Ketiga</h3>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <a href="{{ route('fr-ia-10.create', $asesi->id_asesi) }}"
+                                       class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                       <i class="fas fa-pen-nib"></i> Verifikasi
+                                    </a>
+                                    <a href="{{ route('ia10.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                        class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
                                 </div>
                             </div>
                         </div>
 
                         {{-- IA.02 --}}
                         <div class="relative pl-20 pb-8">
-                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white bg-gray-200 text-gray-500">
-                                <span class="font-bold text-[10px]">IA.02</span>
+                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa02) }}">
+                                @if($stIa02 == 'DONE') <i class="fas fa-check"></i> @else <span class="font-bold text-[10px]">IA.02</span> @endif
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-400">FR.IA.02 - Demonstrasi Praktik</h3>
-                                <div class="flex flex-wrap gap-2 mt-2 opacity-50">
-                                    <span class="text-xs text-gray-400 italic">Belum tersedia</span>
+                                <h3 class="text-lg font-semibold text-gray-800">FR.IA.02 - Tugas Praktik Demonstrasi</h3>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <a href="{{ route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                       class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                       <i class="fas fa-pen-nib"></i> Verifikasi
+                                    </a>
+                                    <a href="{{ route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                        class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
                                 </div>
+                            </div>
+                        </div>
+
+                        {{-- IA.06 --}}
+                        <div class="relative pl-20 pb-8">
+                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa06) }}">
+                                @if($stIa06 == 'DONE') <i class="fas fa-check"></i> @else <span class="font-bold text-[10px]">IA.06</span> @endif
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">FR.IA.06 - Pertanyaan Lisan</h3>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <a href="{{ route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                       class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                       <i class="fas fa-pen-nib"></i> Verifikasi
+                                    </a>
+                                    <a href="{{ route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                        class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- IA.07 --}}
+                        <div class="relative pl-20 pb-8">
+                            <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white {{ iconColor($stIa07) }}">
+                                @if($stIa07 == 'DONE') <i class="fas fa-check"></i> @else <span class="font-bold text-[10px]">IA.07</span> @endif
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">FR.IA.07 - Daftar Pertanyaan Lisan</h3>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <a href="{{ route('FR_IA_07') }}"
+                                       class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                       <i class="fas fa-pen-nib"></i> Verifikasi
+                                    </a>
+                                    <a href="{{ route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                        class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- AK.02 (KEPUTUSAN) --}}
+                        <div class="relative pl-20 pt-4 border-t mt-4 group">
+                            <div class="absolute left-0 top-6 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white 
+                                {{ $isFinalized ? 'bg-green-600 text-white' : ($allIADone ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
+                                <span class="font-bold text-xs">AK.02</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-lg font-bold text-gray-800 mt-2">Keputusan Asesmen (AK.02)</h3>
+                                    <div class="flex gap-2 ml-4 mt-2">
+                                        <a href="{{ route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                           class="{{ btnState($allIADone ? 100 : 0, 100, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                           <i class="fas fa-gavel"></i> Keputusan
+                                        </a>
+                                        <a href="{{ route('ak02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank"
+                                            class="{{ pdfState($isFinalized ? 100 : 0, 100) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 transition">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {{-- Status Validator/Final --}}
+                                @if($dataSertifikasi->status_validasi == 'valid')
+                                    <div class="mt-4 p-4 bg-green-100 border border-green-400 rounded-lg shadow-sm">
+                                        <div class="flex items-center gap-3">
+                                            <div class="bg-green-500 text-white rounded-full p-1">
+                                                <i class="fas fa-check w-4 h-4 text-center"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-green-800 font-bold text-sm">SELESAI & TERVALIDASI</p>
+                                                <p class="text-xs text-green-700">Keputusan telah disetujui oleh Validator.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @elseif($isFinalized)
+                                    <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p class="text-blue-800 font-bold text-sm">✅ Keputusan telah dikirim ke Validator.</p>
+                                        <p class="text-xs text-blue-600">Menunggu validasi.</p>
+                                    </div>
+                                @elseif($allIADone)
+                                    <p class="text-xs text-yellow-600 mt-2 font-semibold">Silakan isi keputusan asesmen.</p>
+                                @else
+                                    <p class="text-xs text-red-400 mt-2 italic">Selesaikan penilaian pada semua form di atas terlebih dahulu.</p>
+                                @endif
                             </div>
                         </div>
 
