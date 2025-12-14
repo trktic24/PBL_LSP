@@ -359,8 +359,8 @@ Route::middleware('auth')->group(function () {
         });
 
         // AK-02
-        Route::get('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
-        Route::put('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
+        Route::get('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
+        Route::put('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
 
         // APL-02 (Verifikasi)
         Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');

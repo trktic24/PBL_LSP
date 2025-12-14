@@ -29,7 +29,7 @@ class DataSertifikasiAsesiFactory extends Factory
             'tanggal_daftar' => fake()->dateTimeThisYear()->format('Y-m-d'),
             'rekomendasi_apl01' => $statusApl01,
             'tujuan_asesmen' => fake()->randomElement(['sertifikasi', 'PKT', 'rekognisi pembelajaran sebelumnya', 'lainnya']),
-            
+
             // Default NULL semua
             'rekomendasi_apl02' => null,
             'jawaban_mapa01' => null,
@@ -61,7 +61,7 @@ class DataSertifikasiAsesiFactory extends Factory
 
         // 2. Tahap APL-02
         $statusApl02 = fake()->randomElement(array_merge(
-            array_fill(0, 8, 'diterima'), 
+            array_fill(0, 8, 'diterima'),
             ['tidak diterima', null]
         ));
 
@@ -85,9 +85,9 @@ class DataSertifikasiAsesiFactory extends Factory
 
         // 4. Tahap Keputusan (AK-02)
         // Chance K: 2/3, BK: 1/3
-        $hasilAkhir = fake()->randomElement(['kompeten', 'kompeten', 'belum kompeten']); 
+        $hasilAkhir = fake()->randomElement(['kompeten', 'kompeten', 'belum kompeten']);
 
-        $data['rekomendasi_hasil_asesmen_AK02'] = $hasilAkhir;
+        $data['rekomendasi_hasil_asesmen_AK02'] = NULL;//suruh cezar
         $data['tindakan_lanjut_AK02'] = $hasilAkhir == 'kompeten' ? 'Terbitkan sertifikat' : 'Perlu asesmen ulang';
         $data['komentar_AK02'] = fake()->sentence();
         $data['catatan_asesi_AK03'] = 'Setuju dengan keputusan asesor';
