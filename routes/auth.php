@@ -484,3 +484,4 @@ Route::middleware('auth')->group(function () {
         Auth::logout();
         return redirect('/login')->with('error', 'Role Anda tidak valid.');
     })->name('home.index');
+});
