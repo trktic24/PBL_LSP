@@ -62,7 +62,7 @@ class AsesorJadwalController extends Controller
         $id_asesor = $user->asesor->id_asesor;
 
         // Ambil data asesor berdasarkan ID user yang login
-        $asesor = Asesor::with('user', 'skema')->find($id_asesor);
+        $asesor = Asesor::with('user', 'skemas')->find($id_asesor);
 
         /*$profile = [
             'nama' => $asesor->nama_lengkap ?? 'Nama Asesor',

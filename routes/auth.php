@@ -70,6 +70,7 @@ use App\Http\Controllers\Asesi\pembayaran\PaymentController;
 // PDF Controllers
 use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
 use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\Ak01PdfController; 
 use App\Http\Controllers\Asesi\Pdf\KartuPesertaPdfController;
 
 // ======================================================
@@ -363,8 +364,8 @@ Route::middleware('auth')->group(function () {
         });
 
         // AK-02
-        Route::get('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
-        Route::put('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
+        Route::get('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
+        Route::put('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
 
         // APL-02 (Verifikasi)
         Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
@@ -422,6 +423,7 @@ Route::middleware('auth')->group(function () {
         // Jadwal & Konfirmasi
         Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
         Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
+        
 
         // Pembayaran
         Route::controller(PaymentController::class)->group(function () {
@@ -455,8 +457,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04');
 
         // Cetak
-        Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
+        Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01'); 
+
+        // Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
+
         Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
+        Route::get('/cetak/ak01/{id_sertifikasi}', [Ak01PdfController::class, 'generateAk01'])->name('cetak.ak01');
     });
 
     // ======================================================

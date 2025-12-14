@@ -1,5 +1,25 @@
 ﻿@props(['active' => 'home'])
 
+@php
+    $displayName = 'User';
+    if(Auth::check()){
+        $user = Auth::user();
+        $roleName = $user->role->nama_role;
+
+        if($roleName == 'asesi' && $user->asesi){
+             $displayName = $user->asesi->nama_lengkap;
+        } elseif($roleName == 'asesor' && $user->asesor){
+             $displayName = $user->asesor->nama_lengkap;
+        } elseif(($roleName == 'admin' || $roleName == 'superadmin') && $user->admin){
+             $displayName = $user->admin->nama_lengkap;
+        }
+        
+        if(empty($displayName) || $displayName === 'User'){
+            $displayName = $user->email;
+        }
+    }
+@endphp
+
 @if(Auth::check() && Auth::user()->role->nama_role == 'asesor' && (request()->is('asesor*') || request()->routeIs('asesor.*')))
 {{-- ====================================================================== --}}
 {{-- NAVBAR ASESOR (DASHBOARD) --}}
@@ -10,7 +30,7 @@
   x-data="{ openMenu: false, openDropdown: false }"
   class="fixed top-0 left-0 w-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] py-4 px-6 sm:px-12 z-50 font-[Poppins]">
   <div class="flex items-center justify-between w-full max-w-7xl mx-auto">
-    {{-- ðŸŸ¦ Logo --}}
+    {{-- 🟡 Logo --}}
     <a href="{{ url('/') }}">
       <img src="{{ asset('images/Logo_LSP_No_BG.png') }}" alt="logo" class="w-20">
     </a>
@@ -71,7 +91,7 @@
               alt="Foto Profil"
               class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover">
             <span class="text-gray-800 font-semibold">
-              {{ Auth::user()->name ?? 'User' }}
+              {{ $displayName }}
             </span>
           </a>
 
@@ -113,7 +133,7 @@
       {{-- Klik ke profil --}}
       <a href="{{ route('asesor.profil') }}" class="flex items-center space-x-3">
         <span class="text-gray-800 font-semibold">
-          {{ Auth::user()->name ?? 'User' }}
+          {{ $displayName }}
         </span>
         <img
           src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}"
@@ -315,7 +335,7 @@
             <li class="lg:hidden border-t border-gray-200 pt-4 mt-4 px-2 space-y-2">
               @auth
                 <div class="mb-3 px-2">
-                  <p class="font-semibold text-gray-900 truncate">{{ Auth::user()->nama_lengkap ?? 'User' }}</p>
+                  <p class="font-semibold text-gray-900 truncate">{{ $displayName }}</p>
                   <p class="text-sm text-gray-500 truncate">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                 </div>
 
@@ -360,7 +380,7 @@
               >
                 <span class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-blue-600 text-white font-medium text-xs">
                   @php
-                    $nama = Auth::user()->nama_lengkap ?? 'User';
+                    $nama = $displayName;
                     $words = explode(' ', $nama);
                     $initials = count($words) >= 2
                       ? strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1))
@@ -369,7 +389,7 @@
                   {{ $initials }}
                 </span>
                 <span class="font-medium text-[15px] text-slate-900 hidden sm:block">
-                  {{ Auth::user()->nama_lengkap ?? 'User' }}
+                  {{ $displayName }}
                 </span>
                 <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 10 6"><path d="m1 1 4 4 4-4" /></svg>
               </button>
@@ -381,7 +401,7 @@
                 class="absolute right-0 mt-2 w-56 bg-white border border-gray-100 shadow-lg rounded-md z-50 overflow-hidden"
               >
                 <div class="px-4 py-3 border-b border-gray-200">
-                  <p class="text-sm font-semibold text-gray-900 truncate">{{ Auth::user()->nama_lengkap ?? 'User' }}</p>
+                  <p class="text-sm font-semibold text-gray-900 truncate">{{ $displayName }}</p>
                   <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                 </div>
                 <div class="py-1">
