@@ -25,7 +25,7 @@
                     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm w-full mx-auto">
                         <div class="flex flex-col gap-3">
                             <div class="w-full flex flex-col items-center text-sm text-gray-600">
-                                <p>Pada hari ini, Hari/Tanggal: {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }} , Waktu: Pukul {{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }} s/d Selesai, bertempat di TUK {{ $jadwal->tuk->nama_lokasi }}, 
+                                <p>Pada hari ini, Hari/Tanggal: {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }} , Waktu: Pukul {{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }} s/d Selesai, bertempat di TUK {{ $jadwal->masterTuk->nama_lokasi }}, 
                                     telah dilaksanakan proses asesmen terhadap asesi pada sektor / sub sektor / bidang profesi {{ $jadwal->skema->nama_skema }} yang diikuti oleh <strong>{{ $pendaftar->total() }} orang peserta</strong>. Dari hasil asesmen, peserta yang dinyatakan <strong>kompeten</strong>
                                     adalah <strong>{{ $jumlahKompeten > 0 ? $jumlahKompeten . ' orang peserta' : 'tidak ada' }}</strong> dan yang <strong>belum kompeten</strong> adalah <strong>{{ $jumlahBelumKompeten > 0 ? $jumlahBelumKompeten . ' orang peserta' : 'tidak ada' }}</strong> dengan perincian sebagai berikut:
                                 </p>

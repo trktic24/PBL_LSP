@@ -41,7 +41,7 @@ class Asesi extends Model
 
     public function dataPekerjaan(): HasOne
     {
-        return $this->hasMany(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
+        return $this->hasOne(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
     }
     
     /**

@@ -17,7 +17,7 @@
                     <div class="font-semibold text-gray-700">Waktu</div>
                     <div>: {{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }}</div>
                     <div class="font-semibold text-gray-700">TUK</div>
-                    <div>: {{ $jadwal->tuk->nama_lokasi ?? 'Nama Skema' }}</div>
+                    <div>: {{ $jadwal->masterTuk->nama_lokasi ?? 'Nama Skema' }}</div>
                 </div>
             </div>
 
