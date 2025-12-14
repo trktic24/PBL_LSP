@@ -389,7 +389,11 @@
 
                                 @if ($level >= $LVL_SETUJU)
                                     <p class="{{ $statusClassSelesai }}">Telah Disetujui</p>
-                                    <button class="{{ $btnBlue }}">Unduh Dokumen</button>
+                                    <a href="{{ route('asesi.cetak.ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                                    class="{{ $btnBlue }}" 
+                                    target="_blank">
+                                    Unduh Dokumen
+                                </a>
                                 @elseif ($level == $LVL_PRA_ASESMEN && $unlockAK01)
                                     <p class="{{ $statusClassProses }}">Siap Diisi</p>
                                 @elseif ($level == $LVL_PRA_ASESMEN)

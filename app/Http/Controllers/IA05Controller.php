@@ -15,12 +15,20 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class IA05Controller extends Controller
 {
     // FUNGSI BANTUAN: Mapping Role ID ke Teks (Supaya View tidak error)
-    private function assignRoleText($user) {
-        if ($user->role_id == 1) $user->role = 'admin';
-        elseif ($user->role_id == 2) $user->role = 'asesi';
-        elseif ($user->role_id == 3) $user->role = 'asesor';
-        else $user->role = 'guest';
-        return $user;
+    // FUNGSI BANTUAN: Mapping Role ID ke Teks (Supaya View tidak error)
+    private function getRoleText($user)
+    {
+        if (!$user)
+            return 'guest';
+
+        if ($user->role_id == 1)
+            return 'admin';
+        elseif ($user->role_id == 2)
+            return 'asesi';
+        elseif ($user->role_id == 3)
+            return 'asesor';
+        else
+            return 'guest';
     }
 
     /**
@@ -31,23 +39,24 @@ class IA05Controller extends Controller
     public function showSoalForm(Request $request, $id_asesi)
     {
         // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
-        $user = Auth::user(); 
-        $user = $this->assignRoleText($user); // Mapping ID ke Teks
+        $user = Auth::user();
+        $roleText = $this->getRoleText($user); // Ganti nama fungsi biar jelas
         // ----------------------------------------
 
         $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $data_jawaban_asesi = collect();
-        
+
         // Logika ambil jawaban jika role asesi/asesor
         if ($user->role_id == 2 || $user->role_id == 3) {
             $data_jawaban_asesi = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                                                    ->pluck('teks_jawaban_asesi_ia05', 'id_soal_ia05');
+                ->pluck('jawaban_asesi_ia05', 'id_soal_ia05');
         }
 
         return view('frontend.fr_IA_05_A', [
             'user' => $user,
+            'role' => $roleText, // Kirim sebagai variabel terpisah
             'asesi' => $asesi,
             'semua_soal' => $semua_soal,
             'data_jawaban_asesi' => $data_jawaban_asesi,
@@ -114,7 +123,7 @@ class IA05Controller extends Controller
                         'id_data_sertifikasi_asesi' => $id_asesi,
                         'id_soal_ia05' => $id_soal,
                     ],
-                    [ 
+                    [
                         'teks_jawaban_asesi_ia05' => $pilihan_jawaban,
                         'pencapaian_ia05_iya' => 0, // Reset penilaian
                         'pencapaian_ia05_tidak' => 0, // Reset penilaian
@@ -137,8 +146,8 @@ class IA05Controller extends Controller
     public function showKunciForm(Request $request)
     {
         // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
-        $user = Auth::user(); 
-        $user = $this->assignRoleText($user);
+        $user = Auth::user();
+        $roleText = $this->getRoleText($user);
         // ----------------------------------------
 
         // Jika role_id = 2 (Asesi), langsung tolak!
@@ -147,11 +156,12 @@ class IA05Controller extends Controller
         }
 
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
-        $kunci_jawaban = KunciJawabanIA05::pluck('teks_kunci_jawaban_ia05', 'id_soal_ia05'); 
+        $kunci_jawaban = KunciJawabanIA05::pluck('teks_kunci_jawaban_ia05', 'id_soal_ia05');
         $skema_info = Skema::first();
 
         return view('frontend.fr_IA_05_B', [
             'user' => $user,
+            'role' => $roleText,
             'semua_soal' => $semua_soal,
             'kunci_jawaban' => $kunci_jawaban,
             'skema_info' => $skema_info,
@@ -170,7 +180,7 @@ class IA05Controller extends Controller
             foreach ($request->kunci as $id_soal => $teks_kunci) {
                 KunciJawabanIA05::updateOrCreate(
                     ['id_soal_ia05' => $id_soal],
-                    [ 
+                    [
                         'teks_kunci_jawaban_ia05' => $teks_kunci,
                         'nomor_kunci_jawaban_ia05' => 1,
                     ]
@@ -192,8 +202,8 @@ class IA05Controller extends Controller
     public function showJawabanForm(Request $request, $id_asesi)
     {
         // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
-        $user = Auth::user(); 
-        $user = $this->assignRoleText($user);
+        $user = Auth::user();
+        $roleText = $this->getRoleText($user);
         // ----------------------------------------
 
         // Jika role_id = 2 (Asesi), langsung tolak!
@@ -203,12 +213,12 @@ class IA05Controller extends Controller
 
         $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
-        
+
         $kunci_jawaban = KunciJawabanIA05::pluck('teks_kunci_jawaban_ia05', 'id_soal_ia05');
-        
+
         $lembar_jawab = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                                        ->get()
-                                        ->keyBy('id_soal_ia05');
+            ->get()
+            ->keyBy('id_soal_ia05');
 
         // Ambil Umpan Balik
         $contoh_jawaban = $lembar_jawab->first();
@@ -216,6 +226,7 @@ class IA05Controller extends Controller
 
         return view('frontend.fr_IA_05_C', [
             'user' => $user,
+            'role' => $roleText, // Pass role variable
             'asesi' => $asesi,
             'semua_soal' => $semua_soal,
             'kunci_jawaban' => $kunci_jawaban,
@@ -239,8 +250,8 @@ class IA05Controller extends Controller
         try {
             foreach ($request->penilaian as $id_soal => $hasil_penilaian) {
                 $jawaban = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                                         ->where('id_soal_ia05', $id_soal)
-                                         ->first();
+                    ->where('id_soal_ia05', $id_soal)
+                    ->first();
 
                 if ($jawaban) {
                     $jawaban->update([
@@ -252,7 +263,7 @@ class IA05Controller extends Controller
 
             if ($request->has('umpan_balik')) {
                 LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                               ->update(['umpan_balik_ia05' => $request->umpan_balik]);
+                    ->update(['umpan_balik_ia05' => $request->umpan_balik]);
             }
 
             DB::commit();
@@ -289,10 +300,10 @@ class IA05Controller extends Controller
 
         // 5. Render PDF
         $pdf = Pdf::loadView('pdf.ia_05', [
-            'asesi'        => $asesi,
-            'semua_soal'   => $semua_soal,
+            'asesi' => $asesi,
+            'semua_soal' => $semua_soal,
             'lembar_jawab' => $lembar_jawab,
-            'umpan_balik'  => $umpan_balik
+            'umpan_balik' => $umpan_balik
         ]);
 
         $pdf->setPaper('A4', 'portrait');

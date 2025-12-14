@@ -135,4 +135,5 @@ class PersetujuanKerahasiaanAPIController extends Controller
 
         return $pdf->stream('FR_AK_01_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
     }
+    
 }
