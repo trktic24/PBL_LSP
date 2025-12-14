@@ -21,7 +21,7 @@ use App\Models\PertanyaanIa10;
 use App\Models\Ia10;
 use App\Models\Ia07;
 use App\Models\JawabanIa06;
-use App\Models\LembarJawabIa05;
+use App\Models\LembarJawabIA05;
 use App\Models\ResponBuktiAk01;
 use App\Models\DaftarHadirAsesi;
 use App\Models\KomentarAk05;
@@ -87,6 +87,7 @@ class DataSertifikasiAsesi extends Model
 
     // Tahap Pra-Asesmen (Asesi)
     public const STATUS_PRA_ASESMEN_SELESAI = 'pra_asesmen_selesai';
+
     public const STATUS_PERSETUJUAN_ASESMEN_OK = 'persetujuan_asesmen_disetujui';
 
     // Tahap Asesmen (Asesor)
@@ -181,6 +182,11 @@ class DataSertifikasiAsesi extends Model
         return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi');
     }
 
+    public function lembarJawabIa05(): HasMany
+    {
+        return $this->hasMany(LembarJawabIA05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
     /**
      * ACCESSOR: Menghitung Level Status untuk Tracker
      */
@@ -268,10 +274,7 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(BuktiDasar::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
-    public function lembarJawabIA05(): HasMany
-    {
-        return $this->hasMany(LembarJawabIA05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
-    }
+
 
     public function responAk04(): HasMany
     {

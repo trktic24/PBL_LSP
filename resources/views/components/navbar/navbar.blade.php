@@ -248,11 +248,19 @@
                     Sertifikasi
                   </a>
                 </li>
+              @elseif(auth()->user()->role->nama_role == 'admin' || auth()->user()->role->nama_role == 'superadmin')
+                <li>
+                  <a href="{{ route('admin.dashboard') }}"
+                    class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
+                    {{ request()->routeIs('admin.dashboard') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+                    Dashboard
+                  </a>
+                </li>
               @else
                 <li>
-                  <a href="{{ url('/dashboard') }}"
+                  <a href="{{ route('asesor.dashboard') }}"
                     class="block font-medium text-[15px] px-2 py-2 border-b-2 transition-all duration-200
-                    {{ request()->is('dashboard') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
+                    {{ request()->routeIs('asesor.dashboard') ? 'text-blue-700 border-blue-600' : 'text-slate-900 border-transparent hover:text-blue-700 hover:border-blue-600' }}">
                     Dashboard
                   </a>
                 </li>
@@ -311,7 +319,9 @@
                   <p class="text-sm text-gray-500 truncate">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                 </div>
 
-                @if(Auth::user()->role->nama_role != 'asesi')
+                @if(Auth::user()->role->nama_role == 'admin' || Auth::user()->role->nama_role == 'superadmin')
+                    <a href="{{ route('admin.dashboard') }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Dashboard</a>
+                @elseif(Auth::user()->role->nama_role != 'asesi')
                     <a href="{{ url('/dashboard') }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Dashboard</a>
                 @endif
                 @php
@@ -375,7 +385,9 @@
                   <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email ?? 'user@email.com' }}</p>
                 </div>
                 <div class="py-1">
-                  @if(Auth::user()->role->nama_role != 'asesi')
+                  @if(Auth::user()->role->nama_role == 'admin' || Auth::user()->role->nama_role == 'superadmin')
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+                  @elseif(Auth::user()->role->nama_role != 'asesi')
                     <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
                   @endif
                   @php

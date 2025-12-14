@@ -68,7 +68,7 @@
                             class="block px-4 py-2 {{ $isSkemaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Skema
                         </a>
-                        <a href="{{ route('admin.master_schedule') }}" 
+                            <a href="{{ route('admin.master_schedule') }}" 
                             class="block px-4 py-2 {{ $isMasterScheduleActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Schedule
                         </a>
@@ -100,7 +100,7 @@
         </div>
 
         <a href="{{ route('admin.schedule_admin') }}" class="relative h-full flex items-center transition {{ $isScheduleActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
-            Schedule
+            Jadwal
             @if ($isScheduleActive)
                 <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
             @endif

@@ -18,7 +18,7 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             // Isi Pertanyaan dan Opsi
-            $table->text('pertanyaan_ia05');
+            $table->text('soal_ia05');
             $table->string('opsi_a_ia05');
             $table->string('opsi_b_ia05');
             $table->string('opsi_c_ia05');

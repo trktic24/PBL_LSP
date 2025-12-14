@@ -83,7 +83,7 @@
                                     </div>
                                     <div>
                                         <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider">Tempat Uji Kompetensi</span>
-                                        <span class="font-medium text-gray-900">{{ $jadwal->tuk->nama_lokasi }}</span>
+                                        <span class="font-medium text-gray-900">{{ $jadwal->masterTuk->nama_lokasi }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -189,7 +189,7 @@
                             </td>
 
                             <td class="px-6 py-4 truncate max-w-xs" title="{{ $data->asesi->alamat_rumah }}">
-                                {{ Str::limit($data->asesi->alamat_rumah, 30) }}
+                                {{ Illuminate\Support\Str::limit($data->asesi->alamat_rumah, 30) }}
                             </td>
 
                             <td class="px-6 py-4">
@@ -225,7 +225,7 @@
                             </td>
 
                             <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
-                                <form action="{{ route('admin.schedule.attendance.destroy', $data->id_data_sertifikasi_asesi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus peserta {{ $data->asesi->nama_lengkap }} dari jadwal ini?');" class="inline-block">
+                                <form action="{{ route('admin.schedule.attendance.destroy', ['id_jadwal' => $jadwal->id_jadwal, 'id' => $data->id_data_sertifikasi_asesi])}}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus peserta {{ $data->asesi->nama_lengkap }} dari jadwal ini?');" class="inline-block">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition">

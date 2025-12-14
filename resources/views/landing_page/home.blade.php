@@ -182,7 +182,7 @@ html { scroll-behavior: smooth; }
                                 <div class="rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-shadow duration-300 bg-white border border-gray-100/50 mb-3">
                                     <div class="overflow-hidden">
                                         {{-- Path gambar skema Anda sudah benar --}}
-                                        <img src="{{ asset('images/skema/' . ($skema->gambar && file_exists(public_path('images/skema/' . $skema->gambar)) ? $skema->gambar : 'default.jpg')) }}"
+                                        <img src="{{ asset('images/skema/foto_skema/' . ($skema->gambar && file_exists(public_path('images/skema/foto_skema/' . $skema->gambar)) ? $skema->gambar : 'default.jpg')) }}"
                                             alt="Gambar Skema"
                                             class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500">
                                     </div>
