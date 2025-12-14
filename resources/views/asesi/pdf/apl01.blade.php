@@ -390,50 +390,6 @@
         </tbody>
     </table>
 
-    <!-- BAGIAN D: REKOMENDASI -->
-    <div class="section-title" style="margin-top: 30px;">D. Rekomendasi</div>
-    <p style="margin-left: 20px; margin-top: 5px;">
-        Berdasarkan ketentuan persyaratan dasar, maka pemohon
-        <span class="rekomendasi-box">
-            @if (isset($sertifikasi->status_rekomendasi) && $sertifikasi->status_rekomendasi == 'diterima')
-                <span class="status-diterima">Diterima</span>
-            @elseif(isset($sertifikasi->status_rekomendasi) && $sertifikasi->status_rekomendasi == 'tidak_diterima')
-                <span class="status-tidak-diterima">Tidak Diterima</span>
-            @else
-                <span class="status-diterima">Diterima</span>
-            @endif
-        </span>
-        sebagai peserta sertifikasi
-    </p>
-
-    <!-- TANDA TANGAN -->
-    <div class="signature-section">
-        <div class="signature-left">
-            <div class="signature-title">Pemohon</div>
-            <div class="signature-space">
-                @if ($asesi->tanda_tangan)
-                    <img src="{{ public_path($asesi->tanda_tangan) }}"
-                        style="max-width: 120px; max-height: 70px; margin-top: 5px;">
-                @endif
-            </div>
-            <div class="signature-name">
-                ({{ $asesi->nama_lengkap }})
-            </div>
-        </div>
-        <div class="signature-right">
-            <div class="signature-title">Lembaga Sertifikasi Profesi</div>
-            <div class="signature-space">
-                @if ($ttdBase64)
-                    <img src="data:image/png;base64,{{ $ttdBase64 }}" alt="Tanda Tangan Admin"
-                        style="max-width: 120px; max-height: 70px; margin-top: 5px;">
-                @endif
-            </div>
-            <div class="signature-name">
-                ({{ $admin->nama_admin ?? 'nama admin disini' }})
-            </div>
-        </div>
-    </div>
-
-</body>
+    </body>
 
 </html>

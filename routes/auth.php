@@ -42,8 +42,8 @@ use App\Http\Controllers\Asesi\DashboardController as AsesiDashboardController;
 use App\Http\Controllers\Asesi\ProfileController as AsesiProfileController;
 use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
 use App\Http\Controllers\Asesi\TrackerController;
-use App\Http\Controllers\Asesi\Apl01PdfController;
-use App\Http\Controllers\Asesi\Apl02\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
+use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
@@ -55,6 +55,8 @@ use App\Http\Controllers\Asesi\asesmen\AsesmenEsaiController;
 use App\Http\Controllers\Asesi\umpan_balik\Ak03Controller;
 use App\Http\Controllers\Asesi\Ak04API\APIBandingController;
 use App\Http\Controllers\Asesi\pembayaran\PaymentController;
+use App\Http\Controllers\Asesi\Pdf\KartuPesertaPdfController;
+
 
 // --- Controllers Form IA ---
 use App\Http\Controllers\IA02Controller;
@@ -419,6 +421,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
             // Konfirmasi Jadwal TUK
             Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
+            Route::get('/kartu-peserta/{id_sertifikasi}', [KartuPesertaPdfController::class, 'generateKartuPeserta'])->name('kartu.peserta');
+            // Route untuk download (jika nanti diaktifkan)
+            // Route::get('/kartu-peserta/{id_sertifikasi}/download', [KartuPesertaPdfController::class, 'downloadKartuPeserta'])
+            //     ->name('kartu.peserta.download');
 
             // --- E. Asesmen / Ujian (IA.05 & IA.06) ---
             Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');

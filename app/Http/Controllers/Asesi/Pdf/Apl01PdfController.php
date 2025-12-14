@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Asesi;
+namespace App\Http\Controllers\Asesi\Pdf;
 
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
-
-// ✅ TAMBAHAN PENTING: Import Facade PDF agar tidak error
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class Apl01PdfController extends Controller
@@ -75,7 +73,7 @@ class Apl01PdfController extends Controller
         ];
 
         // Kode pembuatan PDF
-        $pdf = PDF::loadView('pdf.apl_01', $data);
+        $pdf = PDF::loadView('asesi.pdf.apl01', $data);
         
         $nama = $dataSertifikasi->asesi->nama_lengkap;
         $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
