@@ -7,7 +7,7 @@
                       request()->is('admin/add_asesor*') || 
                       request()->is('admin/edit_asesor*');
     $isAsesiActive = request()->is('admin/master/asesi*');
-    $isMasterScheduleActive = request()->is('admin/master/schedule*');
+    $isMasterScheduleActive = request()->is('admin/master/jadwal*');
     $isCategoryActive = request()->is('admin/master/category*'); 
     $isBeritaActive = request()->is('admin/master/berita*');
     $isTukActive = request()->is('admin/master/tuk*'); // Koreksi: Pastikan TUK juga punya /admin
@@ -68,7 +68,7 @@
                             class="block px-4 py-2 {{ $isSkemaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Skema
                         </a>
-                            <a href="{{ route('admin.master_jadwal') }}" 
+                            <a href="{{ route('admin.master_schedule') }}" 
                             class="block px-4 py-2 {{ $isMasterScheduleActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Schedule
                         </a>
@@ -99,7 +99,7 @@
             @endif
         </div>
 
-        <a href="{{ route('admin.jadwal_admin') }}" class="relative h-full flex items-center transition {{ $isScheduleActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
+        <a href="{{ route('admin.schedule_admin') }}" class="relative h-full flex items-center transition {{ $isScheduleActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
             Jadwal
             @if ($isScheduleActive)
                 <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
@@ -133,7 +133,7 @@
                     class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
                             hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all z-20 relative">
                 <span class="{{ $isProfileActive ? 'text-blue-600' : 'text-gray-800' }} font-semibold text-base mr-5 whitespace-nowrap">
-                    {{ Auth::check() ? (Auth::user()->role_id == 1 ? 'Admin LSP' : Auth::user()->username) : 'Guest' }}
+                    {{ Auth::check() ? (in_array(Auth::user()->role->nama_role, ['admin', 'superadmin']) ? 'Admin LSP' : Auth::user()->username) : 'Guest' }}
                 </span>
                 
                 <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner flex-shrink-0 flex items-center justify-center bg-blue-600 text-white font-bold text-sm select-none">

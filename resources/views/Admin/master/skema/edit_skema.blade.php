@@ -86,8 +86,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
-                            <select id="categorie_id" name="categorie_id" required 
-                                    data-initial-value="{{ old('categorie_id', $skema->categorie_id) }}">
+                            <select id="category_id" name="category_id" required 
+                                    data-initial-value="{{ old('category_id', $skema->category_id) }}">
                                 <option value="">Pilih Kategori...</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}">
@@ -159,8 +159,22 @@
                             {{-- PRATINJAU DENGAN FORMAT BARU --}}
                             @if($skema->gambar)
                                 <div class="mt-2 text-sm text-gray-600">
+                                    @php
+                                        $previewImg = 'images/default.jpg';
+                                        if ($skema->gambar) {
+                                            if (str_starts_with($skema->gambar, 'images/')) {
+                                                if(file_exists(public_path($skema->gambar))) {
+                                                    $previewImg = $skema->gambar;
+                                                }
+                                            } elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
+                                                $previewImg = 'images/skema/foto_skema/' . $skema->gambar;
+                                            } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
+                                                $previewImg = 'images/skema/' . $skema->gambar;
+                                            }
+                                        }
+                                    @endphp
                                     <p class="font-medium mb-1">Gambar Saat Ini:</p>
-                                    <img src="{{ asset($skema->gambar) }}" alt="Preview" class="h-20 w-auto object-cover rounded border">
+                                    <img src="{{ asset($previewImg) }}" alt="Preview" class="h-20 w-auto object-cover rounded border">
                                 </div>
                             @endif
                         </div>
@@ -179,7 +193,7 @@
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const selectElement = document.getElementById('categorie_id');
+            const selectElement = document.getElementById('category_id');
             
             // 1. Ambil nilai kategori yang seharusnya dipilih dari data-attribute
             const initialValue = selectElement.getAttribute('data-initial-value');

@@ -115,17 +115,25 @@
 
                             <td class="px-4 py-4">
                                 <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50">
-                                    @if($skema->gambar)
-                                        <img src="{{ asset($skema->gambar) }}" 
-                                             alt="{{ $skema->nama_skema }}" 
-                                             class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
-                                             onclick="window.open(this.src, '_blank')"
-                                        >
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                            <i class="fas fa-image text-lg"></i>
-                                        </div>
-                                    @endif
+                                    @php
+                                        $imgSrc = 'images/default.jpg';
+                                        if ($skema->gambar) {
+                                            if (str_starts_with($skema->gambar, 'images/')) {
+                                                if(file_exists(public_path($skema->gambar))) {
+                                                    $imgSrc = $skema->gambar;
+                                                }
+                                            } elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
+                                                $imgSrc = 'images/skema/foto_skema/' . $skema->gambar;
+                                            } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
+                                                $imgSrc = 'images/skema/' . $skema->gambar;
+                                            }
+                                        }
+                                    @endphp
+                                    <img src="{{ asset($imgSrc) }}" 
+                                            alt="{{ $skema->nama_skema }}" 
+                                            class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
+                                            onclick="window.open(this.src, '_blank')"
+                                    >
                                 </div>
                             </td>
 

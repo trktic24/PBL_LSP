@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Asesi\asesmen;
 
+use Carbon\Carbon; // PENTING: Jangan lupa import Carbon
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
-use App\Models\KunciIa06; // Ini model untuk tabel transaksi 'kunci_ia06'
+use App\Models\JawabanIa06; // Pastikan Model ini connect ke tabel 'lembar_jawab_ia06'
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,26 +25,40 @@ class AsesmenEsaiController extends Controller
             'jadwal.skema',
         ])->findOrFail($idSertifikasi);
 
+        // Validasi akses user
         if ($sertifikasi->id_asesi !== $user->asesi->id_asesi) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Pastikan nama file bladenya nanti 'asesmen_esai.blade.php'
+        // --- LOGIC HITUNG MUNDUR WAKTU (SAMA SEPERTI IA-05) ---
+        $jadwal = $sertifikasi->jadwal;
+        $tanggal = Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
+
+        // 1. Set Timezone Explicit ke Asia/Jakarta
+        $waktuSelesai = Carbon::parse($tanggal . ' ' . $jadwal->waktu_selesai, 'Asia/Jakarta');
+        $waktuSekarang = Carbon::now('Asia/Jakarta');
+
+        // 2. Hitung Sisa Waktu
+        $sisaWaktuDetik = $waktuSekarang->greaterThanOrEqualTo($waktuSelesai) 
+            ? 0 
+            : $waktuSekarang->diffInSeconds($waktuSelesai);
+        // -------------------------------------------------------
+
         return view('asesi.assesmen.asesmen_esai', [ 
             'asesi' => $user->asesi,
             'sertifikasi' => $sertifikasi,
+            'sisa_waktu' => (int) $sisaWaktuDetik // Kirim variabel waktu ke blade
         ]);
     }
 
     /**
      * [GET API] Mengambil daftar soal essai.
-     * ASUMSI: Data sudah disiapkan Asesor di tabel 'kunci_ia06'.
      */
     public function getQuestions($idSertifikasi)
     {
         try {
-            // Ambil data dari tabel transaksi 'kunci_ia06', join ke master 'soal_ia06'
-            $data = KunciIa06::with(['soal'])
+            // Ambil data dari tabel 'lembar_jawab_ia06'
+            $data = JawabanIa06::with(['soal'])
                 ->where('id_data_sertifikasi_asesi', $idSertifikasi)
                 ->get();
 
@@ -60,15 +75,16 @@ class AsesmenEsaiController extends Controller
                 if (!$item->soal) return null;
 
                 return [
-                    // KUNCI UTAMA UNTUK UPDATE (PK tabel kunci_ia06)
-                    'id_lembar_jawab' => $item->id_kunci_ia06,
+                    // KUNCI UTAMA (PK tabel lembar_jawab_ia06)
+                    // Pastikan di Model JawabanIa06 primary key-nya sesuai (misal: id_lembar_jawab_ia06)
+                    'id_lembar_jawab' => $item->id_jawaban_ia06 ?? $item->id_kunci_ia06, // Sesuaikan dengan PK tabelmu
                     
                     // Teks Soal dari master soal
                     'pertanyaan' => $item->soal->soal_ia06, 
                     
                     // Jawaban essai yang sudah disimpan (jika ada)
-                    // Sesuai nama kolom di migrasi 'kunci_ia06'
-                    'jawaban_tersimpan' => $item->teks_jawaban_ia06,
+                    // [PERUBAHAN]: Menggunakan nama kolom 'jawaban_asesi'
+                    'jawaban_tersimpan' => $item->jawaban_asesi,
                 ];
             })->filter()->values();
 
@@ -87,23 +103,29 @@ class AsesmenEsaiController extends Controller
     {
         $request->validate([
             'jawaban' => 'required|array',
-            // Validasi PK tabel kunci_ia06
-            'jawaban.*.id_lembar_jawab' => 'required|exists:kunci_ia06,id_kunci_ia06',
-            // Jawaban essai bisa teks panjang dan boleh kosong (nullable di database)
+            // [PERUBAHAN]: Validasi ke tabel lembar_jawab_ia06 (bukan kunci)
+            'jawaban.*.id_lembar_jawab' => 'required|exists:jawaban_ia06,id_jawaban_ia06', 
             'jawaban.*.jawaban' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
         try {
             foreach ($request->jawaban as $item) {
-                // Update tabel 'kunci_ia06'
-                KunciIa06::where('id_kunci_ia06', $item['id_lembar_jawab'])
+                // Update tabel 'lembar_jawab_ia06'
+                // Pastikan menggunakan Model yang benar atau DB Query builder
+                
+                // OPSI 1: Pakai Model (Jika PK Model sudah benar 'id_lembar_jawab_ia06')
+                $lembarJawab = JawabanIa06::where('id_jawaban_ia06', $item['id_lembar_jawab'])
                     ->where('id_data_sertifikasi_asesi', $idSertifikasi)
-                    ->update([
-                        // Simpan teks jawaban ke kolom 'teks_jawaban_ia06'
-                        'teks_jawaban_ia06' => $item['jawaban'] ?? null,
+                    ->first();
+
+                if ($lembarJawab) {
+                    $lembarJawab->update([
+                        // [PERUBAHAN]: Nama kolom 'jawaban_asesi' (tanpa _ia06)
+                        'jawaban_asesi' => $item['jawaban'] ?? null,
                         'updated_at' => now(),
                     ]);
+                }
             }
 
             // Ambil ID Jadwal untuk redirect balik ke tracker
@@ -112,6 +134,7 @@ class AsesmenEsaiController extends Controller
             $idJadwalRedirect = $sertifikasiData->id_jadwal;
 
             DB::commit();
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Jawaban essai berhasil disimpan. Menunggu penilaian asesor.',

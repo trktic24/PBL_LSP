@@ -15,7 +15,9 @@ class AsesorProfileController extends Controller
     public function showProfile($id_asesor)
     {
         $asesor = Asesor::with('user')->findOrFail($id_asesor);
-        return view('profile_asesor.asesor_profile_settings', compact('asesor'));
+        
+        // Mengarah ke resources/views/admin/profile_asesor/asesor_profile_settings.blade.php
+        return view('admin.profile_asesor.asesor_profile_settings', compact('asesor'));
     }
 
     // ==========================================================
@@ -36,7 +38,8 @@ class AsesorProfileController extends Controller
             ['key' => 'sertifikasi_kompetensi', 'title' => 'Sertifikasi Kompetensi', 'subtitle' => 'Sertifikat teknis', 'file_path' => $asesor->sertifikasi_kompetensi],
         ];
 
-        return view('profile_asesor.asesor_profile_bukti', compact('asesor', 'documents'));
+        // Mengarah ke resources/views/admin/profile_asesor/asesor_profile_bukti.blade.php
+        return view('admin.profile_asesor.asesor_profile_bukti', compact('asesor', 'documents'));
     }
 
     // ==========================================================
@@ -46,25 +49,24 @@ class AsesorProfileController extends Controller
     {
         $asesor = Asesor::with('skemas')->findOrFail($id_asesor);
         
-        // Data Dummy untuk UI (Sekarang ada id_jadwal dummy)
+        // Data Dummy untuk UI
         $tinjauan_data = collect([
             (object) ['no' => 1, 'id_jadwal' => 101, 'skema' => 'Pemrograman Web Junior', 'status' => 1],
             (object) ['no' => 2, 'id_jadwal' => 102, 'skema' => 'Network Administrator Muda', 'status' => 0],
             (object) ['no' => 3, 'id_jadwal' => 103, 'skema' => 'Desainer Grafis Utama', 'status' => 0],
         ]);
 
-        return view('profile_asesor.asesor_profile_tinjauan', compact('asesor', 'tinjauan_data'));
+        // Mengarah ke resources/views/admin/profile_asesor/asesor_profile_tinjauan.blade.php
+        return view('admin.profile_asesor.asesor_profile_tinjauan', compact('asesor', 'tinjauan_data'));
     }
 
     // ==========================================================
-    // HALAMAN DAFTAR ASESI (DARI JADWAL) - BARU
+    // HALAMAN DAFTAR ASESI (DARI JADWAL)
     // ==========================================================
     public function showDaftarAsesi($id_asesor, $id_jadwal)
     {
-        // 1. Ambil Data Asesor (Untuk Sidebar)
         $asesor = Asesor::findOrFail($id_asesor);
 
-        // 2. Ambil Data Jadwal (Untuk konten utama)
         // --- DATA DUMMY JADWAL (Simulasi) ---
         $jadwal = new class {
             public $id_jadwal = 101;
@@ -78,19 +80,18 @@ class AsesorProfileController extends Controller
                 $this->skema = (object) ['nama_skema' => 'Pemrograman Web Junior', 'nomor_skema' => 'SKM-001'];
                 $this->tuk = (object) ['nama_lokasi' => 'Lab Komputer 1'];
                 
-                // Dummy Data Asesi
                 $this->dataSertifikasiAsesi = collect([
                     (object)[
                         'id_data_sertifikasi_asesi' => 1,
                         'asesi' => (object)['nama_lengkap' => 'Budi Santoso'],
-                        'responApl2Ia01' => true, 'responBuktiAk01' => true, // Pra Asesmen Done
-                        'lembarJawabIa05' => true, 'komentarAk05' => true,   // Asesmen Done
+                        'responApl2Ia01' => true, 'responBuktiAk01' => true, 
+                        'lembarJawabIa05' => true, 'komentarAk05' => true,   
                         'rekomendasi_apl02' => 'diterima'
                     ],
                     (object)[
                         'id_data_sertifikasi_asesi' => 2,
                         'asesi' => (object)['nama_lengkap' => 'Siti Aminah'],
-                        'responApl2Ia01' => true, 'responBuktiAk01' => false, // Pra Asesmen Proses
+                        'responApl2Ia01' => true, 'responBuktiAk01' => false, 
                         'lembarJawabIa05' => false, 'komentarAk05' => false,
                         'rekomendasi_apl02' => 'belum'
                     ]
@@ -98,24 +99,20 @@ class AsesorProfileController extends Controller
             }
         };
 
-        // Logika sederhana untuk tombol berita acara (Dummy)
         $semuaSudahAdaKomentar = true; 
 
-        if (view()->exists('profile_asesor.daftar_asesi')) {
-             return view('profile_asesor.daftar_asesi', compact('asesor', 'jadwal', 'semuaSudahAdaKomentar'));
-        } else {
-             return view('daftar_asesi', compact('asesor', 'jadwal', 'semuaSudahAdaKomentar'));
-        }
+        // Mengarah ke resources/views/admin/profile_asesor/daftar_asesi.blade.php
+        return view('admin.profile_asesor.daftar_asesi', compact('asesor', 'jadwal', 'semuaSudahAdaKomentar'));
     }
 
     // ==========================================================
-    // 1. TRACKER PROFIL ASESOR (Timeline) - PERBAIKAN DI SINI
+    // TRACKER PROFIL ASESOR (Timeline)
     // ==========================================================
     public function showTracker($id_asesor)
     {
         $asesor = Asesor::findOrFail($id_asesor);
 
-        // DATA DUMMY TIMELINE (Sesuai gambar Tracker Asesor.jpg)
+        // DATA DUMMY TIMELINE
         $timelineData = [
             [
                 'title' => 'Formulir Pendaftaran Sertifikasi',
@@ -180,18 +177,18 @@ class AsesorProfileController extends Controller
             ],
         ];
 
-        // MENGIRIM $timelineData KE VIEW TRACKER
-        return view('profile_asesor.asesor_profile_tracker', compact('asesor', 'timelineData'));
+        // Mengarah ke resources/views/admin/profile_asesor/asesor_profile_tracker.blade.php
+        return view('admin.profile_asesor.asesor_profile_tracker', compact('asesor', 'timelineData'));
     }
 
     // ==========================================================
-    // 2. DETAIL ASESMEN ASESI (FR.APL.01, dll)
+    // DETAIL ASESMEN ASESI (FR.APL.01, dll)
     // ==========================================================
     public function showAssessmentDetail($id_asesor, $id_data_sertifikasi_asesi)
     {
         $asesor = Asesor::findOrFail($id_asesor);
 
-        // DATA DUMMY UNTUK DETAIL ASESMEN (FR.APL.01, dll)
+        // DATA DUMMY UNTUK DETAIL ASESMEN
         $dataSertifikasi = new class {
             public $id_data_sertifikasi_asesi = 12345; 
             public $level_status = 40; 
@@ -208,7 +205,7 @@ class AsesorProfileController extends Controller
                 $this->responbuktiAk01 = collect([ (object)['respon' => 'Valid'] ]);
             }
             
-            // Mock methods untuk mencegah error di view detail
+            // Mock methods
             public function ia10() { return new class { public function exists() { return true; } }; }
             public function ia02() { return new class { public function exists() { return false; } }; }
             public function ia07() { return new class { public function exists() { return true; } }; }
@@ -217,12 +214,12 @@ class AsesorProfileController extends Controller
 
         $asesi = $dataSertifikasi->asesi;
 
-        // MENGIRIM $dataSertifikasi KE VIEW DETAIL
-        return view('profile_asesor.asesor_assessment_detail', compact('asesor', 'dataSertifikasi', 'asesi'));
+        // Mengarah ke resources/views/admin/profile_asesor/asesor_assessment_detail.blade.php
+        return view('admin.profile_asesor.asesor_assessment_detail', compact('asesor', 'dataSertifikasi', 'asesi'));
     }
 
     // ==========================================================
-    // UPDATE STATUS VERIFIKASI ASESOR (APPROVED/REJECTED)
+    // UPDATE STATUS VERIFIKASI ASESOR
     // ==========================================================
     public function updateStatus(Request $request, $id_asesor)
     {

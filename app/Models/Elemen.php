@@ -22,8 +22,9 @@ class Elemen extends Model
         return $this->belongsTo(UnitKompetensi::class, 'id_unit_kompetensi', 'id_unit_kompetensi');
     }
 
-    public function kriteriaUnjukKerja()
+    public function kriteria()
     {
         return $this->hasMany(KriteriaUnjukKerja::class, 'id_elemen', 'id_elemen');
     }
+    
 }

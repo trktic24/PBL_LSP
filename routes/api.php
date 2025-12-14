@@ -106,6 +106,76 @@ Route::prefix('v1')->group(function () {
 
 
     // ==========================
+    // 🧑‍🎓 ASESI WORKFLOW
+    // ==========================
+    
+    // 1. Data Sertifikasi & Tujuan
+    Route::prefix('data-sertifikasi')->group(function () {
+        Route::get('/detail/{id}', [DataSertifikasiAsesiController::class, 'getDetailSertifikasiApi'])->name('api.v1.sertifikasi.detail');
+        Route::get('/{id}', [DataSertifikasiAsesiController::class, 'getDataSertifikasiAsesiApi'])->name('api.v1.data_sertifikasi.get');
+        Route::post('/', [DataSertifikasiAsesiController::class, 'storeAjax'])->name('api.v1.data_sertifikasi.store');
+    });
+
+    // 2. Bukti Kelengkapan
+    Route::prefix('bukti-kelengkapan')->group(function () {
+        Route::get('/list/{id_data_sertifikasi_asesi}', [BuktiKelengkapanController::class, 'getDataBuktiKelengkapanApi'])->name('api.v1.bukti_kelengkapan.get');
+        Route::post('/store', [BuktiKelengkapanController::class, 'storeAjax'])->name('api.v1.bukti_kelengkapan.store');
+        Route::delete('/delete/{id}', [BuktiKelengkapanController::class, 'deleteAjax'])->name('api.v1.bukti_kelengkapan.delete');
+    });
+
+    // 3. Pra Asesmen (APL-02)
+    Route::prefix('pra-asesmen')->group(function () {
+        Route::post('/{id_sertifikasi}', [PraasesmenController::class, 'store'])->name('api.v1.apl02.store');
+    });
+
+    // 4. Kerahasiaan (AK-01)
+    Route::prefix('kerahasiaan')->group(function () {
+        Route::get('/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data'])->name('api.v1.get.frak01');
+        Route::post('/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])->name('api.v1.setuju.frak01');
+    });
+    // Duplicate route handling (legacy support from conflicts)
+    Route::get('/get-frak01-data/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data']);
+    Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan']);
+
+    // 5. Jadwal & TUK
+    Route::prefix('jadwal-tuk')->group(function () {
+        Route::get('/{id_sertifikasi}', [JadwalTukAPIController::class, 'getJadwalData']);
+        Route::post('/konfirmasi/{id_sertifikasi}', [JadwalTukAPIController::class, 'konfirmasiJadwal']);
+    });
+
+    // 6. Asesmen Teori (IA-05 & IA-06)
+    // IA-05 Pilihan Ganda
+    Route::get('/asesmen-teori/{id_sertifikasi}/soal', [AsesmenPilihanGandaController::class, 'getQuestions']);
+    Route::post('/asesmen-teori/{id_sertifikasi}/submit', [AsesmenPilihanGandaController::class, 'submitAnswers']);
+
+    // IA-06 Essai
+    Route::get('/asesmen-esai/{id_sertifikasi}/soal', [AsesmenEsaiController::class, 'getQuestions']);
+    Route::post('/asesmen-esai/{id_sertifikasi}/submit', [AsesmenEsaiController::class, 'submitAnswers']);
+
+    // 7. IA-02 (Observasi)
+    Route::prefix('ia02')->group(function () {
+        Route::get('/{id_data_sertifikasi_asesi}/data', [Ia02AsesiController::class, 'apiDetail'])->name('api.v1.ia02.detail');
+    });
+
+    // 8. Banding (AK-04)
+    Route::prefix('banding')->group(function () {
+        Route::get('/{id_sertifikasi}', [APIBandingController::class, 'getBandingData'])->name('api.v1.get.ak04');
+        Route::post('/{id_sertifikasi}', [APIBandingController::class, 'simpanBanding'])->name('api.v1.post.ak04');
+    });
+
+    // 9. Tanda Tangan
+    Route::prefix('tanda-tangan')->group(function () {
+            Route::get('/show-all', [TandaTanganAPIController::class, 'index']);
+            Route::get('/show-detail/{id_asesi}', [TandaTanganAPIController::class, 'show']);
+            Route::post('/simpan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])->name('api.v1.simpan.tandatangan');
+    });
+    // Legacy route support
+    Route::get('/show-all', [TandaTanganAPIController::class, 'index']);
+    Route::get('/show-detail/{id_asesi}', [TandaTanganAPIController::class, 'show']);
+    Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax']);
+
+
+    // ==========================
     // 🔐 PROTECTED ROUTES (Bearer Token Required)
     // ==========================
     Route::middleware('auth:sanctum')->group(function () {
@@ -166,84 +236,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/ia-01/{id}', [Ia01ApiController::class, 'show']);
         Route::post('/ia-01/{id}', [Ia01ApiController::class, 'store']);
 
-        // ==========================
-        // 🧑‍🎓 ASESI WORKFLOW
-        // ==========================
         
-        // 1. Data Sertifikasi & Tujuan
-        Route::prefix('data-sertifikasi')->group(function () {
-            Route::get('/detail/{id}', [DataSertifikasiAsesiController::class, 'getDetailSertifikasiApi'])->name('api.v1.sertifikasi.detail');
-            Route::get('/{id}', [DataSertifikasiAsesiController::class, 'getDataSertifikasiAsesiApi'])->name('api.v1.data_sertifikasi.get');
-            Route::post('/', [DataSertifikasiAsesiController::class, 'storeAjax'])->name('api.v1.data_sertifikasi.store');
-        });
-
-        // 2. Bukti Kelengkapan
-        Route::prefix('bukti-kelengkapan')->group(function () {
-            Route::get('/list/{id_data_sertifikasi_asesi}', [BuktiKelengkapanController::class, 'getDataBuktiKelengkapanApi'])->name('api.v1.bukti_kelengkapan.get');
-            Route::post('/store', [BuktiKelengkapanController::class, 'storeAjax'])->name('api.v1.bukti_kelengkapan.store');
-            Route::delete('/delete/{id}', [BuktiKelengkapanController::class, 'deleteAjax'])->name('api.v1.bukti_kelengkapan.delete');
-        });
-
-        // 3. Pra Asesmen (APL-02)
-        Route::prefix('pra-asesmen')->group(function () {
-            Route::post('/{id_sertifikasi}', [PraasesmenController::class, 'store'])->name('api.v1.apl02.store');
-        });
-
-        // 4. Kerahasiaan (AK-01)
-        Route::prefix('kerahasiaan')->group(function () {
-            Route::get('/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data'])->name('api.v1.get.frak01');
-            Route::post('/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])->name('api.v1.setuju.frak01');
-        });
-        // Duplicate route handling (legacy support from conflicts)
-        Route::get('/get-frak01-data/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'getFrAk01Data']);
-        Route::post('/setuju-kerahasiaan/{id_asesi}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan']);
-
-        // 5. Jadwal & TUK
-        Route::prefix('jadwal-tuk')->group(function () {
-            Route::get('/{id_sertifikasi}', [JadwalTukAPIController::class, 'getJadwalData']);
-            Route::post('/konfirmasi/{id_sertifikasi}', [JadwalTukAPIController::class, 'konfirmasiJadwal']);
-        });
-
-        // 6. Asesmen Teori (IA-05 & IA-06)
-        // IA-05 Pilihan Ganda
-        Route::prefix('ia-05')->group(function () {
-             Route::get('/soal', [SoalIA05ApiController::class, 'index']);
-             Route::post('/submit', [SoalIA05ApiController::class, 'submitJawaban']);
-        });
-        // IA-05 Alternative Routes
-        Route::get('/asesmen-teori/{id_sertifikasi}/soal', [AsesmenPilihanGandaController::class, 'getQuestions']);
-        Route::post('/asesmen-teori/{id_sertifikasi}/submit', [AsesmenPilihanGandaController::class, 'submitAnswers']);
-
-        // IA-06 Essai
-        Route::apiResource('soal-ia06', SoalIa06Controller::class); // Bank Soal
-        Route::post('soal-ia06/jawab', [SoalIa06Controller::class, 'storeJawabanAsesi']);
-        Route::get('soal-ia06/jawaban/{id_data_sertifikasi_asesi}', [SoalIa06Controller::class, 'getJawabanAsesi']);
-        // IA-06 Alternative Routes
-        Route::get('/asesmen-esai/{id_sertifikasi}/soal', [AsesmenEsaiController::class, 'getQuestions']);
-        Route::post('/asesmen-esai/{id_sertifikasi}/submit', [AsesmenEsaiController::class, 'submitAnswers']);
-
-        // 7. IA-02 (Observasi)
-        Route::prefix('ia02')->group(function () {
-            Route::get('/{id_data_sertifikasi_asesi}/data', [Ia02AsesiController::class, 'apiDetail'])->name('api.v1.ia02.detail');
-        });
-
-        // 8. Banding (AK-04)
-        Route::prefix('banding')->group(function () {
-            Route::get('/{id_sertifikasi}', [APIBandingController::class, 'getBandingData'])->name('api.v1.get.ak04');
-            Route::post('/{id_sertifikasi}', [APIBandingController::class, 'simpanBanding'])->name('api.v1.post.ak04');
-        });
-
-        // 9. Tanda Tangan
-        Route::prefix('tanda-tangan')->group(function () {
-             Route::get('/show-all', [TandaTanganAPIController::class, 'index']);
-             Route::get('/show-detail/{id_asesi}', [TandaTanganAPIController::class, 'show']);
-             Route::post('/simpan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax'])->name('api.v1.simpan.tandatangan');
-        });
-        // Legacy route support
-        Route::get('/show-all', [TandaTanganAPIController::class, 'index']);
-        Route::get('/show-detail/{id_asesi}', [TandaTanganAPIController::class, 'show']);
-        Route::post('/ajax-simpan-tandatangan/{id_asesi}', [TandaTanganAPIController::class, 'storeAjax']);
-
 
         // ==========================
         // 🔧 ADMIN / MASTER DATA CRUD

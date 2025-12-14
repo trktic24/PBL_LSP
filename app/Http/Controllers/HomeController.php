@@ -46,30 +46,12 @@ class HomeController extends Controller
     public function show($id): View
     {
         // Menggunakan Eager Loading untuk 'jadwal' dan relasi 'masterTuk' di dalamnya
-        $skema = Skema::with(['jadwal.masterTuk', 'category', 'asesor'])->findOrFail($id);
+        // Menggunakan Eager Loading untuk 'jadwal', 'masterTuk', 'category', 'asesor', dan 'unitKompetensi'
+        $skema = Skema::with(['jadwal.masterTuk', 'category', 'asesor', 'unitKompetensi'])->findOrFail($id);
         
-        // --- INJEKSI DUMMY DATA UNTUK KONTEN (UNIT KOMPETENSI & SKKNI) ---
-        $skema->unit_kompetensi = collect([
-            (object) [
-                'kode' => '123456789',
-                'judul' => [
-                    'Mengidentifikasi Konsep Keamanan Jaringan',
-                    'Menerapkan prosedur keamanan dasar jaringan',
-                ]
-            ],
-            (object) [
-                'kode' => '987654321',
-                'judul' => [
-                    'Menganalisis potensi ancaman keamanan sistem',
-                    'Mengimplementasikan pengamanan berbasis firewall',
-                ]
-            ]
-        ]);
-
-        $skema->skkni = collect([
-            (object) ['nama' => 'SKKNI Keamanan Siber 1', 'link_pdf' => '#'],
-            (object) ['nama' => 'SKKNI Keamanan Siber 2', 'link_pdf' => '#'],
-        ]);
+        // --- INJEKSI DUMMY DATA YANG DIHAPUS (DIGANTI DATA REAL VIA EAGER LOAD) ---
+        // $skema->unit_kompetensi = collect([...]);
+        // $skema->skkni = collect([...]); -> Menggunakan $skema->SKKNI dari DB
         
         if (!isset($skema->gambar)) {
              $skema->gambar = 'default_skema_image.jpg'; 

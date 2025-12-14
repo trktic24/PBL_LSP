@@ -2,7 +2,7 @@
 {{-- Menggunakan layout yang sama dengan Profile (tanpa sidebar) atau sesuaikan layout Anda --}}
 
 @section('content')
-<div class="h-screen pt-24 pb-12 px-6 bg-gray-50 font-[Poppins]">
+<div class="min-h-screen pt-24 pb-20 px-6 bg-gray-50 font-[Poppins]">
     
     <div class="max-w-6xl mx-auto">
         

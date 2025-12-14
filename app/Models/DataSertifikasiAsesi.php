@@ -21,7 +21,7 @@ use App\Models\PertanyaanIa10;
 use App\Models\Ia10;
 use App\Models\Ia07;
 use App\Models\JawabanIa06;
-use App\Models\LembarJawabIa05;
+use App\Models\LembarJawabIA05;
 use App\Models\ResponBuktiAk01;
 use App\Models\DaftarHadirAsesi;
 use App\Models\KomentarAk05;
@@ -53,6 +53,7 @@ class DataSertifikasiAsesi extends Model
         'feedback_ia01',
         'rekomendasi_IA04B',
         'rekomendasi_hasil_asesmen_AK02',
+        'status_validasi',
         'tindakan_lanjut_AK02',
         'komentar_AK02',
         'catatan_asesi_AK03',
@@ -180,6 +181,11 @@ class DataSertifikasiAsesi extends Model
     public function responApl2Ia01(): HasOne
     {
         return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi');
+    }
+
+    public function lembarJawabIa05(): HasMany
+    {
+        return $this->hasMany(LembarJawabIA05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     /**

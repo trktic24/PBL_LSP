@@ -35,7 +35,20 @@
         <div class="flex justify-center my-6">
             <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-800 shadow-lg border-4 border-white">
                 @if($sertifikasi && $sertifikasi->jadwal && $sertifikasi->jadwal->skema)
-                    <img src="{{ asset('images/skema/foto_skema/' . ($sertifikasi->jadwal->skema->gambar ?? 'default_skema.jpg')) }}" 
+                    @php
+                        $imgSrc = 'images/default.jpg';
+                        $gambar = $sertifikasi->jadwal->skema->gambar;
+                        if ($gambar) {
+                            if (str_starts_with($gambar, 'images/')) {
+                                $imgSrc = $gambar;
+                            } elseif (file_exists(public_path('images/skema/foto_skema/' . $gambar))) {
+                                $imgSrc = 'images/skema/foto_skema/' . $gambar;
+                            } else {
+                                $imgSrc = 'images/skema/' . $gambar;
+                            }
+                        }
+                    @endphp
+                    <img src="{{ asset($imgSrc) }}" 
                         alt="Logo Skema" 
                         class="w-full h-full object-cover"
                         onerror="this.src='https://ui-avatars.com/api/?name=Skema&background=random'">

@@ -52,7 +52,7 @@ class DashboardController extends Controller
         $id_asesor = $user->asesor->id_asesor;
 
         // Ambil data asesor berdasarkan ID user yang login
-        $asesor = Asesor::with('user', 'skema')->find($id_asesor);
+        $asesor = Asesor::with('user', 'skemas')->find($id_asesor);
 
         // 1. Data Profil
         $profile = [
@@ -65,20 +65,28 @@ class DashboardController extends Controller
         ];
 
         // Ringkasan
-        $blmreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
-                ->whereDoesntHave('responApl2Ia01')
-                ->whereDoesntHave('komentarAk05')
-                ->count();    
-        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
-                ->whereHas('responApl2Ia01')        // sudah mengisi APL02
-                ->whereDoesntHave('komentarAk05')
-                ->count();        
-        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
-                ->whereHas('komentarAk05')
-                ->count();
-        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
-        ->count();
-        
+        $blmreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
+            $q->where('id_asesor', $id_asesor);
+        })
+            ->whereDoesntHave('responApl2Ia01')
+            ->whereDoesntHave('komentarAk05')
+            ->count();
+        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
+            $q->where('id_asesor', $id_asesor);
+        })
+            ->whereHas('responApl2Ia01')        // sudah mengisi APL02
+            ->whereDoesntHave('komentarAk05')
+            ->count();
+        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
+            $q->where('id_asesor', $id_asesor);
+        })
+            ->whereHas('komentarAk05')
+            ->count();
+        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
+            $q->where('id_asesor', $id_asesor);
+        })
+            ->count();
+
         // // 2. Data Ringkasan (Dummy)
         // $summary = [
         //     'belum_direview' => 5,

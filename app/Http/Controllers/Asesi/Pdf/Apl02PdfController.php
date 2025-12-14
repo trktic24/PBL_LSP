@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Asesi\Apl02;
+namespace App\Http\Controllers\Asesi\Pdf;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -34,9 +34,10 @@ public function generateApl02($id_sertifikasi)
         'tanggal'     => Carbon::now()->isoFormat('D MMMM Y'),
     ];
 
-    $pdf = Pdf::loadView('pdf.fr_apl_02', $data);
+    $pdf = Pdf::loadView('asesi.pdf.fr_apl_02', $data);
     $pdf->setPaper('a4', 'portrait');
 
-    return $pdf->stream('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    // return $pdf->stream('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    return $pdf->download('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
 }
 }

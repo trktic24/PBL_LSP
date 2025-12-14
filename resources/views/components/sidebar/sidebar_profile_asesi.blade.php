@@ -4,7 +4,7 @@
               bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
               shadow-inner border-r border-gray-200 flex flex-col items-center pt-8 z-40">
 
-    <a href="{{ $backUrl ?? route('dashboard') }}" 
+    <a href="{{ $backUrl ?? route('admin.dashboard') }}" 
        class="absolute top-4 left-6 flex items-center text-gray-500 hover:text-blue-600 transition-all duration-200 cursor-pointer z-50 hover:-translate-x-1">
         <i class="fas fa-arrow-left text-lg"></i>
         <span class="ml-2 font-medium text-sm">Kembali</span>
@@ -44,35 +44,35 @@
                 shadow-[0_0_15px_rgba(0,0,0,0.15)] mb-4 relative z-10">
     
         <div class="flex flex-col space-y-4">
-            <a href="{{ route('asesi.profile.settings', $asesi->id_asesi) }}" 
+            <a href="{{ route('admin.asesi.profile.settings', $asesi->id_asesi) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ Route::is('asesi.profile.settings') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ Route::is('admin.asesi.profile.settings') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
             </a>
 
-            <a href="{{ route('asesi.profile.form', $asesi->id_asesi) }}" 
+            <a href="{{ route('admin.asesi.profile.form', $asesi->id_asesi) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ Route::is('asesi.profile.form') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ Route::is('admin.asesi.profile.form') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-clipboard text-l mr-3"></i> Form
             </a>
 
-            <a href="{{ route('asesi.profile.tracker', $asesi->id_asesi) }}" 
+            <a href="{{ route('admin.asesi.profile.tracker', $asesi->id_asesi) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ Route::is('asesi.profile.tracker') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ Route::is('admin.asesi.profile.tracker') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
             </a>
 
-            <a href="{{ route('asesi.profile.bukti', $asesi->id_asesi) }}" 
+            <a href="{{ route('admin.asesi.profile.bukti', $asesi->id_asesi) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ Route::is('asesi.profile.bukti') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ Route::is('admin.asesi.profile.bukti') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-check text-l mr-3"></i> Bukti Kelengkapan
             </a>
 
