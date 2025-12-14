@@ -130,9 +130,17 @@ Route::middleware('auth')->group(function () {
 
     // APL-02 (Asesmen Mandiri)
     Route::get('/APL_02', fn() => view('frontend/APL_02/APL_02'))->name('APL_02');
+    // Buka routes/web.php
+// Pastikan kamu punya route seperti ini (sesuaikan controller-nya):
+
+Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
+    ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
 
     // FR-AK (Ceklis, Banding, dll)
     Route::get('/FR_AK_01', fn() => view('frontend/FR_AK_01'))->name('FR_AK_01');
+    // --- TAMBAHKAN BARIS INI (Fix Route AK01) ---
+    Route::post('/FR_AK_01/simpan/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
+        ->name('ak01.store');
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
     Route::get('/FR_AK_03', fn() => view('frontend/FR_AK_03'))->name('FR_AK_03');
     Route::get('/FR_AK_04', fn() => view('frontend/FR_AK_04'))->name('FR_AK_04');

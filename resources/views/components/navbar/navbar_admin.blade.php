@@ -7,7 +7,7 @@
                       request()->is('admin/add_asesor*') || 
                       request()->is('admin/edit_asesor*');
     $isAsesiActive = request()->is('admin/master/asesi*');
-    $isMasterScheduleActive = request()->is('admin/master/schedule*');
+    $isMasterScheduleActive = request()->is('admin/master/jadwal*');
     $isCategoryActive = request()->is('admin/master/category*'); 
     $isBeritaActive = request()->is('admin/master/berita*');
     $isTukActive = request()->is('admin/master/tuk*'); // Koreksi: Pastikan TUK juga punya /admin
