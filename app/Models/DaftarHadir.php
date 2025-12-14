@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DaftarHadir extends Model
 {
@@ -13,7 +14,7 @@ class DaftarHadir extends Model
         'tanda_tangan_asesi',
         'id_data_sertifikasi_asesi'
     ];
-    protected $guarded = [];
+    //protected $guarded = [];
 
 public function dataSertifikasiAsesi()
     {

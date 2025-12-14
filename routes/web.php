@@ -32,6 +32,7 @@ use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\Asesi\asesmen\AssessmenFRIA04tController;
+use App\Http\Controllers\Asesi\asesmen\AssessmenFRIA09Controller;
 
 
 
@@ -94,6 +95,7 @@ Route::prefix('profil')
 // Placeholder Sertifikasi
 Route::get('/sertifikasi', fn() => 'Halaman Sertifikasi')->name('sertifikasi');
 
+
     // Route untuk menampilkan Form Portofolio (Halaman Awal)
 Route::get('/portofolio', [PortofolioController::class, 'index'])
     ->name('portofolio.index');
@@ -105,6 +107,7 @@ Route::post('/portofolio/store', [PortofolioController::class, 'store'])
 // Route untuk menghapus/membatalkan dokumen (jika Anda ingin mengimplementasikan fungsi hapus)
 Route::delete('/portofolio/delete', [PortofolioController::class, 'destroyBukti'])
     ->name('portofolio.destroy');
+
 
     // Route untuk menampilkan form FR.IA.04A (GET) - ASESOR
 // TIDAK ADA PARAMETER ID
@@ -121,6 +124,15 @@ Route::get('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'showIA04AAsesi'
 
 // Route baru untuk menyimpan input ASESI (Hanya Tanggapan)
 Route::post('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'storeIA04AAsesi'])->name('fria04a.asesi.store');
+
+// --- ROUTE FR.IA.09 (PERTANYAAN WAWANCARA) ---
+// 1. Route untuk Menampilkan Form (GET) - TIDAK ADA PARAMETER ID DI URL
+    Route::get('/asesmen/ia09', [AssessmenFRIA09Controller::class, 'index'])
+        ->name('asesmen.ia09.view'); // <-- URL: /asesmen/ia09
+
+    // 2. Route untuk Menyimpan Data (POST) - ID Sertifikasi dikirim via form/hidden input
+    Route::post('/asesmen/ia09/store', [AssessmenFRIA09Controller::class, 'store'])
+        ->name('asesmen.ia09.store');
 
 // ====================================================
 // 2. AUTHENTICATION

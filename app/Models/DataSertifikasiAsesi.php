@@ -7,6 +7,7 @@ use App\Models\Jadwal;
 use App\Models\BuktiDasar;
 use App\Models\BuktiKelengkapan;
 use App\Models\Ia02;
+use App\Models\DaftarHadir;
 
 // Pastikan semua model yang direlasikan di-import
 use Illuminate\Database\Eloquent\Model;
