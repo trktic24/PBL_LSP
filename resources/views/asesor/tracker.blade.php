@@ -87,29 +87,29 @@
 
                     {{-- ITEM 1: FR.APL.01 --}}
                     <div class="relative pl-20 pb-8 group">
+                        {{-- REVISI DISINI: Logika warna ikon diganti cek langsung ke 'diterima' --}}
                         <div class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
-                            {{ $level >= 20 ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white' }}">
-                            @if($level >= 20) <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg> @else <span class="font-bold text-xs">01</span> @endif
+                            {{ $dataSertifikasi->rekomendasi_apl01 == 'diterima' ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white' }}">
+                            
+                            {{-- Icon Check (Jika diterima) atau Angka 01 (Jika belum) --}}
+                            @if($dataSertifikasi->rekomendasi_apl01 == 'diterima') 
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> 
+                            @else 
+                                <span class="font-bold text-xs">01</span> 
+                            @endif
                         </div>
+
                         <div>
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold text-gray-800">FR.APL.01 - Permohonan Sertifikasi</h3>
                                 <div class="flex space-x-2 ml-4">
-                                    <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
-                                        class="text-xs font-bold py-1 px-3 rounded-md {{ btnState(100, 0, $isFinalized) }}">Verifikasi</a>
-                                    <a href="{{ route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
-                                        target="_blank"
-                                        class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState(100, 0) }}"><span>Lihat
-                                            PDF</span></a>
+                                    <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}" class="text-xs font-bold py-1 px-3 rounded-md {{ btnState(100, 0, $isFinalized) }}">Verifikasi</a>
+                                    <a href="{{ route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState(100, 0) }}"><span>Lihat PDF</span></a>
                                 </div>
                             </div>
                             {{-- STATUS TEXT --}}
-                            @if($dataSertifikasi->responbuktiAk01->contains('respon', 'Valid') || $dataSertifikasi->status_sertifikasi >= 40)
-                                <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
-                            @elseif($dataSertifikasi->rekomendasi_apl01 == 'tidak diterima') <p
-                                class="text-xs text-red-500 mt-1 font-semibold">Tidak Diterima</p>
+                            @if($dataSertifikasi->rekomendasi_apl01 == 'diterima') <p class="text-xs text-green-500 mt-1 font-semibold">Diterima</p>
+                            @elseif($dataSertifikasi->rekomendasi_apl01 == 'tidak diterima') <p class="text-xs text-red-500 mt-1 font-semibold">Tidak Diterima</p>
                             @else <p class="text-xs text-yellow-600 mt-1 font-semibold">Menunggu Verifikasi</p> @endif
                         </div>
                     </div>

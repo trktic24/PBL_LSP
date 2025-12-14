@@ -261,13 +261,13 @@
                 </div>
 
                 {{-- TANDA TANGAN (Sesuai Gaya IA-03) --}}
-                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-6">
+                {{-- <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">C. Tanda Tangan</h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm"> --}}
 
-                        {{-- Kolom Asesi --}}
-                        <div class="border p-4 rounded-lg bg-gray-50 shadow-inner">
+                {{-- Kolom Asesi --}}
+                {{-- <div class="border p-4 rounded-lg bg-gray-50 shadow-inner">
                             <h3 class="font-semibold text-lg mb-4 text-center text-gray-800">Asesi</h3>
                             <p class="mb-2"><strong>Nama:</strong>
                                 {{ $sertifikasi->asesi->nama_lengkap ?? 'Nama Asesi' }}</p>
@@ -282,10 +282,10 @@
                                     Tanda Tangan Digital Asesi
                                 @endif
                             </div>
-                        </div>
+                        </div> --}}
 
-                        {{-- Kolom Asesor --}}
-                        <div class="border p-4 rounded-lg bg-gray-50 shadow-inner">
+                {{-- Kolom Asesor --}}
+                {{-- <div class="border p-4 rounded-lg bg-gray-50 shadow-inner">
                             <h3 class="font-semibold text-lg mb-4 text-center text-gray-800">Asesor</h3>
                             <p class="mb-2"><strong>Nama:</strong>
                                 {{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Nama Asesor' }}</p>
@@ -304,7 +304,7 @@
                         </div>
 
                     </div>
-                </div>
+                </div> --}}
 
                 {{-- NAVIGATION BUTTONS --}}
                 <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between pb-8 no-print">
