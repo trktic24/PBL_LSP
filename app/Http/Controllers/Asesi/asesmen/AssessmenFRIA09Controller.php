@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Asesi\asesmen;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\BuktiDasar; // <<< Import Model BuktiDasar
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ class AssessmenFRIA09Controller extends Controller
      */
     protected function getSkemaRelatedData($id_skema)
     {
+        // ... (Fungsi tetap sama) ...
         if (!$id_skema) {
              return [
                 'unitsToDisplay' => [], 
@@ -56,11 +58,10 @@ class AssessmenFRIA09Controller extends Controller
      */
     public function index()
     {
-        // 1. Tentukan ID Sertifikasi Aktif
+        // 1. Tentukan ID Sertifikasi Aktif (Logic Public/Auth Access)
         $sertifikasi = null;
         
         if (Auth::check()) {
-            // Jika user login, ambil data Sertifikasi terakhir mereka
             $asesi = optional(Auth::user())->asesi;
             if ($asesi) {
                 $sertifikasi = $asesi->dataSertifikasi()->latest()->first();
@@ -68,36 +69,40 @@ class AssessmenFRIA09Controller extends Controller
         } 
         
         if (!$sertifikasi) {
-            // Jika tidak login ATAU tidak ada data Asesi, ambil data Sertifikasi PERTAMA (ID 1)
             $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk'])
                                 ->orderBy('id_data_sertifikasi_asesi', 'asc')
                                 ->first();
         }
         
         if (!$sertifikasi) {
-            // Default fallback jika DB benar-benar kosong
+            // Jika DB kosong, kirim data kosong agar view bisa di render
             return view('asesi.assesmen.FRIA09_Wawancara', [
                 'error' => 'Database kosong. Tidak dapat memuat data sertifikasi.',
-                'sertifikasi' => null, 'asesi' => null, 'asesor' => null, 'skema' => null, 
+                'sertifikasi' => (object)['id_data_sertifikasi_asesi' => 0], 'asesi' => (object)['id_asesi' => null, 'nama_lengkap' => 'Guest', 'tanda_tangan' => null], 
+                'asesor' => (object)['nama_lengkap' => 'N/A', 'tanda_tangan' => null], 'skema' => (object)['nama_skema' => 'N/A', 'nomor_skema' => 'N/A', 'id_skema' => null], 
                 'unitsToDisplay' => [], 'kelompok_pekerjaan' => null, 
                 'tanggal_pelaksanaan' => date('d/m/Y'), 'jenis_tuk_db' => 'Sewaktu',
                 'tanda_tangan_asesor_path' => null, 'tanda_tangan_asesi_path' => null,
+                'bukti_portofolio_data' => collect(), // Mengirim data kosong untuk loop
+                'judul_kegiatan_db' => 'Proyek Uji Coba',
             ]);
         }
 
-        // 2. Deklarasi Data (Menggunakan optional helper untuk menghindari error jika relasi null)
+        // 2. Deklarasi Data Utama
         $asesi = $sertifikasi->asesi;
         $asesor = optional($sertifikasi->jadwal)->asesor; 
         $skema = optional($sertifikasi->jadwal)->skema; 
         $jadwal = $sertifikasi->jadwal;
 
+        // 3. Ambil Data Dinamis Bukti Portofolio dari DB
+        $bukti_portofolio_data = BuktiDasar::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)->get();
+        
+        // 4. Data Pelengkap
         $jenis_tuk_db = optional(optional($jadwal)->jenisTuk)->jenis_tuk ?? 'Sewaktu';
         $tanggal_pelaksanaan = optional(optional($jadwal)->tanggal_pelaksanaan)->format('d/m/Y') ?? date('d/m/Y'); 
-        
         $skemaData = $this->getSkemaRelatedData(optional($skema)->id_skema);
+        $judul_kegiatan_db = 'Proyek Pendaftaran Sertifikasi'; // Asumsi nilai default jika tidak ada form terstruktur
         
-        // --- DATA KHUSUS FORM & TANDA TANGAN ---
-        $pertanyaanIA09Data = null; 
         $tanda_tangan_asesor_path = optional($asesor)->tanda_tangan ?? null;
         $tanda_tangan_asesi_path = optional($asesi)->tanda_tangan ?? null; 
         
@@ -108,15 +113,16 @@ class AssessmenFRIA09Controller extends Controller
             'skema' => $skema,
             'tanggal_pelaksanaan' => $tanggal_pelaksanaan,
             'jenis_tuk_db' => $jenis_tuk_db,
-            'pertanyaanIA09Data' => $pertanyaanIA09Data,
-            
-            'id_sertifikasi_aktif' => $sertifikasi->id_data_sertifikasi_asesi,
+            'judul_kegiatan_db' => $judul_kegiatan_db,
             
             // Variabel yang dibutuhkan oleh View
             'unitsToDisplay' => $skemaData['unitsToDisplay'],
             'kelompok_pekerjaan' => $skemaData['kelompok_pekerjaan'],
             'tanda_tangan_asesor_path' => $tanda_tangan_asesor_path,
             'tanda_tangan_asesi_path' => $tanda_tangan_asesi_path,
+            
+            // --- DATA BUKTI PORTOFOLIO DINAMIS ---
+            'bukti_portofolio_data' => $bukti_portofolio_data, 
         ]));
     }
 

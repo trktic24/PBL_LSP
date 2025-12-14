@@ -143,29 +143,27 @@
                     $nama_asesi = $asesi->nama_lengkap ?? 'AGUS (12345)';
                     $tanggal = $tanggal_pelaksanaan ?? date('d/m/Y');
                     $jenis_tuk = $jenis_tuk_db ?? 'Sewaktu'; 
-                    $judul_kegiatan_db = 'Proyek Pembuatan Sistem Informasi Pendaftaran Mahasiswa Baru'; 
+                    $judul_kegiatan_db = $judul_kegiatan_db ?? 'Proyek Pendaftaran Sertifikasi'; 
 
                     // Variabel Tanda Tangan (FIXED: Pastikan ada fallback untuk menghindari Undefined Variable)
                     $tanda_tangan_asesor_path = $tanda_tangan_asesor_path ?? null; 
                     $tanda_tangan_asesi_path = $tanda_tangan_asesi_path ?? null; 
 
-                    // Data DUMMY Pertanyaan Wawancara & Bukti Portofolio (untuk loop)
+                    // Data DUMMY Pertanyaan Wawancara (Hanya untuk struktur loop jika $bukti_portofolio_data kosong)
                     $pertanyaan_dummy = [
                         ['no' => 1, 'pertanyaan' => 'Sesuai dengan bukti no. 1 yang Anda ajukan, jelaskan cara Anda menganalisis kebutuhan pengguna.', 'bukti' => 'Dokumen Kebutuhan'],
                         ['no' => 2, 'pertanyaan' => 'Bagaimana Anda memastikan kode yang Anda buat mematuhi standar keamanan?', 'bukti' => 'Laporan Uji Keamanan'],
                         ['no' => 3, 'pertanyaan' => 'Jelaskan tahapan *debugging* yang efisien.', 'bukti' => 'Screenshoot Konsol Error'],
                         ['no' => 4, 'pertanyaan' => 'Bagaimana Anda mengelola alur data untuk menghindari redundansi?', 'bukti' => 'Diagram ERD'],
                     ];
+                    
+                    // Data Unit Kompetensi (dari Controller)
+                    $unitsToDisplay = $unitsToDisplay ?? [];
+                    $kelompok_pekerjaan = $kelompok_pekerjaan ?? 'Pengembangan Aplikasi';
 
-                    // Data DUMMY Unit Kompetensi (Digunakan jika $unitsToDisplay dari Controller kosong)
-                    $dummyUnits = [
-                        ['code' => 'J.620100.001.01', 'title' => 'Menggunakan Struktur Data'],
-                        ['code' => 'J.620100.002.02', 'title' => 'Mengimplementasikan User Interface'],
-                        ['code' => 'J.620100.003.03', 'title' => 'Melakukan Debugging'],
-                    ];
-                    $unitsToDisplay = empty($unitsToDisplay) ? $dummyUnits : $unitsToDisplay;
-                    $kelompok_pekerjaan = empty($unitsToDisplay) ? 'Pengembangan Aplikasi' : $kelompok_pekerjaan;
-
+                    // Tentukan loop data bukti: jika ada data dinamis, gunakan itu; jika tidak, gunakan dummy.
+                    $data_loop_bukti = $bukti_portofolio_data->isEmpty() ? collect($pertanyaan_dummy) : $bukti_portofolio_data;
+                    
                 @endphp
                 
                 {{-- FORM START --}}
@@ -292,7 +290,7 @@
 
                 <hr class="border-t border-gray-200 mb-8">
                 
-                {{-- 2A. TABEL BUKTI PORTOFOLIO --}}
+                {{-- 2A. TABEL BUKTI PORTOFOLIO (DATA DARI DB: bukti_dasar) --}}
                 <div class="mb-8">
                     <h3 class="text-xl font-bold text-gray-900 mb-4">Bukti Portofolio</h3>
                     
@@ -300,20 +298,31 @@
                         <table class="w-full table-auto table-formal text-sm min-w-[500px]">
                             <thead class="bg-gray-900 text-white text-center font-semibold">
                                 <tr>
-                                    <th class="p-3 w-10 border-gray-300">No.</th>
+                                    <th class="p-3 border-gray-300" style="width: 5%;">No.</th>
                                     <th class="p-3 w-full border-gray-300">Bukti Portofolio</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($pertanyaan_dummy as $q)
+                                {{-- Loop Data Bukti Portofolio (dari Model BuktiDasar) --}}
+                                @forelse ($bukti_portofolio_data as $index => $bukti)
                                 <tr class="bg-white hover:bg-gray-50">
-                                    <td class="p-2 text-center align-top border-gray-300 font-bold w-10">{{ $q['no'] }}.</td>
+                                    <td class="p-2 text-center align-top border-gray-300 font-bold" style="width: 5%;">{{ $index + 1 }}.</td>
                                     <td class="p-2 align-top border-gray-300">
-                                        {{-- Input Bukti Portofolio --}}
-                                        <textarea rows="2" name="bukti_portofolio_{{ $q['no'] }}" placeholder="Masukkan Judul Bukti Portofolio">{{ $q['bukti'] }}</textarea>
+                                        {{-- Menampilkan bukti_dasar dari database --}}
+                                        <textarea rows="2" name="bukti_portofolio_{{ $bukti->id_bukti_dasar }}" placeholder="Judul Bukti Portofolio" readonly>{{ $bukti->bukti_dasar }}</textarea>
+                                    </td>
+                                </tr>
+                                @empty
+                                {{-- Fallback jika DB kosong, gunakan DUMMY untuk menampilkan minimal 4 baris --}}
+                                @foreach (collect($pertanyaan_dummy)->take(4) as $index => $q)
+                                <tr class="bg-white hover:bg-gray-50">
+                                    <td class="p-2 text-center align-top border-gray-300 font-bold" style="width: 5%;">{{ $index + 1 }}.</td>
+                                    <td class="p-2 align-top border-gray-300">
+                                        <textarea rows="2" name="bukti_portofolio_{{ $index + 1 }}" placeholder="Masukkan Judul Bukti Portofolio (Dummy)">{{ $q['bukti'] }}</textarea>
                                     </td>
                                 </tr>
                                 @endforeach
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -322,7 +331,7 @@
                 <hr class="border-t border-gray-200 mb-8">
 
 
-                {{-- 2B. TABEL DAFTAR PERTANYAAN WAWANCARA (Pencapaian Dihapus, Kolom No. Dirampingkan) --}}
+                {{-- 2B. TABEL DAFTAR PERTANYAAN WAWANCARA (Kolom No. Dirampingkan) --}}
                 <div class="mb-8">
                     <h3 class="text-xl font-bold text-gray-900 mb-4">Daftar Pertanyaan Wawancara</h3>
                     
