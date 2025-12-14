@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Jadwal;
 use App\Models\JenisTuk;
-use App\Models\MasterTuk;
+use App\Models\MasterTUK;
 use App\Models\Skema;
 use App\Models\Asesor;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,13 +23,13 @@ class JadwalFactory extends Factory
         // 2. Logika Jam (Waktu)
         // Kita bikin objek DateTime biar gampang dihitung selisihnya
         // Misal mulai antara jam 8 pagi sampe jam 2 siang
-        $waktuMulaiObj = $this->faker->dateTimeBetween('08:00', '14:00'); 
-        
+        $waktuMulaiObj = $this->faker->dateTimeBetween('08:00', '14:00');
+
         // Waktu selesai otomatis +2 jam dari waktu mulai
         $waktuSelesaiObj = (clone $waktuMulaiObj)->modify('+2 hours');
 
         // 3. Foreign Keys
-        $id_tuk = MasterTuk::inRandomOrder()->first()->id_tuk;
+        $id_tuk = MasterTUK::inRandomOrder()->first()->id_tuk;
         $id_skema = Skema::inRandomOrder()->first()->id_skema;
         $id_asesor = Asesor::inRandomOrder()->first()->id_asesor;
         $id_jenis_tuk = JenisTuk::inRandomOrder()->first()->id_jenis_tuk;
@@ -46,7 +46,7 @@ class JadwalFactory extends Factory
             'tanggal_mulai' => $mulai,
             'tanggal_selesai' => $selesai,
             'tanggal_pelaksanaan' => $pelaksanaan,
-            
+
             // Perbaikan ada di sini:
             // Format object DateTime jadi string jam:menit (H:i)
             'waktu_mulai' => $waktuMulaiObj->format('H:i'),

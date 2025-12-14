@@ -21,42 +21,42 @@ class PraasesmenController extends Controller
     public function view($idDataSertifikasi)
     {
         // try {
-            // 1. Ambil Data Sertifikasi dengan Relasi Lengkap
-            // Kita butuh 'jadwal.asesor' untuk sidebar
-            $sertifikasi = DataSertifikasiAsesi::with([
-                'asesi.user',
-                'jadwal.asesor', // <--- PENTING: Ambil data asesor
-                'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteriaUnjukKerja'
-            ])->findOrFail($idDataSertifikasi);
+        // 1. Ambil Data Sertifikasi dengan Relasi Lengkap
+        // Kita butuh 'jadwal.asesor' untuk sidebar
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi.user',
+            'jadwal.asesor', // <--- PENTING: Ambil data asesor
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteria'
+        ])->findOrFail($idDataSertifikasi);
 
-            $skema = $sertifikasi->jadwal->skema;
-            
-            // Ambil Data Asesor dari relasi
-            $asesorObj = $sertifikasi->jadwal->asesor;
+        $skema = $sertifikasi->jadwal->skema;
 
-            // 2. Ambil Respon yang SUDAH ADA (History Jawaban)
-            $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)
-                ->get()
-                ->keyBy('id_kriteria'); 
+        // Ambil Data Asesor dari relasi
+        $asesorObj = $sertifikasi->jadwal->asesor;
 
-            // Filter Role
-            $mode = Auth::user()->role->id_role === 2 ? 'edit' : 'view';                
+        // 2. Ambil Respon yang SUDAH ADA (History Jawaban)
+        $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)
+            ->get()
+            ->keyBy('id_kriteria');
 
-            // 3. Kirim Data ke View
-            return view('frontend.apl02', [
-                'sertifikasi'       => $sertifikasi, // Dikirim untuk Sidebar
-                'skema'             => $skema,
-                'asesi'             => $sertifikasi->asesi,
-                'idDataSertifikasi' => $idDataSertifikasi,
-                'existingResponses' => $existingResponses,
-                'mode'              => $mode,
-                
-                // Kirim Data Asesor yang sudah dirapikan (Sesuai permintaanmu)
-                'asesor' => [
-                    'nama'   => $asesorObj->nama_lengkap ?? 'Belum Ditentukan',
-                    'no_reg' => $asesorObj->nomor_regis ?? '-',
-                ],
-            ]);
+        // Filter Role
+        $mode = Auth::user()->role->id_role === 2 ? 'edit' : 'view';
+
+        // 3. Kirim Data ke View
+        return view('frontend.apl02', [
+            'sertifikasi' => $sertifikasi, // Dikirim untuk Sidebar
+            'skema' => $skema,
+            'asesi' => $sertifikasi->asesi,
+            'idDataSertifikasi' => $idDataSertifikasi,
+            'existingResponses' => $existingResponses,
+            'mode' => $mode,
+
+            // Kirim Data Asesor yang sudah dirapikan (Sesuai permintaanmu)
+            'asesor' => [
+                'nama' => $asesorObj->nama_lengkap ?? 'Belum Ditentukan',
+                'no_reg' => $asesorObj->nomor_regis ?? '-',
+            ],
+        ]);
 
         // } catch (\Exception $e) {
         //     return redirect('/tracker')->with('error', 'Data tidak ditemukan: ' . $e->getMessage());
@@ -73,7 +73,7 @@ class PraasesmenController extends Controller
 
         $request->validate([
             'respon' => 'required|array',
-            'respon.*.k' => 'required|in:1,0', 
+            'respon.*.k' => 'required|in:1,0',
             'respon.*.bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120'
         ]);
 
@@ -81,11 +81,11 @@ class PraasesmenController extends Controller
             DB::beginTransaction();
 
             foreach ($request->respon as $idKriteria => $data) {
-                
+
                 $filePath = null;
                 $existing = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)
-                                          ->where('id_kriteria', $idKriteria)
-                                          ->first();
+                    ->where('id_kriteria', $idKriteria)
+                    ->first();
 
                 // 1. Handle File Upload
                 if ($request->hasFile("respon.$idKriteria.bukti")) {
@@ -93,7 +93,7 @@ class PraasesmenController extends Controller
                     $ext = $file->getClientOriginalExtension();
                     $fileName = "bukti_apl02_{$idDataSertifikasi}_{$idKriteria}.{$ext}";
                     $destinationPath = public_path("images/bukti_apl02/{$idDataSertifikasi}");
-                    
+
                     if (!File::exists($destinationPath)) {
                         File::makeDirectory($destinationPath, 0755, true);
                     }
@@ -117,30 +117,32 @@ class PraasesmenController extends Controller
                     ],
                     [
                         'respon_asesi_apl02' => $data['k'],
-                        'bukti_asesi_apl02'  => $filePath,
-                        'pencapaian_ia01'       => 1, 
-                        'penilaian_lanjut_ia01' => 0 
+                        'bukti_asesi_apl02' => $filePath,
+                        'pencapaian_ia01' => 1,
+                        'penilaian_lanjut_ia01' => 0
                     ]
                 );
             }
-            
+
             // 3. Update Status (Naik Level ke Pra-Asesmen Selesai)
             $sertifikasi = DataSertifikasiAsesi::find($idDataSertifikasi);
             // Cek level atau status string-nya
             // Pastikan status ini ada di enum database kamu
-            if($sertifikasi->status_sertifikasi != 'pra_asesmen_selesai' && 
-               $sertifikasi->progres_level < 40) { 
-                 $sertifikasi->status_sertifikasi = 'pra_asesmen_selesai';
-                 $sertifikasi->save();
+            if (
+                $sertifikasi->status_sertifikasi != 'pra_asesmen_selesai' &&
+                $sertifikasi->progres_level < 40
+            ) {
+                $sertifikasi->status_sertifikasi = 'pra_asesmen_selesai';
+                $sertifikasi->save();
             }
 
             DB::commit();
-            
+
             // Return JSON
             return response()->json([
                 'success' => true,
                 'message' => 'Asesmen Mandiri berhasil disimpan!',
-                'id_jadwal' => $sertifikasi->id_jadwal 
+                'id_jadwal' => $sertifikasi->id_jadwal
             ]);
 
         } catch (\Exception $e) {
@@ -162,7 +164,7 @@ class PraasesmenController extends Controller
         ]);
     }
 
-   /**
+    /**
      * Generate PDF APL-02 untuk Asesi
      */
     public function generatePDF($idDataSertifikasi)
@@ -170,7 +172,7 @@ class PraasesmenController extends Controller
         // 1. Ambil Data Sertifikasi beserta relasi lengkap (Unit -> Elemen -> KUK)
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi.user',
-            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteriaUnjukKerja', // Deep nested relationship
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteria', // Deep nested relationship
             'jadwal.asesor',
         ])->findOrFail($idDataSertifikasi);
 
@@ -186,11 +188,11 @@ class PraasesmenController extends Controller
 
         // 4. Buat data untuk dikirim ke view PDF
         $data = [
-            'sertifikasi'       => $sertifikasi,
-            'skema'             => $skema,
-            'asesi'             => $sertifikasi->asesi,
+            'sertifikasi' => $sertifikasi,
+            'skema' => $skema,
+            'asesi' => $sertifikasi->asesi,
             'existingResponses' => $responses,
-            'mode'              => $mode,
+            'mode' => $mode,
         ];
 
         // 5. Load view blade untuk PDF
@@ -200,6 +202,6 @@ class PraasesmenController extends Controller
 
         // 6. Kirim file PDF langsung ke browser
         $fileName = 'APL02_' . $sertifikasi->asesi->nama_lengkap . '.pdf';
-        return $pdf->stream($fileName); 
+        return $pdf->stream($fileName);
     }
 }

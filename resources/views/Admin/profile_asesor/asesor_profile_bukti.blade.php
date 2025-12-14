@@ -43,86 +43,99 @@
             </div>
         @endif
 
-        <div class="space-y-6">
+          <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
           
+          <div class="space-y-4">
           @foreach ($documents as $doc)
-          <div class="border border-gray-200 rounded-xl shadow-sm overflow-hidden transition-shadow hover:shadow-md" x-data="{ open: true }">
+          <div x-data="{ expanded: false }" class="border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
             
-            <div @click="open = !open" class="flex items-center justify-between px-6 py-4 bg-gray-50 cursor-pointer select-none group">
-              <div>
-                <h3 class="font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{{ $doc['title'] }}</h3>
-                <p class="text-sm text-gray-500">{{ $doc['subtitle'] }}</p>
-              </div>
-              <div class="flex items-center space-x-4">
-                @if ($doc['file_path'])
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <i class="fas fa-check-circle mr-1"></i> 1 berkas
-                  </span>
-                @else
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                    <i class="fas fa-times-circle mr-1"></i> 0 berkas
-                  </span>
-                @endif
-                <i class="fas text-gray-400 transition-transform duration-300 group-hover:text-blue-500" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-              </div>
+            <!-- Accordion Header -->
+            <div @click="expanded = !expanded" class="bg-gray-50 p-4 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition select-none">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 transition-colors duration-300"
+                         class="{{ $doc['file_path'] ? 'bg-green-100 text-green-600' : 'bg-white border border-gray-300 text-gray-400' }}">
+                        <i class="fas {{ $doc['file_path'] ? 'fa-check' : 'fa-file-upload' }}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-800 text-sm">
+                            {{ $doc['title'] }}
+                        </h4>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ $doc['subtitle'] }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    @if ($doc['file_path'])
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-800">
+                            Terupload
+                        </span>
+                    @else
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-800">
+                            Kosong
+                        </span>
+                    @endif
+                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300" :class="{'rotate-180': expanded}"></i>
+                </div>
             </div>
-            
-            <div x-show="open" x-transition class="p-6 border-t border-gray-200 bg-white">
-              @if ($doc['file_path'])
-                <div class="flex items-center space-x-4">
-                  <div class="w-12 h-12 flex items-center justify-center bg-blue-50 text-blue-600 font-bold rounded-lg text-sm border border-blue-100 uppercase tracking-wide">
-                    .{{ pathinfo($doc['file_path'], PATHINFO_EXTENSION) }}
-                  </div>
-                  
-                  <div class="flex-1 min-w-0">
-                    <p class="font-medium text-gray-800 text-sm truncate" title="{{ basename($doc['file_path']) }}">
-                        {{ basename($doc['file_path']) }}
-                    </p>
-                    <p class="text-xs text-gray-500 mt-0.5 flex items-center">
-                        <i class="fas fa-cloud-upload-alt mr-1"></i> File telah diupload
-                    </p>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    {{-- Tombol View --}}
-                    <a href="{{ Storage::url($doc['file_path']) }}" target="_blank"
-                       class="bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110" 
-                       title="Lihat File">
-                      <i class="fas fa-eye text-xs"></i>
-                    </a>
 
-                    {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
-                    <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}"
-                       class="bg-yellow-400 hover:bg-yellow-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110"
-                       title="Edit File">
-                      <i class="fas fa-pen text-xs"></i>
-                    </a>
-                    
-                    {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
-                    <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}"
-                       class="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110"
-                       title="Hapus File">
-                      <i class="fas fa-trash text-xs"></i>
-                    </a>
-                  </div>
+            <!-- Accordion Body -->
+            <div x-show="expanded" x-collapse class="bg-white border-t border-gray-200">
+                <div class="p-6">
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-blue-50 hover:border-blue-300 transition relative group">
+                        
+                        @if ($doc['file_path'])
+                            <!-- File Preview Logic -->
+                            @php
+                                $ext = strtolower(pathinfo($doc['file_path'], PATHINFO_EXTENSION));
+                                $isImage = in_array($ext, ['jpg', 'jpeg', 'png']);
+                            @endphp
+
+                            @if ($isImage)
+                                <div class="relative w-full mb-4">
+                                    <img src="{{ Storage::url($doc['file_path']) }}" class="max-h-64 mx-auto rounded-lg shadow-sm object-contain">
+                                </div>
+                            @else
+                                <div class="mb-4">
+                                    <i class="fas fa-file-pdf text-red-500 text-5xl"></i>
+                                    <p class="mt-2 text-sm font-medium text-gray-700">{{ basename($doc['file_path']) }}</p>
+                                </div>
+                            @endif
+
+                            <!-- Action Buttons -->
+                            <div class="flex items-center justify-center space-x-3 mt-2">
+                                <a href="{{ Storage::url($doc['file_path']) }}" target="_blank" 
+                                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-sm transition flex items-center">
+                                    <i class="fas fa-eye mr-2"></i> Lihat
+                                </a>
+                                <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" 
+                                   class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-medium rounded-lg shadow-sm transition flex items-center">
+                                    <i class="fas fa-pen mr-2"></i> Edit
+                                </a>
+                                <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" 
+                                   class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg shadow-sm transition flex items-center">
+                                    <i class="fas fa-trash mr-2"></i> Hapus
+                                </a>
+                            </div>
+
+                        @else
+                            <!-- Empty State / Upload Placeholder -->
+                            <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" class="space-y-3 cursor-pointer w-full block">
+                                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-cloud-upload-alt text-3xl"></i>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700">Belum ada dokumen</p>
+                                    <p class="text-xs text-gray-400 mt-1">Klik untuk mengunggah dokumen ini</p>
+                                </div>
+                            </a>
+                        @endif
+
+                    </div>
                 </div>
-              @else
-                <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-dashed border-gray-300">
-                  <div class="flex items-center text-gray-500">
-                      <i class="fas fa-file-upload text-xl mr-3 text-gray-400"></i>
-                      <span class="text-sm font-medium">Belum ada dokumen yang diunggah.</span>
-                  </div>
-                  {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
-                  <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}"
-                     class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-                    <i class="fas fa-upload mr-2"></i> Upload Sekarang
-                  </a>
-                </div>
-              @endif
             </div>
           </div>
           @endforeach
-        </div>
+          </div>
       
         <div class="mt-10 p-10 border border-gray-200 rounded-2xl shadow-md relative">
           
@@ -141,32 +154,34 @@
 
           <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">Tanda Tangan Pemohon</h3>
           
-          <p class="font-semibold text-gray-800 mb-4 text-center md:text-left">Saya yang bertanda tangan di bawah ini:</p>
+          <div class="bg-gray-50 rounded-xl p-6 max-w-3xl mx-auto border border-gray-200 mb-8">
+              <p class="text-sm font-semibold text-gray-800 mb-4">Saya yang bertanda tangan di bawah ini:</p>
 
-          <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 mb-6">
-              <div class="space-y-3 text-sm text-gray-700">
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Nama</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->nama_lengkap }}</span>
-                </div>
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Pekerjaan</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->pekerjaan }}</span>
-                </div>
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Alamat Korespondensi</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->alamat_rumah ?? '-' }}</span>
-                </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                  {{-- Item 1 --}}
+                  <div>
+                      <label class="block text-xs text-gray-500 mb-1">Nama Lengkap</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->nama_lengkap }}</p>
+                  </div>
+                  
+                  {{-- Item 2 --}}
+                  <div>
+                      <label class="block text-xs text-gray-500 mb-1">Pekerjaan</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->pekerjaan }}</p>
+                  </div>
+                  
+                  {{-- Item 3 --}}
+                  <div class="md:col-span-2">
+                      <label class="block text-xs text-gray-500 mb-1">Alamat Korespondensi</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->alamat_rumah ?? '-' }}</p>
+                  </div>
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-gray-200 text-gray-600 text-[11px] leading-relaxed">
+                  Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan dapat dipertanggungjawabkan. 
+                  Dokumen ini digunakan sebagai bukti pemenuhan syarat Sertifikasi Kompetensi.
               </div>
           </div>
-
-          <p class="mt-6 text-gray-600 text-sm mb-8 leading-relaxed">
-            Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan dapat dipertanggungjawabkan. 
-            Dokumen ini digunakan sebagai bukti pemenuhan syarat Sertifikasi Kompetensi.
-          </p>
 
           <div class="flex flex-col items-center justify-center">
               <div class="group relative mt-2 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl w-full max-w-md h-48 flex items-center justify-center bg-gray-50 transition-colors duration-300">

@@ -8,7 +8,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        function confirmDelete(id, name, status) {
+            if (status === 'approved') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Menghapus',
+                    text: 'Asesor ' + name + ' sudah disetujui (Approved). Data yang sudah disetujui tidak dapat dihapus demi menjaga integritas data.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Mengerti'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Anda akan menghapus asesor " + name + ". Tindakan ini akan menghapus data asesor, akun user, dan semua file terkait secara permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('delete-form-' + id).submit();
+                    }
+                });
+            }
+        }
+    </script>
 
     <style>
         body { font-family: 'Poppins', sans-serif; }
@@ -28,8 +58,7 @@
             </div>
             
             @php
-                // Menggunakan requestData dari controller untuk kompatibilitas
-                $allParams = $requestData;
+                $allParams = $requestData ?? request()->all();
             @endphp
             
             <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
@@ -41,7 +70,6 @@
                     class="w-full max-w-sm"
                     x-data="{ search: '{{ $requestData['search'] ?? '' }}' }" 
                 >
-                    {{-- Hidden inputs untuk menjaga parameter filter saat search --}}
                     @foreach ($allParams as $key => $value)
                         @if ($key != 'search' && $key != 'page')
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
@@ -72,7 +100,7 @@
                 </form>
 
                 <div class="flex space-x-3">
-                    {{-- Filter Dropdown Complex (Dipertahankan logikanya, disesuaikan UI-nya) --}}
+                    {{-- Filter Dropdown --}}
                     <div class="relative" x-data="{ open: false, activeFilter: '' }" @click.away="open = false; activeFilter = ''">
                         <button
                             @click="open = !open; activeFilter = ''"
@@ -193,7 +221,7 @@
             @endif
 
             @if (session('error'))
-                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+                <div x-data="{ show: true }" x-show="show"
                     x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                     class="mb-4 p-4 bg-red-100 text-red-700 border border-red-200 rounded-lg flex justify-between items-center" role="alert">
                     <span class="font-medium">{{ session('error') }}</span>
@@ -230,7 +258,6 @@
                     <span class="text-sm text-gray-600">entries</span>
                 </div>
 
-                {{-- TABEL ASESOR DENGAN UI BARU (Divide-x, border, text-xs) --}}
                 <table class="min-w-full text-xs text-left border border-gray-200">
                     
                     <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
@@ -308,15 +335,35 @@
                             <td class="px-6 py-4">{{ $asesor->email ?? 'N/A' }}</td>
                             <td class="px-6 py-4">{{ $asesor->nomor_regis }}</td>
                             <td class="px-6 py-4">{{ $asesor->nomor_hp }}</td>
+                            
+                            {{-- LOGIKA TAMPIL SKEMA LENGKAP: Profil + Pivot + Jadwal --}}
                             <td class="px-6 py-4">
-                                <ul class="list-disc list-inside text-gray-600">
-                                    @forelse($asesor->skemas as $skema)
-                                        <li>{{ $skema->nama_skema }}</li>
-                                    @empty
-                                        <li class="list-none text-gray-400 italic">Belum ada skema</li>
-                                    @endforelse
-                                </ul>
+                                @php
+                                    // 1. Ambil Skema dari Pivot (Many-to-Many)
+                                    $skemaPivot = $asesor->skemas; 
+                                    
+                                    // 2. Ambil Skema dari Riwayat Jadwal
+                                    $skemaJadwal = $asesor->jadwals->pluck('skema')->filter(); 
+                                    
+                                    // 3. Ambil Skema Utama (One-to-Many)
+                                    $skemaUtama = $asesor->skema ? collect([$asesor->skema]) : collect();
+
+                                    // 4. Gabungkan semua dan hilangkan duplikat bedasarkan 'nama_skema' (bukan 'id_skema')
+                                    // KUNCI PERBAIKAN: ->unique('nama_skema') memastikan nama skema hanya muncul sekali meskipun ID-nya berbeda (kasus langka tapi mungkin)
+                                    $allSkemas = $skemaPivot->merge($skemaJadwal)->merge($skemaUtama)->unique('nama_skema');
+                                @endphp
+
+                                @if($allSkemas->isNotEmpty())
+                                    <ul class="list-disc list-inside text-gray-700">
+                                        @foreach($allSkemas as $skemaItem)
+                                            <li>{{ $skemaItem->nama_skema }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <span class="text-gray-400 italic">Belum ada skema</span>
+                                @endif
                             </td>
+
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($asesor->status_verifikasi == 'approved')
                                   <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full flex items-center w-fit">
@@ -338,16 +385,16 @@
                                     <a href="{{ route('admin.edit_asesor1', $asesor->id_asesor) }}" class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-lg transition">
                                         <i class="fas fa-pen"></i> <span>Edit</span>
                                     </a>
-                                    <form 
-                                        action="{{ route('admin.asesor.destroy', $asesor->id_asesor) }}" 
-                                        method="POST" 
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus asesor {{ $asesor->nama_lengkap }}? Tindakan ini akan menghapus data asesor, akun user, dan semua file terkait.');"
+                                    <button 
+                                        type="button" 
+                                        onclick="confirmDelete('{{ $asesor->id_asesor }}', '{{ $asesor->nama_lengkap }}', '{{ $asesor->status_verifikasi }}')"
+                                        class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition"
                                     >
+                                        <i class="fas fa-trash"></i> <span>Delete</span>
+                                    </button>
+                                    <form id="delete-form-{{ $asesor->id_asesor }}" action="{{ route('admin.asesor.destroy', $asesor->id_asesor) }}" method="POST" class="hidden">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="flex items-center space-x-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg transition">
-                                            <i class="fas fa-trash"></i> <span>Delete</span>
-                                        </button>
                                     </form>
                                     <a href="{{ route('admin.asesor.profile', $asesor->id_asesor) }}"
                                        class="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition"> <i class="fas fa-eye"></i> <span>View</span>

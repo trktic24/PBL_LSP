@@ -19,10 +19,12 @@ class TenSchemesSeeder extends Seeder
     public function run()
     {
         // 1. Ensure Dependencies Exist
-        $asesor = User::whereHas('role', function($q) { $q->where('nama_role', 'asesor'); })->first();
-        $asesi = User::whereHas('role', function($q) { $q->where('nama_role', 'asesi'); })->first();
+        $asesor = User::whereHas('role', function ($q) {
+            $q->where('nama_role', 'asesor'); })->first();
+        $asesi = User::whereHas('role', function ($q) {
+            $q->where('nama_role', 'asesi'); })->first();
         $tuk = MasterTuk::first();
-        
+
         if (!$asesor || !$asesi) {
             $this->command->error('❌ Asesor or Asesi user missing. Please run UserSeeder first.');
             return;
@@ -126,7 +128,7 @@ class TenSchemesSeeder extends Seeder
 
                 // Ensure we have a valid MasterTuk
                 if (!$tuk) {
-                    $tuk = \App\Models\MasterTuk::create([
+                    $tuk = \App\Models\MasterTUK::create([
                         'nama_lokasi' => 'TUK Sewaktu',
                         'alamat_tuk' => 'Jl. Contoh No. 1',
                         'kontak_tuk' => '08123456789',
@@ -148,7 +150,7 @@ class TenSchemesSeeder extends Seeder
                     'sesi' => 1,
                     'kuota_maksimal' => 20,
                     'kuota_minimal' => 5,
-                    'Status_jadwal' => 'Terjadwal', 
+                    'Status_jadwal' => 'Terjadwal',
                 ]);
 
                 // G. Create DataSertifikasiAsesi (The Ticket)

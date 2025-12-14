@@ -81,18 +81,21 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">No Registrasi <span class="text-red-500">*</span></label>
               <input type="text" name="nomor_regis" required 
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                     placeholder="Nomor registrasi MET (jika ada)"
                      value="{{ old('nomor_regis', $asesor->nomor_regis ?? '') }}">
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
               <input type="text" name="nama_lengkap" required 
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                     placeholder="Sesuai dengan KTP"
                      value="{{ old('nama_lengkap', $asesor->nama_lengkap ?? '') }}">
             </div>
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-2">NIK <span class="text-red-500">*</span></label>
               <input type="text" name="nik" required 
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+                     placeholder="16 digit nomor induk kependudukan"
                      value="{{ old('nik', $asesor->nik ?? '') }}">
             </div>
           </div>
@@ -150,7 +153,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                <label class="block text-sm font-medium text-gray-700 mb-2">Tempat Lahir <span class="text-red-500">*</span></label>
-               <input type="text" name="tempat_lahir" placeholder="Kota Kelahiran" required 
+               <input type="text" name="tempat_lahir" placeholder="Kota tempat lahir sesuai KTP" required 
                       class="w-full p-3 border border-gray-300 rounded-lg outline-none" 
                       value="{{ old('tempat_lahir', $asesor->tempat_lahir ?? '') }}">
             </div>
@@ -162,79 +165,91 @@
             </div>
 
             <div>
-               <label class="block text-sm font-medium text-gray-700 mb-2">JK & Kebangsaan <span class="text-red-500">*</span></label>
-               <div class="flex space-x-2">
-                   <select name="jenis_kelamin" required 
-                           class="w-1/2 p-3 border border-gray-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-blue-500">
-                     <option value="">Pilih JK</option>
-                     <option value="Laki-laki" {{ old('jenis_kelamin', $asesor->jenis_kelamin??'')=='Laki-laki'?'selected':'' }}>Laki-laki</option>
-                     <option value="Perempuan" {{ old('jenis_kelamin', $asesor->jenis_kelamin??'')=='Perempuan'?'selected':'' }}>Perempuan</option>
-                   </select>
-                   <select name="kebangsaan" required 
-                           class="w-1/2 p-3 border border-gray-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-blue-500">
-                     <option value="Indonesia" {{ old('kebangsaan', $asesor->kebangsaan??'')=='Indonesia'?'selected':'' }}>Indonesia</option>
-                     <option value="WNA" {{ old('kebangsaan', $asesor->kebangsaan??'')=='WNA'?'selected':'' }}>WNA</option>
-                   </select>
-               </div>
+               <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin <span class="text-red-500">*</span></label>
+               <select name="jenis_kelamin" required 
+                       class="w-full p-3 border border-gray-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-blue-500">
+                 <option value="">Pilih JK</option>
+                 <option value="Laki-laki" {{ old('jenis_kelamin', $asesor->jenis_kelamin??'')=='Laki-laki'?'selected':'' }}>Laki-laki</option>
+                 <option value="Perempuan" {{ old('jenis_kelamin', $asesor->jenis_kelamin??'')=='Perempuan'?'selected':'' }}>Perempuan</option>
+               </select>
             </div>
-          </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+            <div>
+               <label class="block text-sm font-medium text-gray-700 mb-2">Kebangsaan <span class="text-red-500">*</span></label>
+               <select name="kebangsaan" required 
+                       class="w-full p-3 border border-gray-300 rounded-lg outline-none bg-white focus:ring-2 focus:ring-blue-500">
+                 <option value="Indonesia" {{ old('kebangsaan', $asesor->kebangsaan??'')=='Indonesia'?'selected':'' }}>Indonesia</option>
+                 <option value="WNA" {{ old('kebangsaan', $asesor->kebangsaan??'')=='WNA'?'selected':'' }}>WNA</option>
+               </select>
+            </div>
+
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Alamat <span class="text-red-500">*</span></label>
-                <textarea name="alamat_rumah" required rows="3" 
+                <textarea name="alamat_rumah" required rows="3" placeholder="Alamat lengkap domisili saat ini"
                           class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('alamat_rumah', $asesor->alamat_rumah??'') }}</textarea>
             </div>
+
             <div>
                 <label class="block text-sm mb-1 font-medium text-gray-700">Kota/Kab</label>
                 <input type="text" name="kabupaten_kota" required 
                        class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Kota atau Kabupaten domisili"
                        value="{{ old('kabupaten_kota', $asesor->kabupaten_kota??'') }}">
             </div>
             <div>
                 <label class="block text-sm mb-1 font-medium text-gray-700">Provinsi</label>
                 <input type="text" name="provinsi" required 
                        class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Provinsi domisili"
                        value="{{ old('provinsi', $asesor->provinsi??'') }}">
             </div>
+
             <div>
                 <label class="block text-sm mb-1 font-medium text-gray-700">Kode POS</label>
                 <input type="text" name="kode_pos" 
                        class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Kode pos wilayah (5 digit)"
                        value="{{ old('kode_pos', $asesor->kode_pos??'') }}">
             </div>
             <div>
                 <label class="block text-sm mb-1 font-medium text-gray-700">No HP</label>
                 <input type="text" name="nomor_hp" required 
                        class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Nomor WhatsApp yang aktif"
                        value="{{ old('nomor_hp', $asesor->nomor_hp??'') }}">
             </div>
+
             <div>
                 <label class="block text-sm mb-1 font-medium text-gray-700">Pekerjaan</label>
                 <input type="text" name="pekerjaan" required 
                        class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Pekerjaan atau jabatan saat ini"
                        value="{{ old('pekerjaan', $asesor->pekerjaan??'') }}">
             </div>
-            <div class="md:col-span-2">
+            <div>
                 <label class="block text-sm mb-1 font-medium text-gray-700">NPWP</label>
                 <input type="text" name="NPWP" required 
                        class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Nomor Pokok Wajib Pajak"
                        value="{{ old('NPWP', $asesor->NPWP??'') }}">
             </div>
           </div>
 
           <h3 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4 pt-4">Informasi Bank</h3>
+          <p class="text-sm text-gray-500 -mt-2 mb-4">Untuk keperluan transfer honorarium.</p>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-sm mb-1 font-medium text-gray-700">Nama Bank</label>
                 <input type="text" name="nama_bank" required 
                        class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Nama bank yang digunakan"
                        value="{{ old('nama_bank', $asesor->nama_bank??'') }}">
             </div>
             <div>
                 <label class="block text-sm mb-1 font-medium text-gray-700">No Rekening</label>
                 <input type="text" name="norek" required 
                        class="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Nomor rekening atas nama sendiri"
                        value="{{ old('norek', $asesor->norek??'') }}">
             </div>
           </div>

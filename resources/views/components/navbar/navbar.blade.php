@@ -13,7 +13,7 @@
         } elseif(($roleName == 'admin' || $roleName == 'superadmin') && $user->admin){
              $displayName = $user->admin->nama_lengkap;
         }
-        
+
         if(empty($displayName) || $displayName === 'User'){
             $displayName = $user->email;
         }
@@ -342,7 +342,7 @@
                 @if(Auth::user()->role->nama_role == 'admin' || Auth::user()->role->nama_role == 'superadmin')
                     <a href="{{ route('admin.dashboard') }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Dashboard</a>
                 @elseif(Auth::user()->role->nama_role != 'asesi')
-                    <a href="{{ url('/dashboard') }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Dashboard</a>
+                    <a href="{{ route('asesor.dashboard') }}" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Dashboard</a>
                 @endif
                 @php
                     $profileUrl = '#';
@@ -408,7 +408,7 @@
                   @if(Auth::user()->role->nama_role == 'admin' || Auth::user()->role->nama_role == 'superadmin')
                     <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
                   @elseif(Auth::user()->role->nama_role != 'asesi')
-                    <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+                    <a href="{{ route('asesor.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
                   @endif
                   @php
                     $profileUrlDesktop = '#';

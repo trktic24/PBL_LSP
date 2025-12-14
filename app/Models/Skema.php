@@ -79,7 +79,7 @@ class Skema extends Model
     {
         return $this->belongsToMany(
             Asesor::class,
-            'transaksi_asesor_skema', // Nama tabel pivot
+            'Transaksi_asesor_skema', // Nama tabel pivot
             'id_skema',               // FK di pivot untuk model ini (Skema)
             'id_asesor'               // FK di pivot untuk model tujuan (Asesor)
         );

@@ -6,35 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Skema;
+use App\Models\Jadwal;
 use Illuminate\Support\Facades\Storage; 
 
 class Asesor extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang terkait dengan model.
-     *
-     * @var string
-     */
     protected $table = 'asesor';
-
-    /**
-     * Primary key untuk model.
-     *
-     * @var string
-     */
     protected $primaryKey = 'id_asesor';
 
-    /**
-     * Atribut yang dapat diisi secara massal.
-     * PERBAIKAN: 
-     * 1. Mengubah 'user_id' menjadi 'id_user' sesuai controller & migrasi.
-     * 2. Mengubah 'is_verified' menjadi 'status_verifikasi' sesuai controller.
-     * @var array
-     */
     protected $fillable = [
-        'id_user',          // FIXED: Disesuaikan dengan foreign key di DB
+        'id_user',
+        'id_skema', // Skema Utama (One-to-Many)
         'nomor_regis',
         'nama_lengkap',
         'nik',
@@ -60,24 +44,36 @@ class Asesor extends Model
         'sertifikat_asesor',
         'sertifikasi_kompetensi',
         'tanda_tangan',
-        'status_verifikasi', // FIXED: Disesuaikan dengan kolom DB
+        'status_verifikasi',
     ];
 
-    /**
-     * Relasi one-to-one ke model User.
-     * PERBAIKAN: Foreign key disesuaikan menjadi 'id_user'
-     */
     public function user()
     {
-        // Parameter: (Model Tujuan, Foreign Key di tabel ini, Primary Key di tabel tujuan)
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
     /**
-     * Relasi many-to-many ke model Skema.
+     * Sumber 1: Skema Profil Utama (Kolom id_skema di tabel asesor)
+     */
+    public function skema()
+    {
+        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+    }
+
+    /**
+     * Sumber 2: Skema Lisensi (Tabel Pivot Transaksi_asesor_skema)
+     * Sesuai file migrasi: 2025_10_30_080349_transaksi_asesor_skema.php
      */
     public function skemas()
     {
         return $this->belongsToMany(Skema::class, 'Transaksi_asesor_skema', 'id_asesor', 'id_skema');
+    }
+
+    /**
+     * Sumber 3: Skema Riwayat Penugasan (Tabel Jadwal)
+     */
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class, 'id_asesor', 'id_asesor');
     }
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Asesor - Informasi Akun | LSP Polines</title>
+  <title>Tambah Asesor - Informasi Akun | LSP Polines</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -29,7 +29,7 @@
             <a href="{{ route('admin.master_asesor') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
               <i class="fas fa-arrow-left mr-2"></i> Back
             </a> 
-            <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">EDIT ASESOR</h1>
+            <h1 class="text-3xl font-bold text-gray-900 text-center flex-1">TAMBAH ASESOR</h1>
             <div class="w-[80px]"></div> 
         </div>
         
@@ -63,42 +63,42 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.asesor.update.step1', $asesor->id_asesor) }}" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
+        {{-- PERBAIKAN ROUTE: Menggunakan 'admin.add_asesor1.post' sesuai auth.php --}}
+        <form action="{{ route('admin.add_asesor1.post') }}" method="POST" class="space-y-6 max-w-lg mx-auto" x-data="{ showPassword: false }">
           @csrf
-          @method('PATCH')
           
           <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Informasi Akun</h2>
           
-          <!-- PERBAIKAN: Label diubah jadi 'Nama Lengkap' dan value langsung ke nama_lengkap -->
           <div>
-            <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
-            <input type="text" id="nama" name="nama"
+            <label for="nama_lengkap" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+            <input type="text" id="nama_lengkap" name="nama_lengkap"
                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Masukkan Nama Lengkap"
-                   value="{{ old('nama', $asesor->nama_lengkap) }}" required>
+                   value="{{ old('nama_lengkap', $asesor->nama_lengkap) }}"> 
+            <p class="text-xs text-gray-500 mt-1">Sesuai dengan KTP.</p>
           </div>
           
-          <!-- PERBAIKAN: Mengambil email dari relasi user yang sekarang sudah diperbaiki Modelnya -->
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Alamat Email <span class="text-red-500">*</span></label>
             <input type="email" id="email" name="email"
                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Masukkan Alamat Email"
-                   value="{{ old('email', $asesor->user->email ?? '') }}" required>
+                   value="{{ old('email', $asesor->user->email ?? $asesor->email ?? '') }}" required>
+            <p class="text-xs text-gray-500 mt-1">Gunakan email aktif untuk notifikasi.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
               <input :type="showPassword ? 'text' : 'password'" id="password" name="password"
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                     placeholder="Kosongkan jika tidak berubah">
+                     placeholder="Password akun" required>
             </div>
             <div>
-              <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
+              <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password <span class="text-red-500">*</span></label>
               <input :type="showPassword ? 'text' : 'password'" id="password_confirmation" name="password_confirmation"
                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                     placeholder="Konfirmasi password baru">
+                     placeholder="Ulangi password" required>
             </div>
           </div>
           
