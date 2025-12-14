@@ -1,8 +1,8 @@
-@extends('layouts.app-sidebar-asesi')
+@extends('layouts.app-sidebar')
 @php
     $jadwal = $sertifikasi->jadwal;
     $asesi = $sertifikasi->asesi;
-    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);  
+    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);
 @endphp
 
 @section('content')
@@ -195,7 +195,7 @@
         {{-- Footer Buttons --}}
         <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 mt-8 sm:mt-10 pt-6 border-t border-gray-200">
             @csrf
-            
+
             <a href="{{ route('APL_01_1', $sertifikasi->id_data_sertifikasi_asesi) }}"
                 class="px-6 sm:px-8 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-700 font-semibold text-sm rounded-lg hover:bg-gray-50 transition shadow-sm text-center flex items-center justify-center">
                 Kembali
@@ -274,7 +274,7 @@
 
                 if (fileInput) {
                     const fileLabel = fileInput.nextElementSibling;
-                    
+
                     fileLabel.addEventListener('click', (e) => {
                         fileInput.click();
                     });
@@ -282,11 +282,11 @@
                     fileInput.addEventListener('change', () => {
                         if (fileInput.files.length > 0) {
                             const file = fileInput.files[0];
-                            
+
                             fileCount.textContent = '1 berkas';
                             toggleButton.classList.remove('bg-blue-50', 'text-blue-600');
                             toggleButton.classList.add('bg-green-100', 'text-green-700');
-                            
+
                             initialButtons.classList.add('hidden');
                             successButtons.classList.remove('hidden');
 
@@ -309,7 +309,7 @@
                          saveButton.classList.remove('bg-green-600', 'hover:bg-green-700');
                          saveButton.classList.add('bg-gray-500');
                          saveButton.disabled = true;
-                         
+
                          setTimeout(() => {
                              alert('Data berhasil disimpan!');
                              saveButton.textContent = 'Simpan';

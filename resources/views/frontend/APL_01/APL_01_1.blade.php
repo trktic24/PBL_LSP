@@ -1,8 +1,8 @@
-@extends('layouts.app-sidebar-asesi')
+@extends('layouts.app-sidebar')
 @php
     $jadwal = $sertifikasi->jadwal;
     $asesi = $sertifikasi->asesi;
-    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);  
+    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);
 @endphp
 
 @section('content')
@@ -63,7 +63,7 @@
             {{-- 5. Pilih Tujuan Asesmen --}}
             <div class="mb-6 sm:mb-8">
                 <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Pilih Tujuan Asesmen</h3>
-                
+
                 {{-- Grid radio button --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
 
@@ -110,7 +110,7 @@
                 <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 border-b border-gray-200 pb-2">
                     Daftar Unit Kompetensi
                 </h3>
-                
+
                 {{-- Desktop Table (hidden di mobile) --}}
                 <div class="hidden md:block overflow-x-auto border border-gray-200 rounded-lg shadow-sm">
                     <table class="min-w-full divide-y divide-gray-200">
