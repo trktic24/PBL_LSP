@@ -32,7 +32,7 @@ class DataSertifikasiAsesi extends Model
 {
     use HasFactory;
 
-    const STATUS_PERSETUJUAN_ASESMEN_OK = 40;
+
 
     protected $table = 'data_sertifikasi_asesi';
     protected $primaryKey = 'id_data_sertifikasi_asesi';
@@ -159,10 +159,7 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(JawabanIa06::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
-    public function lembarJawabIa05(): HasOne
-    {
-        return $this->hasOne(LembarJawabIa05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
-    }
+
 
     public function responbuktiAk01(): HasMany
     {
@@ -254,17 +251,7 @@ class DataSertifikasiAsesi extends Model
         // Fallback: Ambil manual
         return $this->asesi ? $this->asesi->user : null;
     }
-    public function getSkemaAttribute()
-    {
-        // 1. Cek apakah relasi jadwal sudah di-load sebelumnya?
-        if ($this->relationLoaded('jadwal')) {
-            // Ambil skema dari object jadwal yang sudah ada di memori
-            return $this->jadwal->skema;
-        }
 
-        // Jika sampai sini, berarti ada status aneh yang tidak terhandle
-        return 0; // Default Unknown
-    }   
 
     public function jadwal(): BelongsTo
     {
@@ -302,7 +289,7 @@ class DataSertifikasiAsesi extends Model
         return $this->jadwal?->skema;
     }
 
-    public function getTukAtrribute()
+    public function getTukAttribute()
     {
         return $this->jadwal?->masterTuk;
     }

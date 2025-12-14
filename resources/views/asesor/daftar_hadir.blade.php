@@ -52,7 +52,7 @@
                                     </div>
                                     <div>
                                         <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider">Tempat Uji Kompetensi</span>
-                                        <span class="font-medium text-gray-900">{{ $jadwal->tuk->nama_lokasi }}</span>
+                                        <span class="font-medium text-gray-900">{{ $jadwal->tuk->nama_lokasi ?? '-' }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -152,7 +152,7 @@
                             </td>
                             
                             <td class="px-6 py-4 truncate max-w-xs" title="{{ $data->asesi->alamat_rumah }}">
-                                {{ Str::limit($data->asesi->alamat_rumah, 30) }}
+                                {{ \Illuminate\Support\Str::limit($data->asesi->alamat_rumah, 30) }}
                             </td>
                             
                             <td class="px-6 py-4">

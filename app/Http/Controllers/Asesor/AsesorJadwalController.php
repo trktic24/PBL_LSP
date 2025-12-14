@@ -75,7 +75,7 @@ class AsesorJadwalController extends Controller
 
         // 3. Data Jadwal Asesmen
         $jadwal = Jadwal::where('id_asesor', $id_asesor)
-            ->with('skema', 'tuk', 'jenisTuk')
+            ->with('skema', 'masterTuk', 'jenisTuk')
             ->orderBy('tanggal_pelaksanaan', 'asc');
 
         // A. Filter Pencarian (Search Input)
@@ -89,7 +89,7 @@ class AsesorJadwalController extends Controller
                     ->orWhereHas('skema', function ($qSkema) use ($searchTerm) {
                         $qSkema->where('nama_skema', 'like', '%' . $searchTerm . '%');
                     })
-                    ->orWhereHas('tuk', function ($qTuk) use ($searchTerm) {
+                    ->orWhereHas('masterTuk', function ($qTuk) use ($searchTerm) {
                         $qTuk->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
                     })
                     ->orWhereHas('jenis_tuk', function ($qJenisTuk) use ($searchTerm) {
@@ -128,7 +128,7 @@ class AsesorJadwalController extends Controller
         }
         // Filter TUK
         if ($request->has('tuk') && is_array($request->tuk)) {
-            $jadwal->whereIn('tuk', $request->tuk);
+            $jadwal->whereIn('id_tuk', $request->tuk);
         }
 
         // Filter Jenis TUK
@@ -189,7 +189,7 @@ class AsesorJadwalController extends Controller
     public function showAsesi($id_jadwal) // <-- Variabel ini datang dari URL
     {
         // 1. Dapatkan data jadwal (Hapus 'asesi' dari 'with')
-        $jadwal = Jadwal::with(['skema', 'tuk', 'dataSertifikasiAsesi.asesi', 'dataSertifikasiAsesi']) // <-- Modifikasi 1: Hapus 'asesi'
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'dataSertifikasiAsesi.asesi', 'dataSertifikasiAsesi']) // <-- Modifikasi 1: Hapus 'asesi'
             ->findOrFail($id_jadwal);
 
         // 2. PENTING: Cek apakah asesor ini berhak melihat jadwal ini
@@ -278,7 +278,7 @@ class AsesorJadwalController extends Controller
     public function daftarHadir(Request $request, $id_jadwal)
     {
         // 1. Ambil Data Jadwal Utama
-        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor'])->findOrFail($id_jadwal);
 
         // 2. Cek Otorisasi HANYA jika role asesor
         if (Auth::user()->role === 'asesor') {
@@ -384,7 +384,7 @@ class AsesorJadwalController extends Controller
     public function beritaAcara(Request $request, $id_jadwal)
     {
         // 1. Ambil Data Jadwal Utama
-        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor'])->findOrFail($id_jadwal);
 
         // 2. Cek Otorisasi HANYA jika role asesor
         if (Auth::user()->role === 'asesor') {
@@ -472,7 +472,7 @@ class AsesorJadwalController extends Controller
 
     public function exportPdfdaftarhadir($id_jadwal)
     {
-        $jadwal = Jadwal::with(['skema', 'asesor', 'tuk'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'asesor', 'masterTuk'])->findOrFail($id_jadwal);
         $pendaftar = DataSertifikasiAsesi::with('asesi.dataPekerjaan', 'presensi')
             ->where('id_jadwal', $id_jadwal)
             ->get();
@@ -483,7 +483,7 @@ class AsesorJadwalController extends Controller
 
     public function exportPdfberitaAcara($id_jadwal)
     {
-        $jadwal = Jadwal::with(['skema', 'asesor', 'tuk'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'asesor', 'masterTuk'])->findOrFail($id_jadwal);
         $pendaftar = DataSertifikasiAsesi::with('asesi.dataPekerjaan', 'presensi', 'komentarAk05')
             ->where('id_jadwal', $id_jadwal)
             ->get();
@@ -502,7 +502,7 @@ class AsesorJadwalController extends Controller
 
     public function ak05($id_jadwal)
     {
-        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor', 'dataSertifikasiAsesi.asesi'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor', 'dataSertifikasiAsesi.asesi'])->findOrFail($id_jadwal);
 
         // Cek Otorisasi
         $asesor = Asesor::where('id_user', Auth::id())->first();
@@ -515,7 +515,7 @@ class AsesorJadwalController extends Controller
 
     public function ak06($id_jadwal)
     {
-        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor'])->findOrFail($id_jadwal);
 
         // Cek Otorisasi
         $asesor = Asesor::where('id_user', Auth::id())->first();
@@ -528,7 +528,7 @@ class AsesorJadwalController extends Controller
 
     public function ak07($id_sertifikasi_asesi)
     {
-        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema', 'jadwal.tuk', 'jadwal.skema.asesor'])
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema', 'jadwal.masterTuk', 'jadwal.skema.asesor'])
             ->findOrFail($id_sertifikasi_asesi);
 
         // Cek Otorisasi
