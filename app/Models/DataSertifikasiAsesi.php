@@ -53,6 +53,7 @@ class DataSertifikasiAsesi extends Model
         'feedback_ia01',
         'rekomendasi_IA04B',
         'rekomendasi_hasil_asesmen_AK02',
+        'status_validasi',
         'tindakan_lanjut_AK02',
         'komentar_AK02',
         'catatan_asesi_AK03',

@@ -51,6 +51,7 @@ use App\Http\Controllers\IA09Controller;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\Ia11Controller;
 
+use App\Http\Controllers\Validator\ValidatorTrackerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -143,6 +144,11 @@ Route::middleware('auth')->group(function () {
     // ========================
     // 2. INSTRUMEN ASESMEN (IA)
     // ========================
+
+    Route::middleware(['auth', 'role:superadmin'])->prefix('validator')->group(function () {
+        Route::get('/tracker/{id}', [ValidatorTrackerController::class, 'show'])->name('validator.tracker.show');
+        Route::post('/tracker/{id}/validasi', [ValidatorTrackerController::class, 'validasi'])->name('validator.tracker.validasi');
+    });
 
     // IA-01
     Route::prefix('ia01/{id_sertifikasi}')->group(function() {
