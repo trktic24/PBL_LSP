@@ -146,7 +146,7 @@
 
                                 @if ($isSelesai)
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
-                                    <a href="{{ route('asesi.pdf.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                    <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         target="_blank" class="{{ $btnBlue }}">
                                         Unduh Document
                                     </a>
@@ -281,7 +281,7 @@
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
                                     <a href="{{ route('asesi.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}" 
                                        class="{{ $btnBlue }}" 
-                                       target="_blank"> Unduh Dokumen
+                                       target="_blank"> Unduh Document
                                     </a>
                                 @elseif ($level == $LVL_LUNAS && $unlockAPL02)
                                     <p class="{{ $statusClassProses }}">Siap Diisi</p>

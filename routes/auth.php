@@ -54,9 +54,6 @@ use App\Http\Controllers\Asesi\DashboardController as AsesiDashboardController;
 use App\Http\Controllers\Asesi\ProfileController as AsesiSelfProfileController;
 use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
 use App\Http\Controllers\Asesi\TrackerController;
-use App\Http\Controllers\Asesi\pembayaran\PaymentController;
-
-// Formulir & Asesmen Asesi
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
@@ -67,10 +64,13 @@ use App\Http\Controllers\Asesi\asesmen\AsesmenPilihanGandaController;
 use App\Http\Controllers\Asesi\asesmen\AsesmenEsaiController;
 use App\Http\Controllers\Asesi\umpan_balik\Ak03Controller;
 use App\Http\Controllers\Asesi\Ak04API\APIBandingController;
+use App\Http\Controllers\Asesi\pembayaran\PaymentController;
+
 
 // PDF Controllers
-use App\Http\Controllers\Asesi\Apl01PdfController;
-use App\Http\Controllers\Asesi\Apl02\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
+use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\KartuPesertaPdfController;
 
 // ======================================================
 // 5. CONTROLLERS FORM (SHARED/SPECIFIC)
@@ -287,17 +287,114 @@ Route::middleware('auth')->group(function () {
         
         // Master Jadwal
         Route::resource('master/jadwal', AdminJadwalController::class)->names([
-            'index' => 'master_jadwal', 'create' => 'add_jadwal', 'store' => 'add_jadwal.store',
-            'edit' => 'edit_jadwal', 'update' => 'update_jadwal', 'destroy' => 'delete_jadwal'
+            'index' => 'master_schedule', 'create' => 'add_schedule', 'store' => 'add_schedule.store',
+            'edit' => 'edit_schedule', 'update' => 'update_schedule', 'destroy' => 'delete_schedule'
         ]);
-        Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('jadwal_admin');
+        Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('schedule_admin');
 
-        // Daftar Hadir & Berita Acara
-        Route::controller(DaftarHadirController::class)->prefix('master/jadwal/{id_jadwal}')->group(function () {
-            Route::get('/daftar-hadir', 'daftarHadir')->name('attendance.show');
-            Route::get('/daftar-hadir/pdf', 'exportPdfdaftarhadir')->name('attendance.pdf');
-            Route::get('/berita-acara', 'beritaAcara')->name('berita_acara');
-            Route::get('/berita-acara/pdf', 'exportPdfberitaAcara')->name('berita_acara.pdf');
+            // --- Profile Asesi ---
+            Route::controller(AsesiProfileController::class)->group(function () {
+                Route::get('/profile', 'edit')->name('profile.edit');
+                Route::patch('/profile', 'update')->name('profile.update');
+                Route::delete('/profile', 'destroy')->name('profile.destroy');
+                Route::put('/profile/password', 'updatePassword')->name('profile.password.update'); // Jika ada update PW
+            });
+
+            // --- A. Tracker ---
+            Route::controller(TrackerController::class)->group(function () {
+                Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
+                Route::get('/pendaftaran-selesai/{id_sertifikasi}', 'pendaftaranSelesai')->name('pendaftaran.selesai');
+                Route::get('/pra-asesmen-selesai/{id_sertifikasi}', 'praAsesmenSelesai')->name('pra_asesmen.selesai');
+                Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
+                Route::get('/persetujuan-selesai/{id_sertifikasi}', 'persetujuanSelesai')->name('persetujuan.selesai');
+            });
+
+            // --- Riwayat Sertifikasi (REPLACEMENT FOR DASHBOARD) ---
+            Route::get('/riwayat-sertifikasi', [RiwayatSertifikasiController::class, 'index'])->name('riwayat.index');
+
+            // --- B. Formulir APL-01 (Pendaftaran) ---
+            // Menggunakan Controller yang baru saja kita rapikan
+            Route::get('/data_sertifikasi/{id_sertifikasi}', [DataSertifikasiAsesiController::class, 'showFormulir'])->name('data.sertifikasi');
+            Route::get('/bukti_pemohon/{id_sertifikasi}', [BuktiKelengkapanController::class, 'showBuktiPemohon'])->name('bukti.pemohon');
+            Route::get('/halaman-tanda-tangan/{id_sertifikasi}', [TandaTanganAPIController::class, 'showTandaTangan'])->name('show.tandatangan');
+
+            Route::get('/formulir-selesai', fn() => 'BERHASIL DISIMPAN! Ini halaman selanjutnya.')->name('form.selesai');
+
+            // --- C. Formulir APL-02 (Pra-Asesmen) ---
+            Route::get('/pra-asesmen/{id_sertifikasi}', [PraasesmenController::class, 'index'])->name('apl02.view');
+
+            // --- D. Persetujuan & Jadwal TUK ---
+            // Persetujuan Kerahasiaan (FR.AK.01)
+            Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
+            // Konfirmasi Jadwal TUK
+            Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
+            Route::get('/kartu-peserta/{id_sertifikasi}', [KartuPesertaPdfController::class, 'generateKartuPeserta'])->name('kartu.peserta');
+            // Route untuk download (jika nanti diaktifkan)
+            // Route::get('/kartu-peserta/{id_sertifikasi}/download', [KartuPesertaPdfController::class, 'downloadKartuPeserta'])
+            //     ->name('kartu.peserta.download');
+
+            // --- E. Asesmen / Ujian (IA.05 & IA.06) ---
+            Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');
+            Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])->name('asesmen.ia06.view');
+
+            // --- F. Pasca Asesmen (Banding & Umpan Balik) ---
+            // Umpan Balik (AK.03)
+            Route::get('/umpan-balik/{id}', [Ak03Controller::class, 'index'])->name('ak03.index');
+            Route::post('/umpan-balik/store/{id}', [Ak03Controller::class, 'store'])->name('ak03.store');
+            // Banding (AK.04)
+            Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04');
+
+            // --- G. Pembayaran (Midtrans) ---
+            Route::controller(PaymentController::class)->group(function () {
+                Route::get('/bayar/{id_sertifikasi}', 'createTransaction')->name('payment.create');
+                Route::get('/pembayaran_diproses', 'processed')->name('pembayaran_diproses'); // Callback sukses
+                Route::get('/pembayaran_batal', 'paymentCancel')->name('payment.cancel'); // Callback batal
+                Route::get('/payment/{id_sertifikasi}/invoice', 'downloadInvoice')->name('payment.invoice');
+            });
+
+            // --- H. Utilities (PDF & Cetak) ---
+            Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');  
+            Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
+
+            // --- IA.01 sementara (biar tidak error) ---
+            Route::get('/ia01/{id_sertifikasi}', function ($id_sertifikasi) {
+                return 'HALAMAN IA01 BELUM DIBUAT — ID: ' . $id_sertifikasi;
+            })->name('ia01.index');
+
+            // --- ROUTE FR.IA.02 (TUGAS PRAKTIK / DEMONSTRASI) ---
+
+            // 1. Menampilkan halaman IA02 (READ-ONLY)
+            // id_sertifikasi = ID Data Sertifikasi Asesi
+            Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');
+
+            // 2. Tombol "Selanjutnya" → redirect ke IA03
+            Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
+
+            // Halaman utama IA03 (list pertanyaan + identitas lengkap)
+            Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
+
+            // Halaman detail satu pertanyaan (opsional)
+            Route::get('/ia03/detail/{id}', [IA03Controller::class, 'show'])->name('ia03.show');
+
+            // --- ROUTE FR.IA.07 (PERTANYAAN LISAN) ---
+
+            // 1. Route untuk Menampilkan Form (GET)
+            // Parameter {id_sertifikasi} diperlukan agar Controller tahu data siapa yang ditampilkan
+            Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
+
+            // --- ROUTE FR.IA.11 (CEKLIS REVIU PRODUK) ---
+            // 1. Route untuk Menampilkan Data (READ)
+            Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
+
+            // 2. Route untuk Menyimpan Data Baru (POST)
+            Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+
+            // 3. Route untuk Memperbarui Data (PUT/PATCH)
+            // Menggunakan ID primary key dari tabel IA11, bukan ID sertifikasi
+            Route::put('/ia11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
+
+            // 4. Route untuk Menghapus Data (DELETE)
+            Route::delete('/ia11/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
         });
 
         // Bank Soal IA-06 (Admin)
@@ -475,4 +572,3 @@ Route::middleware('auth')->group(function () {
         Auth::logout();
         return redirect('/login')->with('error', 'Role Anda tidak valid.');
     })->name('home.index');
-});

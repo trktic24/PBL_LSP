@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Asesi;
 use Illuminate\Http\Request;
 
-
 class AsesiProfileController extends Controller
 {
     // Helper function untuk mengambil data asesi
