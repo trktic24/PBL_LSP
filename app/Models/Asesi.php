@@ -52,5 +52,18 @@ class Asesi extends Model
     {
         return $this->hasMany(DataSertifikasiAsesi::class, 'id_asesi', 'id_asesi');
     }
+
+    public function buktiDasar()
+    {
+        // Relasi: Asesi -> DataSertifikasiAsesi -> BuktiDasar
+        return $this->hasManyThrough(
+            BuktiDasar::class,           // Model Tujuan
+            DataSertifikasiAsesi::class, // Model Perantara
+            'id_asesi',                  // Foreign Key di tabel Perantara (data_sertifikasi_asesi)
+            'id_data_sertifikasi_asesi', // Foreign Key di tabel Tujuan (bukti_dasar)
+            'id_asesi',                  // Local Key di tabel Asal (asesi)
+            'id_data_sertifikasi_asesi'  // Local Key di tabel Perantara (data_sertifikasi_asesi)
+        );
+    }
 }
 
