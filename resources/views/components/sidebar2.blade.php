@@ -34,7 +34,7 @@
         <div class="flex justify-center my-6 flex-shrink-0">
             <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-800 shadow-lg border-4 border-white">
                 @if($sertifikasi && $sertifikasi->jadwal && $sertifikasi->jadwal->skema)
-                    <img src="{{ asset('images/skema/' . ($sertifikasi->jadwal->skema->gambar ?? 'default_skema.jpg')) }}" 
+                    <img src="{{ asset('images/skema/foto_skema/' . ($sertifikasi->jadwal->skema->gambar ?? 'default_skema.jpg')) }}" 
                          alt="Logo Skema" 
                          class="w-full h-full object-cover"
                          onerror="this.src='https://ui-avatars.com/api/?name=Skema&background=random'">

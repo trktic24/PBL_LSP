@@ -352,7 +352,7 @@
                   </td>
                   <td class="px-4 py-4 font-medium text-gray-700">{{ $jadwal->skema->nomor_skema ?? '-' }}</td>
                   <td class="px-6 py-4 font-medium text-gray-900">{{ $jadwal->skema->nama_skema ?? '-' }}</td>
-                  <td class="px-6 py-4 text-gray-700">{{ $jadwal->tuk->nama_lokasi ?? '-' }}</td>
+                  <td class="px-6 py-4 text-gray-700">{{ $jadwal->masterTuk->nama_lokasi ?? '-' }}</td>
                   <td class="px-6 py-4 text-gray-700">{{ $jadwal->jenisTuk->jenis_tuk ?? '-' }}</td>
                   <td class="px-4 py-4 text-center font-bold text-gray-700">{{ $jadwal->sesi }}</td>
                   <td class="px-4 py-4 text-center text-gray-700 whitespace-nowrap">{{ $jadwal->kuota_minimal }} / {{ $jadwal->kuota_maksimal }}</td>
