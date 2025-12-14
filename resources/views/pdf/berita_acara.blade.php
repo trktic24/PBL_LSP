@@ -83,7 +83,7 @@
         <p style="text-align: justify;">
             Pada hari ini, Hari/Tanggal: {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }},
             Waktu: Pukul {{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }} s/d Selesai, 
-            bertempat di TUK {{ $jadwal->tuk->nama_lokasi }}, telah dilaksanakan proses asesmen terhadap asesi 
+            bertempat di TUK {{ $jadwal->masterTuk->nama_lokasi }}, telah dilaksanakan proses asesmen terhadap asesi 
             pada sektor/sub sektor/bidang profesi <strong>{{ $jadwal->skema->nama_skema }}</strong> 
             yang diikuti oleh <strong>{{ $pendaftar->count() }} orang peserta</strong>.
             <br><br>

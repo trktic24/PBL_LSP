@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File; // [PENTING] Gunakan File Facade
 use Illuminate\Validation\Rules\Password;
 
-use App\Http\Controllers\Controller;
-
 class AsesiController extends Controller
 {
     /**
@@ -211,8 +209,12 @@ class AsesiController extends Controller
 
     public function edit($id_asesi)
     {
-        $asesi = Asesi::with(['user', 'dataPekerjaan'])->findOrFail($id_asesi);
-        return view('admin.master.asesi.edit_asesi', ['asesi' => $asesi]);
+        $asesi = Asesi::with('user')->findOrFail($id_asesi);
+        $dataPekerjaanSingle = $asesi->dataPekerjaan()->latest()->first();
+        return view('admin.master.asesi.edit_asesi', [
+        'asesi' => $asesi,
+        'dataPekerjaan' => $dataPekerjaanSingle // Kirim HANYA model tunggal
+        ]);
     }
 
     public function update(Request $request, $id_asesi)

@@ -47,7 +47,7 @@
 <div class="mb-4 text-sm text-gray-700">
     <p><span class="font-semibold">Skema:</span> {{ $jadwal->skema->nama_skema }}</p>
     <p><span class="font-semibold">Tanggal Pelaksanaan:</span> {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</p>
-    <p><span class="font-semibold">Tempat Uji Kompetensi:</span> {{ $jadwal->tuk->nama_lokasi }}</p>
+    <p><span class="font-semibold">Tempat Uji Kompetensi:</span> {{ $jadwal->masterTuk->nama_lokasi }}</p>
 </div>
 
 <table>

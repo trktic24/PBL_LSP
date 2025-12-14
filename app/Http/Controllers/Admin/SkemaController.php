@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 
-use App\Http\Controllers\Controller;
-
 class SkemaController extends Controller
 {
     /**
@@ -25,26 +23,35 @@ class SkemaController extends Controller
         if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'id_skema';
         if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
 
+        // 1. EAGER LOADING: Muat relasi 'category' agar $skema->category bisa dipanggil di view
         $query = Skema::with('category'); 
 
         if ($request->has('search') && $request->input('search') != '') {
             $searchTerm = $request->input('search');
             $query->where(function($q) use ($searchTerm) {
                 $q->where('nama_skema', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('nomor_skema', 'like', '%' . $searchTerm . '%')
-                  ->orWhereHas('category', function($cq) use ($searchTerm) {
-                      $cq->where('nama_kategori', 'like', '%' . $searchTerm . '%');
-                  });
+                ->orWhere('nomor_skema', 'like', '%' . $searchTerm . '%')
+                // Pastikan searching relasi juga menggunakan 'categorie_id' jika itu nama kolom Anda
+                ->orWhereHas('category', function($cq) use ($searchTerm) {
+                    $cq->where('nama_kategori', 'like', '%' . $searchTerm . '%');
+                });
             });
         }
 
-        $query->select('skema.*');
-        
+        // 2. QUERY UTAMA:
+        // Gunakan LEFT JOIN hanya jika sorting dilakukan berdasarkan nama kategori.
         if ($sortColumn == 'category_nama') {
-            $query->join('categories', 'skema.categorie_id', '=', 'categories.id')
-                  ->orderBy('categories.nama_kategori', $sortDirection);
+            $query->leftJoin('categories', 'skema.categorie_id', '=', 'categories.id')
+                // PENTING: Pilih skema.* dan tambahkan kolom kategori untuk sorting.
+                // Karena kita menggunakan eager loading 'with('category')' di atas, 
+                // kolom skema.* yang di-select ini tidak akan merusak relasi.
+                ->select('skema.*', 'categories.nama_kategori') 
+                ->orderBy('categories.nama_kategori', $sortDirection);
         } else {
-            $query->orderBy($sortColumn, $sortDirection);
+            // Jika tidak sorting kategori, kita hanya perlu memilih semua kolom skema 
+            // dan mengandalkan eager loading untuk relasi.
+            $query->select('skema.*')
+                ->orderBy($sortColumn, $sortDirection);
         }
 
         $allowedPerpage = [10, 25, 50, 100]; 
@@ -121,6 +128,7 @@ class SkemaController extends Controller
     {
         $skema = Skema::findOrFail($id);
         $categories = Category::all();
+        $skema->categorie_id = (string) $skema->categorie_id;
         return view('admin.master.skema.edit_skema', compact('skema', 'categories'));
     }
 

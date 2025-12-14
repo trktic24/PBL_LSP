@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
-use App\Http\Controllers\Controller;
-
 class CategoryController extends Controller
 {
     /**
@@ -143,8 +141,13 @@ class CategoryController extends Controller
         ];
 
         $validatedData = $request->validate($rules, $messages);
+        
+        // **[PERBAIKAN] LOGIKA UPDATE SLUG:**
+        // Hanya update slug jika nama kategori memang diubah
+        if ($validatedData['nama_kategori'] !== $category->nama_kategori) {
+             $validatedData['slug'] = Str::slug($validatedData['nama_kategori']);
+        }
 
-        // Slug tidak di-update saat edit
         $category->update($validatedData);
 
         // Redirect ke rute yang benar dengan pesan sukses + ID
@@ -157,6 +160,13 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        // **[PERBAIKAN] LOGIKA PENCEGAHAN HAPUS (INTEGRITAS DATA):**
+        // Cek apakah ada Skema yang masih terhubung dengan kategori ini.
+        if ($category->skemas()->exists()) {
+            return redirect()->back()
+                             ->with('error', "Gagal menghapus! Kategori '{$category->nama_kategori}' masih memiliki skema yang terhubung. Hapus skema tersebut terlebih dahulu.");
+        }
+
         // Simpan detail sebelum dihapus
         $namaKategori = $category->nama_kategori;
         $idKategori = $category->id;
@@ -165,6 +175,6 @@ class CategoryController extends Controller
         
         // Redirect ke rute yang benar dengan pesan sukses + ID
         return redirect()->route('admin.master_category')
-                         ->with('success', "Kategori '{$namaKategori}' (ID: {$idKategori}) dan semua skema yang terhubung telah dihapus.");
+                         ->with('success', "Kategori '{$namaKategori}' (ID: {$idKategori}) berhasil dihapus.");
     }
 }

@@ -239,7 +239,7 @@ Route::middleware('auth')->group(function () {
             Route::match(['get', 'post'], '/add', 'store')->name('add_skema.store'); // Simplified for CRUD
             Route::get('/add', 'create')->name('add_skema'); 
             Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
-            Route::patch('/update/{id_skema}', 'update')->name('update_skema');
+            Route::put('/update/{id_skema}', 'update')->name('update_skema');
             Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
         });
         
