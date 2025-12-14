@@ -33,30 +33,30 @@ class DetailSkemaController extends Controller
         
         $formConfig = [
             // FASE 1
-            ['code' => 'FR.APL.01', 'name' => 'Permohonan Sertifikasi Kompetensi', 'db_field' => 'apl_01', 'checked' => (bool)$configDB->apl_01],
-            ['code' => 'FR.APL.02', 'name' => 'Asesmen Mandiri', 'db_field' => 'apl_02', 'checked' => (bool)$configDB->apl_02],
+            ['code' => 'FR.APL.01', 'name' => 'Permohonan Sertifikasi Kompetensi', 'db_field' => 'apl_01', 'checked' => (bool)$configDB->apl_01, 'url' => null],
+            ['code' => 'FR.APL.02', 'name' => 'Asesmen Mandiri', 'db_field' => 'apl_02', 'checked' => (bool)$configDB->apl_02, 'url' => null],
             // FASE 2
-            ['code' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 'db_field' => 'fr_mapa_01', 'checked' => (bool)$configDB->fr_mapa_01],
-            ['code' => 'FR.MAPA.02', 'name' => 'Peta Instrumen Asesmen', 'db_field' => 'fr_mapa_02', 'checked' => (bool)$configDB->fr_mapa_02],
+            ['code' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 'db_field' => 'fr_mapa_01', 'checked' => (bool)$configDB->fr_mapa_01, 'url' => null],
+            ['code' => 'FR.MAPA.02', 'name' => 'Peta Instrumen Asesmen', 'db_field' => 'fr_mapa_02', 'checked' => (bool)$configDB->fr_mapa_02, 'url' => null],
             // FASE 3 (IA)
-            ['code' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'db_field' => 'fr_ia_01', 'checked' => (bool)$configDB->fr_ia_01],
-            ['code' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi', 'db_field' => 'fr_ia_02', 'checked' => (bool)$configDB->fr_ia_02],
-            ['code' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi', 'db_field' => 'fr_ia_03', 'checked' => (bool)$configDB->fr_ia_03],
-            ['code' => 'FR.IA.04', 'name' => 'Ceklis Verifikasi Portofolio', 'db_field' => 'fr_ia_04', 'checked' => (bool)$configDB->fr_ia_04],
-            ['code' => 'FR.IA.05', 'name' => 'Pertanyaan Tertulis Pilihan Ganda', 'db_field' => 'fr_ia_05', 'checked' => (bool)$configDB->fr_ia_05],
-            ['code' => 'FR.IA.06', 'name' => 'Pertanyaan Tertulis Esai', 'db_field' => 'fr_ia_06', 'checked' => (bool)$configDB->fr_ia_06],
-            ['code' => 'FR.IA.07', 'name' => 'Pertanyaan Lisan', 'db_field' => 'fr_ia_07', 'checked' => (bool)$configDB->fr_ia_07],
-            ['code' => 'FR.IA.08', 'name' => 'Ceklis Verifikasi Pihak Ketiga', 'db_field' => 'fr_ia_08', 'checked' => (bool)$configDB->fr_ia_08],
-            ['code' => 'FR.IA.09', 'name' => 'Pertanyaan Wawancara', 'db_field' => 'fr_ia_09', 'checked' => (bool)$configDB->fr_ia_09],
-            ['code' => 'FR.IA.10', 'name' => 'Klarifikasi Bukti Pihak Ketiga', 'db_field' => 'fr_ia_10', 'checked' => (bool)$configDB->fr_ia_10],
-            ['code' => 'FR.IA.11', 'name' => 'Ceklis Meninjau Instrumen Asesmen', 'db_field' => 'fr_ia_11', 'checked' => (bool)$configDB->fr_ia_11],
+            ['code' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'db_field' => 'fr_ia_01', 'checked' => (bool)$configDB->fr_ia_01, 'url' => null],
+            ['code' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi', 'db_field' => 'fr_ia_02', 'checked' => (bool)$configDB->fr_ia_02, 'url' => null],
+            ['code' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi', 'db_field' => 'fr_ia_03', 'checked' => (bool)$configDB->fr_ia_03, 'url' => null],
+            ['code' => 'FR.IA.04', 'name' => 'Ceklis Verifikasi Portofolio', 'db_field' => 'fr_ia_04', 'checked' => (bool)$configDB->fr_ia_04, 'url' => null],
+            ['code' => 'FR.IA.05', 'name' => 'Pertanyaan Tertulis Pilihan Ganda', 'db_field' => 'fr_ia_05', 'checked' => (bool)$configDB->fr_ia_05, 'url' => null],
+            ['code' => 'FR.IA.06', 'name' => 'Pertanyaan Tertulis Esai', 'db_field' => 'fr_ia_06', 'checked' => (bool)$configDB->fr_ia_06, 'url' => route('admin.ia06.index', ['skema_id' => $skema->id_skema])],
+            ['code' => 'FR.IA.07', 'name' => 'Pertanyaan Lisan', 'db_field' => 'fr_ia_07', 'checked' => (bool)$configDB->fr_ia_07, 'url' => null],
+            ['code' => 'FR.IA.08', 'name' => 'Ceklis Verifikasi Pihak Ketiga', 'db_field' => 'fr_ia_08', 'checked' => (bool)$configDB->fr_ia_08, 'url' => null],
+            ['code' => 'FR.IA.09', 'name' => 'Pertanyaan Wawancara', 'db_field' => 'fr_ia_09', 'checked' => (bool)$configDB->fr_ia_09, 'url' => null],
+            ['code' => 'FR.IA.10', 'name' => 'Klarifikasi Bukti Pihak Ketiga', 'db_field' => 'fr_ia_10', 'checked' => (bool)$configDB->fr_ia_10, 'url' => null],
+            ['code' => 'FR.IA.11', 'name' => 'Ceklis Meninjau Instrumen Asesmen', 'db_field' => 'fr_ia_11', 'checked' => (bool)$configDB->fr_ia_11, 'url' => null],
             // FASE 4 (AK)
-            ['code' => 'FR.AK.01', 'name' => 'Persetujuan Asesmen dan Kerahasiaan', 'db_field' => 'fr_ak_01', 'checked' => (bool)$configDB->fr_ak_01],
-            ['code' => 'FR.AK.02', 'name' => 'Rekaman Asesmen Kompetensi', 'db_field' => 'fr_ak_02', 'checked' => (bool)$configDB->fr_ak_02],
-            ['code' => 'FR.AK.03', 'name' => 'Umpan Balik dan Catatan Asesmen', 'db_field' => 'fr_ak_03', 'checked' => (bool)$configDB->fr_ak_03],
-            ['code' => 'FR.AK.04', 'name' => 'Banding Asesmen', 'db_field' => 'fr_ak_04', 'checked' => (bool)$configDB->fr_ak_04],
-            ['code' => 'FR.AK.05', 'name' => 'Laporan Asesmen', 'db_field' => 'fr_ak_05', 'checked' => (bool)$configDB->fr_ak_05],
-            ['code' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen', 'db_field' => 'fr_ak_06', 'checked' => (bool)$configDB->fr_ak_06],
+            ['code' => 'FR.AK.01', 'name' => 'Persetujuan Asesmen dan Kerahasiaan', 'db_field' => 'fr_ak_01', 'checked' => (bool)$configDB->fr_ak_01, 'url' => null],
+            ['code' => 'FR.AK.02', 'name' => 'Rekaman Asesmen Kompetensi', 'db_field' => 'fr_ak_02', 'checked' => (bool)$configDB->fr_ak_02, 'url' => null],
+            ['code' => 'FR.AK.03', 'name' => 'Umpan Balik dan Catatan Asesmen', 'db_field' => 'fr_ak_03', 'checked' => (bool)$configDB->fr_ak_03, 'url' => null],
+            ['code' => 'FR.AK.04', 'name' => 'Banding Asesmen', 'db_field' => 'fr_ak_04', 'checked' => (bool)$configDB->fr_ak_04, 'url' => null],
+            ['code' => 'FR.AK.05', 'name' => 'Laporan Asesmen', 'db_field' => 'fr_ak_05', 'checked' => (bool)$configDB->fr_ak_05, 'url' => null],
+            ['code' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen', 'db_field' => 'fr_ak_06', 'checked' => (bool)$configDB->fr_ak_06, 'url' => null],
         ];
 
         return view('admin.master.skema.detail_skema', [

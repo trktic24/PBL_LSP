@@ -141,6 +141,7 @@
                                 <th class="px-6 py-3">Kode Form</th>
                                 <th class="px-6 py-3">Nama Formulir</th>
                                 <th class="px-6 py-3 text-center w-32">Status</th>
+                                <th class="px-6 py-3 text-center w-32">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
@@ -165,6 +166,17 @@
                                         <span x-show="!form.checked" class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full font-medium border border-gray-200">
                                             Non-Aktif
                                         </span>
+                                    </td>
+                                    
+                                    <td class="px-6 py-3 text-center">
+                                        <template x-if="form.url">
+                                            <a :href="form.url" class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded text-xs font-semibold transition">
+                                                <i class="fas fa-external-link-alt mr-1"></i> Buka
+                                            </a>
+                                        </template>
+                                        <template x-if="!form.url">
+                                            <span class="text-gray-400 text-xs">-</span>
+                                        </template>
                                     </td>
                                 </tr>
                             </template>

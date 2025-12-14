@@ -10,7 +10,7 @@
         </div>
 
         {{-- Tombol Tambah (Hanya muncul jika skema dipilih) --}}
-        @if($selectedSkema)
+        @if($selectedSkema && Auth::user()->role->nama_role == 'superadmin')
             <button onclick="openModal('add')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold shadow-sm flex items-center gap-2 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Tambah Soal Baru
@@ -58,7 +58,9 @@
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-16">No</th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-2/5">Pertanyaan</th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-2/5">Kunci Jawaban</th>
-                            <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+                            @if(Auth::user()->role->nama_role == 'superadmin')
+                                <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -67,8 +69,9 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">{{ $index + 1 }}</td>
                             <td class="px-6 py-4 text-sm text-gray-900 leading-relaxed">{{ $soal->soal_ia06 }}</td>
                             <td class="px-6 py-4 text-sm text-gray-600 italic leading-relaxed bg-gray-50/50">
-                                {{ Str::limit($soal->kunci_jawaban_ia06, 80) }}
+                                {{ \Illuminate\Support\Str::limit($soal->kunci_jawaban_ia06, 80) }}
                             </td>
+                            @if(Auth::user()->role->nama_role == 'superadmin')
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end gap-3">
                                     {{-- Edit Button --}}
@@ -86,6 +89,7 @@
                                     </form>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>

@@ -316,11 +316,15 @@ Route::middleware('auth')->group(function () {
             // Route::get('/berita-acara/pdf', 'exportPdfberitaAcara')->name('berita_acara.pdf');
         });
 
-        // Bank Soal IA-06 (Admin)
+        // Bank Soal IA-06 (View Only for Admin, Full Access for Superadmin)
         Route::get('/bank-soal-ia06', [Ia06Controller::class, 'adminIndex'])->name('ia06.index');
-        Route::post('/bank-soal-ia06', [Ia06Controller::class, 'adminStoreSoal'])->name('ia06.store');
-        Route::put('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
-        Route::delete('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
+        
+        // Superadmin ONLY Actions
+        Route::middleware(['role:superadmin'])->group(function () {
+            Route::post('/bank-soal-ia06', [Ia06Controller::class, 'adminStoreSoal'])->name('ia06.store');
+            Route::put('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
+            Route::delete('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
+        });
     });
 
     // ======================================================

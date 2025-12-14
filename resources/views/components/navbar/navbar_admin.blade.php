@@ -133,7 +133,7 @@
                     class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
                             hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all z-20 relative">
                 <span class="{{ $isProfileActive ? 'text-blue-600' : 'text-gray-800' }} font-semibold text-base mr-5 whitespace-nowrap">
-                    {{ Auth::check() ? (Auth::user()->role_id == 1 ? 'Admin LSP' : Auth::user()->username) : 'Guest' }}
+                    {{ Auth::check() ? (in_array(Auth::user()->role->nama_role, ['admin', 'superadmin']) ? 'Admin LSP' : Auth::user()->username) : 'Guest' }}
                 </span>
                 
                 <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner flex-shrink-0 flex items-center justify-center bg-blue-600 text-white font-bold text-sm select-none">
