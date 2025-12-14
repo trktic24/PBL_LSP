@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 // ======================================================
 // 1. CONTROLLERS UAMA & AUTH
 // ======================================================
-use App\Http\Controllers\ProfileController;
+// use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -54,9 +54,6 @@ use App\Http\Controllers\Asesi\DashboardController as AsesiDashboardController;
 use App\Http\Controllers\Asesi\ProfileController as AsesiSelfProfileController;
 use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
 use App\Http\Controllers\Asesi\TrackerController;
-use App\Http\Controllers\Asesi\pembayaran\PaymentController;
-
-// Formulir & Asesmen Asesi
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
@@ -67,10 +64,13 @@ use App\Http\Controllers\Asesi\asesmen\AsesmenPilihanGandaController;
 use App\Http\Controllers\Asesi\asesmen\AsesmenEsaiController;
 use App\Http\Controllers\Asesi\umpan_balik\Ak03Controller;
 use App\Http\Controllers\Asesi\Ak04API\APIBandingController;
+use App\Http\Controllers\Asesi\pembayaran\PaymentController;
+
 
 // PDF Controllers
-use App\Http\Controllers\Asesi\Apl01PdfController;
-use App\Http\Controllers\Asesi\Apl02\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
+use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\KartuPesertaPdfController;
 
 // ======================================================
 // 5. CONTROLLERS FORM (SHARED/SPECIFIC)
@@ -80,7 +80,7 @@ use App\Http\Controllers\Ak02Controller;
 use App\Http\Controllers\FrMapa01Controller;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\IA02Controller;
-use App\Http\Controllers\IA03Controller;
+use App\Http\Controllers\Asesi\IA03\IA03Controller;
 use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\Ia06Controller;
 use App\Http\Controllers\IA07Controller;
@@ -363,6 +363,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
         Route::put('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
 
+        // APL-02 (Verifikasi)
+        Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
+
         // IA-06 Penilaian
         Route::get('/penilaian/ia-06/{id}', [Ia06Controller::class, 'asesorShow'])->name('ia06.edit');
         Route::put('/penilaian/ia-06/{id}', [Ia06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
@@ -481,4 +484,3 @@ Route::middleware('auth')->group(function () {
         Auth::logout();
         return redirect('/login')->with('error', 'Role Anda tidak valid.');
     })->name('home.index');
-});

@@ -135,6 +135,33 @@
                     </div>
                 </div>
 
+                <div class="bg-white rounded-xl border border-gray-400 p-6 mb-8">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-blue-500 text-white rounded-full p-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-800">Kartu Peserta Sertifikasi</h3>
+                                <p class="text-sm text-gray-600 mt-1">Unduh kartu tanda peserta Anda untuk pelaksanaan
+                                    asesmen</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('asesi.kartu.peserta', ['id_sertifikasi' => $id_sertifikasi]) }}" target="_blank"
+                            class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg 
+                  transition-all shadow-md flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Unduh Kartu Peserta
+                        </a>
+                    </div>
+                </div>
+
                 {{-- TOMBOL NAVIGASI --}}
                 <div class="flex justify-between items-center mt-10">
                     <button id="btn_sebelumnya"
@@ -156,7 +183,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const idSertifikasi = document.querySelector('main').dataset.sertifikasiId;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            const nextUrl = "{{ route('asesi.kerahasiaan.fr_ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
+            const nextUrl =
+                "{{ route('asesi.kerahasiaan.fr_ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
 
 
             if (!idSertifikasi) {
@@ -191,17 +219,8 @@
                         document.getElementById('text_tanggal').innerText = date.toLocaleDateString('id-ID',
                             options);
 
-                        const waktuObj = new Date(data.waktu);
-
-                        // 2. Format jadi Jam:Menit sesuai zona waktu Jakarta (WIB)
-                        const jamWib = waktuObj.toLocaleTimeString('id-ID', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false // Format 24 jam
-                        });
-
-                        // 3. Tampilkan
-                        document.getElementById('text_waktu').innerText = jamWib + ' WIB';
+                        // D. Format Waktu (Ambil HH:MM saja)
+                        document.getElementById('text_waktu').innerText = data.waktu.substring(0, 5) + ' WIB';
 
                         // E. Isi Maps
                         if (data.link_gmap) {
@@ -212,7 +231,7 @@
                         if (data.foto_gedung) {
                             // Pastikan path-nya bener (kalau cuma nama file, tambah /images/tuk/)
                             // Asumsi: data.foto_gedung adalah path lengkap atau nama file
-                            // Kalau nama file doang: `{{ asset('images') }}/${data.foto_gedung}`
+                            // Kalau nama file doang: `{{ asset('images/') }}/${data.foto_gedung}`
                             // Di sini saya asumsi path lengkap/url
                             const imgEl = document.getElementById('img_gedung');
                             imgEl.src = `/${data.foto_gedung}`; // Tambah slash depan buat root

@@ -16,10 +16,10 @@ class SoalIa05 extends Model
     // Sesuaikan dengan nama kolom di screenshot
     protected $fillable = [
         'soal_ia05',
-        'opsi_jawaban_a',
-        'opsi_jawaban_b',
-        'opsi_jawaban_c',
-        'opsi_jawaban_d',
+        'opsi_a_ia05',
+        'opsi_b_ia05',
+        'opsi_c_ia05',
+        'opsi_d_ia05',
     ];
 
     // ================= RELASI =================
