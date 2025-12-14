@@ -177,6 +177,8 @@
     </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
    const editBtn = document.getElementById('editButton');
     const inputs = document.querySelectorAll('.profile-input');
@@ -240,9 +242,15 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    // 3. [PINDAH] Jika SUKSES, baru ubah UI kembali
-                    alert('Data berhasil disimpan!'); // Ganti dengan notifikasi yang lebih baik jika mau
+                    if (data.success) {
+                    // === SWAL SUKSES ===
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Data berhasil disimpan!',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
 
                     // Kembalikan field ke mode readonly
                     editableInputs.forEach(input => {
@@ -262,16 +270,23 @@
                     editBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
 
                 } else {
-                    // Jika GAGAL dari server (misal, validasi error)
-                    alert('Gagal menyimpan data: ' + data.message);
+                    // === SWAL GAGAL (dari server) ===
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: data.message || 'Terjadi kesalahan saat menyimpan.',
+                    });
                     editing = true; // Tetap di mode editing
                 }
             })
             .catch(error => {
-                // Jika GAGAL (error jaringan, dll)
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan!',
+                    text: 'Silakan coba lagi.',
+                });
                 console.error('Error:', error);
-                alert('Terjadi kesalahan. Silakan coba lagi.');
-                editing = true; // Tetap di mode editing
+                editing = true;
             });
         }
     });

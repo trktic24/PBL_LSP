@@ -1,14 +1,28 @@
 @props([
+    'sertifikasi' => null, // Terima objek sertifikasi
     'skema' => 'Data Skema Default',
     'nomorSkema' => 'Nomor Skema Default',
     'tuk' => 'Tempat Kerja', // Nilai default
     'namaAsesor' => 'Data Asesor Default',
     'namaAsesi' => 'Data Asesi Default',
-    'tanggal' => '12-10-2025',
+    'tanggal' => 'Tanggal Default',
     'waktu' => '09.00 WIB',
     'showWaktu' => true
-
 ])
+
+@php
+    // Jika sertifikasi ada, override variabel default dengan data dari sertifikasi
+    if ($sertifikasi) {
+        $skema = $sertifikasi->jadwal->skema->judul_skema ?? '-';
+        $nomorSkema = $sertifikasi->jadwal->skema->nomor_skema ?? '-';
+        $tuk = $sertifikasi->jadwal->tuk->nama_tuk ?? '-';
+        // Ambil asesor pertama dari koleksi (jika ada)
+        $namaAsesor = $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '-';
+        $namaAsesi = $sertifikasi->asesi->nama_lengkap ?? '-';
+        $tanggal = $sertifikasi->jadwal->tanggal_pelaksanaan ?? '-';
+        $waktu = $sertifikasi->jadwal->waktu_pelaksanaan ?? '-';
+    }
+@endphp
 
 {{-- 
   HTML, isinya diganti dengan variabel props.
@@ -55,18 +69,13 @@
         <div class="flex items-center space-x-2 ml-0 md:ml-2">
             {{-- Gunakan '@checked' untuk menentukan pilihan default --}}
             <input type="radio" id="tuk_sewaktu" name="tuk_type" class="form-radio h-4 w-4 text-gray-400" 
-                   @checked($tuk == 'Sewaktu')>
+                   @checked($tuk == 'Sewaktu') disabled>
             <label for="tuk_sewaktu" class="text-sm text-gray-700">Sewaktu</label>
         </div>
         <div class="flex items-center space-x-2">
             <input type="radio" id="tuk_tempatkerja" name="tuk_type" class="form-radio h-4 w-4 text-gray-400"
-                   @checked($tuk == 'Tempat Kerja')>
+                   @checked($tuk == 'Tempat Kerja') disabled>
             <label for="tuk_tempatkerja" class="text-sm text-gray-700">Tempat Kerja</label>
-        </div>
-        <div class="flex items-center space-x-2">
-            <input type="radio" id="tuk_mandiri" name="tuk_type" class="form-radio h-4 w-4 text-gray-400"
-                   @checked($tuk == 'Mandiri')>
-            <label for="tuk_mandiri" class="text-sm text-gray-700">Mandiri</label>
         </div>
     </div>
 
@@ -85,7 +94,7 @@
     <label class="text-sm font-bold text-black">Tanggal</label>
     <div class="flex items-center">
         <span>:</span>
-        <p class="ml-2 font-medium text-gray-600">{{ $tanggal ? \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') : '-' }}</p>
+        <p class="ml-2 font-medium text-gray-600">{{ $tanggal }}</p>
     </div>
 
     @if($showWaktu)

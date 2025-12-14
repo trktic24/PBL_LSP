@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 
+use App\Http\Controllers\Controller;
+
 class SkemaController extends Controller
 {
     /**

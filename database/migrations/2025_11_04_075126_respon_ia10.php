@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,8 +16,7 @@ return new class extends Migration
             $table->foreignId('id_ia10')->constrained('ia10', 'id_ia10')->onUpdate('cascade')->onDelete('cascade');
 
             // isi kolom Database respon_ia10
-            $table->boolean('jawaban_pilihan_iya')->default(false)->comment('1 untuk Ya, 0 untuk Tidak');
-            $table->boolean('jawaban_pilihan_tidak')->default(false)->comment('1 untuk Tidak, 0 untuk Ya');
+            $table->boolean('jawaban_pilihan_iya_tidak')->default(null)->comment('1 untuk Iya, 0 untuk Tidak');
             $table->text('jawaban_isian')->nullable()->comment('Isian jawaban jika ada');
             $table->timestamps();
         });

@@ -1,86 +1,93 @@
-{{-- 
-    File: components/ttd-display.blade.php (MODE STATIS DUMMY - SUDAH DIPERBAIKI)
---}}
+@props(['sertifikasi' => null])
 
 @php
-    // --- DATA DUMMY INTERNAL (DIRUBAH AGAR ADA URL GAMBAR) ---
-    // ... (Variabel Dummy tetap sama) ...
-    $namaAsesiDummy  = "John Doe (Data Statis)";
-    $ttdAsesiDummy   = "https://via.placeholder.com/150x50?text=TTD+Asesi+DUMMY"; // Asumsi ini URL TTD Asesi
-    $namaAsesorDummy = "Ajeng Febria H. (Data Statis)";
-    $regMetDummy     = "MET-12345 (Statis)";
-    $tanggalDummy    = "01-10-2025";
-    $ttdAsesorImageDummy = "https://via.placeholder.com/150x50?text=TTD+Asesor+DUMMY"; 
+    // Ambil data dari $sertifikasi
+    $asesi = $sertifikasi->asesi ?? null;
+    $asesor = $sertifikasi->asesor ?? null; // Menggunakan accessor getAsesorAttribute di model DataSertifikasiAsesi
+    $jadwal = $sertifikasi->jadwal ?? null;
 
-    // ... (Logika $showAsesi, $showAsesor, $cols, $renderDisplay tetap sama) ...
+    // Data Asesi
+    $namaAsesi = $asesi->nama_lengkap ?? '-';
+    $ttdAsesi = $asesi->tanda_tangan ?? null;
+    
+    // Data Asesor
+    $namaAsesor = $asesor->nama_lengkap ?? '-';
+    $noRegMet = $asesor->nomor_regis ?? '-';
+    $ttdAsesor = $asesor->tanda_tangan ?? null;
+
+    // Tanggal (Ambil dari jadwal tanggal pelaksanaan, atau hari ini jika null)
+    $tanggal = $jadwal && $jadwal->tanggal_pelaksanaan 
+        ? \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('d-m-Y') 
+        : date('d-m-Y');
+
+    // Logic Tampilan
     $showAsesi = $showAsesi ?? true; 
     $showAsesor = $showAsesor ?? true;
     $cols = ($showAsesi && $showAsesor) ? 2 : 1; 
-
-    $renderDisplay = function ($value, $isImage = false) {
-        $finalValue = $value ?? '-'; 
-        
-        if ($isImage && $finalValue !== '-') {
-            // LOGIKA GAMBAR:
-            return "<img src='{$finalValue}' alt='Tanda Tangan' class='h-12 w-auto object-contain'>";
-        } else {
-            // LOGIKA TEKS:
-            return "<div class='text-sm p-1 w-full'>$finalValue</div>";
-        }
-    };
 @endphp
 
-<div class="mt-8">
-    <h3 class="font-semibold text-gray-700 mb-3">Pencatatan dan Validasi (Statis)</h3>
+<div class="border border-gray-200 shadow-md p-4 rounded-lg bg-white mt-8">
+    <h3 class="text-lg font-semibold mb-4">Pencatatan dan Validasi</h3>
 
-    <div class="grid grid-cols-1 md:grid-cols-{{ $cols }} gap-6 p-6 bg-gray-50 border border-gray-200 rounded-md shadow-sm">
+    <div class="flex flex-col gap-4">
 
         {{-- BAGIAN ASESI --}}
         @if ($showAsesi)
-            <div class="space-y-3">
-                <h4 class="font-medium text-gray-800">Asesi</h4>
-                <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Nama</span>
-                    <span class="font-medium">:</span>
-                    {!! $renderDisplay($namaAsesiDummy) !!} 
+            <div>
+                <h4 class="font-medium mb-2 text-base text-gray-800">Asesi</h4>
+                <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-sm">
+                    <div>Nama</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] font-medium text-gray-900">{{ $namaAsesi }}</div>
 
-                    {{-- TANGGAL: Teks biasa, tetap di baris yang sama --}}
-                    <span class="font-medium text-gray-700">Tanggal</span>
-                    <span class="font-medium">:</span>
-                    {!! $renderDisplay($tanggalDummy) !!}                    
+                    <div>Tanggal</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] text-gray-900">{{ $tanggal }}</div>
 
-
-                    {{-- PERUBAHAN ASESI: TTD --}}
-                    {{-- Judul Label tetap di baris ini --}}
-                    <span class="font-medium text-gray-700">Tanda Tangan</span>
-                    <span class="font-medium">:</span>
-                    
+                    <div>Tanda Tangan</div>
+                    <div>:</div>
+                    <div class="h-16">
+                        @if($ttdAsesi)
+                            <img src="{{ asset('storage/' . $ttdAsesi) }}" alt="Tanda Tangan Asesi" class="h-full object-contain">
+                        @else
+                            <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
+                        @endif
+                    </div>
                 </div>
             </div>
         @endif
 
+        {{-- SEPARATOR JIKA KEDUANYA DITAMPILKAN --}}
+        @if ($showAsesi && $showAsesor)
+            <hr class="border-gray-200">
+        @endif
+
         {{-- BAGIAN ASESOR --}}
         @if ($showAsesor)
-            <div class="space-y-3">
-                <h4 class="font-medium text-gray-800">Asesor</h4>
-                <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                    <span class="font-medium text-gray-700">Nama</span>
-                    <span class="font-medium">:</span>
-                    {!! $renderDisplay($namaAsesorDummy) !!}
+            <div>
+                <h4 class="font-medium mb-2 text-base text-gray-800">Asesor</h4>
+                <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-sm">
+                    <div>Nama</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] font-medium text-gray-900">{{ $namaAsesor }}</div>
 
-                    <span class="font-medium text-gray-700">No. Reg. MET.</span>
-                    <span class="font-medium">:</span>
-                    {!! $renderDisplay($regMetDummy) !!}
+                    <div>No. Reg. MET.</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] text-gray-900">{{ $noRegMet }}</div>
 
-                    {{-- TANGGAL ASESOR: Teks biasa, tetap di baris yang sama --}}
-                    <span class="font-medium text-gray-700">Tanggal</span>
-                    <span class="font-medium">:</span>
-                    {!! $renderDisplay($tanggalDummy) !!} 
+                    <div>Tanggal</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] text-gray-900">{{ $tanggal }}</div>
 
-                    {{-- PERUBAHAN ASESOR: Tanda Tangan --}}
-                    {{-- Judul Label tetap di baris ini --}}
-                    <span class="font-medium text-gray-700">Tanda Tangan</span>
-                    <span class="font-medium">:</span>
+                    <div>Tanda Tangan</div>
+                    <div>:</div>
+                    <div class="h-16">
+                        @if($ttdAsesor)
+                            <img src="{{ asset('storage/' . $ttdAsesor) }}" alt="Tanda Tangan Asesor" class="h-full object-contain">
+                        @else
+                            <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
+                        @endif
+                    </div>
                 </div>
             </div>
         @endif

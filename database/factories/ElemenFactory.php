@@ -21,7 +21,7 @@ class ElemenFactory extends Factory
             // Ini akan OTOMATIS membuat 1 UnitKompetensi baru
             // (yang juga otomatis bikin 1 KelompokPekerjaan baru, dst.)
             // lalu pakai ID-nya untuk 'id_unit_kompetensi'.
-            'id_unit_kompetensi' => UnitKompetensi::factory(),
+            'id_unit_kompetensi' => UnitKompetensi::inRandomOrder()->value('id_unit_kompetensi'),
             
             // Bikin data palsu (saya pakai $this->faker yg lebih aman)
             'elemen' => 'Melaksanakan ' . $this->faker->words(2, true),

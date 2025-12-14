@@ -8,6 +8,8 @@ use App\Models\Jadwal;
 use App\Models\Asesi;
 use App\Models\Asesor;
 
+use App\Http\Controllers\Controller;
+
 class DashboardController extends Controller
 {
     /**

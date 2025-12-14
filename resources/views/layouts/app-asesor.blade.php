@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,23 +18,26 @@
     @yield('styles')
 
     <style>
-        [x-cloak] { display: none !important; }
-      </style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 
 </head>
 
 <body class="antialiased bg-white">
 
-    <x-navbar.navbar/>
-   
-        <div class="bg-white flex-1">
-        @yield('content')
-    </div>
+    <x-navbar.navbar />
+
+    <div class="bg-white flex-1">
+        @yield('content')
+    </div>
 
     {{-- KARENA ANDA SUDAH MENGHILANGKAN FOOTER SECARA KONTINU,
          JIKA ADA FOOTER GLOBAL, HARUS DITAMBAHKAN DI SINI MENGGUNAKAN @yield. --}}
     {{-- Contoh jika Anda ingin memiliki footer global yang bisa dihilangkan: --}}
     {{-- @yield('global-footer') --}}
-    <x-footer.footer/>
+    <x-footer.footer />
 </body>
+
 </html>

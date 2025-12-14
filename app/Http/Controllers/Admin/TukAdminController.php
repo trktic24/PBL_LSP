@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File; // [PENTING] Pakai File Facade, bukan Storage
 use Illuminate\Database\QueryException; 
 
+use App\Http\Controllers\Controller;
+
 class TukAdminController extends Controller
 {
     /**

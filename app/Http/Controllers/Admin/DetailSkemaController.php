@@ -10,6 +10,8 @@ use App\Models\UnitKompetensi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use App\Http\Controllers\Controller;
+
 class DetailSkemaController extends Controller
 {
     /**

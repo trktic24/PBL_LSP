@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File; // [PENTING] Gunakan File Facade
 use Illuminate\Validation\Rules\Password;
 
+use App\Http\Controllers\Controller;
+
 class AsesiController extends Controller
 {
     /**

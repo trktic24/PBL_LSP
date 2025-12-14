@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,9 +14,9 @@ return new class extends Migration
             // Sesuai permintaan: id_asesor (primary) (bigint)
             $table->id('id_asesor');
             $table->foreignId('id_user')
-                  ->constrained('users', 'id_user') // <-- Tambahkan 'id_user' di sini
-                  ->onUpdate('cascade')
-                  ->onDelete('cascade');
+                ->constrained('users', 'id_user') // <-- Tambahkan 'id_user' di sini
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->foreignId('id_skema')->nullable()->constrained('skema', 'id_skema')->onUpdate('cascade')->onDelete('restrict');
 
             // Data Pribadi Asesor
