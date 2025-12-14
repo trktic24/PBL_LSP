@@ -465,7 +465,7 @@ Route::middleware('auth')->group(function () {
             }
             return redirect()->route('asesor.dashboard');
         } elseif ($roleName === 'admin' || $roleName === 'superadmin') {
-            return app(AdminDashboardController::class)->index();
+            return redirect()->route('admin.dashboard');
         }
         
         // Fallback

@@ -35,7 +35,7 @@
         {{-- 2. HEADER MOBILE (Component Baru) --}}
         @php
             $gambarSkema = ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) 
-                ? asset('images/skema/' . $sertifikasi->jadwal->skema->gambar) 
+                ? asset('images/skema/foto_skema/' . $sertifikasi->jadwal->skema->gambar) 
                 : null;
         @endphp
 
