@@ -117,7 +117,7 @@
         <br>
     @endforeach
 
-    <table style="border: 2px solid black;">
+    {{-- <table style="border: 2px solid black;">
         <tr>
             <td width="50%" class="bg-grey text-bold">Nama Asesi:</td>
             <td width="50%" class="bg-grey text-bold">Tanggal:</td>
@@ -154,7 +154,7 @@
             <td style="vertical-align: bottom;">__________________</td> {{-- TTD --}}
             <td style="vertical-align: bottom;">Tanggal: _____________</td>
         </tr>
-    </table>
+    </table> --}}
 
 </body>
 </html>
