@@ -2,26 +2,32 @@
 
 namespace App\Http\Controllers\Asesi\KerahasiaanAPI;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Models\DataSertifikasiAsesi;
 use App\Models\BuktiAk01;
+use Illuminate\Http\Request;
 use App\Models\ResponBuktiAk01;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Models\DataSertifikasiAsesi;
+use Illuminate\Support\Facades\Auth;
 
 class PersetujuanKerahasiaanAPIController extends Controller
 {
     // ... (Method show() buat view biarin aja) ...
     public function show($id_sertifikasi)
     {
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
+
+        if ($sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' || 
+            $sertifikasi->progres_level >= 30) { // Asumsi level 30 itu LVL_SETUJU
+            
+            return redirect()->route('asesi.persetujuan.selesai', ['id_sertifikasi' => $id_sertifikasi]);
+        }
         try {
-            $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal'])->findOrFail($id_sertifikasi);
-            return view('frontend.FR_AK_01', [
+            $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
+            return view('asesi.persetujuan_assesmen_dan_kerahasiaan.fr_ak01', [
                 'id_sertifikasi' => $id_sertifikasi,
-                'asesi' => $sertifikasi->asesi,
-                'sertifikasi' => $sertifikasi,
-                'jadwal' => $sertifikasi->jadwal
+                'asesi'          => $sertifikasi->asesi,
+                'sertifikasi'    => $sertifikasi
             ]);
         } catch (\Exception $e) {
             return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
@@ -36,7 +42,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
         try {
             // 1. Ambil Data Sertifikasi
             $sertifikasi = DataSertifikasiAsesi::with([
-                'asesi',
+                'asesi', 
                 'jadwal.asesor',
                 'jadwal.jenisTuk'
             ])->findOrFail($id_sertifikasi);
@@ -47,15 +53,15 @@ class PersetujuanKerahasiaanAPIController extends Controller
             // 3. Ambil "Settingan Bukti"
             // Kita anggap data yang sudah ada di tabel respon (hasil factory) adalah settingan admin.
             $responBukti = ResponBuktiAk01::where('id_data_sertifikasi_asesi', $id_sertifikasi)
-                ->pluck('id_bukti_ak01')
-                ->toArray();
+                                          ->pluck('id_bukti_ak01')
+                                          ->toArray();
 
             $jenisTuk = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu';
 
             return response()->json([
                 'success' => true,
                 'asesi' => $sertifikasi->asesi,
-                'asesor' => $sertifikasi->jadwal->asesor ?? (object) ['nama_lengkap' => '-'],
+                'asesor' => $sertifikasi->jadwal->asesor ?? (object)['nama_lengkap' => '-'],
                 'tuk' => $jenisTuk,
                 'master_bukti' => $masterBukti,
                 'respon_bukti' => $responBukti, // ID Bukti yang akan tercentang
@@ -67,7 +73,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
-
+    
     /**
      * POST: Cuma Update Status (Setuju)
      */
@@ -75,65 +81,48 @@ class PersetujuanKerahasiaanAPIController extends Controller
     {
         try {
             $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
-
-            // Tentukan Status Tujuan
-            $nextStatus = DataSertifikasiAsesi::STATUS_PERSETUJUAN_ASESMEN_OK; 
-            // (Isinya: 'persetujuan_asesmen_disetujui')
-
-            // Update Tanda Tangan (Jika ada input signature)
-            if($request->has('tanda_tangan') && !empty($request->tanda_tangan)){
-                 $sertifikasi->asesi->tanda_tangan = $request->tanda_tangan;
-                 $sertifikasi->asesi->save();
+            
+            // Validasi Tanda Tangan
+            if (empty($sertifikasi->asesi->tanda_tangan)) {
+                return response()->json(['success' => false, 'message' => 'Tanda tangan belum ada.'], 422);
             }
 
-            // LOGIKA UPDATE STATUS
-            // Jika status sekarang BELUM sesuai tujuan, baru kita update
+            // Update Status
+            $nextStatus = DataSertifikasiAsesi::STATUS_PERSETUJUAN_ASESMEN_OK;
             if ($sertifikasi->status_sertifikasi != $nextStatus) {
                 $sertifikasi->status_sertifikasi = $nextStatus;
                 $sertifikasi->save();
-                $pesan = 'Persetujuan FR.AK.01 berhasil disimpan.';
-            } else {
-                // Jika SUDAH sesuai (kasus kamu sekarang), kita update timestampnya saja biar ketahuan ada aktivitas
-                $sertifikasi->touch(); 
-                $pesan = 'Data sudah terverifikasi sebelumnya.';
             }
 
-            // Redirect Kembali ke Tracker
-            return redirect()->route('asesor.tracker', ['id_sertifikasi_asesi' => $id_sertifikasi])
-                ->with('success', $pesan);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Persetujuan berhasil disimpan.',
+                'id_jadwal' => $sertifikasi->id_jadwal
+            ]);
 
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
-    public function cetakPDF($id_sertifikasi)
+    public function persetujuanSelesai($id_sertifikasi)
     {
-        // 1. Ambil Data Sertifikasi Lengkap
-        $sertifikasi = DataSertifikasiAsesi::with([
-            'asesi',
-            'jadwal.asesor',
-            'jadwal.jenisTuk'
-        ])->findOrFail($id_sertifikasi);
+        $user = Auth::user();
 
-        // 2. Ambil Master Bukti (Semua opsi bukti)
-        $masterBukti = BuktiAk01::orderBy('id_bukti_ak01', 'asc')->get();
+        // Ambil sertifikasi spesifik
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
+            ->where('id_asesi', $user->asesi->id_asesi)
+            ->findOrFail($id_sertifikasi);
 
-        // 3. Ambil Respon Bukti (Bukti yang dicentang/dipilih)
-        $responBukti = ResponBuktiAk01::where('id_data_sertifikasi_asesi', $id_sertifikasi)
-            ->pluck('id_bukti_ak01')
-            ->toArray();
-
-        // 4. Render PDF
-        $pdf = Pdf::loadView('pdf.ak_01', [
+        // Pakai view universal yang tadi kita buat
+        return view('asesi.tunggu_or_berhasil.berhasil', [
             'sertifikasi' => $sertifikasi,
-            'masterBukti' => $masterBukti,
-            'responBukti' => $responBukti
+            'asesi'       => $sertifikasi->asesi
         ]);
-
-        $pdf->setPaper('A4', 'portrait');
-
-        return $pdf->stream('FR_AK_01_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
     }
+<<<<<<< HEAD
+}   
+=======
     
 }
+>>>>>>> 7b5ccd0db2efcedc20353f4cc36240282a2cedde

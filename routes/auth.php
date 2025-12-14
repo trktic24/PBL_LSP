@@ -426,6 +426,8 @@ Route::middleware('auth')->group(function () {
              Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
              Route::get('/pendaftaran-selesai/{id_sertifikasi}', 'pendaftaranSelesai')->name('pendaftaran.selesai');
              Route::get('/pra-asesmen-selesai/{id_sertifikasi}', 'praAsesmenSelesai')->name('pra_asesmen.selesai');
+             Route::get('/persetujuan-selesai/{id_sertifikasi}', 'persetujuanSelesai')
+                    ->name('persetujuan.selesai');
              Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
         });
 

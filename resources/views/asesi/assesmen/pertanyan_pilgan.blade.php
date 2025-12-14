@@ -6,537 +6,445 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asesmen Pilihan Ganda (IA-05)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    {{-- Meta CSRF Token untuk request AJAX --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
+        body { font-family: 'Poppins', sans-serif; }
 
-        /* Style untuk opsi pilihan ganda saat dipilih */
-        .option-label:has(input:checked) {
-            background-color: #EFF6FF;
-            /* bg-blue-50 */
-            border-color: #3B82F6;
-            /* border-blue-500 */
-        }
+        /* Style Pilihan */
+        .option-label:has(input:checked) { background-color: #EFF6FF; border-color: #3B82F6; }
+        .option-label:has(input:checked) .option-key { background-color: #3B82F6; border-color: #3B82F6; color: white; }
 
-        .option-label:has(input:checked) .option-key {
-            background-color: #3B82F6;
-            /* bg-blue-500 */
-            border-color: #3B82F6;
-            color: white;
-        }
+        /* Navigasi */
+        .nav-btn-active { background-color: #3B82F6 !important; color: white !important; border-color: #3B82F6 !important; }
+        .nav-btn-answered { background-color: #10B981; color: white; border-color: #10B981; }
 
-        /* Style untuk navigasi nomor soal */
-        .nav-btn-active {
-            background-color: #3B82F6 !important;
-            color: white !important;
-            border-color: #3B82F6 !important;
+        /* Timer Warning Animation */
+        @keyframes pulse-red {
+            0%, 100% { background-color: white; color: #DC2626; }
+            50% { background-color: #FEE2E2; color: #991B1B; }
         }
-
-        .nav-btn-answered {
-            background-color: #10B981;
-            /* Green for answered */
-            color: white;
-            border-color: #10B981;
-        }
+        .timer-warning { animation: pulse-red 1s infinite; border-color: #EF4444 !important; }
     </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen font-sans antialiased">
 
-    {{-- LAYOUT UTAMA DENGAN SIDEBAR --}}
-    <div class="flex h-screen overflow-hidden">
+    {{-- MODAL POPUP WAKTU HABIS (Desain Keren) --}}
+    <div id="timeout-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        {{-- Backdrop Blur --}}
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm"></div>
 
-        {{-- SIDEBAR (Menggunakan Komponen x-sidebar2) --}}
-        {{-- Pastikan variabel $asesi dan $sertifikasi dikirim dari Controller --}}
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border-t-8 border-red-500">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            {{-- Icon Jam --}}
+                            <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-xl leading-6 font-bold text-gray-900" id="modal-title">
+                                Waktu Asesmen Habis!
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">
+                                    Maaf, waktu pengerjaan asesmen Anda telah berakhir sesuai jadwal.
+                                    Sistem sedang <strong>mengirimkan jawaban Anda secara otomatis</strong>. Mohon tunggu sebentar...
+                                </p>
+                            </div>
+                            {{-- Loading Indicator di Modal --}}
+                            <div class="mt-4 flex justify-center sm:justify-start items-center space-x-2 text-blue-600 font-semibold animate-pulse">
+                                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Mengumpulkan Jawaban...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex h-screen overflow-hidden">
+        {{-- SIDEBAR --}}
         <x-sidebar2 :idAsesi="$asesi->id_asesi ?? null" :sertifikasi="$sertifikasi ?? null" />
 
         {{-- KONTEN UTAMA --}}
-        <main class="flex-1 overflow-y-auto bg-gray-50 focus:outline-none">
+        <main class="flex-1 overflow-y-auto bg-gray-50 focus:outline-none relative">
             <div class="py-6">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
 
-                    {{-- Header Halaman --}}
+                    {{-- Header --}}
                     <div class="mb-8">
-                        
-                        {{-- 1. JUDUL UTAMA (Center, Tebal, Hitam - Persis Screenshot) --}}
                         <h1 class="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-5 tracking-wide">
                             Pertanyaan Pilihan Ganda
                         </h1>
-
-                        {{-- 2. GARIS PEMBATAS (Tebal Abu-abu) --}}
                         <div class="w-full border-b-2 border-gray-300 mb-6"></div>
 
-                        {{-- 3. INFO BAR (Di bawah garis: Kiri Info Skema, Kanan Timer) --}}
                         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                            
-                            {{-- Bagian Kiri: Info Skema (Mirip layout TUK di screenshot) --}}
                             <div class="flex items-center gap-3 w-full md:w-auto">
                                 <span class="font-bold text-gray-800 text-lg">Skema :</span>
-                                {{-- Kotak tampilan skema --}}
                                 <div class="px-0 py-1.5 text-sm font-medium text-gray-700 flex-1 md:flex-none">
                                     {{ $sertifikasi->jadwal->skema->nama_skema ?? 'Skema Tidak Tersedia' }}
                                 </div>
                             </div>
 
-                            {{-- Bagian Kanan: Timer (Tetap ada biar fungsional) --}}
-                            <div class="bg-white border-2 border-gray-200 text-gray-800 px-5 py-2 rounded-lg font-mono font-bold flex items-center shadow-sm">
+                            {{-- TIMER --}}
+                            <div id="timer-box" class="bg-white border-2 border-gray-200 text-gray-800 px-5 py-2 rounded-lg font-mono font-bold flex items-center shadow-sm transition-colors duration-300">
                                 <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                <span id="timer">--:--</span>
+                                <span id="timer">Memuat...</span>
                             </div>
-
                         </div>
                     </div>
 
-                    {{-- Layout Kolom: Kiri (Soal) & Kanan (Navigasi) --}}
+                    {{-- Area Soal --}}
                     <div class="flex flex-col lg:flex-row gap-6">
-
-                        {{-- KOLOM KIRI: AREA SOAL --}}
                         <div class="flex-1 lg:w-3/4">
-
-                            {{-- Loading State --}}
-                            <div id="loading-skeleton"
-                                class="bg-white rounded-xl shadow-sm p-8 animate-pulse border border-gray-200">
+                            {{-- Skeleton Loading --}}
+                            <div id="loading-skeleton" class="bg-white rounded-xl shadow-sm p-8 animate-pulse border border-gray-200">
                                 <div class="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-                                <div class="h-6 bg-gray-300 rounded w-full mb-2"></div>
-                                <div class="h-6 bg-gray-300 rounded w-3/4 mb-8"></div>
+                                <div class="h-6 bg-gray-300 rounded w-full mb-8"></div>
                                 <div class="space-y-4">
-                                    <div class="h-14 bg-gray-100 rounded-lg block border border-gray-200"></div>
-                                    <div class="h-14 bg-gray-100 rounded-lg block border border-gray-200"></div>
-                                    <div class="h-14 bg-gray-100 rounded-lg block border border-gray-200"></div>
-                                    <div class="h-14 bg-gray-100 rounded-lg block border border-gray-200"></div>
+                                    <div class="h-14 bg-gray-100 rounded-lg block"></div>
+                                    <div class="h-14 bg-gray-100 rounded-lg block"></div>
+                                    <div class="h-14 bg-gray-100 rounded-lg block"></div>
+                                    <div class="h-14 bg-gray-100 rounded-lg block"></div>
                                 </div>
                             </div>
 
-                            {{-- Pesan Error / Kosong --}}
+                            {{-- Error Msg --}}
                             <div id="error-message" class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-6">
                                 <p class="text-red-700" id="error-text"></p>
                             </div>
 
-                            {{-- Wadah Soal (Akan diisi oleh JS) --}}
+                            {{-- Container Soal --}}
                             <div id="question-container" class="hidden">
-                                <div
-                                    class="bg-white rounded-xl shadow-sm p-8 border border-gray-200 relative overflow-hidden">
-                                    {{-- Hiasan Background --}}
-                                    <div
-                                        class="absolute top-0 right-0 -mt-6 -mr-6 text-blue-50 opacity-40 pointer-events-none">
+                                <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-200 relative overflow-hidden">
+                                    {{-- Hiasan --}}
+                                    <div class="absolute top-0 right-0 -mt-6 -mr-6 text-blue-50 opacity-40 pointer-events-none">
                                         <svg class="w-40 h-40" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0 1 1 0 002 0zm-1 4a1 1 0 00-1 1v3a1 1 0 002 0v-3a1 1 0 00-1-1z"
-                                                clip-rule="evenodd"></path>
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0 1 1 0 002 0zm-1 4a1 1 0 00-1 1v3a1 1 0 002 0v-3a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                                         </svg>
                                     </div>
 
                                     <div class="relative z-10">
-                                        {{-- Nomor Soal --}}
                                         <div class="mb-6">
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                                                 Soal No. <span id="current-question-num" class="ml-1">1</span>
                                             </span>
                                         </div>
-
-                                        {{-- Teks Pertanyaan --}}
-                                        <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-8 leading-relaxed"
-                                            id="question-text">
-                                        </h2>
-
-                                        {{-- Opsi Jawaban --}}
-                                        <div class="space-y-4" id="options-container">
-                                        </div>
+                                        <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-8 leading-relaxed" id="question-text"></h2>
+                                        <div class="space-y-4" id="options-container"></div>
                                     </div>
                                 </div>
 
-                                {{-- Tombol Navigasi Bawah (Prev/Next) --}}
+                                {{-- Navigasi Tombol --}}
                                 <div class="flex justify-between items-center mt-6 font-medium">
-                                    <button id="btn-prev"
-                                        class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-sm">
-                                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 19l-7-7 7-7"></path>
-                                        </svg>
+                                    <button id="btn-prev" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 flex items-center shadow-sm">
                                         Sebelumnya
                                     </button>
-
-                                    <button id="btn-next"
-                                        class="px-5 py-2.5 bg-blue-600 border border-transparent text-white rounded-lg hover:bg-blue-700 transition flex items-center shadow-sm">
+                                    <button id="btn-next" class="px-5 py-2.5 bg-blue-600 border border-transparent text-white rounded-lg hover:bg-blue-700 transition flex items-center shadow-sm">
                                         Selanjutnya
-                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7"></path>
-                                        </svg>
                                     </button>
-
-                                    {{-- Tombol Selesai (Muncul di soal terakhir) --}}
-                                    <button id="btn-finish"
-                                        class="hidden px-5 py-2.5 bg-green-600 border border-transparent text-white rounded-lg hover:bg-green-700 transition flex items-center shadow-sm">
+                                    <button id="btn-finish" class="hidden px-5 py-2.5 bg-green-600 border border-transparent text-white rounded-lg hover:bg-green-700 transition flex items-center shadow-sm">
                                         <span id="btn-finish-text">Selesai & Kumpulkan</span>
-                                        <svg id="btn-finish-icon" class="w-5 h-5 ml-2" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 13l4 4L19 7"></path>
-                                        </svg>
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- KOLOM KANAN: NAVIGASI NOMOR --}}
+                        {{-- Navigasi Kanan --}}
                         <aside class="lg:w-1/4">
                             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 sticky top-6">
-                                <h3 class="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100">
-                                    Navigasi Soal</h3>
-
-                                {{-- Grid Nomor Soal --}}
-                                <div class="grid grid-cols-5 gap-2" id="question-nav-grid">
-                                </div>
-
-                                {{-- Legenda Keterangan --}}
+                                <h3 class="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100">Navigasi Soal</h3>
+                                <div class="grid grid-cols-5 gap-2" id="question-nav-grid"></div>
                                 <div class="mt-6 text-xs text-gray-500 space-y-2 bg-gray-50 p-3 rounded-lg">
-                                    <div class="flex items-center">
-                                        <div class="w-3 h-3 bg-blue-600 rounded-sm mr-2"></div> Sedang dibuka
-                                    </div>
-                                    <div class="flex items-center">
-                                        <div class="w-3 h-3 bg-green-500 rounded-sm mr-2"></div> Sudah dijawab
-                                    </div>
-                                    <div class="flex items-center">
-                                        <div class="w-3 h-3 border border-gray-300 bg-white rounded-sm mr-2"></div>
-                                        Belum dijawab
-                                    </div>
+                                    <div class="flex items-center"><div class="w-3 h-3 bg-blue-600 rounded-sm mr-2"></div> Sedang dibuka</div>
+                                    <div class="flex items-center"><div class="w-3 h-3 bg-green-500 rounded-sm mr-2"></div> Sudah dijawab</div>
+                                    <div class="flex items-center"><div class="w-3 h-3 border border-gray-300 bg-white rounded-sm mr-2"></div> Belum dijawab</div>
                                 </div>
                             </div>
                         </aside>
-
-                    </div> {{-- End Flex Row --}}
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-
-    {{-- JAVASCRIPT LOGIC (Disesuaikan dengan API baru) --}}
-    {{-- JAVASCRIPT LOGIC (FULL VERSION WITH V1 API & REDIRECT FIX) --}}
+    {{-- JAVASCRIPT LOGIC --}}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 1. VARIABEL STATE UTAMA ---
-            let questionsData = []; // Menyimpan semua data soal dari API
-            // userAnswers menyimpan jawaban user.
-            // KUNCI-nya adalah ID LEMBAR JAWAB (string), NILAI-nya adalah jawaban (a,b,c,d)
+            // === KONFIGURASI TIMER DARI CONTROLLER (Laravel Blade) ===
+            // Variabel ini disuntikkan dari PHP. Nilainya dalam detik.
+            let remainingSeconds = {{ $sisa_waktu ?? 0 }}; 
+
+            // State Aplikasi
+            let questionsData = []; 
             let userAnswers = {};
-            let currentQuestionIndex = 0; // Indeks array soal yang sedang aktif (mulai dari 0)
+            let currentQuestionIndex = 0;
+            let timerInterval;
 
-            // Elemen DOM
-            const loadingSkeleton = document.getElementById('loading-skeleton');
-            const questionContainer = document.getElementById('question-container');
-            const errorMessageEl = document.getElementById('error-message');
-            const errorTextEl = document.getElementById('error-text');
-            const questionTextEl = document.getElementById('question-text');
-            const optionsContainerEl = document.getElementById('options-container');
-            const currentNumEl = document.getElementById('current-question-num');
-            const btnPrev = document.getElementById('btn-prev');
-            const btnNext = document.getElementById('btn-next');
-            const btnFinish = document.getElementById('btn-finish');
-            const btnFinishText = document.getElementById('btn-finish-text');
-            const btnFinishIcon = document.getElementById('btn-finish-icon');
-            const navGridEl = document.getElementById('question-nav-grid');
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            // DOM Elements
+            const dom = {
+                loading: document.getElementById('loading-skeleton'),
+                container: document.getElementById('question-container'),
+                errorMsg: document.getElementById('error-message'),
+                errorText: document.getElementById('error-text'),
+                questionText: document.getElementById('question-text'),
+                optionsBox: document.getElementById('options-container'),
+                numLabel: document.getElementById('current-question-num'),
+                prev: document.getElementById('btn-prev'),
+                next: document.getElementById('btn-next'),
+                finish: document.getElementById('btn-finish'),
+                finishText: document.getElementById('btn-finish-text'),
+                navGrid: document.getElementById('question-nav-grid'),
+                timerDisplay: document.getElementById('timer'),
+                timerBox: document.getElementById('timer-box'),
+                modalTimeout: document.getElementById('timeout-modal'),
+                csrf: document.querySelector('meta[name="csrf-token"]').content
+            };
 
-
-            // --- 2. FUNGSI UNTUK MENGAMBIL DATA DARI API LARAVEL (GUNAKAN V1) ---
-            async function fetchQuestions() {
-                // Ambil ID Sertifikasi dari URL. Asumsi URL: /asesmen/ia05/{id_sertifikasi}
-                const pathSegments = window.location.pathname.split('/');
-                const idSertifikasi = pathSegments[pathSegments.length - 1];
-
-                if (!idSertifikasi || isNaN(idSertifikasi)) {
-                    showError("ID Sertifikasi tidak valid di URL.");
+            // --- 1. LOGIC TIMER ---
+            function startTimer() {
+                updateTimerDisplay(); // Render awal (langsung muncul, gak nunggu 1 detik)
+                
+                // Jika waktu sudah habis dari awal (misal telat login)
+                if (remainingSeconds <= 0) {
+                    handleTimeUp();
                     return;
                 }
 
+                timerInterval = setInterval(() => {
+                    remainingSeconds--;
+                    updateTimerDisplay();
+
+                    if (remainingSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        handleTimeUp();
+                    }
+                }, 1000);
+            }
+
+            function updateTimerDisplay() {
+                if (remainingSeconds < 0) remainingSeconds = 0;
+
+                const hours = Math.floor(remainingSeconds / 3600);
+                const minutes = Math.floor((remainingSeconds % 3600) / 60);
+                const seconds = remainingSeconds % 60;
+
+                // Format HH:MM:SS
+                const formattedTime = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                dom.timerDisplay.innerText = formattedTime;
+
+                // Efek Warning jika waktu < 5 menit (300 detik)
+                if (remainingSeconds <= 300) {
+                    dom.timerBox.classList.add('timer-warning');
+                }
+            }
+
+            function handleTimeUp() {
+                // 1. Munculkan Modal
+                dom.modalTimeout.classList.remove('hidden');
+                
+                // 2. Disable interaksi user
+                document.body.style.pointerEvents = 'none'; // Membekukan layar belakang
+                
+                // 3. Trigger Submit Otomatis
+                submitAssessment(true); // true = isAutoSubmit
+            }
+
+            // --- 2. LOGIC FETCH & RENDER SOAL ---
+            async function fetchQuestions() {
+                const pathSegments = window.location.pathname.split('/');
+                const idSertifikasi = pathSegments[pathSegments.length - 1];
+
                 try {
-                    // Panggil endpoint GET dengan prefix /api/v1/
-                    const response = await fetch(`/api/v1/asesmen-teori/${idSertifikasi}/soal`, {
-                        headers: {
-                            'Accept': 'application/json',
-                            // Jika pakai token auth (Sanctum), tambahkan header Authorization di sini
-                            // 'Authorization': 'Bearer ' + your_token
-                        }
-                    });
-
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+                    const response = await fetch(`/api/v1/asesmen-teori/${idSertifikasi}/soal`);
                     const result = await response.json();
 
                     if (result.success) {
                         questionsData = result.data;
+                        if (questionsData.length === 0) throw new Error("Soal belum tersedia.");
 
-                        // Jika data kosong (belum ada soal untuk skema ini)
-                        if (questionsData.length === 0) {
-                            showError(
-                                "Belum ada soal yang tersedia untuk skema ini atau Anda belum dijadwalkan.");
-                            return;
-                        }
-
-                        // Populate jawaban yang sudah tersimpan dari database (jika ada)
+                        // Load jawaban tersimpan
                         questionsData.forEach(q => {
-                            if (q.jawaban_tersimpan) {
-                                // KUNCI UTAMA: Gunakan id_lembar_jawab
-                                userAnswers[q.id_lembar_jawab] = q.jawaban_tersimpan;
-                            }
+                            if (q.jawaban_tersimpan) userAnswers[q.id_lembar_jawab] = q.jawaban_tersimpan;
                         });
 
-                        // Data siap, mulai inisialisasi tampilan
                         initApp();
-
+                        // CATATAN: startTimer() SUDAH DIPANGGIL DI LUAR BIAR CEPAT
                     } else {
-                        throw new Error(result.message || 'Gagal mengambil data soal.');
+                        throw new Error(result.message);
                     }
-
                 } catch (error) {
-                    console.error("Error fetching questions:", error);
-                    showError(`Terjadi kesalahan saat memuat soal: ${error.message}`);
+                    showError(error.message);
+                    dom.timerDisplay.innerText = "Error";
                 }
             }
 
-            // Helper untuk menampilkan error
-            function showError(message) {
-                loadingSkeleton.classList.add('hidden');
-                questionContainer.classList.add('hidden');
-                errorMessageEl.classList.remove('hidden');
-                errorTextEl.innerText = message;
-            }
-
-
-            // --- 3. FUNGSI INISIALISASI TAMPILAN ---
             function initApp() {
-                loadingSkeleton.classList.add('hidden');
-                errorMessageEl.classList.add('hidden');
-                questionContainer.classList.remove('hidden');
-
-                // Buat grid navigasi nomor di sidebar
-                renderNavigationGrid();
-                // Tampilkan soal pertama (index 0)
+                dom.loading.classList.add('hidden');
+                dom.container.classList.remove('hidden');
+                renderNavGrid();
                 loadQuestion(0);
             }
 
-
-            // --- 4. FUNGSI RENDER NAVIGASI NOMOR (SIDEBAR) ---
-            function renderNavigationGrid() {
-                navGridEl.innerHTML = '';
-                // Looping sebanyak data soal yang didapat
-                questionsData.forEach((question, index) => {
-                    const pageNumber = index + 1;
-                    const navBtn = document.createElement('button');
-                    navBtn.innerText = pageNumber;
-                    navBtn.className =
-                        `w-full aspect-square rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:border-blue-500 hover:text-blue-600 transition flex items-center justify-center nav-btn-item focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1`;
-                    navBtn.dataset.index = index; // Simpan index array sebagai data attribute
-
-                    navBtn.addEventListener('click', () => {
-                        loadQuestion(index);
-                    });
-
-                    navGridEl.appendChild(navBtn);
-                });
-                updateNavGridStatus();
-            }
-
-
-            // --- 5. FUNGSI UNTUK MEMUAT/MENAMPILKAN SATU SOAL ---
             function loadQuestion(index) {
                 if (index < 0 || index >= questionsData.length) return;
-
                 currentQuestionIndex = index;
-                const currentQuestionData = questionsData[index];
+                const data = questionsData[index];
 
-                // Update UI Teks Soal & Nomor
-                currentNumEl.innerText = index + 1;
-                // Gunakan nama kolom yang sesuai dari API (pertanyaan)
-                questionTextEl.innerHTML = currentQuestionData.pertanyaan;
+                dom.numLabel.innerText = index + 1;
+                dom.questionText.innerHTML = data.pertanyaan;
 
-                // Render Opsi Jawaban
-                optionsContainerEl.innerHTML = '';
-                currentQuestionData.opsi.forEach(opsi => {
-                    // Cek apakah opsi ini sudah dipilih sebelumnya (gunakan id_lembar_jawab sebagai kunci)
-                    const isChecked = userAnswers[currentQuestionData.id_lembar_jawab] === opsi.key;
+                // Render Opsi
+                dom.optionsBox.innerHTML = data.opsi.map(opsi => {
+                    const isChecked = userAnswers[data.id_lembar_jawab] === opsi.key;
+                    return `
+                        <label class="option-label flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition w-full bg-white shadow-sm relative overflow-hidden">
+                            <input type="radio" name="q_${data.id_lembar_jawab}" value="${opsi.key}" class="hidden peer" ${isChecked ? 'checked' : ''} onchange="saveAnswer('${data.id_lembar_jawab}', '${opsi.key}')">
+                            <div class="option-key w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 font-bold mr-4 uppercase">${opsi.key}</div>
+                            <span class="text-gray-800 font-medium">${opsi.text}</span>
+                        </label>`;
+                }).join('');
 
-                    const optionHtml = `
-                    <label class="option-label flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition w-full bg-white shadow-sm relative overflow-hidden">
-                        <input type="radio" 
-                                name="question_${currentQuestionData.id_lembar_jawab}" 
-                                value="${opsi.key}" 
-                                class="hidden peer"
-                                ${isChecked ? 'checked' : ''}
-                                onchange="saveAnswer(${currentQuestionData.id_lembar_jawab}, '${opsi.key}')">
-                        
-                        <div class="option-key w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 font-bold mr-4 transition uppercase">
-                            ${opsi.key}
-                        </div>
-                        <span class="text-gray-800 font-medium text-base">${opsi.text}</span>
-                    </label>
-                `;
-                    optionsContainerEl.insertAdjacentHTML('beforeend', optionHtml);
-                });
-
-                // Update status tombol Navigasi Bawah & Sidebar
-                updateNavigationButtons();
+                updateNavButtons();
                 updateNavGridStatus();
-                // Scroll ke atas container soal agar nyaman dibaca
-                questionContainer.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
             }
 
-            // --- 6. FUNGSI UPDATE TOMBOL NEXT/PREV/FINISH ---
-            function updateNavigationButtons() {
-                // Tombol Previous mati di soal pertama
-                btnPrev.disabled = currentQuestionIndex === 0;
-
-                // Cek apakah ini soal terakhir
-                const isLastQuestion = currentQuestionIndex === questionsData.length - 1;
-
-                if (isLastQuestion) {
-                    btnNext.classList.add('hidden');
-                    btnFinish.classList.remove('hidden');
-                } else {
-                    btnNext.classList.remove('hidden');
-                    btnFinish.classList.add('hidden');
-                }
-            }
-
-            // --- 7. FUNGSI UPDATE STATUS NAVIGASI GRID ---
-            function updateNavGridStatus() {
-                document.querySelectorAll('.nav-btn-item').forEach(btn => {
-                    const index = parseInt(btn.dataset.index);
-                    // Ambil ID lembar jawab dari data soal pada index tersebut
-                    const idLembarJawab = questionsData[index].id_lembar_jawab;
-
-                    // Reset class
-                    btn.classList.remove('nav-btn-active', 'nav-btn-answered');
-
-                    // Cek jika ini soal yang sedang dibuka
-                    if (index === currentQuestionIndex) {
-                        btn.classList.add('nav-btn-active');
-                    }
-                    // Cek jika soal ini sudah dijawab (cek di objek userAnswers pakai id_lembar_jawab)
-                    else if (userAnswers[idLembarJawab]) {
-                        btn.classList.add('nav-btn-answered');
-                    }
-                });
-            }
-
-
-            // --- 8. FUNGSI SIMPAN JAWABAN SEMENTARA DI JS ---
-            // Dipanggil saat radio button diklik (onchange) di HTML
-            window.saveAnswer = function(idLembarJawab, selectedOptionKey) {
-                // KUNCI UTAMA: ID LEMBAR JAWAB
-                userAnswers[idLembarJawab] = selectedOptionKey;
-                updateNavGridStatus(); // Update warna grid jadi hijau
+            // Global function untuk onchange
+            window.saveAnswer = function(idLembarJawab, val) {
+                userAnswers[idLembarJawab] = val;
+                updateNavGridStatus();
             };
 
+            function renderNavGrid() {
+                dom.navGrid.innerHTML = questionsData.map((_, i) => `
+                    <button class="nav-btn-item w-full aspect-square rounded-lg border border-gray-200 text-sm font-medium hover:border-blue-500 transition" onclick="jumpTo(${i})" data-index="${i}">${i + 1}</button>
+                `).join('');
+            }
+            
+            window.jumpTo = (idx) => loadQuestion(idx);
 
-            // --- 9. EVENT LISTENERS TOMBOL NAVIGASI ---
-            btnPrev.addEventListener('click', () => {
-                loadQuestion(currentQuestionIndex - 1);
-            });
+            function updateNavGridStatus() {
+                document.querySelectorAll('.nav-btn-item').forEach(btn => {
+                    const idx = parseInt(btn.dataset.index);
+                    if (questionsData[idx]) {
+                        const id = questionsData[idx].id_lembar_jawab;
+                        
+                        btn.className = `nav-btn-item w-full aspect-square rounded-lg border text-sm font-medium transition focus:outline-none `;
+                        
+                        if (idx === currentQuestionIndex) {
+                            btn.classList.add('nav-btn-active');
+                        } else if (userAnswers[id]) {
+                            btn.classList.add('nav-btn-answered');
+                        } else {
+                            btn.classList.add('border-gray-200', 'text-gray-600', 'hover:text-blue-600');
+                        }
+                    }
+                });
+            }
 
-            btnNext.addEventListener('click', () => {
-                loadQuestion(currentQuestionIndex + 1);
-            });
+            function updateNavButtons() {
+                dom.prev.disabled = currentQuestionIndex === 0;
+                if (currentQuestionIndex === questionsData.length - 1) {
+                    dom.next.classList.add('hidden');
+                    dom.finish.classList.remove('hidden');
+                } else {
+                    dom.next.classList.remove('hidden');
+                    dom.finish.classList.add('hidden');
+                }
+            }
 
-
-            // --- 10. EVENT LISTENER TOMBOL FINISH (SUBMIT KE API V1 & REDIRECT FIX) ---
-            btnFinish.addEventListener('click', async () => {
-                // Hitung berapa soal yang sudah dijawab
-                const totalAnswered = Object.keys(userAnswers).length;
-                const totalQuestions = questionsData.length;
-
-                // Validasi: Pastikan semua soal sudah dijawab
-                if (totalAnswered < totalQuestions) {
-                    alert(
-                        `Anda baru menjawab ${totalAnswered} dari ${totalQuestions} soal.\n\nMohon lengkapi semua jawaban sebelum mengumpulkan.`);
-                    return;
+            // --- 3. LOGIC SUBMIT (Manual & Auto) ---
+            async function submitAssessment(isAuto = false) {
+                if (!isAuto) {
+                    // Validasi Manual Submit
+                    const answered = Object.keys(userAnswers).length;
+                    const total = questionsData.length;
+                    if (answered < total) {
+                        alert(`Baru ${answered} dari ${total} soal terjawab.`);
+                        return;
+                    }
+                    if (!confirm("Yakin ingin mengumpulkan?")) return;
                 }
 
-                if (!confirm(
-                        "Apakah Anda yakin ingin mengumpulkan jawaban? Pastikan semua jawaban sudah benar."
-                        )) return;
+                // UI Loading State
+                if(!isAuto) {
+                    dom.finish.disabled = true;
+                    dom.finishText.innerText = 'Mengirim...';
+                }
 
-                // Siapkan payload data untuk dikirim ke API
-                const payload = Object.entries(userAnswers).map(([id, val]) => ({
-                    id_lembar_jawab: id,
-                    jawaban: val
-                }));
-
-                // Ambil ID Sertifikasi dari URL lagi
                 const pathSegments = window.location.pathname.split('/');
                 const idSertifikasi = pathSegments[pathSegments.length - 1];
-
-                // Update UI tombol saat loading
-                btnFinish.disabled = true;
-                btnFinishText.innerText = 'Mengirim...';
-                btnFinishIcon.classList.add('hidden');
+                const payload = Object.entries(userAnswers).map(([id, val]) => ({ id_lembar_jawab: id, jawaban: val }));
 
                 try {
-                    // Panggil endpoint POST dengan prefix /api/v1/
                     const response = await fetch(`/api/v1/asesmen-teori/${idSertifikasi}/submit`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
-                            // Tambahkan token auth jika perlu
-                        },
-                        body: JSON.stringify({
-                            jawaban: payload
-                        })
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': dom.csrf },
+                        body: JSON.stringify({ jawaban: payload })
                     });
 
                     const result = await response.json();
 
                     if (response.ok && result.success) {
-                        alert(result.message || "Jawaban berhasil dikumpulkan!");
-
-                        // --- [PERBAIKAN REDIRECT DI SINI] ---
-                        // Gunakan ID JADWAL yang dikirim balik oleh backend untuk redirect
+                        if(!isAuto) alert("Berhasil dikumpulkan!");
+                        
+                        // Redirect
                         if (result.redirect_id_jadwal) {
-                            window.location.href = '/tracker/' + result.redirect_id_jadwal;
+                            window.location.href = 'asesi/tracker/' + result.redirect_id_jadwal;
                         } else {
-                            // Fallback jika backend lupa mengirim ID (seharusnya tidak terjadi)
-                            console.warn("Backend tidak mengirim redirect_id_jadwal.");
-                            // window.location.reload(); // Opsi lain: reload halaman
+                            window.location.reload();
                         }
-
                     } else {
-                        throw new Error(result.message || 'Gagal menyimpan jawaban.');
+                        throw new Error(result.message);
                     }
-
                 } catch (error) {
-                    console.error("Error submitting answers:", error);
-                    alert(`Gagal mengumpulkan jawaban: ${error.message}. Silakan coba lagi.`);
-
-                    // Kembalikan UI tombol jika gagal
-                    btnFinish.disabled = false;
-                    btnFinishText.innerText = 'Selesai & Kumpulkan';
-                    btnFinishIcon.classList.remove('hidden');
+                    console.error(error);
+                    if(isAuto) {
+                        alert("Waktu habis, namun gagal mengirim otomatis. Silakan coba submit manual atau hubungi pengawas.");
+                        document.body.style.pointerEvents = 'auto'; // Buka kunci jika gagal
+                        dom.modalTimeout.classList.add('hidden');
+                    } else {
+                        alert("Gagal mengirim: " + error.message);
+                        dom.finish.disabled = false;
+                        dom.finishText.innerText = 'Selesai & Kumpulkan';
+                    }
                 }
-            });
+            }
 
+            // Event Listeners
+            dom.prev.addEventListener('click', () => loadQuestion(currentQuestionIndex - 1));
+            dom.next.addEventListener('click', () => loadQuestion(currentQuestionIndex + 1));
+            dom.finish.addEventListener('click', () => submitAssessment(false));
 
-            // --- MULAI APLIKASI ---
-            fetchQuestions(); // Panggil fungsi pengambil data pertama kali saat halaman dimuat
+            function showError(msg) {
+                dom.loading.classList.add('hidden');
+                dom.errorMsg.classList.remove('hidden');
+                dom.errorText.innerText = msg;
+            }
+
+            // --- MULAI APLIKASI (Urutan Penting!) ---
+            
+            // 1. Jalankan Timer LANGSUNG (Biar gak nunggu API)
+            startTimer(); 
+
+            // 2. Baru ambil soal dari API
+            fetchQuestions(); 
         });
     </script>
-
 </body>
-
 </html>

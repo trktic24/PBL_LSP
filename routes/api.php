@@ -145,19 +145,10 @@ Route::prefix('v1')->group(function () {
 
     // 6. Asesmen Teori (IA-05 & IA-06)
     // IA-05 Pilihan Ganda
-    Route::prefix('ia-05')->group(function () {
-            Route::get('/soal', [SoalIA05ApiController::class, 'index']);
-            Route::post('/submit', [SoalIA05ApiController::class, 'submitJawaban']);
-    });
-    // IA-05 Alternative Routes
     Route::get('/asesmen-teori/{id_sertifikasi}/soal', [AsesmenPilihanGandaController::class, 'getQuestions']);
     Route::post('/asesmen-teori/{id_sertifikasi}/submit', [AsesmenPilihanGandaController::class, 'submitAnswers']);
 
     // IA-06 Essai
-    Route::apiResource('soal-ia06', SoalIa06Controller::class); // Bank Soal
-    Route::post('soal-ia06/jawab', [SoalIa06Controller::class, 'storeJawabanAsesi']);
-    Route::get('soal-ia06/jawaban/{id_data_sertifikasi_asesi}', [SoalIa06Controller::class, 'getJawabanAsesi']);
-    // IA-06 Alternative Routes
     Route::get('/asesmen-esai/{id_sertifikasi}/soal', [AsesmenEsaiController::class, 'getQuestions']);
     Route::post('/asesmen-esai/{id_sertifikasi}/submit', [AsesmenEsaiController::class, 'submitAnswers']);
 
