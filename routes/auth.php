@@ -54,8 +54,6 @@ use App\Http\Controllers\Asesi\DashboardController as AsesiDashboardController;
 use App\Http\Controllers\Asesi\ProfileController as AsesiSelfProfileController;
 use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
 use App\Http\Controllers\Asesi\TrackerController;
-use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
-use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
@@ -67,12 +65,12 @@ use App\Http\Controllers\Asesi\asesmen\AsesmenEsaiController;
 use App\Http\Controllers\Asesi\umpan_balik\Ak03Controller;
 use App\Http\Controllers\Asesi\Ak04API\APIBandingController;
 use App\Http\Controllers\Asesi\pembayaran\PaymentController;
-use App\Http\Controllers\Asesi\Pdf\KartuPesertaPdfController;
 
 
 // PDF Controllers
-use App\Http\Controllers\Asesi\Apl01PdfController;
-use App\Http\Controllers\Asesi\Apl02\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
+use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\KartuPesertaPdfController;
 
 // ======================================================
 // 5. CONTROLLERS FORM (SHARED/SPECIFIC)
@@ -571,4 +569,3 @@ Route::middleware('auth')->group(function () {
         Auth::logout();
         return redirect('/login')->with('error', 'Role Anda tidak valid.');
     })->name('home.index');
-});
