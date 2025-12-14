@@ -39,6 +39,7 @@ use App\Http\Controllers\PortofolioController;
 use App\Http\Controllers\FrMapa01Controller; // MAPA-01
 use App\Http\Controllers\Mapa02Controller; // MAPA-02
 use App\Http\Controllers\FrAk07Controller; // AK-07
+use App\Http\Controllers\Ak02Controller; // AK-02
 use App\Http\Controllers\SoalController;
 
 // Instrumen Asesmen
@@ -51,6 +52,7 @@ use App\Http\Controllers\IA09Controller;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\Ia11Controller;
 
+use App\Http\Controllers\Validator\ValidatorTrackerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +113,7 @@ Route::post('/register-asesi', [RegisteredUserController::class, 'store'])->name
 // C. PROTECTED ROUTES (Middleware: auth)
 // ==========================================================
 Route::middleware('auth')->group(function () {
-    
+
     // User Profile
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -120,17 +122,25 @@ Route::middleware('auth')->group(function () {
     // ========================
     // 1. ASESMEN & FORMULIR
     // ========================
-    
+
     // APL-01 (Permohonan)
     Route::get('/APL_01_1', fn() => view('frontend/APL_01/APL_01_1'))->name('APL_01_1');
     Route::get('/APL_01_2', fn() => view('frontend/APL_01/APL_01_2'))->name('APL_01_2');
     Route::get('/APL_01_3', fn() => view('frontend/APL_01/APL_01_3'))->name('APL_01_3');
-    
+
     // APL-02 (Asesmen Mandiri)
     Route::get('/APL_02', fn() => view('frontend/APL_02/APL_02'))->name('APL_02');
+    // Buka routes/web.php
+// Pastikan kamu punya route seperti ini (sesuaikan controller-nya):
+
+Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
+    ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
 
     // FR-AK (Ceklis, Banding, dll)
     Route::get('/FR_AK_01', fn() => view('frontend/FR_AK_01'))->name('FR_AK_01');
+    // --- TAMBAHKAN BARIS INI (Fix Route AK01) ---
+    Route::post('/FR_AK_01/simpan/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
+        ->name('ak01.store');
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
     Route::get('/FR_AK_03', fn() => view('frontend/FR_AK_03'))->name('FR_AK_03');
     Route::get('/FR_AK_04', fn() => view('frontend/FR_AK_04'))->name('FR_AK_04');
@@ -144,8 +154,13 @@ Route::middleware('auth')->group(function () {
     // 2. INSTRUMEN ASESMEN (IA)
     // ========================
 
+    Route::middleware(['auth', 'role:superadmin'])->prefix('validator')->group(function () {
+        Route::get('/tracker/{id}', [ValidatorTrackerController::class, 'show'])->name('validator.tracker.show');
+        Route::post('/tracker/{id}/validasi', [ValidatorTrackerController::class, 'validasi'])->name('validator.tracker.validasi');
+    });
+
     // IA-01
-    Route::prefix('ia01/{id_sertifikasi}')->group(function() {
+    Route::prefix('ia01/{id_sertifikasi}')->group(function () {
         Route::get('/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
         Route::post('/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
         Route::get('/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
@@ -188,7 +203,7 @@ Route::middleware('auth')->group(function () {
     // ========================
     // 3. CETAK PDF
     // ========================
-    Route::prefix('cetak')->group(function() {
+    Route::prefix('cetak')->group(function () {
         Route::get('/mapa02/{id}', [Mapa02Controller::class, 'cetakPDF'])->name('mapa02.cetak_pdf');
         Route::get('/ia05/{id_asesi}', [IA05Controller::class, 'cetakPDF'])->name('ia05.cetak_pdf');
         Route::get('/ia10/{id_asesi}', [IA10Controller::class, 'cetakPDF'])->name('ia10.cetak_pdf');
@@ -199,6 +214,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/mapa01/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.cetak_pdf');
         Route::get('/apl02/{id}', [PraasesmenController::class, 'generatePDF'])->name('apl02.cetak_pdf');
         Route::get('/ak01/{id}', [PersetujuanKerahasiaanAPIController::class, 'cetakPDF'])->name('ak01.cetak_pdf');
+        Route::get('/ak02/{id}', [Ak02Controller::class, 'cetakPDF'])->name('ak02.cetak_pdf');
     });
     // Legacy mapping (just in case)
     Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF']);

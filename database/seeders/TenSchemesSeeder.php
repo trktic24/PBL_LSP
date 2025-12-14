@@ -64,7 +64,7 @@ class TenSchemesSeeder extends Seeder
                         'nomor_skema' => $nomorSkema,
                         'deskripsi_skema' => "Skema sertifikasi untuk $namaSkema",
                         'harga' => 500000 + ($index * 50000),
-                        'gambar' => 'default.jpg',
+                        'gambar' => 'skema' . fake()->numberBetween(1, 12) . '.jpg',
                         'SKKNI' => 'file.pdf',
                     ]
                 );

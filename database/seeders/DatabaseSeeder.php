@@ -101,7 +101,6 @@ class DatabaseSeeder extends Seeder
             // DummyIA05Seeder::class,
             LembarJawabIa05Seeder::class,
             
-            Ia06Seeder::class,
             SoalIa06MasterSeeder::class,
             // KunciIa06TransaksiSeeder::class,
 

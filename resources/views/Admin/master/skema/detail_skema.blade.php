@@ -69,8 +69,22 @@
             </div>
         @endif
 
+        @php
+            $bgImage = 'images/default.jpg';
+            if ($skema->gambar) {
+                if (str_starts_with($skema->gambar, 'images/')) {
+                     if (file_exists(public_path($skema->gambar))) {
+                        $bgImage = $skema->gambar;
+                    }
+                } elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
+                    $bgImage = 'images/skema/foto_skema/' . $skema->gambar;
+                } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
+                    $bgImage = 'images/skema/' . $skema->gambar;
+                }
+            }
+        @endphp
         <div class="relative rounded-xl overflow-hidden shadow-xl mb-8 border border-gray-200">
-            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset($skema->gambar ?? 'path/to/default/image.jpg') }}'); filter: brightness(0.3);"></div>
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset($bgImage) }}'); filter: brightness(0.3);"></div>
 
             <div class="relative p-6 md:p-10 text-white flex flex-col justify-end min-h-[300px]">
                 <div class="absolute top-4 right-4 text-base font-semibold px-3 py-1 rounded-full bg-blue-600/80 backdrop-blur-sm">
@@ -95,7 +109,7 @@
         <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8"
              x-data="formConfigHandler()">
 
-            <form id="formConfigUpdate" action="{{ route('admin.skema.detail.update_form', $skema->id_skema) }}" method="POST">
+            <form id="formConfigUpdate" action="{{ route('admin.edit_skema', $skema->id_skema) }}" method="POST">
                 @csrf
                 @method('PUT')
 

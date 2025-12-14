@@ -9,8 +9,18 @@ class SoalDanKunciSeeder extends Seeder
 {
     public function run(): void
     {
-        // DATA SOAL UMUM & KUNCI JAWABAN (Bank Soal IA-05)
-        // Nama key disesuaikan dengan nama kolom di migrasi terbaru.
+        // 1. AMBIL SEMUA DATA ID SKEMA
+        // Asumsi nama tabelnya 'skema' dan kolom primary key-nya 'id_skema'
+        // Ubah 'skema' jika nama tabelmu beda (misal: 'master_skema')
+        $listSkema = DB::table('skema')->pluck('id_skema');
+
+        // Cek validasi biar gak error kalau tabel skema kosong
+        if ($listSkema->isEmpty()) {
+            $this->command->warn('⚠️ Data Skema kosong! Harap jalankan SkemaSeeder terlebih dahulu.');
+            return;
+        }
+
+        // 2. DATA BANK SOAL (Tetap sama)
         $bankSoal = [
             [
                 'pertanyaan_ia05' => 'Apa kepanjangan dari HTML dalam dunia pemrograman web?',
@@ -66,37 +76,44 @@ class SoalDanKunciSeeder extends Seeder
                 'jawaban_benar_ia05' => 'd',
                 'penjelasan_ia05' => 'Kita sedang membangun aplikasi ini menggunakan framework Laravel.',
             ],
+            // ... (Tambahkan soal lain di sini jika ada) ...
         ];
 
-        // MULAI PROSES SEEDING
-        $this->command->info('Memulai proses seeding Bank Soal IA-05...');
+        $this->command->info('Memulai proses seeding soal ke ' . $listSkema->count() . ' skema...');
         $now = now();
 
-        DB::transaction(function () use ($bankSoal, $now) {
-            foreach ($bankSoal as $data) {
-                // 1. Insert SOAL MASTER dan dapatkan ID-nya
-                // Kita gunakan insertGetId agar langsung dapat ID soal yang baru dibuat.
-                $soalId = DB::table('soal_ia05')->insertGetId([
-                    'pertanyaan_ia05' => $data['pertanyaan_ia05'],
-                    'opsi_a_ia05' => $data['opsi_a_ia05'],
-                    'opsi_b_ia05' => $data['opsi_b_ia05'],
-                    'opsi_c_ia05' => $data['opsi_c_ia05'],
-                    'opsi_d_ia05' => $data['opsi_d_ia05'],
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ]);
+        DB::transaction(function () use ($bankSoal, $listSkema, $now) {
+            
+            // LOOPING 1: Iterasi setiap ID Skema
+            foreach ($listSkema as $idSkema) {
+                
+                // LOOPING 2: Masukkan Bank Soal ke Skema tersebut
+                foreach ($bankSoal as $data) {
+                    
+                    // Insert Soal dengan ID SKEMA
+                    $soalId = DB::table('soal_ia05')->insertGetId([
+                        'id_skema' => $idSkema, // <--- INI KUNCI UTAMANYA!
+                        'pertanyaan_ia05' => $data['pertanyaan_ia05'],
+                        'opsi_a_ia05' => $data['opsi_a_ia05'],
+                        'opsi_b_ia05' => $data['opsi_b_ia05'],
+                        'opsi_c_ia05' => $data['opsi_c_ia05'],
+                        'opsi_d_ia05' => $data['opsi_d_ia05'],
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]);
 
-                // 2. Insert KUNCI JAWABAN MASTER yang terhubung ke soal tadi
-                DB::table('kunci_jawaban_ia05')->insert([
-                    'id_soal_ia05' => $soalId, // HUBUNGKAN DI SINI
-                    'jawaban_benar_ia05' => $data['jawaban_benar_ia05'],
-                    'penjelasan_ia05' => $data['penjelasan_ia05'],
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ]);
+                    // Insert Kunci Jawaban (Menempel ke ID Soal yang barusan dibuat)
+                    DB::table('kunci_jawaban_ia05')->insert([
+                        'id_soal_ia05' => $soalId,
+                        'jawaban_benar_ia05' => $data['jawaban_benar_ia05'],
+                        'penjelasan_ia05' => $data['penjelasan_ia05'],
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]);
+                }
             }
         });
 
-        $this->command->info('Berhasil memasukkan ' . count($bankSoal) . ' pasang soal dan kunci jawaban IA-05!');
+        $this->command->info('✅ Berhasil menyebarkan soal ke seluruh Skema!');
     }
 }

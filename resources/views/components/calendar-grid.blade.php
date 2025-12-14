@@ -177,7 +177,7 @@
 
                 <div class="space-y-3">
                     <template x-for="event in selectedEvents" :key="event.id_jadwal">
-                        <a :href="'/master/schedule/attendance/' + event.id_jadwal" 
+                        <a :href="'/admin/master/jadwal/' + event.id_jadwal + '/daftar_hadir'"
                            class="block bg-white border border-gray-200 rounded-lg p-3 hover:border-blue-400 hover:shadow-md transition group">
                             
                             <div class="flex justify-between items-start mb-2">

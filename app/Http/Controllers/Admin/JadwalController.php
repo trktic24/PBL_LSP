@@ -83,8 +83,8 @@ class JadwalController extends Controller
             $query->join('asesor', 'jadwal.id_asesor', '=', 'asesor.id_asesor')
                   ->orderBy('asesor.nama_lengkap', $sortDirection);
         } elseif ($sortColumn == 'tuk_nama') {
-            $query->join('master_tuk', 'jadwal.id_tuk', '=', 'master_tuk.id_tuk')
-                  ->orderBy('master_tuk.nama_lokasi', $sortDirection);
+            $query->join('masterTuk', 'jadwal.id_tuk', '=', 'masterTuk.id_tuk')
+                  ->orderBy('masterTuk.nama_lokasi', $sortDirection);
         } else {
             $query->orderBy($sortColumn, $sortDirection); 
         }
@@ -137,7 +137,7 @@ class JadwalController extends Controller
         // [PERBAIKAN] Memisahkan $rules dan $messages
         $rules = [
             'id_jenis_tuk' => 'required|exists:jenis_tuk,id_jenis_tuk',
-            'id_tuk' => 'required|exists:master_tuk,id_tuk',
+            'id_tuk' => 'required|exists:masterTuk,id_tuk',
             'id_skema' => 'required|exists:skema,id_skema',
             'id_asesor' => 'required|exists:asesor,id_asesor',
             'kuota_maksimal' => 'required|integer|min:1',
@@ -195,7 +195,7 @@ class JadwalController extends Controller
         // [PERBAIKAN] Memisahkan $rules dan $messages
         $rules = [
             'id_jenis_tuk' => 'required|exists:jenis_tuk,id_jenis_tuk',
-            'id_tuk' => 'required|exists:master_tuk,id_tuk',
+            'id_tuk' => 'required|exists:masterTuk,id_tuk',
             'id_skema' => 'required|exists:skema,id_skema',
             'id_asesor' => 'required|exists:asesor,id_asesor',
             'kuota_maksimal' => 'required|integer|min:1',

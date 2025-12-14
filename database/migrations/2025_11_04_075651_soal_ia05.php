@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id('id_soal_ia05'); // PK
 
             
-            $table->foreignId('id_data_sertifikasi_asesi')
-                  ->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')
+            $table->foreignId('id_skema')
+                  ->constrained('skema', 'id_skema')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
 

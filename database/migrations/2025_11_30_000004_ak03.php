@@ -16,7 +16,8 @@ return new class extends Migration {
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
             // isi kolom tabel respon_hasil_ak03
-            $table->text('komentar_lainnya')->nullable()->comment('isi sesuai komentar jika ada');
+            $table->enum('hasil', ['ya', 'tidak']); // Sesuai radio button
+            $table->text('catatan')->nullable();
             $table->timestamps();
         });
     }
