@@ -1,11 +1,11 @@
-{{-- 
-    Nama File: resources/views/asesmen/fr-ak-06.blade.php 
+{{--
+    Nama File: resources/views/asesmen/fr-ak-06.blade.php
     Deskripsi: Form FR.AK.06 - Meninjau Proses Asesmen (Layout Wizard)
 --}}
 
-@extends('layouts.wizard')
+@extends('layouts.app-sidebar')
 
-@section('wizard-content')
+@section('content')
 
     {{-- Style khusus untuk tabel border hitam --}}
     <style>
@@ -26,15 +26,15 @@
     </div>
 
     {{-- FORM START --}}
-    <form action="{{ route('ak06.store') }}" method="POST">
+    <form action="{{ route('asesor.ak06.store', request()->route('id_jadwal')) }}" method="POST">
         @csrf
-        
+
         <div class="bg-white">
-            
+
             {{-- HEADER DOKUMEN --}}
             <div class="mb-10 text-center">
-                <div class="mb-4 text-gray-400 text-sm font-bold italic text-left">Logo BNSP</div> 
-                
+                <div class="mb-4 text-gray-400 text-sm font-bold italic text-left">Logo BNSP</div>
+
                 <h1 class="text-2xl font-bold text-black uppercase tracking-wide border-b-2 border-gray-100 pb-4 mb-2 inline-block">
                     FR.AK.06. MENINJAU PROSES ASESMEN
                 </h1>
@@ -87,7 +87,7 @@
                         <tr class="bg-gray-50">
                             <td colspan="5" class="p-2 font-bold">Prosedur asesmen:</td>
                         </tr>
-                        
+
                         {{-- Rencana Asesmen --}}
                         <tr>
                             <td class="p-2 pl-6">Rencana asesmen</td>
@@ -120,7 +120,7 @@
                             <td class="p-2 pl-6">Keputusan asesmen</td>
                             <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer"></td>
                             <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center bg-gray-200"></td> 
+                            <td class="p-2 text-center bg-gray-200"></td>
                             <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer"></td>
                         </tr>
 
@@ -129,7 +129,7 @@
                             <td class="p-2 pl-6">Umpan balik asesmen</td>
                             <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="validitas" class="w-5 h-5 cursor-pointer"></td>
                             <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="reliabel" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center bg-gray-200"></td> 
+                            <td class="p-2 text-center bg-gray-200"></td>
                             <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="adil" class="w-5 h-5 cursor-pointer"></td>
                         </tr>
 
@@ -163,7 +163,7 @@
                     <tbody>
                         <tr>
                             <td class="p-2 font-bold">Konsistensi keputusan asesmen</td>
-                            <td colspan="5" class="p-0 border-none bg-gray-100"></td> 
+                            <td colspan="5" class="p-0 border-none bg-gray-100"></td>
                         </tr>
                         <tr>
                             <td class="p-2 pl-6 align-top">
