@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Jadwal;
 use App\Models\DataSertifikasiAsesi;
-
+use App\Models\Asesor;
 
 class DaftarHadirController extends Controller
 {
@@ -16,7 +17,8 @@ class DaftarHadirController extends Controller
     public function daftarHadir(Request $request, $id_jadwal)
     {
         // 1. Ambil Data Jadwal Utama
-        $jadwal = Jadwal::with(['skema', 'tuk', 'asesor'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'asesor', 'masterTuk', 'jenisTuk', 'dataSertifikasiAsesi'])
+                    ->findOrFail($id_jadwal);
 
         // 2. Cek Otorisasi HANYA jika role asesor
         if (Auth::user()->role === 'asesor') {

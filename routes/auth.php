@@ -254,6 +254,14 @@ Route::middleware('auth')->group(function () {
             Route::delete('/unit/{id_unit}', 'destroyUnit')->name('skema.detail.destroy_unit');
         });
 
+        // Profile Asesi
+        Route::controller(AsesiProfileController::class)->prefix('asesi/{id_asesi}')->group(function () {
+            Route::get('/settings', 'settings')->name('asesi.profile.settings');
+            Route::get('/form', 'form')->name('asesi.profile.form');
+            Route::get('/bukti', 'bukti')->name('asesi.profile.bukti');
+            Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
+        });
+
         // Master Asesor
         Route::controller(AsesorController::class)->group(function () {
             Route::get('/master_asesor', 'index')->name('master_asesor');
@@ -295,6 +303,7 @@ Route::middleware('auth')->group(function () {
         // Daftar Hadir & Berita Acara
         Route::controller(DaftarHadirController::class)->prefix('master/jadwal/{id_jadwal}')->group(function () {
             Route::get('/daftar_hadir', 'daftarHadir')->name('schedule.attendance');
+            Route::delete('/attendance/delete/{id}', 'destroy')->name('schedule.attendance.destroy');
             Route::get('/daftar_hadir/pdf', 'exportPdfdaftarhadir')->name('attendance.pdf');
             Route::get('/berita-acara', 'beritaAcara')->name('berita_acara');
             Route::get('/berita-acara/pdf', 'exportPdfberitaAcara')->name('berita_acara.pdf');

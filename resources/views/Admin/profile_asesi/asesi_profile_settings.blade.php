@@ -22,7 +22,7 @@
   
   <div class="flex pt-0">
     
-    <x-sidebar_profile_asesi 
+    <x-sidebar.sidebar_profile_asesi 
         :asesi="$asesi" 
         :backUrl="route('admin.schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
     />

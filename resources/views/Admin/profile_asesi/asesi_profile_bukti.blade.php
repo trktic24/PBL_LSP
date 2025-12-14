@@ -26,7 +26,7 @@
 
   <x-navbar.navbar_admin/>
   <main class="flex min-h-[calc(100vh-80px)]">
-    <x-sidebar_profile_asesi 
+    <x-sidebar.sidebar_profile_asesi 
         :asesi="$asesi" 
         :backUrl="route('admin.schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
     />
