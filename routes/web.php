@@ -36,6 +36,9 @@ use App\Http\Controllers\Asesi\Apl02\PraasesmenController; // APL-02
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController; // AK-01
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\PortofolioController;
+use App\Http\Controllers\Asesi\asesmen\AssessmenFRIA04tController;
+use App\Http\Controllers\Asesi\asesmen\AssessmenFRIA09Controller;
+
 use App\Http\Controllers\FrMapa01Controller; // MAPA-01
 use App\Http\Controllers\Mapa02Controller; // MAPA-02
 use App\Http\Controllers\FrAk07Controller; // AK-07
@@ -185,6 +188,18 @@ Route::middleware('auth')->group(function () {
     // Portofolio
     Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
 
+    //FRIA04_Asesi
+    Route::get('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'showIA04AAsesi'])->name('fria04a.asesi.show');
+    Route::post('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'storeIA04AAsesi'])->name('fria04a.asesi.store');
+
+    //FRIA04_Asesor
+    Route::get('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
+    Route::post('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
+
+    //FRIA09
+    Route::get('/asesmen/ia09', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.ia09.view'); // <-- URL: /asesmen/ia09
+    Route::post('/asesmen/ia09/store', [AssessmenFRIA09Controller::class, 'store'])->name('asesmen.ia09.store');
+
     // ========================
     // 3. CETAK PDF
     // ========================
@@ -210,3 +225,4 @@ Route::middleware('auth')->group(function () {
 Route::get('/keep-alive', fn() => response()->json(['status' => 'session_refreshed']));
 Route::get('/api/search-countries', [CountryController::class, 'search'])->name('api.countries.search');
 Route::post('/api/jadwal/daftar', [TrackerController::class, 'daftarJadwal'])->name('api.jadwal.daftar');
+Route::get('/tracking', [TrackerController::class, 'index'])->name('tracker');
