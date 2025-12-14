@@ -279,7 +279,10 @@
 
                                 @if ($level >= $LVL_PRA_ASESMEN)
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
-                                    <button class="{{ $btnBlue }}">Unduh Dokumen</button>
+                                    <a href="{{ route('asesi.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}" 
+                                       class="{{ $btnBlue }}" 
+                                       target="_blank"> Unduh Dokumen
+                                    </a>
                                 @elseif ($level == $LVL_LUNAS && $unlockAPL02)
                                     <p class="{{ $statusClassProses }}">Siap Diisi</p>
                                 @elseif ($level == $LVL_LUNAS)

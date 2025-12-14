@@ -215,4 +215,20 @@ class TrackerController extends Controller
             'asesi'       => $sertifikasi->asesi
         ]);
     }
+
+    public function persetujuanSelesai($id_sertifikasi)
+    {
+        $user = Auth::user();
+
+        // Ambil sertifikasi spesifik
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
+            ->where('id_asesi', $user->asesi->id_asesi)
+            ->findOrFail($id_sertifikasi);
+
+        // Pakai view universal yang tadi kita buat
+        return view('asesi.tunggu_or_berhasil.berhasil', [
+            'sertifikasi' => $sertifikasi,
+            'asesi'       => $sertifikasi->asesi
+        ]);
+    }
 }

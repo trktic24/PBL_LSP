@@ -14,6 +14,17 @@ class PersetujuanKerahasiaanAPIController extends Controller
     // ... (Method show() buat view biarin aja) ...
     public function show($id_sertifikasi)
     {
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
+
+        // --- SECURITY CHECK (Modifikasi Kak Gem) ---
+        // Jika status sertifikasi sudah tahap persetujuan atau lebih lanjut
+        // Sesuaikan string status ini dengan enum di database kamu
+        if ($sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' || 
+            $sertifikasi->progres_level >= 30) { // Asumsi level 30 itu LVL_SETUJU
+            
+            return redirect()->route('asesi.persetujuan.selesai', ['id_sertifikasi' => $id_sertifikasi]);
+        }
+        
         try {
             $sertifikasi = DataSertifikasiAsesi::with('asesi')->findOrFail($id_sertifikasi);
             return view('asesi.persetujuan_assesmen_dan_kerahasiaan.fr_ak01', [
