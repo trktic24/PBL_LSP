@@ -63,12 +63,21 @@
         <main class="flex-1 flex justify-center items-start pt-10 pb-12 px-4 sm:px-6 lg:px-8">
             <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-6 sm:p-10">
 
-                <div class="grid grid-cols-3 items-center mb-8 sm:mb-10">
-                    <a href="{{ route('admin.master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium justify-self-start">
-                        <i class="fas fa-arrow-left mr-2"></i> Back
-                    </a>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center">TAMBAH SCHEDULE</h1>
-                    <div class="justify-self-end"></div>
+                <div class="relative flex flex-col sm:flex-row items-center justify-center mb-8 sm:mb-10">
+    
+                    {{-- Tombol Back --}}
+                    {{-- Mobile: Lebar full, margin bawah. Desktop: Posisi absolute di kiri, vertikal tengah --}}
+                    <div class="w-full sm:w-auto sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 mb-4 sm:mb-0">
+                        <a href="{{ route('admin.master_schedule') }}" class="inline-flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i> Back
+                        </a>
+                    </div>
+                    
+                    {{-- Judul --}}
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+                        TAMBAH SCHEDULE
+                    </h1>
+
                 </div>
 
                 @if ($errors->any())
@@ -169,7 +178,8 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- [REVISI] Mengubah grid menjadi 3 kolom untuk Waktu Selesai --}}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label for="tanggal_pelaksanaan" class="block text-sm font-medium text-gray-700 mb-2">Tgl Pelaksanaan <span class="text-red-500">*</span></label>
                             <input type="date" id="tanggal_pelaksanaan" name="tanggal_pelaksanaan" value="{{ old('tanggal_pelaksanaan') }}" required class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
@@ -177,6 +187,11 @@
                         <div>
                             <label for="waktu_mulai" class="block text-sm font-medium text-gray-700 mb-2">Waktu Mulai <span class="text-red-500">*</span></label>
                             <input type="time" id="waktu_mulai" name="waktu_mulai" value="{{ old('waktu_mulai') }}" required class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        {{-- [INPUT BARU] Waktu Selesai --}}
+                        <div>
+                            <label for="waktu_selesai" class="block text-sm font-medium text-gray-700 mb-2">Waktu Selesai <span class="text-red-500">*</span></label>
+                            <input type="time" id="waktu_selesai" name="waktu_selesai" value="{{ old('waktu_selesai') }}" required class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
                     </div>
 

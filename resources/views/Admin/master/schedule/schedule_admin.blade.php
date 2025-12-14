@@ -40,7 +40,7 @@
 <body class="bg-gray-50 text-gray-800">
     <div class="min-h-screen flex flex-col">
 
-        <x-navbar.navbar_admin/>
+        <x-navbar.navbar_admin />
 
         <main class="p-6" x-data="calendarApp()">
 
@@ -297,9 +297,11 @@
                                 <tr class="hover:bg-gray-50 transition divide-x divide-gray-200">
                                     <td class="px-4 py-4 text-center font-medium text-gray-500" x-text="jadwal.id_jadwal"></td>
                                     <td class="px-4 py-4 font-bold text-gray-700 whitespace-nowrap" x-text="formatFullDate(jadwal.tanggal_pelaksanaan)"></td>
-                                    <td class="px-4 py-4 font-medium" x-text="formatTime(jadwal.waktu_mulai)"></td>
+                                    <td class="px-4 py-4 font-medium whitespace-nowrap">
+                                        <span x-text="formatTime(jadwal.waktu_mulai)"></span> - <span x-text="formatTime(jadwal.waktu_selesai)"></span>
+                                    </td>
                                     <td class="px-6 py-4 font-medium text-gray-900" x-text="jadwal.skema?.nama_skema || '-'"></td>
-                                    <td class="px-6 py-4" x-text="jadwal.tuk?.nama_lokasi || '-'"></td>
+                                    <td class="px-6 py-4" x-text="jadwal.master_tuk?.nama_lokasi || '-'"></td>
                                     <td class="px-6 py-4" x-text="jadwal.jenis_tuk?.jenis_tuk || '-'"></td>
                                     <td class="px-6 py-4" x-text="jadwal.asesor?.nama_lengkap || '-'"></td>
                                     <td class="px-4 py-4 text-center font-bold" x-text="jadwal.sesi"></td>
@@ -318,7 +320,7 @@
                                     </td>
                                     <td class="px-4 py-4 text-center">
                                         <a :href="'/admin/master/jadwal/' + jadwal.id_jadwal + '/daftar_hadir'"
-                                        class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition">
+                                            class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition">
                                             <i class="fas fa-eye"></i> <span>Detail</span>
                                         </a>
                                     </td>
@@ -370,7 +372,7 @@
                 month: dayjs().month(),
                 year: dayjs().year(),
                 viewMode: 'month',
-                selectedWeek: 1, // Default
+                selectedWeek: 1,
 
                 // --- 2. MODAL STATE ---
                 isModalOpen: false,
@@ -391,30 +393,25 @@
                 // --- 5. DATA SUMBER ---
                 allSchedules: @json($schedules),
 
-                // =====================================================================
-                // LOGIKA MINGGU OTOMATIS (AUTO DETECT WEEK)
-                // =====================================================================
+                formatTime(datetime) {
+                    if (!datetime) return '-';
+                    let parts = datetime.split(/[ T]/);
+                    let timePart = parts.length > 1 ? parts[1] : datetime;
+                    return timePart.substring(0, 5);
+                },
 
-                // [PERBAIKAN UTAMA] Hitung minggu berdasarkan posisi grid visual
                 setCurrentWeek() {
                     const today = dayjs();
-
-                    // Cek apakah Kalender sedang membuka Bulan & Tahun saat ini (Hari Ini)
                     if (today.month() === this.month && today.year() === this.year) {
-                        const date = today.date(); // Tanggal hari ini (misal: 25)
+                        const date = today.date();
                         const startOfMonth = dayjs().year(this.year).month(this.month).startOf('month');
-                        const firstDayIndex = startOfMonth.day(); // Hari apa tgl 1 itu (0=Minggu, 6=Sabtu)
-
-                        // Rumus: (Tanggal + Index Hari Pertama) / 7, dibulatkan ke atas
-                        // Ini mencerminkan posisi baris di kalender visual
+                        const firstDayIndex = startOfMonth.day();
                         this.selectedWeek = Math.ceil((date + firstDayIndex) / 7);
                     } else {
-                        // Jika membuka bulan lain (masa depan/lalu), default ke Minggu 1
                         this.selectedWeek = 1;
                     }
                 },
 
-                // Hitung total minggu dalam bulan ini (untuk Loop Dropdown)
                 get totalWeeksInMonth() {
                     const firstDayOfMonth = dayjs().year(this.year).month(this.month).startOf('month');
                     const lastDayOfMonth = dayjs().year(this.year).month(this.month).endOf('month');
@@ -422,13 +419,8 @@
                     return Math.ceil(used / 7);
                 },
 
-                // =====================================================================
-                // NAVIGASI KALENDER (UPDATED)
-                // =====================================================================
-
                 toggleView(mode) {
                     this.viewMode = mode;
-                    // Saat pindah ke mode week, hitung ulang minggu saat ini
                     if (mode === 'week') {
                         this.setCurrentWeek();
                     }
@@ -441,7 +433,7 @@
                     } else {
                         this.month++;
                     }
-                    this.setCurrentWeek(); // [UPDATE] Cek ulang apakah bulan baru ini bulan "hari ini"
+                    this.setCurrentWeek();
                 },
 
                 prevMonth() {
@@ -451,33 +443,21 @@
                     } else {
                         this.month--;
                     }
-                    this.setCurrentWeek(); // [UPDATE] Cek ulang apakah bulan baru ini bulan "hari ini"
+                    this.setCurrentWeek();
                 },
 
-                // =====================================================================
-                // INITIALISASI
-                // =====================================================================
-
                 init() {
-                    this.setCurrentWeek(); // [PENTING] Jalankan saat load pertama kali
-
+                    this.setCurrentWeek();
                     this.$watch('pageSize', () => this.currentPage = 1);
                     this.$watch('month', () => this.currentPage = 1);
                     this.$watch('search', () => this.currentPage = 1);
                     this.$watch('filterStatus', () => this.currentPage = 1);
                     this.$watch('filterJenisTuk', () => this.currentPage = 1);
                     this.$watch('isModalOpen', (value) => {
-                        if (value) {
-                            document.body.classList.add('overflow-hidden');
-                        } else {
-                            document.body.classList.remove('overflow-hidden');
-                        }
+                        if (value) document.body.classList.add('overflow-hidden');
+                        else document.body.classList.remove('overflow-hidden');
                     });
                 },
-
-                // =====================================================================
-                // SISA LOGIKA (FILTER, SORT, RENDER GRID) - TIDAK BERUBAH
-                // =====================================================================
 
                 get monthName() {
                     return dayjs().month(this.month).format('MMMM');
@@ -588,9 +568,6 @@
                 formatFullDate(dateStr) {
                     return dayjs(dateStr).format('DD MMMM YYYY');
                 },
-                formatTime(timeStr) {
-                    return timeStr ? timeStr.substring(0, 5) : '-';
-                },
 
                 weekDays() {
                     const startOfMonth = dayjs().year(this.year).month(this.month).startOf('month');
@@ -600,7 +577,7 @@
                     const days = [];
                     for (let i = 0; i < 7; i++) {
                         const day = startOfSelectedWeek.add(i, 'day');
-                        const events = this.getEventsForFullDate(day); // Pakai helper khusus week view
+                        const events = this.getEventsForFullDate(day);
                         days.push({
                             label: day.format('ddd'),
                             date: day.format('D'),
@@ -611,6 +588,8 @@
                     }
                     return days;
                 },
+
+                // --- [INI FUNGSI YANG HILANG TADI] ---
                 get miniDays() {
                     const start = dayjs().year(this.year).month(this.month).startOf('month').day();
                     const daysInMonth = dayjs().year(this.year).month(this.month).daysInMonth();
@@ -629,22 +608,20 @@
                     }
                     return days;
                 },
+                // -------------------------------------
 
                 get bigDays() {
                     const startOfMonth = dayjs().year(this.year).month(this.month).startOf('month');
-                    const startOfGrid = startOfMonth.startOf('week'); // Hari Minggu sebelum tanggal 1 (atau tgl 1 itu sendiri)
+                    const startOfGrid = startOfMonth.startOf('week');
                     const days = [];
 
-                    // Kita buat grid fix 6 minggu (42 hari) agar kalender stabil tidak naik turun
                     for (let i = 0; i < 42; i++) {
                         const day = startOfGrid.add(i, 'day');
                         const isCurrentMonth = day.month() === this.month;
-
-                        // Ambil event
                         const events = this.getEventsForFullDate(day);
 
                         days.push({
-                            date: day.format('D'), // [FIX] Selalu isi angka tanggal (misal 30, 31, 1, 2...)
+                            date: day.format('D'),
                             isCurrentMonth: isCurrentMonth,
                             isToday: day.isSame(dayjs(), 'day'),
                             events: events
@@ -653,23 +630,6 @@
 
                     return days;
                 },
-
-                nextMonth() {
-                    if (this.month === 11) {
-                        this.month = 0;
-                        this.year++;
-                    } else {
-                        this.month++;
-                    }
-                },
-                prevMonth() {
-                    if (this.month === 0) {
-                        this.month = 11;
-                        this.year--;
-                    } else {
-                        this.month--;
-                    }
-                }
             };
         }
     </script>

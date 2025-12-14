@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edit Schedule | LSP Polines</title> <script src="https://cdn.tailwindcss.com"></script>
+    <title>Edit Schedule | LSP Polines</title> 
+    
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,34 +24,35 @@
             @apply shadow-lg;
         }
         
-        /* [PERUBAHAN] CSS Tom Select disamakan dengan input lain */
+        /* CSS Tom Select disamakan dengan input lain */
         .ts-control {
             width: 100%;
-            padding: 0.75rem 1rem; /* Menyamai class 'p-3' */
-            font-size: 0.875rem; /* Menyamai class 'text-sm' */
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
             line-height: 1.25rem;
-            border-radius: 0.5rem; /* rounded-lg */
+            border-radius: 0.5rem;
             border-width: 1px;
-            border-color: #D1D5DB; /* border-gray-300 */
-            background-color: #FFFFFF; /* bg-white */
+            border-color: #D1D5DB;
+            background-color: #FFFFFF;
         }
         .ts-wrapper.plugin-dropdown_input.focus .ts-control {
-            border-color: #2563EB; /* focus:ring-blue-500 */
-            box-shadow: 0 0 0 2px #BFDBFE; /* focus:ring-2 */
+            border-color: #2563EB;
+            box-shadow: 0 0 0 2px #BFDBFE;
             outline: none;
         }
         .ts-dropdown {
             border-radius: 0.5rem;
             border-width: 1px;
             border-color: #D1D5DB;
+            z-index: 50;
         }
         .ts-dropdown .option {
             padding: 0.5rem 0.75rem;
-            font-size: 0.875rem; /* text-sm */
+            font-size: 0.875rem;
         }
         .ts-dropdown .option.active {
-            background-color: #EFF6FF; /* bg-blue-50 */
-            color: #1D4ED8; /* text-blue-700 */
+            background-color: #EFF6FF;
+            color: #1D4ED8;
         }
     </style>
 </head>
@@ -61,12 +64,14 @@
         <main class="flex-1 flex justify-center items-start pt-10 pb-12 px-4 sm:px-6 lg:px-8">
             <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-6 sm:p-10">
 
-                <div class="grid grid-cols-3 items-center mb-8 sm:mb-10">
-                    <a href="{{ route('admin.master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium justify-self-start">
-                        <i class="fas fa-arrow-left mr-2"></i> Back
-                    </a>
+                {{-- HEADER YANG LEBIH RAPI & RESPONSIF --}}
+                <div class="relative flex flex-col sm:flex-row items-center justify-center mb-8 sm:mb-10">
+                    <div class="w-full sm:w-auto sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 mb-4 sm:mb-0">
+                        <a href="{{ route('admin.master_schedule') }}" class="inline-flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i> Back
+                        </a>
+                    </div>
                     <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 text-center">EDIT SCHEDULE</h1>
-                    <div class="justify-self-end"></div>
                 </div>
 
                 @if ($errors->any())
@@ -84,6 +89,7 @@
                     @csrf
                     @method('PATCH')
 
+                    {{-- ROW 1: Skema & Asesor --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="id_skema" class="block text-sm font-medium text-gray-700 mb-2">Nama Skema <span class="text-red-500">*</span></label>
@@ -115,6 +121,7 @@
                         </div>
                     </div>
 
+                    {{-- ROW 2: TUK & Jenis TUK --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="id_tuk" class="block text-sm font-medium text-gray-700 mb-2">Tempat Uji Kompetensi (TUK) <span class="text-red-500">*</span></label>
@@ -146,6 +153,7 @@
                         </div>
                     </div>
 
+                    {{-- ROW 3: Kuota & Sesi --}}
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label for="kuota_maksimal" class="block text-sm font-medium text-gray-700 mb-2">Kuota Maksimal <span class="text-red-500">*</span></label>
@@ -161,6 +169,7 @@
                         </div>
                     </div>
 
+                    {{-- ROW 4: Tanggal Pendaftaran --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="tanggal_mulai" class="block text-sm font-medium text-gray-700 mb-2">Tgl Mulai Pendaftaran <span class="text-red-500">*</span></label>
@@ -176,7 +185,9 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- ROW 5: Pelaksanaan (Dipecah jadi 3 Kolom) --}}
+                    {{-- [REVISI] Menambahkan Waktu Selesai --}}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label for="tanggal_pelaksanaan" class="block text-sm font-medium text-gray-700 mb-2">Tgl Pelaksanaan <span class="text-red-500">*</span></label>
                             <input type="date" id="tanggal_pelaksanaan" name="tanggal_pelaksanaan" 
@@ -189,8 +200,16 @@
                                    value="{{ old('waktu_mulai', $jadwal->waktu_mulai ? $jadwal->waktu_mulai->format('H:i') : '') }}" 
                                    required class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
+                        {{-- [INPUT BARU] Waktu Selesai --}}
+                        <div>
+                            <label for="waktu_selesai" class="block text-sm font-medium text-gray-700 mb-2">Waktu Selesai <span class="text-red-500">*</span></label>
+                            <input type="time" id="waktu_selesai" name="waktu_selesai" 
+                                   value="{{ old('waktu_selesai', $jadwal->waktu_selesai ? $jadwal->waktu_selesai->format('H:i') : '') }}" 
+                                   required class="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
                     </div>
 
+                    {{-- ROW 6: Status Jadwal --}}
                     <div>
                         <label for="Status_jadwal" class="block text-sm font-medium text-gray-700 mb-2">Status Jadwal <span class="text-red-500">*</span></label>
                         <div class="relative w-full">
@@ -218,7 +237,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             var tomSelectSettings = {
                 create: false,
-                sortField: { field: 'text', direction: 'asc' }
+                sortField: { field: 'text', direction: 'asc' },
+                plugins: ['dropdown_input'], // Tambahan fitur search
             };
             
             new TomSelect('#id_skema', tomSelectSettings);
@@ -226,7 +246,7 @@
             new TomSelect('#id_tuk', tomSelectSettings);
             new TomSelect('#id_jenis_tuk', tomSelectSettings);
             
-            // Status tidak perlu di-sort, jadi pengaturannya beda
+            // Status tidak perlu di-sort dan search
             new TomSelect('#Status_jadwal', { create: false });
         });
     </script>
