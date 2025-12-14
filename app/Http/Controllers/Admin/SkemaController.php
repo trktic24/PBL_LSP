@@ -31,7 +31,7 @@ class SkemaController extends Controller
             $query->where(function($q) use ($searchTerm) {
                 $q->where('nama_skema', 'like', '%' . $searchTerm . '%')
                 ->orWhere('nomor_skema', 'like', '%' . $searchTerm . '%')
-                // Pastikan searching relasi juga menggunakan 'categorie_id' jika itu nama kolom Anda
+                // Pastikan searching relasi juga menggunakan 'category_id' jika itu nama kolom Anda
                 ->orWhereHas('category', function($cq) use ($searchTerm) {
                     $cq->where('nama_kategori', 'like', '%' . $searchTerm . '%');
                 });
@@ -41,7 +41,7 @@ class SkemaController extends Controller
         // 2. QUERY UTAMA:
         // Gunakan LEFT JOIN hanya jika sorting dilakukan berdasarkan nama kategori.
         if ($sortColumn == 'category_nama') {
-            $query->leftJoin('categories', 'skema.categorie_id', '=', 'categories.id')
+            $query->leftJoin('categories', 'skema.category_id', '=', 'categories.id')
                 // PENTING: Pilih skema.* dan tambahkan kolom kategori untuk sorting.
                 // Karena kita menggunakan eager loading 'with('category')' di atas, 
                 // kolom skema.* yang di-select ini tidak akan merusak relasi.
@@ -87,14 +87,14 @@ class SkemaController extends Controller
         $validatedData = $request->validate([
             'nomor_skema' => 'required|string|unique:skema,nomor_skema',
             'nama_skema' => 'required|string|max:255',
-            'categorie_id' => 'required|exists:categories,id',
+            'category_id' => 'required|exists:categories,id',
             'harga' => 'required|numeric|min:0',
             'deskripsi_skema' => 'required|string',
             'SKKNI' => 'required|file|mimes:pdf|max:5120', 
             'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048', 
         ], [
             'nomor_skema.unique' => 'Nomor skema ini sudah terdaftar.',
-            'categorie_id.required' => 'Kategori wajib dipilih.',
+            'category_id.required' => 'Kategori wajib dipilih.',
         ]);
 
         // Upload File SKKNI
@@ -128,7 +128,7 @@ class SkemaController extends Controller
     {
         $skema = Skema::findOrFail($id);
         $categories = Category::all();
-        $skema->categorie_id = (string) $skema->categorie_id;
+        $skema->category_id = (string) $skema->category_id;
         return view('admin.master.skema.edit_skema', compact('skema', 'categories'));
     }
 
@@ -142,7 +142,7 @@ class SkemaController extends Controller
         $validatedData = $request->validate([
             'nomor_skema' => ['required', 'string', Rule::unique('skema')->ignore($skema->id_skema, 'id_skema')],
             'nama_skema' => 'required|string|max:255',
-            'categorie_id' => 'required|exists:categories,id',
+            'category_id' => 'required|exists:categories,id',
             'harga' => 'required|numeric|min:0',
             'deskripsi_skema' => 'required|string',
             'SKKNI' => 'nullable|file|mimes:pdf|max:5120', // Nullable saat update

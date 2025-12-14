@@ -88,10 +88,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
-                            <select id="categorie_id" name="categorie_id" required>
+                            <select id="category_id" name="category_id" required>
                                 <option value="">Pilih Kategori...</option>
                                 @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}" {{ old('categorie_id') == $cat->id ? 'selected' : '' }}>{{ $cat->nama_kategori }}</option>
+                                    <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->nama_kategori }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -151,7 +151,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <script>
-        new TomSelect('#categorie_id', { create: false, sortField: { field: 'text', direction: 'asc' } });
+        new TomSelect('#category_id', { create: false, sortField: { field: 'text', direction: 'asc' } });
     </script>
 </body>
 </html>
