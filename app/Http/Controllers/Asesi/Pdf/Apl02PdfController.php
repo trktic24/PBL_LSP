@@ -38,6 +38,6 @@ public function generateApl02($id_sertifikasi)
     $pdf->setPaper('a4', 'portrait');
 
     // return $pdf->stream('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
-    // return $pdf->download('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    return $pdf->download('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
 }
 }

@@ -103,4 +103,13 @@ class Jadwal extends Model
         return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor'
         );
     }
+    
+
+    
+    public function tuk(): BelongsTo
+    {
+        // Alias ke MasterTUK agar cocok dengan panggilan controller 'tuk'
+        return $this->belongsTo(MasterTUK::class, 'id_tuk', 'id_tuk');
+    }
+
 }
