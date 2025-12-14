@@ -156,7 +156,7 @@ class IA05Controller extends Controller
         }
 
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
-        $kunci_jawaban = KunciJawabanIA05::pluck('teks_kunci_jawaban_ia05', 'id_soal_ia05');
+        $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
         $skema_info = Skema::first();
 
         return view('frontend.fr_IA_05_B', [
@@ -214,7 +214,7 @@ class IA05Controller extends Controller
         $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
-        $kunci_jawaban = KunciJawabanIA05::pluck('teks_kunci_jawaban_ia05', 'id_soal_ia05');
+        $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
 
         $lembar_jawab = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
             ->get()
@@ -263,7 +263,7 @@ class IA05Controller extends Controller
 
             if ($request->has('umpan_balik')) {
                 LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                    ->update(['umpan_balik_ia05' => $request->umpan_balik]);
+                    ->update(['pencapaian_ia05' => $request->umpan_balik]);
             }
 
             DB::commit();
@@ -282,7 +282,7 @@ class IA05Controller extends Controller
         // 1. Ambil Data Asesi Lengkap
         $asesi = DataSertifikasiAsesi::with([
             'asesi',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'jadwal.skema.asesor',
         ])->findOrFail($id_asesi);
 

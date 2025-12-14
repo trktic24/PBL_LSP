@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar-asesi')
+@extends('layouts.app-sidebar')
 
 @section('content')
     <div class="p-4 sm:p-6 md:p-8">

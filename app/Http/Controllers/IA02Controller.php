@@ -22,7 +22,7 @@ class IA02Controller extends Controller
         // Menggunakan relasi nested yang lengkap agar data tidak null
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi.user',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'jadwal.skema.asesor',
             // Kita coba panggil unitKompetensi via skema (sesuai perbaikan model sebelumnya)
             // Jika masih error, codingan di bawah akan menghandle manualnya.
@@ -119,7 +119,7 @@ class IA02Controller extends Controller
         // 1. Ambil Data Sertifikasi Lengkap
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'jadwal.skema.asesor',
             // Pastikan relasi ini sesuai dengan perbaikan Model Skema & KelompokPekerjaan
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
