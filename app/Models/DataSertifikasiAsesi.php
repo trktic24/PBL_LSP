@@ -186,7 +186,7 @@ class DataSertifikasiAsesi extends Model
     public function lembarJawabIa05(): HasMany
     {
         return $this->hasMany(LembarJawabIA05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
-    }
+    }    
 
     /**
      * ACCESSOR: Menghitung Level Status untuk Tracker
