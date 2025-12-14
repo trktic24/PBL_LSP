@@ -59,15 +59,15 @@ class JadwalTukAPIController extends Controller
                     'jenis_tuk' => $jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu',
 
                     'lokasi'      => $jadwal->masterTuk->nama_lokasi ?? '-',
-                    'alamat'      => $jadwal->tuk->alamat_tuk ?? '-',
-                    'kontak'      => $jadwal->tuk->kontak_tuk ?? '-',
+                    'alamat'      => $jadwal->masterTuk->alamat_tuk ?? '-',
+                    'kontak'      => $jadwal->masterTuk->kontak_tuk ?? '-',
                     
                     // [PERBAIKAN] Ambil langsung dari kolom 'foto_tuk' di database
                     // Asumsi di database isinya: "gedung1.jpg"
                     // Outputnya jadi: "images/gedung1.jpg"
-                    'foto_gedung' => 'images/' . ($jadwal->tuk->foto_tuk ?? 'default.jpg'), 
+                    'foto_gedung' => 'images/' . ($jadwal->masterTuk->foto_tuk ?? 'default.jpg'), 
 
-                    'link_gmap'   => $jadwal->tuk->link_gmap ?? null,
+                    'link_gmap'   => $jadwal->masterTuk->link_gmap ?? null,
 
                     'tanggal' => $jadwal->tanggal_pelaksanaan, 
                     'waktu'   => $jadwal->waktu_mulai, 

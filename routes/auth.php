@@ -30,7 +30,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DaftarHadirController;
 use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\MitraController;
-use App\Http\Controllers\Admin\AsesorProfileController; 
+use App\Http\Controllers\Admin\AsesorProfileController;
 
 // --- Controllers Asesor (Role Asesor) ---
 use App\Http\Controllers\Asesor\DashboardController as AsesorDashboardController;
@@ -67,7 +67,6 @@ use App\Http\Controllers\Asesi\IA11\IA11Controller;
 use App\Http\Controllers\Asesi\IA02\Ia02AsesiController;
 use App\Http\Controllers\Asesi\IA07\Ia07AsesiController;
 
-
 // ======================================================
 // --- RUTE GUEST (YANG BELUM LOGIN) ---
 // ======================================================
@@ -98,7 +97,6 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->
 // --- RUTE YANG WAJIB LOGIN ('auth') ---
 // ======================================================
 Route::middleware('auth')->group(function () {
-    
     // 1. GENERAL AUTH ROUTES
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
@@ -163,183 +161,216 @@ Route::middleware('auth')->group(function () {
     // ======================================================
     // 3. ROLE: ADMIN
     // ======================================================
-    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['role:admin'])
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
+            // Dashboard & Notifikasi
+            Route::controller(AdminDashboardController::class)->group(function () {
+                Route::get('/dashboard', 'index')->name('dashboard');
+            });
+            Route::get('/notifications', function () {
+                return view('admin.notifications.notifications_admin');
+            })->name('notifications');
 
-        // Dashboard & Notifikasi
-        Route::controller(AdminDashboardController::class)->group(function () {
-            Route::get('/dashboard', 'index')->name('dashboard');
-        });
-        Route::get('/notifications', function () { return view('admin.notifications.notifications_admin'); })->name('notifications');
-        
-        // Profile Admin
-        Route::get('/profile_admin', function () { return view('admin.profile.profile_admin'); })->name('profile_admin');
-        Route::controller(AdminProfileController::class)->group(function () {
-            Route::get('/profile', 'edit')->name('profile.edit');
-            Route::patch('/profile', 'update')->name('profile.update');
-            Route::delete('/profile', 'destroy')->name('profile.destroy');
-            Route::put('/profile/password', 'updatePassword')->name('profile.password.update');
-        });
+            // Profile Admin
+            Route::get('/profile_admin', function () {
+                return view('admin.profile.profile_admin');
+            })->name('profile_admin');
+            Route::controller(AdminProfileController::class)->group(function () {
+                Route::get('/profile', 'edit')->name('profile.edit');
+                Route::patch('/profile', 'update')->name('profile.update');
+                Route::delete('/profile', 'destroy')->name('profile.destroy');
+                Route::put('/profile/password', 'updatePassword')->name('profile.password.update');
+            });
 
-        // -----------------------------------------------------------
-        // [MODIFIKASI] MASTER ASESOR (Persis Web.php)
-        // -----------------------------------------------------------
-        Route::controller(AsesorController::class)->group(function () {
-            Route::get('/master_asesor', 'index')->name('master_asesor');
-            
-            // Add Steps
-            Route::get('/add_asesor1', 'createStep1')->name('add_asesor1');
-            Route::post('/add_asesor1', 'postStep1')->name('add_asesor1.post');
-            Route::get('/add_asesor2', 'createStep2')->name('add_asesor2');
-            Route::post('/add_asesor2', 'postStep2')->name('add_asesor2.post');
-            Route::get('/add_asesor3', 'createStep3')->name('add_asesor3');
-            Route::post('/asesor/store', 'store')->name('asesor.store');
-            
-            // Edit Steps
-            Route::get('/edit-asesor-step-1/{id_asesor}', 'editStep1')->name('edit_asesor1');
-            Route::patch('/update-asesor-step-1/{id_asesor}', 'updateStep1')->name('asesor.update.step1');
-            Route::get('/edit-asesor-step-2/{id_asesor}', 'editStep2')->name('edit_asesor2');
-            Route::patch('/update-asesor-step-2/{id_asesor}', 'updateStep2')->name('asesor.update.step2');
-            Route::get('/edit-asesor-step-3/{id_asesor}', 'editStep3')->name('edit_asesor3');
-            Route::patch('/update-asesor-step-3/{id_asesor}', 'updateStep3')->name('asesor.update.step3');
+            // -----------------------------------------------------------
+            // [MODIFIKASI] MASTER ASESOR (Persis Web.php)
+            // -----------------------------------------------------------
+            Route::controller(AsesorController::class)->group(function () {
+                Route::get('/master_asesor', 'index')->name('master_asesor');
 
-            Route::delete('/asesor/{id_asesor}', 'destroy')->name('asesor.destroy');
-        });
+                // Add Steps
+                Route::get('/add_asesor1', 'createStep1')->name('add_asesor1');
+                Route::post('/add_asesor1', 'postStep1')->name('add_asesor1.post');
+                Route::get('/add_asesor2', 'createStep2')->name('add_asesor2');
+                Route::post('/add_asesor2', 'postStep2')->name('add_asesor2.post');
+                Route::get('/add_asesor3', 'createStep3')->name('add_asesor3');
+                Route::post('/asesor/store', 'store')->name('asesor.store');
 
-        // -----------------------------------------------------------
-        // [MODIFIKASI] DETAIL PROFIL ASESOR (Persis Web.php)
-        // -----------------------------------------------------------
-        Route::controller(AsesorProfileController::class)->prefix('asesor/{id_asesor}')->group(function () {
-            Route::get('/profile', 'showProfile')->name('asesor.profile');
-            Route::get('/bukti', 'showBukti')->name('asesor.bukti');
-            Route::get('/tinjauan', 'showTinjauan')->name('asesor_profile_tinjauan');
-            Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.jadwal.asesi');
-            Route::get('/tracker', 'showTracker')->name('asesor_profile_tracker');
-            Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
-            Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
-        });
+                // Edit Steps
+                Route::get('/edit-asesor-step-1/{id_asesor}', 'editStep1')->name('edit_asesor1');
+                Route::patch('/update-asesor-step-1/{id_asesor}', 'updateStep1')->name('asesor.update.step1');
+                Route::get('/edit-asesor-step-2/{id_asesor}', 'editStep2')->name('edit_asesor2');
+                Route::patch('/update-asesor-step-2/{id_asesor}', 'updateStep2')->name('asesor.update.step2');
+                Route::get('/edit-asesor-step-3/{id_asesor}', 'editStep3')->name('edit_asesor3');
+                Route::patch('/update-asesor-step-3/{id_asesor}', 'updateStep3')->name('asesor.update.step3');
 
-        // -----------------------------------------------------------
-        // BAGIAN LAIN (SKEMA, ASESI, DLL) TETAP SEPERTI AUTH.PHP ASLI
-        // -----------------------------------------------------------
+                Route::delete('/asesor/{id_asesor}', 'destroy')->name('asesor.destroy');
+            });
 
-        // Master - Skema
-        Route::controller(SkemaController::class)->prefix('master/skema')->group(function () {
-            Route::get('/', 'index')->name('master_skema');
-            Route::get('/add', 'create')->name('add_skema');
-            Route::post('/add', 'store')->name('add_skema.store');
-            Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
-            Route::patch('/update/{id_skema}', 'update')->name('update_skema');
-            Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
-        });
-        Route::controller(DetailSkemaController::class)->prefix('master/skema/detail')->group(function () {
-            Route::get('/{id_skema}', 'index')->name('skema.detail');
-            Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
-            Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
-            Route::get('/kelompok/{id_kelompok}/edit', 'editKelompok')->name('skema.detail.edit_kelompok');
-            Route::put('/kelompok/{id_kelompok}', 'updateKelompok')->name('skema.detail.update_kelompok');
-            Route::delete('/kelompok/{id_kelompok}', 'destroyKelompok')->name('skema.detail.destroy_kelompok');
-            Route::delete('/unit/{id_unit}', 'destroyUnit')->name('skema.detail.destroy_unit');
-            Route::put('/{id_skema}/update-form', 'updateListForm')->name('skema.detail.update_form');
-        });
+            // -----------------------------------------------------------
+            // [MODIFIKASI] DETAIL PROFIL ASESOR (Persis Web.php)
+            // -----------------------------------------------------------
+            Route::controller(AsesorProfileController::class)
+                ->prefix('asesor/{id_asesor}')
+                ->group(function () {
+                    Route::get('/profile', 'showProfile')->name('asesor.profile');
+                    Route::get('/bukti', 'showBukti')->name('asesor.bukti');
+                    Route::get('/tinjauan', 'showTinjauan')->name('asesor_profile_tinjauan');
+                    Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.jadwal.asesi');
+                    Route::get('/tracker', 'showTracker')->name('asesor_profile_tracker');
+                    Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
+                    Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
+                });
 
-        // Master - Asesi
-        Route::controller(AsesiController::class)->prefix('master/asesi')->group(function () {
-            Route::get('/', 'index')->name('master_asesi');
-            Route::get('/add', 'create')->name('add_asesi');
-            Route::post('/add', 'store')->name('add_asesi.store');
-            Route::get('/edit/{id_asesi}', 'edit')->name('edit_asesi');
-            Route::patch('/update/{id_asesi}', 'update')->name('update_asesi');
-            Route::delete('/delete/{id_asesi}', 'destroy')->name('delete_asesi');
-        });
+            // -----------------------------------------------------------
+            // BAGIAN LAIN (SKEMA, ASESI, DLL) TETAP SEPERTI AUTH.PHP ASLI
+            // -----------------------------------------------------------
 
-        // Master - Schedule
-        Route::controller(ScheduleController::class)->prefix('master/schedule')->group(function () {
-            Route::get('/', 'index')->name('master_schedule');
-            Route::get('/add', 'create')->name('add_schedule');
-            Route::post('/add', 'store')->name('add_schedule.store');
-            Route::get('/edit/{id_jadwal}', 'edit')->name('edit_schedule');
-            Route::patch('/update/{id_jadwal}', 'update')->name('update_schedule');
-            Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_schedule');
-            Route::get('/attendance/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('schedule.attendance');
-            Route::delete('/attendance/destroy/{id}', [DaftarHadirController::class, 'destroy'])->name('schedule.attendance.destroy');
-        });
-        Route::get('/schedule_admin', [ScheduleController::class, 'showCalendar'])->name('schedule_admin');
+            // Master - Skema
+            Route::controller(SkemaController::class)
+                ->prefix('master/skema')
+                ->group(function () {
+                    Route::get('/', 'index')->name('master_skema');
+                    Route::get('/add', 'create')->name('add_skema');
+                    Route::post('/add', 'store')->name('add_skema.store');
+                    Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
+                    Route::patch('/update/{id_skema}', 'update')->name('update_skema');
+                    Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
+                });
+            Route::controller(DetailSkemaController::class)
+                ->prefix('master/skema/detail')
+                ->group(function () {
+                    Route::get('/{id_skema}', 'index')->name('skema.detail');
+                    Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
+                    Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
+                    Route::get('/kelompok/{id_kelompok}/edit', 'editKelompok')->name('skema.detail.edit_kelompok');
+                    Route::put('/kelompok/{id_kelompok}', 'updateKelompok')->name('skema.detail.update_kelompok');
+                    Route::delete('/kelompok/{id_kelompok}', 'destroyKelompok')->name('skema.detail.destroy_kelompok');
+                    Route::delete('/unit/{id_unit}', 'destroyUnit')->name('skema.detail.destroy_unit');
+                    Route::put('/{id_skema}/update-form', 'updateListForm')->name('skema.detail.update_form');
+                });
 
-        // Master - TUK
-        Route::controller(TukAdminController::class)->prefix('master/tuk')->group(function () {
-            Route::get('/', 'index')->name('master_tuk');
-            Route::get('/add', 'create')->name('add_tuk');
-            Route::post('/add', 'store')->name('add_tuk.store');
-            Route::get('/edit/{id}', 'edit')->name('edit_tuk');
-            Route::patch('/update/{id}', 'update')->name('update_tuk');
-            Route::delete('/delete/{id}', 'destroy')->name('delete_tuk');
-        });
+            // Master - Asesi
+            Route::controller(AsesiController::class)
+                ->prefix('master/asesi')
+                ->group(function () {
+                    Route::get('/', 'index')->name('master_asesi');
+                    Route::get('/add', 'create')->name('add_asesi');
+                    Route::post('/add', 'store')->name('add_asesi.store');
+                    Route::get('/edit/{id_asesi}', 'edit')->name('edit_asesi');
+                    Route::patch('/update/{id_asesi}', 'update')->name('update_asesi');
+                    Route::delete('/delete/{id_asesi}', 'destroy')->name('delete_asesi');
+                });
 
-        // Master - Category
-        Route::controller(CategoryController::class)->prefix('master/category')->group(function () {
-            Route::get('/', 'index')->name('master_category');
-            Route::get('/add', 'create')->name('add_category');
-            Route::post('/add', 'store')->name('add_category.store');
-            Route::get('/edit/{category}', 'edit')->name('edit_category');
-            Route::patch('/update/{category}', 'update')->name('update_category');
-            Route::delete('/delete/{category}', 'destroy')->name('delete_category');
-        });
+            // Master - Schedule
+            Route::controller(ScheduleController::class)
+                ->prefix('master/schedule')
+                ->group(function () {
+                    Route::get('/', 'index')->name('master_schedule');
+                    Route::get('/add', 'create')->name('add_schedule');
+                    Route::post('/add', 'store')->name('add_schedule.store');
+                    Route::get('/edit/{id_jadwal}', 'edit')->name('edit_schedule');
+                    Route::patch('/update/{id_jadwal}', 'update')->name('update_schedule');
+                    Route::delete('/delete/{id_jadwal}', 'destroy')->name('delete_schedule');
+                    Route::get('/attendance/{id_jadwal}', [DaftarHadirController::class, 'index'])->name('schedule.attendance');
+                    Route::delete('/attendance/destroy/{id}', [DaftarHadirController::class, 'destroy'])->name('schedule.attendance.destroy');
+                });
+            Route::get('/schedule_admin', [ScheduleController::class, 'showCalendar'])->name('schedule_admin');
 
-        // Master - Mitra
-        Route::controller(MitraController::class)->prefix('master/mitra')->group(function () {
-            Route::get('/', 'index')->name('master_mitra');
-            Route::get('/add', 'create')->name('add_mitra');
-            Route::post('/add', 'store')->name('add_mitra.store');
-            Route::get('/edit/{id}', 'edit')->name('edit_mitra');
-            Route::patch('/update/{id}', 'update')->name('update_mitra');
-            Route::delete('/delete/{id}', 'destroy')->name('delete_mitra');
-        });
+            // Master - TUK
+            Route::controller(TukAdminController::class)
+                ->prefix('master/tuk')
+                ->group(function () {
+                    Route::get('/', 'index')->name('master_tuk');
+                    Route::get('/add', 'create')->name('add_tuk');
+                    Route::post('/add', 'store')->name('add_tuk.store');
+                    Route::get('/edit/{id}', 'edit')->name('edit_tuk');
+                    Route::patch('/update/{id}', 'update')->name('update_tuk');
+                    Route::delete('/delete/{id}', 'destroy')->name('delete_tuk');
+                });
 
-        // Master - Berita Terbaru
-        Route::controller(BeritaController::class)->prefix('master/berita')->group(function () {
-            Route::get('/', 'index')->name('master_berita');
-            Route::get('/add', 'create')->name('add_berita');
-            Route::post('/add', 'store')->name('add_berita.store');
-            Route::get('/edit/{id}', 'edit')->name('edit_berita');
-            Route::patch('/update/{id}', 'update')->name('update_berita');
-            Route::delete('/delete/{id}', 'destroy')->name('delete_berita');
+            // Master - Category
+            Route::controller(CategoryController::class)
+                ->prefix('master/category')
+                ->group(function () {
+                    Route::get('/', 'index')->name('master_category');
+                    Route::get('/add', 'create')->name('add_category');
+                    Route::post('/add', 'store')->name('add_category.store');
+                    Route::get('/edit/{category}', 'edit')->name('edit_category');
+                    Route::patch('/update/{category}', 'update')->name('update_category');
+                    Route::delete('/delete/{category}', 'destroy')->name('delete_category');
+                });
+
+            // Master - Mitra
+            Route::controller(MitraController::class)
+                ->prefix('master/mitra')
+                ->group(function () {
+                    Route::get('/', 'index')->name('master_mitra');
+                    Route::get('/add', 'create')->name('add_mitra');
+                    Route::post('/add', 'store')->name('add_mitra.store');
+                    Route::get('/edit/{id}', 'edit')->name('edit_mitra');
+                    Route::patch('/update/{id}', 'update')->name('update_mitra');
+                    Route::delete('/delete/{id}', 'destroy')->name('delete_mitra');
+                });
+
+            // Master - Berita Terbaru
+            Route::controller(BeritaController::class)
+                ->prefix('master/berita')
+                ->group(function () {
+                    Route::get('/', 'index')->name('master_berita');
+                    Route::get('/add', 'create')->name('add_berita');
+                    Route::post('/add', 'store')->name('add_berita.store');
+                    Route::get('/edit/{id}', 'edit')->name('edit_berita');
+                    Route::patch('/update/{id}', 'update')->name('update_berita');
+                    Route::delete('/delete/{id}', 'destroy')->name('delete_berita');
+                });
+
+            // Profile Asesi (Admin View)
+            Route::controller(AsesiProfileController::class)
+                ->prefix('asesi/{id_asesi}')
+                ->group(function () {
+                    Route::get('/settings', 'settings')->name('asesi.profile.settings');
+                    Route::get('/form', 'form')->name('asesi.profile.form');
+                    Route::get('/bukti', 'bukti')->name('asesi.profile.bukti');
+                    Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
+                });
         });
-        
-        // Profile Asesi (Admin View)
-        Route::controller(AsesiProfileController::class)->prefix('asesi/{id_asesi}')->group(function () {
-            Route::get('/settings', 'settings')->name('asesi.profile.settings');
-            Route::get('/form', 'form')->name('asesi.profile.form');
-            Route::get('/bukti', 'bukti')->name('asesi.profile.bukti');
-            Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
-        });
-    });
 
     // ======================================================
     // 4. ROLE: ASESOR (Untuk Login Sebagai Asesor)
     // ======================================================
-    Route::middleware(['role:asesor'])->prefix('asesor')->name('asesor.')->group(function () {
-        // Dashboard
-        Route::get('/dashboard', [AsesorDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/home', [AsesorDashboardController::class, 'index'])->name('home.index');
+    Route::middleware(['role:asesor'])
+        ->prefix('asesor')
+        ->name('asesor.')
+        ->group(function () {
+            // Dashboard
+            Route::get('/dashboard', [AsesorDashboardController::class, 'index'])->name('dashboard');
+            Route::get('/home', [AsesorDashboardController::class, 'index'])->name('home.index');
 
-        // Manajemen Jadwal & Asesi
-        Route::get('/jadwal', [AsesorJadwalController::class, 'index'])->name('jadwal.index');
-        Route::get('/daftar-asesi/{id_jadwal}', [AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
-        Route::get('/tracker/{id_sertifikasi_asesi}', [TrackerController::class, 'show'])->name('tracker');
+            // Manajemen Jadwal & Asesi
+            Route::get('/jadwal', [AsesorJadwalController::class, 'index'])->name('jadwal.index');
+            Route::get('/daftar-asesi/{id_jadwal}', [AsesorJadwalController::class, 'showAsesi'])->name('daftar_asesi');
+            Route::get('/tracker/{id_sertifikasi_asesi}', [TrackerController::class, 'show'])->name('tracker');
 
-        // Tools
-        Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
+            // Tools
+            Route::get('/laporan', fn() => view('frontend.laporan'))->name('laporan');
 
-        // Profile Asesor
-        Route::get('/profil', [AsesorSelfProfileController::class, 'show'])->name('profil');
-        
-        // View Statis / Placeholder Asesor
-        Route::get('/profile_tinjauan', function () { return view('profile_asesor.asesor_profile_tinjauan'); })->name('profile_tinjauan');
-        Route::get('/profile_tracker', function () { return view('profile_asesor.asesor_profile_tracker'); })->name('profile_tracker');
+            // Profile Asesor
+            Route::get('/profil', [AsesorSelfProfileController::class, 'show'])->name('profil');
 
-        // Update Profile Asesor (Ajax)
-        Route::post('/update', [AsesorSelfProfileController::class, 'updateAsesorAjax'])->name('update.ajax');
-    });
+            // View Statis / Placeholder Asesor
+            Route::get('/profile_tinjauan', function () {
+                return view('profile_asesor.asesor_profile_tinjauan');
+            })->name('profile_tinjauan');
+            Route::get('/profile_tracker', function () {
+                return view('profile_asesor.asesor_profile_tracker');
+            })->name('profile_tracker');
+
+            // Update Profile Asesor (Ajax)
+            Route::post('/update', [AsesorSelfProfileController::class, 'updateAsesorAjax'])->name('update.ajax');
+        });
 
     // ======================================================
     // 5. ROLE: ASESI
@@ -365,6 +396,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/pendaftaran-selesai/{id_sertifikasi}', 'pendaftaranSelesai')->name('pendaftaran.selesai');
                 Route::get('/pra-asesmen-selesai/{id_sertifikasi}', 'praAsesmenSelesai')->name('pra_asesmen.selesai');
                 Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
+                Route::get('/persetujuan-selesai/{id_sertifikasi}', 'persetujuanSelesai')->name('persetujuan.selesai');
             });
 
             // --- Riwayat Sertifikasi (REPLACEMENT FOR DASHBOARD) ---
@@ -453,7 +485,9 @@ Route::middleware('auth')->group(function () {
     // ======================================================
     // 6. TRAFFIC COP & VERIFICATION
     // ======================================================
-    Route::get('/dashboard', function () { return redirect()->route('home.index'); })->name('dashboard');
+    Route::get('/dashboard', function () {
+        return redirect()->route('home.index');
+    })->name('dashboard');
 
     Route::get('/home', function (Request $request) {
         $user = Auth::user();
@@ -486,8 +520,53 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/tunggu-verifikasi', function () {
     $user = Auth::user();
-    if (!$user) return redirect()->route('login');
-    if ($user->role->nama_role !== 'asesor') return redirect()->route('home.index');
-    if ($user->asesor?->status_verifikasi === 'approved') return redirect()->route('home.index');
+    if (!$user) {
+        return redirect()->route('login');
+    }
+    if ($user->role->nama_role !== 'asesor') {
+        return redirect()->route('home.index');
+    }
+    if ($user->asesor?->status_verifikasi === 'approved') {
+        return redirect()->route('home.index');
+    }
+    return view('auth.verification-asesor');
+})->name('auth.wait');
+
+        if ($roleName === 'asesi') {
+            if (!$user->asesi) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')->with('error', 'Profil Anda belum lengkap. Silakan daftar terlebih dahulu untuk melengkapi data profil.');
+            }
+            return redirect()->route('asesi.riwayat.index');
+        } elseif ($roleName === 'asesor') {
+            $status = $user->asesor?->status_verifikasi;
+            if (!$user->asesor || $status !== 'approved') {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')->with('error', 'Akun Anda belum diverifikasi oleh Admin. Silakan tunggu persetujuan.');
+            }
+            return redirect()->route('asesor.dashboard');
+        } elseif ($roleName === 'admin' || $roleName === 'superadmin') {
+            return app(AdminDashboardController::class)->index($request);
+        }
+        Auth::logout();
+        return redirect('/login')->with('error', 'Role Anda tidak terdefinisi.');
+    })->name('home.index');
+});
+
+Route::get('/tunggu-verifikasi', function () {
+    $user = Auth::user();
+    if (!$user) {
+        return redirect()->route('login');
+    }
+    if ($user->role->nama_role !== 'asesor') {
+        return redirect()->route('home.index');
+    }
+    if ($user->asesor?->status_verifikasi === 'approved') {
+        return redirect()->route('home.index');
+    }
     return view('auth.verification-asesor');
 })->name('auth.wait');

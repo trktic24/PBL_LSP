@@ -191,8 +191,17 @@
                         document.getElementById('text_tanggal').innerText = date.toLocaleDateString('id-ID',
                             options);
 
-                        // D. Format Waktu (Ambil HH:MM saja)
-                        document.getElementById('text_waktu').innerText = data.waktu.substring(0, 5) + ' WIB';
+                        const waktuObj = new Date(data.waktu);
+
+                        // 2. Format jadi Jam:Menit sesuai zona waktu Jakarta (WIB)
+                        const jamWib = waktuObj.toLocaleTimeString('id-ID', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false // Format 24 jam
+                        });
+
+                        // 3. Tampilkan
+                        document.getElementById('text_waktu').innerText = jamWib + ' WIB';
 
                         // E. Isi Maps
                         if (data.link_gmap) {
@@ -203,7 +212,7 @@
                         if (data.foto_gedung) {
                             // Pastikan path-nya bener (kalau cuma nama file, tambah /images/tuk/)
                             // Asumsi: data.foto_gedung adalah path lengkap atau nama file
-                            // Kalau nama file doang: `{{ asset('images/') }}/${data.foto_gedung}`
+                            // Kalau nama file doang: `{{ asset('images') }}/${data.foto_gedung}`
                             // Di sini saya asumsi path lengkap/url
                             const imgEl = document.getElementById('img_gedung');
                             imgEl.src = `/${data.foto_gedung}`; // Tambah slash depan buat root
