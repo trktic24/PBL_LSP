@@ -136,7 +136,7 @@ Route::middleware('auth')->group(function () {
     // APL-02 (Asesmen Mandiri)
     Route::get('/APL_02', fn() => view('frontend/APL_02/APL_02'))->name('APL_02');
     // Buka routes/web.php
-// Pastikan kamu punya route seperti ini (sesuaikan controller-nya):
+    // Pastikan kamu punya route seperti ini (sesuaikan controller-nya):
 
     Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
         ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG

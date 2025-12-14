@@ -6,8 +6,6 @@
 
     {{-- Unread Count Badge --}}
     @if(Auth::user()->unreadNotifications->count() > 0)
-    <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full">
-        {{ Auth::user()->unreadNotifications->count() }}
-    </span>
+    <span class="absolute top-1 right-1 block w-3 h-3 bg-red-600 rounded-full ring-2 ring-white"></span>
     @endif
 </a>

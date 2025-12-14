@@ -198,6 +198,6 @@ class DashboardController extends Controller
         // Ambil semua notifikasi dengan pagination (10 per halaman)
         $notifications = $user->notifications()->latest()->paginate(10);
 
-        return view('asesor.notification', compact('notifications'));
+        return view('asesor.notifications_asesor', compact('notifications'));
     }
 }
