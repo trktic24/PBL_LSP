@@ -1,29 +1,3 @@
-@php
-    // --- DEFINISI LEVEL (Sama dengan Asesi) ---
-    $level = $asesi->dataSertifikasi->first()->progres_level ?? 0;
-    
-    $LVL_DAFTAR_SELESAI = 10;
-    $LVL_TUNGGU_BAYAR = 20;
-    $LVL_LUNAS = 30;
-    $LVL_PRA_ASESMEN = 40;
-    $LVL_SETUJU = 50;
-    $LVL_ASESMEN = 70;
-    $LVL_UMPAN_BALIK = 80;
-    $LVL_BANDING = 90;
-    $LVL_REKOMENDASI = 100;
-
-    // --- Helper Checkmark ---
-    if (!function_exists('renderCheckmark')) {
-        function renderCheckmark() {
-            return '<div class="absolute -top-1 -left-1.5 z-10 bg-green-500 rounded-full p-0.5 border-2 border-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="white" class="w-3 h-3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                    </div>';
-        }
-    }
-@endphp
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -44,130 +18,100 @@
 
 <body class="bg-gray-50 text-gray-800 text-sm">
 
+  {{-- 1. NAVBAR --}}
   <x-navbar.navbar_admin/>
   
   <main class="flex min-h-[calc(100vh-80px)]">
     
+    {{-- LOGIKA TOMBOL KEMBALI (Sama seperti halaman Bukti) --}}
     @php
         $firstSertifikasi = $asesi->dataSertifikasi->first();
         $defaultBackUrl = route('admin.master_asesi'); 
     @endphp
 
+    {{-- 2. SIDEBAR --}}
     <x-sidebar.sidebar_profile_asesi 
         :asesi="$asesi" 
         :backUrl="$firstSertifikasi ? route('admin.schedule.attendance', $firstSertifikasi->id_jadwal) : $defaultBackUrl" 
     />
 
+    {{-- 3. KONTEN UTAMA --}}
     <section class="ml-[22%] flex-1 p-8 h-[calc(100vh-80px)] overflow-y-auto bg-gray-50">
       
+      {{-- 4. CARD PUTIH UTAMA (Style konsisten dengan halaman Bukti) --}}
       <div class="bg-white p-10 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 min-h-[500px]">
         
+        {{-- JUDUL --}}
         <h1 class="text-3xl font-bold text-gray-800 mb-10 text-center">Tracker Status Sertifikasi</h1>
 
-        @if($firstSertifikasi)
-            <div class="max-w-3xl mx-auto px-4">
-                
-                <ol class="relative z-10 border-l-2 border-gray-200 ml-4 space-y-8">
-
-                    {{-- ITEM 1: Formulir Pendaftaran --}}
-                    <li class="mb-10 ml-8 relative">
-                        <div class="absolute -left-11 mt-1.5 w-6 h-6 bg-white rounded-full border-4 border-gray-200 
-                                    {{ $level >= $LVL_DAFTAR_SELESAI ? '!border-green-500 bg-green-500' : '' }}">
-                            @if($level >= $LVL_DAFTAR_SELESAI) {!! renderCheckmark() !!} @endif
-                        </div>
-                        <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">
-                            Pendaftaran Akun & Formulir
-                            @if($level >= $LVL_DAFTAR_SELESAI)
-                                <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded ml-3">Selesai</span>
-                            @endif
-                        </h3>
-                        <p class="mb-2 text-sm font-normal text-gray-500">
-                            Mengisi data diri dan formulir APL-01.
-                        </p>
-                        <p class="text-xs text-gray-400">
-                            {{ $firstSertifikasi->tanggal_daftar ? $firstSertifikasi->tanggal_daftar->format('d M Y, H:i') : '-' }}
-                        </p>
-                    </li>
-
-                    {{-- ITEM 2: Pembayaran --}}
-                    <li class="mb-10 ml-8 relative">
-                        <div class="absolute -left-11 mt-1.5 w-6 h-6 bg-white rounded-full border-4 border-gray-200 
-                                    {{ $level >= $LVL_LUNAS ? '!border-green-500 bg-green-500' : '' }}">
-                            @if($level >= $LVL_LUNAS) {!! renderCheckmark() !!} @endif
-                        </div>
-                        <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">
-                            Pembayaran
-                            @if($level >= $LVL_LUNAS)
-                                <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded ml-3">Lunas</span>
-                            @elseif($level == $LVL_TUNGGU_BAYAR)
-                                <span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded ml-3">Menunggu Verifikasi</span>
-                            @endif
-                        </h3>
-                        <p class="text-sm font-normal text-gray-500">Biaya sertifikasi telah dibayarkan.</p>
-                    </li>
-
-                    {{-- ITEM 3: Pra-Asesmen --}}
-                    <li class="mb-10 ml-8 relative">
-                        <div class="absolute -left-11 mt-1.5 w-6 h-6 bg-white rounded-full border-4 border-gray-200 
-                                    {{ $level >= $LVL_PRA_ASESMEN ? '!border-green-500 bg-green-500' : '' }}">
-                            @if($level >= $LVL_PRA_ASESMEN) {!! renderCheckmark() !!} @endif
-                        </div>
-                        <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">Pra-Asesmen</h3>
-                        <p class="text-sm font-normal text-gray-500">Pengisian Asesmen Mandiri (APL-02).</p>
-                    </li>
-
-                    {{-- ITEM 4: Jadwal & TUK --}}
-                    <li class="mb-10 ml-8 relative">
-                        <div class="absolute -left-11 mt-1.5 w-6 h-6 bg-white rounded-full border-4 border-gray-200 
-                                    {{ $level >= $LVL_PRA_ASESMEN ? '!border-green-500 bg-green-500' : '' }}">
-                             @if($level >= $LVL_PRA_ASESMEN) {!! renderCheckmark() !!} @endif
-                        </div>
-                        <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">Jadwal & TUK</h3>
-                        <p class="text-sm font-normal text-gray-500">Penetapan jadwal dan Tempat Uji Kompetensi.</p>
-                    </li>
-
-                    {{-- ITEM 5: Asesmen --}}
-                    <li class="mb-10 ml-8 relative">
-                        <div class="absolute -left-11 mt-1.5 w-6 h-6 bg-white rounded-full border-4 border-gray-200 
-                                    {{ $level >= $LVL_ASESMEN ? '!border-green-500 bg-green-500' : '' }}">
-                             @if($level >= $LVL_ASESMEN) {!! renderCheckmark() !!} @endif
-                        </div>
-                        <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">
-                            Proses Asesmen
-                            @if($level >= $LVL_ASESMEN)
-                                <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded ml-3">Selesai</span>
-                            @elseif($level >= $LVL_SETUJU)
-                                <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded ml-3">Berlangsung</span>
-                            @endif
-                        </h3>
-                        <p class="text-sm font-normal text-gray-500">Uji Kompetensi (Tertulis, Praktik, Wawancara).</p>
-                    </li>
-
-                    {{-- ITEM 6: Keputusan Komite --}}
-                    <li class="mb-10 ml-8 relative">
-                        <div class="absolute -left-11 mt-1.5 w-6 h-6 bg-white rounded-full border-4 border-gray-200 
-                                    {{ $level >= $LVL_REKOMENDASI ? '!border-green-500 bg-green-500' : '' }}">
-                             @if($level >= $LVL_REKOMENDASI) {!! renderCheckmark() !!} @endif
-                        </div>
-                        <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">
-                            Keputusan Komite
-                            @if($level == $LVL_REKOMENDASI)
-                                <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded ml-3">Kompeten</span>
-                            @endif
-                        </h3>
-                        <p class="text-sm font-normal text-gray-500">Hasil akhir rekomendasi sertifikasi.</p>
-                    </li>
-
-                </ol>
-
+        {{-- AREA KONTEN TRACKER (Placeholder Visual Timeline) --}}
+        <div class="max-w-3xl mx-auto">
+            
+            {{-- Contoh Item 1: Selesai --}}
+            <div class="flex gap-4">
+                <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white shadow-md z-10">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="w-0.5 h-full bg-green-200 -mt-1 -mb-1"></div>
+                </div>
+                <div class="pb-10">
+                    <h3 class="text-base font-bold text-gray-800">Pendaftaran Akun</h3>
+                    <p class="text-xs text-gray-500 mt-1">12 Desember 2024, 09:00 WIB</p>
+                    <div class="mt-2 bg-green-50 text-green-700 px-3 py-2 rounded-lg text-xs border border-green-100">
+                        Akun berhasil dibuat dan diverifikasi.
+                    </div>
+                </div>
             </div>
-        @else
-            {{-- Jika Belum Ada Data --}}
-            <div class="text-center py-20">
-                <i class="fas fa-clipboard-list text-6xl text-gray-200 mb-4"></i>
-                <p class="text-gray-500 text-lg">Belum ada data sertifikasi untuk asesi ini.</p>
+
+            {{-- Contoh Item 2: Selesai --}}
+            <div class="flex gap-4">
+                <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white shadow-md z-10">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div class="w-0.5 h-full bg-gray-200 -mt-1 -mb-1"></div>
+                </div>
+                <div class="pb-10">
+                    <h3 class="text-base font-bold text-gray-800">Upload Dokumen Persyaratan</h3>
+                    <p class="text-xs text-gray-500 mt-1">14 Desember 2024, 14:30 WIB</p>
+                    <div class="mt-2 bg-green-50 text-green-700 px-3 py-2 rounded-lg text-xs border border-green-100">
+                        Semua dokumen wajib telah diunggah.
+                    </div>
+                </div>
             </div>
-        @endif
+
+            {{-- Contoh Item 3: Proses Sekarang (Aktif) --}}
+            <div class="flex gap-4">
+                <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg ring-4 ring-blue-100 z-10">
+                        <i class="fas fa-spinner fa-spin text-xs"></i>
+                    </div>
+                    <div class="w-0.5 h-full bg-gray-200 -mt-1 -mb-1"></div>
+                </div>
+                <div class="pb-10">
+                    <h3 class="text-base font-bold text-blue-600">Verifikasi Admin</h3>
+                    <p class="text-xs text-gray-500 mt-1">Sedang berlangsung...</p>
+                    <div class="mt-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-xs border border-blue-100">
+                        Admin sedang memverifikasi kelengkapan dokumen (APL-01 & APL-02).
+                    </div>
+                </div>
+            </div>
+
+            {{-- Contoh Item 4: Belum --}}
+            <div class="flex gap-4">
+                <div class="flex flex-col items-center">
+                    <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 z-10">
+                        <span class="text-xs font-bold">4</span>
+                    </div>
+                </div>
+                <div class="pb-10">
+                    <h3 class="text-base font-bold text-gray-400">Pembayaran</h3>
+                    <p class="text-xs text-gray-400 mt-1">Menunggu verifikasi selesai</p>
+                </div>
+            </div>
+
+        </div>
 
       </div>
 

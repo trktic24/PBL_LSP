@@ -266,8 +266,11 @@ Route::middleware('auth')->group(function () {
             Route::post('/bukti/store', 'storeBukti')->name('asesi.profile.bukti.store'); // Upload
             Route::post('/bukti/update/{id_bukti}', 'updateBukti')->name('asesi.profile.bukti.update');
             Route::delete('/bukti/delete/{id_bukti}', 'deleteBukti')->name('asesi.profile.bukti.delete'); // Hapus
+
             Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
             Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
+            
+            
         });
 
         // Master Asesor
