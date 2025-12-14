@@ -43,6 +43,7 @@ use App\Http\Controllers\Asesi\ProfileController as AsesiProfileController;
 use App\Http\Controllers\Asesi\RiwayatSertifikasiController;
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Asesi\Apl01PdfController;
+use App\Http\Controllers\Asesi\Apl02\Apl02PdfController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\DataSertifikasiAsesiController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\BuktiKelengkapanController;
 use App\Http\Controllers\Asesi\FormulirPendaftaranAPI\TandaTanganAPIController;
@@ -407,7 +408,8 @@ Route::middleware('auth')->group(function () {
             });
 
             // --- H. Utilities (PDF & Cetak) ---
-            Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
+            Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');  
+            Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
 
             // --- IA.01 sementara (biar tidak error) ---
             Route::get('/ia01/{id_sertifikasi}', function ($id_sertifikasi) {
