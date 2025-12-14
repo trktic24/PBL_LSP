@@ -89,7 +89,7 @@
         </div>
         @endif
 
-        <form action="{{ route('login_admin.post') }}" method="POST" class="space-y-5">
+        <form action="{{ route('admin.login_admin.post') }}" method="POST" class="space-y-5">
           @csrf
 
           <div class="flex flex-col w-full">

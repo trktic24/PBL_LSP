@@ -287,15 +287,15 @@ Route::middleware('auth')->group(function () {
         
         // Master Jadwal
         Route::resource('master/jadwal', AdminJadwalController::class)->names([
-            'index' => 'master_jadwal', 'create' => 'add_jadwal', 'store' => 'add_jadwal.store',
-            'edit' => 'edit_jadwal', 'update' => 'update_jadwal', 'destroy' => 'delete_jadwal'
+            'index' => 'master_schedule', 'create' => 'add_schedule', 'store' => 'add_schedule.store',
+            'edit' => 'edit_schedule', 'update' => 'update_schedule', 'destroy' => 'delete_schedule'
         ]);
-        Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('jadwal_admin');
+        Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('schedule_admin');
 
         // Daftar Hadir & Berita Acara
         Route::controller(DaftarHadirController::class)->prefix('master/jadwal/{id_jadwal}')->group(function () {
-            Route::get('/daftar-hadir', 'daftarHadir')->name('attendance.show');
-            Route::get('/daftar-hadir/pdf', 'exportPdfdaftarhadir')->name('attendance.pdf');
+            Route::get('/daftar_hadir', 'daftarHadir')->name('schedule.attendance');
+            Route::get('/daftar_hadir/pdf', 'exportPdfdaftarhadir')->name('attendance.pdf');
             Route::get('/berita-acara', 'beritaAcara')->name('berita_acara');
             Route::get('/berita-acara/pdf', 'exportPdfberitaAcara')->name('berita_acara.pdf');
         });
