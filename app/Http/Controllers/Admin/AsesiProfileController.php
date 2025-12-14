@@ -93,7 +93,7 @@ class AsesiProfileController extends Controller
     public function bukti($id_asesi)
     {
         // Ambil asesi beserta bukti dasarnya (lewat relasi HasManyThrough yang baru dibuat)
-        $asesi = Asesi::with(['buktiDasar'])->findOrFail($id_asesi);
+        $asesi = Asesi::with(['buktiDasar', 'dataPekerjaan'])->findOrFail($id_asesi);
         
         $persyaratan = [
             ['jenis' => 'Pas Foto (Background Merah)', 'desc' => 'Format: JPG/PNG, Maks 2MB.'],
@@ -203,6 +203,75 @@ class AsesiProfileController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
+    }
+
+    public function storeTandaTangan(Request $request, $id_asesi)
+    {
+        $request->validate([
+            'file_ttd' => 'required|image|mimes:png,jpg,jpeg|max:2048', // Max 2MB
+        ]);
+
+        try {
+            $asesi = Asesi::findOrFail($id_asesi);
+
+            if ($request->hasFile('file_ttd')) {
+                // Hapus file lama jika ada
+                if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
+                    File::delete(public_path($asesi->tanda_tangan));
+                }
+
+                $file = $request->file('file_ttd');
+                $filename = 'ttd_' . time() . '_' . $id_asesi . '.' . $file->getClientOriginalExtension();
+                
+                // Simpan di folder ttd_asesi
+                $path = 'images/ttd_asesi';
+                if (!File::exists(public_path($path))) {
+                    File::makeDirectory(public_path($path), 0755, true);
+                }
+                
+                $file->move(public_path($path), $filename);
+                
+                // Simpan Path ke Database
+                $asesi->update([
+                    'tanda_tangan' => $path . '/' . $filename
+                ]);
+
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Tanda tangan berhasil diupload',
+                    'url' => asset($path . '/' . $filename)
+                ]);
+            }
+            
+            return response()->json(['success' => false, 'message' => 'File tidak valid'], 400);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteTandaTangan($id_asesi)
+    {
+        try {
+            $asesi = Asesi::findOrFail($id_asesi);
+
+            if ($asesi->tanda_tangan) {
+                // Hapus File Fisik
+                if (File::exists(public_path($asesi->tanda_tangan))) {
+                    File::delete(public_path($asesi->tanda_tangan));
+                }
+                
+                // Hapus path di DB
+                $asesi->update(['tanda_tangan' => null]);
+                
+                return response()->json(['success' => true, 'message' => 'Tanda tangan dihapus']);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Tidak ada tanda tangan'], 404);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+        }
     }
 
     public function tracker($id_asesi)

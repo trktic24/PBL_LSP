@@ -167,10 +167,95 @@
         </div>
       </div>
 
-      <div class="bg-white p-10 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100">
+      {{-- CARD TANDA TANGAN & IDENTITAS --}}
+      <div class="bg-white p-10 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 mt-8">
+        
         <h3 class="text-2xl font-bold text-gray-800 text-center mb-8">Tanda Tangan Pemohon</h3>
-        <div class="text-center p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
-            <p class="text-gray-500 text-sm">Fitur tanda tangan akan segera hadir.</p>
+        
+        {{-- BAGIAN IDENTITAS --}}
+        @php
+            // Menggunakan relasi hasOne (tanpa first)
+            $pekerjaan = $asesi->dataPekerjaan; 
+        @endphp
+
+        <div class="bg-gray-50 rounded-xl p-6 max-w-3xl mx-auto border border-gray-200 mb-8">
+            <p class="text-sm font-semibold text-gray-800 mb-4">Saya yang bertanda tangan di bawah ini:</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                {{-- Item 1 --}}
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Nama Lengkap</label>
+                    <p class="text-gray-900 font-medium text-sm">{{ $asesi->nama_lengkap ?? '-' }}</p>
+                </div>
+                
+                {{-- Item 2 --}}
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Jabatan</label>
+                    <p class="text-gray-900 font-medium text-sm">{{ $pekerjaan?->jabatan ?? '-' }}</p>
+                </div>
+                
+                {{-- Item 3 --}}
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Perusahaan</label>
+                    <p class="text-gray-900 font-medium text-sm">{{ $pekerjaan?->nama_institusi_pekerjaan ?? '-' }}</p>
+                </div>
+                
+                {{-- Item 4 --}}
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Alamat Perusahaan</label>
+                    <p class="text-gray-900 font-medium text-sm">{{ $pekerjaan?->alamat_institusi ?? '-' }}</p>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-gray-200 text-gray-600 text-[11px] leading-relaxed">
+                Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan saya setuju untuk mengikuti proses sertifikasi sesuai dengan prosedur yang berlaku.
+            </div>
+        </div>
+        {{-- BAGIAN UPLOAD TTD --}}
+        <div class="flex flex-col items-center" x-data="{ hasTtd: {{ $asesi->tanda_tangan ? 'true' : 'false' }} }">
+            
+            {{-- 1. AREA PREVIEW GAMBAR --}}
+            <div class="w-full max-w-3xl h-64 border-2 border-dashed border-gray-300 rounded-xl bg-white flex items-center justify-center overflow-hidden relative group">
+                
+                <img id="img-ttd-preview" 
+                     src="{{ $asesi->tanda_tangan ? asset($asesi->tanda_tangan) : '' }}" 
+                     class="max-h-full max-w-full object-contain p-6" 
+                     :class="hasTtd ? '' : 'hidden'">
+                
+                <div class="text-center text-gray-400" :class="hasTtd ? 'hidden' : ''">
+                    <i class="fas fa-signature text-5xl mb-4 opacity-50"></i>
+                    <p class="text-base font-medium">Belum ada tanda tangan</p>
+                </div>
+            </div>
+
+            {{-- 2. TEKS FORMAT --}}
+            <p class="text-xs text-gray-400 mt-4 text-center">
+                Format: PNG/JPG (Disarankan latar belakang transparan). Maks 2MB.
+            </p>
+
+            {{-- 3. TOMBOL AKSI --}}
+            <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <input type="file" id="input-ttd" class="hidden" accept="image/png, image/jpeg, image/jpg">
+                
+                {{-- Tombol Edit/Upload (Warna DINAMIS) --}}
+                {{-- Perhatikan bagian :class di bawah ini --}}
+                <button type="button" id="btn-upload-ttd" 
+                        class="px-6 py-2.5 font-bold rounded-full transition shadow-md text-sm flex items-center text-white"
+                        :class="hasTtd ? 'bg-yellow-400 hover:bg-yellow-500' : 'bg-blue-600 hover:bg-blue-700'">
+                    {{-- Icon dinamis --}}
+                    <i class="fas mr-2" :class="hasTtd ? 'fa-edit' : 'fa-upload'"></i> 
+                    {{-- Teks dinamis --}}
+                    <span x-text="hasTtd ? 'Edit' : 'Upload TTD'"></span>
+                </button>
+
+                {{-- Tombol Hapus (Merah Solid) --}}
+                <button type="button" id="btn-delete-ttd" 
+                        class="px-6 py-2.5 bg-red-500 text-white font-bold rounded-full hover:bg-red-600 transition shadow-sm text-sm flex items-center"
+                        :class="hasTtd ? '' : 'hidden'">
+                    <i class="fas fa-trash mr-2"></i> Hapus
+                </button>
+            </div>
+            
         </div>
       </div>
 
@@ -179,10 +264,15 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // === VARIABEL GLOBAL ===
         const idAsesi = "{{ $asesi->id_asesi }}"; 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-        // --- Helper: Render Preview ---
+        // =========================================================================
+        // BAGIAN 1: LOGIKA BUKTI KELENGKAPAN (DOKUMEN)
+        // =========================================================================
+
+        // Helper: Render Preview Gambar/PDF
         function renderPreview(previewBox, file) {
             previewBox.innerHTML = '';
             const isImage = file.type.startsWith('image/');
@@ -200,7 +290,7 @@
             }
         }
 
-        // --- Main Loop Logic ---
+        // Loop untuk setiap item upload dokumen
         document.querySelectorAll('.upload-section').forEach(section => {
             const fileInput = section.querySelector('.file-input');
             const btnSelect = section.querySelector('.btn-select-file');
@@ -214,10 +304,10 @@
             const groupUploaded = section.querySelector('.button-group-uploaded');
             const jenisDokumen = section.querySelector('h3').getAttribute('data-jenis');
             
-            // Ambil ID Section untuk localStorage (Persistence UI)
+            // Ambil ID Section untuk localStorage
             const sectionId = section.getAttribute('data-id'); 
             
-            // Cek apakah ini Update atau Create (berdasarkan keberadaan tombol delete yang punya data-id)
+            // Cek apakah ini Update atau Create (berdasarkan tombol delete yang punya data-id)
             const existingId = btnDelete ? btnDelete.getAttribute('data-id') : null;
 
             let selectedFile = null;
@@ -271,7 +361,7 @@
 
                         // LOGIKA PENENTUAN ROUTE (CREATE vs UPDATE)
                         if (existingId) {
-                            // UPDATE
+                            // UPDATE (Pakai POST karena upload file)
                             url = `/admin/asesi/${idAsesi}/bukti/update/${existingId}`;
                             method = 'POST';
                         } else {
@@ -289,7 +379,7 @@
                         const result = await response.json();
 
                         if (result.success) {
-                            // Berhasil, reload halaman
+                            alert('Berhasil diunggah!');
                             location.reload(); 
                         } else {
                             throw new Error(result.message);
@@ -303,12 +393,11 @@
                 });
             }
 
-            // Handle Delete
+            // Handle Delete Dokumen
             if(btnDelete) {
                 btnDelete.addEventListener('click', async () => {
                     if(!confirm('Yakin ingin menghapus dokumen ini?')) return;
                     
-                    // Simpan state agar tetap terbuka (opsional, bisa dihapus baris ini jika ingin tertutup)
                     localStorage.setItem('open_' + sectionId, 'true');
 
                     const idBukti = btnDelete.getAttribute('data-id');
@@ -319,6 +408,7 @@
                         });
                         const result = await response.json();
                         if (result.success) {
+                            alert('Dokumen dihapus!');
                             location.reload();
                         } else {
                             throw new Error(result.message);
@@ -329,6 +419,96 @@
                 });
             }
         });
+
+
+        // =========================================================================
+        // BAGIAN 2: LOGIKA TANDA TANGAN (TTD)
+        // =========================================================================
+        
+        const inputTtd = document.getElementById('input-ttd');
+        const btnUploadTtd = document.getElementById('btn-upload-ttd');
+        const btnDeleteTtd = document.getElementById('btn-delete-ttd');
+        const imgTtd = document.getElementById('img-ttd-preview');
+
+        // Klik tombol upload -> trigger input file
+        if(btnUploadTtd) {
+            btnUploadTtd.addEventListener('click', () => inputTtd.click());
+        }
+
+        // Handle File Selected (Upload Langsung)
+        if(inputTtd) {
+            inputTtd.addEventListener('change', async () => {
+                if (inputTtd.files.length > 0) {
+                    const file = inputTtd.files[0];
+                    const formData = new FormData();
+                    formData.append('file_ttd', file);
+
+                    const originalHtml = btnUploadTtd.innerHTML;
+                    const isEditing = btnUploadTtd.innerText.includes('Ganti') || btnUploadTtd.innerText.includes('Edit');
+                    
+                    btnUploadTtd.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> ${isEditing ? 'Mengganti...' : 'Mengupload...'}`;
+                    btnUploadTtd.disabled = true;
+                    if(btnDeleteTtd) btnDeleteTtd.disabled = true;
+
+                    try {
+                        const response = await fetch(`/admin/asesi/${idAsesi}/ttd/store`, {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': csrfToken },
+                            body: formData
+                        });
+                        const result = await response.json();
+
+                        if (result.success) {
+                            alert('Tanda tangan berhasil disimpan!');
+                            location.reload(); 
+                        } else {
+                            throw new Error(result.message);
+                        }
+                    } catch (error) {
+                        alert('Gagal: ' + error.message);
+                        btnUploadTtd.innerHTML = originalHtml;
+                        btnUploadTtd.disabled = false;
+                        if(btnDeleteTtd) btnDeleteTtd.disabled = false;
+                        inputTtd.value = ''; 
+                    }
+                }
+            });
+        }
+
+        // Handle Hapus TTD
+        if(btnDeleteTtd) {
+            btnDeleteTtd.addEventListener('click', async () => {
+                if(!confirm('Yakin ingin menghapus tanda tangan ini?')) return;
+
+                const originalHtml = btnDeleteTtd.innerHTML;
+                btnDeleteTtd.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menghapus...';
+                btnDeleteTtd.disabled = true;
+                if(btnUploadTtd) btnUploadTtd.disabled = true;
+
+                try {
+                    const response = await fetch(`/admin/asesi/${idAsesi}/ttd/delete`, {
+                        method: 'DELETE',
+                        headers: { 
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert('Tanda tangan dihapus!');
+                        location.reload();
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    alert('Gagal menghapus: ' + error.message);
+                    btnDeleteTtd.innerHTML = originalHtml;
+                    btnDeleteTtd.disabled = false;
+                    if(btnUploadTtd) btnUploadTtd.disabled = false;
+                }
+            });
+        }
     });
 </script>
 </body>
