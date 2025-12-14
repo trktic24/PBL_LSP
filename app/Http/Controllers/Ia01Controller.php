@@ -27,7 +27,7 @@ class IA01Controller extends Controller
     {
         return \App\Models\DataSertifikasiAsesi::with([
             'asesi',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'jadwal.skema',
             'jadwal.asesor',
             'jadwal.skema.kelompokPekerjaans.UnitKompetensis'
@@ -56,7 +56,11 @@ class IA01Controller extends Controller
         $data_sesi = $request->session()->get("ia01.sertifikasi_{$id_sertifikasi}", []);
 
         return view('frontend.IA_01.tampilan_awal', compact(
-            'kelompok','skema', 'unitKompetensi', 'data_sesi', 'sertifikasi'
+            'kelompok',
+            'skema',
+            'unitKompetensi',
+            'data_sesi',
+            'sertifikasi'
         ));
     }
 
@@ -78,7 +82,7 @@ class IA01Controller extends Controller
 
         $metaData = [
             'nama_asesor' => $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor',
-            'nama_asesi'  => $sertifikasi->asesi->nama_lengkap ?? 'Asesi',
+            'nama_asesi' => $sertifikasi->asesi->nama_lengkap ?? 'Asesi',
         ];
 
         // Simpan ke Session
@@ -108,9 +112,9 @@ class IA01Controller extends Controller
         $kelompok = $skema->kelompokPekerjaans->firstOrFail();
 
         $unitKompetensi = UnitKompetensi::with(['elemens.kriteriaUnjukKerja'])
-                                    ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
-                                    ->where('urutan', $urutan)
-                                    ->firstOrFail();
+            ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
+            ->where('urutan', $urutan)
+            ->firstOrFail();
 
         $kuks = $unitKompetensi->kriteriaUnjukKerja()->orderBy('no_kriteria')->get();
         $totalSteps = $kelompok->unitKompetensis()->count();
@@ -120,7 +124,13 @@ class IA01Controller extends Controller
         $formType = $kuks->first()->tipe ?? 'aktivitas';
 
         return view('frontend.IA_01.IA_01', compact(
-            'unitKompetensi', 'kuks','skema', 'data_sesi', 'totalSteps', 'formType', 'sertifikasi'
+            'unitKompetensi',
+            'kuks',
+            'skema',
+            'data_sesi',
+            'totalSteps',
+            'formType',
+            'sertifikasi'
         ));
     }
 
@@ -137,8 +147,8 @@ class IA01Controller extends Controller
         $skema = $sertifikasi->jadwal->skema;
         $kelompok = $skema->kelompokPekerjaans->firstOrFail();
         $unitKompetensi = UnitKompetensi::where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
-                                    ->where('urutan', $urutan)
-                                    ->firstOrFail();
+            ->where('urutan', $urutan)
+            ->firstOrFail();
 
         $kukIds = $unitKompetensi->kriteriaUnjukKerja()->pluck('id_kriteria')->toArray();
 
@@ -218,7 +228,11 @@ class IA01Controller extends Controller
         $rekomendasiSistem = $adaBK ? 'belum_kompeten' : 'kompeten';
 
         return view('frontend.IA_01.finish', compact(
-            'skema', 'kelompok', 'rekomendasiSistem', 'sertifikasi', 'data_sesi'
+            'skema',
+            'kelompok',
+            'rekomendasiSistem',
+            'sertifikasi',
+            'data_sesi'
         ));
     }
 
@@ -309,17 +323,21 @@ class IA01Controller extends Controller
 
         // Ambil SEMUA unit kompetensi beserta elemen dan KUK
         $units = UnitKompetensi::with(['elemens.kriteriaUnjukKerja'])
-                    ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
-                    ->orderBy('urutan')
-                    ->get();
+            ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
+            ->orderBy('urutan')
+            ->get();
 
         // Ambil semua jawaban yang tersimpan di DB
         $responses = ResponApl02Ia01::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
-                        ->get()
-                        ->keyBy('id_kriteria');
+            ->get()
+            ->keyBy('id_kriteria');
 
         return view('frontend.IA_01.admin_show', compact(
-            'skema', 'kelompok', 'units', 'sertifikasi', 'responses'
+            'skema',
+            'kelompok',
+            'units',
+            'sertifikasi',
+            'responses'
         ));
     }
 }

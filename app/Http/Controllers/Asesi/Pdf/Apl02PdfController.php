@@ -37,7 +37,7 @@ public function generateApl02($id_sertifikasi)
     $pdf = Pdf::loadView('asesi.pdf.fr_apl_02', $data);
     $pdf->setPaper('a4', 'portrait');
 
-    return $pdf->stream('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
-    // return $pdf->download('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    // return $pdf->stream('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    return $pdf->download('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
 }
 }

@@ -146,7 +146,7 @@
 
                                 @if ($isSelesai)
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
-                                    <a href="{{ route('asesi.pdf.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                    <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         target="_blank" class="{{ $btnBlue }}">
                                         Unduh Document
                                     </a>
@@ -388,7 +388,10 @@
 
                                 @if ($level >= $LVL_SETUJU)
                                     <p class="{{ $statusClassSelesai }}">Telah Disetujui</p>
-                                    <button class="{{ $btnBlue }}">Unduh Dokumen</button>
+                                    <a href="{{ route('asesi.cetak.ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        class="{{ $btnBlue }}" target="_blank">
+                                        Unduh Dokumen
+                                    </a>
                                 @elseif ($level == $LVL_PRA_ASESMEN && $unlockAK01)
                                     <p class="{{ $statusClassProses }}">Siap Diisi</p>
                                 @elseif ($level == $LVL_PRA_ASESMEN)
@@ -403,12 +406,12 @@
                         {{-- ITEM 6: Asesmen --}}
                         {{-- ============================================= --}}
                         <li class="relative flex items-center md:items-start md:pb-10">
-                            {{-- Garis Timeline (Logic tetap) --}}
+                            {{-- Garis Timeline --}}
                             <div
                                 class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 {{ $unlockAsesmen ? 'bg-green-500' : 'bg-gray-200' }}">
                             </div>
 
-                            {{-- Icon Timeline (Logic tetap) --}}
+                            {{-- Icon Timeline --}}
                             <div class="relative flex-shrink-0 ml-1 mr-4 md:mr-6 z-10">
                                 <div
                                     class="hidden md:flex w-12 h-12 rounded-lg {{ $unlockAsesmen ? 'bg-green-100 text-green-600 ring-4 ring-green-50' : 'bg-gray-100 text-gray-400' }} items-center justify-center transition-all duration-300">
@@ -437,7 +440,7 @@
                                     @endif
                                 </div>
 
-                                {{-- Pesan Status --}}
+                                {{-- INFO STATUS --}}
                                 @if (!$unlockAsesmen && isset($pesanStatus))
                                     <div
                                         class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-lg text-sm flex items-start gap-3">
@@ -469,14 +472,11 @@
 
                                 <div class="space-y-4">
 
-                                    {{-- ==================================================== --}}
-                                    {{-- IA.02: PRAKTIK DEMONSTRASI --}}
-                                    {{-- ==================================================== --}}
+                                    {{-- 1. IA.02 (Praktik) --}}
                                     @if ($showIA02)
                                         <div
                                             class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 
                     {{ $unlockAsesmen ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-
                                             <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
                                                 <div
                                                     class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $unlockAsesmen ? 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors' : 'bg-gray-200 text-gray-400' }}">
@@ -495,7 +495,6 @@
                                                     <p class="text-xs text-gray-500">Tugas Praktik & Observasi</p>
                                                 </div>
                                             </div>
-
                                             <div class="w-full sm:w-auto flex-shrink-0">
                                                 @if ($unlockAsesmen)
                                                     <a href="{{ route('asesi.ia02.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
@@ -509,8 +508,7 @@
                                                                 stroke-width="2"
                                                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
                                                             </path>
-                                                        </svg>
-                                                        Lihat Soal
+                                                        </svg> Lihat Soal
                                                     </a>
                                                 @else
                                                     <div
@@ -521,22 +519,16 @@
                                                                 stroke-width="2"
                                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                                             </path>
-                                                        </svg>
-                                                        Terkunci
-                                                    </div>
+                                                        </svg> Terkunci</div>
                                                 @endif
                                             </div>
                                         </div>
                                     @endif
 
-                                    {{-- ==================================================== --}}
-                                    {{-- IA.05: PILIHAN GANDA --}}
-                                    {{-- ==================================================== --}}
+                                    {{-- 2. IA.05 (Pilihan Ganda) --}}
                                     @if ($showIA05)
                                         <div
-                                            class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 
-                    {{ $unlockAsesmen ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-
+                                            class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $unlockAsesmen ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
                                             <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
                                                 <div
                                                     class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $unlockAsesmen ? 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors' : 'bg-gray-200 text-gray-400' }}">
@@ -554,18 +546,15 @@
                                                     <p class="text-xs text-gray-500">Tes Tertulis</p>
                                                 </div>
                                             </div>
-
                                             <div class="w-full sm:w-auto flex-shrink-0">
                                                 @if ($isWaktuHabis || $unlockHasil)
                                                     <span
-                                                        class="inline-flex items-center justify-center w-full sm:w-36 h-10 bg-green-100 text-green-700 text-xs font-bold rounded-lg border border-green-200 cursor-default">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none"
+                                                        class="inline-flex items-center justify-center w-full sm:w-36 h-10 bg-green-100 text-green-700 text-xs font-bold rounded-lg border border-green-200 cursor-default"><svg
+                                                            class="w-4 h-4 mr-1.5" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                        </svg>
-                                                        Selesai
-                                                    </span>
+                                                        </svg> Selesai</span>
                                                 @elseif ($unlockAsesmen)
                                                     <a href="{{ route('asesi.asesmen.ia05.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                         class="flex items-center justify-center w-full sm:w-36 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
@@ -575,8 +564,7 @@
                                                                 stroke-width="2"
                                                                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
                                                             </path>
-                                                        </svg>
-                                                        Kerjakan
+                                                        </svg> Kerjakan
                                                     </a>
                                                 @else
                                                     <div
@@ -587,22 +575,16 @@
                                                                 stroke-width="2"
                                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                                             </path>
-                                                        </svg>
-                                                        Terkunci
-                                                    </div>
+                                                        </svg> Terkunci</div>
                                                 @endif
                                             </div>
                                         </div>
                                     @endif
 
-                                    {{-- ==================================================== --}}
-                                    {{-- IA.06: ESAI --}}
-                                    {{-- ==================================================== --}}
+                                    {{-- 3. IA.06 (Esai) --}}
                                     @if ($showIA06)
                                         <div
-                                            class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 
-                    {{ $unlockAsesmen ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-
+                                            class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $unlockAsesmen ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
                                             <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
                                                 <div
                                                     class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $unlockAsesmen ? 'bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors' : 'bg-gray-200 text-gray-400' }}">
@@ -621,18 +603,15 @@
                                                     <p class="text-xs text-gray-500">Tes Tertulis Uraian</p>
                                                 </div>
                                             </div>
-
                                             <div class="w-full sm:w-auto flex-shrink-0">
                                                 @if ($isWaktuHabis || $unlockHasil)
                                                     <span
-                                                        class="inline-flex items-center justify-center w-full sm:w-36 h-10 bg-green-100 text-green-700 text-xs font-bold rounded-lg border border-green-200 cursor-default">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none"
+                                                        class="inline-flex items-center justify-center w-full sm:w-36 h-10 bg-green-100 text-green-700 text-xs font-bold rounded-lg border border-green-200 cursor-default"><svg
+                                                            class="w-4 h-4 mr-1.5" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                        </svg>
-                                                        Selesai
-                                                    </span>
+                                                        </svg> Selesai</span>
                                                 @elseif ($unlockAsesmen)
                                                     <a href="{{ route('asesi.asesmen.ia06.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                         class="flex items-center justify-center w-full sm:w-36 h-10 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
@@ -642,8 +621,7 @@
                                                                 stroke-width="2"
                                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                             </path>
-                                                        </svg>
-                                                        Kerjakan
+                                                        </svg> Kerjakan
                                                     </a>
                                                 @else
                                                     <div
@@ -654,91 +632,126 @@
                                                                 stroke-width="2"
                                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                                             </path>
-                                                        </svg>
-                                                        Terkunci
-                                                    </div>
+                                                        </svg> Terkunci</div>
                                                 @endif
                                             </div>
                                         </div>
                                     @endif
 
-                                    {{-- ==================================================== --}}
-                                    {{-- IA.07 & IA.09 (Status Only) --}}
-                                    {{-- ==================================================== --}}
-                                    @php
-                                        $otherItems = [
-                                            [
-                                                'show' => $showIA07,
-                                                'code' => 'FR.IA.07',
-                                                'name' => 'Pertanyaan Lisan',
-                                                'desc' => 'Interview Asesor',
-                                                'color' => 'orange',
-                                            ],
-                                            [
-                                                'show' => $showIA09,
-                                                'code' => 'FR.IA.09',
-                                                'name' => 'Wawancara',
-                                                'desc' => 'Verifikasi Portofolio',
-                                                'color' => 'red',
-                                            ],
-                                        ];
-                                    @endphp
-
-                                    @foreach ($otherItems as $item)
-                                        @if ($item['show'])
-                                            <div
-                                                class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 
-                        {{ $unlockAsesmen ? 'bg-white border-gray-200 hover:border-gray-300' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-
+                                    {{-- 4. IA.07 (Pertanyaan Lisan) --}}
+                                    {{-- DISINI KITA GAK PAKAI LOOP LAGI, TAPI MANUAL BIAR BISA SET ROUTE SENDIRI --}}
+                                    @if ($showIA07)
+                                        <div
+                                            class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $unlockAsesmen ? 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
+                                            <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
                                                 <div
-                                                    class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
-                                                    <div
-                                                        class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $unlockAsesmen ? 'bg-' . $item['color'] . '-50 text-' . $item['color'] . '-600' : 'bg-gray-200 text-gray-400' }}">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
-                                                            </path>
-                                                        </svg>
-                                                    </div>
-                                                    <div>
-                                                        <h4
-                                                            class="font-bold text-gray-800 {{ !$unlockAsesmen ? 'text-gray-500' : '' }}">
-                                                            {{ $item['code'] }} {{ $item['name'] }}</h4>
-                                                        <p class="text-xs text-gray-500">{{ $item['desc'] }}</p>
-                                                    </div>
+                                                    class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $unlockAsesmen ? 'bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors' : 'bg-gray-200 text-gray-400' }}">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                                                        </path>
+                                                    </svg>
                                                 </div>
-
-                                                <div
-                                                    class="w-full sm:w-auto flex-shrink-0 flex justify-center sm:justify-end">
-                                                    @if ($unlockHasil)
-                                                        <a href="#"
-                                                            class="flex items-center justify-center w-full sm:w-36 h-10 text-blue-600 text-sm font-semibold hover:underline">
-                                                            Lihat Hasil
-                                                        </a>
-                                                    @elseif ($unlockAsesmen)
-                                                        <span
-                                                            class="flex items-center justify-center w-full sm:w-36 h-10 px-3 bg-yellow-50 text-yellow-700 text-xs font-bold rounded-lg border border-yellow-200 animate-pulse">
-                                                            Proses Asesmen
-                                                        </span>
-                                                    @else
-                                                        <span
-                                                            class="flex items-center justify-center w-full sm:w-36 h-10 text-gray-400 text-xs font-semibold bg-gray-50 rounded-lg border border-gray-100">
-                                                            <svg class="w-3 h-3 mr-1" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-                                                                </path>
-                                                            </svg>
-                                                            Terkunci
-                                                        </span>
-                                                    @endif
+                                                <div>
+                                                    <h4
+                                                        class="font-bold text-gray-800 {{ !$unlockAsesmen ? 'text-gray-500' : '' }}">
+                                                        FR.IA.07 Pertanyaan Lisan</h4>
+                                                    <p class="text-xs text-gray-500">Interview Asesor</p>
                                                 </div>
                                             </div>
-                                        @endif
-                                    @endforeach
+                                            <div class="w-full sm:w-auto flex-shrink-0">
+                                                @if ($unlockHasil)
+                                                    <a href="#"
+                                                        class="flex items-center justify-center w-full sm:w-36 h-10 text-blue-600 text-sm font-semibold hover:underline">Lihat
+                                                        Hasil</a>
+                                                @elseif ($unlockAsesmen)
+                                                    {{-- GANTI ROUTE DI SINI UNTUK IA.07 --}}
+                                                    <a href="{{ route('asesi.ia07.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="flex items-center justify-center w-full sm:w-36 h-10 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                                                        <svg class="w-4 h-4 mr-2" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                                            </path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                            </path>
+                                                        </svg> Lihat Soal
+                                                    </a>
+                                                @else
+                                                    <div
+                                                        class="flex items-center justify-center w-full sm:w-36 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">
+                                                        <svg class="w-3 h-3 mr-1.5" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                                            </path>
+                                                        </svg> Terkunci</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    {{-- 5. IA.09 (Wawancara) --}}
+                                    @if ($showIA09)
+                                        <div
+                                            class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $unlockAsesmen ? 'bg-white border-gray-200 hover:border-red-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
+                                            <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
+                                                <div
+                                                    class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $unlockAsesmen ? 'bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors' : 'bg-gray-200 text-gray-400' }}">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                                                        </path>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4
+                                                        class="font-bold text-gray-800 {{ !$unlockAsesmen ? 'text-gray-500' : '' }}">
+                                                        FR.IA.09 Wawancara</h4>
+                                                    <p class="text-xs text-gray-500">Verifikasi Portofolio</p>
+                                                </div>
+                                            </div>
+                                            <div class="w-full sm:w-auto flex-shrink-0">
+                                                @if ($unlockHasil)
+                                                    <a href="#"
+                                                        class="flex items-center justify-center w-full sm:w-36 h-10 text-blue-600 text-sm font-semibold hover:underline">Lihat
+                                                        Hasil</a>
+                                                @elseif ($unlockAsesmen)
+                                                    {{-- GANTI ROUTE DI SINI UNTUK IA.09 --}}
+                                                    <a href="{{ route('asesi.ia09.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                        class="flex items-center justify-center w-full sm:w-36 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                                                        <svg class="w-4 h-4 mr-2" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                                            </path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                            </path>
+                                                        </svg> Lihat Soal
+                                                    </a>
+                                                @else
+                                                    <div
+                                                        class="flex items-center justify-center w-full sm:w-36 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">
+                                                        <svg class="w-3 h-3 mr-1.5" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                                            </path>
+                                                        </svg> Terkunci</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
 
                                 </div>
                             </div>

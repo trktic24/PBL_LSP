@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route; 
+use Illuminate\Support\Facades\Route;
 // Import semua Models yang relevan
 use App\Models\Asesi;
 use App\Models\Asesor;
@@ -45,8 +45,10 @@ class IA07Controller extends Controller
         if (!$jadwal) {
             $jadwal = new Jadwal();
             // Set dummy relations if needed, or rely on view's null coalescing operator if improved
-            if ($skema) $jadwal->setRelation('skema', $skema);
-            if ($asesor) $jadwal->setRelation('asesor', $asesor);
+            if ($skema)
+                $jadwal->setRelation('skema', $skema);
+            if ($asesor)
+                $jadwal->setRelation('asesor', $asesor);
         }
 
         // Ambil data Jenis TUK untuk radio button
@@ -85,7 +87,7 @@ class IA07Controller extends Controller
     public function store(Request $request)
     {
         // --- LOGIKA PENYIMPANAN DATA DI SINI ---
-        
+
         // 1. Validasi
         //   - Pastikan ada input radio TUK
         //   - Pastikan tanggal terisi
@@ -99,7 +101,7 @@ class IA07Controller extends Controller
         //    Idealnya ini dikirim via hidden input atau parameter route
         $sertifikasi = DataSertifikasiAsesi::first();
         if (!$sertifikasi) {
-             return redirect()->back()->with('error', 'Data Sertifikasi tidak ditemukan (DB Kosong).');
+            return redirect()->back()->with('error', 'Data Sertifikasi tidak ditemukan (DB Kosong).');
         }
         $idSertifikasi = $sertifikasi->id_data_sertifikasi_asesi;
 
@@ -112,17 +114,17 @@ class IA07Controller extends Controller
 
             // Regex untuk menangkap jawaban_CODE_qX
             $unitCodes = [];
-            
+
             // Loop data untuk mencari pattern jawaban
             foreach ($allData as $key => $value) {
                 if (preg_match('/^jawaban_(.+)_q(\d+)$/', $key, $matches)) {
                     $unitCode = $matches[1];
                     $questionNum = $matches[2];
-                    
+
                     $pertanyaan = "Pertanyaan No $questionNum Unit $unitCode"; // Atau ambil real text dari DB jika ada
                     $jawabanKey = $key;
                     $keputusanKey = "keputusan_{$unitCode}_q{$questionNum}";
-                    
+
                     $jawabanDiharapkan = "Lihat Kunci Jawaban"; // Placeholder
 
                     $keputusanVal = $request->input($keputusanKey); // K atau BK
@@ -146,17 +148,17 @@ class IA07Controller extends Controller
                     $unitCodes[$unitCode] = true;
                 }
             }
-            
+
             // 4. Update Umpan Balik (Jika ada kolom di tabel sertifikasi/lainnya, atau simpan di tempat lain)
             //    Model Ia07 sepertinya per-pertanyaan. Jika umpan balik global, mungkin masuk ke log activity atau field lain.
             //    Sesuai struktur yang ada, kita biarkan dulu atau simpan di salah satu record jika terpaksa.
             //    Tapi controller IA05 menyimpan umpan balik di tabel LembarJawab, di sini tabel Ia07 juga punya struktur mirip?
             //    Cek Ia07 model: fillable ['id_data_sertifikasi_asesi', 'pertanyaan', 'jawaban_asesi', 'jawaban_diharapkan', 'pencapaian']
             //    Tidak ada kolom umpan_balik khusus di Ia07.
-            
+
             // 5. Update Jadwal / Jenis TUK (Opsional, karena jadwal biasanya master data)
             //    Tapi kita bisa update id_jenis_tuk di sertifikasi/jadwal jika perlu.
-            
+
             DB::commit();
 
             return redirect()->route('ia07.cetak', $idSertifikasi)->with('success', 'Penilaian FR.IA.07 berhasil disimpan.');
@@ -172,7 +174,7 @@ class IA07Controller extends Controller
         // 1. Ambil Data Sertifikasi Lengkap
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'jadwal.skema.asesor',
             'jadwal.skema.unitKompetensi' // Ambil unit untuk ditampilkan di tabel awal
         ])->findOrFail($idSertifikasi);

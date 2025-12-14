@@ -182,14 +182,19 @@
                             
                             <div class="flex justify-between items-start mb-2">
                                 <span class="text-xs font-bold px-2 py-1 rounded-full"
-                                      :class="{
+                                    :class="{
                                         'bg-blue-100 text-blue-700': event.Status_jadwal === 'Terjadwal',
                                         'bg-green-100 text-green-700': event.Status_jadwal === 'Selesai',
                                         'bg-red-100 text-red-700': event.Status_jadwal === 'Dibatalkan'
-                                      }" 
-                                      x-text="event.Status_jadwal">
+                                    }" 
+                                    x-text="event.Status_jadwal">
                                 </span>
-                                <span class="text-xs text-gray-500" x-text="formatTime(event.waktu_mulai)"></span>
+                                
+                                {{-- [PERBAIKAN] Tampilkan Range Waktu --}}
+                                <span class="text-xs text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded-md">
+                                    <i class="far fa-clock mr-1"></i>
+                                    <span x-text="formatTime(event.waktu_mulai)"></span> - <span x-text="formatTime(event.waktu_selesai)"></span>
+                                </span>
                             </div>
 
                             <h4 class="font-semibold text-gray-900 text-sm mb-1 group-hover:text-blue-600 transition" x-text="event.skema?.nama_skema"></h4>
@@ -197,7 +202,7 @@
                             <div class="flex items-center text-xs text-gray-500 gap-3">
                                 <div class="flex items-center">
                                     <i class="fas fa-map-marker-alt mr-1 text-gray-400"></i>
-                                    <span x-text="event.tuk?.nama_lokasi || '-'"></span>
+                                    <span x-text="event.master_tuk?.nama_lokasi || '-'"></span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-users mr-1 text-gray-400"></i>

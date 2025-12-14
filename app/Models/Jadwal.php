@@ -5,9 +5,10 @@ namespace App\Models;
 use App\Models\Asesor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\belongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Perbaikan typo 'belongsTo' jadi 'BelongsTo'
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Carbon; // PENTING: Import Carbon
+use Illuminate\Support\Carbon;
+
 class Jadwal extends Model
 {
     use HasFactory;
@@ -25,29 +26,24 @@ class Jadwal extends Model
         'tanggal_selesai',
         'tanggal_pelaksanaan',
         'waktu_mulai',
+        'waktu_selesai', // [TAMBAHAN 1] Masukkan ke fillable
         'Status_jadwal',
         'kuota_maksimal',
         'kuota_minimal',
     ];
 
-    /**
-     * Atribut yang harus di-cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'tanggal_mulai' => 'datetime',
         'tanggal_selesai' => 'datetime',
         'tanggal_pelaksanaan' => 'date',
         'waktu_mulai' => 'datetime',
-        // Dibiarkan kosong/dihapus karena kita menggunakan Accessor untuk null safety
+        'waktu_selesai' => 'datetime', // [TAMBAHAN 2] Masukkan ke casts
     ];
 
-    // --- CUSTOM ACCESSORS UNTUK NULL SAFETY (WAJIB DIBERIKAN UNTUK SEMUA KOLOM TANGGAL/WAKTU) ---
+    // --- CUSTOM ACCESSORS ---
 
     public function getTanggalMulaiAttribute($value)
     {
-        // Jika nilai (dari DB) kosong (null atau string kosong), kembalikan null. Jika tidak, parse.
         return $value ? Carbon::parse($value) : null;
     }
 
@@ -63,11 +59,16 @@ class Jadwal extends Model
     
     public function getWaktuMulaiAttribute($value)
     {
-        // Accessor ini sekarang menangani waktu_mulai yang mungkin kosong.
         return $value ? Carbon::parse($value) : null;
     }
 
-    // --- Relasi ke Parent (Many-to-One) ---
+    // [TAMBAHAN 3] Accessor untuk Waktu Selesai
+    public function getWaktuSelesaiAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    // --- RELASI ---
 
     public function jenisTuk(): BelongsTo
     {
@@ -86,13 +87,9 @@ class Jadwal extends Model
 
     public function dataSertifikasiAsesi(): HasMany
     {
-        // Jadwal (id_jadwal) memiliki banyak DataSertifikasiAsesi
         return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
     }
 
-    /**
-     * Alias for dataSertifikasiAsesi to match controller usage ($jadwal->asesi)
-     */
     public function asesi(): HasMany
     {
         return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
@@ -100,16 +97,6 @@ class Jadwal extends Model
 
     public function asesor(): BelongsTo
     {
-        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor'
-        );
-    }
-
-    // Di dalam file App\Models\Jadwal.php
-
-    public function tuk()
-    {
-        // Sesuaikan 'Tuk::class' dengan nama Model TUK kamu
-        // Sesuaikan 'id_tuk' dengan nama kolom foreign key di tabel jadwal
-        return $this->belongsTo(Tuk::class, 'id_tuk'); 
+        return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
     }
 }

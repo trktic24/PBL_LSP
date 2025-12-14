@@ -348,7 +348,7 @@
                     $profileUrl = '#';
                     if(Auth::check()){
                          $role = Auth::user()->role->nama_role;
-                         if($role == 'admin') $profileUrl = route('admin.profile.edit');
+                         if($role == 'admin' || $role == 'superadmin') $profileUrl = route('admin.profile.edit');
                          elseif($role == 'asesi') $profileUrl = route('asesi.profile.edit');
                          elseif($role == 'asesor') $profileUrl = route('asesor.profil');
                     }
@@ -414,7 +414,7 @@
                     $profileUrlDesktop = '#';
                     if(Auth::check()){
                          $role = Auth::user()->role->nama_role;
-                         if($role == 'admin') $profileUrlDesktop = route('admin.profile.edit');
+                         if($role == 'admin' || $role == 'superadmin') $profileUrlDesktop = route('admin.profile.edit');
                          elseif($role == 'asesi') $profileUrlDesktop = route('asesi.profile.edit');
                          elseif($role == 'asesor') $profileUrlDesktop = route('asesor.profil');
                     }

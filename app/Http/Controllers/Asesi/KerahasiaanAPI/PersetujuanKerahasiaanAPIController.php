@@ -120,4 +120,9 @@ class PersetujuanKerahasiaanAPIController extends Controller
             'asesi'       => $sertifikasi->asesi
         ]);
     }
+<<<<<<< HEAD
 }   
+=======
+    
+}
+>>>>>>> 7b5ccd0db2efcedc20353f4cc36240282a2cedde

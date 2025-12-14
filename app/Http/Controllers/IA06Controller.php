@@ -23,7 +23,7 @@ class Ia06Controller extends Controller
      */
     public function adminIndex(Request $request)
     {
-        $this->authorizeRole(1); // Cek apakah Admin
+        // $this->authorizeRole(1); // Handled by Middleware
 
         $skemas = Skema::all();
         $selectedSkema = $request->query('skema_id');
@@ -42,7 +42,7 @@ class Ia06Controller extends Controller
      */
     public function adminStoreSoal(Request $request)
     {
-        $this->authorizeRole(1);
+        // $this->authorizeRole(1);
 
         $request->validate([
             'id_skema' => 'required|exists:skema,id_skema',
@@ -60,7 +60,7 @@ class Ia06Controller extends Controller
      */
     public function adminUpdateSoal(Request $request, $id)
     {
-        $this->authorizeRole(1);
+        // $this->authorizeRole(1);
 
         $soal = SoalIa06::findOrFail($id);
         $soal->update($request->only(['soal_ia06', 'kunci_jawaban_ia06']));
@@ -73,7 +73,7 @@ class Ia06Controller extends Controller
      */
     public function adminDestroySoal($id)
     {
-        $this->authorizeRole(1);
+        // $this->authorizeRole(1);
         SoalIa06::destroy($id);
         return back()->with('success', 'Soal dihapus.');
     }
@@ -206,9 +206,9 @@ class Ia06Controller extends Controller
     {
         // 1. Ambil Data Sertifikasi
         $sertifikasi = DataSertifikasiAsesi::with([
-            'jadwal.skema', 
+            'jadwal.skema',
             'jadwal.asesor',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'asesi'
         ])->findOrFail($idSertifikasi);
 
@@ -224,7 +224,7 @@ class Ia06Controller extends Controller
         $pdf = Pdf::loadView('pdf.ia_06', [
             'sertifikasi' => $sertifikasi,
             'daftar_soal' => $daftar_soal,
-            'umpanBalik'  => $umpanBalik
+            'umpanBalik' => $umpanBalik
         ]);
 
         $pdf->setPaper('A4', 'portrait');
@@ -259,7 +259,8 @@ class Ia06Controller extends Controller
             // Ambil soal berdasarkan skema jadwal
             $soals = SoalIa06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
 
-            if ($soals->isEmpty()) return; // Tidak ada soal, skip
+            if ($soals->isEmpty())
+                return; // Tidak ada soal, skip
 
             $dataInsert = [];
             foreach ($soals as $soal) {

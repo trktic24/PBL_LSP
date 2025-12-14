@@ -70,6 +70,7 @@ use App\Http\Controllers\Asesi\pembayaran\PaymentController;
 // PDF Controllers
 use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
 use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
+use App\Http\Controllers\Asesi\Pdf\Ak01PdfController; 
 use App\Http\Controllers\Asesi\Pdf\KartuPesertaPdfController;
 
 // ======================================================
@@ -258,8 +259,15 @@ Route::middleware('auth')->group(function () {
         Route::controller(AsesiProfileController::class)->prefix('asesi/{id_asesi}')->group(function () {
             Route::get('/settings', 'settings')->name('asesi.profile.settings');
             Route::get('/form', 'form')->name('asesi.profile.form');
-            Route::get('/bukti', 'bukti')->name('asesi.profile.bukti');
             Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
+
+            // --- FITUR BUKTI KELENGKAPAN ---
+            Route::get('/bukti', 'bukti')->name('asesi.profile.bukti'); // Halaman View
+            Route::post('/bukti/store', 'storeBukti')->name('asesi.profile.bukti.store'); // Upload
+            Route::post('/bukti/update/{id_bukti}', 'updateBukti')->name('asesi.profile.bukti.update');
+            Route::delete('/bukti/delete/{id_bukti}', 'deleteBukti')->name('asesi.profile.bukti.delete'); // Hapus
+            Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
+            Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
         });
 
         // Master Asesor
@@ -310,11 +318,15 @@ Route::middleware('auth')->group(function () {
             // Route::get('/berita-acara/pdf', 'exportPdfberitaAcara')->name('berita_acara.pdf');
         });
 
-        // Bank Soal IA-06 (Admin)
+        // Bank Soal IA-06 (View Only for Admin, Full Access for Superadmin)
         Route::get('/bank-soal-ia06', [Ia06Controller::class, 'adminIndex'])->name('ia06.index');
-        Route::post('/bank-soal-ia06', [Ia06Controller::class, 'adminStoreSoal'])->name('ia06.store');
-        Route::put('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
-        Route::delete('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
+        
+        // Superadmin ONLY Actions
+        Route::middleware(['role:superadmin'])->group(function () {
+            Route::post('/bank-soal-ia06', [Ia06Controller::class, 'adminStoreSoal'])->name('ia06.store');
+            Route::put('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
+            Route::delete('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
+        });
     });
 
     // ======================================================
@@ -358,8 +370,8 @@ Route::middleware('auth')->group(function () {
         });
 
         // AK-02
-        Route::get('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
-        Route::put('/asesor/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
+        Route::get('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
+        Route::put('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
 
         // APL-02 (Verifikasi)
         Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
@@ -419,6 +431,7 @@ Route::middleware('auth')->group(function () {
         // Jadwal & Konfirmasi
         Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
         Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
+        
 
         // Pembayaran
         Route::controller(PaymentController::class)->group(function () {
@@ -452,8 +465,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04');
 
         // Cetak
-        Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
+        Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01'); 
+
+        // Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
+
         Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
+        Route::get('/cetak/ak01/{id_sertifikasi}', [Ak01PdfController::class, 'generateAk01'])->name('cetak.ak01');
     });
 
     // ======================================================
