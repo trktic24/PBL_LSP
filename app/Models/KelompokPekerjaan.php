@@ -25,7 +25,7 @@ class KelompokPekerjaan extends Model
     }
 
     // Relasi ke Anak (Unit Kompetensi)
-    public function unitKompetensis()
+    public function unitKompetensi()
     {
         return $this->hasMany(UnitKompetensi::class, 'id_kelompok_pekerjaan', 'id_kelompok_pekerjaan');
     }
