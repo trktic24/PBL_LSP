@@ -191,7 +191,8 @@ class AsesorProfileController extends Controller
                 'date' => $dataSertifikasi->jadwal->tanggal_pelaksanaan,
                 'status_text' => $hasAk05 ? 'Selesai' : 'Terjadwal',
                 'icon' => 'far fa-edit',
-                'sub_items' => $subItems
+                'sub_items' => $subItems,
+                'action_url' => route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $dataSertifikasi->id_data_sertifikasi_asesi])
             ];
 
             // Menggunakan asesor_profile_tracker_skema untuk detail timeline (sesuai permintaan user)

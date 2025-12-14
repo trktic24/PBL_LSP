@@ -154,32 +154,34 @@
 
           <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">Tanda Tangan Pemohon</h3>
           
-          <p class="font-semibold text-gray-800 mb-4 text-center md:text-left">Saya yang bertanda tangan di bawah ini:</p>
+          <div class="bg-gray-50 rounded-xl p-6 max-w-3xl mx-auto border border-gray-200 mb-8">
+              <p class="text-sm font-semibold text-gray-800 mb-4">Saya yang bertanda tangan di bawah ini:</p>
 
-          <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 mb-6">
-              <div class="space-y-3 text-sm text-gray-700">
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Nama</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->nama_lengkap }}</span>
-                </div>
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Pekerjaan</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->pekerjaan }}</span>
-                </div>
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Alamat Korespondensi</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->alamat_rumah ?? '-' }}</span>
-                </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                  {{-- Item 1 --}}
+                  <div>
+                      <label class="block text-xs text-gray-500 mb-1">Nama Lengkap</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->nama_lengkap }}</p>
+                  </div>
+                  
+                  {{-- Item 2 --}}
+                  <div>
+                      <label class="block text-xs text-gray-500 mb-1">Pekerjaan</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->pekerjaan }}</p>
+                  </div>
+                  
+                  {{-- Item 3 --}}
+                  <div class="md:col-span-2">
+                      <label class="block text-xs text-gray-500 mb-1">Alamat Korespondensi</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->alamat_rumah ?? '-' }}</p>
+                  </div>
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-gray-200 text-gray-600 text-[11px] leading-relaxed">
+                  Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan dapat dipertanggungjawabkan. 
+                  Dokumen ini digunakan sebagai bukti pemenuhan syarat Sertifikasi Kompetensi.
               </div>
           </div>
-
-          <p class="mt-6 text-gray-600 text-sm mb-8 leading-relaxed">
-            Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan dapat dipertanggungjawabkan. 
-            Dokumen ini digunakan sebagai bukti pemenuhan syarat Sertifikasi Kompetensi.
-          </p>
 
           <div class="flex flex-col items-center justify-center">
               <div class="group relative mt-2 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl w-full max-w-md h-48 flex items-center justify-center bg-gray-50 transition-colors duration-300">

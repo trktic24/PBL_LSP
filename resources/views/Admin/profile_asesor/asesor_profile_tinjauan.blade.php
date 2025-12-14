@@ -34,7 +34,7 @@
       
       <div class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-10 border border-gray-100 min-h-full">
         
-        <div class="flex flex-col mb-8">
+        <div class="flex flex-col mb-8 text-center">
             <h1 class="text-2xl font-bold text-gray-800">Tinjauan Asesmen</h1>
             <p class="text-sm text-gray-500 mt-1">Daftar asesmen yang perlu diverifikasi atau ditinjau.</p>
         </div>
@@ -100,10 +100,11 @@
                                     </button>
                                     
                                     {{-- Link Laporan --}}
-                                    <a href="{{ route('admin.asesor.daftar_asesi', ['id_asesor' => $asesor->id_asesor, 'id_jadwal' => $item->id_jadwal]) }}" 
+                                    {{-- Link Laporan (Disembunyikan sementara) --}}
+                                    {{-- <a href="{{ route('admin.asesor.daftar_asesi', ['id_asesor' => $asesor->id_asesor, 'id_jadwal' => $item->id_jadwal]) }}" 
                                        class="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-4 rounded-lg text-xs font-bold shadow-md transition-transform hover:scale-105 flex items-center">
                                         <i class="fas fa-file-alt mr-1.5"></i> Laporan
-                                    </a>
+                                    </a> --}}
                                 @else
                                     {{-- Link Verifikasi (Daftar Asesi) --}}
                                     {{-- Pastikan route ini ada di web.php: admin.asesor.daftar_asesi --}}
@@ -112,9 +113,9 @@
                                         <i class="fas fa-edit mr-1.5"></i> Verifikasi
                                     </a>
                                     
-                                    <button disabled class="bg-gray-100 text-gray-400 py-1.5 px-4 rounded-lg text-xs font-bold cursor-not-allowed border border-gray-200">
+                                    {{-- <button disabled class="bg-gray-100 text-gray-400 py-1.5 px-4 rounded-lg text-xs font-bold cursor-not-allowed border border-gray-200">
                                         Laporan
-                                    </button>
+                                    </button> --}}
                                 @endif
                             </div>
                         </td>

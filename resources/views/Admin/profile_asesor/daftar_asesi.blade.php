@@ -33,15 +33,14 @@
       <div class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-10 border border-gray-100 min-h-full">
         
         {{-- Header Page --}}
-        <div class="flex items-center justify-between mb-8">
-            <div>
+        <div class="relative flex items-center justify-center mb-8">
+            <a href="{{ route('admin.asesor_profile_tinjauan', $asesor->id_asesor) }}" class="absolute left-0 top-1 text-gray-500 hover:text-blue-600 transition text-sm font-medium">
+                <i class="fas fa-arrow-left mr-2"></i> Kembali
+            </a>
+            <div class="text-center">
                 <h1 class="text-2xl font-bold text-gray-800">Daftar Asesi</h1>
                 <p class="text-sm text-gray-500 mt-1">Kelola penilaian dan verifikasi untuk setiap asesi pada jadwal ini.</p>
             </div>
-            
-            <a href="{{ route('admin.asesor_profile_tinjauan', $asesor->id_asesor) }}" class="flex items-center text-gray-500 hover:text-blue-600 transition text-sm font-medium">
-                <i class="fas fa-arrow-left mr-2"></i> Kembali ke Tinjauan
-            </a>
         </div>
 
         {{-- Card Informasi Jadwal --}}
@@ -149,10 +148,12 @@
                             </td>
                             
                             <td class="px-6 py-4 text-left align-top">
-                                <div class="font-bold text-gray-800">{{ $item->asesi->nama_lengkap ?? 'Nama Tidak Ditemukan' }}</div>
-                                @if($item->asesi->dataPekerjaan)
-                                    <div class="text-xs text-gray-400 font-normal mt-0.5">{{ $item->asesi->dataPekerjaan->nama_institusi_pekerjaan }}</div>
-                                @endif
+                                <a href="{{ url('/admin/asesi/' . $item->asesi->id_asesi . '/settings') }}" class="group block">
+                                    <div class="font-bold text-gray-800 group-hover:text-blue-600 transition">{{ $item->asesi->nama_lengkap ?? 'Nama Tidak Ditemukan' }}</div>
+                                    @if($item->asesi->dataPekerjaan)
+                                        <div class="text-xs text-gray-400 font-normal mt-0.5 group-hover:text-blue-400 transition">{{ $item->asesi->dataPekerjaan->nama_institusi_pekerjaan }}</div>
+                                    @endif
+                                </a>
                             </td>
 
                             {{-- Status Pra Asesmen --}}

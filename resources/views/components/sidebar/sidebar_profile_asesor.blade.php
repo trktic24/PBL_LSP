@@ -26,9 +26,21 @@
     <div class="w-[85%] border-t-2 border-gray-300 opacity-50 mt-4 -mb-2 relative z-10"></div>
 
     @php
-        $skemaPertama = $asesor->skemas->first();
+        // 1. Ambil Skema dari Pivot (Many-to-Many)
+        $skemaPivot = $asesor->skemas; 
+        
+        // 2. Ambil Skema dari Riwayat Jadwal
+        $skemaJadwal = $asesor->jadwals->pluck('skema')->filter(); 
+        
+        // 3. Ambil Skema Utama (One-to-Many)
+        $skemaUtama = $asesor->skema ? collect([$asesor->skema]) : collect();
+
+        // 4. Gabungkan semua dan hilangkan duplikat bedasarkan 'nama_skema'
+        $allSkemas = $skemaPivot->merge($skemaJadwal)->merge($skemaUtama)->unique('nama_skema');
+
+        $skemaPertama = $allSkemas->first();
         $namaSkema = $skemaPertama->nama_skema ?? 'Belum ada skema';
-        $jumlahSkema = $asesor->skemas->count();
+        $jumlahSkema = $allSkemas->count();
         $infoTambahan = $jumlahSkema > 1 ? '+ ' . ($jumlahSkema - 1) . ' Skema Lainnya' : ($skemaPertama->nomor_skema ?? '-');
     @endphp
 
