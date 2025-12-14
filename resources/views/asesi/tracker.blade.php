@@ -404,6 +404,7 @@
                             <div
                                 class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 {{ $unlockAsesmen ? 'bg-green-500' : 'bg-gray-200' }}">
                             </div>
+
                             <div class="relative flex-shrink-0 ml-1 mr-4 md:mr-6 z-10">
                                 <div
                                     class="hidden md:flex w-12 h-12 rounded-lg {{ $unlockAsesmen ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500' }} items-center justify-center">
@@ -415,9 +416,16 @@
                             </div>
 
                             <div class="w-full bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                                <h3 class="text-lg font-bold text-gray-900 mb-4">Asesmen</h3>
 
-                                {{-- Pesan Status --}}
+                                {{-- JUDUL UTAMA: Cek Unlock Asesmen --}}
+                                @if ($unlockAsesmen)
+                                    <h3 class="text-lg font-bold text-gray-900 mb-4">Asesmen</h3>
+                                @else
+                                    {{-- Pakai variable $linkClassDisabled biar konsisten sama menu lain --}}
+                                    <h3 class="{{ $linkClassDisabled }} mb-4">Asesmen</h3>
+                                @endif
+
+                                {{-- Pesan Status (Info Waktu / Waktu Habis) --}}
                                 @if (!$unlockAsesmen && isset($pesanStatus))
                                     <div class="mb-4 p-3 bg-yellow-50 text-yellow-700 rounded-md text-sm">
                                         <span class="font-semibold">Info:</span> {{ $pesanStatus }}
@@ -427,18 +435,26 @@
                                     </div>
                                 @elseif($isWaktuHabis)
                                     <div class="mb-4 p-3 bg-blue-50 text-blue-700 rounded-md text-sm font-medium">
-                                        Waktu Asesmen Telah Habis. Jawaban Anda otomatis tersimpan. Silahkan isi Umpan
-                                        Balik di bawah.
+                                        Waktu Asesmen Telah Habis. Jawaban otomatis tersimpan. Silahkan isi Umpan Balik.
                                     </div>
                                 @endif
 
                                 <div class="space-y-4">
-                                    {{-- IA.02: PRAKTIK (Selalu buka kalau udah start) --}}
+
+                                    {{-- IA.02: PRAKTIK --}}
                                     @if ($showIA02)
                                         <div class="flex justify-between items-center p-3 border rounded-md">
                                             <div>
-                                                <h4 class="font-semibold text-gray-800">FR.IA.02 Demonstrasi</h4>
+                                                {{-- Logika Text Judul Item --}}
+                                                @if ($unlockAsesmen)
+                                                    <h4 class="font-semibold text-gray-800">FR.IA.02 Demonstrasi</h4>
+                                                @else
+                                                    <h4 class="font-semibold text-gray-400 cursor-not-allowed">FR.IA.02
+                                                        Demonstrasi</h4>
+                                                @endif
                                             </div>
+
+                                            {{-- Tombol --}}
                                             @if ($unlockAsesmen)
                                                 <a href="{{ route('asesi.ia02.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                     class="btn-primary-sm">Lihat Soal</a>
@@ -448,12 +464,18 @@
                                         </div>
                                     @endif
 
-                                    {{-- IA.05: PILGAN (Tutup kalau Waktu Habis) --}}
+                                    {{-- IA.05: PILGAN --}}
                                     @if ($showIA05)
                                         <div class="flex justify-between items-center p-3 border rounded-md">
                                             <div>
-                                                <h4 class="font-semibold text-gray-800">FR.IA.05 Pilihan Ganda</h4>
+                                                @if ($unlockAsesmen)
+                                                    <h4 class="font-semibold text-gray-800">FR.IA.05 Pilihan Ganda</h4>
+                                                @else
+                                                    <h4 class="font-semibold text-gray-400 cursor-not-allowed">FR.IA.05
+                                                        Pilihan Ganda</h4>
+                                                @endif
                                             </div>
+
                                             @if ($isWaktuHabis || $unlockHasil)
                                                 <span class="badge-selesai">Selesai / Waktu Habis</span>
                                             @elseif ($unlockAsesmen)
@@ -465,12 +487,18 @@
                                         </div>
                                     @endif
 
-                                    {{-- IA.06: ESAI (Tutup kalau Waktu Habis) --}}
+                                    {{-- IA.06: ESAI --}}
                                     @if ($showIA06)
                                         <div class="flex justify-between items-center p-3 border rounded-md">
                                             <div>
-                                                <h4 class="font-semibold text-gray-800">FR.IA.06 Esai</h4>
+                                                @if ($unlockAsesmen)
+                                                    <h4 class="font-semibold text-gray-800">FR.IA.06 Esai</h4>
+                                                @else
+                                                    <h4 class="font-semibold text-gray-400 cursor-not-allowed">FR.IA.06
+                                                        Esai</h4>
+                                                @endif
                                             </div>
+
                                             @if ($isWaktuHabis || $unlockHasil)
                                                 <span class="badge-selesai">Selesai / Waktu Habis</span>
                                             @elseif ($unlockAsesmen)
@@ -482,12 +510,19 @@
                                         </div>
                                     @endif
 
-                                    {{-- IA.07 & IA.09 (Buka pas Hasil Keluar) --}}
+                                    {{-- IA.07: LISAN --}}
                                     @if ($showIA07)
                                         <div class="flex justify-between items-center p-3 border rounded-md">
                                             <div>
-                                                <h4 class="font-semibold text-gray-800">FR.IA.07 Lisan</h4>
+                                                @if ($unlockAsesmen)
+                                                    {{-- Kalau asesmen mulai, statusnya 'Proses', jadi text Hitam --}}
+                                                    <h4 class="font-semibold text-gray-800">FR.IA.07 Lisan</h4>
+                                                @else
+                                                    <h4 class="font-semibold text-gray-400 cursor-not-allowed">FR.IA.07
+                                                        Lisan</h4>
+                                                @endif
                                             </div>
+
                                             @if ($unlockHasil)
                                                 <a href="#" class="text-blue-600 text-xs">Lihat Hasil</a>
                                             @elseif ($unlockAsesmen)
@@ -497,6 +532,29 @@
                                             @endif
                                         </div>
                                     @endif
+
+                                    {{-- IA.09: WAWANCARA --}}
+                                    @if ($showIA09)
+                                        <div class="flex justify-between items-center p-3 border rounded-md">
+                                            <div>
+                                                @if ($unlockAsesmen)
+                                                    <h4 class="font-semibold text-gray-800">FR.IA.09 Wawancara</h4>
+                                                @else
+                                                    <h4 class="font-semibold text-gray-400 cursor-not-allowed">FR.IA.09
+                                                        Wawancara</h4>
+                                                @endif
+                                            </div>
+
+                                            @if ($unlockHasil)
+                                                <a href="#" class="text-blue-600 text-xs">Lihat Hasil</a>
+                                            @elseif ($unlockAsesmen)
+                                                <span class="text-yellow-600 text-xs">Proses Asesmen</span>
+                                            @else
+                                                <span class="text-gray-400 text-xs">Terkunci</span>
+                                            @endif
+                                        </div>
+                                    @endif
+
                                 </div>
                             </div>
                         </li>

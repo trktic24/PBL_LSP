@@ -90,7 +90,7 @@ class TrackerController extends Controller
                         }
                     } else {
                         $pesanStatus = 'Asesmen belum dimulai.';
-                        $pesanWaktu = 'Mulai: ' . $waktuMulai->format('H:i') . ' WIB';
+                        $pesanWaktu = 'Mulai: ' . $waktuMulai->format('d M Y, H:i') . ' WIB';
                     }
 
                     // Cek Selesai (Trigger AK.03 / Umpan Balik)

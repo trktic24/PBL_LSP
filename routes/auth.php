@@ -450,56 +450,6 @@ Route::middleware('auth')->group(function () {
             Route::delete('/ia11/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
         });
 
-        // Tracker
-        Route::controller(TrackerController::class)->group(function () {
-            Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
-            Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
-            Route::get('/pendaftaran-selesai', 'pendaftaranSelesai')->name('pendaftaran.selesai');
-        });
-
-        // Riwayat & Formulir
-        Route::get('/riwayat-sertifikasi', [RiwayatSertifikasiController::class, 'index'])->name('riwayat.index');
-        Route::get('/data_sertifikasi/{id_sertifikasi}', [DataSertifikasiAsesiController::class, 'showFormulir'])->name('data.sertifikasi');
-        Route::get('/bukti_pemohon/{id_sertifikasi}', [BuktiKelengkapanController::class, 'showBuktiPemohon'])->name('bukti.pemohon');
-        Route::get('/halaman-tanda-tangan/{id_sertifikasi}', [TandaTanganAPIController::class, 'showTandaTangan'])->name('show.tandatangan');
-        Route::get('/formulir-selesai', fn() => 'BERHASIL DISIMPAN!')->name('form.selesai');
-
-        // Pra-Asesmen & Lainnya
-        Route::get('/pra-asesmen/{id_sertifikasi}', [PraasesmenController::class, 'index'])->name('apl02.view');
-        Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
-        Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
-        Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');
-        Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])->name('asesmen.ia06.view');
-        
-        // Pasca Asesmen
-        Route::get('/umpan-balik/{id}', [Ak03Controller::class, 'index'])->name('ak03.index');
-        Route::post('/umpan-balik/store/{id}', [Ak03Controller::class, 'store'])->name('ak03.store');
-        Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04');
-
-        // Pembayaran
-        Route::controller(PaymentController::class)->group(function () {
-            Route::get('/bayar/{id_sertifikasi}', 'createTransaction')->name('payment.create');
-            Route::get('/pembayaran_diproses', 'processed')->name('pembayaran_diproses');
-            Route::get('/pembayaran_batal', 'paymentCancel')->name('payment.cancel');
-            Route::get('/payment/{id_sertifikasi}/invoice', 'downloadInvoice')->name('payment.invoice');
-        });
-
-        // Utilities
-        Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('pdf.apl01');
-        Route::get('/ia01/{id_sertifikasi}', fn($id) => 'HALAMAN IA01 BELUM DIBUAT — ID: ' . $id)->name('ia01.index');
-        
-        // IA02, IA03, IA07, IA11
-        Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');
-        Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
-        Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
-        Route::get('/ia03/detail/{id}', [IA03Controller::class, 'show'])->name('ia03.show');
-        Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
-        Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
-        Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
-        Route::put('/ia11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
-        Route::delete('/ia11/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
-    });
-
     // ======================================================
     // 6. TRAFFIC COP & VERIFICATION
     // ======================================================
