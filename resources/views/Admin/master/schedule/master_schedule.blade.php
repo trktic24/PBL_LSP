@@ -69,7 +69,7 @@
                             class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 flex items-center"
                         >
                             <i class="fas fa-filter mr-2"></i> Filter
-                            
+
                             @if($filterStatus || $filterJenisTuk)
                                 <span class="ml-2 w-2 h-2 bg-blue-500 rounded-full"></span>
                             @endif
@@ -81,40 +81,40 @@
                             x-transition
                         >
                             <div class="px-4 py-2 text-xs text-gray-500 font-semibold uppercase">Filter Status</div>
-                            <a 
+                            <a
                                 href="{{ route('admin.master_schedule', array_merge($allParams, [
-                                    'filter_status' => ($filterStatus == 'Terjadwal') ? null : 'Terjadwal', 
+                                    'filter_status' => ($filterStatus == 'Terjadwal') ? null : 'Terjadwal',
                                     'page' => 1
                                 ])) }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 {{ $filterStatus == 'Terjadwal' ? 'bg-blue-50 font-semibold' : '' }}"
                             >Status: Terjadwal</a>
-                            <a 
+                            <a
                                 href="{{ route('admin.master_schedule', array_merge($allParams, [
-                                    'filter_status' => ($filterStatus == 'Selesai') ? null : 'Selesai', 
+                                    'filter_status' => ($filterStatus == 'Selesai') ? null : 'Selesai',
                                     'page' => 1
                                 ])) }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 {{ $filterStatus == 'Selesai' ? 'bg-blue-50 font-semibold' : '' }}"
                             >Status: Selesai</a>
-                            <a 
+                            <a
                                 href="{{ route('admin.master_schedule', array_merge($allParams, [
-                                    'filter_status' => ($filterStatus == 'Dibatalkan') ? null : 'Dibatalkan', 
+                                    'filter_status' => ($filterStatus == 'Dibatalkan') ? null : 'Dibatalkan',
                                     'page' => 1
                                 ])) }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 {{ $filterStatus == 'Dibatalkan' ? 'bg-blue-50 font-semibold' : '' }}"
                             >Status: Dibatalkan</a>
-                            
+
                             <div class="border-t border-gray-100 my-1"></div>
                             <div class="px-4 py-2 text-xs text-gray-500 font-semibold uppercase">Filter Jenis TUK</div>
-                            <a 
+                            <a
                                 href="{{ route('admin.master_schedule', array_merge($allParams, [
-                                    'filter_jenis_tuk' => ($filterJenisTuk == '1') ? null : 1, 
+                                    'filter_jenis_tuk' => ($filterJenisTuk == '1') ? null : 1,
                                     'page' => 1
                                 ])) }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 {{ $filterJenisTuk == '1' ? 'bg-blue-50 font-semibold' : '' }}"
                             >Jenis: Sewaktu</a>
-                            <a 
+                            <a
                                 href="{{ route('admin.master_schedule', array_merge($allParams, [
-                                    'filter_jenis_tuk' => ($filterJenisTuk == '2') ? null : 2, 
+                                    'filter_jenis_tuk' => ($filterJenisTuk == '2') ? null : 2,
                                     'page' => 1
                                 ])) }}"
                                 class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 {{ $filterJenisTuk == '2' ? 'bg-blue-50 font-semibold' : '' }}"
@@ -122,7 +122,7 @@
 
                             @if($filterStatus || $filterJenisTuk)
                                 <div class="border-t border-gray-100 my-1"></div>
-                                <a 
+                                <a
                                     href="{{ route('admin.master_schedule', array_merge($allParams, ['filter_status' => null, 'filter_jenis_tuk' => null, 'page' => 1])) }}"
                                     class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                                 >
@@ -210,9 +210,9 @@
                             @php
                                 // [PERBAIKAN] Pastikan $baseParams juga membawa filter yang aktif
                                 $baseParams = [
-                                    'search' => request('search'), 
-                                    'per_page' => request('per_page'), 
-                                    'filter_status' => $filterStatus, 
+                                    'search' => request('search'),
+                                    'per_page' => request('per_page'),
+                                    'filter_status' => $filterStatus,
                                     'filter_jenis_tuk' => $filterJenisTuk
                                 ];
                             @endphp
@@ -232,7 +232,7 @@
                                     </div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-4 py-3 text-left font-semibold">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'skema_nama';
@@ -248,7 +248,7 @@
                                     </div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-4 py-3 text-left font-semibold">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'asesor_nama';
@@ -264,7 +264,7 @@
                                     </div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-4 py-3 text-left font-semibold">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'tuk_nama';
@@ -280,7 +280,7 @@
                                     </div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-4 py-3 text-left font-semibold">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'tanggal_mulai';
@@ -296,7 +296,7 @@
                                     </div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-4 py-3 text-left font-semibold">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'tanggal_pelaksanaan';
@@ -312,9 +312,9 @@
                                     </div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-4 py-3 text-left font-semibold">Jenis TUK</th>
-                            
+
                             <th class="px-4 py-3 text-left font-semibold">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'sesi';
@@ -330,7 +330,7 @@
                                     </div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-4 py-3 text-center font-semibold">
                                 @php
                                     $isCurrentColumn = $sortColumn == 'kuota_maksimal';
@@ -346,13 +346,13 @@
                                     </div>
                                 </a>
                             </th>
-                            
+
                             <th class="px-4 py-3 text-center font-semibold">Status</th>
-                            
+
                             <th class="px-4 py-3 text-center font-semibold">Daftar Hadir</th>
-                            
+
                             <th class="px-4 py-3 text-center font-semibold">Berita Acara</th>
-                            
+
                             <th class="px-4 py-3 text-center font-semibold">Aksi</th>
                         </tr>
                     </thead>
@@ -384,7 +384,7 @@
                                 </a>
                             </td>
                             <td class="px-4 py-3 text-center">
-                                <a href="#" class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded-md transition">
+                                <a href="{{ route('asesor.berita_acara', $jadwal->id_jadwal) }}" class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded-md transition">
                                     <i class="fas fa-file-alt"></i> <span>Lihat</span>
                                 </a>
                             </td>

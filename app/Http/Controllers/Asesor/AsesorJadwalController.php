@@ -386,26 +386,36 @@ class AsesorJadwalController extends Controller
         // 1. Ambil Data Jadwal Utama
         $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor'])->findOrFail($id_jadwal);
 
-        // 2. Cek Otorisasi HANYA jika role asesor
-        if (Auth::user()->role === 'asesor') {
-            $asesor = Asesor::where('id_user', Auth::id())->first();
+        $user = Auth::user();
+        $userRole = $user->role->nama_role;
+        $isAdmin = in_array($userRole, ['admin', 'superadmin']);
+        $isAsesor = $userRole === 'asesor';
 
+        // 2. Cek Otorisasi: Asesor harus punya akses ke jadwal ini, Admin bisa akses semua (readonly)
+        $asesor = null;
+        if ($isAsesor) {
+            $asesor = Asesor::where('id_user', Auth::id())->first();
             if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
                 abort(403, 'Anda tidak berhak mengakses jadwal ini.');
             }
+        } elseif ($isAdmin) {
+            // Admin bisa akses semua jadwal (readonly)
+            $asesor = $jadwal->asesor; // Ambil asesor dari jadwal untuk display
+        } else {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        $asesor = Asesor::where('id_user', Auth::id())->first();
+        // 2.5 Cek apakah seluruh AK05 sudah diverifikasi validator (hanya untuk asesor, admin bisa lihat semua)
+        if ($isAsesor) {
+            $adaBelumDiverifikasi = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
+                ->whereHas('komentarAk05', function ($q) {
+                    $q->whereNull('verifikasi_validator'); // kolom verifikasi validator
+                })
+                ->exists();
 
-        // 2.5 Cek apakah seluruh AK05 sudah diverifikasi validator
-        $adaBelumDiverifikasi = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
-            ->whereHas('komentarAk05', function ($q) {
-                $q->whereNull('verifikasi_validator'); // kolom verifikasi validator
-            })
-            ->exists();
-
-        if ($adaBelumDiverifikasi) {
-            abort(403, 'Berita Acara belum dapat diakses karena hasil asesmen belum diverifikasi.');
+            if ($adaBelumDiverifikasi) {
+                abort(403, 'Berita Acara belum dapat diakses karena hasil asesmen belum diverifikasi.');
+            }
         }
 
         // 3. Setup Default Sorting
@@ -466,6 +476,7 @@ class AsesorJadwalController extends Controller
             'jumlahKompeten' => $jumlahKompeten,
             'jumlahBelumKompeten' => $jumlahBelumKompeten,
             'role' => Auth::user()->role,
+            'isReadonly' => $isAdmin, // Flag untuk readonly mode (admin)
         ]);
     }
 
@@ -554,18 +565,18 @@ class AsesorJadwalController extends Controller
         \DB::beginTransaction();
         try {
             // Save Global AK05 Data
-            // Assuming AK05 table might be linked to Jadwal, but the model doesn't show id_jadwal. 
-            // If table 'ak05' is for template, we might be using it wrong. 
+            // Assuming AK05 table might be linked to Jadwal, but the model doesn't show id_jadwal.
+            // If table 'ak05' is for template, we might be using it wrong.
             // However, based on the input 'aspek_asesmen', etc, it seems to be a record per schedule.
-            // Let's assume we create a new AK05 record or update if logic permits. 
-            // For now, simpliest approach: Create/Update based on some context if possible, 
+            // Let's assume we create a new AK05 record or update if logic permits.
+            // For now, simpliest approach: Create/Update based on some context if possible,
             // or just Create new one and link Komentar to it.
             // But KomentarAk05 links to id_ak05.
 
-            // Check if there's an existing AK05 for this Jadwal? 
-            // The model Ak05 doesn't have id_jadwal. 
+            // Check if there's an existing AK05 for this Jadwal?
+            // The model Ak05 doesn't have id_jadwal.
             // Maybe it's many-to-many? Or one-to-one via another table?
-            // Given the constraints and lack of clear relation in Ak05 model, 
+            // Given the constraints and lack of clear relation in Ak05 model,
             // I will assume we create an Ak05 record for this submission.
 
             // Search if we already have an AK05 for this context (via Komentar -> DataSertifikasi -> Jadwal?)
