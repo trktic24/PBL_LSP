@@ -32,7 +32,7 @@ class DataSertifikasiAsesi extends Model
 {
     use HasFactory;
 
-    const STATUS_PERSETUJUAN_ASESMEN_OK = 40;
+
 
     protected $table = 'data_sertifikasi_asesi';
     protected $primaryKey = 'id_data_sertifikasi_asesi';
@@ -87,6 +87,7 @@ class DataSertifikasiAsesi extends Model
 
     // Tahap Pra-Asesmen (Asesi)
     public const STATUS_PRA_ASESMEN_SELESAI = 'pra_asesmen_selesai';
+
     public const STATUS_PERSETUJUAN_ASESMEN_OK = 'persetujuan_asesmen_disetujui';
 
     // Tahap Asesmen (Asesor)
@@ -254,17 +255,7 @@ class DataSertifikasiAsesi extends Model
         // Fallback: Ambil manual
         return $this->asesi ? $this->asesi->user : null;
     }
-    public function getSkemaAttribute()
-    {
-        // 1. Cek apakah relasi jadwal sudah di-load sebelumnya?
-        if ($this->relationLoaded('jadwal')) {
-            // Ambil skema dari object jadwal yang sudah ada di memori
-            return $this->jadwal->skema;
-        }
 
-        // Jika sampai sini, berarti ada status aneh yang tidak terhandle
-        return 0; // Default Unknown
-    }   
 
     public function jadwal(): BelongsTo
     {
@@ -281,10 +272,7 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(BuktiDasar::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
-    public function lembarJawabIA05(): HasMany
-    {
-        return $this->hasMany(LembarJawabIA05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
-    }
+
 
     public function responAk04(): HasMany
     {
