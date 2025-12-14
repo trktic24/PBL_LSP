@@ -13,30 +13,30 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+// Pastikan semua Model terimport
+use App\Models\DetailIa10;
+use App\Models\PertanyaanIa10;
+use App\Models\Ia10;
+use App\Models\Ia07;
+use App\Models\JawabanIa06;
+use App\Models\LembarJawabIa05;
+use App\Models\ResponBuktiAk01;
+use App\Models\DaftarHadirAsesi;
+use App\Models\KomentarAk05;
+use App\Models\ResponApl2Ia01;
+use App\Models\Skema; // Tambahan
 
 class DataSertifikasiAsesi extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang terkait dengan model.
-     *
-     * @var string
-     */
-    protected $table = 'data_sertifikasi_asesi';
+    const STATUS_PERSETUJUAN_ASESMEN_OK = 40;
 
-    /**
-     * Primary key yang terkait dengan tabel.
-     *
-     * @var string
-     */
+    protected $table = 'data_sertifikasi_asesi';
     protected $primaryKey = 'id_data_sertifikasi_asesi';
 
-    /**
-     * Atribut yang dapat diisi secara massal.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'id_asesi',
         'id_jadwal',
@@ -141,101 +141,125 @@ class DataSertifikasiAsesi extends Model
      */
     public function ia07(): HasMany
     {
-        // Tentukan foreign key dan local key karena tidak standar
         return $this->hasMany(Ia07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function ia10(): HasOne
+    {
+        return $this->hasOne(Ia10::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function ia02(): HasOne
+    {
+        return $this->hasOne(Ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function ia06Answers(): HasMany
+    {
+        return $this->hasMany(JawabanIa06::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function lembarJawabIa05(): HasOne
+    {
+        return $this->hasOne(LembarJawabIa05::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     public function responbuktiAk01(): HasMany
     {
-        // Tentukan foreign key dan local key karena tidak standar
         return $this->hasMany(ResponBuktiAk01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
-    }    
+    }
+
+    public function presensi(): HasOne
+    {
+        return $this->hasOne(DaftarHadirAsesi::class, 'id_data_sertifikasi_asesi');
+    }
+
+    public function komentarAk05(): HasOne
+    {
+        return $this->hasOne(KomentarAk05::class, 'id_data_sertifikasi_asesi');
+    }
+
+    public function responApl2Ia01(): HasOne
+    {
+        return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi');
+    }
 
     /**
-     * ACCESSOR: Menghitung 'Level Virtual' berdasarkan isi kolom database.
-     * Logika ini MAPPING dari DATA NYATA -> ANGKA LEVEL VIRTUAL.
+     * ACCESSOR: Menghitung Level Status untuk Tracker
      */
     public function getLevelStatusAttribute()
     {
-        // --- FASE AKHIR (Level 100 - 80) ---
-        
-        // 1. Level 100: Sertifikat Terbit (AK-05 sudah ada rekomendasi)
-        if ($this->rekomendasi_hasil_asesmen_AK02 == 'kompeten') {
-            return 100; // $LVL_SERTIFIKAT
+        // 1. CEK FINISH
+        if (!is_null($this->rekomendasi_hasil_asesmen_AK02)) {
+            return 100;
         }
 
-        // 1. Target Soal (Misal: 10 Soal)
-        $idSkema = $this->jadwal->id_skema; 
-        $totalSoal = Ia10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)->count(); 
+        // 2. CEK ASESMEN SELESAI
+        $jmlChecklist = PertanyaanIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)->count();
+        $jmlEssay = 7;
+        $totalSoal = $jmlChecklist + $jmlEssay;
+        $jawabanValid = 0;
 
-        // 2. Hitung Jawaban Asesi yang VALID (Isinya tidak kosong)
-        // Di sini kita pakai ide kamu: Kita filter hanya yang kolomnya TERISI.
-        $jawabanValid = ResponIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
-                            ->where(function($query) {
-                                // Logic: Dianggap terisi jika (Ya/Tidak dipilih) ATAU (Isian ada textnya)
-                                $query->where('jawaban_pilihan_iya', 1)
-                                    ->orWhere('jawaban_pilihan_tidak', 1)
-                                    ->orWhereNotNull('jawaban_isian');
-                            })
-                            ->count();
+        $headerIa10 = $this->ia10;
 
-        // 3. Bandingkan
-        // Apakah jumlah jawaban valid SAMA DENGAN jumlah soal?
-        if ($jawabanValid > 0 && $jawabanValid >= $totalSoal) {
-            return 90; // ASESMEN SELESAII YEEE
+        if ($headerIa10) {
+            $isiChecklist = PertanyaanIa10::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
+                ->whereNotNull('jawaban_pilihan_iya_tidak')
+                ->count();
+
+            $isiEssay = DetailIa10::where('id_ia10', $headerIa10->id_ia10)
+                ->whereNotNull('jawaban')
+                ->where('jawaban', '!=', '')
+                ->count();
+
+            $jawabanValid = $isiChecklist + $isiEssay;
         }
 
-        // --- FASE ASESMEN REAL (Level 70) ---
-        
-        // 4. Level 70: Sedang Ujian
-        // Asumsi: Kalau AK-02 belum diisi TAPI AK-01 (Persetujuan) sudah ada (catatan_asesi_AK03 atau kolom lain yang relevan)
-        // TAPI, karena di tabelmu tidak ada kolom spesifik "status_AK01", kita pakai logika:
-        // "Kalau APL-02 sudah diterima, berarti sudah masuk fase Asesmen/Persiapan Asesmen"
-        
-        // Kita perlu cek lebih detail untuk membedakan level 30, 45, 50, 70.
-        // Karena kolom terbatas, kita pakai indikator yang ada.
-
-        $ak01valid = ResponBuktiAk01::where('id_data_sertifikasi_asesi', $this->id_data_sertifikasi_asesi)
-                                ->where('respon', 'Valid')                    
-                                ->exists();        
-
-        if ($ak01valid && $this->rekomendasi_apl02 == 'diterima') {
-            return 40; // LANJUT KE ASESMENN
+        if ($totalSoal > 0 && $jawabanValid >= $totalSoal) {
+            return 90;
         }
 
+        // 3. CEK SIAP ASESMEN
+        $ak01Valid = $this->responbuktiAk01()->where('respon', 'Valid')->exists();
 
-        // Cek Level 25 (APL-02 Verifikasi) -> "diterima"
+        if ($ak01Valid && $this->rekomendasi_apl02 == 'diterima') {
+            return 40;
+        }
+
+        // 4. CEK SIAP AK.01
         if ($this->rekomendasi_apl02 == 'diterima') {
-            // Jika APL-02 diterima, kita anggap sudah melewati fase verifikasi APL-02.
-            // Karena tidak ada kolom khusus TUK atau AK-01 di tabel utama ini (mungkin ada di tabel lain atau hardcode flow),
-            // Kita bisa return level tertinggi sebelum Asesmen Real.
-            
-            // Opsional: Cek tabel lain (TUK/AK01) disini kalau mau presisi level 30/45/50.
-            // Tapi untuk simpelnya, jika APL-02 OK, anggap siap Asesmen Real (atau setidaknya TUK).
-            return 30; // $LVL_VERIF_TUK (Minimal sampai sini kalau APL-02 beres)
+            return 30;
         }
 
-        // Cek Level 20 (APL-02 Submit) -> Tapi kolom rekomendasi masih NULL
-        // Susah dicek dari tabel ini saja karena tidak ada kolom "tanggal_submit_apl02".
-        // Tapi kita bisa berasumsi: Jika APL-01 diterima, user ada di tahap APL-02.
-        
-        // Cek Level 15 (Verifikasi Admin / APL-01 Diterima)
+        // 5. CEK SEDANG ISI APL.02
         if ($this->rekomendasi_apl01 == 'diterima') {
-            // Jika APL-01 diterima, tapi APL-02 belum diterima (null/tidak),
-            // berarti user sedang di tahap mengisi APL-02 (Level 20).
-            return 20; // $LVL_SUBMIT_APL02
+            return 20;
         }
 
-        // Cek Level 10 (Submit APL-01)
-        // Jika data ini ada (created), berarti minimal level 10.
-        // Tapi rekomendasi_apl01 masih null.
-        if ($this->rekomendasi_apl01 == null) {
-            return 10; // $LVL_SUBMIT_APL01 (Menunggu Verifikasi Admin)
+        return 10;
+    }
+
+    /**
+     * [WAJIB ADA]
+     * Accessor 'skema' agar $asesi->skema di View bisa berjalan tanpa error.
+     * Mengambil data skema melewati relasi 'jadwal'.
+     */
+    public function getUserAttribute()
+    {
+        // Jika relasi asesi & user sudah diload, ambil langsung
+        if ($this->relationLoaded('asesi') && $this->asesi && $this->asesi->relationLoaded('user')) {
+            return $this->asesi->user;
         }
 
-        // Tambahan logic biar jelas (Opsional)
-        if ($this->rekomendasi_apl01 == 'tidak_diterima' || $this->rekomendasi_apl01 == 'ditolak') {
-            return 0; // Atau return -1 biar beda, artinya GAGAL APL-01
+        // Fallback: Ambil manual
+        return $this->asesi ? $this->asesi->user : null;
+    }
+    public function getSkemaAttribute()
+    {
+        // 1. Cek apakah relasi jadwal sudah di-load sebelumnya?
+        if ($this->relationLoaded('jadwal')) {
+            // Ambil skema dari object jadwal yang sudah ada di memori
+            return $this->jadwal->skema;
         }
 
         // Jika sampai sini, berarti ada status aneh yang tidak terhandle
@@ -291,11 +315,6 @@ class DataSertifikasiAsesi extends Model
     public function getTanggalPelaksanaanAttribute()
     {
         return $this->jadwal?->tanggal_pelaksanaan;
-    }
-
-     public function Ia02(): HasMany
-    {
-        return $this->hasMany(Ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     public function daftarHadir()

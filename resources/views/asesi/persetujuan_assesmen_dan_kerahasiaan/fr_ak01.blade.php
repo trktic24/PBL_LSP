@@ -6,19 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Persetujuan Asesmen dan Kerahasiaan</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    {{-- 1. WAJIB: SCRIPT SWEETALERT (Ini harus ada biar popup muncul) --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
-        /* Styling khusus checkbox disabled biar tetap terbaca */
+        /* Styling khusus checkbox disabled */
         input[type="checkbox"]:disabled {
             opacity: 1 !important;
             cursor: default;
             color: #2563eb;
-            /* Warna biru tetap menyala */
         }
 
         input[type="checkbox"]:disabled+span {
             color: #374151;
-            /* Warna teks abu gelap */
         }
     </style>
 </head>
@@ -30,7 +32,6 @@
         {{-- Sidebar --}}
         <x-sidebar2 :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
 
-        {{-- PENTING: Simpan ID Sertifikasi di sini --}}
         <main class="flex-1 p-12 bg-white overflow-y-auto" data-sertifikasi-id="{{ $id_sertifikasi }}">
             <div class="max-w-4xl mx-auto">
 
@@ -43,8 +44,7 @@
                 <hr class="my-8 border-gray-300">
 
                 <dl class="grid grid-cols-1 md:grid-cols-4 gap-y-6 text-sm">
-
-                    {{-- 1. TUK (Read Only) --}}
+                    {{-- Bagian TUK --}}
                     <dt class="col-span-1 font-medium text-gray-800">TUK</dt>
                     <dd class="col-span-3 flex flex-wrap gap-x-6 gap-y-2 items-center">
                         <label class="flex items-center text-gray-700 cursor-default">
@@ -64,17 +64,16 @@
                         </label>
                     </dd>
 
-                    {{-- 2. Data Nama --}}
+                    {{-- Bagian Nama --}}
                     <dt class="col-span-1 font-medium text-gray-800">Nama Asesor</dt>
                     <dd class="col-span-3 text-gray-800 font-semibold">: <span id="nama_asesor">...</span></dd>
 
                     <dt class="col-span-1 font-medium text-gray-800">Nama Asesi</dt>
                     <dd class="col-span-3 text-gray-800 font-semibold">: <span id="nama_asesi">...</span></dd>
 
-                    {{-- 3. Bukti (Read Only - Tampilan Sama dengan TUK) --}}
+                    {{-- Bagian Bukti --}}
                     <dt class="col-span-1 font-medium text-gray-800 pt-1">Bukti yang akan dikumpulkan</dt>
                     <dd class="col-span-3">
-                        {{-- Container Bukti (Grid tanpa border, mirip TUK) --}}
                         <div id="container_bukti" class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
                             <span class="text-gray-400 text-xs">Memuat daftar bukti...</span>
                         </div>
@@ -94,7 +93,7 @@
                     </p>
                 </div>
 
-                {{-- 4. Tanda Tangan (View Only) --}}
+                {{-- Tanda Tangan --}}
                 <div class="mt-8">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Tanda Tangan Asesi</label>
                     <div class="w-full h-48 bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden relative"
@@ -104,14 +103,7 @@
                 </div>
 
                 {{-- Tombol Aksi --}}
-                <div class="flex justify-between items-center mt-10">
-                    {{-- Tombol Kembali --}}
-                    <button id="btn_sebelumnya"
-                        class="w-48 py-3 bg-gray-300 text-gray-700 font-semibold rounded-full hover:bg-gray-400 transition-all shadow-sm text-center">
-                        Kembali
-                    </button>
-
-                    {{-- Tombol Setuju --}}
+                <div class="flex justify-end items-center mt-10">
                     <button type="button" id="tombol-selanjutnya" disabled
                         class="w-48 py-3 bg-gray-400 text-white font-semibold rounded-full shadow-md cursor-not-allowed transition-all text-center">
                         Setuju
@@ -126,22 +118,27 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            // 1. Inisialisasi
+            // --- 1. SETUP VARIABLE ---
             const mainEl = document.querySelector('main[data-sertifikasi-id]');
             const idSertifikasi = mainEl ? mainEl.dataset.sertifikasiId : null;
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
             const ttdContainer = document.getElementById('ttd_container');
             const btnSelanjutnya = document.getElementById('tombol-selanjutnya');
-            const prevUrl = "{{ route('asesi.show.jadwal_tuk', ['id_sertifikasi' => $id_sertifikasi]) }}";
             const containerBukti = document.getElementById('container_bukti');
 
+            // Cek ID Sertifikasi
             if (!idSertifikasi) {
-                alert("ID Sertifikasi tidak ditemukan.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Sistem',
+                    text: 'ID Sertifikasi tidak ditemukan. Silakan muat ulang halaman.',
+                    confirmButtonColor: '#2563EB'
+                });
                 return;
             }
 
-            // 2. LOAD DATA DARI API
+            // --- 2. LOAD DATA DARI SERVER ---
             fetch(`/api/v1/kerahasiaan/${idSertifikasi}`)
                 .then(response => response.json())
                 .then(resp => {
@@ -151,24 +148,20 @@
 
                     const data = resp;
 
-                    // A. Isi Nama
+                    // Isi Nama
                     document.getElementById('nama_asesor').innerText = data.asesor.nama_lengkap || '-';
                     document.getElementById('nama_asesi').innerText = data.asesi.nama_lengkap;
 
-                    // B. Isi TUK
+                    // Isi TUK
                     const tukValue = data.tuk;
                     const tukEl = document.getElementById(`tuk_${tukValue}`);
                     if (tukEl) tukEl.checked = true;
 
-                    // C. Render Checkbox Bukti (Gaya Minimalis - Read Only)
+                    // Isi Bukti
                     containerBukti.innerHTML = '';
                     if (data.master_bukti && data.master_bukti.length > 0) {
                         data.master_bukti.forEach(item => {
-
-                            // Cek apakah bukti ini ada di daftar 'respon_bukti'
                             const isChecked = data.respon_bukti.includes(item.id_bukti_ak01);
-
-                            // HTML Checkbox
                             const html = `
                                 <label class="flex items-center text-gray-700 cursor-default">
                                     <input type="checkbox" 
@@ -180,11 +173,10 @@
                             containerBukti.innerHTML += html;
                         });
                     } else {
-                        containerBukti.innerHTML =
-                            '<span class="text-red-500 text-xs">Data bukti tidak tersedia.</span>';
+                        containerBukti.innerHTML = '<span class="text-red-500 text-xs">Data bukti tidak tersedia.</span>';
                     }
 
-                    // D. Tampilkan Tanda Tangan
+                    // Isi Tanda Tangan
                     if (data.tanda_tangan_valid) {
                         const img = document.createElement('img');
                         img.src = `/${data.asesi.tanda_tangan}`;
@@ -194,11 +186,10 @@
                         ttdContainer.innerHTML = '';
                         ttdContainer.appendChild(img);
 
-                        // Aktifkan Tombol
+                        // Aktifkan Tombol jika TTD ada
                         btnSelanjutnya.disabled = false;
                         btnSelanjutnya.classList.remove('bg-gray-400', 'cursor-not-allowed');
                         btnSelanjutnya.classList.add('bg-blue-500', 'hover:bg-blue-600');
-
                     } else {
                         ttdContainer.innerHTML = `
                             <div class="text-center">
@@ -210,21 +201,40 @@
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    alert("Gagal memuat data: " + error.message);
+                    // Ganti Alert biasa jadi SweetAlert Error
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Memuat Data',
+                        text: 'Terjadi kesalahan: ' + error.message,
+                        confirmButtonColor: '#2563EB'
+                    });
                 });
 
 
-            // 3. LOGIC LANJUT (Tanpa Kirim Bukti)
-            btnSelanjutnya.addEventListener('click', function() {
+            // --- 3. EVENT KLIK TOMBOL SETUJU (DENGAN POPUP) ---
+            btnSelanjutnya.addEventListener('click', async function() {
 
-                if (!confirm('Dengan ini, saya menyetujui asesmen dan kerahasiaan. Lanjutkan?')) {
-                    return;
-                }
+                // TAMPILKAN POPUP KONFIRMASI
+                const result = await Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    text: "Persetujuan ini bersifat final. Data hanya dapat dikirim sekali dan tidak dapat diubah!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2563EB', // Biru
+                    cancelButtonColor: '#d33',     // Merah
+                    confirmButtonText: 'Ya, Saya Setuju',
+                    cancelButtonText: 'Batal'
+                });
 
+                // Jika user pilih Batal, berhenti di sini.
+                if (!result.isConfirmed) return;
+
+                // Jika user pilih Ya, lanjut proses loading
+                const originalText = this.innerText;
                 this.innerText = 'Menyimpan...';
                 this.disabled = true;
 
-                // Kirim body kosong, karena controller cuma butuh ID dari URL buat update status
+                // Kirim Data
                 fetch(`/api/v1/kerahasiaan/${idSertifikasi}`, {
                         method: 'POST',
                         headers: {
@@ -237,22 +247,35 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Persetujuan berhasil disimpan!');
-                            window.location.href = `/tracker/${data.id_jadwal}`;
+                            // POPUP SUKSES
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: 'Persetujuan Anda telah disimpan.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // Redirect setelah popup sukses tertutup
+                                window.location.href = `/asesi/tracker/${data.id_jadwal}`;
+                            });
                         } else {
                             throw new Error(data.message || 'Gagal menyimpan');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Terjadi kesalahan: ' + error.message);
-                        this.innerText = 'Selanjutnya';
+                        // POPUP ERROR SAAT MENYIMPAN
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menyimpan',
+                            text: error.message,
+                            confirmButtonColor: '#2563EB'
+                        });
+                        
+                        // Kembalikan tombol seperti semula
+                        this.innerText = 'Setuju';
                         this.disabled = false;
                     });
-            });
-
-            document.getElementById('btn_sebelumnya').addEventListener('click', () => {
-                window.location.href = prevUrl;
             });
 
         });

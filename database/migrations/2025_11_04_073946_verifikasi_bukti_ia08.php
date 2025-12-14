@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -16,8 +15,8 @@ return new class extends Migration
             $table->foreignId('id_ia08')->constrained('ia08', 'id_ia08')->onUpdate('cascade')->onDelete('cascade');
 
             // isi dari database verifikasi_bukti_ia08
-            $table->string('deskripsi_verifikasi')->comment('Deskripsi verifikasi bukti IA08');
-            $table->boolean('status_cekslist')->default(false)->comment('ceklist untuk bukti verifikasi IA08');
+            $table->text('materi_atau_substansi_wawancara')->comment('Materi atau substansi wawancara');
+            $table->boolean('status_cekslist')->default(false)->comment('ceklist untuk hasil verifikasi IA08');
             $table->timestamps();
         });
     }

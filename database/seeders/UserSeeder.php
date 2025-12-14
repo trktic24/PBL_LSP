@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
         $asesiRole = Role::where('nama_role', 'asesi')->first();
 
         // Buat Admin
+        // Buat Admin
         if ($adminRole) {
             User::firstOrCreate([
                 'email' => 'admin@example.com',

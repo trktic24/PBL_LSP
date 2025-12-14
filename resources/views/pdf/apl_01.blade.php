@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FR.APL.01 FORMULIR PERMOHONAN SERTIFIKASI KOMPETENSI</title>
+    <title>FR.APL.01 - Permohonan Sertifikasi Kompetensi</title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 11px; }
-        .header { font-weight: bold; font-size: 14px; margin-bottom: 10px; }
+        .header { font-size: 14px; font-weight: bold; margin-bottom: 20px; text-align: center; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
         th, td { border: 1px solid black; padding: 5px; vertical-align: top; }
-        .bg-gray { background-color: #f0f0f0; font-weight: bold; }
-        .no-border { border: none !important; }
+        th { background-color: #e2e8f0; text-align: center; font-weight: bold; }
+        .no-border, .no-border td { border: none !important; }
         .text-center { text-align: center; }
-        .title-section { background-color: #ddd; font-weight: bold; padding: 5px; border: 1px solid black; margin-top: 10px; }
+        .font-bold { font-weight: bold; }
+        .bg-gray { background-color: #f3f4f6; }
+        h3 { font-size: 12px; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
     </style>
 </head>
 <body>
@@ -19,116 +21,177 @@
         FR.APL.01. PERMOHONAN SERTIFIKASI KOMPETENSI
     </div>
 
-    {{-- BAGIAN 1: RINCIAN DATA PEMOHON --}}
-    <div class="title-section">Bagian 1 : Rincian Data Pemohon Sertifikasi</div>
-    <table class="no-border">
+    <h3>Bagian 1 : Rincian Data Pemohon Sertifikasi</h3>
+    <table class="no-border" style="margin-bottom: 10px;">
         <tr>
-            <td width="150" class="no-border">Nama Lengkap</td>
-            <td class="no-border">: {{ $asesi->nama_lengkap }}</td>
+            <td width="150"><strong>a. Data Pribadi</strong></td>
+            <td></td>
         </tr>
         <tr>
-            <td class="no-border">No. KTP/NIK</td>
-            <td class="no-border">: {{ $asesi->nik }}</td>
+            <td style="padding-left: 20px;">Nama Lengkap</td>
+            <td>: {{ $asesi->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
-            <td class="no-border">Tempat / Tgl. Lahir</td>
-            <td class="no-border">: {{ $asesi->tempat_lahir }}, {{ \Carbon\Carbon::parse($asesi->tanggal_lahir)->format('d-m-Y') }}</td>
+            <td style="padding-left: 20px;">No. KTP/NIK/Paspor</td>
+            <td>: {{ $asesi->nik ?? '-' }}</td>
         </tr>
         <tr>
-            <td class="no-border">Alamat Rumah</td>
-            <td class="no-border">: {{ $asesi->alamat }}</td>
+            <td style="padding-left: 20px;">Tempat / Tgl. Lahir</td>
+            <td>: {{ $asesi->tempat_lahir ?? '-' }}, {{ isset($asesi->tanggal_lahir) ? \Carbon\Carbon::parse($asesi->tanggal_lahir)->format('d-m-Y') : '-' }}</td>
         </tr>
         <tr>
-            <td class="no-border">No. Telepon/HP</td>
-            <td class="no-border">: {{ $asesi->no_telp }}</td>
+            <td style="padding-left: 20px;">Jenis Kelamin</td>
+            <td>: {{ $asesi->jenis_kelamin ?? '-' }}</td>
         </tr>
         <tr>
-            <td class="no-border">Kualifikasi Pendidikan</td>
-            <td class="no-border">: {{ $asesi->pendidikan_terakhir }}</td>
-        </tr>
-    </table>
-
-    {{-- BAGIAN 2: DATA SERTIFIKASI --}}
-    <div class="title-section">Bagian 2 : Data Sertifikasi</div>
-    <table>
-        <tr>
-            <td rowspan="2" width="150" class="bg-gray">Skema Sertifikasi</td>
-            <td width="100">Judul</td>
-            <td>: {{ $skema->judul_skema }}</td>
+            <td style="padding-left: 20px;">Kebangsaan</td>
+            <td>: {{ $asesi->kebangsaan ?? 'Indonesia' }}</td>
         </tr>
         <tr>
-            <td>Nomor</td>
-            <td>: {{ $skema->kode_skema }}</td>
+            <td style="padding-left: 20px;">Alamat Rumah</td>
+            <td>: {{ $asesi->alamat ?? '-' }}</td>
         </tr>
         <tr>
-            <td colspan="2">Tujuan Asesmen</td>
-            <td>: {{ $sertifikasi->tujuan_asesmen ?? 'Sertifikasi' }}</td>
+            <td style="padding-left: 20px;">No. Telepon/HP</td>
+            <td>: {{ $asesi->no_telp ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 20px;">Email</td>
+            <td>: {{ $asesi->user->email ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 20px;">Kualifikasi Pendidikan</td>
+            <td>: {{ $asesi->pendidikan_terakhir ?? '-' }}</td>
         </tr>
     </table>
 
-    {{-- BAGIAN 3: BUKTI KELENGKAPAN (DARI APL 01-2) --}}
-    <div class="title-section">Bagian 3 : Bukti Kelengkapan Pemohon</div>
+    <table class="no-border" style="margin-bottom: 10px;">
+        <tr>
+            <td width="150"><strong>b. Data Pekerjaan Sekarang</strong></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 20px;">Nama Perusahaan</td>
+            <td>: {{ $asesi->data_pekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 20px;">Jabatan</td>
+            <td>: {{ $asesi->data_pekerjaan->jabatan ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 20px;">Alamat Kantor</td>
+            <td>: {{ $asesi->data_pekerjaan->alamat_institusi ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 20px;">No. Telp Perusahaan</td>
+            <td>: {{ $asesi->data_pekerjaan->no_telp_institusi ?? '-' }}</td>
+        </tr>
+    </table>
+
+    <h3>Bagian 2 : Data Sertifikasi</h3>
+    <table class="no-border" style="margin-bottom: 10px;">
+        <tr>
+            <td width="150">Judul Skema</td>
+            <td>: {{ $skema->judul_skema ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Nomor Skema</td>
+            <td>: {{ $skema->kode_skema ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Tujuan Asesmen</td>
+            <td>: Sertifikasi</td> </tr>
+    </table>
+
+    <div style="margin-bottom: 5px; font-weight: bold;">Daftar Unit Kompetensi:</div>
     <table>
         <thead>
-            <tr class="bg-gray text-center">
-                <th width="5%">No</th>
-                <th>Bukti Persyaratan Dasar</th>
-                <th width="15%">Status</th>
+            <tr>
+                <th width="10%">No.</th>
+                <th width="30%">Kode Unit</th>
+                <th width="60%">Judul Unit</th>
             </tr>
         </thead>
         <tbody>
-            {{-- Pas Foto --}}
+            @if(isset($unitKompetensi) && $unitKompetensi->count() > 0)
+                @foreach($unitKompetensi as $index => $uk)
+                <tr>
+                    <td class="text-center">{{ $loop->iteration }}.</td>
+                    <td class="text-center">{{ $uk->kode_unit }}</td>
+                    <td>{{ $uk->judul_unit }}</td>
+                </tr>
+                @endforeach
+            @else
+                <tr><td colspan="3" class="text-center">Unit Kompetensi tidak ditemukan.</td></tr>
+            @endif
+        </tbody>
+    </table>
+
+    <h3>Bagian 3 : Bukti Kelengkapan Pemohon</h3>
+    <table>
+        <thead>
             <tr>
-                <td class="text-center">1</td>
-                <td>Pas Foto (Background Merah)</td>
-                <td class="text-center">{{ $sertifikasi->file_pas_foto ? 'Ada' : 'Tidak' }}</td>
+                <th width="10%">No.</th>
+                <th width="50%">Bukti Persyaratan Dasar</th>
+                <th width="20%">Ada</th>
+                <th width="20%">Tidak Ada</th>
             </tr>
-            {{-- KTP --}}
+        </thead>
+        <tbody>
             <tr>
-                <td class="text-center">2</td>
+                <td class="text-center">1.</td>
+                <td>Pas Foto 3x4 Background Merah</td>
+                <td class="text-center check-mark">V</td> <td></td>
+            </tr>
+            <tr>
+                <td class="text-center">2.</td>
                 <td>Kartu Tanda Penduduk (KTP)</td>
-                <td class="text-center">{{ $sertifikasi->file_ktp ? 'Ada' : 'Tidak' }}</td>
+                <td class="text-center check-mark">V</td>
+                <td></td>
             </tr>
-            {{-- Ijazah --}}
             <tr>
-                <td class="text-center">3</td>
+                <td class="text-center">3.</td>
                 <td>Ijazah Terakhir</td>
-                <td class="text-center">{{ $sertifikasi->file_ijazah ? 'Ada' : 'Tidak' }}</td>
+                <td class="text-center check-mark">V</td>
+                <td></td>
             </tr>
-            {{-- CV --}}
             <tr>
-                <td class="text-center">4</td>
+                <td class="text-center">4.</td>
                 <td>Daftar Riwayat Hidup (CV)</td>
-                <td class="text-center">{{ $sertifikasi->file_cv ? 'Ada' : 'Tidak' }}</td>
+                <td class="text-center check-mark">V</td>
+                <td></td>
             </tr>
         </tbody>
     </table>
 
-    {{-- BAGIAN 4: TANDA TANGAN (DARI APL 01-3) --}}
-    <div class="title-section">Bagian 4 : Tanda Tangan</div>
-    <br>
-    <table class="no-border" style="width: 100%">
+    <br><br>
+    <div style="font-weight: bold; margin-bottom: 10px;">Rekomendasi (diisi oleh LSP):</div>
+    <table style="width: 100%; border: 1px solid black;">
         <tr>
-            <td class="no-border" width="60%" valign="top">
-                <p><strong>Rekomendasi (Diisi oleh LSP):</strong></p>
-                <p>Berdasarkan ketentuan persyaratan dasar, maka pemohon:</p>
-                <p>
-                    [ ] <strong>Diterima</strong><br>
-                    [ ] <strong>Tidak Diterima</strong>
-                </p>
+            <td style="width: 60%; border-right: 1px solid black; vertical-align: top;">
+                Berdasarkan ketentuan persyaratan dasar, maka pemohon: <br>
+                <strong>[ ] Diterima</strong> <br>
+                <strong>[ ] Tidak Diterima</strong> <br>
+                sebagai peserta sertifikasi. <br><br>
+                <strong>Catatan:</strong> <br>
+                ..................................................................................
             </td>
-            <td class="no-border text-center" width="40%">
-                <p><strong>Pemohon,</strong></p>
+            <td style="width: 40%; vertical-align: top; text-align: center;">
+                <strong>Pemohon,</strong>
+                <br><br><br><br>
+                <strong>{{ $asesi->nama_lengkap ?? '(.......................)' }}</strong>
                 <br>
-                @if($sertifikasi->tanda_tangan_asesi)
-                    {{-- Menampilkan Gambar Tanda Tangan Base64 atau Path --}}
-                    <img src="{{ public_path($sertifikasi->tanda_tangan_asesi) }}" style="height: 70px; max-width: 150px;">
-                @else
-                    <br><br><br>
-                @endif
+                Tanggal: {{ \Carbon\Carbon::now()->format('d-m-Y') }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-top: 1px solid black; padding: 10px;">
+                <strong>Admin LSP:</strong> <br>
+                Nama: ........................................................... <br>
+                No. Reg: ........................................................ <br>
                 <br>
-                <p><strong>{{ $asesi->nama_lengkap }}</strong></p>
-                <p>Tanggal: {{ now()->format('d-m-Y') }}</p>
+                Tanda Tangan: ................................................
+                Tanggal: ..............................
             </td>
         </tr>
     </table>

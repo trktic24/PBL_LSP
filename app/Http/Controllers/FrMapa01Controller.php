@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FrMapa01;
 use App\Models\DataSertifikasiAsesi;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FrMapa01Controller extends Controller
 {
@@ -22,8 +23,7 @@ class FrMapa01Controller extends Controller
             'sertifikasi' => $sertifikasi,
             'asesi'       => $sertifikasi->asesi,
             'skema'       => $sertifikasi->jadwal->skema,
-            'jadwal'      => $sertifikasi->jadwal,
-            'backUrl' => route('tracker', $sertifikasi->id_data_sertifikasi_asesi),            
+            'jadwal'      => $sertifikasi->jadwal,            
         ]);
     }    
 
@@ -39,5 +39,27 @@ class FrMapa01Controller extends Controller
 
         // 3. Kembali ke halaman form dengan pesan sukses
         return redirect()->route('mapa01.index')->with('success', 'Data FR.MAPA.01 berhasil disimpan!');
+    }
+
+    public function cetakPDF($idSertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'jadwal.skema'
+        ])->findOrFail($idSertifikasi);
+
+        // 2. Ambil Data Form MAPA 01
+        $mapa01 = FrMapa01::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
+
+        // 3. Render PDF
+        // Pastikan nama view sesuai dengan nama file yang kamu buat (misal: 'pdf.mapa01')
+        $pdf = Pdf::loadView('pdf.mapa01', [
+            'sertifikasi' => $sertifikasi,
+            'mapa01'      => $mapa01
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR_MAPA_01_' . $sertifikasi->id_data_sertifikasi_asesi . '.pdf');
     }
 }

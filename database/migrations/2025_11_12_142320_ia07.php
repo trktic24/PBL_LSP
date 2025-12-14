@@ -15,9 +15,9 @@ return new class extends Migration {
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
             // Isi kolom lainnya sesuai kebutuhan
-            $table->text('pertanyaan')->nullable();
-            $table->text('jawaban_asesi')->nullable();
-            $table->text('jawaban_diharapkan')->nullable();
+            $table->text('pertanyaan');
+            $table->text('jawaban_asesi')->nullable()->unique();
+            $table->text('jawaban_diharapkan');
             $table->boolean('pencapaian')->default(null)->comment('1 untuk Ya, 0 untuk Tidak');
             $table->timestamps();
         });

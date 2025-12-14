@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Asesor;
 use App\Models\Jadwal;
 use App\Models\Skema;
+use App\Models\DataSertifikasiAsesi;
+use App\Models\ResponApl2a01;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -25,8 +27,8 @@ class DashboardController extends Controller
         // 🛡️ TAHAP 1: CEK APAKAH DATA ASESOR ADA?
         // ----------------------------------------------------
         if (!$user->asesor) {
-             Auth::logout();
-             return redirect('/login')->with('error', 'Data profil Asesor tidak ditemukan.');
+            Auth::logout();
+            return redirect('/login')->with('error', 'Data profil Asesor tidak ditemukan.');
         }
 
         // ----------------------------------------------------
@@ -62,32 +64,47 @@ class DashboardController extends Controller
             'foto_url' => $asesor->url_foto ?? 'https://placehold.co/60x60/8B5CF6/ffffff?text=AF',
         ];
 
-        // 2. Data Ringkasan (Dummy)
-        $summary = [
-            'belum_direview' => 5,
-            'dalam_proses' => 7,
-            'telah_direview' => 4,
-            'jumlah_asesi' => 18,
-        ];
+        // Ringkasan
+        $blmreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereDoesntHave('responApl2Ia01')
+                ->whereDoesntHave('komentarAk05')
+                ->count();    
+        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereHas('responApl2Ia01')        // sudah mengisi APL02
+                ->whereDoesntHave('komentarAk05')
+                ->count();        
+        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereHas('komentarAk05')
+                ->count();
+        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+        ->count();
+        
+        // // 2. Data Ringkasan (Dummy)
+        // $summary = [
+        //     'belum_direview' => 5,
+        //     'dalam_proses' => 7,
+        //     'telah_direview' => 4,
+        //     'jumlah_asesi' => 18,
+        // ];
 
         // 3. Data Jadwal Asesmen
         $jadwal = Jadwal::where('id_asesor', $id_asesor)
-                            ->with('skema', 'masterTuk')
-                            ->orderBy('tanggal_pelaksanaan', 'asc');
+            ->with('skema', 'tuk')
+            ->orderBy('tanggal_pelaksanaan', 'asc');
 
         // A. Filter Pencarian (Search Input)
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $jadwal->where(function ($q) use ($searchTerm) {
                 $q->where('Status_jadwal', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('waktu_mulai', 'like', '%' . $searchTerm . '%')  
-                  ->orWhere('tanggal_pelaksanaan', 'like', '%' . $searchTerm . '%')              
-                  ->orWhereHas('skema', function ($qSkema) use ($searchTerm) {
-                      $qSkema->where('nama_skema', 'like', '%' . $searchTerm . '%');
-                  });
+                    ->orWhere('waktu_mulai', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('tanggal_pelaksanaan', 'like', '%' . $searchTerm . '%')
+                    ->orWhereHas('skema', function ($qSkema) use ($searchTerm) {
+                        $qSkema->where('nama_skema', 'like', '%' . $searchTerm . '%');
+                    });
             });
         }
-        
+
         // B. Filter Nama Skema (dari Checkbox)
         if ($request->has('namaskema') && is_array($request->namaskema)) {
             $jadwal->whereHas('skema', function ($q) use ($request) {
@@ -98,20 +115,20 @@ class DashboardController extends Controller
         // Waktu
         if ($request->filled('waktu')) {
             $jadwal->whereTime('waktu_mulai', '>=', $request->waktu);
-        }        
+        }
 
         // C. Filter Tanggal (dari Input Date tunggal)
         // Saya asumsikan Anda ingin mencari jadwal TEPAT PADA tanggal tersebut.
         if ($request->filled('tanggal')) {
             // Pastikan Anda membandingkan tanggal dengan tepat (misalnya, pada hari itu)
-             $jadwal->whereDate('tanggal_pelaksanaan', $request->tanggal);
+            $jadwal->whereDate('tanggal_pelaksanaan', $request->tanggal);
         }
-        
+
         // D. Filter Status (dari Checkbox)
         if ($request->has('status') && is_array($request->status)) {
             $jadwal->whereIn('Status_jadwal', $request->status);
         }
-        
+
         // 4. Eksekusi Query Jadwal (Hanya 5 data pertama untuk Dashboard)
         $jadwals = $jadwal->latest()->paginate(5);
 
@@ -127,23 +144,52 @@ class DashboardController extends Controller
         });*/
 
         $skemaIdsInJadwal = Jadwal::where('id_asesor', $id_asesor)
-                                  ->select('id_skema')->distinct()->pluck('id_skema');
+            ->select('id_skema')->distinct()->pluck('id_skema');
         $listSkema = Skema::whereIn('id_skema', $skemaIdsInJadwal)
-                          ->pluck('nama_skema')->filter()->sort()->values();
-        
+            ->pluck('nama_skema')->filter()->sort()->values();
+
         // LIST STATUS
         $listStatus = Jadwal::where('id_asesor', $id_asesor)
-                            ->select('Status_jadwal')->distinct()->pluck('Status_jadwal')
-                            ->filter()->sort()->values();        
+            ->select('Status_jadwal')->distinct()->pluck('Status_jadwal')
+            ->filter()->sort()->values();
+
+        // 5. Data Notifikasi (Dari Database)
+        // Mengambil notifikasi milik user yang sedang login
+        $notifications = $user->notifications()->latest()->take(4)->get()->map(function ($n) {
+            return [
+                'title' => $n->data['title'] ?? 'Notifikasi',
+                'message' => $n->data['body'] ?? 'Pesan tidak tersedia',
+                'time' => $n->created_at->diffForHumans(),
+                'is_read' => !is_null($n->read_at),
+                'link' => $n->data['link'] ?? '#'
+            ];
+        });
 
         // Kirim ke view frontend.home (dashboard asesor)
         return view('asesor.home', [
             'profile' => $profile,
-            'summary' => $summary,
+            // 'summary' => $summary,
             'jadwals' => $jadwals,
-            'listSkema' => $listSkema, 
-            'listStatus' => $listStatus,            
+            'listSkema' => $listSkema,
+            'listStatus' => $listStatus,
+            'notifications' => $notifications,
+            'totalAsesi' => $totalAsesi,
+            'blmreview' => $blmreview,
+            'dlmproses' => $dlmproses,
+            'sdhreview' => $sdhreview,
         ]);
-    }                        
-    
+    }
+
+    /**
+     * Tampilkan halaman semua notifikasi dengan pagination.
+     */
+    public function semuaNotifikasi(Request $request)
+    {
+        $user = $request->user();
+
+        // Ambil semua notifikasi dengan pagination (10 per halaman)
+        $notifications = $user->notifications()->latest()->paginate(10);
+
+        return view('asesor.notification', compact('notifications'));
+    }
 }

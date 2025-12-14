@@ -26,9 +26,6 @@ class Asesi extends Model
      */
     protected $guarded = [];
 
-    /**
-     * Tentukan kolom yang harus diperlakukan sebagai tanggal.
-     */
     protected $casts = [
         'tanggal_lahir' => 'date',
     ];
