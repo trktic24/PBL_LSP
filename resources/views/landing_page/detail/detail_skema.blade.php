@@ -8,7 +8,8 @@
 
     {{-- HERO SECTION: Menampilkan detail utama Skema --}}
     <section class="max-w-screen-xl mx-auto px-8 mt-20">
-            @php
+        <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
+             @php
                 $detailImgSrc = 'images/placeholder_default.jpg';
                 if ($skema->gambar) {
                     if (str_starts_with($skema->gambar, 'images/')) {
@@ -24,6 +25,7 @@
                     }
                 }
             @endphp
+            {{-- Menggunakan $skema->gambar (Menggunakan isset untuk keamanan) --}}
             <img src="{{ asset($detailImgSrc) }}"
                 alt="{{ $skema->nama_skema ?? 'Skema Sertifikasi' }}"
                 class="w-full h-full object-cover">
