@@ -532,7 +532,6 @@ Route::middleware('auth')->group(function () {
         Auth::logout();
         return redirect('/login')->with('error', 'Role Anda tidak terdefinisi.');
     })->name('home.index');
-});
 
 Route::get('/tunggu-verifikasi', function () {
     $user = Auth::user();
