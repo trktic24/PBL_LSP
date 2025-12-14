@@ -93,7 +93,7 @@ class SoalDanKunciSeeder extends Seeder
                     // Insert Soal dengan ID SKEMA
                     $soalId = DB::table('soal_ia05')->insertGetId([
                         'id_skema' => $idSkema, // <--- INI KUNCI UTAMANYA!
-                        'pertanyaan_ia05' => $data['pertanyaan_ia05'],
+                        'soal_ia05' => $data['pertanyaan_ia05'],
                         'opsi_a_ia05' => $data['opsi_a_ia05'],
                         'opsi_b_ia05' => $data['opsi_b_ia05'],
                         'opsi_c_ia05' => $data['opsi_c_ia05'],
