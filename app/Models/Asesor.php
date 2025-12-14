@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Skema;
-use Illuminate\Support\Facades\Storage; // Pastikan Storage di-import
+use Illuminate\Support\Facades\Storage; 
 
 class Asesor extends Model
 {
@@ -28,11 +28,13 @@ class Asesor extends Model
 
     /**
      * Atribut yang dapat diisi secara massal.
-     * (Ini sudah sesuai dengan migrasi 2025_10_23_041924_data_asesor.php)
+     * PERBAIKAN: 
+     * 1. Mengubah 'user_id' menjadi 'id_user' sesuai controller & migrasi.
+     * 2. Mengubah 'is_verified' menjadi 'status_verifikasi' sesuai controller.
      * @var array
      */
     protected $fillable = [
-        'user_id',
+        'id_user',          // FIXED: Disesuaikan dengan foreign key di DB
         'nomor_regis',
         'nama_lengkap',
         'nik',
@@ -58,21 +60,21 @@ class Asesor extends Model
         'sertifikat_asesor',
         'sertifikasi_kompetensi',
         'tanda_tangan',
-        'is_verified',
+        'status_verifikasi', // FIXED: Disesuaikan dengan kolom DB
     ];
 
     /**
      * Relasi one-to-one ke model User.
-     * (Relasi ini sudah benar)
+     * PERBAIKAN: Foreign key disesuaikan menjadi 'id_user'
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id_user');
+        // Parameter: (Model Tujuan, Foreign Key di tabel ini, Primary Key di tabel tujuan)
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
     /**
      * Relasi many-to-many ke model Skema.
-     * (Relasi ini sudah benar, sesuai migrasi 2025_10_30_080349_transaksi_asesor_skema.php)
      */
     public function skemas()
     {
