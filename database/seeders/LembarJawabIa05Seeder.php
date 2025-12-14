@@ -2,80 +2,86 @@
 
 namespace Database\Seeders;
 
-use App\Models\SoalIa05;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class LembarJawabIa05Seeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // ================================================================
-        // KONFIGURASI SEEDER (SESUAIKAN DI SINI)
-        // ================================================================
-        
-        // 1. GANTI ID INI dengan ID Data Sertifikasi Asesi yang mau kamu tes.
-        $targetIdSertifikasi = 81; 
-        
-        // 2. Berapa jumlah soal yang mau diberikan ke asesi ini?
-        $jumlahSoal = 8;
-
-        // ================================================================
-
-        $this->command->info("Memulai proses seeding Lembar Jawab IA-05...");
-
-        // Cek dulu apakah data sertifikasi target ada
-        // Pastikan nama tabel 'data_sertifikasi_asesi' sudah benar (kadang ada 's'-nya)
-        $targetExists = DB::table('data_sertifikasi_asesi') // atau 'data_sertifikasi_asesis'
-                        ->where('id_data_sertifikasi_asesi', $targetIdSertifikasi)
-                        ->exists();
-
-        if (!$targetExists) {
-            $this->command->error("Gagal! Data Sertifikasi dengan ID $targetIdSertifikasi tidak ditemukan.");
-            return;
-        }
-
-        // 1. Ambil sejumlah soal master secara acak dari tabel soal_ia05
-        $soalMaster = SoalIa05::inRandomOrder()->take($jumlahSoal)->get();
-
-        if ($soalMaster->isEmpty()) {
-            $this->command->error('Gagal! Tabel master "soal_ia05" masih kosong.');
-            $this->command->warn('Jalankan "SoalDanKunciSeeder" terlebih dahulu.');
-            return;
-        }
-
-        if ($soalMaster->count() < $jumlahSoal) {
-             $this->command->warn("Hanya menemukan " . $soalMaster->count() . " soal di master. Semua akan digunakan.");
-        }
-
-        $dataToInsert = [];
+        // 1. KONFIGURASI JUMLAH SOAL PER PESERTA
+        $jumlahSoal = 10; 
         $now = now();
 
-        // 2. Loop soal-soal yang didapat dan siapkan data untuk tabel penghubung
-        foreach ($soalMaster as $soal) {
-            $dataToInsert[] = [
-                // HUBUNGKAN PESERTA DENGAN SOAL (FK)
-                'id_data_sertifikasi_asesi' => $targetIdSertifikasi,
-                'id_soal_ia05' => $soal->id_soal_ia05,
-                
-                // [PERUBAHAN DI SINI: GUNAAN NAMA KOLOM BARU]
-                // Kolom lain dibiarkan default (null/belum dijawab)
-                'jawaban_asesi_ia05' => null, // Nama kolom baru
-                'pencapaian_ia05' => null,     // Nama kolom baru
-                
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
+        $this->command->info("🔄 Memulai proses seeding Lembar Jawab IA-05 untuk SEMUA Asesi...");
+
+        // 2. AMBIL SEMUA DATA SERTIFIKASI (Beserta ID Skema-nya)
+        // Kita perlu JOIN ke tabel jadwal untuk tahu sertifikasi ini pakai Skema ID berapa
+        $listSertifikasi = DB::table('data_sertifikasi_asesi')
+            ->join('jadwal', 'data_sertifikasi_asesi.id_jadwal', '=', 'jadwal.id_jadwal')
+            ->select(
+                'data_sertifikasi_asesi.id_data_sertifikasi_asesi', 
+                'jadwal.id_skema' // Kita butuh ini buat filter soal
+            )
+            ->get();
+
+        if ($listSertifikasi->isEmpty()) {
+            $this->command->warn("⚠️ Tidak ada data sertifikasi asesi ditemukan.");
+            return;
         }
 
-        // 3. Masukkan data ke tabel lembar_jawab_ia05 menggunakan Query Builder
-        DB::table('lembar_jawab_ia05')->insert($dataToInsert);
-        
-        $count = count($dataToInsert);
-        $this->command->info("SUKSES! Berhasil memasukkan $count soal untuk Data Sertifikasi ID: $targetIdSertifikasi.");
-        $this->command->info("Silakan refresh halaman frontend asesmen.");
+        $this->command->info("🔎 Ditemukan " . $listSertifikasi->count() . " peserta sertifikasi. Sedang memproses...");
+
+        DB::transaction(function () use ($listSertifikasi, $jumlahSoal, $now) {
+            
+            $totalSoalTergenerate = 0;
+
+            foreach ($listSertifikasi as $sertifikasi) {
+                
+                // 3. CEK APAKAH SUDAH PUNYA SOAL? (Opsional, biar gak duplikat kalau di-seed 2x)
+                $sudahAda = DB::table('lembar_jawab_ia05')
+                    ->where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
+                    ->exists();
+
+                if ($sudahAda) {
+                    continue; // Skip kalau sudah ada soalnya
+                }
+
+                // 4. AMBIL SOAL SESUAI ID SKEMA PESERTA
+                // Ini logic pentingnya: Ambil soal dimana id_skema == id_skema milik sertifikasi
+                $soalPaket = DB::table('soal_ia05')
+                    ->where('id_skema', $sertifikasi->id_skema) 
+                    ->inRandomOrder()
+                    ->take($jumlahSoal)
+                    ->get();
+
+                if ($soalPaket->isEmpty()) {
+                    // Log warning tapi jangan stop loop, mungkin skema lain ada soalnya
+                    // $this->command->warn("⚠️ Skema ID {$sertifikasi->id_skema} belum memiliki Bank Soal.");
+                    continue;
+                }
+
+                // 5. SIAPKAN DATA INSERT
+                $dataToInsert = [];
+                foreach ($soalPaket as $soal) {
+                    $dataToInsert[] = [
+                        'id_data_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi,
+                        'id_soal_ia05'              => $soal->id_soal_ia05,
+                        'jawaban_asesi_ia05'        => null, 
+                        'pencapaian_ia05'           => null,
+                        'created_at'                => $now,
+                        'updated_at'                => $now,
+                    ];
+                }
+
+                // 6. EKSEKUSI INSERT
+                if (!empty($dataToInsert)) {
+                    DB::table('lembar_jawab_ia05')->insert($dataToInsert);
+                    $totalSoalTergenerate += count($dataToInsert);
+                }
+            }
+
+            $this->command->info("✅ SUKSES! Total $totalSoalTergenerate baris lembar jawab berhasil dibuat untuk seluruh asesi.");
+        });
     }
 }

@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('soal_ia06', function (Blueprint $table) {
             $table->id('id_soal_ia06');
 
+            $table->foreignId('id_skema')
+                  ->constrained('skema', 'id_skema')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
             // isi dari database soal_ia06
             $table->text('soal_ia06');
             $table->text('kunci_jawaban_ia06')->nullable();
