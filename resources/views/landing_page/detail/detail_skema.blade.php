@@ -8,9 +8,23 @@
 
     {{-- HERO SECTION: Menampilkan detail utama Skema --}}
     <section class="max-w-screen-xl mx-auto px-8 mt-20">
-        <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
-            {{-- Menggunakan $skema->gambar (Menggunakan isset untuk keamanan) --}}
-            <img src="{{ asset('images/skema/foto_skema/' . ($skema->gambar ?? 'placeholder_default.jpg')) }}"
+            @php
+                $detailImgSrc = 'images/placeholder_default.jpg';
+                if ($skema->gambar) {
+                    if (str_starts_with($skema->gambar, 'images/')) {
+                        if (file_exists(public_path($skema->gambar))) {
+                            $detailImgSrc = $skema->gambar;
+                        }
+                    } else {
+                         if (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
+                            $detailImgSrc = 'images/skema/foto_skema/' . $skema->gambar;
+                        } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
+                            $detailImgSrc = 'images/skema/' . $skema->gambar;
+                        }
+                    }
+                }
+            @endphp
+            <img src="{{ asset($detailImgSrc) }}"
                 alt="{{ $skema->nama_skema ?? 'Skema Sertifikasi' }}"
                 class="w-full h-full object-cover">
 

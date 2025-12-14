@@ -181,8 +181,27 @@ html { scroll-behavior: smooth; }
                             <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
                                 <div class="rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-shadow duration-300 bg-white border border-gray-100/50 mb-3">
                                     <div class="overflow-hidden">
-                                        {{-- Path gambar skema Anda sudah benar --}}
-                                        <img src="{{ asset('images/skema/foto_skema/' . ($skema->gambar && file_exists(public_path('images/skema/foto_skema/' . $skema->gambar)) ? $skema->gambar : 'default.jpg')) }}"
+                                        @php
+                                            $imgSrc = 'images/default.jpg'; 
+                                            if ($skema->gambar) {
+                                                // Cek apakah gambar sudah berupa path lengkap (upload baru)
+                                                if (str_starts_with($skema->gambar, 'images/')) {
+                                                    if (file_exists(public_path($skema->gambar))) {
+                                                        $imgSrc = $skema->gambar;
+                                                    }
+                                                } else {
+                                                    // Jika hanya nama file (dummy/lama), cek di folder foto_skema
+                                                    if (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
+                                                        $imgSrc = 'images/skema/foto_skema/' . $skema->gambar;
+                                                    } 
+                                                    // Fallback: Cek di folder parent (images/skema) jika dummy ada disana
+                                                    elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
+                                                        $imgSrc = 'images/skema/' . $skema->gambar;
+                                                    }
+                                                }
+                                            }
+                                        @endphp
+                                        <img src="{{ asset($imgSrc) }}"
                                             alt="Gambar Skema"
                                             class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500">
                                     </div>

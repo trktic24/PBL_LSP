@@ -159,8 +159,22 @@
                             {{-- PRATINJAU DENGAN FORMAT BARU --}}
                             @if($skema->gambar)
                                 <div class="mt-2 text-sm text-gray-600">
+                                    @php
+                                        $previewImg = 'images/default.jpg';
+                                        if ($skema->gambar) {
+                                            if (str_starts_with($skema->gambar, 'images/')) {
+                                                if(file_exists(public_path($skema->gambar))) {
+                                                    $previewImg = $skema->gambar;
+                                                }
+                                            } elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
+                                                $previewImg = 'images/skema/foto_skema/' . $skema->gambar;
+                                            } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
+                                                $previewImg = 'images/skema/' . $skema->gambar;
+                                            }
+                                        }
+                                    @endphp
                                     <p class="font-medium mb-1">Gambar Saat Ini:</p>
-                                    <img src="{{ asset($skema->gambar) }}" alt="Preview" class="h-20 w-auto object-cover rounded border">
+                                    <img src="{{ asset($previewImg) }}" alt="Preview" class="h-20 w-auto object-cover rounded border">
                                 </div>
                             @endif
                         </div>
