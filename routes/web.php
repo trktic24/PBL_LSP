@@ -35,7 +35,11 @@ use App\Http\Controllers\APL01Controller; // Permohonan
 use App\Http\Controllers\Asesi\Apl02\PraasesmenController; // APL-02
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController; // AK-01
 use App\Http\Controllers\Asesi\TrackerController;
+use App\Http\Controllers\Asesi\Pdf\Ak01PdfController;
 use App\Http\Controllers\PortofolioController;
+use App\Http\Controllers\Asesi\asesmen\AssessmenFRIA04tController;
+use App\Http\Controllers\Asesi\asesmen\AssessmenFRIA09Controller;
+
 use App\Http\Controllers\FrMapa01Controller; // MAPA-01
 use App\Http\Controllers\Mapa02Controller; // MAPA-02
 use App\Http\Controllers\FrAk07Controller; // AK-07
@@ -134,8 +138,8 @@ Route::middleware('auth')->group(function () {
     // Buka routes/web.php
 // Pastikan kamu punya route seperti ini (sesuaikan controller-nya):
 
-Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
-    ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
+    Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
+        ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
 
     // FR-AK (Ceklis, Banding, dll)
     Route::get('/FR_AK_01', fn() => view('frontend/FR_AK_01'))->name('FR_AK_01');
@@ -182,7 +186,7 @@ Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\P
 
     // IA-08
     Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])
-     ->name('ia08.show');
+        ->name('ia08.show');
     Route::post('/ia08/store', [IA08Controller::class, 'store'])
         ->name('ia08.store');
 
@@ -205,6 +209,18 @@ Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\P
     // Portofolio
     Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
 
+    //FRIA04_Asesi
+    Route::get('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'showIA04AAsesi'])->name('fria04a.asesi.show');
+    Route::post('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'storeIA04AAsesi'])->name('fria04a.asesi.store');
+
+    //FRIA04_Asesor
+    Route::get('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
+    Route::post('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
+
+    //FRIA09
+    Route::get('/asesmen/ia09', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.ia09.view'); // <-- URL: /asesmen/ia09
+    Route::post('/asesmen/ia09/store', [AssessmenFRIA09Controller::class, 'store'])->name('asesmen.ia09.store');
+
     // ========================
     // 3. CETAK PDF
     // ========================
@@ -218,7 +234,7 @@ Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\P
         Route::get('/apl01/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.cetak_pdf');
         Route::get('/mapa01/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.cetak_pdf');
         Route::get('/apl02/{id}', [PraasesmenController::class, 'generatePDF'])->name('apl02.cetak_pdf');
-        Route::get('/ak01/{id}', [PersetujuanKerahasiaanAPIController::class, 'cetakPDF'])->name('ak01.cetak_pdf');
+        Route::get('/ak01/{id}', [Ak01PdfController::class, 'generateAk01'])->name('ak01.cetak_pdf');
         Route::get('/ak02/{id}', [Ak02Controller::class, 'cetakPDF'])->name('ak02.cetak_pdf');
     });
     // Legacy mapping (just in case)
@@ -231,3 +247,4 @@ Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\P
 Route::get('/keep-alive', fn() => response()->json(['status' => 'session_refreshed']));
 Route::get('/api/search-countries', [CountryController::class, 'search'])->name('api.countries.search');
 Route::post('/api/jadwal/daftar', [TrackerController::class, 'daftarJadwal'])->name('api.jadwal.daftar');
+Route::get('/tracking', [TrackerController::class, 'index'])->name('tracker');

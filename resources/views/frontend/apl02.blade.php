@@ -169,7 +169,7 @@
                                                 </tr>
 
                                                 {{-- LOOP KRITERIA (KUK) --}}
-                                                @foreach ($elemen->kriteriaUnjukKerja as $kuk)
+                                                @foreach ($elemen->kriteria as $kuk)
                                                     @php
                                                         $kukId = 'kuk-' . $kuk->id_kriteria;
                                                         $radioName = 'respon[' . $kuk->id_kriteria . '][k]';

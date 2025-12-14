@@ -21,28 +21,28 @@ class TukController extends Controller
             $query->where(function ($q) use ($searchTerm) {
                 // Kolom sesuai tabel: nama_lokasi dan alamat_tuk
                 $q->where('nama_lokasi', 'like', $searchTerm)
-                  ->orWhere('alamat_tuk', 'like', $searchTerm);
+                    ->orWhere('alamat_tuk', 'like', $searchTerm);
             });
         }
-        
+
         // 3. LOGIKA SORTING
-        
-        $sortColumn = $request->get('sort', 'nama_lokasi'); 
+
+        $sortColumn = $request->get('sort', 'nama_lokasi');
         $sortDirection = $request->get('direction', 'asc');
 
         // Daftar kolom yang diizinkan untuk sorting
         $allowedColumns = ['nama_lokasi', 'alamat_tuk', 'kontak_tuk', 'created_at'];
 
-        if (in_array($sortColumn, $allowedColumns)) { 
+        if (in_array($sortColumn, $allowedColumns)) {
             $query->orderBy($sortColumn, $sortDirection);
         } else {
             // Fallback jika kolom tidak valid
-            $query->orderBy('nama_lokasi', 'asc'); 
+            $query->orderBy('nama_lokasi', 'asc');
         }
 
         // 4. Ambil data TUK (dengan Pagination 10 data per halaman)
-        $tuks = $query->paginate(10); 
-        
+        $tuks = $query->paginate(10);
+
         // Mengirimkan data TUK ke view
         return view('landing_page.page_tuk.info-tuk', [
             'tuks' => $tuks,
@@ -58,8 +58,8 @@ class TukController extends Controller
     public function showDetail($id)
     {
 
-        $data_tuk = MasterTuk::findOrFail($id);
-        
+        $data_tuk = MasterTUK::findOrFail($id);
+
 
         return view('landing_page.page_tuk.detail-tuk', [
             'data_tuk' => $data_tuk,

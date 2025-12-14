@@ -4,7 +4,7 @@
               bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
               shadow-inner border-r border-gray-200 flex flex-col items-center pt-8 z-40">
 
-    <a href="{{ url()->previous() ?? route('admin.dashboard') }}" 
+    <a href="{{ route('admin.master_asesor') }}" 
        class="absolute top-4 left-6 flex items-center text-gray-500 hover:text-blue-600 transition-all duration-200 cursor-pointer z-50 hover:-translate-x-1">
         <i class="fas fa-arrow-left text-lg"></i>
         <span class="ml-2 font-medium text-sm">Kembali</span>
@@ -26,9 +26,21 @@
     <div class="w-[85%] border-t-2 border-gray-300 opacity-50 mt-4 -mb-2 relative z-10"></div>
 
     @php
-        $skemaPertama = $asesor->skemas->first();
+        // 1. Ambil Skema dari Pivot (Many-to-Many)
+        $skemaPivot = $asesor->skemas; 
+        
+        // 2. Ambil Skema dari Riwayat Jadwal
+        $skemaJadwal = $asesor->jadwals->pluck('skema')->filter(); 
+        
+        // 3. Ambil Skema Utama (One-to-Many)
+        $skemaUtama = $asesor->skema ? collect([$asesor->skema]) : collect();
+
+        // 4. Gabungkan semua dan hilangkan duplikat bedasarkan 'nama_skema'
+        $allSkemas = $skemaPivot->merge($skemaJadwal)->merge($skemaUtama)->unique('nama_skema');
+
+        $skemaPertama = $allSkemas->first();
         $namaSkema = $skemaPertama->nama_skema ?? 'Belum ada skema';
-        $jumlahSkema = $asesor->skemas->count();
+        $jumlahSkema = $allSkemas->count();
         $infoTambahan = $jumlahSkema > 1 ? '+ ' . ($jumlahSkema - 1) . ' Skema Lainnya' : ($skemaPertama->nomor_skema ?? '-');
     @endphp
 
@@ -40,7 +52,7 @@
             {{ $infoTambahan }}
         </p>
 
-        {{-- NEW: Status Badge di Sidebar --}}
+        {{-- Status Badge --}}
         <div class="mt-3">
             @if($asesor->status_verifikasi == 'approved')
                 <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-green-700 bg-green-100 rounded-full border border-green-200 shadow-sm flex items-center justify-center w-fit mx-auto">
@@ -63,15 +75,17 @@
     
         <div class="flex flex-col space-y-4">
             
+            {{-- 1. PROFILE SETTINGS --}}
             <a href="{{ route('admin.asesor.profile', $asesor->id_asesor) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
                     {{ Route::is('admin.asesor.profile') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
-                </a>
+            </a>
 
-                <a href="{{ route('admin.asesor_profile_tinjauan', $asesor->id_asesor) }}" 
+            {{-- 2. TINJAUAN ASESMEN --}}
+            <a href="{{ route('admin.asesor_profile_tinjauan', $asesor->id_asesor) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
@@ -79,14 +93,17 @@
                 <i class="fas fa-clipboard-list text-l mr-3"></i> Tinjauan Asesmen
             </a>
 
-            <a href="{{ route('admin.asesor_profile_tracker', $asesor->id_asesor) }}" 
+            {{-- 3. LACAK AKTIVITAS (TRACKER) --}}
+            {{-- Menggunakan route dengan 1 parameter (id_asesor) karena parameter ke-2 (id_sertifikasi) dibuat opsional di auth.php --}}
+            <a href="{{ route('admin.asesor.tracker', $asesor->id_asesor) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
-                    {{ Route::is('admin.asesor_profile_tracker') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
+                    {{ Route::is('admin.asesor.tracker') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
             </a>
 
+            {{-- 4. BUKTI KELENGKAPAN --}}
             <a href="{{ route('admin.asesor.bukti', $asesor->id_asesor) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
