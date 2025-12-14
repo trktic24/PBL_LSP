@@ -163,7 +163,7 @@
                             <th class="px-6 py-3 font-semibold text-center">Tanda Tangan</th>
 
                             <th class="px-4 py-3 font-semibold text-center">
-                                Checklist
+                                Kehadiran
                             </th>
 
                             <th class="px-6 py-3 font-semibold text-center w-24">Aksi</th>
