@@ -66,27 +66,21 @@ class DashboardController extends Controller
 
         // Ringkasan
         $blmreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
-            $q->where('id_asesor', $id_asesor);
-        })
-            ->whereDoesntHave('responApl2Ia01')
-            ->whereDoesntHave('komentarAk05')
+                $q->where('id_asesor', $id_asesor);
+            })
+            ->whereNull('rekomendasi_apl02')
+            ->whereNull('rekomendasi_hasil_asesmen_AK02')
             ->count();
-        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
-            $q->where('id_asesor', $id_asesor);
-        })
-            ->whereHas('responApl2Ia01')        // sudah mengisi APL02
-            ->whereDoesntHave('komentarAk05')
-            ->count();
-        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
-            $q->where('id_asesor', $id_asesor);
-        })
-            ->whereHas('komentarAk05')
-            ->count();
-        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
-            $q->where('id_asesor', $id_asesor);
-        })
-            ->count();
-
+        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereNotNull('rekomendasi_apl02')        // sudah mengisi APL02
+                ->whereNull('rekomendasi_hasil_asesmen_AK02')
+                ->count();        
+        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereNotNull('rekomendasi_hasil_asesmen_AK02')
+                ->count();
+        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+        ->count();
+        
         // // 2. Data Ringkasan (Dummy)
         // $summary = [
         //     'belum_direview' => 5,

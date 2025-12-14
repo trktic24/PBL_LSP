@@ -95,7 +95,7 @@
                                 @if ($data->komentarAk05 === null)
                                     -
                                 @else
-                                    {{ $data->komentarAk05->rekomendasi }}
+                                    {{ $data->komentarAk05->keterangan }}
                                 @endif
                             </td>     
                             

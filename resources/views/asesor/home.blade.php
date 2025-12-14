@@ -83,7 +83,7 @@
                 <h1 class="text-3xl font-bold text-gray-900">Selamat Datang {{ $profile['nama'] }}!</h1>
                 <p class="text-xl font-semibold text-gray-800 mt-1">{{ $profile['nama'] }}</p>
                 <p class="text-base text-gray-600">{{ $profile['nomor_registrasi'] }}</p>
-                <p class="text-base text-gray-600">{{ $profile['kompetensi'] }}</p>
+                <!-- <p class="text-base text-gray-600">{{ $profile['kompetensi'] }}</p> -->
             </div>
         </div>
 
