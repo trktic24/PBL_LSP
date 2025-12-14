@@ -26,7 +26,6 @@ class AsesorController extends Controller
         $skemaId = $request->input('skema_id');
         $jenisKelamin = $request->input('jenis_kelamin');
         
-        // PERBAIKAN: Mengambil input 'status_verifikasi' bukan 'is_verified'
         $statusVerifikasi = $request->input('status_verifikasi');
 
         $perPage = $request->input('per_page', 10);
@@ -39,9 +38,9 @@ class AsesorController extends Controller
         }
 
         $query = Asesor::with(['skemas'])
-            // PERBAIKAN: Menggunakan 'id_user' untuk join
             ->join('users', 'asesor.id_user', '=', 'users.id_user')
-            ->select('asesor.*', 'users.email', 'users.username');
+            // PERBAIKAN: Menghapus 'users.username' karena kolom tidak ada di DB
+            ->select('asesor.*', 'users.email');
 
         if ($search) {
             $searchTerm = '%' . $search . '%';
@@ -64,7 +63,6 @@ class AsesorController extends Controller
         }
         if ($jenisKelamin) $query->where('asesor.jenis_kelamin', $jenisKelamin);
         
-        // PERBAIKAN: Filter berdasarkan kolom 'status_verifikasi'
         if ($statusVerifikasi) $query->where('asesor.status_verifikasi', $statusVerifikasi);
 
         $sortColumnName = ($sortColumn == 'email') ? 'users.email' : 'asesor.' . $sortColumn;
@@ -73,7 +71,7 @@ class AsesorController extends Controller
         $skemas = Skema::orderBy('nama_skema')->get();
         $asesors = $query->paginate($perPage)->appends($requestData); 
         
-        return view('master.asesor.master_asesor', compact('asesors', 'skemas', 'requestData', 'perPage', 'sortColumn', 'sortDirection'));
+        return view('admin.master.asesor.master_asesor', compact('asesors', 'skemas', 'requestData', 'perPage', 'sortColumn', 'sortDirection'));
     }
 
     // ==========================================================
@@ -82,25 +80,28 @@ class AsesorController extends Controller
     public function createStep1(Request $request)
     {
         $asesor = $request->session()->get('asesor');
-        return view('master.asesor.add_asesor1', compact('asesor'));
+        return view('admin.master.asesor.add_asesor1', compact('asesor'));
     }
 
     public function postStep1(Request $request)
     {
+        // PERBAIKAN: Menghapus validasi 'username'
         $validatedData = $request->validate([
             'email' => 'required|email|unique:users,email',
-            'username' => 'required|string|unique:users,username',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $asesor = $request->session()->get('asesor', new Asesor());
-        $asesor->fill($validatedData);
+        $asesor->fill($validatedData); // Ini akan mengisi email (jika ada di model Asesor)
+        
+        // Simpan data sementara ke object asesor untuk sesi
         $asesor->password = $validatedData['password']; 
-        $asesor->username = $validatedData['username'];
         $asesor->email = $validatedData['email'];
+        // PERBAIKAN: Tidak menyimpan username ke session
         
         $request->session()->put('asesor', $asesor);
-        return redirect()->route('add_asesor2');
+        // PERBAIKAN ROUTE: Menambahkan prefix admin.
+        return redirect()->route('admin.add_asesor2');
     }
 
     public function createStep2(Request $request)
@@ -108,7 +109,7 @@ class AsesorController extends Controller
         $asesor = $request->session()->get('asesor');
         $skemas = Skema::all();
         $selectedSkemas = isset($asesor->skema_ids) ? $asesor->skema_ids : [];
-        return view('master.asesor.add_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
+        return view('admin.master.asesor.add_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
     }
 
     public function postStep2(Request $request)
@@ -140,20 +141,22 @@ class AsesorController extends Controller
         $asesor->tanggal_lahir = $validatedData['tanggal_lahir'];
 
         $request->session()->put('asesor', $asesor);
-        return redirect()->route('add_asesor3');
+        // PERBAIKAN ROUTE: Menambahkan prefix admin.
+        return redirect()->route('admin.add_asesor3');
     }
 
     public function createStep3(Request $request)
     {
         $asesor = $request->session()->get('asesor');
-        return view('master.asesor.add_asesor3', compact('asesor'));
+        return view('admin.master.asesor.add_asesor3', compact('asesor'));
     }
 
     public function store(Request $request)
     {
         $asesorData = $request->session()->get('asesor');
         if (!$asesorData) {
-            return redirect()->route('add_asesor1')->with('error', 'Sesi Anda telah berakhir, silakan mulai lagi.');
+            // PERBAIKAN ROUTE: Menambahkan prefix admin.
+            return redirect()->route('admin.add_asesor1')->with('error', 'Sesi Anda telah berakhir, silakan mulai lagi.');
         }
 
         $validatedFiles = $request->validate([
@@ -170,15 +173,14 @@ class AsesorController extends Controller
 
         DB::beginTransaction();
         try {
+            // PERBAIKAN: Hapus 'username' dari User::create
             $user = User::create([
-                'username' => $asesorData->username,
                 'email' => $asesorData->email,
                 'password' => Hash::make($asesorData->password),
                 'role_id' => 2,
             ]);
 
             $finalAsesorData = [
-                // PERBAIKAN: Key 'id_user'
                 'id_user' => $user->id_user, 
                 'nomor_regis' => $asesorData->nomor_regis,
                 'nama_lengkap' => $asesorData->nama_lengkap,
@@ -196,7 +198,6 @@ class AsesorController extends Controller
                 'NPWP' => $asesorData->NPWP,
                 'nama_bank' => $asesorData->nama_bank,
                 'norek' => $asesorData->norek,
-                // PERBAIKAN: Key 'status_verifikasi' default 'pending'
                 'status_verifikasi' => 'pending',
             ];
 
@@ -214,7 +215,8 @@ class AsesorController extends Controller
 
             DB::commit();
             $request->session()->forget('asesor');
-            return redirect()->route('master_asesor')->with('success', 'Asesor baru berhasil ditambahkan!');
+            // PERBAIKAN ROUTE: Menambahkan prefix admin.
+            return redirect()->route('admin.master_asesor')->with('success', 'Asesor baru berhasil ditambahkan!');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -229,7 +231,7 @@ class AsesorController extends Controller
     public function editStep1($id_asesor)
     {
         $asesor = Asesor::with(['user'])->findOrFail($id_asesor);
-        return view('master.asesor.edit_asesor1', compact('asesor'));
+        return view('admin.master.asesor.edit_asesor1', compact('asesor'));
     }
 
     public function updateStep1(Request $request, $id_asesor)
@@ -237,23 +239,26 @@ class AsesorController extends Controller
         $asesor = Asesor::with('user')->findOrFail($id_asesor);
         $user = $asesor->user;
 
+        // Kita validasi 'nama' (untuk asesor.nama_lengkap) dan email (untuk user.email)
         $validatedUserData = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id_user, 'id_user')],
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
-        $user->username = $validatedUserData['nama'];
+        // PERBAIKAN: Hapus baris '$user->username = ...' karena kolom tidak ada
         $user->email = $validatedUserData['email'];
         if (!empty($validatedUserData['password'])) {
             $user->password = Hash::make($validatedUserData['password']);
         }
         $user->save();
         
+        // Nama lengkap disimpan di tabel asesor
         $asesor->nama_lengkap = $validatedUserData['nama'];
         $asesor->save();
         
-        return redirect()->route('edit_asesor2', $id_asesor)->with('success-step', 'Data Akun berhasil diperbarui.');
+        // PERBAIKAN ROUTE: Menambahkan prefix admin.
+        return redirect()->route('admin.edit_asesor2', $id_asesor)->with('success-step', 'Data Akun berhasil diperbarui.');
     }
 
     public function editStep2($id_asesor)
@@ -261,7 +266,7 @@ class AsesorController extends Controller
         $asesor = Asesor::with('skemas')->findOrFail($id_asesor);
         $skemas = Skema::all();
         $selectedSkemas = $asesor->skemas->pluck('id_skema')->toArray();
-        return view('master.asesor.edit_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
+        return view('admin.master.asesor.edit_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
     }
 
     public function updateStep2(Request $request, $id_asesor)
@@ -293,13 +298,14 @@ class AsesorController extends Controller
         $skema_ids = $validatedAsesorData['skema_ids'] ?? [];
         $asesor->skemas()->sync($skema_ids);
 
-        return redirect()->route('edit_asesor3', $id_asesor)->with('success-step', 'Data Pribadi & Skema berhasil diperbarui.');
+        // PERBAIKAN ROUTE: Menambahkan prefix admin.
+        return redirect()->route('admin.edit_asesor3', $id_asesor)->with('success-step', 'Data Pribadi & Skema berhasil diperbarui.');
     }
 
     public function editStep3($id_asesor)
     {
         $asesor = Asesor::findOrFail($id_asesor);
-        return view('master.asesor.edit_asesor3', compact('asesor'));
+        return view('admin.master.asesor.edit_asesor3', compact('asesor'));
     }
 
     public function updateStep3(Request $request, $id_asesor)
@@ -318,7 +324,6 @@ class AsesorController extends Controller
             'tanda_tangan' => 'nullable|file|mimes:png|max:5120', 
         ]);
 
-        // PERBAIKAN: Mengakses properti 'id_user'
         $uploadPath = 'public/asesor_files/' . $asesor->id_user;
         
         foreach ($validatedFiles as $key => $file) {
@@ -332,7 +337,8 @@ class AsesorController extends Controller
         }
         $asesor->save(); 
 
-        return redirect()->route('master_asesor')->with('success', 'Data Asesor berhasil diperbarui.');
+        // PERBAIKAN ROUTE: Menambahkan prefix admin.
+        return redirect()->route('admin.master_asesor')->with('success', 'Data Asesor berhasil diperbarui.');
     }
 
     public function destroy($id_asesor)
@@ -342,7 +348,6 @@ class AsesorController extends Controller
             $asesor = Asesor::with('user')->findOrFail($id_asesor);
             $user = $asesor->user;
             
-            // PERBAIKAN: Mengakses properti 'id_user'
             $userId = $asesor->id_user; 
 
             $asesor->delete(); 
@@ -352,7 +357,8 @@ class AsesorController extends Controller
             Storage::deleteDirectory($uploadPath);
 
             DB::commit();
-            return redirect()->route('master_asesor')->with('success', 'Data berhasil dihapus.');
+            // PERBAIKAN ROUTE: Menambahkan prefix admin.
+            return redirect()->route('admin.master_asesor')->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menghapus: ' . $e->getMessage());

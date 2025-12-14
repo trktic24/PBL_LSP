@@ -4,36 +4,51 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
+use App\Models\Skema;
+use Illuminate\Support\Facades\Storage; // Pastikan Storage di-import
 
 class Asesor extends Model
 {
     use HasFactory;
-    protected $table = 'asesor';
-    protected $primaryKey = 'id_asesor';
-    protected $guarded = ['id_asesor'];
 
-    // Kolom yang boleh diisi (sesuaikan dengan migration & form step 2 & 3 asesor)
+    /**
+     * Nama tabel yang terkait dengan model.
+     *
+     * @var string
+     */
+    protected $table = 'asesor';
+
+    /**
+     * Primary key untuk model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id_asesor';
+
+    /**
+     * Atribut yang dapat diisi secara massal.
+     * (Ini sudah sesuai dengan migrasi 2025_10_23_041924_data_asesor.php)
+     * @var array
+     */
     protected $fillable = [
-        'id_user',
-        'id_skema',
-        'nomor_regis', // Mapping dari 'no_registrasi_asesor'
+        'user_id',
+        'nomor_regis',
         'nama_lengkap',
         'nik',
         'tempat_lahir',
-        'tanggal_lahir', // Simpan YYYY-MM-DD
-        'jenis_kelamin', // Simpan 0/1
+        'tanggal_lahir',
+        'jenis_kelamin',
         'kebangsaan',
+        'pekerjaan',
         'alamat_rumah',
-        'kode_pos', // <-- Ditambahkan
-        'kabupaten_kota', // <-- Ditambahkan (menggantikan tempat_tinggal)
+        'kode_pos',
+        'kabupaten_kota',
         'provinsi',
         'nomor_hp',
         'NPWP',
         'nama_bank',
-        'norek', // Mapping dari 'nomor_rekening'
-        'pekerjaan', // Mapping dari 'pekerjaan_asesor'
-        // Path file (nama samain sama migration)
+        'norek',
         'ktp',
         'pas_foto',
         'NPWP_foto',
@@ -43,27 +58,24 @@ class Asesor extends Model
         'sertifikat_asesor',
         'sertifikasi_kompetensi',
         'tanda_tangan',
-        'status_verifikasi',
+        'is_verified',
     ];
 
-    // Casting
-    protected $casts = [
-        'tanggal_lahir' => 'date',
-    ];
-
-    // Relasi: Satu Asesor dimiliki oleh satu User
-    public function user(): BelongsTo
+    /**
+     * Relasi one-to-one ke model User.
+     * (Relasi ini sudah benar)
+     */
+    public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user'); // FK, Owner Key
+        return $this->belongsTo(User::class, 'user_id', 'id_user');
     }
-    
-    public function skema()
+
+    /**
+     * Relasi many-to-many ke model Skema.
+     * (Relasi ini sudah benar, sesuai migrasi 2025_10_30_080349_transaksi_asesor_skema.php)
+     */
+    public function skemas()
     {
-        return $this->belongsToMany(
-            Skema::class,           // Model tujuan
-            'transaksi_asesor_skema', // Nama tabel pivot
-            'id_asesor',            // Foreign key di pivot untuk model ini
-            'id_skema'              // Foreign key di pivot untuk model tujuan
-        );
+        return $this->belongsToMany(Skema::class, 'Transaksi_asesor_skema', 'id_asesor', 'id_skema');
     }
 }
