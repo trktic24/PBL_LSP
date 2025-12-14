@@ -317,8 +317,8 @@
                                             x-text="jadwal.Status_jadwal"></span>
                                     </td>
                                     <td class="px-4 py-4 text-center">
-                                        <a :href="'/master/schedule/attendance/' + jadwal.id_jadwal"
-                                            class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition">
+                                        <a :href="'/admin/master/jadwal/' + jadwal.id_jadwal + '/daftar_hadir'"
+                                        class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md transition">
                                             <i class="fas fa-eye"></i> <span>Detail</span>
                                         </a>
                                     </td>
