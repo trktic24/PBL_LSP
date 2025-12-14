@@ -68,7 +68,7 @@ use App\Http\Controllers\Asesi\pembayaran\PaymentController;
 // PDF Controllers
 use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
 use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
-use App\Http\Controllers\Asesi\Pdf\Ak01PdfController; 
+use App\Http\Controllers\Asesi\Pdf\Ak01PdfController;
 use App\Http\Controllers\Asesi\Pdf\KartuPesertaPdfController;
 
 // ======================================================
@@ -204,32 +204,52 @@ Route::middleware('auth')->group(function () {
 
         // Master TUK
         Route::resource('master/tuk', TukAdminController::class)->names([
-            'index' => 'master_tuk', 'create' => 'add_tuk', 'store' => 'add_tuk.store',
-            'edit' => 'edit_tuk', 'update' => 'update_tuk', 'destroy' => 'delete_tuk'
+            'index' => 'master_tuk',
+            'create' => 'add_tuk',
+            'store' => 'add_tuk.store',
+            'edit' => 'edit_tuk',
+            'update' => 'update_tuk',
+            'destroy' => 'delete_tuk'
         ]);
 
         // Master Category
         Route::resource('master/category', CategoryController::class)->names([
-            'index' => 'master_category', 'create' => 'add_category', 'store' => 'add_category.store',
-            'edit' => 'edit_category', 'update' => 'update_category', 'destroy' => 'delete_category'
+            'index' => 'master_category',
+            'create' => 'add_category',
+            'store' => 'add_category.store',
+            'edit' => 'edit_category',
+            'update' => 'update_category',
+            'destroy' => 'delete_category'
         ]);
 
         // Master Mitra
         Route::resource('master/mitra', MitraController::class)->names([
-            'index' => 'master_mitra', 'create' => 'add_mitra', 'store' => 'add_mitra.store',
-            'edit' => 'edit_mitra', 'update' => 'update_mitra', 'destroy' => 'delete_mitra'
+            'index' => 'master_mitra',
+            'create' => 'add_mitra',
+            'store' => 'add_mitra.store',
+            'edit' => 'edit_mitra',
+            'update' => 'update_mitra',
+            'destroy' => 'delete_mitra'
         ]);
 
         // Master Berita
         Route::resource('master/berita', BeritaController::class)->names([
-            'index' => 'master_berita', 'create' => 'add_berita', 'store' => 'add_berita.store',
-            'edit' => 'edit_berita', 'update' => 'update_berita', 'destroy' => 'delete_berita'
+            'index' => 'master_berita',
+            'create' => 'add_berita',
+            'store' => 'add_berita.store',
+            'edit' => 'edit_berita',
+            'update' => 'update_berita',
+            'destroy' => 'delete_berita'
         ]);
 
         // Master Asesi
         Route::resource('master/asesi', AsesiController::class)->names([
-            'index' => 'master_asesi', 'create' => 'add_asesi', 'store' => 'add_asesi.store',
-            'edit' => 'edit_asesi', 'update' => 'update_asesi', 'destroy' => 'delete_asesi'
+            'index' => 'master_asesi',
+            'create' => 'add_asesi',
+            'store' => 'add_asesi.store',
+            'edit' => 'edit_asesi',
+            'update' => 'update_asesi',
+            'destroy' => 'delete_asesi'
         ]);
 
         // Master Skema
@@ -278,41 +298,45 @@ Route::middleware('auth')->group(function () {
             Route::post('/add_asesor2', 'postStep2')->name('add_asesor2.post');
             Route::get('/add_asesor3', 'createStep3')->name('add_asesor3');
             Route::post('/asesor/store', 'store')->name('asesor.store');
-             // Edit Steps
-             Route::get('/edit-asesor-step-1/{id_asesor}', 'editStep1')->name('edit_asesor1');
-             Route::patch('/update-asesor-step-1/{id_asesor}', 'updateStep1')->name('asesor.update.step1');
-             Route::get('/edit-asesor-step-2/{id_asesor}', 'editStep2')->name('edit_asesor2');
-             Route::patch('/update-asesor-step-2/{id_asesor}', 'updateStep2')->name('asesor.update.step2');
-             Route::get('/edit-asesor-step-3/{id_asesor}', 'editStep3')->name('edit_asesor3');
-             Route::patch('/update-asesor-step-3/{id_asesor}', 'updateStep3')->name('asesor.update.step3');
-             Route::delete('/asesor/{id_asesor}', 'destroy')->name('asesor.destroy');
+            // Edit Steps
+            Route::get('/edit-asesor-step-1/{id_asesor}', 'editStep1')->name('edit_asesor1');
+            Route::patch('/update-asesor-step-1/{id_asesor}', 'updateStep1')->name('asesor.update.step1');
+            Route::get('/edit-asesor-step-2/{id_asesor}', 'editStep2')->name('edit_asesor2');
+            Route::patch('/update-asesor-step-2/{id_asesor}', 'updateStep2')->name('asesor.update.step2');
+            Route::get('/edit-asesor-step-3/{id_asesor}', 'editStep3')->name('edit_asesor3');
+            Route::patch('/update-asesor-step-3/{id_asesor}', 'updateStep3')->name('asesor.update.step3');
+            Route::delete('/asesor/{id_asesor}', 'destroy')->name('asesor.destroy');
         });
 
         // ==========================================================
         // DETAIL PROFIL ASESOR (Admin View) - [UPDATED SECTION]
         // ==========================================================
         Route::controller(AsesorProfileController::class)->prefix('asesor/{id_asesor}')->group(function () {
-             Route::get('/profile', 'showProfile')->name('asesor.profile');
-             Route::get('/bukti', 'showBukti')->name('asesor.bukti');
-             Route::get('/tinjauan', 'showTinjauan')->name('asesor_profile_tinjauan');
-             
-             // [FIX] Mengubah nama route agar sesuai dengan View (daftar_asesi)
-             Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.daftar_asesi'); 
-             
-             // [FIX] Parameter Tracker dibuat OPSIONAL (?) agar tidak error di Sidebar
-             Route::get('/tracker/{id_data_sertifikasi_asesi?}', 'showTracker')->name('asesor.tracker');
+            Route::get('/profile', 'showProfile')->name('asesor.profile');
+            Route::get('/bukti', 'showBukti')->name('asesor.bukti');
+            Route::get('/tinjauan', 'showTinjauan')->name('asesor_profile_tinjauan');
 
-             // Route untuk Tracker Skema (Timeline per Jadwal/Asesi)
-             Route::get('/tracker_skema/{id_jadwal}', 'showTrackerSkema')->name('asesor.tracker_skema');
-             
-             Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
-             Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
+            // [FIX] Mengubah nama route agar sesuai dengan View (daftar_asesi)
+            Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.daftar_asesi');
+
+            // [FIX] Parameter Tracker dibuat OPSIONAL (?) agar tidak error di Sidebar
+            Route::get('/tracker/{id_data_sertifikasi_asesi?}', 'showTracker')->name('asesor.tracker');
+
+            // Route untuk Tracker Skema (Timeline per Jadwal/Asesi)
+            Route::get('/tracker_skema/{id_jadwal}', 'showTrackerSkema')->name('asesor.tracker_skema');
+
+            Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
+            Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
         });
 
         // Master Jadwal
         Route::resource('master/jadwal', AdminJadwalController::class)->names([
-            'index' => 'master_schedule', 'create' => 'add_schedule', 'store' => 'add_schedule.store',
-            'edit' => 'edit_schedule', 'update' => 'update_schedule', 'destroy' => 'delete_schedule'
+            'index' => 'master_schedule',
+            'create' => 'add_schedule',
+            'store' => 'add_schedule.store',
+            'edit' => 'edit_schedule',
+            'update' => 'update_schedule',
+            'destroy' => 'delete_schedule'
         ]);
         Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('schedule_admin');
 
@@ -325,7 +349,7 @@ Route::middleware('auth')->group(function () {
 
         // Bank Soal IA-06 (View Only for Admin, Full Access for Superadmin)
         Route::get('/bank-soal-ia06', [Ia06Controller::class, 'adminIndex'])->name('ia06.index');
-        
+
         // Superadmin ONLY Actions
         Route::middleware(['role:superadmin'])->group(function () {
             Route::post('/bank-soal-ia06', [Ia06Controller::class, 'adminStoreSoal'])->name('ia06.store');
@@ -358,7 +382,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/tracker/{id_sertifikasi_asesi}', [AsesiTrackerController::class, 'show'])->name('tracker');
 
         // Daftar Hadir & BA
-        Route::controller(AsesorJadwalController::class)->group(function() {
+        Route::controller(AsesorJadwalController::class)->group(function () {
             Route::get('/daftar-hadir/{id_jadwal}', 'daftarHadir')->name('daftar_hadir');
             Route::post('/daftar-hadir/{id_jadwal}/simpan', 'storeKehadiran')->name('simpan_kehadiran');
             Route::get('/daftar-hadir/pdf/{id_jadwal}', 'exportPdfdaftarhadir')->name('daftar_hadir.pdf');
@@ -390,7 +414,7 @@ Route::middleware('auth')->group(function () {
     // Berita Acara - Shared Route (Asesor & Admin)
     // ======================================================
     Route::middleware(['role:asesor,admin'])->prefix('asesor')->name('asesor.')->group(function () {
-        Route::controller(AsesorJadwalController::class)->group(function() {
+        Route::controller(AsesorJadwalController::class)->group(function () {
             Route::get('/berita-acara/{id_jadwal}', 'beritaAcara')->name('berita_acara');
             Route::get('/berita-acara/pdf/{id_jadwal}', 'exportPdfberitaAcara')->name('berita_acara.pdf');
         });
@@ -424,18 +448,18 @@ Route::middleware('auth')->group(function () {
 
         // Tracker
         Route::controller(TrackerController::class)->group(function () {
-             Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
-             Route::get('/pendaftaran-selesai/{id_sertifikasi}', 'pendaftaranSelesai')->name('pendaftaran.selesai');
-             Route::get('/pra-asesmen-selesai/{id_sertifikasi}', 'praAsesmenSelesai')->name('pra_asesmen.selesai');
-             Route::get('/persetujuan-selesai/{id_sertifikasi}', 'persetujuanSelesai')
-                    ->name('persetujuan.selesai');
-             Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
+            Route::get('/tracker/{jadwal_id?}', 'index')->name('tracker');
+            Route::get('/pendaftaran-selesai/{id_sertifikasi}', 'pendaftaranSelesai')->name('pendaftaran.selesai');
+            Route::get('/pra-asesmen-selesai/{id_sertifikasi}', 'praAsesmenSelesai')->name('pra_asesmen.selesai');
+            Route::get('/persetujuan-selesai/{id_sertifikasi}', 'persetujuanSelesai')
+                ->name('persetujuan.selesai');
+            Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
         });
 
         // Jadwal & Konfirmasi
         Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
         Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
-        
+
 
         // Pembayaran
         Route::controller(PaymentController::class)->group(function () {
@@ -469,7 +493,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04');
 
         // Cetak
-        Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01'); 
+        Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01');
         Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
         Route::get('/cetak/ak01/{id_sertifikasi}', [Ak01PdfController::class, 'generateAk01'])->name('cetak.ak01');
     });
@@ -481,9 +505,12 @@ Route::middleware('auth')->group(function () {
     // Tunggu Verifikasi (Asesor)
     Route::get('/tunggu-verifikasi', function () {
         $user = Auth::user();
-        if (!$user) return redirect()->route('login');
-        if ($user->role->nama_role !== 'asesor') return redirect()->route('home.index');
-        if ($user->asesor?->status_verifikasi === 'approved') return redirect()->route('home.index');
+        if (!$user)
+            return redirect()->route('login');
+        if ($user->role->nama_role !== 'asesor')
+            return redirect()->route('home.index');
+        if ($user->asesor?->status_verifikasi === 'approved')
+            return redirect()->route('home.index');
         return view('auth.verification-asesor');
     })->name('auth.wait');
 
@@ -501,7 +528,7 @@ Route::middleware('auth')->group(function () {
         } elseif ($roleName === 'asesor') {
             $status = $user->asesor?->status_verifikasi;
             if (!$user->asesor || $status !== 'approved') {
-                 // Redirect to verification waiting page instead of logging out
+                // Redirect to verification waiting page instead of logging out
                 return redirect()->route('auth.wait');
             }
             return redirect()->route('asesor.dashboard');

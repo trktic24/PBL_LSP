@@ -20,22 +20,22 @@ class Ak01PdfController extends Controller
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',
             'jadwal.skema',
-            'jadwal.tuk',    // Pastikan relasi 'tuk' ada di model Jadwal
+            'jadwal.masterTuk',    // Pastikan relasi 'masterTuk' ada di model Jadwal
             'jadwal.asesor'  // Pastikan relasi 'asesor' ada di model Jadwal
         ])
-        ->where('id_asesi', $user->asesi->id_asesi)
-        ->findOrFail($id_sertifikasi);
+            // ->where('id_asesi', $user->asesi->id_asesi) // Removed to allow Asesor access
+            ->findOrFail($id_sertifikasi);
 
         // 2. Siapkan Data untuk View
         $data = [
             'sertifikasi' => $sertifikasi,
-            'asesi'       => $sertifikasi->asesi,
-            'skema'       => $sertifikasi->jadwal->skema,
-            'tuk'         => $sertifikasi->jadwal->tuk,
-            'asesor'      => $sertifikasi->jadwal->asesor,
-            'tanggal'     => Carbon::now()->isoFormat('D MMMM Y'),
-            'hari'        => Carbon::now()->isoFormat('dddd'),
-            'jam'         => Carbon::now()->format('H:i'),
+            'asesi' => $sertifikasi->asesi,
+            'skema' => $sertifikasi->jadwal->skema,
+            'tuk' => $sertifikasi->jadwal->masterTuk,
+            'asesor' => $sertifikasi->jadwal->asesor,
+            'tanggal' => Carbon::now()->isoFormat('D MMMM Y'),
+            'hari' => Carbon::now()->isoFormat('dddd'),
+            'jam' => Carbon::now()->format('H:i'),
         ];
 
         // 3. Load View PDF

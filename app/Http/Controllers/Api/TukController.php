@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\MasterTuk; // Import Model MasterTuk Anda
+use App\Models\MasterTUK; // Import Model MasterTuk Anda
 use Illuminate\Http\Request;
 
 class TukController extends Controller
