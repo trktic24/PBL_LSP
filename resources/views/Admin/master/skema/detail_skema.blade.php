@@ -95,7 +95,7 @@
         <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8"
              x-data="formConfigHandler()">
 
-            <form id="formConfigUpdate" action="{{ route('admin.skema.detail.update_form', $skema->id_skema) }}" method="POST">
+            <form id="formConfigUpdate" action="{{ route('admin.edit_skema', $skema->id_skema) }}" method="POST">
                 @csrf
                 @method('PUT')
 
