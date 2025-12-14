@@ -253,6 +253,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/kelompok/{id_kelompok}', 'updateKelompok')->name('skema.detail.update_kelompok');
             Route::delete('/kelompok/{id_kelompok}', 'destroyKelompok')->name('skema.detail.destroy_kelompok');
             Route::delete('/unit/{id_unit}', 'destroyUnit')->name('skema.detail.destroy_unit');
+            Route::put('/{id_skema}/update-form', 'updateListForm')->name('skema.detail.update_form');
         });
 
         // Profile Asesi

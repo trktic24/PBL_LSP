@@ -286,8 +286,8 @@ class AsesiProfileController extends Controller
                 $q->with([
                     'jadwal.masterTuk',
                     'jadwal.asesor',
-                    'jadwal.waktuMulai', // Jika Anda punya accessor/relasi khusus untuk waktu
-                    'jadwal.waktuSelesai', // Jika Anda punya accessor/relasi khusus untuk waktu
+                    // 'jadwal.waktuMulai', // Jika Anda punya accessor/relasi khusus untuk waktu
+                    // 'jadwal.waktuSelesai', // Jika Anda punya accessor/relasi khusus untuk waktu
                 ])->latest(); // Ambil yang paling baru (yang utama dilacak)
             }
         ])->findOrFail($id_asesi);
