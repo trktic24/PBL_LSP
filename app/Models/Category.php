@@ -37,6 +37,6 @@ class Category extends Model
     {
         // 'categorie_id' -> foreign key di tabel 'skema'
         // 'id'           -> primary key di tabel 'categories' ini
-        return $this->hasMany(Skema::class, 'categorie_id', 'id');
+        return $this->hasMany(Skema::class, 'category_id', 'id');
     }
 }

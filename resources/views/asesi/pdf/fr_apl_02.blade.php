@@ -151,7 +151,7 @@
         </tr>
         <tr>
             <td style="height: 60px;"><strong>Tanda Tangan dan Tanggal:</strong></td>
-            <td style="vertical-align: bottom;">__________________</td> {{-- TTD --}}
+            <td style="vertical-align: bottom;">__________________</td> TTD
             <td style="vertical-align: bottom;">Tanggal: _____________</td>
         </tr>
     </table> --}}

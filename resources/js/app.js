@@ -19,4 +19,17 @@ Alpine.store("sidebar", {
     },
 });
 
+Alpine.store("sidebar", {
+    open: initialSidebarState,
+
+    toggle() {
+        this.open = !this.open;
+        localStorage.setItem("sidebar_open", this.open);
+    },
+
+    setOpen(value) {
+        this.open = value;
+        localStorage.setItem("sidebar_open", value);
+    },
+});
 Alpine.start();

@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
         $asesiRole = Role::where('nama_role', 'asesi')->first();
 
         // Buat Admin
+        // Buat Admin
         if ($adminRole) {
             User::firstOrCreate([
                 'email' => 'admin@example.com',
@@ -90,7 +91,7 @@ class UserSeeder extends Seeder
         // Buat Contoh Asesi
         if ($asesiRole) {
             // Kita override role_id-nya jadi 'Asesi'
-            User::factory()->count(20)->create([
+            User::factory()->count(50)->create([
                 'role_id' => $asesiRole->id_role,
             ]);            
             $asesiUser = User::firstOrCreate(

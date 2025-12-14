@@ -29,11 +29,8 @@ class KelompokPekerjaanFactory extends Factory
             // --- INI KUNCINYA ---
             // Ambil 'id_skema' SECARA ACAK dari tabel 'skema'
             // Ini WAJIB dijalanin SETELAH SkemaFactory
-            'id_skema' => Skema::all()->random()->id_skema,
-            
-            // Bikin data palsu sesuai migrasi lu
-            'kode_unit' => 'K.' . fake()->numerify('450100.0##.0#'),
-            'judul_unit' => 'Unit ' . fake()->words(3, true),
+            'id_skema' => Skema::inRandomOrder()->first()->id_skema ?? Skema::factory(),
+            'nama_kelompok_pekerjaan' => fake()->jobTitle(),
         ];
     }
 }

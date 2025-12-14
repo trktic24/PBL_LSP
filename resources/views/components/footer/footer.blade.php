@@ -57,7 +57,6 @@
     <div class="border-t border-white/30 pt-3 max-w-6xl mx-auto"></div>
 
     {{-- Footer bawah --}}
-    {{-- Footer bawah --}}
     <div class="relative max-w-6xl mx-auto mt-3 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-3">
       <div class="flex items-center gap-2 order-1 md:order-none">
         <img src="{{ asset('images/Polines Onli.png') }}" alt="Logo LSP POLINES" class="w-10">

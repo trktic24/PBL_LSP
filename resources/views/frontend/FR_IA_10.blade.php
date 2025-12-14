@@ -5,7 +5,6 @@
         
             <x-header_form.header_form title="FR.IA.10. VPK - VERIFIKASI PIHAK KETIGA" />
 
-            {{-- Menggunakan data dinamis dari Controller --}}
             <x-identitas_skema_form.identitas_skema_form
                 skema="Junior Web Developer"
                 nomorSkema="SKK.XXXXX.XXXX"
@@ -15,66 +14,57 @@
                 tanggal="{{ now()->format('d F Y') }}" 
             />
 
-            {{-- Notifikasi Sukses/Error --}}
+            {{-- Notifikasi --}}
             @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
                     {{ session('success') }}
                 </div>
             @endif
             @if (session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
                     {{ session('error') }}
                 </div>
             @endif
 
             <form class="form-body mt-10" method="POST" action="{{ route('fr-ia-10.store') }}">
             @csrf
-
-                {{-- WAJIB ADA: ID Asesi untuk disimpan ke database --}}
                 <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $asesi->id_data_sertifikasi_asesi }}">
 
-                {{-- Input tersembunyi pelengkap (opsional visual) --}}
-                <input type="hidden" name="nama_asesi" value="{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}">
-                <input type="hidden" name="nama_asesor" value="{{ $asesor->name ?? 'Nama Asesor' }}">
-
-                <div class="guide-box bg-gray-100 border-gray-100 p-6 rounded-md shadow-sm my-8">
-                     <p><strong>Panduan bagi Asesor:</strong></p>
-                     <ul class="list-disc pl-5 mt-2">
-                        <li>Lengkapi formulir ini untuk memverifikasi bukti pihak ketiga yang diajukan oleh asesi.</li>
-                        <li>Pastikan setiap pertanyaan dijawab dengan jujur berdasarkan pengamatan atau pengalaman kerja dengan asesi.</li>
-                     </ul>
-                </div> 
-                
-                {{-- Data Pihak Ketiga --}}
+                {{-- --- BAGIAN 1: HEADER (Data Pihak Ketiga) --- --}}
                 <div class="form-section my-8">
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Data Pihak Ketiga</h2>
 
+                    {{-- Perhatikan: value="{{ $header->kolom ?? '' }}" untuk pre-fill data lama --}}
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'supervisor_name',
                         'name'  => 'supervisor_name',
-                        'label' => 'Nama Pengawas/penyelia/atasan/orang lain di perusahaan '
+                        'label' => 'Nama Pengawas/penyelia',
+                        'value' => $header->nama_pengawas ?? '' 
                     ]) 
 
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'workplace',
                         'name'  => 'workplace',
-                        'label' => 'Tempat kerja '
+                        'label' => 'Tempat kerja',
+                        'value' => $header->tempat_kerja ?? ''
                     ]) 
 
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'address',
                         'name'  => 'address',
-                        'label' => 'Alamat'
+                        'label' => 'Alamat',
+                        'value' => $header->alamat ?? ''
                     ]) 
 
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'phone',
                         'name'  => 'phone',
-                        'label' => 'Telepon'
+                        'label' => 'Telepon',
+                        'value' => $header->telepon ?? ''
                     ]) 
                 </div>
 
-                {{-- TABEL PERTANYAAN (DINAMIS SEKARANG) --}}
+                {{-- --- BAGIAN 2: CHECKLIST PERTANYAAN (Tabel pertanyaan_ia10) --- --}}
                 <div class="form-section my-8">
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Daftar Pertanyaan</h2>
                     <div class="overflow-x-auto border border-gray-900 shadow-md">
@@ -87,104 +77,125 @@
                                 </tr>
                             </x-slot>
                             
-                            {{-- LOOPING SOAL DARI DATABASE --}}
-                            @forelse($daftar_soal as $index => $soal)
+                            @forelse($daftar_soal as $soal)
                                 <tr>
                                     <td class="border border-gray-900 p-2 text-sm">
-                                        {{-- Menampilkan Teks Pertanyaan --}}
                                         {{ $soal->pertanyaan }}
                                     </td>
                                     
-                                    {{-- Opsi YA --}}
+                                    {{-- Opsi YA (Value 1) --}}
                                     <td class="border border-gray-900 p-2 text-sm text-center">
                                         <input type="radio" 
-                                               name="jawaban[{{ $soal->id_ia10 }}]" 
-                                               value="ya" 
+                                               name="checklist[{{ $soal->id_pertanyaan_ia10 }}]" 
+                                               value="1" 
                                                class="form-radio h-4 w-4 text-blue-600"
-                                               {{-- Cek jika sudah ada jawaban YA di database --}}
-                                               {{ (isset($jawaban_map[$soal->id_ia10]) && $jawaban_map[$soal->id_ia10] == 'ya') ? 'checked' : '' }}
+                                               {{ ($soal->jawaban_pilihan_iya_tidak == 1) ? 'checked' : '' }}
                                                required>
                                     </td>
 
-                                    {{-- Opsi TIDAK --}}
+                                    {{-- Opsi TIDAK (Value 0) --}}
                                     <td class="border border-gray-900 p-2 text-sm text-center">
                                         <input type="radio" 
-                                               name="jawaban[{{ $soal->id_ia10 }}]" 
-                                               value="tidak" 
+                                               name="checklist[{{ $soal->id_pertanyaan_ia10 }}]" 
+                                               value="0" 
                                                class="form-radio h-4 w-4 text-blue-600"
-                                               {{-- Cek jika sudah ada jawaban TIDAK di database --}}
-                                               {{ (isset($jawaban_map[$soal->id_ia10]) && $jawaban_map[$soal->id_ia10] == 'tidak') ? 'checked' : '' }}>
+                                               {{ ($soal->jawaban_pilihan_iya_tidak === 0) ? 'checked' : '' }}>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="border border-gray-900 p-2 text-sm text-center text-red-500">
-                                        Data pertanyaan (IA.10) belum tersedia di Bank Soal.
+                                    <td colspan="3" class="border border-gray-900 p-2 text-center text-red-500">
+                                        Soal belum digenerate untuk asesi ini (Tabel pertanyaan_ia10 kosong).
                                     </td>
                                 </tr>
                             @endforelse
-
                         </x-table>
                     </div>
                 </div>
 
-                {{-- Detail Verifikasi --}}
+                {{-- --- BAGIAN 3: DETAIL JAWABAN ESSAY (Tabel detail_ia10) --- --}}
+                {{-- Kita gunakan array name="essay[key]" --}}
                 <div class="form-section my-8">
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Detail Verifikasi</h2>
+
+                    @php
+                        // Helper kecil untuk ambil value lama dari array essay_answers
+                        $getVal = function($key) use ($essay_answers) {
+                            // Map key form ke pertanyaan lengkap (sama seperti di Controller)
+                            $map = [
+                                'relation'       => 'Apa hubungan Anda dengan asesi?',
+                                'duration'       => 'Berapa lama Anda bekerja dengan asesi?',
+                                'proximity'      => 'Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?',
+                                'experience'     => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai? (termasuk asesmen atau kualifikasi pelatihan)',
+                                'consistency'    => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar yang diminta oleh unit kompetensi secara konsisten?',
+                                'training_needs' => 'Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:',
+                                'other_comments' => 'Ada komentar lain:'
+                            ];
+                            $fullQuestion = $map[$key] ?? '';
+                            return $essay_answers[$fullQuestion] ?? '';
+                        };
+                    @endphp
+
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'relation',
-                        'name'  => 'relation',
+                        'name'  => 'essay[relation]',  
                         'label' => 'Apa hubungan Anda dengan asesi?',
-                        'type'  => 'textarea'
+                        'type'  => 'textarea',
+                        'value' => $getVal('relation')
                     ]) 
 
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'duration',
-                        'name'  => 'duration',
+                        'name'  => 'essay[duration]',
                         'label' => 'Berapa lama Anda bekerja dengan asesi?',
-                        'type'  => 'textarea'
+                        'type'  => 'textarea',
+                        'value' => $getVal('duration')
                     ]) 
                     
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'proximity',
-                        'name'  => 'proximity',
+                        'name'  => 'essay[proximity]',
                         'label' => 'Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?',
-                        'type'  => 'textarea'
+                        'type'  => 'textarea',
+                        'value' => $getVal('proximity')
                     ]) 
 
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'experience',
-                        'name'  => 'experience', 
-                        'label' => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai? (termasuk asesmen atau kualifikasi pelatihan)',
-                        'type'  => 'textarea'
+                        'name'  => 'essay[experience]',
+                        'label' => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai?',
+                        'type'  => 'textarea',
+                        'value' => $getVal('experience')
                     ]) 
                 </div>
 
-                {{-- Kesimpulan --}}
+                {{-- --- BAGIAN 4: KESIMPULAN (Masih masuk detail_ia10) --- --}}
                 <div class="form-section my-8">
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Kesimpulan</h2>
 
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'consistency',
-                        'name'  => 'consistency',
-                        'label' => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar yang diminta oleh unit kompetensi secara konsisten?',
-                        'type'  => 'textarea'
+                        'name'  => 'essay[consistency]',
+                        'label' => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar?',
+                        'type'  => 'textarea',
+                        'value' => $getVal('consistency')
                     ]) 
                     
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'training_needs',
-                        'name'  => 'training_needs',
+                        'name'  => 'essay[training_needs]',
                         'label' => 'Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:',
-                        'type'  => 'textarea'
+                        'type'  => 'textarea',
+                        'value' => $getVal('training_needs')
                     ]) 
 
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'other_comments',
-                        'name'  => 'other_comments',
+                        'name'  => 'essay[other_comments]',
                         'label' => 'Ada komentar lain:',
-                        'type'  => 'textarea'
+                        'type'  => 'textarea',
+                        'value' => $getVal('other_comments')
                     ]) 
-                    
                 </div>
                 
                 @include('components.kolom_ttd.asesiasesor', [
@@ -193,8 +204,8 @@
                 ])
 
                 <div class="form-footer flex justify-between mt-10">
-                    <button type="button" class="btn py-2 px-5 border border-blue-600 text-blue-600 rounded-md font-semibold hover:bg-blue-50">Sebelumnya</button>
-                    <button type="submit" class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Kirim</button>
+                    <button type="button" class="btn border border-blue-600 text-blue-600 px-5 py-2 rounded">Batal</button>
+                    <button type="submit" class="btn bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">Simpan Verifikasi</button>
                 </div>
                 
             </form>

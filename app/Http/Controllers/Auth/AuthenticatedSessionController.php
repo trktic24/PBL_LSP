@@ -58,6 +58,11 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
+        // Cek untuk Admin
+        if ($user->role?->nama_role === 'admin' || $user->role?->nama_role === 'superadmin') {
+            return redirect()->route('admin.dashboard');
+        }
+
         return redirect()->intended(route('home.index'));
     }
 

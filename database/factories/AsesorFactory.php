@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Skema;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AsesorFactory extends Factory
@@ -11,6 +12,7 @@ class AsesorFactory extends Factory
     {
         return [
             'id_user' => User::factory()->state(['role_id' => 3]),
+            'id_skema' => Skema::inRandomOrder()->value('id_skema'),
             'nomor_regis' => 'MET.' . fake()->unique()->numberBetween(1000000, 9999999),
             'nama_lengkap' => fake()->name(),
             'nik' => fake()->unique()->numerify('################'),
@@ -37,7 +39,7 @@ class AsesorFactory extends Factory
             'ijazah' => 'uploads/ijazah/dummy.pdf',
             'sertifikat_asesor' => 'uploads/sertifikat/dummy.pdf',
             'sertifikasi_kompetensi' => 'uploads/kompetensi/dummy.pdf',
-            'tanda_tangan' => 'uploads/ttd/dummy.png',
+            'tanda_tangan' => 'images/ttd_asesii.png',
 
             'status_verifikasi' => $this->faker->boolean(80) ? 'approved' : $this->faker->randomElement(['pending', 'rejected']),
         ];

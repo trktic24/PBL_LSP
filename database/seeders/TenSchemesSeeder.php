@@ -12,7 +12,7 @@ use App\Models\Jadwal;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\User;
 use App\Models\MasterTuk;
-use App\Models\Categorie;
+use App\Models\Category;
 
 class TenSchemesSeeder extends Seeder
 {
@@ -51,7 +51,7 @@ class TenSchemesSeeder extends Seeder
                 $this->command->info("Creating Scheme: $namaSkema...");
 
                 // A. Create Category
-                $kategori = Categorie::firstOrCreate(
+                $kategori = Category::firstOrCreate(
                     ['nama_kategori' => $kategoriName],
                     ['slug' => \Illuminate\Support\Str::slug($kategoriName)]
                 );
@@ -60,7 +60,7 @@ class TenSchemesSeeder extends Seeder
                 $skema = Skema::firstOrCreate(
                     ['nama_skema' => $namaSkema],
                     [
-                        'categorie_id' => $kategori->id,
+                        'category_id' => $kategori->id,
                         'nomor_skema' => $nomorSkema,
                         'deskripsi_skema' => "Skema sertifikasi untuk $namaSkema",
                         'harga' => 500000 + ($index * 50000),
@@ -144,6 +144,7 @@ class TenSchemesSeeder extends Seeder
                     'tanggal_selesai' => now()->addDays(7),
                     'tanggal_pelaksanaan' => now()->addDays(2),
                     'waktu_mulai' => '09:00:00',
+                    'waktu_selesai' => '12:00:00',
                     'sesi' => 1,
                     'kuota_maksimal' => 20,
                     'kuota_minimal' => 5,

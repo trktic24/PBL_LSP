@@ -1,85 +1,89 @@
-{{-- 
-  File: resources/views/components/kolom_ttd/penyusunvalidator.blade.php
-  (Ganti seluruh isi file dengan kode ini)
---}}
+@props(['sertifikasi' => null])
 
-{{-- 
-  Container utama ini menggantikan <table> lama.
-  Saya menggunakan `space-y-4` untuk memberi jarak antar bagian.
-  Layout ini meniru style dari gambar yang Anda berikan.
---}}
-<div class="border border-gray-200 shadow-md p-4 rounded-lg bg-white">
+@php
+    // Ambil data dari $sertifikasi
+    $penyusunValidator = $sertifikasi->penyusunValidator ?? null;
+    $penyusun = $penyusunValidator->penyusun ?? null;
+    $validator = $penyusunValidator->validator ?? null;
 
-    {{-- Judul utama, diambil dari style gambar --}}
-    <h3 class="text-lg font-semibold">
-        Pencatatan dan Validasi
-    </h3>
+    // Data Penyusun
+    $namaPenyusun = $penyusun->penyusun ?? '-';
+    $noMetPenyusun = $penyusun->no_MET_penyusun ?? '-';
+    $ttdPenyusun = $penyusun->ttd ?? null;
 
-    {{-- 
-      BAGIAN PENYUSUN
-      Ini menggantikan 2 baris pertama (rowspan="2") dari <tbody> tabel lama.
-      Saya beri jarak 'mb-3' (margin-bottom) antara Penyusun 1 dan 2.
-    --}}
-    <div>
-        <h4 class="font-medium mb-2 text-base">Penyusun</h4>
-        
-        {{-- Data Penyusun 1 --}}
-        <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-sm mb-3">
-            <div>Nama</div>
-            <div>:</div>
-            {{-- 'min-h-[1.5em]' untuk tinggi minimal & border-b untuk garis --}}
-            <div class="min-h-[1.5em]">
-                {{-- Isi data nama penyusun 1 di sini --}}
-            </div>
+    // Data Validator
+    $namaValidator = $validator->nama_validator ?? '-';
+    $noMetValidator = $validator->no_MET_validator ?? '-';
+    $ttdValidator = $validator->ttd ?? null;
 
-            <div>No. Reg. MET.</div>
-            <div>:</div>
-            <div class="min-h-[1.5em]">
-                {{-- Isi data no reg 1 di sini --}}
-            </div>
+    // Tanggal Validasi
+    $tanggal = $penyusunValidator && $penyusunValidator->tanggal_validasi 
+        ? \Carbon\Carbon::parse($penyusunValidator->tanggal_validasi)->format('d-m-Y') 
+        : '-';
+@endphp
 
-            <div>Tanggal</div>
-            <div>:</div>
-            <div class="min-h-[1.5em]">
-                {{-- Isi data tanggal 1 di sini --}}
-            </div>
+<div class="border border-gray-200 shadow-md p-4 rounded-lg bg-white mt-8">
+    <h3 class="text-lg font-semibold mb-4">Pencatatan dan Validasi</h3>
 
-            <div>Tanda Tangan</div>
-            <div>:</div>
-            <div class="h-16">
-                {{-- Area Tanda Tangan (seperti h-16 di kode lama) --}}
+    <div class="flex flex-col gap-4">
+
+        {{-- BAGIAN PENYUSUN --}}
+        <div>
+            <h4 class="font-medium mb-2 text-base text-gray-800">Penyusun</h4>
+            <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-sm">
+                <div>Nama</div>
+                <div>:</div>
+                <div class="min-h-[1.5em] font-medium text-gray-900">{{ $namaPenyusun }}</div>
+
+                <div>No. Reg. MET.</div>
+                <div>:</div>
+                <div class="min-h-[1.5em] text-gray-900">{{ $noMetPenyusun }}</div>
+
+                <div>Tanggal</div>
+                <div>:</div>
+                <div class="min-h-[1.5em] text-gray-900">{{ $tanggal }}</div>
+
+                <div>Tanda Tangan</div>
+                <div>:</div>
+                <div class="h-16">
+                    @if($ttdPenyusun)
+                        <img src="{{ asset('storage/' . $ttdPenyusun) }}" alt="Tanda Tangan Penyusun" class="h-full object-contain">
+                    @else
+                        <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
+                    @endif
+                </div>
             </div>
         </div>
 
-    {{-- Garis pemisah antar bagian --}}
-    <hr class="my-4">
+        <hr class="border-gray-200">
 
-    {{-- 
-      BAGIAN VALIDATOR
-      Ini menggantikan 2 baris terakhir (rowspan="2") dari <tbody> tabel lama.
-    --}}
-    <div>
-        <h4 class="font-medium mb-2 text-base">Validator</h4>
-        
-        {{-- Data Validator 1 --}}
-        <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-sm mb-3">
-            <div>Nama</div>
-            <div>:</div>
-            <div class="min-h-[1.5em]"></div>
+        {{-- BAGIAN VALIDATOR --}}
+        <div>
+            <h4 class="font-medium mb-2 text-base text-gray-800">Validator</h4>
+            <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-sm">
+                <div>Nama</div>
+                <div>:</div>
+                <div class="min-h-[1.5em] font-medium text-gray-900">{{ $namaValidator }}</div>
 
-            <div>No. Reg. MET.</div>
-            <div>:</div>
-            <div class="min-h-[1.5em]"></div>
+                <div>No. Reg. MET.</div>
+                <div>:</div>
+                <div class="min-h-[1.5em] text-gray-900">{{ $noMetValidator }}</div>
 
-            <div>Tanggal</div>
-            <div>:</div>
-            <div class="min-h-[1.5em]"></div>
+                <div>Tanggal</div>
+                <div>:</div>
+                <div class="min-h-[1.5em] text-gray-900">{{ $tanggal }}</div>
 
-            <div>Tanda Tangan</div>
-            <div>:</div>
-            <div class="h-16"></div>
+                <div>Tanda Tangan</div>
+                <div>:</div>
+                <div class="h-16">
+                    @if($ttdValidator)
+                        <img src="{{ asset('storage/' . $ttdValidator) }}" alt="Tanda Tangan Validator" class="h-full object-contain">
+                    @else
+                        <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
+                    @endif
+                </div>
+            </div>
         </div>
-
+        
     </div>
-
 </div>

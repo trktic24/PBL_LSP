@@ -68,4 +68,9 @@ class ResponApl2Ia01 extends Model
         // Asumsi: Foreign key 'id_kriteria'
         return $this->belongsTo(KriteriaUnjukKerja::class, 'id_kriteria');
     }
+
+    public function dataSertifikasiAsesi(): BelongsTo
+    {
+        return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi');
+    }    
 }
