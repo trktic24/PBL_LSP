@@ -103,4 +103,13 @@ class Jadwal extends Model
         return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor'
         );
     }
+
+    // Di dalam file App\Models\Jadwal.php
+
+    public function tuk()
+    {
+        // Sesuaikan 'Tuk::class' dengan nama Model TUK kamu
+        // Sesuaikan 'id_tuk' dengan nama kolom foreign key di tabel jadwal
+        return $this->belongsTo(Tuk::class, 'id_tuk'); 
+    }
 }
