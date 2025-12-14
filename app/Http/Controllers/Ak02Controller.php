@@ -104,7 +104,7 @@ class Ak02Controller extends Controller
         // 1. Ambil Data Asesi Lengkap
         $asesi = DataSertifikasiAsesi::with([
             'asesi',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'jadwal.skema.kelompokPekerjaan.unitKompetensi',
             'jadwal.skema.asesor',
             'jadwal.asesor',

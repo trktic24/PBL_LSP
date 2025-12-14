@@ -282,7 +282,7 @@ class IA05Controller extends Controller
         // 1. Ambil Data Asesi Lengkap
         $asesi = DataSertifikasiAsesi::with([
             'asesi',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'jadwal.skema.asesor',
         ])->findOrFail($id_asesi);
 

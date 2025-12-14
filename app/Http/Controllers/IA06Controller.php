@@ -206,9 +206,9 @@ class Ia06Controller extends Controller
     {
         // 1. Ambil Data Sertifikasi
         $sertifikasi = DataSertifikasiAsesi::with([
-            'jadwal.skema', 
+            'jadwal.skema',
             'jadwal.asesor',
-            'jadwal.tuk',
+            'jadwal.masterTuk',
             'asesi'
         ])->findOrFail($idSertifikasi);
 
@@ -224,7 +224,7 @@ class Ia06Controller extends Controller
         $pdf = Pdf::loadView('pdf.ia_06', [
             'sertifikasi' => $sertifikasi,
             'daftar_soal' => $daftar_soal,
-            'umpanBalik'  => $umpanBalik
+            'umpanBalik' => $umpanBalik
         ]);
 
         $pdf->setPaper('A4', 'portrait');
@@ -259,7 +259,8 @@ class Ia06Controller extends Controller
             // Ambil soal berdasarkan skema jadwal
             $soals = SoalIa06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
 
-            if ($soals->isEmpty()) return; // Tidak ada soal, skip
+            if ($soals->isEmpty())
+                return; // Tidak ada soal, skip
 
             $dataInsert = [];
             foreach ($soals as $soal) {
