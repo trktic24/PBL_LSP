@@ -48,6 +48,7 @@ use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\Ia06Controller;
 use App\Http\Controllers\IA07Controller;
+use App\Http\Controllers\IA08Controller;
 use App\Http\Controllers\IA09Controller;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\Ia11Controller;
@@ -142,9 +143,9 @@ Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\P
     Route::post('/FR_AK_01/simpan/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
         ->name('ak01.store');
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
-    Route::get('/FR_AK_03', fn() => view('frontend/FR_AK_03'))->name('FR_AK_03');
+    Route::get('/FR_AK_03', fn() => view('frontend/AK_03/FR_AK_03'))->name('FR_AK_03');
     Route::get('/FR_AK_04', fn() => view('frontend/FR_AK_04'))->name('FR_AK_04');
-    Route::get('/FR_AK_05', fn() => view('frontend/FR_AK_05'))->name('FR_AK_05');
+    Route::get('/FR_AK_05', fn() => view('frontend/AK_05/FR_AK_05'))->name('FR_AK_05');
 
     // FR-AK-07
     Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
@@ -180,7 +181,11 @@ Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\P
     Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
 
     // IA-08
-    Route::get('/IA_08', fn() => view('frontend/IA_08/IA_08'))->name('IA08');
+    Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])
+     ->name('ia08.show');
+    Route::post('/ia08/store', [IA08Controller::class, 'store'])
+        ->name('ia08.store');
+
 
     // IA-09
     Route::prefix('IA09')->group(function () {

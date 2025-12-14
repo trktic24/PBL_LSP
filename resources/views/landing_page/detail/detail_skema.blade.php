@@ -132,24 +132,26 @@
         <h2 class="text-3xl font-bold mb-6 text-gray-800 font-poppins">Unit Kompetensi</h2>
 
         <div class="space-y-4">
-            @if(isset($skema->unit_kompetensi) && count($skema->unit_kompetensi) > 0)
-                @foreach($skema->unit_kompetensi as $unit)
+            @if(isset($skema->unitKompetensi) && $skema->unitKompetensi->isNotEmpty())
+                @foreach($skema->unitKompetensi as $unit)
                     <div class="bg-white rounded-2xl p-6 border-2 border-blue-500 shadow-xl hover:shadow-2xl transition duration-300">
-                        <h3 class="text-lg font-bold text-blue-600 mb-3 border-b pb-2 font-poppins">Kode Unit: {{ $unit->kode ?? 'N/A' }}</h3>
-                        <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                            {{-- Looping judul unit --}}
-                            @if(isset($unit->judul) && is_array($unit->judul))
-                                @foreach($unit->judul as $judul)
-                                    <li>{{ $judul }}</li>
-                                @endforeach
-                            @else
-                                <li>Judul unit tidak tersedia atau formatnya salah.</li>
-                            @endif
-                        </ul>
+                        {{-- Menampilkan Kode Unit --}}
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded border border-blue-400">
+                                {{ $unit->kode_unit ?? 'N/A' }}
+                            </span>
+                        </div>
+                        
+                        {{-- Menampilkan Judul Unit (String, bukan Array) --}}
+                        <h3 class="text-lg font-bold text-gray-800 font-poppins">
+                            {{ $unit->judul_unit ?? 'Judul Unit Tidak Tersedia' }}
+                        </h3>
                     </div>
                 @endforeach
-            @else
-                <p class="text-gray-500">Data Unit Kompetensi tidak tersedia.</p>
+            @else                       
+                <p class="text-gray-500 text-center py-4 border-dashed border-2 border-gray-300 rounded-lg">
+                    Data Unit Kompetensi tidak tersedia.
+                </p>
             @endif
         </div>
     </section>
@@ -158,33 +160,36 @@
 
     {{-- SKKNI (Standar Kompetensi Kerja Nasional Indonesia) --}}
     <section class="max-w-screen-xl mx-auto px-8 py-10">
-        <h2 class="text-3xl font-bold mb-6 text-gray-800 font-poppins">SKKNI (Standar Kompetensi Kerja Nasional Indonesia)</h2>
+        <h2 class="text-3xl font-bold mb-6 text-gray-800 font-poppins">SKKNI</h2>
 
         <div class="space-y-4">
-            @if(isset($skema->skkni) && count($skema->skkni) > 0)
-                @foreach($skema->skkni as $skkni)
-                    <div class="bg-blue-50 rounded-2xl shadow-md p-4 flex items-center justify-between transition duration-300 hover:bg-blue-100">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <span class="font-semibold text-gray-800">{{ $skkni->nama ?? 'Dokumen SKKNI' }}</span>
-                        </div>
-                        <a href="{{ $skkni->link_pdf ?? '#' }}" 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            class="text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center gap-1">
-                            Lihat PDF
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            @if(!empty($skema->SKKNI))
+                <div class="bg-blue-50 rounded-2xl shadow-md p-4 flex items-center justify-between transition duration-300 hover:bg-blue-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            {{-- Icon Dokumen --}}
+                            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
                             </svg>
-                        </a>
+                        </div>
+                        <span class="font-semibold text-gray-800">Dokumen SKKNI</span>
                     </div>
-                @endforeach
+                    
+                    {{-- Asumsi SKKNI adalah link atau path file --}}
+                    <a href="{{ $skema->SKKNI }}" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center gap-1">
+                        Unduh / Lihat
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                    </a>
+                </div>
             @else
-                <p class="text-gray-500">Data SKKNI tidak tersedia.</p>
+                <p class="text-gray-500 text-center py-4 border-dashed border-2 border-gray-300 rounded-lg">
+                    Dokumen SKKNI tidak tersedia.
+                </p>
             @endif
         </div>
     </section>
