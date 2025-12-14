@@ -483,10 +483,11 @@ Route::middleware('auth')->group(function () {
         return redirect('/login')->with('error', 'Role Anda tidak terdefinisi.');
     })->name('home.index');
 
-Route::get('/tunggu-verifikasi', function () {
-    $user = Auth::user();
-    if (!$user) return redirect()->route('login');
-    if ($user->role->nama_role !== 'asesor') return redirect()->route('home.index');
-    if ($user->asesor?->status_verifikasi === 'approved') return redirect()->route('home.index');
-    return view('auth.verification-asesor');
-})->name('auth.wait');
+    Route::get('/tunggu-verifikasi', function () {
+        $user = Auth::user();
+        if (!$user) return redirect()->route('login');
+        if ($user->role->nama_role !== 'asesor') return redirect()->route('home.index');
+        if ($user->asesor?->status_verifikasi === 'approved') return redirect()->route('home.index');
+        return view('auth.verification-asesor');
+    })->name('auth.wait');
+});
