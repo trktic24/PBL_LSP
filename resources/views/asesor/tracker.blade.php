@@ -391,34 +391,48 @@
 
                     {{-- ITEM TERAKHIR: AK.02 (KEPUTUSAN) --}}
                     <div class="relative pl-20 pt-4 border-t mt-4">
-                        <div
-                            class="absolute left-0 top-6 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white 
+                        <div class="absolute left-0 top-6 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white 
                             {{ $isFinalized ? 'bg-green-600 text-white' : ($allIADone ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
                             <span class="font-bold text-xs">AK.02</span>
                         </div>
                         <div>
                             <h3 class="text-lg font-bold text-gray-800 mt-2">Keputusan Asesmen (AK.02)</h3>
-                            <p class="text-sm text-gray-500 mb-2">Pastikan seluruh instrumen asesmen (IA) telah dinilai
-                                sebelum mengisi keputusan ini.</p>
+                            
+                            {{-- PRIORITAS 1: SUDAH DIVALIDASI VALIDATOR (HIJAU TEBAL) --}}
+                            @if($dataSertifikasi->status_validasi == 'valid')
+                                <div class="mt-4 p-4 bg-green-100 border border-green-400 rounded-lg shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-green-500 text-white rounded-full p-1">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-green-800 font-bold text-lg">SELESAI & TERVALIDASI</p>
+                                            <p class="text-sm text-green-700">Pekerjaan Anda telah diperiksa dan disetujui oleh Validator.</p>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            {{-- Tombol AK.02 --}}
-                            @if($allIADone && !$isFinalized)
-                                <a href="{{-- ISI ROUTE KE CONTROLLER CREATE AK.02 --}}"
-                                    class="inline-block bg-indigo-600 text-white hover:bg-indigo-700 py-2 px-6 rounded-lg shadow-md transition cursor-pointer">
+                            {{-- PRIORITAS 2: SUDAH DIKIRIM TAPI BELUM DIVALIDASI (BIRU/INFO) --}}
+                            @elseif($isFinalized)
+                                <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p class="text-blue-800 font-bold">✅ Keputusan telah dikirim ke Validator.</p>
+                                    <p class="text-xs text-blue-600">Menunggu validasi</p>
+                                </div>
+
+                            {{-- PRIORITAS 3: BELUM SELESAI (TOMBOL MASIH AKTIF) --}}
+                            @elseif($allIADone)
+                                <p class="text-sm text-gray-500 mb-2">Pastikan seluruh instrumen asesmen (IA) telah dinilai sebelum mengisi keputusan ini.</p>
+                                <a href="{{-- ISI ROUTE KE CONTROLLER CREATE AK.02 --}}" class="inline-block bg-indigo-600 text-white hover:bg-indigo-700 py-2 px-6 rounded-lg shadow-md transition cursor-pointer">
                                     Isi Keputusan Asesmen
                                 </a>
-                            @elseif($isFinalized)
-                                <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                    <p class="text-green-800 font-bold">✅ Keputusan telah dikirim ke Validator.</p>
-                                </div>
+
+                            {{-- PRIORITAS 4: BELUM BISA DIISI --}}
                             @else
-                                <button
-                                    class="inline-block bg-gray-300 text-gray-500 py-2 px-6 rounded-lg shadow-none cursor-not-allowed"
-                                    disabled>
+                                <p class="text-sm text-gray-500 mb-2">Pastikan seluruh instrumen asesmen (IA) telah dinilai sebelum mengisi keputusan ini.</p>
+                                <button class="inline-block bg-gray-300 text-gray-500 py-2 px-6 rounded-lg shadow-none cursor-not-allowed" disabled>
                                     Isi Keputusan Asesmen
                                 </button>
-                                <p class="text-xs text-red-400 mt-2 italic">Selesaikan penilaian pada semua form di atas
-                                    terlebih dahulu.</p>
+                                <p class="text-xs text-red-400 mt-2 italic">Selesaikan penilaian pada semua form di atas terlebih dahulu.</p>
                             @endif
                         </div>
                     </div>
