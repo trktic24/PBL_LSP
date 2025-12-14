@@ -42,9 +42,10 @@ class Asesi extends Model
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
-    public function dataPekerjaan()
+    public function dataPekerjaan(): HasOne
     {
-        return $this->hasMany(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
+        // Model Asesi HANYA memiliki SATU DataPekerjaanAsesi
+        return $this->hasOne(DataPekerjaanAsesi::class, 'id_asesi', 'id_asesi');
     }
     
     /**

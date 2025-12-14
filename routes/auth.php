@@ -228,7 +228,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/add', 'create')->name('add_skema');
             Route::post('/add', 'store')->name('add_skema.store');
             Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
-            Route::patch('/update/{id_skema}', 'update')->name('update_skema');
+            Route::put('/update/{id_skema}', 'update')->name('update_skema');
             Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
         });
         Route::controller(DetailSkemaController::class)->prefix('master/skema/detail')->group(function () {

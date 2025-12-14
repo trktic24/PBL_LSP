@@ -43,7 +43,7 @@ class Skema extends Model
     public function category()
     {
         // Model, foreign_key, owner_key
-        return $this->belongsTo(Category::class, 'category_id', 'id');
+        return $this->belongsTo(Category::class, 'categorie_id', 'id');
     }
 
     public function kelompokPekerjaan()
