@@ -142,9 +142,9 @@ Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\P
     Route::post('/FR_AK_01/simpan/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
         ->name('ak01.store');
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
-    Route::get('/FR_AK_03', fn() => view('frontend/FR_AK_03'))->name('FR_AK_03');
+    Route::get('/FR_AK_03', fn() => view('frontend/AK_03/FR_AK_03'))->name('FR_AK_03');
     Route::get('/FR_AK_04', fn() => view('frontend/FR_AK_04'))->name('FR_AK_04');
-    Route::get('/FR_AK_05', fn() => view('frontend/FR_AK_05'))->name('FR_AK_05');
+    Route::get('/FR_AK_05', fn() => view('frontend/AK_05/FR_AK_05'))->name('FR_AK_05');
 
     // FR-AK-07
     Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
