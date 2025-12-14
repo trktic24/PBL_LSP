@@ -36,7 +36,7 @@
             <div class="flex flex-wrap items-center justify-between mb-8 gap-4">
                 
                 <form
-                    action="{{ route('master_category') }}"
+                    action="{{ route('admin.master_category') }}"
                     method="GET"
                     class="w-full max-w-sm"
                     x-data="{ search: '{{ request('search', '') }}' }"
@@ -65,7 +65,7 @@
                 </form>
                 
                 <a
-                    href="{{ route('add_category') }}"
+                    href="{{ route('admin.add_category') }}"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center"
                 >
                     <i class="fas fa-plus mr-2"></i> Tambah Kategori
@@ -147,7 +147,7 @@
                                     $isCurrentColumn = $sortColumn == 'id';
                                 @endphp
                                 <a
-                                    href="{{ route('master_category', array_merge($baseParams, ['sort' => 'id', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_category', array_merge($baseParams, ['sort' => 'id', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>ID</span>
@@ -163,7 +163,7 @@
                                     $isCurrentColumn = $sortColumn == 'nama_kategori';
                                 @endphp
                                 <a
-                                    href="{{ route('master_category', array_merge($baseParams, ['sort' => 'nama_kategori', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_category', array_merge($baseParams, ['sort' => 'nama_kategori', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Nama Kategori</span>
@@ -179,7 +179,7 @@
                                     $isCurrentColumn = $sortColumn == 'slug';
                                 @endphp
                                 <a
-                                    href="{{ route('master_category', array_merge($baseParams, ['sort' => 'slug', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
+                                    href="{{ route('admin.master_category', array_merge($baseParams, ['sort' => 'slug', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex w-full items-center justify-between"
                                 >
                                     <span>Slug</span>
@@ -204,13 +204,13 @@
                             <td class="px-4 py-4 text-center whitespace-nowrap">
                                 <div class="flex justify-center space-x-2">
                                     <a
-                                        href="{{ route('edit_category', $category->id) }}"
+                                        href="{{ route('admin.edit_category', $category->id) }}"
                                         class="flex items-center space-x-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition"
                                     >
                                         <i class="fas fa-pen"></i> <span>Edit</span>
                                     </a>
                                     <form
-                                        action="{{ route('delete_category', $category->id) }}"
+                                        action="{{ route('admin.delete_category', $category->id) }}"
                                         method="POST"
                                         onsubmit="return confirm('PERINGATAN: Menghapus kategori \'{{ addslashes($category->nama_kategori) }}\' juga akan MENGHAPUS SEMUA SKEMA yang terhubung dengannya. Apakah Anda yakin ingin melanjutkan?');"
                                     >

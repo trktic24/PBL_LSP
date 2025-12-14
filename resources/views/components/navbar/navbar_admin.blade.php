@@ -1,21 +1,27 @@
 @php
     // --- Logika Status Aktif ---
     
+    // PENTING: Menggunakan '/admin/' di request()->is() untuk mencocokkan URL path yang benar
     $isSkemaActive = request()->is('admin/master/skema*');
-    $isAsesorActive = request()->is('master_asesor') || 
-                      request()->is('add_asesor*') || 
-                      request()->is('edit_asesor*');
-    $isAsesiActive = request()->is('master/asesi*');
-    $isMasterScheduleActive = request()->is('master/schedule*');
-    $isCategoryActive = request()->is('master/category*'); 
-    $isBeritaActive = request()->is('master/berita*');
+    $isAsesorActive = request()->is('admin/master_asesor') || 
+                      request()->is('admin/add_asesor*') || 
+                      request()->is('admin/edit_asesor*');
+    $isAsesiActive = request()->is('admin/master/asesi*');
+    $isMasterScheduleActive = request()->is('admin/master/schedule*');
+    $isCategoryActive = request()->is('admin/master/category*'); 
+    $isBeritaActive = request()->is('admin/master/berita*');
+    $isTukActive = request()->is('admin/master/tuk*'); // Koreksi: Pastikan TUK juga punya /admin
+    $isMitraActive = request()->is('admin/master/mitra*');
 
-    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive;
+    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive || $isMitraActive;
     
-    $isScheduleActive = request()->routeIs('schedule_admin');
-    $isTukActive = request()->is('master/tuk*'); 
-    $isNotifActive = request()->routeIs('notifications');
-    $isProfileActive = request()->routeIs('profile_admin');
+    // PENTING: Menggunakan 'admin.' pada request()->routeIs() karena ini membandingkan NAMA route
+    $isScheduleActive = request()->routeIs('admin.schedule_admin');
+    $isNotifActive = request()->routeIs('admin.notifications');
+    $isProfileActive = request()->routeIs('admin.profile_admin');
+    
+    // Cek Dashboard secara terpisah karena routeis('dashboard') di kode Anda tidak konsisten
+    $isDashboardActive = request()->routeIs('admin.dashboard');
 
 @endphp
 
@@ -25,17 +31,17 @@
 
 <nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
     <div class="flex items-center space-x-4">
-        <a href="{{ route('dashboard') }}">
+        <a href="{{ route('admin.dashboard') }}">
             <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
         </a>
     </div>
 
     <div class="flex items-center space-x-20 text-base md:text-lg font-semibold relative h-full">
         
-        <a href="{{ route('dashboard') }}" class="relative h-full flex items-center transition
-            {{ request()->routeIs('dashboard') ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
+        <a href="{{ route('admin.dashboard') }}" class="relative h-full flex items-center transition
+            {{ $isDashboardActive ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600' }}">
             Dashboard
-            @if (request()->routeIs('dashboard'))
+            @if ($isDashboardActive)
             <span class="absolute bottom-[-1px] left-0 w-full h-[3px] bg-blue-600"></span>
             @endif
         </a>
@@ -80,6 +86,10 @@
                         <a href="{{ route('admin.master_berita') }}" 
                             class="block px-4 py-2 {{ $isBeritaActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Berita
+                        </a>
+                        <a href="{{ route('admin.master_mitra') }}" 
+                            class="block px-4 py-2 {{ $isMitraActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Mitra
                         </a>
                         </div>
                 </div>
@@ -128,23 +138,25 @@
                 
                 <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner flex-shrink-0 flex items-center justify-center bg-blue-600 text-white font-bold text-sm select-none">
                     @php
-                        $user = Auth::user();
-                        $nama = 'User'; // Default
-                
-                        if ($user) {
-                            // Cek Role ID (1=Admin, 2=Asesi, 3=Asesor, 4=Superadmin)
-                            if ($user->role_id == 2 && $user->asesi) {
-                                $nama = $user->asesi->nama_lengkap;
+                        $initials = 'AD'; // Default: Admin Default
+                        
+                        if (Auth::check()) {
+                            $email = Auth::user()->email ?? 'admin.default@lsp.com';
+                            
+                            // 1. Ambil bagian email sebelum '@'
+                            $prefix = explode('@', $email)[0];
+                            
+                            // 2. Ganti titik atau underscore dengan spasi, lalu pisahkan kata
+                            $words = explode(' ', str_replace(['.', '_'], ' ', $prefix));
+                            
+                            // 3. Ambil inisial: Huruf pertama dari 2 kata pertama
+                            if (count($words) >= 2) {
+                                $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
                             } else {
-                                $nama = ucfirst($user->username);
+                                // Jika hanya satu kata, ambil 2 huruf pertama
+                                $initials = strtoupper(substr($prefix, 0, 2));
                             }
                         }
-                
-                        // Ambil Inisial (Maksimal 2 huruf)
-                        $words = explode(' ', $nama);
-                        $initials = count($words) >= 2
-                            ? strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1)) 
-                            : strtoupper(substr($nama, 0, 2));
                     @endphp
                     {{ $initials }}
                 </div>

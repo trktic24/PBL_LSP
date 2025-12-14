@@ -195,7 +195,7 @@ class AsesiController extends Controller
 
             DB::commit();
 
-            return redirect()->route('master_asesi')->with('success', "Asesi '{$asesi->nama_lengkap}' (ID: {$asesi->id_asesi}) berhasil ditambahkan.");
+            return redirect()->route('admin.master_asesi')->with('success', "Asesi '{$asesi->nama_lengkap}' (ID: {$asesi->id_asesi}) berhasil ditambahkan.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -304,7 +304,7 @@ class AsesiController extends Controller
 
             DB::commit();
 
-            return redirect()->route('master_asesi')->with('success', "Asesi '{$asesi->nama_lengkap}' (ID: {$asesi->id_asesi}) berhasil diperbarui.");
+            return redirect()->route('admin.master_asesi')->with('success', "Asesi '{$asesi->nama_lengkap}' (ID: {$asesi->id_asesi}) berhasil diperbarui.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -334,7 +334,7 @@ class AsesiController extends Controller
             
             DB::commit();
 
-            return redirect()->route('master_asesi')->with('success', "Asesi '{$nama}' (ID: {$id}) dan akun user terkait berhasil dihapus.");
+            return redirect()->route('admin.master_asesi')->with('success', "Asesi '{$nama}' (ID: {$id}) dan akun user terkait berhasil dihapus.");
         
         } catch (\Exception $e) {
             DB::rollBack();

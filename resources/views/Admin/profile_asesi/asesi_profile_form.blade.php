@@ -25,7 +25,7 @@
     
     <x-sidebar_profile_asesi 
         :asesi="$asesi" 
-        :backUrl="route('schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
+        :backUrl="route('admin.schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
     />
 
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">

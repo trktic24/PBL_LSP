@@ -67,7 +67,7 @@
         <div class="bg-white rounded-3xl shadow-xl border border-gray-200 p-10 max-w-3xl mx-auto">
 
             <div class="flex items-center justify-between mb-10">
-                <a href="{{ route('dashboard') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-lg font-medium">
                     <i class="fas fa-arrow-left mr-2"></i> Kembali
                 </a>
                 <h2 class="text-3xl font-semibold text-gray-800 text-center flex-1">Account Settings</h2>
@@ -75,35 +75,38 @@
             </div>
 
             <!-- [PERUBAHAN] Bagian Foto Profil -->
-            <div class="relative flex justify-center mb-10">
+            <div class="relative flex justify-center mb-20">
                 <!-- Lingkaran Avatar (Menggunakan Inisial, Konsisten dengan Navbar) -->
                 <div class="h-48 w-48 rounded-full bg-blue-600 text-white flex items-center justify-center text-7xl font-bold shadow-md border-4 border-white select-none">
                     @php
-                        $user = Auth::user();
-                        $nama = 'User'; // Default
-
-                        if ($user) {
-                            // Cek Role ID (Asumsi 1=Admin, 3=Asesi)
-                            if ($user->role_id == 3 && $user->asesi) {
-                                $nama = $user->asesi->nama_lengkap;
+                        $emailPrefix = 'AD'; // Default jika Auth::user() null
+                        
+                        if (Auth::check()) {
+                            $email = Auth::user()->email;
+                            // Ambil bagian email sebelum '@'
+                            $prefix = explode('@', $email)[0];
+                            
+                            // Ganti titik atau underscore dengan spasi, lalu pisahkan kata
+                            $words = explode(' ', str_replace(['.', '_'], ' ', $prefix));
+                            
+                            // Ambil inisial: Ambil huruf pertama dari 2 kata pertama
+                            if (count($words) >= 2) {
+                                $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
                             } else {
-                                $nama = ucfirst($user->username);
+                                // Jika hanya satu kata (atau tidak ada separator), ambil 2 huruf pertama
+                                $initials = strtoupper(substr($prefix, 0, 2));
                             }
-                        }
 
-                        // Logika Inisial (Ambil 2 huruf pertama)
-                        $words = explode(' ', $nama);
-                        $initials = count($words) >= 2
-                            ? strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1)) 
-                            : strtoupper(substr($nama, 0, 2));
+                            $emailPrefix = $initials;
+                        }
                     @endphp
-                    {{ $initials }}
+                    {{ $emailPrefix }}
                 </div>
 
                 <!-- [PERBAIKAN] Tombol Kamera dan Delete DIHAPUS di sini -->
             </div>
 
-            <form action="{{ route('profile.update') }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.profile.update') }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PATCH')
                 
@@ -111,18 +114,10 @@
                     <label for="name" class="w-1/3 text-sm font-medium text-gray-700">Nama Lengkap</label>
                     <!-- Mengambil nama dari logic PHP di atas agar dinamis -->
                      
-                    <input id="name" name="name" type="text" value="{{ $nama }}" 
+                    <input id="name" name="name" type="text" 
+                        value="{{ Auth::user()->name ?? Auth::user()->username ?? 'Admin LSP' }}"
                            readonly
                            class="flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed">
-                </div>
-
-                <div class="flex items-center">
-                    <label for="username" class="w-1/3 text-sm font-medium text-gray-700">Username</label>
-                    <input id="username" name="username" type="text" value="{{ Auth::user()->username }}" 
-                           :readonly="!editMode"
-                           :class="editMode 
-                                ? 'flex-1 border border-blue-400 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none' 
-                                : 'flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed'">
                 </div>
 
                 <div class="flex items-center">
@@ -183,7 +178,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('profile.password.update') }}" method="POST" class="space-y-4">
+                <form action="{{ route('admin.profile.password.update') }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
 

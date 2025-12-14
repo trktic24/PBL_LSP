@@ -101,7 +101,7 @@ class TukAdminController extends Controller
 
         $tuk = MasterTUK::create($validatedData); 
 
-        return redirect()->route('master_tuk')
+        return redirect()->route('admin.master_tuk')
                          ->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil ditambahkan!");
     }
 
@@ -147,7 +147,7 @@ class TukAdminController extends Controller
 
         $tuk->update($validatedData);
 
-        return redirect()->route('master_tuk')
+        return redirect()->route('admin.master_tuk')
                          ->with('success', "TUK (ID: {$tuk->id_tuk}) {$tuk->nama_lokasi} Berhasil diperbarui!");
     }
 
@@ -177,7 +177,7 @@ class TukAdminController extends Controller
 
             $tuk->delete();
 
-            return redirect()->route('master_tuk')
+            return redirect()->route('admin.master_tuk')
                              ->with('success', "TUK (ID: {$id_tuk}) {$nama_lokasi} Berhasil dihapus!");
 
         } catch (QueryException $e) {

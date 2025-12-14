@@ -22,7 +22,7 @@
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
     
-    <x-navbar.navbar-admin />
+    <x-navbar />
 
     <main class="p-6">
       <div class="mb-6">
@@ -39,7 +39,7 @@
         
         {{-- Form Pencarian --}}
         <form 
-          action="{{ route('admin.master_asesor') }}" method="GET" 
+          action="{{ route('master_asesor') }}" method="GET" 
           class="w-full max-w-sm"
           x-data="{ search: '{{ $requestData['search'] ?? '' }}' }"
         >
@@ -79,7 +79,7 @@
         {{-- Tombol Filter dan Tambah --}}
         <div class="flex flex-wrap items-center gap-3">
           
-          {{-- Filter Gabungan Dropdown Kustom (Ini dipertahankan dari Asesor) --}}
+          {{-- Filter Gabungan Dropdown Kustom --}}
           <div class="relative" 
                x-data="{ open: false, activeFilter: '' }" 
                @click.away="open = false; activeFilter = ''">
@@ -95,7 +95,8 @@
                 $filterCount = 0;
                 if (!empty($requestData['skema_id'])) $filterCount++;
                 if (!empty($requestData['jenis_kelamin'])) $filterCount++;
-                if (isset($requestData['is_verified']) && $requestData['is_verified'] !== '') $filterCount++;
+                // UPDATE: Cek status_verifikasi bukan is_verified
+                if (!empty($requestData['status_verifikasi'])) $filterCount++;
               @endphp
 
               @if ($filterCount > 0)
@@ -126,14 +127,15 @@
                 </button>
                 
                 <button @click="activeFilter = 'status'" class="w-full text-left flex justify-between items-center px-4 py-3 hover:bg-gray-100">
-                  <span class="flex items-center"><i class="fas fa-check-circle fa-fw mr-2 text-gray-400"></i>Status</span>
-                  @if (isset($requestData['is_verified']) && $requestData['is_verified'] !== '') <span class="text-xs text-blue-600">Aktif</span> @endif
+                  <span class="flex items-center"><i class="fas fa-check-circle fa-fw mr-2 text-gray-400"></i>Status Verifikasi</span>
+                  {{-- UPDATE: Cek parameter status_verifikasi --}}
+                  @if (!empty($requestData['status_verifikasi'])) <span class="text-xs text-blue-600">Aktif</span> @endif
                   <i class="fas fa-chevron-right text-xs text-gray-400"></i>
                 </button>
 
                 @if ($filterCount > 0)
                 <div class="p-2 border-t bg-gray-50">
-                  <a href="{{ route('admin.master_asesor', ['search' => $requestData['search'] ?? '', 'sort' => $sortColumn, 'direction' => $sortDirection, 'per_page' => $perPage]) }}" 
+                  <a href="{{ route('master_asesor', ['search' => $requestData['search'] ?? '', 'sort' => $sortColumn, 'direction' => $sortDirection, 'per_page' => $perPage]) }}" 
                      class="block w-full text-center px-4 py-2 text-sm text-red-600 hover:bg-red-100 rounded">
                       Reset Semua Filter
                   </a>
@@ -144,9 +146,9 @@
               {{-- Sub-menu Skema --}}
               <div x-show="activeFilter === 'skema'" class="max-h-80 overflow-y-auto" x-transition>
                 <button @click="activeFilter = ''" class="flex items-center px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-gray-100 w-full"><i class="fas fa-chevron-left text-xs mr-2"></i>Kembali</button><hr>
-                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['skema_id' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Tampilkan Semua</a>
+                <a href="{{ route('master_asesor', array_merge($allParams, ['skema_id' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Tampilkan Semua</a>
                 @foreach ($skemas as $skema)
-                  <a href="{{ route('admin.master_asesor', array_merge($allParams, ['skema_id' => $skema->id_skema, 'page' => 1])) }}" 
+                  <a href="{{ route('master_asesor', array_merge($allParams, ['skema_id' => $skema->id_skema, 'page' => 1])) }}" 
                      class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['skema_id']) && $requestData['skema_id'] == $skema->id_skema) ? 'bg-blue-100' : '' }}">
                     {{ $skema->nama_skema }}
                   </a>
@@ -156,21 +158,36 @@
               {{-- Sub-menu Jenis Kelamin --}}
               <div x-show="activeFilter === 'jk'" x-transition>
                 <button @click="activeFilter = ''" class="flex items-center px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-gray-100 w-full"><i class="fas fa-chevron-left text-xs mr-2"></i>Kembali</button><hr>
-                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['jenis_kelamin' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Semua</a>
-                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['jenis_kelamin' => 'Laki-laki', 'page' => 1])) }}" 
+                <a href="{{ route('master_asesor', array_merge($allParams, ['jenis_kelamin' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Semua</a>
+                <a href="{{ route('master_asesor', array_merge($allParams, ['jenis_kelamin' => 'Laki-laki', 'page' => 1])) }}" 
                    class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['jenis_kelamin']) && $requestData['jenis_kelamin'] == 'Laki-laki') ? 'bg-blue-100' : '' }}">Laki-laki</a>
-                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['jenis_kelamin' => 'Perempuan', 'page' => 1])) }}" 
+                <a href="{{ route('master_asesor', array_merge($allParams, ['jenis_kelamin' => 'Perempuan', 'page' => 1])) }}" 
                    class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['jenis_kelamin']) && $requestData['jenis_kelamin'] == 'Perempuan') ? 'bg-blue-100' : '' }}">Perempuan</a>
               </div>
 
-              {{-- Sub-menu Status --}}
+              {{-- Sub-menu Status (UPDATED) --}}
               <div x-show="activeFilter === 'status'" x-transition>
                 <button @click="activeFilter = ''" class="flex items-center px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-gray-100 w-full"><i class="fas fa-chevron-left text-xs mr-2"></i>Kembali</button><hr>
-                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['is_verified' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Semua</a>
-                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['is_verified' => '1', 'page' => 1])) }}" 
-                   class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['is_verified']) && $requestData['is_verified'] == '1') ? 'bg-blue-100' : '' }}">Terverifikasi</a>
-                <a href="{{ route('admin.master_asesor', array_merge($allParams, ['is_verified' => '0', 'page' => 1])) }}" 
-                   class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['is_verified']) && $requestData['is_verified'] == '0') ? 'bg-blue-100' : '' }}">Belum</a>
+                {{-- Reset status filter --}}
+                <a href="{{ route('master_asesor', array_merge($allParams, ['status_verifikasi' => '', 'page' => 1])) }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 font-medium border-b">Semua</a>
+                
+                {{-- Status Approved --}}
+                <a href="{{ route('master_asesor', array_merge($allParams, ['status_verifikasi' => 'approved', 'page' => 1])) }}" 
+                   class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['status_verifikasi']) && $requestData['status_verifikasi'] == 'approved') ? 'bg-blue-100' : '' }}">
+                   <span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>Disetujui
+                </a>
+                
+                {{-- Status Pending --}}
+                <a href="{{ route('master_asesor', array_merge($allParams, ['status_verifikasi' => 'pending', 'page' => 1])) }}" 
+                   class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['status_verifikasi']) && $requestData['status_verifikasi'] == 'pending') ? 'bg-blue-100' : '' }}">
+                   <span class="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>Menunggu
+                </a>
+                
+                 {{-- Status Rejected --}}
+                 <a href="{{ route('master_asesor', array_merge($allParams, ['status_verifikasi' => 'rejected', 'page' => 1])) }}" 
+                    class="block px-4 py-2 text-gray-700 hover:bg-blue-50 {{ (isset($requestData['status_verifikasi']) && $requestData['status_verifikasi'] == 'rejected') ? 'bg-blue-100' : '' }}">
+                    <span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>Ditolak
+                 </a>
               </div>
 
             </div>
@@ -178,7 +195,7 @@
           {{-- Akhir Filter Gabungan --}}
 
           <a 
-            href="{{ route('admin.add_asesor1') }}"
+            href="{{ route('add_asesor1') }}"
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-md transition flex items-center"
           >
             <i class="fas fa-plus mr-2"></i> Tambah Asesor
@@ -207,7 +224,7 @@
       {{-- Kontainer Tabel --}}
       <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 w-full overflow-x-auto">
         
-        {{-- "Per Page" Selector (dari Master Asesi) --}}
+        {{-- "Per Page" Selector --}}
         <div
             x-data="{
                 perPage: '{{ $perPage }}',
@@ -238,7 +255,7 @@
         {{-- Tabel Data --}}
         <table class="min-w-full divide-y divide-gray-200 text-sm">
           
-          {{-- Header Tabel Sortable (Diringkas) --}}
+          {{-- Header Tabel Sortable --}}
           <thead class="bg-gray-100 text-gray-600 uppercase text-xs"> 
             <tr>
               @php
@@ -249,7 +266,7 @@
               {{-- Kolom ID --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap w-16">
                 @php $isCurrentColumn = $sortColumn == 'id_asesor'; @endphp
-                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'id_asesor', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'id_asesor', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>ID</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
@@ -258,7 +275,7 @@
               {{-- Kolom Nama Asesor --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">
                 @php $isCurrentColumn = $sortColumn == 'nama_lengkap'; @endphp
-                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>Nama Asesor</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
@@ -267,7 +284,7 @@
               {{-- Kolom Email --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">
                 @php $isCurrentColumn = $sortColumn == 'email'; @endphp
-                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'email', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'email', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>Email</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
@@ -276,7 +293,7 @@
               {{-- Kolom No. Registrasi --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">
                 @php $isCurrentColumn = $sortColumn == 'nomor_regis'; @endphp
-                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'nomor_regis', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'nomor_regis', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>No. Registrasi</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
@@ -285,19 +302,19 @@
               {{-- Kolom No. Telepon --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">
                 @php $isCurrentColumn = $sortColumn == 'nomor_hp'; @endphp
-                <a href="{{ route('admin.master_asesor', array_merge($baseParams, ['sort' => 'nomor_hp', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                <a href="{{ route('master_asesor', array_merge($baseParams, ['sort' => 'nomor_hp', 'direction' => ($isCurrentColumn && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
                   <span>No. Telepon</span>
                   <div class="flex flex-col -space-y-1 text-sm"><i class="fas fa-caret-up {{ ($isCurrentColumn && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrentColumn && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                 </a>
               </th>
               
-              {{-- Kolom Skema (Tidak sortable) --}}
+              {{-- Kolom Skema --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">Bidang Sertifikasi (Skema)</th>
               
-              {{-- Kolom Status (Tidak sortable) --}}
-              <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">Status</th>
+              {{-- Kolom Status --}}
+              <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">Status Verifikasi</th>
               
-              {{-- Kolom Aksi (Tidak sortable) --}}
+              {{-- Kolom Aksi --}}
               <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">Aksi</th>
             </tr>
           </thead>
@@ -308,27 +325,35 @@
               <td class="px-6 py-4 whitespace-nowrap">{{ $asesor->id_asesor }}</td>
               <td class="px-6 py-4 whitespace-nowrap font-medium">{{ $asesor->nama_lengkap }}</td>
               
-              {{-- Email sekarang diambil langsung karena sudah di-JOIN --}}
               <td class="px-6 py-4 whitespace-nowrap">{{ $asesor->email ?? 'N/A' }}</td>
               
               <td class="px-6 py-4 whitespace-nowrap">{{ $asesor->nomor_regis }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ $asesor->nomor_hp }}</td>
               
               <td class="px-6 py-4 whitespace-nowrap">
-                <ul class="list-disc list-inside">
+                <ul class="list-disc list-inside text-gray-600">
                   @forelse($asesor->skemas as $skema)
                     <li>{{ $skema->nama_skema }}</li>
                   @empty
-                    <li class="list-none">N/A</li>
+                    <li class="list-none text-gray-400 italic">Belum ada skema</li>
                   @endforelse
                 </ul>
               </td>
                             
+              {{-- UPDATE: Tampilan Badge Status Berdasarkan ENUM --}}
               <td class="px-6 py-4 whitespace-nowrap">
-                @if($asesor->is_verified)
-                  <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Terverifikasi</span>
+                @if($asesor->status_verifikasi == 'approved')
+                  <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full flex items-center w-fit">
+                    <i class="fas fa-check-circle mr-1"></i> Disetujui
+                  </span>
+                @elseif($asesor->status_verifikasi == 'rejected')
+                  <span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full flex items-center w-fit">
+                    <i class="fas fa-times-circle mr-1"></i> Ditolak
+                  </span>
                 @else
-                  <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">Belum</span>
+                  <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full flex items-center w-fit">
+                    <i class="fas fa-clock mr-1"></i> Menunggu
+                  </span>
                 @endif
               </td>
               
@@ -350,7 +375,6 @@
             </tr>
             @empty
             <tr>
-              {{-- PERBAIKAN: Colspan disesuaikan menjadi 8 --}}
               <td colspan="8" class="px-6 py-4 text-center text-gray-500">
                 Belum ada data asesor yang ditampilkan.
               </td>
@@ -359,8 +383,6 @@
           </tbody>
           </table>
 
-
-                {{-- Navigasi pagination (dari Master Asesi) --}}
       <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
           <div class="text-sm text-gray-500 font-bold">
               @if ($asesors->total() > 0)
@@ -370,7 +392,6 @@
               @endif
           </div>
           <div>
-              {{-- Menggunakan komponen pagination kustom --}}
               {{ $asesors->links('components.pagination') }}
           </div>
       </div>

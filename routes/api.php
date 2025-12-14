@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\V1\AsesorTableApiController;
 use App\Http\Controllers\Api\V1\JadwalController;
 use App\Http\Controllers\Api\AsesorApiController;
 use App\Http\Controllers\Api\V1\DetailSkemaController;
-use App\Http\Controllers\Api\V1\BeritaController;
+use App\Http\Controllers\Api\V1\BeritaAPIController;
 use App\Http\Controllers\Api\V1\StrukturOrganisasiController;
 use App\Http\Controllers\Api\V1\JadwalControllerAPI; // Sudah benar
 use App\Http\Controllers\Api\V1\MitraController;
@@ -80,7 +80,7 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('tuks', TukController::class);
 
     // Berita CRUD
-    Route::apiResource('berita', BeritaController::class);
+    Route::apiResource('berita', BeritaAPIController::class);
 
     // Struktur organisasi CRUD
     Route::apiResource('struktur', StrukturOrganisasiController::class);

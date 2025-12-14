@@ -98,7 +98,7 @@ class CategoryController extends Controller
         $category = Category::create($validatedData);
 
         // Redirect ke rute yang benar dengan pesan sukses + ID
-        return redirect()->route('master_category') 
+        return redirect()->route('admin.master_category') 
                          ->with('success', "Kategori '{$category->nama_kategori}' (ID: {$category->id}) berhasil ditambahkan.");
     }
 
@@ -108,7 +108,7 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         // Redirect ke rute yang benar
-        return redirect()->route('edit_category', $category->id); 
+        return redirect()->route('admin.edit_category', $category->id); 
     }
 
     /**
@@ -146,7 +146,7 @@ class CategoryController extends Controller
         $category->update($validatedData);
 
         // Redirect ke rute yang benar dengan pesan sukses + ID
-        return redirect()->route('master_category')
+        return redirect()->route('admin.master_category')
                          ->with('success', "Kategori '{$category->nama_kategori}' (ID: {$category->id}) berhasil diperbarui.");
     }
 
@@ -162,7 +162,7 @@ class CategoryController extends Controller
         $category->delete(); 
         
         // Redirect ke rute yang benar dengan pesan sukses + ID
-        return redirect()->route('master_category')
+        return redirect()->route('admin.master_category')
                          ->with('success', "Kategori '{$namaKategori}' (ID: {$idKategori}) dan semua skema yang terhubung telah dihapus.");
     }
 }

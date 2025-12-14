@@ -28,7 +28,7 @@
   <main class="flex min-h-[calc(100vh-80px)]">
     <x-sidebar_profile_asesi 
         :asesi="$asesi" 
-        :backUrl="route('schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
+        :backUrl="route('admin.schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
     />
 
     <section class="ml-[22%] flex-1 p-8 h-[calc(100vh-80px)] overflow-y-auto">

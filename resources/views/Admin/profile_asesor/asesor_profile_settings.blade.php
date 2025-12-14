@@ -47,7 +47,7 @@
         
         <div class="flex flex-col space-y-4 mt-3 mb-3">
           {{-- Link 'Profile Settings' dinamis --}}
-          <a href="{{ route('asesor.profile', $asesor->id_asesor) }}" 
+          <a href="{{ route('admin.asesor.profile', $asesor->id_asesor) }}" 
              class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
@@ -56,14 +56,14 @@
           </a>
 
           {{-- Link 'Tinjauan' dan 'Tracker' statis --}}
-          <a href="{{ route('asesor_profile_tinjauan') }}" 
+          <a href="{{ route('admin.asesor_profile_tinjauan') }}" 
              class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
                     {{ request()->routeIs('asesor_profile_tinjauan') ? 'text-blue-600' : 'text-gray-800 hover:text-blue-600' }}">
             <i class="fas fa-clipboard-list text-l mr-3"></i> Tinjauan Asesmen
           </a>
-          <a href="{{ route('asesor_profile_tracker') }}" 
+          <a href="{{ route('admin.asesor_profile_tracker') }}" 
              class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
@@ -72,7 +72,7 @@
           </a>
 
           {{-- Link 'Bukti Kelengkapan' dinamis --}}
-          <a href="{{ route('asesor.bukti', $asesor->id_asesor) }}" 
+          <a href="{{ route('admin.asesor.bukti', $asesor->id_asesor) }}" 
              class="flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]

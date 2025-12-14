@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage; // Penting untuk file upload
 
-class BeritaController extends Controller
+class BeritaAPIController extends Controller
 {
     /**
      * READ (Semua): Mengambil semua data berita.
