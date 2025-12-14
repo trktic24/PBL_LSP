@@ -31,12 +31,23 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $categoryName) {
-            Category::firstOrCreate(
-                ['slug' => Str::slug($categoryName)],
-                ['nama_kategori' => $categoryName]
-            );
+            try {
+                Category::firstOrCreate(
+                    ['slug' => Str::slug($categoryName)],
+                    ['nama_kategori' => $categoryName]
+                );
+            } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+                // Ignore duplicate error as we want to ensure it exists
+                continue;
+            } catch (\Exception $e) {
+                // Catch generic SQL errors (like integrity constraint violation 1062)
+                if ($e->getCode() == 23000) {
+                    continue;
+                }
+                throw $e;
+            }
         }
-        
+
         // Opsional: Anda bisa menggunakan Factory di sini untuk menambahkan data dummy
         // Category::factory(5)->create(); 
     }

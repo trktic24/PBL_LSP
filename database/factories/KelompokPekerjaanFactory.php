@@ -32,8 +32,7 @@ class KelompokPekerjaanFactory extends Factory
             'id_skema' => Skema::all()->random()->id_skema,
             
             // Bikin data palsu sesuai migrasi lu
-            'kode_unit' => 'K.' . fake()->numerify('450100.0##.0#'),
-            'judul_unit' => 'Unit ' . fake()->words(3, true),
+            'nama_kelompok_pekerjaan' => 'Kolompok ' . fake()->words(3, true),
         ];
     }
 }

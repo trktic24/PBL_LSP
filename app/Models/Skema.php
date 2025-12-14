@@ -6,47 +6,45 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+// Import Model
+use App\Models\UnitKompetensi;
 use App\Models\Category;
 use App\Models\Asesor;
 use App\Models\Jadwal;
+use App\Models\KelompokPekerjaan;
 
 class Skema extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang terhubung dengan model.
-     *
-     * @var string
-     */
     protected $table = 'skema';
-    /**
-     * Primary key untuk model ini.
-     * Sesuai migration: $table->id('id_skema');
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id_skema';
+    protected $primaryKey = 'id_skema'; // Primary key kamu 'id_skema'
+
+    protected $fillable = [
+        'category_id',
+        'id_kelompok_pekerjaan',
+        'nomor_skema',
+        'nama_skema',
+        'deskripsi_skema',
+        'harga',
+        'SKKNI',
+        'gambar',
+    ];
 
     /**
-     * Atribut yang dapat diisi secara massal (mass assignable).
-     * Disesuaikan dengan kolom di migration.
-     *
-     * @var array<int, string>
+     * Relasi ke Category
      */
-    protected $fillable = ['categorie_id', 'nomor_skema', 'nama_skema', 'deskripsi_skema', 'harga', 'SKKNI', 'gambar'];
-
-    /**
-     * Relasi ke Categorie (Berdasarkan foreignId 'categorie_id').
-     * Menandakan bahwa Skema ini 'milik' satu Categorie.
-     */
-    public function category()
+    public function category(): BelongsTo
     {
         // Model, foreign_key, owner_key
-        return $this->belongsTo(Category::class, 'category_id', 'id');
+        return $this->belongsTo(Category::class, 'categorie_id', 'id');
     }
 
-    public function kelompokPekerjaan()
+    /**
+     * Relasi ke KelompokPekerjaan
+     */
+    public function kelompokPekerjaan(): HasMany
     {
         // LOGIC BENAR:
         // Skema punya BANYAK KelompokPekerjaan.
@@ -75,32 +73,30 @@ class Skema extends Model
     }
 
     /**
-     * Relasi ke Asesor (Many-to-Many).
-     * Skema ini 'memiliki dan dimiliki oleh banyak' Asesor.
+     * Relasi ke Asesor (Many-to-Many)
      */
     public function asesor()
     {
         return $this->belongsToMany(
             Asesor::class,
             'transaksi_asesor_skema', // Nama tabel pivot
-            'id_skema', // Foreign key di pivot untuk model ini (Skema)
-            'id_asesor', // Foreign key di pivot untuk model tujuan (Asesor)
+            'id_skema',               // FK di pivot untuk model ini (Skema)
+            'id_asesor'               // FK di pivot untuk model tujuan (Asesor)
         );
     }
 
     /**
-     * Relasi "Jalan Pintas" (HasManyThrough)
-     * Skema -> (lewat KelompokPekerjaan) -> UnitKompetensi
+     * Relasi ke UnitKompetensi (YANG ERROR SEBELUMNYA)
      */
     public function unitKompetensi()
     {
         return $this->hasManyThrough(
-            UnitKompetensi::class, // 1. Model Tujuan (Unit)
-            KelompokPekerjaan::class, // 2. Model Perantara (Kelompok)
-            'id_skema', // 3. FK di tabel perantara (kelompok_pekerjaan)
-            'id_kelompok_pekerjaan', // 4. FK di tabel tujuan (unit_kompetensi)
-            'id_skema', // 5. PK di tabel ini (skema)
-            'id_kelompok_pekerjaan', // 6. PK di tabel perantara (kelompok_pekerjaan)
+            UnitKompetensi::class,      // Model Tujuan
+            KelompokPekerjaan::class,   // Model Perantara
+            'id_skema',                 // FK di tabel Perantara (kelompok_pekerjaan)
+            'id_kelompok_pekerjaan',    // FK di tabel Tujuan (unit_kompetensi)
+            'id_skema',                 // PK di tabel Asal (skema)
+            'id_kelompok_pekerjaan'     // PK di tabel Perantara (kelompok_pekerjaan)
         );
     }
 }

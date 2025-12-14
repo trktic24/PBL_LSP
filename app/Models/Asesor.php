@@ -9,11 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Asesor extends Model
 {
     use HasFactory;
-
     protected $table = 'asesor';
-
-    // Primary key
     protected $primaryKey = 'id_asesor';
+    protected $guarded = ['id_asesor'];
 
     // Kolom yang boleh diisi (sesuaikan dengan migration & form step 2 & 3 asesor)
     protected $fillable = [
@@ -58,8 +56,7 @@ class Asesor extends Model
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user'); // FK, Owner Key
     }
-
-    // Relasi: Satu Asesor punya satu Skema
+    
     public function skema()
     {
         return $this->belongsToMany(

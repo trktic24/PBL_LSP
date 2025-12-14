@@ -257,6 +257,9 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
+        if ($user->role->nama_role === 'asesor' && $user->asesor?->status_verifikasi === 'pending') {
+            return redirect()->route('auth.wait');
+        }
 
         // Refresh user to load relationships (asesor)
         $user->refresh();

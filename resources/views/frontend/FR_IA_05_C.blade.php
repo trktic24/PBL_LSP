@@ -226,7 +226,7 @@
                 </table>
             </div>
 
-            @include('components.kolom_ttd.asesiasesor')
+            @include('components.kolom_ttd.asesiasesor', ['sertifikasi' => $asesi])
         </div>
             
         <div class="form-footer flex justify-between mt-10">
