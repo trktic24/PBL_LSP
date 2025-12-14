@@ -263,7 +263,7 @@ class IA05Controller extends Controller
 
             if ($request->has('umpan_balik')) {
                 LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                    ->update(['umpan_balik_ia05' => $request->umpan_balik]);
+                    ->update(['pencapaian_ia05' => $request->umpan_balik]);
             }
 
             DB::commit();

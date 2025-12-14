@@ -2,27 +2,26 @@
 
 namespace Database\Factories;
 
-use App\Models\Skema;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SoalIa05Factory extends Factory
 {
-    public function definition(): array
+    public function definition()
     {
-        // Ambil satu ID Skema secara acak, atau buat jika belum ada.
-        // Ini PENTING agar soal punya induk.
-        $idSkema = Skema::inRandomOrder()->first()->id_skema ?? Skema::factory()->create()->id_skema;
-
         return [
-            'id_skema' => $idSkema,
-            // Placeholder: Nilai ini nanti akan ditimpa oleh Seeder dengan data riil
-            'soal_ia05' => 'Placeholder Pertanyaan',
-            'opsi_jawaban_a' => 'Opsi A',
-            'opsi_jawaban_b' => 'Opsi B',
-            'opsi_jawaban_c' => 'Opsi C',
-            'opsi_jawaban_d' => 'Opsi D',
-            'created_at' => now(),
-            'updated_at' => now(),
+            // PENTING: id ini harus ada di tabel 'data_sertifikasi_asesi'
+            // Jika ingin aman, ganti angka 1 dengan id yang pasti ada, 
+            // atau gunakan: \App\Models\DataSertifikasiAsesi::factory(),
+            'id_data_sertifikasi_asesi' => 1, 
+            
+            // Membuat kalimat soal random (diakhiri tanda tanya)
+            'soal_ia05' => $this->faker->sentence(5) . '?', 
+            
+            // Membuat opsi jawaban random
+            'opsi_a_ia05' => $this->faker->words(3, true),
+            'opsi_b_ia05' => $this->faker->words(3, true),
+            'opsi_c_ia05' => $this->faker->words(3, true),
+            'opsi_d_ia05' => $this->faker->words(3, true),
         ];
     }
 }
