@@ -22,9 +22,14 @@
   
   <div class="flex pt-0">
     
+    @php
+        $firstSertifikasi = $asesi->dataSertifikasi->first();
+        $defaultBackUrl = route('admin.master_asesi'); // Fallback ke daftar master asesi
+    @endphp
+
     <x-sidebar.sidebar_profile_asesi 
         :asesi="$asesi" 
-        :backUrl="route('admin.schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" 
+        :backUrl="$firstSertifikasi ? route('admin.schedule.attendance', $firstSertifikasi->id_jadwal) : $defaultBackUrl" 
     />
 
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">
