@@ -21,165 +21,101 @@ class TrackerController extends Controller
         $asesi = $user->asesi;
         $sertifikasi = null;
 
-        // Default value buat flag tampilan (biar gak error kalau $sertifikasi null)
-        $showPortofolio = false;
-        $showObservasi = false;
-        $showTanyaJawab = false;
-        $showReviuProduk = false;
-        $showKegiatan = false;
-        $showTertulis = false;
-        $showLisan = false;
-        $showWawancara = false;
-        $showLainnya = false;
+        // Default Flags View
+        $showIA02 = false; $showIA05 = false; $showIA06 = false; 
+        $showIA07 = false; $showIA09 = false; 
 
-        // Data Status default flags
+        // Status Flags
         $unlockAPL02 = false;
         $unlockAK01 = false;
-        $unlockAsesmen = false;
-        $unlockAK03 = false;
+        $unlockAsesmen = false; // Start Ujian
+        $isWaktuHabis = false;  // End Ujian -> Trigger AK.03
+        $unlockAK03 = false;    // Umpan Balik
+        $unlockHasil = false;   // Trigger Lihat Nilai
+        $unlockAK04 = false;    // Banding Asesmen
+        
         $isSudahHadir = false;
-        $unlockHasil = false;
-
-        // Data Status default text
         $statusAPL01 = 'menunggu';
         $statusAPL02 = 'menunggu';
-        $statusAK01 = 'menunggu';
-        $statusAsesmen = 'menunggu';
-        $statusAK03 = 'menunggu';
-        $pesanHasil = '';
+        $pesanWaktu = null;
+        $pesanStatus = null;
 
         if ($asesi) {
-            // [UPDATE 1] Tambahkan 'responBuktiAk01' di sini biar datanya keambil sekalian
-            $query = $asesi->dataSertifikasi()->with(['jadwal.skema', 'jadwal.asesor', 'responBuktiAk01', 'daftarHadir']);
+            $query = $asesi->dataSertifikasi()->with(['jadwal.skema.listForm', 'jadwal.asesor', 'daftarHadir']);
+            $sertifikasi = $jadwal_id ? $query->where('id_jadwal', $jadwal_id)->first() : $query->latest()->first();
 
-            if ($jadwal_id) {
-                $sertifikasi = $query->where('id_jadwal', $jadwal_id)->first();
-            } else {
-                $sertifikasi = $query->latest()->first();
-            }
-
-            // [BARU] LOGIC CEK BUKTI AK.01
             if ($sertifikasi) {
-                // APL 01 Status
-                $apl01 = $sertifikasi->rekomendasi_apl01;
-                $statusAPL01 = $apl01;
-
+                // --- 1. STATUS AWAL ---
+                $statusAPL01 = $sertifikasi->rekomendasi_apl01;
+                $statusAPL02 = $sertifikasi->rekomendasi_apl02;
+                if ($statusAPL01 == 'diterima') $unlockAPL02 = true;
+                if ($statusAPL02 == 'diterima') $unlockAK01 = true;
+                
                 $isSudahHadir = $sertifikasi->is_sudah_hadir;
-
-                // APL 02 Status
-                $apl02 = $sertifikasi->rekomendasi_apl02;
-                $statusAPL02 = $apl02;
-
-                // Logic unlock APL-02
-                if ($apl01 == 'diterima') {
-                    $unlockAPL02 = true;
-                }
-
-                // Logic unlock Asesmen
-                if ($apl02 == 'diterima') {
-                    $unlockAK01 = true;
-                }
-
                 $isAsesorVerified = $sertifikasi->rekomendasi_apl02 == 'diterima';
 
-                // 1. Ambil semua ID bukti yang tersimpan buat asesi ini
-                $buktiIds = $sertifikasi->responBuktiAk01->pluck('id_bukti_ak01')->toArray();
+                // --- 2. SETTING FORM ---
+                $setting = $sertifikasi->jadwal->skema->listForm ?? null;
+                if ($setting) {
+                    $showIA02 = $setting->fr_ia_02 == 1;
+                    $showIA05 = $setting->fr_ia_05 == 1;
+                    $showIA06 = $setting->fr_ia_06 == 1;
+                    $showIA07 = $setting->fr_ia_07 == 1;
+                    $showIA09 = $setting->fr_ia_09 == 1;
+                }
 
-                // 2. Definisi ID
-                $ID_PORTOFOLIO = 1;
-                $ID_OBSERVASI = 2;
-                $ID_TANYA_JAWAB = 3;
-                $ID_REVIU_PRODUK = 4;
-                $ID_KEGIATAN = 5;
-                $ID_TERTULIS = 6;
-                $ID_LISAN = 7;
-                $ID_WAWANCARA = 8;
-                $ID_LAINNYA = 9;
-
-                // 3. Cek apakah ID tersebut ada di array milik asesi
-                $showPortofolio = in_array($ID_PORTOFOLIO, $buktiIds);
-                $showObservasi = in_array($ID_OBSERVASI, $buktiIds);
-                $showTanyaJawab = in_array($ID_TANYA_JAWAB, $buktiIds);
-                $showReviuProduk = in_array($ID_REVIU_PRODUK, $buktiIds);
-                $showKegiatan = in_array($ID_KEGIATAN, $buktiIds);
-                $showTertulis = in_array($ID_TERTULIS, $buktiIds);
-                $showLisan = in_array($ID_LISAN, $buktiIds);
-                $showWawancara = in_array($ID_WAWANCARA, $buktiIds);
-                $showLainnya = in_array($ID_LAINNYA, $buktiIds);
-
+                // --- 3. LOGIC WAKTU (MULAI & SELESAI) ---
                 $jadwalDB = $sertifikasi->jadwal;
                 if ($jadwalDB) {
-                    // buat waktu mulai dari tanggal pelaksanaan + waktu mulai
-                    // 1. Ambil tanggal pelaksanaannya saja
-                    $tanggalSaja = Carbon::parse($jadwalDB->tanggal_pelaksanaan)->format('Y-m-d');
+                    $tgl = Carbon::parse($jadwalDB->tanggal_pelaksanaan)->format('Y-m-d');
+                    
+                    // Waktu Mulai
+                    $jamMulai = Carbon::parse($jadwalDB->waktu_mulai)->format('H:i:s');
+                    $waktuMulai = Carbon::parse($tgl . ' ' . $jamMulai);
 
-                    // 2. Bersihin waktu_mulai biar cuma ambil JAM:MENIT:DETIK (H:i:s)
-                    // Ini buat jaga-jaga kalau dari DB datanya format DateTime lengkap
-                    $jamSaja = Carbon::parse($jadwalDB->waktu_mulai)->format('H:i:s');
+                    // Waktu Selesai (Pastikan kolom waktu_selesai ada di tabel jadwal)
+                    $jamSelesai = Carbon::parse($jadwalDB->waktu_selesai)->format('H:i:s');
+                    $waktuSelesai = Carbon::parse($tgl . ' ' . $jamSelesai);
 
-                    // 3. Gabungin Tanggal Pelaksanaan + Jam Mulai
-                    $waktuMulai = Carbon::parse($tanggalSaja . ' ' . $jamSaja);
+                    $now = Carbon::now();
 
-                    // ambil waktu sekarang
-                    $waktuSekarang = Carbon::now();
-
-                    // cek apakah waktu sekarang sudah melewati atau sama dengan waktu mulai
-                    $isWaktuSudahMulai = $waktuSekarang->greaterThanOrEqualTo($waktuMulai);
-
-                    $tglPelaksanaan = Carbon::parse($jadwalDB->tanggal_pelaksanaan);
-                    $tglBukaHasil = $tglPelaksanaan->copy()->addDay()->startOfDay();
-
-                    // Asesmen Status
-                    if ($isWaktuSudahMulai) {
+                    // Cek Mulai
+                    if ($now->greaterThanOrEqualTo($waktuMulai)) {
                         if (!$isAsesorVerified) {
-                            $pesanStatus = 'Menunggu Verifikasi Asesor.';
+                            $pesanStatus = 'Menunggu Verifikasi Asesor (APL-02).';
                         } elseif (!$isSudahHadir) {
-                            // TERKUNCI KARENA BELUM ABSEN
                             $pesanStatus = 'Anda belum mengisi Daftar Hadir.';
                         } else {
-                            $unlockAsesmen = true;
+                            $unlockAsesmen = true; // Ujian Buka
                         }
                     } else {
                         $pesanStatus = 'Asesmen belum dimulai.';
+                        $pesanWaktu = 'Mulai: ' . $waktuMulai->format('H:i') . ' WIB';
                     }
 
-                    if (Carbon::now()->greaterThanOrEqualTo($tglBukaHasil)) {
-                        $unlockHasil = true;
-                        $unlockAK03 = true;
+                    // Cek Selesai (Trigger AK.03 / Umpan Balik)
+                    if ($now->greaterThanOrEqualTo($waktuSelesai)) {
+                        $isWaktuHabis = true;
+                        $unlockAK03 = true; // Umpan Balik Kebuka
                     }
-                } else {
-                    $pesanWaktu = 'Jadwal asesmen tidak ditemukan.';
+                }
+
+                // --- 4. LOGIC HASIL & BANDING (AK.04) ---
+                // Cek apakah Asesor sudah input rekomendasi di AK.02
+                if (!is_null($sertifikasi->rekomendasi_hasil_asesmen_AK02)) {
+                    $unlockHasil = true;
+                    $unlockAK04 = true; // Banding Kebuka bareng Hasil
                 }
             }
         }
 
-        // [UPDATE 2] Kirim variabel flags ke View
-        return view('asesi.tracker', [
-            'sertifikasi' => $sertifikasi,
-            'showPortofolio' => $showPortofolio,
-            'showObservasi' => $showObservasi,
-            'showTanyaJawab' => $showTanyaJawab,
-            'showReviuProduk' => $showReviuProduk,
-            'showKegiatan' => $showKegiatan,
-            'showTertulis' => $showTertulis,
-            'showLisan' => $showLisan,
-            'showWawancara' => $showWawancara,
-            'showLainnya' => $showLainnya,
-            'unlockAPL02' => $unlockAPL02,
-            'unlockAK01' => $unlockAK01,
-            'unlockAsesmen' => $unlockAsesmen,
-            'unlockAK03' => $unlockAK03,
-            'statusAPL01' => $statusAPL01,
-            'statusAPL02' => $statusAPL02,
-            'statusAK01' => $statusAK01,
-            'statusAsesmen' => $statusAsesmen,
-            'statusAK03' => $statusAK03,
-            'pesanWaktu' => $pesanWaktu ?? null,
-            'isSudahHadir' => $isSudahHadir,
-            'unlockHasil' => $unlockHasil,
-            'pesanHasil' => $pesanHasil,
-            'pesanStatus' => $pesanStatus ?? null,
-        ]);
+        return view('asesi.tracker', compact(
+            'sertifikasi',
+            'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09',
+            'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04',
+            'statusAPL01', 'statusAPL02', 'isWaktuHabis',
+            'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus'
+        ));
     }
 
     /**

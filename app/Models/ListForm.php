@@ -10,7 +10,7 @@ class ListForm extends Model
     use HasFactory;
 
     protected $table = 'list_form'; // Sesuai nama tabel Anda
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id_form';
 
     protected $fillable = [
         'id_skema',
