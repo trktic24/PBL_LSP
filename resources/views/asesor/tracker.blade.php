@@ -54,19 +54,27 @@
         // 3. CEK STATUS PER ITEM (UNTUK AK.02 LOCK)
         // =========================================================================
 
-        $ia05Done = $dataSertifikasi->lembarJawabIa05()->exists();
+        // CEK STATUS PER ITEM (UNTUK AK.02 LOCK)
+        // Update: Cek apakah sudah DINILAI (bukan sekadar ada record)
+        
+        // IA.05: Cek pencapaian_ia05 (ya/tidak)
+        $ia05Done = $dataSertifikasi->lembarJawabIa05()->whereNotNull('pencapaian_ia05')->exists();
         $stIa05 = $ia05Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
 
+        // IA.10: Verifikasi Pihak Ketiga (Anggap selesai jika ada record)
         $ia10Done = $dataSertifikasi->ia10()->exists();
         $stIa10 = $ia10Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
 
+        // IA.02: Observasi (Anggap selesai jika ada record)
         $ia02Done = $dataSertifikasi->ia02()->exists();
         $stIa02 = $ia02Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
 
-        $ia06Done = $dataSertifikasi->ia06Answers()->count() > 0;
+        // IA.06: Pertanyaan Lisan (Cek pencapaian)
+        $ia06Done = $dataSertifikasi->ia06Answers()->whereNotNull('pencapaian')->exists();
         $stIa06 = $ia06Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
 
-        $ia07Done = $dataSertifikasi->ia07()->exists();
+        // IA.07: Pertanyaan Lisan (Cek pencapaian)
+        $ia07Done = $dataSertifikasi->ia07()->whereNotNull('pencapaian')->exists();
         $stIa07 = $ia07Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
 
         // Semua IA Harus Selesai agar AK.02 Terbuka
@@ -390,13 +398,25 @@
                     </div>
 
                     {{-- ITEM TERAKHIR: AK.02 (KEPUTUSAN) --}}
-                    <div class="relative pl-20 pt-4 border-t mt-4">
+                    <div class="relative pl-20 pt-4 border-t mt-4 group">
                         <div class="absolute left-0 top-6 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white 
                             {{ $isFinalized ? 'bg-green-600 text-white' : ($allIADone ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-400') }}">
                             <span class="font-bold text-xs">AK.02</span>
                         </div>
                         <div>
-                            <h3 class="text-lg font-bold text-gray-800 mt-2">Keputusan Asesmen (AK.02)</h3>
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-bold text-gray-800 mt-2">Keputusan Asesmen (AK.02)</h3>
+                                <div class="flex gap-2 ml-4 mt-2">
+                                    {{-- Tombol Verifikasi --}}
+                                    <a href="{{ route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                        class="{{ btnState($allIADone ? 100 : 0, 100, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                    
+                                    {{-- Tombol Lihat PDF --}}
+                                    <a href="{{ route('ak02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                        target="_blank"
+                                        class="{{ pdfState($isFinalized ? 100 : 0, 100) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat PDF</a>
+                                </div>
+                            </div>
                             
                             {{-- PRIORITAS 1: SUDAH DIVALIDASI VALIDATOR (HIJAU TEBAL) --}}
                             @if($dataSertifikasi->status_validasi == 'valid')
@@ -419,19 +439,12 @@
                                     <p class="text-xs text-blue-600">Menunggu validasi</p>
                                 </div>
 
-                            {{-- PRIORITAS 3: BELUM SELESAI (TOMBOL MASIH AKTIF) --}}
+                            {{-- PRIORITAS 3: BELUM SELESAI --}}
                             @elseif($allIADone)
-                                <p class="text-sm text-gray-500 mb-2">Pastikan seluruh instrumen asesmen (IA) telah dinilai sebelum mengisi keputusan ini.</p>
-                                <a href="{{-- ISI ROUTE KE CONTROLLER CREATE AK.02 --}}" class="inline-block bg-indigo-600 text-white hover:bg-indigo-700 py-2 px-6 rounded-lg shadow-md transition cursor-pointer">
-                                    Isi Keputusan Asesmen
-                                </a>
+                                <p class="text-sm text-gray-500 mb-2 font-semibold text-yellow-600">Silakan isi keputusan asesmen.</p>
 
                             {{-- PRIORITAS 4: BELUM BISA DIISI --}}
                             @else
-                                <p class="text-sm text-gray-500 mb-2">Pastikan seluruh instrumen asesmen (IA) telah dinilai sebelum mengisi keputusan ini.</p>
-                                <button class="inline-block bg-gray-300 text-gray-500 py-2 px-6 rounded-lg shadow-none cursor-not-allowed" disabled>
-                                    Isi Keputusan Asesmen
-                                </button>
                                 <p class="text-xs text-red-400 mt-2 italic">Selesaikan penilaian pada semua form di atas terlebih dahulu.</p>
                             @endif
                         </div>
