@@ -335,6 +335,10 @@
                                 @endif
                                 <p class="text-sm text-gray-500">Dilakukan oleh Admin</p>
                                 @if ($level >= $LVL_PRA_ASESMEN && $unlockAK01)
+                                    <a href="{{ route('asesi.pdf.kartu_peserta', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        class="{{ $btnBlue }}" target="_blank">
+                                        Unduh Dokumen
+                                    </a>
                                     <p class="{{ $statusClassSelesai }}">Terverifikasi</p>
                                 @else
                                     <p class="{{ $statusClassTerkunci }}">Menunggu Verifikasi Pra-Asesmen</p>
@@ -663,7 +667,7 @@
                                             </div>
                                             <div class="w-full sm:w-auto flex-shrink-0">
                                                 @if ($unlockHasil)
-                                                    <a href="#"
+                                                    <a href="{{ route('asesi.ia07.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                         class="flex items-center justify-center w-full sm:w-36 h-10 text-blue-600 text-sm font-semibold hover:underline">Lihat
                                                         Hasil</a>
                                                 @elseif ($unlockAsesmen)

@@ -421,7 +421,7 @@
 
                     toggleModal(); // Tutup modal
                     alert("Data Banding berhasil disimpan!");
-                    window.location.href = `/tracker/${result.id_jadwal}`;
+                    window.location.href = `/asesi/tracker/${result.id_jadwal}`;
 
                 } catch (err) {
                     console.error(err);

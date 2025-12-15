@@ -441,6 +441,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/payment/{id_sertifikasi}/invoice', 'downloadInvoice')->name('payment.invoice');
         });
 
+        // unduh kartu peserta
+        Route::get('/kartu-peserta/{id_sertifikasi}', [KartuPesertaPdfController::class, 'generateKartuPeserta'])->name('pdf.kartu_peserta');
+
         // Asesmen Screens
         Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');
         Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])->name('asesmen.ia06.view');
