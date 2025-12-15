@@ -64,165 +64,142 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.asesor.update.step3', $asesor->id_asesor) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.asesor.update.step3', $asesor->id_asesor) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
           @csrf
           @method('PATCH') 
           
-          <h3 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-2">Kelengkapan Dokumen</h3>
-          <p class="text-sm text-gray-500 -mt-2">Unggah dokumen dalam format .pdf, .jpg, atau .png. Maksimal ukuran per file adalah 5MB.</p>
+          <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+              <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Bukti Kelengkapan</h3>
+              <p class="text-sm text-gray-500 text-center mb-8 -mt-4">Unggah dokumen yang diperlukan. Format: .pdf, .jpg, .png (Max 5MB)</p>
 
-          <div x-data="{ fileName: '' }">
-            <label for="ktp" class="block text-sm font-medium text-gray-700 mb-2">KTP</label>
-            @if($asesor->ktp)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->ktp) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->ktp) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="ktp" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="ktp" name="ktp" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
+              <div class="space-y-6">
+              @php
+                  $fileFields = [
+                      ['id' => 'ktp', 'label' => 'KTP', 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->ktp],
+                      ['id' => 'pas_foto', 'label' => 'Foto', 'is_image' => true, 'accept' => '.jpg,.jpeg,.png', 'desc' => 'JPG/PNG Only', 'existing' => $asesor->pas_foto],
+                      ['id' => 'NPWP_foto', 'label' => 'NPWP', 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->NPWP_foto],
+                      ['id' => 'rekening_foto', 'label' => 'Rekening', 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->rekening_foto],
+                      ['id' => 'CV', 'label' => 'Curriculum Vitae (CV)', 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->CV],
+                      ['id' => 'ijazah', 'label' => 'Ijazah Pendidikan', 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->ijazah],
+                      ['id' => 'sertifikat_asesor', 'label' => 'Sertifikat Asesor Kompetensi', 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->sertifikat_asesor],
+                      ['id' => 'sertifikasi_kompetensi', 'label' => 'Sertifikat Kompetensi', 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->sertifikasi_kompetensi],
+                      ['id' => 'tanda_tangan', 'label' => 'Tanda Tangan', 'is_image' => true, 'accept' => '.png', 'desc' => 'PNG Only', 'existing' => $asesor->tanda_tangan],
+                  ];
+              @endphp
+
+              @foreach($fileFields as $field)
+              <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md"
+                   x-data="{ 
+                      open: false,
+                      fileName: '',
+                      imageUrl: '{{ $field['existing'] ? Storage::url(str_replace('public/', '', $field['existing'])) : '' }}',
+                      isImage: {{ isset($field['is_image']) && $field['is_image'] ? 'true' : 'false' }},
+                      isDeleted: false,
+                      fileExt: '{{ $field['existing'] ? pathinfo($field['existing'], PATHINFO_EXTENSION) : '' }}'
+                   }">
+                
+                {{-- HEADER ACCORDION --}}
+                <div @click="open = !open" class="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition select-none">
+                    <div>
+                        <h3 class="font-semibold text-gray-700 text-sm">{{ $field['label'] }}</h3>
+                        <p class="text-[11px] text-gray-500 mt-0.5 leading-tight">{{ $field['desc'] }}</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <template x-if="(imageUrl || fileName) && !isDeleted">
+                            <span class="text-[11px] text-green-600 font-bold bg-green-100 px-2.5 py-0.5 rounded-full flex items-center">
+                                <i class="fas fa-check mr-1 text-[10px]"></i> Terunggah
+                            </span>
+                        </template>
+                        <template x-if="(!imageUrl && !fileName) || isDeleted">
+                            <span class="text-[11px] text-red-500 font-semibold">Belum diunggah</span>
+                        </template>
+                        <i class="fas text-gray-400 text-xs transition-transform duration-300" :class="open ? 'fa-chevron-up rotate-180' : 'fa-chevron-down'"></i>
+                    </div>
+                </div>
+
+                {{-- CONTENT --}}
+                <div x-show="open" x-collapse class="p-4 border-t border-gray-200 bg-white">
+                    <div class="flex flex-col md:flex-row items-start gap-4">
+                        
+                        {{-- PREVIEW BOX --}}
+                        <div class="w-full md:w-40 md:h-40 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative group shrink-0">
+                            
+                            <!-- Existing File / New File Preview -->
+                            <template x-if="(imageUrl || fileName) && !isDeleted">
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <template x-if="isImage || (fileName && fileName.match(/\.(jpg|jpeg|png)$/i)) || (fileExt && ['jpg','jpeg','png'].includes(fileExt.toLowerCase()))">
+                                        <img :src="imageUrl" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition" @click="window.open(imageUrl, '_blank')">
+                                    </template>
+                                    <template x-if="!isImage && !(fileName && fileName.match(/\.(jpg|jpeg|png)$/i)) && !(fileExt && ['jpg','jpeg','png'].includes(fileExt.toLowerCase()))">
+                                        <div class="text-center p-2">
+                                            <i class="fas fa-file-pdf text-red-500 text-2xl mb-1"></i>
+                                            <span class="text-[10px] font-bold text-gray-600 block uppercase truncate w-16" x-text="fileName || 'PDF'"></span>
+                                            <a :href="imageUrl" target="_blank" class="text-blue-600 text-[10px] hover:underline mt-0.5 inline-block" x-show="imageUrl">Buka</a>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Placeholder -->
+                            <template x-if="(!imageUrl && !fileName) || isDeleted">
+                                <div class="text-center text-gray-400">
+                                    <i class="fas fa-image text-xl mb-1 opacity-50"></i>
+                                    <span class="text-[10px] block">Preview</span>
+                                </div>
+                            </template>
+                        </div>
+
+                        {{-- FORM ACTION --}}
+                        <div class="flex-1 w-full space-y-2">
+                            <input type="file" name="{{ $field['id'] }}" class="hidden" x-ref="fileInput" accept="{{ $field['accept'] }}"
+                                   @change="
+                                       const file = $event.target.files[0];
+                                       if(file) {
+                                           fileName = file.name;
+                                           isDeleted = false;
+                                           if(file.type.startsWith('image/')) {
+                                               const reader = new FileReader();
+                                               reader.onload = (e) => imageUrl = e.target.result;
+                                               reader.readAsDataURL(file);
+                                           } else {
+                                               imageUrl = null; // No preview for PDF upload (unless we want to show icon)
+                                           }
+                                       }
+                                   ">
+                            
+                            <!-- Hidden Input for Deletion -->
+                            <input type="hidden" name="delete_{{ $field['id'] }}" :value="isDeleted ? '1' : '0'">
+
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                {{-- Tombol Pilih File --}}
+                                <button type="button" @click="$refs.fileInput.click()" 
+                                        class="px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-md hover:bg-blue-100 transition-colors shadow-sm"
+                                        x-show="(!imageUrl && !fileName) || isDeleted">
+                                    <i class="fas fa-upload mr-1.5"></i> Pilih File
+                                </button>
+
+                                {{-- Tombol Ganti / Hapus --}}
+                                <div class="flex gap-2" x-show="(imageUrl || fileName) && !isDeleted">
+                                    <button type="button" @click="$refs.fileInput.click()" class="px-3 py-1.5 bg-yellow-400 text-white text-xs font-bold rounded-md hover:bg-yellow-500 transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-edit mr-1.5"></i> Ganti
+                                    </button>
+                                    <button type="button" @click="isDeleted = true; fileName = ''; imageUrl = ''; $refs.fileInput.value = ''" 
+                                            class="px-3 py-1.5 bg-red-500 text-white text-xs font-bold rounded-md hover:bg-red-600 transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-trash mr-1.5"></i> Hapus
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <p class="text-[10px] text-gray-400 mt-1" x-show="fileName">File terpilih: <span x-text="fileName" class="font-medium text-gray-600"></span></p>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              @endforeach
+              </div>
           </div>
 
-          <div x-data="{ fileName: '' }">
-            <label for="pas_foto" class="block text-sm font-medium text-gray-700 mb-2">Foto</label>
-            @if($asesor->pas_foto)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->pas_foto) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->pas_foto) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="pas_foto" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="pas_foto" name="pas_foto" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
-          </div>
 
-          <div x-data="{ fileName: '' }">
-            <label for="NPWP_foto" class="block text-sm font-medium text-gray-700 mb-2">NPWP</label>
-             @if($asesor->NPWP_foto)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->NPWP_foto) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->NPWP_foto) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="NPWP_foto" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="NPWP_foto" name="NPWP_foto" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
-          </div>
-
-          <div x-data="{ fileName: '' }">
-            <label for="rekening_foto" class="block text-sm font-medium text-gray-700 mb-2">Rekening</label>
-            @if($asesor->rekening_foto)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->rekening_foto) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->rekening_foto) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="rekening_foto" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="rekening_foto" name="rekening_foto" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
-          </div>
-
-          <div x-data="{ fileName: '' }">
-            <label for="CV" class="block text-sm font-medium text-gray-700 mb-2">Curriculum Vitae (CV)</label>
-            @if($asesor->CV)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->CV) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->CV) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="CV" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="CV" name="CV" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
-          </div>
-
-          <div x-data="{ fileName: '' }">
-            <label for="ijazah" class="block text-sm font-medium text-gray-700 mb-2">Ijazah Pendidikan</label>
-            @if($asesor->ijazah)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->ijazah) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->ijazah) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="ijazah" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="ijazah" name="ijazah" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
-          </div>
-
-          <div x-data="{ fileName: '' }">
-            <label for="sertifikat_asesor" class="block text-sm font-medium text-gray-700 mb-2">Sertifikat Asesor Kompetensi</label>
-            @if($asesor->sertifikat_asesor)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->sertifikat_asesor) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->sertifikat_asesor) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="sertifikat_asesor" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="sertifikat_asesor" name="sertifikat_asesor" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
-          </div>
-
-          <div x-data="{ fileName: '' }">
-            <label for="sertifikasi_kompetensi" class="block text-sm font-medium text-gray-700 mb-2">Sertifikat Kompetensi</label>
-            @if($asesor->sertifikasi_kompetensi)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->sertifikasi_kompetensi) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->sertifikasi_kompetensi) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="sertifikasi_kompetensi" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="sertifikasi_kompetensi" name="sertifikasi_kompetensi" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
-          </div>
-
-          <div x-data="{ fileName: '' }">
-            <label for="tanda_tangan" class="block text-sm font-medium text-gray-700 mb-2">Tanda Tangan</label>
-            @if($asesor->tanda_tangan)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->tanda_tangan) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->tanda_tangan) }}</a>
-            </div>
-            @endif
-            <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
-              <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
-              <label for="tanda_tangan" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">
-                Pilih File
-              </label>
-              <input type="file" id="tanda_tangan" name="tanda_tangan" class="hidden"
-                     @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
-            </div>
-          </div>
 
           <div class="flex items-center justify-between pt-6">
             <a href="{{ route('admin.edit_asesor2', $asesor->id_asesor) }}"

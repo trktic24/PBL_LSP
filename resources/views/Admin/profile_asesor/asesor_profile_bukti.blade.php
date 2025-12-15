@@ -43,135 +43,134 @@
             </div>
         @endif
 
-        <div class="space-y-6">
+          <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
           
+          <div class="space-y-6">
           @foreach ($documents as $doc)
-          <div class="border border-gray-200 rounded-xl shadow-sm overflow-hidden transition-shadow hover:shadow-md" x-data="{ open: true }">
+          <div x-data="{ expanded: false }" class="border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
             
-            <div @click="open = !open" class="flex items-center justify-between px-6 py-4 bg-gray-50 cursor-pointer select-none group">
-              <div>
-                <h3 class="font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{{ $doc['title'] }}</h3>
-                <p class="text-sm text-gray-500">{{ $doc['subtitle'] }}</p>
-              </div>
-              <div class="flex items-center space-x-4">
-                @if ($doc['file_path'])
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <i class="fas fa-check-circle mr-1"></i> 1 berkas
-                  </span>
-                @else
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                    <i class="fas fa-times-circle mr-1"></i> 0 berkas
-                  </span>
-                @endif
-                <i class="fas text-gray-400 transition-transform duration-300 group-hover:text-blue-500" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-              </div>
+            <!-- Accordion Header -->
+            <div @click="expanded = !expanded" class="bg-gray-50 p-4 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition select-none">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 transition-colors duration-300"
+                         class="{{ $doc['file_path'] ? 'bg-green-100 text-green-600' : 'bg-white border border-gray-300 text-gray-400' }}">
+                        <i class="fas {{ $doc['file_path'] ? 'fa-check' : 'fa-file-upload' }}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-800 text-sm">
+                            {{ $doc['title'] }}
+                        </h4>
+                        <p class="text-[11px] text-gray-500 mt-0.5 leading-tight">{{ $doc['subtitle'] }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    @if ($doc['file_path'])
+                        <span class="text-[11px] text-green-600 font-bold bg-green-100 px-2.5 py-0.5 rounded-full flex items-center">
+                            <i class="fas fa-check mr-1 text-[10px]"></i> Terunggah
+                        </span>
+                    @else
+                        <span class="text-[11px] text-red-500 font-semibold">Belum diunggah</span>
+                    @endif
+                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300" :class="{'rotate-180': expanded}"></i>
+                </div>
             </div>
-            
-            <div x-show="open" x-transition class="p-6 border-t border-gray-200 bg-white">
-              @if ($doc['file_path'])
-                <div class="flex items-center space-x-4">
-                  <div class="w-12 h-12 flex items-center justify-center bg-blue-50 text-blue-600 font-bold rounded-lg text-sm border border-blue-100 uppercase tracking-wide">
-                    .{{ pathinfo($doc['file_path'], PATHINFO_EXTENSION) }}
-                  </div>
-                  
-                  <div class="flex-1 min-w-0">
-                    <p class="font-medium text-gray-800 text-sm truncate" title="{{ basename($doc['file_path']) }}">
-                        {{ basename($doc['file_path']) }}
-                    </p>
-                    <p class="text-xs text-gray-500 mt-0.5 flex items-center">
-                        <i class="fas fa-cloud-upload-alt mr-1"></i> File telah diupload
-                    </p>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    {{-- Tombol View --}}
-                    <a href="{{ Storage::url($doc['file_path']) }}" target="_blank"
-                       class="bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110" 
-                       title="Lihat File">
-                      <i class="fas fa-eye text-xs"></i>
-                    </a>
 
-                    {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
-                    <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}"
-                       class="bg-yellow-400 hover:bg-yellow-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110"
-                       title="Edit File">
-                      <i class="fas fa-pen text-xs"></i>
-                    </a>
-                    
-                    {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
-                    <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}"
-                       class="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110"
-                       title="Hapus File">
-                      <i class="fas fa-trash text-xs"></i>
-                    </a>
-                  </div>
+            <!-- Accordion Body -->
+            <div x-show="expanded" x-collapse class="bg-white border-t border-gray-200">
+                <div class="p-4">
+                    <div class="flex flex-col md:flex-row items-start gap-4">
+                        
+                        {{-- PREVIEW BOX --}}
+                        <div class="w-full md:w-40 md:h-40 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative group shrink-0">
+                            @if ($doc['file_path'])
+                                @php
+                                    $ext = strtolower(pathinfo($doc['file_path'], PATHINFO_EXTENSION));
+                                    $isImage = in_array($ext, ['jpg', 'jpeg', 'png']);
+                                    $fileUrl = Storage::url(str_replace('public/', '', $doc['file_path']));
+                                @endphp
+
+                                @if ($isImage)
+                                    <img src="{{ $fileUrl }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition" onclick="window.open('{{ $fileUrl }}', '_blank')">
+                                @else
+                                    <div class="text-center p-2">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl mb-1"></i>
+                                        <span class="text-[10px] font-bold text-gray-600 block uppercase truncate w-16">{{ basename($doc['file_path']) }}</span>
+                                        <a href="{{ $fileUrl }}" target="_blank" class="text-blue-600 text-[10px] hover:underline mt-0.5 inline-block">Buka</a>
+                                    </div>
+                                @endif
+                            @else
+                                <div class="text-center text-gray-400">
+                                    <i class="fas fa-image text-xl mb-1 opacity-50"></i>
+                                    <span class="text-[10px] block">Preview</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- ACTION BUTTONS --}}
+                        <div class="flex-1 w-full space-y-2">
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                @if ($doc['file_path'])
+                                    <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" class="px-3 py-1.5 bg-yellow-400 text-white text-xs font-bold rounded-md hover:bg-yellow-500 transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-edit mr-1.5"></i> Edit / Ganti
+                                    </a>
+                                @else
+                                    <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" class="px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-md hover:bg-blue-100 transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-upload mr-1.5"></i> Upload File
+                                    </a>
+                                @endif
+                            </div>
+                            
+                            @if ($doc['file_path'])
+                            <p class="text-[10px] text-gray-400 mt-1">File saat ini: <span class="font-medium text-gray-600">{{ basename($doc['file_path']) }}</span></p>
+                            @endif
+                        </div>
+
+                    </div>
                 </div>
-              @else
-                <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-dashed border-gray-300">
-                  <div class="flex items-center text-gray-500">
-                      <i class="fas fa-file-upload text-xl mr-3 text-gray-400"></i>
-                      <span class="text-sm font-medium">Belum ada dokumen yang diunggah.</span>
-                  </div>
-                  {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
-                  <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}"
-                     class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-                    <i class="fas fa-upload mr-2"></i> Upload Sekarang
-                  </a>
-                </div>
-              @endif
             </div>
           </div>
           @endforeach
-        </div>
+          </div>
       
         <div class="mt-10 p-10 border border-gray-200 rounded-2xl shadow-md relative">
           
           <div class="absolute top-6 right-6 flex space-x-2">
-            {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
             <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" 
                class="group bg-white border border-gray-200 hover:border-yellow-400 text-gray-600 hover:text-yellow-600 font-medium px-3 py-1.5 rounded-lg text-xs flex items-center shadow-sm transition-all duration-200">
-              <i class="fas fa-edit mr-1.5 group-hover:scale-110 transition-transform"></i> Edit
-            </a>
-             {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
-             <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" 
-               class="group bg-white border border-gray-200 hover:border-red-500 text-gray-600 hover:text-red-500 font-medium px-3 py-1.5 rounded-lg text-xs flex items-center shadow-sm transition-all duration-200">
-              <i class="fas fa-trash mr-1.5 group-hover:scale-110 transition-transform"></i> Hapus
+              <i class="fas fa-edit mr-1.5 group-hover:scale-110 transition-transform"></i> Edit Data
             </a>
           </div>
 
           <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">Tanda Tangan Pemohon</h3>
           
-          <p class="font-semibold text-gray-800 mb-4 text-center md:text-left">Saya yang bertanda tangan di bawah ini:</p>
+          <div class="bg-gray-50 rounded-xl p-6 max-w-3xl mx-auto border border-gray-200 mb-8">
+              <p class="text-sm font-semibold text-gray-800 mb-4">Saya yang bertanda tangan di bawah ini:</p>
 
-          <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 mb-6">
-              <div class="space-y-3 text-sm text-gray-700">
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Nama</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->nama_lengkap }}</span>
-                </div>
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Pekerjaan</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->pekerjaan }}</span>
-                </div>
-                <div class="flex flex-col sm:flex-row">
-                    <span class="font-bold w-36 inline-block text-gray-900">Alamat Korespondensi</span> 
-                    <span class="hidden sm:inline font-bold mr-2">:</span> 
-                    <span>{{ $asesor->alamat_rumah ?? '-' }}</span>
-                </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                  <div>
+                      <label class="block text-xs text-gray-500 mb-1">Nama Lengkap</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->nama_lengkap }}</p>
+                  </div>
+                  <div>
+                      <label class="block text-xs text-gray-500 mb-1">Pekerjaan</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->pekerjaan }}</p>
+                  </div>
+                  <div class="md:col-span-2">
+                      <label class="block text-xs text-gray-500 mb-1">Alamat Korespondensi</label>
+                      <p class="text-gray-900 font-medium text-sm">{{ $asesor->alamat_rumah ?? '-' }}</p>
+                  </div>
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-gray-200 text-gray-600 text-[11px] leading-relaxed">
+                  Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan dapat dipertanggungjawabkan. 
+                  Dokumen ini digunakan sebagai bukti pemenuhan syarat Sertifikasi Kompetensi.
               </div>
           </div>
-
-          <p class="mt-6 text-gray-600 text-sm mb-8 leading-relaxed">
-            Dengan ini saya menyatakan bahwa data yang saya isikan adalah benar dan dapat dipertanggungjawabkan. 
-            Dokumen ini digunakan sebagai bukti pemenuhan syarat Sertifikasi Kompetensi.
-          </p>
 
           <div class="flex flex-col items-center justify-center">
               <div class="group relative mt-2 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl w-full max-w-md h-48 flex items-center justify-center bg-gray-50 transition-colors duration-300">
                   @if($asesor->tanda_tangan)
-                    <img src="{{ Storage::url($asesor->tanda_tangan) }}" alt="Tanda Tangan" class="object-contain h-32 transition-transform duration-300 group-hover:scale-105">
+                    <img src="{{ Storage::url(str_replace('public/', '', $asesor->tanda_tangan)) }}" alt="Tanda Tangan" class="object-contain h-32 transition-transform duration-300 group-hover:scale-105">
                   @else
                     <div class="text-center p-4">
                         <i class="fas fa-signature text-gray-300 text-4xl mb-2"></i>
@@ -181,12 +180,11 @@
                     </div>
                   @endif
                   
-                  @if(!$asesor->tanda_tangan)
-                  {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
                   <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" class="absolute inset-0 flex items-center justify-center bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                      <span class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md">Upload Tanda Tangan</span>
+                      <span class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md">
+                          {{ $asesor->tanda_tangan ? 'Ganti Tanda Tangan' : 'Upload Tanda Tangan' }}
+                      </span>
                   </a>
-                  @endif
               </div>
               <p class="text-xs text-gray-400 mt-3 font-medium italic">*Tanda Tangan Digital yang sah</p>
           </div>

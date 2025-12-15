@@ -30,21 +30,24 @@ class NotifikasiSeeder extends Seeder
             $notifications = [];
             $now = Carbon::now();
 
-            for ($i = 0; $i < 15; $i++) {
+            $titles = ['Jadwal Asesmen Baru', 'Pengingat Validasi'];
+            $messages = ['Anda memiliki jadwal asesmen baru pada tanggal 2024-12-20.', 'Mohon segera lakukan validasi untuk asesi baru.'];
+
+            for ($i = 0; $i < 2; $i++) {
                 $notifications[] = [
                     'id' => \Illuminate\Support\Str::uuid()->toString(),
                     'type' => 'App\Notifications\GeneralNotification',
                     'notifiable_type' => 'App\Models\User',
                     'notifiable_id' => $userId,
                     'data' => json_encode([
-                        'title' => 'Notifikasi Asesor ' . $userId . ' - Ke-' . ($i + 1),
-                        'body' => 'Ini adalah pesan dummy untuk Asesor ID ' . $userId,
-                        'icon' => ($i % 2 == 0) ? 'info' : 'warning',
-                        'link' => '#'
+                        'title' => $titles[$i],
+                        'body' => $messages[$i],
+                        'icon' => ($i == 0) ? 'calendar' : 'check-circle',
+                        'link' => '#' // Ganti dengan route yang sesuai jika ada
                     ]),
-                    'read_at' => ($i > 5) ? $now->copy()->subHours($i) : null,
-                    'created_at' => $now->copy()->subHours($i),
-                    'updated_at' => $now->copy()->subHours($i),
+                    'read_at' => null, // Set unread for visibility
+                    'created_at' => $now->copy()->subMinutes($i * 5),
+                    'updated_at' => $now->copy()->subMinutes($i * 5),
                 ];
             }
             DB::table('notifications')->insert($notifications);

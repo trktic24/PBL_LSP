@@ -91,8 +91,27 @@ class Ak02Controller extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Rekaman Asesmen FR.AK.02 berhasil disimpan.');
 
+            // Dispatch Event
+            try {
+                $asesiData = DataSertifikasiAsesi::find($id_asesi);
+                $userName = $request->user()->name ?? 'Asesor'; // Fallback name
+
+                $notificationData = [
+                    'title' => "Penilaian Siap Divalidasi",
+                    'message' => "Asesor {$userName} telah menyelesaikan penilaian FR.AK.02.",
+                    'action_url' => route('validator.tracker.show', ['id' => $id_asesi]),
+                    'actor' => "Asesor",
+                    'entity_id' => $id_asesi,
+                ];
+
+                event(new \App\Events\AssessmentReviewed($notificationData));
+            } catch (\Exception $evt) {
+                // Ignore event failure to not block saving
+                // Log::error($evt);
+            }
+
+            return redirect()->back()->with('success', 'Rekaman Asesmen FR.AK.02 berhasil disimpan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

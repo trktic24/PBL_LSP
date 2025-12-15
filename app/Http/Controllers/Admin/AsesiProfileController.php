@@ -276,7 +276,23 @@ class AsesiProfileController extends Controller
 
     public function tracker($id_asesi)
     {
-        $asesi = $this->getAsesi($id_asesi);
+        // 1. Ambil data asesi beserta relasi yang dibutuhkan oleh halaman Tracker
+        $asesi = Asesi::with([
+            'user', 
+            'dataPekerjaan', 
+            // Ambil semua data sertifikasi asesi (untuk sidebar)
+            'dataSertifikasi' => function($q) {
+                // Eager Load relasi mendalam yang dibutuhkan Blade
+                $q->with([
+                    'jadwal.masterTuk',
+                    'jadwal.asesor',
+                    // 'jadwal.waktuMulai', // Jika Anda punya accessor/relasi khusus untuk waktu
+                    // 'jadwal.waktuSelesai', // Jika Anda punya accessor/relasi khusus untuk waktu
+                ])->latest(); // Ambil yang paling baru (yang utama dilacak)
+            }
+        ])->findOrFail($id_asesi);
+
+        // 2. Kirim ke View
         return view('admin.profile_asesi.asesi_profile_tracker', compact('asesi'));
     }
 

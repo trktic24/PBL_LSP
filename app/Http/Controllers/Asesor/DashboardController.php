@@ -66,27 +66,21 @@ class DashboardController extends Controller
 
         // Ringkasan
         $blmreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
-            $q->where('id_asesor', $id_asesor);
-        })
-            ->whereDoesntHave('responApl2Ia01')
-            ->whereDoesntHave('komentarAk05')
+                $q->where('id_asesor', $id_asesor);
+            })
+            ->whereNull('rekomendasi_apl02')
+            ->whereNull('rekomendasi_hasil_asesmen_AK02')
             ->count();
-        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
-            $q->where('id_asesor', $id_asesor);
-        })
-            ->whereHas('responApl2Ia01')        // sudah mengisi APL02
-            ->whereDoesntHave('komentarAk05')
-            ->count();
-        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
-            $q->where('id_asesor', $id_asesor);
-        })
-            ->whereHas('komentarAk05')
-            ->count();
-        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {
-            $q->where('id_asesor', $id_asesor);
-        })
-            ->count();
-
+        $dlmproses = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereNotNull('rekomendasi_apl02')        // sudah mengisi APL02
+                ->whereNull('rekomendasi_hasil_asesmen_AK02')
+                ->count();        
+        $sdhreview = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+                ->whereNotNull('rekomendasi_hasil_asesmen_AK02')
+                ->count();
+        $totalAsesi = DataSertifikasiAsesi::whereHas('jadwal', function ($q) use ($id_asesor) {$q->where('id_asesor', $id_asesor);})
+        ->count();
+        
         // // 2. Data Ringkasan (Dummy)
         // $summary = [
         //     'belum_direview' => 5,
@@ -107,8 +101,15 @@ class DashboardController extends Controller
                 $q->where('Status_jadwal', 'like', '%' . $searchTerm . '%')
                     ->orWhere('waktu_mulai', 'like', '%' . $searchTerm . '%')
                     ->orWhere('tanggal_pelaksanaan', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('sesi', 'like', '%' . $searchTerm . '%')
                     ->orWhereHas('skema', function ($qSkema) use ($searchTerm) {
                         $qSkema->where('nama_skema', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('masterTuk', function ($qTuk) use ($searchTerm) {
+                        $qTuk->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('jenisTuk', function ($qJenisTuk) use ($searchTerm) {
+                        $qJenisTuk->where('jenis_tuk', 'like', '%' . $searchTerm . '%');
                     });
             });
         }
@@ -198,6 +199,6 @@ class DashboardController extends Controller
         // Ambil semua notifikasi dengan pagination (10 per halaman)
         $notifications = $user->notifications()->latest()->paginate(10);
 
-        return view('asesor.notification', compact('notifications'));
+        return view('asesor.notifications_asesor', compact('notifications'));
     }
 }

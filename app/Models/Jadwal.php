@@ -99,4 +99,9 @@ class Jadwal extends Model
     {
         return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
     }
+    public function tuk(): BelongsTo
+    {
+        // Menghubungkan ke MasterTUK menggunakan foreign key 'id_tuk'
+        return $this->belongsTo(MasterTUK::class, 'id_tuk', 'id_tuk');
+    }
 }

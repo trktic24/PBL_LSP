@@ -25,7 +25,6 @@ class AsesorController extends Controller
         
         $skemaId = $request->input('skema_id');
         $jenisKelamin = $request->input('jenis_kelamin');
-        
         $statusVerifikasi = $request->input('status_verifikasi');
 
         $perPage = $request->input('per_page', 10);
@@ -37,11 +36,15 @@ class AsesorController extends Controller
             $sortColumn = 'id_asesor';
         }
 
-        $query = Asesor::with(['skemas'])
+        // LOAD SEMUA SUMBER DATA SKEMA:
+        // 1. skema (Profil Utama - One-to-Many)
+        // 2. skemas (Lisensi Pivot - Many-to-Many)
+        // 3. jadwals.skema (Riwayat Jadwal - via Tabel Jadwal)
+        $query = Asesor::with(['skema', 'skemas', 'jadwals.skema']) 
             ->join('users', 'asesor.id_user', '=', 'users.id_user')
-            // PERBAIKAN: Menghapus 'users.username' karena kolom tidak ada di DB
             ->select('asesor.*', 'users.email');
 
+        // LOGIKA PENCARIAN (SEARCH)
         if ($search) {
             $searchTerm = '%' . $search . '%';
             $query->where(function($q) use ($searchTerm) {
@@ -50,19 +53,38 @@ class AsesorController extends Controller
                   ->orWhere('asesor.nik', 'like', $searchTerm)
                   ->orWhere('asesor.pekerjaan', 'like', $searchTerm)
                   ->orWhere('users.email', 'like', $searchTerm)
+                  // Cari di Skema Profil Utama
+                  ->orWhereHas('skema', function($sq) use ($searchTerm) {
+                      $sq->where('nama_skema', 'like', $searchTerm);
+                  })
+                  // Cari di Skema Lisensi (Pivot)
                   ->orWhereHas('skemas', function($sq) use ($searchTerm) {
                       $sq->where('nama_skema', 'like', $searchTerm);
+                  })
+                  // Cari di Riwayat Jadwal
+                  ->orWhereHas('jadwals.skema', function($jsq) use ($searchTerm) {
+                      $jsq->where('nama_skema', 'like', $searchTerm);
                   });
             });
         }
         
+        // LOGIKA FILTER SKEMA (dropdown)
         if ($skemaId) {
-            $query->whereHas('skemas', function($q) use ($skemaId) {
-                $q->where('skema.id_skema', $skemaId);
+            $query->where(function($q) use ($skemaId) {
+                // Tampilkan jika skema tersebut ada di profil UTAMA
+                $q->where('asesor.id_skema', $skemaId)
+                // ATAU tampilkan jika skema tersebut ada di daftar LISENSI (Pivot)
+                  ->orWhereHas('skemas', function($sq) use ($skemaId) {
+                      $sq->where('skema.id_skema', $skemaId);
+                  })
+                // ATAU tampilkan jika skema tersebut ada di riwayat JADWAL
+                  ->orWhereHas('jadwals', function($jq) use ($skemaId) {
+                      $jq->where('id_skema', $skemaId);
+                  });
             });
         }
+
         if ($jenisKelamin) $query->where('asesor.jenis_kelamin', $jenisKelamin);
-        
         if ($statusVerifikasi) $query->where('asesor.status_verifikasi', $statusVerifikasi);
 
         $sortColumnName = ($sortColumn == 'email') ? 'users.email' : 'asesor.' . $sortColumn;
@@ -79,34 +101,37 @@ class AsesorController extends Controller
     // ==========================================================
     public function createStep1(Request $request)
     {
-        $asesor = $request->session()->get('asesor');
+        $asesor = $request->session()->get('asesor', new Asesor());
         return view('admin.master.asesor.add_asesor1', compact('asesor'));
     }
 
     public function postStep1(Request $request)
     {
-        // PERBAIKAN: Menghapus validasi 'username'
         $validatedData = $request->validate([
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $asesor = $request->session()->get('asesor', new Asesor());
-        $asesor->fill($validatedData); // Ini akan mengisi email (jika ada di model Asesor)
+        $asesor->fill($validatedData);
         
-        // Simpan data sementara ke object asesor untuk sesi
         $asesor->password = $validatedData['password']; 
         $asesor->email = $validatedData['email'];
-        // PERBAIKAN: Tidak menyimpan username ke session
+        
+        // Opsional: Jika ada input nama_lengkap di step 1 view
+        if($request->has('nama_lengkap')) { 
+            $asesor->nama_lengkap = $request->input('nama_lengkap'); 
+        }
         
         $request->session()->put('asesor', $asesor);
-        // PERBAIKAN ROUTE: Menambahkan prefix admin.
         return redirect()->route('admin.add_asesor2');
     }
 
     public function createStep2(Request $request)
     {
         $asesor = $request->session()->get('asesor');
+        if (!$asesor) return redirect()->route('admin.add_asesor1');
+
         $skemas = Skema::all();
         $selectedSkemas = isset($asesor->skema_ids) ? $asesor->skema_ids : [];
         return view('admin.master.asesor.add_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
@@ -136,18 +161,27 @@ class AsesorController extends Controller
         ]);
 
         $asesor = $request->session()->get('asesor');
+        if (!$asesor) return redirect()->route('admin.add_asesor1');
+
         $asesor->fill($validatedData);
+        // Simpan array ID skema sementara di session untuk pivot nanti
         $asesor->skema_ids = $validatedData['skema_ids'];
+        
+        // Simpan id_skema (single) untuk kolom tabel asesor (ambil yg pertama sebagai default)
+        if (!empty($validatedData['skema_ids'])) {
+            $asesor->id_skema = $validatedData['skema_ids'][0];
+        }
+
         $asesor->tanggal_lahir = $validatedData['tanggal_lahir'];
 
         $request->session()->put('asesor', $asesor);
-        // PERBAIKAN ROUTE: Menambahkan prefix admin.
         return redirect()->route('admin.add_asesor3');
     }
 
     public function createStep3(Request $request)
     {
         $asesor = $request->session()->get('asesor');
+        if (!$asesor) return redirect()->route('admin.add_asesor1');
         return view('admin.master.asesor.add_asesor3', compact('asesor'));
     }
 
@@ -155,7 +189,6 @@ class AsesorController extends Controller
     {
         $asesorData = $request->session()->get('asesor');
         if (!$asesorData) {
-            // PERBAIKAN ROUTE: Menambahkan prefix admin.
             return redirect()->route('admin.add_asesor1')->with('error', 'Sesi Anda telah berakhir, silakan mulai lagi.');
         }
 
@@ -173,7 +206,6 @@ class AsesorController extends Controller
 
         DB::beginTransaction();
         try {
-            // PERBAIKAN: Hapus 'username' dari User::create
             $user = User::create([
                 'email' => $asesorData->email,
                 'password' => Hash::make($asesorData->password),
@@ -182,6 +214,7 @@ class AsesorController extends Controller
 
             $finalAsesorData = [
                 'id_user' => $user->id_user, 
+                'id_skema' => $asesorData->id_skema ?? null, 
                 'nomor_regis' => $asesorData->nomor_regis,
                 'nama_lengkap' => $asesorData->nama_lengkap,
                 'nik' => $asesorData->nik,
@@ -203,19 +236,23 @@ class AsesorController extends Controller
 
             $uploadPath = 'public/asesor_files/' . $user->id_user;
             foreach ($validatedFiles as $key => $file) {
-                $path = $file->store($uploadPath);
+                $subfolder = 'dokumen';
+                if ($key == 'pas_foto') $subfolder = 'foto';
+                if ($key == 'tanda_tangan') $subfolder = 'tanda_tangan';
+                
+                $path = $file->store($uploadPath . '/' . $subfolder);
                 $finalAsesorData[$key] = $path; 
             }
 
             $asesor = Asesor::create($finalAsesorData);
             
+            // Simpan relasi Many-to-Many ke tabel pivot Transaksi_asesor_skema
             if (!empty($asesorData->skema_ids)) {
                 $asesor->skemas()->attach($asesorData->skema_ids);
             }
 
             DB::commit();
             $request->session()->forget('asesor');
-            // PERBAIKAN ROUTE: Menambahkan prefix admin.
             return redirect()->route('admin.master_asesor')->with('success', 'Asesor baru berhasil ditambahkan!');
 
         } catch (\Exception $e) {
@@ -239,32 +276,30 @@ class AsesorController extends Controller
         $asesor = Asesor::with('user')->findOrFail($id_asesor);
         $user = $asesor->user;
 
-        // Kita validasi 'nama' (untuk asesor.nama_lengkap) dan email (untuk user.email)
         $validatedUserData = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id_user, 'id_user')],
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
-        // PERBAIKAN: Hapus baris '$user->username = ...' karena kolom tidak ada
         $user->email = $validatedUserData['email'];
         if (!empty($validatedUserData['password'])) {
             $user->password = Hash::make($validatedUserData['password']);
         }
         $user->save();
         
-        // Nama lengkap disimpan di tabel asesor
         $asesor->nama_lengkap = $validatedUserData['nama'];
         $asesor->save();
         
-        // PERBAIKAN ROUTE: Menambahkan prefix admin.
         return redirect()->route('admin.edit_asesor2', $id_asesor)->with('success-step', 'Data Akun berhasil diperbarui.');
     }
 
     public function editStep2($id_asesor)
     {
+        // Load data skema dari tabel pivot
         $asesor = Asesor::with('skemas')->findOrFail($id_asesor);
         $skemas = Skema::all();
+        // Ambil array ID skema yang sudah dimiliki
         $selectedSkemas = $asesor->skemas->pluck('id_skema')->toArray();
         return view('admin.master.asesor.edit_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
     }
@@ -294,11 +329,18 @@ class AsesorController extends Controller
             'norek' => 'required|string|max:20', 
         ]);
 
-        $asesor->update($validatedAsesorData);
+        $asesor->fill($validatedAsesorData);
+        
+        // Update kolom id_skema di tabel asesor (ambil yang pertama dari pilihan sebagai default)
+        if (!empty($validatedAsesorData['skema_ids'])) {
+            $asesor->id_skema = $validatedAsesorData['skema_ids'][0];
+        }
+        $asesor->save();
+
+        // Update tabel pivot Transaksi_asesor_skema
         $skema_ids = $validatedAsesorData['skema_ids'] ?? [];
         $asesor->skemas()->sync($skema_ids);
 
-        // PERBAIKAN ROUTE: Menambahkan prefix admin.
         return redirect()->route('admin.edit_asesor3', $id_asesor)->with('success-step', 'Data Pribadi & Skema berhasil diperbarui.');
     }
 
@@ -326,18 +368,38 @@ class AsesorController extends Controller
 
         $uploadPath = 'public/asesor_files/' . $asesor->id_user;
         
-        foreach ($validatedFiles as $key => $file) {
+        $fileFields = [
+            'ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 
+            'CV', 'ijazah', 'sertifikat_asesor', 'sertifikasi_kompetensi', 'tanda_tangan'
+        ];
+        
+        foreach ($fileFields as $key) {
+            // 1. Cek apakah user meminta hapus file lama
+            if ($request->input('delete_' . $key) == '1') {
+                if ($asesor->$key) {
+                    Storage::delete($asesor->$key);
+                    $asesor->$key = null;
+                }
+            }
+
+            // 2. Cek apakah ada file baru yang diupload
             if ($request->hasFile($key)) {
+                // Hapus file lama jika masih ada (belum dihapus di langkah 1)
                 if ($asesor->$key) {
                     Storage::delete($asesor->$key);
                 }
-                $path = $file->store($uploadPath);
+                
+                $subfolder = 'dokumen';
+                if ($key == 'pas_foto') $subfolder = 'foto';
+                if ($key == 'tanda_tangan') $subfolder = 'tanda_tangan';
+
+                // Upload file baru
+                $path = $request->file($key)->store($uploadPath . '/' . $subfolder);
                 $asesor->$key = $path; 
             }
         }
         $asesor->save(); 
 
-        // PERBAIKAN ROUTE: Menambahkan prefix admin.
         return redirect()->route('admin.master_asesor')->with('success', 'Data Asesor berhasil diperbarui.');
     }
 
@@ -346,6 +408,12 @@ class AsesorController extends Controller
         DB::beginTransaction();
         try {
             $asesor = Asesor::with('user')->findOrFail($id_asesor);
+            
+            // Cek dependensi Jadwal sebelum hapus
+            if ($asesor->jadwals()->exists()) {
+                return redirect()->route('admin.master_asesor')->with('error', 'Gagal menghapus: Asesor ini terdaftar dalam Jadwal. Silakan hapus atau ubah jadwal terkait terlebih dahulu.');
+            }
+
             $user = $asesor->user;
             
             $userId = $asesor->id_user; 
@@ -357,7 +425,6 @@ class AsesorController extends Controller
             Storage::deleteDirectory($uploadPath);
 
             DB::commit();
-            // PERBAIKAN ROUTE: Menambahkan prefix admin.
             return redirect()->route('admin.master_asesor')->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {
             DB::rollBack();

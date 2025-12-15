@@ -13,9 +13,18 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        // \App\Events\ExampleEvent::class => [
-        //     \App\Listeners\ExampleListener::class,
-        // ],
+        \App\Events\AssessmentAssignedByAdmin::class => [
+            \App\Listeners\NotifyAsesorOfAssignment::class,
+        ],
+        \App\Events\AssessmentCompleted::class => [
+            \App\Listeners\NotifyAsesorOfCompletion::class,
+        ],
+        \App\Events\AssessmentReviewed::class => [
+            \App\Listeners\NotifyValidatorOfReview::class,
+        ],
+        \App\Events\AssessmentValidated::class => [
+            \App\Listeners\NotifyUsersOfValidation::class,
+        ],
     ];
 
     /**

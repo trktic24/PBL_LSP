@@ -75,6 +75,7 @@
                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Masukkan Username"
                    value="{{ old('nama', $asesor->user->username ?? $asesor->nama_lengkap) }}" required>
+            <p class="text-xs text-gray-500 mt-1">Username untuk login.</p>
           </div>
           
           <div>
@@ -83,6 +84,7 @@
                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Masukkan Alamat Email"
                    value="{{ old('email', $asesor->user->email ?? '') }}" required>
+            <p class="text-xs text-gray-500 mt-1">Gunakan email aktif untuk notifikasi.</p>
           </div>
 
           <!-- INPUT SKEMA DIHAPUS (Pindah ke Step 2) -->

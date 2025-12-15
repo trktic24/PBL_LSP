@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Jadwal;
 use App\Models\Asesor;
 use App\Models\Skema;
-use App\Models\MasterTuk;
+use App\Models\MasterTUK;
 use App\Models\JenisTuk;
 use App\Models\Asesi;
 use App\Models\DataSertifikasiAsesi;
@@ -92,7 +92,7 @@ class AsesorJadwalController extends Controller
                     ->orWhereHas('masterTuk', function ($qTuk) use ($searchTerm) {
                         $qTuk->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
                     })
-                    ->orWhereHas('jenis_tuk', function ($qJenisTuk) use ($searchTerm) {
+                    ->orWhereHas('jenisTuk', function ($qJenisTuk) use ($searchTerm) {
                         $qJenisTuk->where('jenis_tuk', 'like', '%' . $searchTerm . '%');
                     });
             });
@@ -200,10 +200,13 @@ class AsesorJadwalController extends Controller
         }
 
         $sudahVerifikasiValidator = !DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
-            ->whereHas('komentarAk05', function ($q) {
-                $q->whereNull('verifikasi_validator');
+            ->where(function ($q) {
+                $q->whereDoesntHave('komentarAk05') // belum ada komentar
+                ->orWhereHas('komentarAk05', function ($q2) {
+                    $q2->whereNull('verifikasi_validator');
+                });
             })
-            ->exists();
+            ->exists();                 
 
 
         // 3. (MODIFIKASI UTAMA) Dapatkan daftar Asesi secara manual
@@ -405,18 +408,21 @@ class AsesorJadwalController extends Controller
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        // 2.5 Cek apakah seluruh AK05 sudah diverifikasi validator (hanya untuk asesor, admin bisa lihat semua)
-        if ($isAsesor) {
-            $adaBelumDiverifikasi = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
-                ->whereHas('komentarAk05', function ($q) {
-                    $q->whereNull('verifikasi_validator'); // kolom verifikasi validator
-                })
-                ->exists();
+        $asesor = Asesor::where('id_user', Auth::id())->first();
 
-            if ($adaBelumDiverifikasi) {
-                abort(403, 'Berita Acara belum dapat diakses karena hasil asesmen belum diverifikasi.');
-            }
-        }
+        // // 2.5 Cek apakah seluruh AK05 sudah diverifikasi validator
+        // $belumVerifikasiValidator = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
+        //     ->where(function ($q) {
+        //         $q->whereDoesntHave('komentarAk05') // belum ada komentar
+        //         ->orWhereHas('komentarAk05', function ($q2) {
+        //             $q2->whereNull('verifikasi_validator');
+        //         });
+        //     })
+        //     ->exists();            
+
+        // if ($belumVerifikasiValidator) {
+        //     abort(403, 'Berita Acara belum dapat diakses');
+        // }
 
         // 3. Setup Default Sorting
         $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');

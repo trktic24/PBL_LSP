@@ -52,10 +52,10 @@
 
                                         {{-- Pra Asesmen --}}
                                         @php
-                                            if (!$item->responApl2Ia01 && !$item->responBuktiAk01) {
+                                            if (is_null($item->rekomendasi_apl02) && !$item->responBuktiAk01) {
                                                 $status = 'Belum Direview';
                                                 $color = 'text-red-600 hover:text-blue-800';
-                                            } elseif ($item->responApl2Ia01 && !$item->responBuktiAk01) {
+                                            } elseif (!is_null($item->rekomendasi_apl02) && !$item->responBuktiAk01) {
                                                 $status = 'Dalam Proses';
                                                 $color = 'text-yellow-600 hover:text-yellow-800';
                                             } else {
@@ -73,10 +73,10 @@
 
                                         {{-- Asesmen --}}
                                         @php
-                                            if (!$item->lembarJawabIa05 && !$item->komentarAk05) {
+                                            if (!$item->lembarJawabIa05 && (is_null($item->rekomendasi_hasil_asesmen_AK02))) {
                                                 $status = 'Belum Direview';
                                                 $color = 'text-blue-600 hover:text-blue-800';
-                                            } elseif ($item->lembarJawabIa05 && !$item->komentarAk05) {
+                                            } elseif ($item->lembarJawabIa05 && (is_null($item->rekomendasi_hasil_asesmen_AK02))) {
                                                 $status = 'Dalam Proses';
                                                 $color = 'text-yellow-600 hover:text-yellow-800';
                                             } else {
@@ -97,10 +97,10 @@
                                             @if ($item->rekomendasi_apl02 == 'diterima')
                                                 <span class="text-green-500 px-2 py-1 rounded-md text-s">Diterima</span>
                                             @elseif ($item->rekomendasi_apl02 == 'tidak diterima')
-                                                <span class="text-reed-500 px-2 py-1 rounded-md text-s">Diterima</span>
+                                                <span class="text-yellow-700 px-2 py-1 rounded-md text-s">Menunggu Verifikasi</span>
                                             @else
                                                 <a href="{{ route('asesor.apl02', $item->id_data_sertifikasi_asesi) }}#btn-verifikasi"
-                                                    class="text-yellow-500 px-2 py-1 rounded-md text-s">Verifikasi</a>
+                                                    class="text-yellow-700 px-2 py-1 rounded-md text-s">Verifikasi</a>
                                             @endif
                                         </td>
 
@@ -144,7 +144,7 @@
                                 class="hidden absolute right-0 top-full mt-2 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
                                 <a href="{{ route('asesor.daftar_hadir', $jadwal->id_jadwal) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
-                                    Verifikasi
+                                    Isi Kehadiran
                                 </a>
                                 <a href="{{ route('asesor.daftar_hadir.pdf', $jadwal->id_jadwal) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
@@ -188,7 +188,7 @@
 
                                     <a href="{{ route('asesor.berita_acara', $jadwal->id_jadwal) }}"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
-                                        Verifikasi
+                                        Lihat File
                                     </a>
 
                                     <a href="{{ route('asesor.berita_acara.pdf', $jadwal->id_jadwal) }}"

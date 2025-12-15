@@ -68,7 +68,7 @@ class APIBandingController extends Controller
             ]);
             
         } catch (\Exception $e) {
-            return redirect('/tracker')->with('error', 'Data Sertifikasi tidak ditemukan atau Anda tidak memiliki akses.');
+            return redirect('/asesi/tracker')->with('error', 'Data Sertifikasi tidak ditemukan atau Anda tidak memiliki akses.');
         }
     }
 

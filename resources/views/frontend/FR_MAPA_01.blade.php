@@ -3,11 +3,11 @@ Nama File: resources/views/asesmen/fr-mapa-01.blade.php
 Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
 --}}
 
-@extends('layouts.app-sidebar-asesi')
+@extends('layouts.app-sidebar')
 @php
     $jadwal = $sertifikasi->jadwal;
     $asesi = $sertifikasi->asesi;
-    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);  
+    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);
 @endphp
 
 @section('content')
@@ -22,6 +22,7 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
         }
     </style>
 
+    <x-header_form.header_form title="FR.MAPA.01. MERENCANAKAN AKTIVITAS DAN PROSES ASESMEN" /><br>
     {{-- Header Mobile (Tombol Sidebar) --}}
     <div
         class="lg:hidden p-4 bg-blue-600 text-white flex justify-between items-center shadow-md sticky top-0 z-30 mb-6 rounded-lg">
@@ -33,6 +34,8 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
         </button>
     </div>
 
+
+
     {{-- FORM START --}}
     <form action="{{ route('mapa01.store') }}" method="POST">
         @csrf
@@ -41,14 +44,6 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
         <div class="bg-white">
 
             {{-- KOP SURAT --}}
-            <div class="mb-10 text-center">
-                <div class="mb-4 text-gray-400 text-sm font-bold italic text-left">Logo BNSP</div>
-
-                <h1
-                    class="text-2xl font-bold text-black uppercase tracking-wide border-b-2 border-gray-100 pb-4 mb-2 inline-block">
-                    FR.MAPA.01. MERENCANAKAN AKTIVITAS DAN PROSES ASESMEN
-                </h1>
-            </div>
 
             {{-- INFO SKEMA --}}
             <div class="grid grid-cols-[250px_auto] gap-y-3 text-sm mb-10 text-gray-700">

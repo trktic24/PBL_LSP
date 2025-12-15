@@ -82,7 +82,7 @@
                             <td colspan="4" class="font-bold">Elemen: {{ $elemen->elemen }}</td>
                         </tr>
 
-                        @foreach ($elemen->kriteriaUnjukKerja as $kuk)
+                        @foreach ($elemen->kriteria as $kuk)
                             @php 
                                 $respon = $existingResponses[$kuk->id_kriteria] ?? null; 
                                 $isK = $respon && $respon->respon_asesi_apl02 == 1;

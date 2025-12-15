@@ -53,6 +53,7 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-8">
+@if(!Auth::check() || !in_array(strtolower(Auth::user()->role->nama_role ?? ''), ['admin', 'asesor']))
                     {{-- Tombol Daftar --}}
                     <a href="{{ route('login') }}"
                            class="bg-yellow-500 text-white font-bold px-10 py-4 rounded-2xl shadow-xl shadow-yellow-500/20
@@ -60,6 +61,7 @@
                                   font-poppins w-full sm:w-auto text-center text-lg tracking-wide transform">
                         Daftar Sekarang
                     </a>
+                    @endif
                     {{-- Tombol Eksplore --}}
                     <a href="#skema-sertifikasi"
                            class="text-white font-semibold text-lg flex items-center gap-3 px-8 py-4 rounded-2xl border border-white/30 backdrop-blur-md bg-white/5 hover:bg-white/10

@@ -15,7 +15,7 @@
                 <h3 class="text-xl font-bold text-gray-700 mb-2">Belum Ada Sertifikasi</h3>
                 <p class="text-gray-500 mb-6">Anda belum mendaftar di skema sertifikasi apapun.</p>
                 
-                <a href="{{ route('jadwal.index') }}" class="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition">
+                <a href="{{ url('/jadwal') }}" class="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition">
                     Cari Jadwal Sertifikasi
                 </a>
             </div>
