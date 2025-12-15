@@ -45,9 +45,9 @@
 
           <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
           
-          <div class="space-y-4">
+          <div class="space-y-6">
           @foreach ($documents as $doc)
-          <div x-data="{ expanded: false }" class="border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div x-data="{ expanded: false }" class="border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
             
             <!-- Accordion Header -->
             <div @click="expanded = !expanded" class="bg-gray-50 p-4 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition select-none">
@@ -60,18 +60,16 @@
                         <h4 class="font-medium text-gray-800 text-sm">
                             {{ $doc['title'] }}
                         </h4>
-                        <p class="text-xs text-gray-500 mt-0.5">{{ $doc['subtitle'] }}</p>
+                        <p class="text-[11px] text-gray-500 mt-0.5 leading-tight">{{ $doc['subtitle'] }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
                     @if ($doc['file_path'])
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-800">
-                            Terupload
+                        <span class="text-[11px] text-green-600 font-bold bg-green-100 px-2.5 py-0.5 rounded-full flex items-center">
+                            <i class="fas fa-check mr-1 text-[10px]"></i> Terunggah
                         </span>
                     @else
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-800">
-                            Kosong
-                        </span>
+                        <span class="text-[11px] text-red-500 font-semibold">Belum diunggah</span>
                     @endif
                     <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300" :class="{'rotate-180': expanded}"></i>
                 </div>
@@ -79,56 +77,53 @@
 
             <!-- Accordion Body -->
             <div x-show="expanded" x-collapse class="bg-white border-t border-gray-200">
-                <div class="p-6">
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-blue-50 hover:border-blue-300 transition relative group">
+                <div class="p-4">
+                    <div class="flex flex-col md:flex-row items-start gap-4">
                         
-                        @if ($doc['file_path'])
-                            <!-- File Preview Logic -->
-                            @php
-                                $ext = strtolower(pathinfo($doc['file_path'], PATHINFO_EXTENSION));
-                                $isImage = in_array($ext, ['jpg', 'jpeg', 'png']);
-                            @endphp
+                        {{-- PREVIEW BOX --}}
+                        <div class="w-full md:w-40 md:h-40 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative group shrink-0">
+                            @if ($doc['file_path'])
+                                @php
+                                    $ext = strtolower(pathinfo($doc['file_path'], PATHINFO_EXTENSION));
+                                    $isImage = in_array($ext, ['jpg', 'jpeg', 'png']);
+                                    $fileUrl = Storage::url(str_replace('public/', '', $doc['file_path']));
+                                @endphp
 
-                            @if ($isImage)
-                                <div class="relative w-full mb-4">
-                                    <img src="{{ Storage::url($doc['file_path']) }}" class="max-h-64 mx-auto rounded-lg shadow-sm object-contain">
-                                </div>
+                                @if ($isImage)
+                                    <img src="{{ $fileUrl }}" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition" onclick="window.open('{{ $fileUrl }}', '_blank')">
+                                @else
+                                    <div class="text-center p-2">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl mb-1"></i>
+                                        <span class="text-[10px] font-bold text-gray-600 block uppercase truncate w-16">{{ basename($doc['file_path']) }}</span>
+                                        <a href="{{ $fileUrl }}" target="_blank" class="text-blue-600 text-[10px] hover:underline mt-0.5 inline-block">Buka</a>
+                                    </div>
+                                @endif
                             @else
-                                <div class="mb-4">
-                                    <i class="fas fa-file-pdf text-red-500 text-5xl"></i>
-                                    <p class="mt-2 text-sm font-medium text-gray-700">{{ basename($doc['file_path']) }}</p>
+                                <div class="text-center text-gray-400">
+                                    <i class="fas fa-image text-xl mb-1 opacity-50"></i>
+                                    <span class="text-[10px] block">Preview</span>
                                 </div>
                             @endif
+                        </div>
 
-                            <!-- Action Buttons -->
-                            <div class="flex items-center justify-center space-x-3 mt-2">
-                                <a href="{{ Storage::url($doc['file_path']) }}" target="_blank" 
-                                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-sm transition flex items-center">
-                                    <i class="fas fa-eye mr-2"></i> Lihat
-                                </a>
-                                <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" 
-                                   class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-medium rounded-lg shadow-sm transition flex items-center">
-                                    <i class="fas fa-pen mr-2"></i> Edit
-                                </a>
-                                <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" 
-                                   class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg shadow-sm transition flex items-center">
-                                    <i class="fas fa-trash mr-2"></i> Hapus
-                                </a>
+                        {{-- ACTION BUTTONS --}}
+                        <div class="flex-1 w-full space-y-2">
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                @if ($doc['file_path'])
+                                    <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" class="px-3 py-1.5 bg-yellow-400 text-white text-xs font-bold rounded-md hover:bg-yellow-500 transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-edit mr-1.5"></i> Edit / Ganti
+                                    </a>
+                                @else
+                                    <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" class="px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-md hover:bg-blue-100 transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-upload mr-1.5"></i> Upload File
+                                    </a>
+                                @endif
                             </div>
-
-                        @else
-                            <!-- Empty State / Upload Placeholder -->
-                            <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" class="space-y-3 cursor-pointer w-full block">
-                                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                                    <i class="fas fa-cloud-upload-alt text-3xl"></i>
-                                </div>
-                                
-                                <div>
-                                    <p class="text-sm font-medium text-gray-700">Belum ada dokumen</p>
-                                    <p class="text-xs text-gray-400 mt-1">Klik untuk mengunggah dokumen ini</p>
-                                </div>
-                            </a>
-                        @endif
+                            
+                            @if ($doc['file_path'])
+                            <p class="text-[10px] text-gray-400 mt-1">File saat ini: <span class="font-medium text-gray-600">{{ basename($doc['file_path']) }}</span></p>
+                            @endif
+                        </div>
 
                     </div>
                 </div>
@@ -140,15 +135,9 @@
         <div class="mt-10 p-10 border border-gray-200 rounded-2xl shadow-md relative">
           
           <div class="absolute top-6 right-6 flex space-x-2">
-            {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
             <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" 
                class="group bg-white border border-gray-200 hover:border-yellow-400 text-gray-600 hover:text-yellow-600 font-medium px-3 py-1.5 rounded-lg text-xs flex items-center shadow-sm transition-all duration-200">
-              <i class="fas fa-edit mr-1.5 group-hover:scale-110 transition-transform"></i> Edit
-            </a>
-             {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
-             <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" 
-               class="group bg-white border border-gray-200 hover:border-red-500 text-gray-600 hover:text-red-500 font-medium px-3 py-1.5 rounded-lg text-xs flex items-center shadow-sm transition-all duration-200">
-              <i class="fas fa-trash mr-1.5 group-hover:scale-110 transition-transform"></i> Hapus
+              <i class="fas fa-edit mr-1.5 group-hover:scale-110 transition-transform"></i> Edit Data
             </a>
           </div>
 
@@ -158,19 +147,14 @@
               <p class="text-sm font-semibold text-gray-800 mb-4">Saya yang bertanda tangan di bawah ini:</p>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                  {{-- Item 1 --}}
                   <div>
                       <label class="block text-xs text-gray-500 mb-1">Nama Lengkap</label>
                       <p class="text-gray-900 font-medium text-sm">{{ $asesor->nama_lengkap }}</p>
                   </div>
-                  
-                  {{-- Item 2 --}}
                   <div>
                       <label class="block text-xs text-gray-500 mb-1">Pekerjaan</label>
                       <p class="text-gray-900 font-medium text-sm">{{ $asesor->pekerjaan }}</p>
                   </div>
-                  
-                  {{-- Item 3 --}}
                   <div class="md:col-span-2">
                       <label class="block text-xs text-gray-500 mb-1">Alamat Korespondensi</label>
                       <p class="text-gray-900 font-medium text-sm">{{ $asesor->alamat_rumah ?? '-' }}</p>
@@ -186,7 +170,7 @@
           <div class="flex flex-col items-center justify-center">
               <div class="group relative mt-2 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl w-full max-w-md h-48 flex items-center justify-center bg-gray-50 transition-colors duration-300">
                   @if($asesor->tanda_tangan)
-                    <img src="{{ Storage::url($asesor->tanda_tangan) }}" alt="Tanda Tangan" class="object-contain h-32 transition-transform duration-300 group-hover:scale-105">
+                    <img src="{{ Storage::url(str_replace('public/', '', $asesor->tanda_tangan)) }}" alt="Tanda Tangan" class="object-contain h-32 transition-transform duration-300 group-hover:scale-105">
                   @else
                     <div class="text-center p-4">
                         <i class="fas fa-signature text-gray-300 text-4xl mb-2"></i>
@@ -196,12 +180,11 @@
                     </div>
                   @endif
                   
-                  @if(!$asesor->tanda_tangan)
-                  {{-- PERBAIKAN ROUTE: Menambahkan prefix admin. --}}
                   <a href="{{ route('admin.edit_asesor3', $asesor->id_asesor) }}" class="absolute inset-0 flex items-center justify-center bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                      <span class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md">Upload Tanda Tangan</span>
+                      <span class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md">
+                          {{ $asesor->tanda_tangan ? 'Ganti Tanda Tangan' : 'Upload Tanda Tangan' }}
+                      </span>
                   </a>
-                  @endif
               </div>
               <p class="text-xs text-gray-400 mt-3 font-medium italic">*Tanda Tangan Digital yang sah</p>
           </div>

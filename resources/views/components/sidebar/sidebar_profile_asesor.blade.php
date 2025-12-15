@@ -12,9 +12,9 @@
 
     <h2 class="text-xl font-bold text-gray-900 mb-3 mt-8">Biodata Asesor</h2>
 
-    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] mb-4 bg-blue-300 flex items-center justify-center relative z-10">
-        @if(isset($asesor->pas_foto) && $asesor->pas_foto)
-            <img src="{{ \Illuminate\Support\Facades\Storage::url($asesor->pas_foto) }}" alt="Foto Profil" class="w-full h-full object-cover">
+    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] mb-4 bg-blue-600 flex items-center justify-center relative z-10">
+        @if($asesor->pas_foto)
+            <img src="{{ \Illuminate\Support\Facades\Storage::url(str_replace('public/', '', $asesor->pas_foto)) }}" alt="Foto Profil" class="w-full h-full object-cover">
         @else
             <span class="text-4xl font-bold text-white select-none">
                 {{ strtoupper(substr($asesor->nama_lengkap ?? 'Asesor', 0, 2)) }}

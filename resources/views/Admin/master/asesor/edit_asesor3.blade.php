@@ -64,117 +64,142 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.asesor.update.step3', $asesor->id_asesor) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.asesor.update.step3', $asesor->id_asesor) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
           @csrf
           @method('PATCH') 
           
-          <h3 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-2">Kelengkapan Dokumen</h3>
-          <p class="text-sm text-gray-500 -mt-2">Unggah dokumen dalam format .pdf, .jpg, atau .png. Maksimal ukuran per file adalah 5MB.</p>
+          <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+              <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Bukti Kelengkapan</h3>
+              <p class="text-sm text-gray-500 text-center mb-8 -mt-4">Unggah dokumen yang diperlukan. Format: .pdf, .jpg, .png (Max 5MB)</p>
 
-          {{-- Reusable File Upload Component Logic with Accordion & Strict Types --}}
-          @php
-              $fileFields = [
-                  ['id' => 'ktp', 'label' => 'KTP', 'required' => false, 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->ktp],
-                  ['id' => 'pas_foto', 'label' => 'Foto', 'required' => false, 'is_image' => true, 'accept' => '.jpg,.jpeg,.png', 'desc' => 'JPG/PNG Only', 'existing' => $asesor->pas_foto],
-                  ['id' => 'NPWP_foto', 'label' => 'NPWP', 'required' => false, 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->NPWP_foto],
-                  ['id' => 'rekening_foto', 'label' => 'Rekening', 'required' => false, 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->rekening_foto],
-                  ['id' => 'CV', 'label' => 'Curriculum Vitae (CV)', 'required' => false, 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->CV],
-                  ['id' => 'ijazah', 'label' => 'Ijazah Pendidikan', 'required' => false, 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->ijazah],
-                  ['id' => 'sertifikat_asesor', 'label' => 'Sertifikat Asesor Kompetensi', 'required' => false, 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->sertifikat_asesor],
-                  ['id' => 'sertifikasi_kompetensi', 'label' => 'Sertifikat Kompetensi', 'required' => false, 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->sertifikasi_kompetensi],
-                  ['id' => 'tanda_tangan', 'label' => 'Tanda Tangan', 'required' => false, 'is_image' => true, 'accept' => '.jpg,.jpeg,.png', 'desc' => 'JPG/PNG Only', 'existing' => $asesor->tanda_tangan],
-              ];
-          @endphp
+              <div class="space-y-6">
+              @php
+                  $fileFields = [
+                      ['id' => 'ktp', 'label' => 'KTP', 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->ktp],
+                      ['id' => 'pas_foto', 'label' => 'Foto', 'is_image' => true, 'accept' => '.jpg,.jpeg,.png', 'desc' => 'JPG/PNG Only', 'existing' => $asesor->pas_foto],
+                      ['id' => 'NPWP_foto', 'label' => 'NPWP', 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->NPWP_foto],
+                      ['id' => 'rekening_foto', 'label' => 'Rekening', 'accept' => '.pdf,.jpg,.jpeg,.png', 'desc' => 'PDF/JPG/PNG', 'existing' => $asesor->rekening_foto],
+                      ['id' => 'CV', 'label' => 'Curriculum Vitae (CV)', 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->CV],
+                      ['id' => 'ijazah', 'label' => 'Ijazah Pendidikan', 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->ijazah],
+                      ['id' => 'sertifikat_asesor', 'label' => 'Sertifikat Asesor Kompetensi', 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->sertifikat_asesor],
+                      ['id' => 'sertifikasi_kompetensi', 'label' => 'Sertifikat Kompetensi', 'accept' => '.pdf', 'desc' => 'PDF Only', 'existing' => $asesor->sertifikasi_kompetensi],
+                      ['id' => 'tanda_tangan', 'label' => 'Tanda Tangan', 'is_image' => true, 'accept' => '.png', 'desc' => 'PNG Only', 'existing' => $asesor->tanda_tangan],
+                  ];
+              @endphp
 
-          @foreach($fileFields as $field)
-          <div x-data="{ expanded: false, fileName: '', imageUrl: '{{ $field['existing'] ? Storage::url($field['existing']) : '' }}', isImage: {{ isset($field['is_image']) && $field['is_image'] ? 'true' : 'false' }} }" 
-               class="border border-gray-200 rounded-xl mb-4 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
-            
-            <!-- Accordion Header -->
-            <div @click="expanded = !expanded" class="bg-gray-50 p-4 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition select-none">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 transition-colors duration-300"
-                         :class="(fileName || '{{ $field['existing'] }}') ? 'bg-green-100 text-green-600' : 'bg-white border border-gray-300 text-gray-400'">
-                        <i class="fas" :class="(fileName || '{{ $field['existing'] }}') ? 'fa-check' : 'fa-file-upload'"></i>
-                    </div>
+              @foreach($fileFields as $field)
+              <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md"
+                   x-data="{ 
+                      open: false,
+                      fileName: '',
+                      imageUrl: '{{ $field['existing'] ? Storage::url(str_replace('public/', '', $field['existing'])) : '' }}',
+                      isImage: {{ isset($field['is_image']) && $field['is_image'] ? 'true' : 'false' }},
+                      isDeleted: false,
+                      fileExt: '{{ $field['existing'] ? pathinfo($field['existing'], PATHINFO_EXTENSION) : '' }}'
+                   }">
+                
+                {{-- HEADER ACCORDION --}}
+                <div @click="open = !open" class="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition select-none">
                     <div>
-                        <h4 class="font-medium text-gray-800 text-sm">
-                            {{ $field['label'] }}
-                        </h4>
-                        <p class="text-xs text-gray-500 mt-0.5" x-text="fileName || ('{{ $field['existing'] }}' ? 'File saat ini: {{ basename($field['existing'] ?? '') }}' : '{{ $field['desc'] }}')"></p>
+                        <h3 class="font-semibold text-gray-700 text-sm">{{ $field['label'] }}</h3>
+                        <p class="text-[11px] text-gray-500 mt-0.5 leading-tight">{{ $field['desc'] }}</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <template x-if="(imageUrl || fileName) && !isDeleted">
+                            <span class="text-[11px] text-green-600 font-bold bg-green-100 px-2.5 py-0.5 rounded-full flex items-center">
+                                <i class="fas fa-check mr-1 text-[10px]"></i> Terunggah
+                            </span>
+                        </template>
+                        <template x-if="(!imageUrl && !fileName) || isDeleted">
+                            <span class="text-[11px] text-red-500 font-semibold">Belum diunggah</span>
+                        </template>
+                        <i class="fas text-gray-400 text-xs transition-transform duration-300" :class="open ? 'fa-chevron-up rotate-180' : 'fa-chevron-down'"></i>
                     </div>
                 </div>
-                <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300" :class="{'rotate-180': expanded}"></i>
-            </div>
 
-            <!-- Accordion Body -->
-            <div x-show="expanded" x-collapse class="bg-white border-t border-gray-200">
-                <div class="p-6">
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-blue-50 hover:border-blue-300 transition relative group">
+                {{-- CONTENT --}}
+                <div x-show="open" x-collapse class="p-4 border-t border-gray-200 bg-white">
+                    <div class="flex flex-col md:flex-row items-start gap-4">
                         
-                        <!-- Preview Area (Existing or New) -->
-                        <template x-if="imageUrl && isImage">
-                            <div class="relative w-full mb-4">
-                                <img :src="imageUrl" class="max-h-48 mx-auto rounded-lg shadow-sm object-contain">
-                                <button type="button" @click.stop="imageUrl = null; fileName = ''; $refs.fileInput.value = ''" 
-                                        class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 shadow-md transition-transform hover:scale-110 z-10"
-                                        x-show="fileName"> <!-- Only show remove button if it's a NEW file -->
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </template>
+                        {{-- PREVIEW BOX --}}
+                        <div class="w-full md:w-40 md:h-40 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative group shrink-0">
+                            
+                            <!-- Existing File / New File Preview -->
+                            <template x-if="(imageUrl || fileName) && !isDeleted">
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <template x-if="isImage || (fileName && fileName.match(/\.(jpg|jpeg|png)$/i)) || (fileExt && ['jpg','jpeg','png'].includes(fileExt.toLowerCase()))">
+                                        <img :src="imageUrl" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition" @click="window.open(imageUrl, '_blank')">
+                                    </template>
+                                    <template x-if="!isImage && !(fileName && fileName.match(/\.(jpg|jpeg|png)$/i)) && !(fileExt && ['jpg','jpeg','png'].includes(fileExt.toLowerCase()))">
+                                        <div class="text-center p-2">
+                                            <i class="fas fa-file-pdf text-red-500 text-2xl mb-1"></i>
+                                            <span class="text-[10px] font-bold text-gray-600 block uppercase truncate w-16" x-text="fileName || 'PDF'"></span>
+                                            <a :href="imageUrl" target="_blank" class="text-blue-600 text-[10px] hover:underline mt-0.5 inline-block" x-show="imageUrl">Buka</a>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
 
-                        <!-- If existing file is NOT an image (PDF), show link -->
-                        @if($field['existing'] && (!isset($field['is_image']) || !$field['is_image']))
-                        <div x-show="!fileName" class="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-center">
-                            <i class="fas fa-file-pdf text-red-500 text-xl mr-3"></i>
-                            <a href="{{ Storage::url($field['existing']) }}" target="_blank" class="text-sm text-blue-600 hover:underline font-medium">
-                                {{ basename($field['existing']) }}
-                            </a>
+                            <!-- Placeholder -->
+                            <template x-if="(!imageUrl && !fileName) || isDeleted">
+                                <div class="text-center text-gray-400">
+                                    <i class="fas fa-image text-xl mb-1 opacity-50"></i>
+                                    <span class="text-[10px] block">Preview</span>
+                                </div>
+                            </template>
                         </div>
-                        @endif
 
-                        <!-- Placeholder / Upload UI -->
-                        <div x-show="!fileName" class="space-y-3 cursor-pointer w-full" @click="$refs.fileInput.click()">
-                            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-cloud-upload-alt text-3xl"></i>
+                        {{-- FORM ACTION --}}
+                        <div class="flex-1 w-full space-y-2">
+                            <input type="file" name="{{ $field['id'] }}" class="hidden" x-ref="fileInput" accept="{{ $field['accept'] }}"
+                                   @change="
+                                       const file = $event.target.files[0];
+                                       if(file) {
+                                           fileName = file.name;
+                                           isDeleted = false;
+                                           if(file.type.startsWith('image/')) {
+                                               const reader = new FileReader();
+                                               reader.onload = (e) => imageUrl = e.target.result;
+                                               reader.readAsDataURL(file);
+                                           } else {
+                                               imageUrl = null; // No preview for PDF upload (unless we want to show icon)
+                                           }
+                                       }
+                                   ">
+                            
+                            <!-- Hidden Input for Deletion -->
+                            <input type="hidden" name="delete_{{ $field['id'] }}" :value="isDeleted ? '1' : '0'">
+
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                {{-- Tombol Pilih File --}}
+                                <button type="button" @click="$refs.fileInput.click()" 
+                                        class="px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-md hover:bg-blue-100 transition-colors shadow-sm"
+                                        x-show="(!imageUrl && !fileName) || isDeleted">
+                                    <i class="fas fa-upload mr-1.5"></i> Pilih File
+                                </button>
+
+                                {{-- Tombol Ganti / Hapus --}}
+                                <div class="flex gap-2" x-show="(imageUrl || fileName) && !isDeleted">
+                                    <button type="button" @click="$refs.fileInput.click()" class="px-3 py-1.5 bg-yellow-400 text-white text-xs font-bold rounded-md hover:bg-yellow-500 transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-edit mr-1.5"></i> Ganti
+                                    </button>
+                                    <button type="button" @click="isDeleted = true; fileName = ''; imageUrl = ''; $refs.fileInput.value = ''" 
+                                            class="px-3 py-1.5 bg-red-500 text-white text-xs font-bold rounded-md hover:bg-red-600 transition-colors shadow-sm flex items-center">
+                                        <i class="fas fa-trash mr-1.5"></i> Hapus
+                                    </button>
+                                </div>
                             </div>
                             
-                            <div>
-                                <p class="text-sm font-medium text-gray-700">Klik untuk ganti file atau drag & drop</p>
-                                <p class="text-xs text-gray-400 mt-1">Format: {{ $field['desc'] }} (Max 5MB)</p>
-                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1" x-show="fileName">File terpilih: <span x-text="fileName" class="font-medium text-gray-600"></span></p>
                         </div>
-
-                        <!-- New File Selected UI -->
-                        <div x-show="fileName" class="flex items-center justify-center text-sm text-gray-700 font-medium bg-gray-100 py-2 px-4 rounded-lg border border-gray-200 mt-2">
-                            <i class="fas fa-file-alt mr-2 text-gray-500"></i>
-                            <span x-text="fileName"></span>
-                            <button type="button" @click.stop="imageUrl = '{{ $field['existing'] ? Storage::url($field['existing']) : '' }}'; fileName = ''; $refs.fileInput.value = ''" class="ml-3 text-red-500 hover:text-red-700">
-                                <i class="fas fa-times-circle"></i>
-                            </button>
-                        </div>
-
-                        <!-- Hidden Input -->
-                        <input type="file" id="{{ $field['id'] }}" name="{{ $field['id'] }}" class="hidden" x-ref="fileInput" 
-                               accept="{{ $field['accept'] }}"
-                               @change="
-                                   const file = $event.target.files[0];
-                                   fileName = file ? file.name : '';
-                                   if (file && file.type.startsWith('image/')) {
-                                       const reader = new FileReader();
-                                       reader.onload = (e) => imageUrl = e.target.result;
-                                       reader.readAsDataURL(file);
-                                   } else {
-                                       // If not image, reset imageUrl to existing or null
-                                       imageUrl = null; 
-                                   }
-                               ">
                     </div>
                 </div>
-            </div>
+              </div>
+              @endforeach
+              </div>
           </div>
-          @endforeach
+
+
 
           <div class="flex items-center justify-between pt-6">
             <a href="{{ route('admin.edit_asesor2', $asesor->id_asesor) }}"

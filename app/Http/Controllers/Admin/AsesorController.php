@@ -236,7 +236,11 @@ class AsesorController extends Controller
 
             $uploadPath = 'public/asesor_files/' . $user->id_user;
             foreach ($validatedFiles as $key => $file) {
-                $path = $file->store($uploadPath);
+                $subfolder = 'dokumen';
+                if ($key == 'pas_foto') $subfolder = 'foto';
+                if ($key == 'tanda_tangan') $subfolder = 'tanda_tangan';
+                
+                $path = $file->store($uploadPath . '/' . $subfolder);
                 $finalAsesorData[$key] = $path; 
             }
 
@@ -364,12 +368,33 @@ class AsesorController extends Controller
 
         $uploadPath = 'public/asesor_files/' . $asesor->id_user;
         
-        foreach ($validatedFiles as $key => $file) {
+        $fileFields = [
+            'ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 
+            'CV', 'ijazah', 'sertifikat_asesor', 'sertifikasi_kompetensi', 'tanda_tangan'
+        ];
+        
+        foreach ($fileFields as $key) {
+            // 1. Cek apakah user meminta hapus file lama
+            if ($request->input('delete_' . $key) == '1') {
+                if ($asesor->$key) {
+                    Storage::delete($asesor->$key);
+                    $asesor->$key = null;
+                }
+            }
+
+            // 2. Cek apakah ada file baru yang diupload
             if ($request->hasFile($key)) {
+                // Hapus file lama jika masih ada (belum dihapus di langkah 1)
                 if ($asesor->$key) {
                     Storage::delete($asesor->$key);
                 }
-                $path = $file->store($uploadPath);
+                
+                $subfolder = 'dokumen';
+                if ($key == 'pas_foto') $subfolder = 'foto';
+                if ($key == 'tanda_tangan') $subfolder = 'tanda_tangan';
+
+                // Upload file baru
+                $path = $request->file($key)->store($uploadPath . '/' . $subfolder);
                 $asesor->$key = $path; 
             }
         }
