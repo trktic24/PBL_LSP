@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Asesor;
 
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -80,21 +82,64 @@ class AsesorJadwalController extends Controller
 
         // A. Filter Pencarian (Search Input)
         if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $jadwal->where(function ($q) use ($searchTerm) {
-                $q->where('Status_jadwal', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('waktu_mulai', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('tanggal_pelaksanaan', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('sesi', 'like', '%' . $searchTerm . '%')
-                    ->orWhereHas('skema', function ($qSkema) use ($searchTerm) {
-                        $qSkema->where('nama_skema', 'like', '%' . $searchTerm . '%');
-                    })
-                    ->orWhereHas('masterTuk', function ($qTuk) use ($searchTerm) {
-                        $qTuk->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
-                    })
-                    ->orWhereHas('jenisTuk', function ($qJenisTuk) use ($searchTerm) {
-                        $qJenisTuk->where('jenis_tuk', 'like', '%' . $searchTerm . '%');
-                    });
+            $search = strtolower(trim($request->search));
+
+            $months = [
+                'january' => 1, 'february' => 2, 'march' => 3,
+                'april' => 4, 'may' => 5, 'june' => 6,
+                'july' => 7, 'august' => 8, 'september' => 9,
+                'october' => 10, 'november' => 11, 'december' => 12,
+            ];
+
+            $jadwal->where(function ($q) use ($search, $months) {
+
+                /* ======================
+                * TEXT SEARCH
+                * ====================== */
+                $q->where('Status_jadwal', 'like', "%{$search}%")
+                ->orWhere('sesi', 'like', "%{$search}%")
+                ->orWhere(DB::raw("TIME_FORMAT(waktu_mulai, '%H:%i')"), 'like', "%{$search}%");
+
+                /* ======================
+                * FULL DATE (16 december 2025)
+                * ====================== */
+                try {
+                    $date = Carbon::parse($search);
+                    $q->orWhereDate('tanggal_pelaksanaan', $date->format('Y-m-d'));
+                } catch (\Exception $e) {}
+
+                /* ======================
+                * MONTH + YEAR (december 2025)
+                * ====================== */
+                if (preg_match('/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})/', $search, $m)) {
+                    $q->orWhereMonth('tanggal_pelaksanaan', $months[$m[1]])
+                    ->orWhereYear('tanggal_pelaksanaan', $m[2]);
+                }
+
+                /* ======================
+                * MONTH ONLY (december)
+                * ====================== */
+                if (isset($months[$search])) {
+                    $q->orWhereMonth('tanggal_pelaksanaan', $months[$search]);
+                }
+
+                /* ======================
+                * YEAR ONLY (2025)
+                * ====================== */
+                if (preg_match('/^\d{4}$/', $search)) {
+                    $q->orWhereYear('tanggal_pelaksanaan', $search);
+                }
+
+                // RELASI
+                $q->orWhereHas('skema', fn ($q) =>
+                    $q->where('nama_skema', 'like', "%{$search}%")
+                )
+                ->orWhereHas('masterTuk', fn ($q) =>
+                    $q->where('nama_lokasi', 'like', "%{$search}%")
+                )
+                ->orWhereHas('jenisTuk', fn ($q) =>
+                    $q->where('jenis_tuk', 'like', "%{$search}%")
+                );
             });
         }
 
