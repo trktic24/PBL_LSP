@@ -3,85 +3,58 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\LembarJawabIA05;
+use App\Models\SoalIA05; // Pastikan nama model Soal benar
+use App\Models\DataSertifikasiAsesi;
 use Illuminate\Support\Facades\DB;
 
 class LembarJawabIa05Seeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // 1. KONFIGURASI JUMLAH SOAL PER PESERTA
-        $jumlahSoal = 10; 
-        $now = now();
+        // 1. Ambil data induk (Asesi & Soal)
+        // Kita butuh ID yang valid agar tidak error Foreign Key
+        $list_asesi = DataSertifikasiAsesi::pluck('id_data_sertifikasi_asesi');
+        $list_soal  = SoalIA05::pluck('id_soal_ia05');
 
-        $this->command->info("🔄 Memulai proses seeding Lembar Jawab IA-05 untuk SEMUA Asesi...");
-
-        // 2. AMBIL SEMUA DATA SERTIFIKASI (Beserta ID Skema-nya)
-        // Kita perlu JOIN ke tabel jadwal untuk tahu sertifikasi ini pakai Skema ID berapa
-        $listSertifikasi = DB::table('data_sertifikasi_asesi')
-            ->join('jadwal', 'data_sertifikasi_asesi.id_jadwal', '=', 'jadwal.id_jadwal')
-            ->select(
-                'data_sertifikasi_asesi.id_data_sertifikasi_asesi', 
-                'jadwal.id_skema' // Kita butuh ini buat filter soal
-            )
-            ->get();
-
-        if ($listSertifikasi->isEmpty()) {
-            $this->command->warn("⚠️ Tidak ada data sertifikasi asesi ditemukan.");
+        // Cek apakah data induk ada
+        if ($list_asesi->isEmpty() || $list_soal->isEmpty()) {
+            $this->command->error("Gagal: Tabel 'data_sertifikasi_asesi' atau 'soal_ia05' masih kosong. Isi dulu data tersebut.");
             return;
         }
 
-        $this->command->info("🔎 Ditemukan " . $listSertifikasi->count() . " peserta sertifikasi. Sedang memproses...");
+        $faker = \Faker\Factory::create('id_ID');
 
-        DB::transaction(function () use ($listSertifikasi, $jumlahSoal, $now) {
-            
-            $totalSoalTergenerate = 0;
-
-            foreach ($listSertifikasi as $sertifikasi) {
+        // 2. Loop: Setiap Asesi menjawab Setiap Soal
+        foreach ($list_asesi as $id_asesi) {
+            foreach ($list_soal as $id_soal) {
                 
-                // 3. CEK APAKAH SUDAH PUNYA SOAL? (Opsional, biar gak duplikat kalau di-seed 2x)
-                $sudahAda = DB::table('lembar_jawab_ia05')
-                    ->where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
-                    ->exists();
+                // Tentukan status kompeten secara acak untuk simulasi
+                $is_kompeten = $faker->boolean(80); // 80% kemungkinan kompeten (ya)
 
-                if ($sudahAda) {
-                    continue; // Skip kalau sudah ada soalnya
-                }
+                LembarJawabIA05::updateOrCreate(
+                    [
+                        // Kunci pencarian (agar tidak duplikat)
+                        'id_data_sertifikasi_asesi' => $id_asesi,
+                        'id_soal_ia05'              => $id_soal,
+                    ],
+                    [
+                        // PENTING: Sesuai gambar, kolom ini ENUM ('a','b','c','d')
+                        // Jadi kita acak memilih salah satu huruf saja
+                        'jawaban_asesi_ia05' => $faker->randomElement(['a', 'b', 'c', 'd']),
 
-                // 4. AMBIL SOAL SESUAI ID SKEMA PESERTA
-                // Ini logic pentingnya: Ambil soal dimana id_skema == id_skema milik sertifikasi
-                $soalPaket = DB::table('soal_ia05')
-                    ->where('id_skema', $sertifikasi->id_skema) 
-                    ->inRandomOrder()
-                    ->take($jumlahSoal)
-                    ->get();
+                        // PENTING: Sesuai gambar, kolom ini ENUM ('ya', 'tidak')
+                        'pencapaian_ia05'    => $is_kompeten ? 'ya' : 'tidak',
 
-                if ($soalPaket->isEmpty()) {
-                    // Log warning tapi jangan stop loop, mungkin skema lain ada soalnya
-                    // $this->command->warn("⚠️ Skema ID {$sertifikasi->id_skema} belum memiliki Bank Soal.");
-                    continue;
-                }
-
-                // 5. SIAPKAN DATA INSERT
-                $dataToInsert = [];
-                foreach ($soalPaket as $soal) {
-                    $dataToInsert[] = [
-                        'id_data_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi,
-                        'id_soal_ia05'              => $soal->id_soal_ia05,
-                        'jawaban_asesi_ia05'        => null, 
-                        'pencapaian_ia05'           => null,
-                        'created_at'                => $now,
-                        'updated_at'                => $now,
-                    ];
-                }
-
-                // 6. EKSEKUSI INSERT
-                if (!empty($dataToInsert)) {
-                    DB::table('lembar_jawab_ia05')->insert($dataToInsert);
-                    $totalSoalTergenerate += count($dataToInsert);
-                }
+                        // OPSI: Jika kamu SUDAH menambahkan kolom 'umpan_balik_ia05' di database,
+                        // hapus tanda komentar (//) di baris bawah ini:
+                        
+                        // 'umpan_balik_ia05' => $is_kompeten ? 'Jawaban sudah tepat.' : 'Perlu pendalaman materi.',
+                    ]
+                );
             }
-
-            $this->command->info("✅ SUKSES! Total $totalSoalTergenerate baris lembar jawab berhasil dibuat untuk seluruh asesi.");
-        });
+        }
+        
+        $this->command->info("Berhasil membuat dummy data Lembar Jawab IA.05!");
     }
 }
