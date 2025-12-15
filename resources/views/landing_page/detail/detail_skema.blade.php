@@ -9,23 +9,28 @@
     {{-- HERO SECTION: Menampilkan detail utama Skema --}}
     <section class="max-w-screen-xl mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
-             @php
-                $detailImgSrc = 'images/placeholder_default.jpg';
-                if ($skema->gambar) {
+            @php
+                // SETTING PLACEHOLDER BARU
+                $detailImgSrc = 'images/default_pic.jpg';
+
+                if (!empty($skema->gambar)) {
+                    // Cek path 1: Path manual (misal: images/namafile.jpg)
                     if (str_starts_with($skema->gambar, 'images/')) {
                         if (file_exists(public_path($skema->gambar))) {
                             $detailImgSrc = $skema->gambar;
                         }
-                    } else {
-                         if (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
-                            $detailImgSrc = 'images/skema/foto_skema/' . $skema->gambar;
-                        } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
-                            $detailImgSrc = 'images/skema/' . $skema->gambar;
-                        }
+                    } 
+                    // Cek path 2: Folder foto_skema
+                    elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
+                        $detailImgSrc = 'images/skema/foto_skema/' . $skema->gambar;
+                    } 
+                    // Cek path 3: Folder skema root
+                    elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
+                        $detailImgSrc = 'images/skema/' . $skema->gambar;
                     }
                 }
             @endphp
-            {{-- Menggunakan $skema->gambar (Menggunakan isset untuk keamanan) --}}
+            
             <img src="{{ asset($detailImgSrc) }}"
                 alt="{{ $skema->nama_skema ?? 'Skema Sertifikasi' }}"
                 class="w-full h-full object-cover">

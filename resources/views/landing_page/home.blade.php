@@ -177,32 +177,33 @@ html { scroll-behavior: smooth; }
                     @foreach($chunk as $skema)
                         @php
                             $categoryName = $skema->category?->nama_kategori ?? 'Tidak Terkategori';
+                            
+                            // 🟩 PERBAIKAN: Logika Placeholder Skema
+                            $imgSrc = 'images/default_pic.jpg'; // Default ke default_pic tadi
+
+                            if (!empty($skema->gambar)) {
+                                // Cek path 1: Jika path sudah lengkap (dimulai dengan images/)
+                                if (str_starts_with($skema->gambar, 'images/')) {
+                                    if (file_exists(public_path($skema->gambar))) {
+                                        $imgSrc = $skema->gambar;
+                                    }
+                                } 
+                                // Cek path 2: Folder foto_skema
+                                elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
+                                    $imgSrc = 'images/skema/foto_skema/' . $skema->gambar;
+                                } 
+                                // Cek path 3: Folder skema root
+                                elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
+                                    $imgSrc = 'images/skema/' . $skema->gambar;
+                                }
+                            }
                         @endphp
                         
                         <div class="transition-all duration-300 hover:scale-[1.02] skema-card group" data-category="{{ $categoryName }}">
                             <a href="{{ route('skema.detail', ['id' => $skema->id_skema]) }}">
                                 <div class="rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-shadow duration-300 bg-white border border-gray-100/50 mb-3">
                                     <div class="overflow-hidden">
-                                        @php
-                                            $imgSrc = 'images/default.jpg'; 
-                                            if ($skema->gambar) {
-                                                // Cek apakah gambar sudah berupa path lengkap (upload baru)
-                                                if (str_starts_with($skema->gambar, 'images/')) {
-                                                    if (file_exists(public_path($skema->gambar))) {
-                                                        $imgSrc = $skema->gambar;
-                                                    }
-                                                } else {
-                                                    // Jika hanya nama file (dummy/lama), cek di folder foto_skema
-                                                    if (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
-                                                        $imgSrc = 'images/skema/foto_skema/' . $skema->gambar;
-                                                    } 
-                                                    // Fallback: Cek di folder parent (images/skema) jika dummy ada disana
-                                                    elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
-                                                        $imgSrc = 'images/skema/' . $skema->gambar;
-                                                    }
-                                                }
-                                            }
-                                        @endphp
+                                        {{-- Tampilkan gambar hasil logika di atas --}}
                                         <img src="{{ asset($imgSrc) }}"
                                             alt="Gambar Skema"
                                             class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500">
@@ -511,12 +512,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="flex-none w-full grid grid-cols-1 md:grid-cols-3 gap-6 p-2">
                         
                         @foreach($chunk as $berita)
-                            {{-- KARTU BERITA (Dibuat h-full agar sama tinggi) --}}
+                            {{-- KARTU BERITA --}}
                             <div class="card bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.03] text-left h-full flex flex-col">
                                 
                                 <a href="{{ route('berita.detail', ['id' => $berita->id]) }}" class="flex flex-col h-full"> 
                                     
-                                    <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
+                                    {{-- 🟩 PERBAIKAN: Logika Placeholder Berita --}}
+                                    @php
+                                        $imgBerita = 'images/default_pic.jpg'; // Default
+                                        
+                                        // Cek apakah gambar tidak kosong DAN filenya benar-benar ada di storage
+                                        if (!empty($berita->gambar) && file_exists(public_path('storage/berita/' . $berita->gambar))) {
+                                            $imgBerita = 'storage/berita/' . $berita->gambar;
+                                        }
+                                    @endphp
+
+                                    <img src="{{ asset($imgBerita) }}" 
                                          alt="{{ $berita->judul }}" 
                                          class="w-full h-48 object-cover">
                                     

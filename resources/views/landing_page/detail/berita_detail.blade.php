@@ -12,11 +12,21 @@
             Dipublikasikan pada: {{ $berita->created_at->format('d F Y') }}
         </p>
         
+        {{-- Logic Penentuan Gambar Berita --}}
+        @php
+            // SETTING PLACEHOLDER BARU
+            $gambarBerita = 'images/default_pic.jpg'; 
+            
+            // Cek jika ada gambar dan filenya benar-benar ada di storage
+            if (!empty($berita->gambar) && file_exists(public_path('storage/berita/' . $berita->gambar))) {
+                $gambarBerita = 'storage/berita/' . $berita->gambar;
+            }
+        @endphp
+
         {{-- Gambar Utama --}}
-        <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
+        <img src="{{ asset($gambarBerita) }}" 
              alt="{{ $berita->judul }}" 
              class="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg mb-8">
-        
         {{-- Konten Berita (Dari Database) --}}
         <div class="text-gray-800 text-lg leading-relaxed space-y-6">
             {!! nl2br(e($berita->isi)) !!}
