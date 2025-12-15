@@ -40,7 +40,7 @@
     $statusClassSelesai = 'text-xs text-green-600 font-medium';
     $statusClassProses = 'text-xs text-blue-600 font-medium';
     $statusClassTunggu = 'text-xs text-yellow-600 font-medium';
-    $statusClassTerkunci = 'text-xs text-gray-400 font-medium';
+    $statusClassTerkunci = 'text-xs text-gray-400 font-medium'; 
 
     // BUTTON STYLES
     $btnBase = 'mt-2 px-4 py-1.5 text-xs font-semibold rounded-md inline-block transition-all';
@@ -122,29 +122,14 @@
                             </div>
 
                             <div class="{{ $responsiveCardClass }}">
-                                {{-- LOGIC GANTI LINK --}}
-                                @php
-                                    // Cek apakah user sudah selesai daftar (sudah TTD)
-                                    $isSelesai = $sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI;
-
-                                    // Jika selesai, arahkan ke halaman berhasil. Jika belum, ke form input.
-                                    $targetUrl = $isSelesai
-                                        ? route('asesi.pendaftaran.selesai', [
-                                            'id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi,
-                                        ])
-                                        : route('asesi.data.sertifikasi', [
-                                            'id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi,
-                                        ]);
-                                @endphp
-
-                                <a href="{{ $targetUrl }}" class="{{ $linkClassEnabled }}">
+                                <a href="{{ route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                    class="{{ $linkClassEnabled }}">
                                     Formulir Pendaftaran Sertifikasi
                                 </a>
-
                                 <p class="text-sm text-gray-500">{{ $sertifikasi->tanggal_daftar->format('l, d F Y') }}
                                 </p>
 
-                                @if ($isSelesai)
+                                @if ($sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI)
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
                                     <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         target="_blank" class="{{ $btnBlue }}">
@@ -248,7 +233,7 @@
                                         <div class="w-4 h-4 bg-gray-300 rounded-full"></div>
                                     @endif
                                 </div>
-                                @if ($level >= $LVL_PRA_ASESMEN && $unlockAK01)
+                                @if ($level >= $LVL_PRA_ASESMEN && $unlockAPL0)
                                     <div class="hidden md:block">{!! renderCheckmark() !!}</div>
                                 @endif
                             </div>

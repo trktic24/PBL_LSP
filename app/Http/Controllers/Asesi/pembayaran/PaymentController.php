@@ -244,7 +244,7 @@ class PaymentController extends Controller
 
         // 4. Load View dan render jadi PDF
         // ... (kode render tetap sama)
-        $pdf = Pdf::loadView('pdf.invoice_pembayaran', $data);
+        $pdf = Pdf::loadView('asesi.pdf.invoice_pembayaran', $data);
         $pdf->setPaper('A4', 'portrait');
 
         // 5. Download file PDF
