@@ -522,9 +522,11 @@ class AsesorJadwalController extends Controller
         $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor', 'dataSertifikasiAsesi.asesi'])->findOrFail($id_jadwal);
 
         // Cek Otorisasi
-        $asesor = Asesor::where('id_user', Auth::id())->first();
-        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
-            abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+        if (!in_array(Auth::user()->role->nama_role, ['admin', 'superadmin'])) {
+            $asesor = Asesor::where('id_user', Auth::id())->first();
+            if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
         }
 
         return view('frontend.AK_05.FR_AK_05', compact('jadwal'));
@@ -535,9 +537,11 @@ class AsesorJadwalController extends Controller
         $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor'])->findOrFail($id_jadwal);
 
         // Cek Otorisasi
-        $asesor = Asesor::where('id_user', Auth::id())->first();
-        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
-            abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+        if (!in_array(Auth::user()->role->nama_role, ['admin', 'superadmin'])) {
+            $asesor = Asesor::where('id_user', Auth::id())->first();
+            if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
         }
 
         return view('frontend.FR_AK_06', compact('jadwal'));

@@ -392,12 +392,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/daftar-hadir/pdf/{id_jadwal}', 'exportPdfdaftarhadir')->name('daftar_hadir.pdf');
 
             // Asesmen Links
-            Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
-            Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
-
-            Route::get('/jadwal/{id_jadwal}/ak06', 'ak06')->name('ak06');
-            Route::post('/ak06/store/{id_jadwal}', 'storeAk06')->name('ak06.store');
-
             Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', 'ak07')->name('ak07');
             Route::post('/ak07/store/{id_sertifikasi_asesi}', 'storeAk07')->name('fr-ak-07.store');
         });
@@ -418,9 +412,17 @@ Route::middleware('auth')->group(function () {
     // Berita Acara - Shared Route (Asesor & Admin)
     // ======================================================
     Route::middleware(['role:asesor,admin'])->prefix('asesor')->name('asesor.')->group(function () {
+
         Route::controller(AsesorJadwalController::class)->group(function () {
             Route::get('/berita-acara/{id_jadwal}', 'beritaAcara')->name('berita_acara');
             Route::get('/berita-acara/pdf/{id_jadwal}', 'exportPdfberitaAcara')->name('berita_acara.pdf');
+    
+            // Asesmen Links (Shared for Admin & Asesor)
+            Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
+            Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
+
+            Route::get('/jadwal/{id_jadwal}/ak06', 'ak06')->name('ak06');
+            Route::post('/ak06/store/{id_jadwal}', 'storeAk06')->name('ak06.store');
         });
     });
 
