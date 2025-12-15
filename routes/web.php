@@ -164,17 +164,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/tracker/{id}/validasi', [ValidatorTrackerController::class, 'validasi'])->name('validator.tracker.validasi');
     });
 
+    Route::get('/ia01/success', fn() => view('frontend.IA_01.success'))->name('ia01.success_page');
+
     // IA-01
     Route::prefix('ia01/{id_sertifikasi}')->group(function () {
-        Route::get('/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
-        Route::post('/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
-        Route::get('/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
-        Route::post('/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
-        Route::get('/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
-        Route::post('/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+        // Single Page Routes
+        Route::get('/', [IA01Controller::class, 'index'])->name('ia01.index');
+        Route::get('/cover', [IA01Controller::class, 'index'])->name('ia01.cover'); // Alias for compatibility
+        Route::post('/store', [IA01Controller::class, 'store'])->name('ia01.store');
+        
+        // Admin View
         Route::get('/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
+        
+        // Deprecated / Redirects
+        Route::get('/step/{urutan}', fn($id) => redirect()->route('ia01.index', $id));
+        Route::get('/finish', fn($id) => redirect()->route('ia01.index', $id));
     });
-    Route::get('/ia01/success', fn() => view('frontend.IA_01.success'))->name('ia01.success_page');
 
     // IA-02
     Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');

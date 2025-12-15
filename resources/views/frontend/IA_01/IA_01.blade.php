@@ -65,10 +65,10 @@
             </thead>
 
             <tbody class="text-gray-800 bg-white">
-                @forelse ($unitKompetensi->elemens as $elemen)
-                    @php $totalKuk = $elemen->kriteriaUnjukKerja->count(); @endphp
+                @forelse ($unitKompetensi->elemen as $elemen)
+                    @php $totalKuk = $elemen->kriteria->count(); @endphp
 
-                    @foreach ($elemen->kriteriaUnjukKerja as $index => $kuk)
+                    @foreach ($elemen->kriteria as $index => $kuk)
                         <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 transition-colors">
 
                             {{-- KOLOM 1: ELEMEN --}}
