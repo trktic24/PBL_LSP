@@ -261,10 +261,10 @@
 
             {{-- Tombol Laporan & Tinjauan --}}
             <div class="flex gap-2">
-                <a href="#" class="flex-1 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl shadow-sm hover:bg-gray-50 transition flex items-center justify-center font-semibold text-sm text-center">
+                <a href="{{ route('asesor.ak05', $jadwal->id_jadwal) }}" class="flex-1 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl shadow-sm hover:bg-gray-50 transition flex items-center justify-center font-semibold text-sm text-center">
                     Laporan Asesmen
                 </a>
-                <a href="{{ route('admin.asesor.tracker_skema', ['id_asesor' => $asesor->id_asesor, 'id_jadwal' => $jadwal->id_jadwal]) }}" class="flex-1 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl shadow-sm hover:bg-gray-50 transition flex items-center justify-center font-semibold text-sm text-center">
+                <a href="{{ route('asesor.ak06', $jadwal->id_jadwal) }}" class="flex-1 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl shadow-sm hover:bg-gray-50 transition flex items-center justify-center font-semibold text-sm text-center">
                     Tinjauan Asesmen
                 </a>
             </div>

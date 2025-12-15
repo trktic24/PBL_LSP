@@ -3,7 +3,7 @@
     Deskripsi: Form FR.AK.06 - Meninjau Proses Asesmen (Layout Wizard)
 --}}
 
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-skema')
 
 @section('content')
 
