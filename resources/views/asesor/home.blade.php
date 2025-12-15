@@ -229,7 +229,7 @@
                 </div>
             </form>
 
-            <form method="GET" action="{{ url('/home') }}" class="relative">
+            <form method="GET" action="{{ route('asesor.dashboard') }}" class="relative">
                 <input type="text" name="search" placeholder="Cari jadwal..." value="{{ request('search') }}" class="w-64 pl-10 pr-4 py-2 border border-gray-600 rounded-full text-sm">
                 <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>

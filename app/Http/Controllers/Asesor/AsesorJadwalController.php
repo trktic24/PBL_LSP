@@ -92,7 +92,7 @@ class AsesorJadwalController extends Controller
                     ->orWhereHas('masterTuk', function ($qTuk) use ($searchTerm) {
                         $qTuk->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
                     })
-                    ->orWhereHas('jenis_tuk', function ($qJenisTuk) use ($searchTerm) {
+                    ->orWhereHas('jenisTuk', function ($qJenisTuk) use ($searchTerm) {
                         $qJenisTuk->where('jenis_tuk', 'like', '%' . $searchTerm . '%');
                     });
             });

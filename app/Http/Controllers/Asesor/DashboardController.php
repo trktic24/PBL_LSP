@@ -101,8 +101,15 @@ class DashboardController extends Controller
                 $q->where('Status_jadwal', 'like', '%' . $searchTerm . '%')
                     ->orWhere('waktu_mulai', 'like', '%' . $searchTerm . '%')
                     ->orWhere('tanggal_pelaksanaan', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('sesi', 'like', '%' . $searchTerm . '%')
                     ->orWhereHas('skema', function ($qSkema) use ($searchTerm) {
                         $qSkema->where('nama_skema', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('masterTuk', function ($qTuk) use ($searchTerm) {
+                        $qTuk->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('jenisTuk', function ($qJenisTuk) use ($searchTerm) {
+                        $qJenisTuk->where('jenis_tuk', 'like', '%' . $searchTerm . '%');
                     });
             });
         }
