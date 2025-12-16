@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\MitraController;
 use App\Http\Controllers\Admin\AsesorProfileController;
 use App\Http\Controllers\Admin\AsesiProfileController;
+use App\Http\Controllers\Admin\StrukturOrganisasiController;
 
 // ======================================================
 // 3. CONTROLLERS ASESOR
@@ -312,6 +313,16 @@ Route::middleware('auth')->group(function () {
             Route::delete('/asesor/{id_asesor}', 'destroy')->name('asesor.destroy');
         });
 
+        // Master Struktur Organisasi
+        Route::resource('master/struktur', StrukturOrganisasiController::class)->names([
+            'index' => 'master_struktur',
+            'create' => 'add_struktur',
+            'store' => 'add_struktur.store',
+            'edit' => 'edit_struktur',
+            'update' => 'update_struktur',
+            'destroy' => 'delete_struktur'
+        ]);
+
         // ==========================================================
         // DETAIL PROFIL ASESOR (Admin View) - [UPDATED SECTION]
         // ==========================================================
@@ -392,6 +403,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/daftar-hadir/pdf/{id_jadwal}', 'exportPdfdaftarhadir')->name('daftar_hadir.pdf');
 
             // Asesmen Links
+            Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
+            Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
+
+            Route::get('/jadwal/{id_jadwal}/ak06', 'ak06')->name('ak06');
+            Route::post('/ak06/store/{id_jadwal}', 'storeAk06')->name('ak06.store');
+
             Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', 'ak07')->name('ak07');
             Route::post('/ak07/store/{id_sertifikasi_asesi}', 'storeAk07')->name('fr-ak-07.store');
         });
@@ -412,17 +429,9 @@ Route::middleware('auth')->group(function () {
     // Berita Acara - Shared Route (Asesor & Admin)
     // ======================================================
     Route::middleware(['role:asesor,admin'])->prefix('asesor')->name('asesor.')->group(function () {
-
         Route::controller(AsesorJadwalController::class)->group(function () {
             Route::get('/berita-acara/{id_jadwal}', 'beritaAcara')->name('berita_acara');
             Route::get('/berita-acara/pdf/{id_jadwal}', 'exportPdfberitaAcara')->name('berita_acara.pdf');
-    
-            // Asesmen Links (Shared for Admin & Asesor)
-            Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
-            Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
-
-            Route::get('/jadwal/{id_jadwal}/ak06', 'ak06')->name('ak06');
-            Route::post('/ak06/store/{id_jadwal}', 'storeAk06')->name('ak06.store');
         });
     });
 
@@ -474,9 +483,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/pembayaran_batal', 'paymentCancel')->name('payment.cancel');
             Route::get('/payment/{id_sertifikasi}/invoice', 'downloadInvoice')->name('payment.invoice');
         });
-
-        // unduh kartu peserta
-        Route::get('/kartu-peserta/{id_sertifikasi}', [KartuPesertaPdfController::class, 'generateKartuPeserta'])->name('pdf.kartu_peserta');
 
         // Asesmen Screens
         Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');
