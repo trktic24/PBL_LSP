@@ -210,10 +210,13 @@
           <div x-data="{ fileName: '' }">
             <label for="tanda_tangan" class="block text-sm font-medium text-gray-700 mb-2">Tanda Tangan</label>
             @if($asesor->tanda_tangan)
-            <div class="text-sm text-gray-600 mb-2">
-                File saat ini: <a href="{{ Storage::url($asesor->tanda_tangan) }}" target="_blank" class="text-blue-600 hover:underline">{{ basename($asesor->tanda_tangan) }}</a>
-            </div>
-            @endif
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xs text-gray-500">File saat ini:</span>
+                    <a href="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}" target="_blank" class="text-blue-600 hover:underline text-sm font-medium flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        Lihat Tanda Tangan
+                    </a>
+                </div>        @endif
             <div class="flex items-center justify-between w-full p-2.5 border border-gray-300 rounded-lg">
               <span x-text="fileName || 'Pilih file baru (opsional)'" class="text-gray-500 text-sm pl-2 truncate w-full max-w-xs sm:max-w-md"></span>
               <label for="tanda_tangan" class="cursor-pointer px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 shrink-0">

@@ -182,7 +182,7 @@
 
                     if (d.tanda_tangan) {
                         previewImg.src = d.tanda_tangan.startsWith('http') ? d.tanda_tangan :
-                            `{{ asset('') }}${d.tanda_tangan}`;
+                            `{{ route('secure.file', ['path' => 'PLACEHOLDER']) }}`.replace('PLACEHOLDER', d.tanda_tangan);
                         previewImg.classList.remove('hidden');
                         placeholder.classList.add('hidden');
                         base64Input.value = d.tanda_tangan;

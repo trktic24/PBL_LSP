@@ -159,22 +159,14 @@
                             {{-- PRATINJAU DENGAN FORMAT BARU --}}
                             @if($skema->gambar)
                                 <div class="mt-2 text-sm text-gray-600">
+                                    <label class="block mb-2 text-sm font-medium text-gray-900">Current Image</label>
                                     @php
-                                        $previewImg = 'images/default.jpg';
-                                        if ($skema->gambar) {
-                                            if (str_starts_with($skema->gambar, 'images/')) {
-                                                if(file_exists(public_path($skema->gambar))) {
-                                                    $previewImg = $skema->gambar;
-                                                }
-                                            } elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
-                                                $previewImg = 'images/skema/foto_skema/' . $skema->gambar;
-                                            } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
-                                                $previewImg = 'images/skema/' . $skema->gambar;
-                                            }
-                                        }
+                                        $previewImg = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default.jpg');
                                     @endphp
-                                    <p class="font-medium mb-1">Gambar Saat Ini:</p>
-                                    <img src="{{ asset($previewImg) }}" alt="Preview" class="h-20 w-auto object-cover rounded border">
+                                    <img src="{{ $previewImg }}" 
+                                         alt="Current Image" 
+                                         class="h-40 rounded-lg border border-gray-200 object-cover"
+                                         onerror="this.onerror=null;this.src='{{ asset('images/default.jpg') }}';">
                                 </div>
                             @endif
                         </div>

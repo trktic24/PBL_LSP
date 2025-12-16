@@ -35,22 +35,13 @@
             <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-800 shadow-lg border-4 border-white">
                 @if($sertifikasi && $sertifikasi->jadwal && $sertifikasi->jadwal->skema)
                     @php
-                        $imgSrc = 'images/default.jpg';
                         $gambar = $sertifikasi->jadwal->skema->gambar;
-                        if ($gambar) {
-                            if (str_starts_with($gambar, 'images/')) {
-                                $imgSrc = $gambar;
-                            } elseif (file_exists(public_path('images/skema/foto_skema/' . $gambar))) {
-                                $imgSrc = 'images/skema/foto_skema/' . $gambar;
-                            } else {
-                                $imgSrc = 'images/skema/' . $gambar;
-                            }
-                        }
+                        $imgSrc = $gambar ? asset('storage/' . $gambar) : asset('images/default.jpg');
                     @endphp
-                    <img src="{{ asset($imgSrc) }}" 
+                    <img src="{{ $imgSrc }}" 
                          alt="Logo Skema" 
                          class="w-full h-full object-cover"
-                         onerror="this.src='https://ui-avatars.com/api/?name=Skema&background=random'">
+                         onerror="this.onerror=null;this.src='{{ asset('images/default.jpg') }}';">
                 @else
                     <img src="https://ui-avatars.com/api/?name=User&background=random&size=128" 
                          alt="Foto Profil" 

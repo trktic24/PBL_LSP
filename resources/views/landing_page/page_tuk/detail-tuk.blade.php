@@ -59,7 +59,7 @@
                     
                     <img src="{{ $data_tuk->foto_tuk }}" alt="Foto Tempat Uji Kompetensi" 
                          class="w-full h-80 object-cover" 
-                         onerror="this.onerror=null;this.src='{{ asset('images/placeholder_tuk.png') }}';">
+                         onerror="this.onerror=null;this.src='{{ asset('images/placeholders/landscape.svg') }}';">
                 </div>
             </div>
             

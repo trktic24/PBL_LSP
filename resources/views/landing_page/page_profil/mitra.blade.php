@@ -14,11 +14,15 @@
                         <div class="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center justify-center h-full transition hover:-translate-y-1 hover:shadow-xl duration-300 cursor-pointer">
                             
                             <div class="mb-6">
-                                @if($mitra->logo)
-                                    <img src="{{ asset('storage/' . $mitra->logo) }}" alt="{{ $mitra->nama_mitra }}" class="rounded shadow-sm w-32 h-32 object-contain bg-white group-hover:opacity-90 transition">
-                                @else
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($mitra->nama_mitra) }}&background=random&size=128" alt="Inisial" class="rounded-full shadow-sm w-32 h-32 object-cover">
-                                @endif
+                                    @php
+                                        // Standardized Image Logic
+                                        $imgSrc = $mitra->logo ? asset('storage/' . $mitra->logo) : asset('images/default_pic.jpeg');
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" 
+                                         alt="{{ $mitra->nama_mitra }}" 
+                                         class="w-32 h-32 object-contain rounded shadow-sm bg-white group-hover:opacity-90 transition"
+                                         onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
+                               
                             </div>
 
                             <h5 class="text-xl font-bold text-center font-poppins mb-2 group-hover:text-blue-600 transition">

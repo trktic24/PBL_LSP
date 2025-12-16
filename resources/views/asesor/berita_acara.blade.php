@@ -133,8 +133,9 @@
                                 <span class="font-medium text-gray-700">{{ $asesor->nama_lengkap }}</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ asset($asesor->tanda_tangan) }}" 
-                                    class="w-20 h-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                                <img src="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}" 
+                                     alt="Tanda Tangan Asesor" 
+                                     class="h-20 w-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
                             </div>
                         </div>
 
@@ -148,7 +149,7 @@
                                 <span class="font-medium text-gray-700">Ajeng Febria H.</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ asset($asesor->tanda_tangan) }}"
+                                <img src="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}" 
                                     class="w-20 h-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
                             </div>
                         </div>

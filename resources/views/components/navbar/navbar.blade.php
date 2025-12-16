@@ -88,6 +88,7 @@
             class="flex items-center space-x-3 cursor-pointer select-none">
             <img
               src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}"
+              onerror="this.onerror=null;this.src='{{ asset('images/placeholders/square.svg') }}';"
               alt="Foto Profil"
               class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover">
             <span class="text-gray-800 font-semibold">
@@ -137,6 +138,7 @@
         </span>
         <img
           src="{{ Auth::user()->photo_url ?? asset('images/profil_asesor.jpeg') }}"
+          onerror="this.onerror=null;this.src='{{ asset('images/placeholders/square.svg') }}';"
           alt="Foto Profil"
           class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover">
       </a>

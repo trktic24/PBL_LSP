@@ -55,7 +55,8 @@
     <div class="flex flex-col items-center text-center">
         <div class="relative w-36 h-36 mb-4">
             {{-- Foto Skema --}}
-            <img src="{{ $skema && $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/junior_web.jpg') }}"
+            <img src="{{ $skema && $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default.jpg') }}"
+                 onerror="this.onerror=null;this.src='{{ asset('images/default.jpg') }}';"
                  alt="{{ $skema->nama_skema ?? 'Skema' }}"
                  class="w-full h-full object-cover rounded-full border-4 border-white shadow-md">
         </div>

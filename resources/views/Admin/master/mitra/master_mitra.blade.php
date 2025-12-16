@@ -97,7 +97,10 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 @if($mitra->logo)
-                                    <img src="{{ asset('storage/' . $mitra->logo) }}" alt="Logo" class="h-10 mx-auto object-contain">
+                                    <img src="{{ asset('storage/' . $mitra->logo) }}" 
+                                         alt="Logo" 
+                                         class="h-10 mx-auto object-contain bg-white rounded p-1"
+                                         onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
                                 @else
                                     <span class="text-gray-400 text-xs">-</span>
                                 @endif

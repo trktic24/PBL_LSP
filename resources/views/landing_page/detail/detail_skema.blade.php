@@ -10,28 +10,11 @@
     <section class="max-w-screen-xl mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
             @php
-                // SETTING PLACEHOLDER BARU
-                $detailImgSrc = 'images/default_pic.jpg';
-
-                if (!empty($skema->gambar)) {
-                    // Cek path 1: Path manual (misal: images/namafile.jpg)
-                    if (str_starts_with($skema->gambar, 'images/')) {
-                        if (file_exists(public_path($skema->gambar))) {
-                            $detailImgSrc = $skema->gambar;
-                        }
-                    } 
-                    // Cek path 2: Folder foto_skema
-                    elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
-                        $detailImgSrc = 'images/skema/foto_skema/' . $skema->gambar;
-                    } 
-                    // Cek path 3: Folder skema root
-                    elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
-                        $detailImgSrc = 'images/skema/' . $skema->gambar;
-                    }
-                }
+                $detailImgSrc = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default_pic.jpeg');
             @endphp
             
-            <img src="{{ asset($detailImgSrc) }}"
+            <img src="{{ $detailImgSrc }}"
+                 onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';"
                 alt="{{ $skema->nama_skema ?? 'Skema Sertifikasi' }}"
                 class="w-full h-full object-cover">
 

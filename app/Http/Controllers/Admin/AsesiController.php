@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File; // [PENTING] Gunakan File Facade
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class AsesiController extends Controller
@@ -143,17 +144,13 @@ class AsesiController extends Controller
         try {
             $ttdPath = null;
             
-            // [PERBAIKAN] Upload ke public/images/kelengkapan_asesi/tanda_tangan
+            // [PERBAIKAN] Upload ke private_docs/ttd_asesi
             if ($request->hasFile('tanda_tangan')) {
                 $file = $request->file('tanda_tangan');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $destinationPath = public_path('images/kelengkapan_asesi/tanda_tangan');
                 
-                // Pindahkan file
-                $file->move($destinationPath, $filename);
-                
-                // Simpan path relatif
-                $ttdPath = 'images/kelengkapan_asesi/tanda_tangan/' . $filename;
+                // Gunakan disk private_docs + Simpan FULL PATH (ttd_asesi/filename.jpg)
+                $ttdPath = Storage::disk('private_docs')->putFileAs('ttd_asesi', $file, $filename);
             }
 
             // A. Buat User
@@ -255,18 +252,17 @@ class AsesiController extends Controller
         try {
             $ttdPath = $asesi->tanda_tangan;
 
-            // [PERBAIKAN] Update file ke public/images/kelengkapan_asesi/tanda_tangan
+            // [PERBAIKAN] Update file ke private_docs/ttd_asesi
             if ($request->hasFile('tanda_tangan')) {
                 // Hapus file lama jika ada
-                if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
-                    File::delete(public_path($asesi->tanda_tangan));
+                if ($asesi->tanda_tangan && Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
+                    Storage::disk('private_docs')->delete($asesi->tanda_tangan);
                 }
                 
                 $file = $request->file('tanda_tangan');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('images/kelengkapan_asesi/tanda_tangan'), $filename);
-                
-                $ttdPath = 'images/kelengkapan_asesi/tanda_tangan/' . $filename;
+                // Simpan FULL PATH
+                $ttdPath = Storage::disk('private_docs')->putFileAs('ttd_asesi', $file, $filename);
             }
 
             // Update User
@@ -325,9 +321,9 @@ class AsesiController extends Controller
             $id = $asesi->id_asesi;
             $user = $asesi->user; 
 
-            // [PERBAIKAN] Hapus file fisik dari public path
-            if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
-                File::delete(public_path($asesi->tanda_tangan));
+            // [PERBAIKAN] Hapus file fisik dari private_docs
+            if ($asesi->tanda_tangan && Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
+                Storage::disk('private_docs')->delete($asesi->tanda_tangan);
             }
             
             if ($user) {

@@ -125,6 +125,13 @@ Route::middleware('auth')->group(function () {
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ========================
+    // 0. SECURE FILE ACCESS (SURGICAL REFACTOR)
+    // ========================
+    Route::get('secure-doc/{path}', [App\Http\Controllers\SecureFileController::class, 'show'])
+        ->where('path', '.*')
+        ->name('secure.file');
+
+    // ========================
     // 1. ASESMEN & FORMULIR
     // ========================
 

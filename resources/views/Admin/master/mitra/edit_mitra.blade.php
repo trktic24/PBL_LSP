@@ -51,7 +51,10 @@
                         <label for="logo" class="block text-sm font-medium text-gray-700 mb-2">Logo Mitra</label>
                         @if($mitra->logo)
                             <div class="mb-2">
-                                <img src="{{ asset('storage/' . $mitra->logo) }}" alt="Current Logo" class="h-16 object-contain border border-gray-200 rounded p-1">
+                                <img src="{{ asset('storage/' . $mitra->logo) }}" 
+                                     alt="Current Logo" 
+                                     class="h-16 object-contain border border-gray-200 rounded p-1"
+                                     onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
                                 <p class="text-xs text-gray-500 mt-1">Logo saat ini</p>
                             </div>
                         @endif

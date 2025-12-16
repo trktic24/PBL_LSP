@@ -205,12 +205,15 @@ class RegisteredUserController extends Controller
                     'ttd_file' => 'tanda_tangan',
                 ];
 
-                $storagePath = "public/asesor_docs/{$user->id_user}";
+                // SECURE STORAGE CHANGE
+                // Use 'asesor_docs' folder in private_docs disk.
+                $baseFolder = "asesor_docs/{$user->id_user}";
                 $filePaths = [];
 
                 foreach ($fileMapping as $form => $column) {
                     if ($request->hasFile($form)) {
-                        $path = $request->file($form)->store($storagePath);
+                        // Store securely on private_docs
+                        $path = $request->file($form)->store($baseFolder, 'private_docs');
                         $filePaths[$column] = $path;
                     }
                 }
@@ -248,8 +251,8 @@ class RegisteredUserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             // Hapus folder file jika gagal simpan asesor
-            if ($roleName === 'asesor' && isset($storagePath)) {
-                Storage::deleteDirectory($storagePath);
+            if ($roleName === 'asesor' && isset($baseFolder)) {
+                Storage::disk('private_docs')->deleteDirectory($baseFolder);
             }
             // Kembalikan ke form dengan error
             return back()->with('error', 'Terjadi kesalahan: '.$e->getMessage())->withInput();

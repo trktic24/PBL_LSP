@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\Storage;
 use App\Models\BuktiDasar; // Asumsi nama model kamu BuktiDasar atau BuktiDasar (sesuaikan)
 use App\Models\BuktiKelengkapan; // Pakai ini jika modelnya BuktiKelengkapan
 use App\Models\DataSertifikasiAsesi;
@@ -65,26 +66,22 @@ class BuktiKelengkapanController extends Controller
                 $safeName = str_replace(' ', '_', $request->jenis_dokumen); 
                 $filename = "{$safeName}.{$extension}"; 
                 
-                $folderPath = "images/bukti_dasar/{$idAsesi}";
-                $destinationPath = public_path($folderPath);
+                // Secure Storage: bukti_dasar/{idAsesi}
+                $folderPath = "bukti_dasar/{$idAsesi}";
+                $relPath = $folderPath . '/' . $filename;
                 
-                // [PERBAIKAN PENTING DI SINI]
-                // Hapus file lama DULU sebelum upload yang baru
-                // Cek apakah ada file lama di database DAN filenya ada di folder
-                if ($existing && $existing->bukti_dasar && File::exists(public_path($existing->bukti_dasar))) {
-                    File::delete(public_path($existing->bukti_dasar));
+                // Hapus file lama DULU jika ada
+                if ($existing && $existing->bukti_dasar) {
+                     if (Storage::disk('private_docs')->exists($existing->bukti_dasar)) {
+                        Storage::disk('private_docs')->delete($existing->bukti_dasar);
+                     }
                 }
 
-                // Buat folder jika belum ada
-                if (!File::exists($destinationPath)) {
-                    File::makeDirectory($destinationPath, 0755, true);
-                }
-
-                // Baru pindahkan file baru
-                $file->move($destinationPath, $filename);
+                // Simpan ke private_docs
+                Storage::disk('private_docs')->putFileAs($folderPath, $file, $filename);
                 
-                // Update path database
-                $pathDatabase = "{$folderPath}/{$filename}";
+                // Update path database (relative to private_docs root)
+                $pathDatabase = $relPath;
             }
 
             // 5. Simpan ke Database
@@ -111,7 +108,7 @@ class BuktiKelengkapanController extends Controller
 
             return response()->json([
                 'success' => true, 
-                'message' => 'Berhasil diupload!',
+                'message' => 'Berhasil diupload! (Secure)',
                 'path' => $pathDatabase,
                 'data' => $existing
             ], 200);
@@ -129,8 +126,8 @@ class BuktiKelengkapanController extends Controller
             $data = BuktiDasar::find($id);
             if (!$data) return response()->json(['success'=>false], 404);
             
-            if ($data->bukti_dasar && File::exists(public_path($data->bukti_dasar))) {
-                File::delete(public_path($data->bukti_dasar));
+            if ($data->bukti_dasar && Storage::disk('private_docs')->exists($data->bukti_dasar)) {
+                Storage::disk('private_docs')->delete($data->bukti_dasar);
             }
             $data->delete();
             return response()->json(['success' => true]);

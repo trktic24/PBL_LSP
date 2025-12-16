@@ -14,17 +14,15 @@
         
         {{-- Logic Penentuan Gambar Berita --}}
         @php
-            // SETTING PLACEHOLDER BARU
-            $gambarBerita = 'images/default_pic.jpg'; 
-            
-            // Cek jika ada gambar dan filenya benar-benar ada di storage
-            if (!empty($berita->gambar) && file_exists(public_path('storage/berita/' . $berita->gambar))) {
-                $gambarBerita = 'storage/berita/' . $berita->gambar;
+            $gambarBerita = 'images/default_pic.jpeg'; 
+            if ($berita->gambar) {
+                $gambarBerita = asset('storage/' . $berita->gambar);
             }
         @endphp
 
         {{-- Gambar Utama --}}
         <img src="{{ asset($gambarBerita) }}" 
+             onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';" 
              alt="{{ $berita->judul }}" 
              class="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg mb-8">
         {{-- Konten Berita (Dari Database) --}}

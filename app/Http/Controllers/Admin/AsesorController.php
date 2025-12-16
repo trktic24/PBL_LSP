@@ -234,13 +234,14 @@ class AsesorController extends Controller
                 'status_verifikasi' => 'pending',
             ];
 
-            $uploadPath = 'public/asesor_files/' . $user->id_user;
+            $uploadPath = 'asesor_files/' . $user->id_user; // Removed public/ prefix
             foreach ($validatedFiles as $key => $file) {
                 $subfolder = 'dokumen';
                 if ($key == 'pas_foto') $subfolder = 'foto';
                 if ($key == 'tanda_tangan') $subfolder = 'tanda_tangan';
                 
-                $path = $file->store($uploadPath . '/' . $subfolder);
+                // Use private_docs disk
+                $path = $file->store($uploadPath . '/' . $subfolder, 'private_docs');
                 $finalAsesorData[$key] = $path; 
             }
 
@@ -366,7 +367,7 @@ class AsesorController extends Controller
             'tanda_tangan' => 'nullable|file|mimes:png|max:5120', 
         ]);
 
-        $uploadPath = 'public/asesor_files/' . $asesor->id_user;
+        $uploadPath = 'asesor_files/' . $asesor->id_user;
         
         $fileFields = [
             'ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 
@@ -377,7 +378,9 @@ class AsesorController extends Controller
             // 1. Cek apakah user meminta hapus file lama
             if ($request->input('delete_' . $key) == '1') {
                 if ($asesor->$key) {
-                    Storage::delete($asesor->$key);
+                    if (Storage::disk('private_docs')->exists($asesor->$key)) {
+                        Storage::disk('private_docs')->delete($asesor->$key);
+                    }
                     $asesor->$key = null;
                 }
             }
@@ -386,15 +389,17 @@ class AsesorController extends Controller
             if ($request->hasFile($key)) {
                 // Hapus file lama jika masih ada (belum dihapus di langkah 1)
                 if ($asesor->$key) {
-                    Storage::delete($asesor->$key);
+                    if (Storage::disk('private_docs')->exists($asesor->$key)) {
+                        Storage::disk('private_docs')->delete($asesor->$key);
+                    }
                 }
                 
                 $subfolder = 'dokumen';
                 if ($key == 'pas_foto') $subfolder = 'foto';
                 if ($key == 'tanda_tangan') $subfolder = 'tanda_tangan';
 
-                // Upload file baru
-                $path = $request->file($key)->store($uploadPath . '/' . $subfolder);
+                // Upload file baru ke private_docs
+                $path = $request->file($key)->store($uploadPath . '/' . $subfolder, 'private_docs');
                 $asesor->$key = $path; 
             }
         }
@@ -421,8 +426,8 @@ class AsesorController extends Controller
             $asesor->delete(); 
             if ($user) $user->delete(); 
 
-            $uploadPath = 'public/asesor_files/' . $userId;
-            Storage::deleteDirectory($uploadPath);
+            $uploadPath = 'asesor_files/' . $userId;
+            Storage::disk('private_docs')->deleteDirectory($uploadPath);
 
             DB::commit();
             return redirect()->route('admin.master_asesor')->with('success', 'Data berhasil dihapus.');

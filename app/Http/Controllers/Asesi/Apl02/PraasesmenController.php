@@ -85,18 +85,11 @@ class PraasesmenController extends Controller
                     $file = $request->file("respon.$idKriteria.bukti");
                     $ext = $file->getClientOriginalExtension();
                     $fileName = "bukti_apl02_{$idDataSertifikasi}_{$idKriteria}.{$ext}";
-                    $destinationPath = public_path("images/bukti_apl02/{$idDataSertifikasi}");
-
-                    if (!File::exists($destinationPath)) {
-                        File::makeDirectory($destinationPath, 0755, true);
-                    }
-
-                    if ($existing && $existing->bukti_asesi_apl02 && File::exists(public_path($existing->bukti_asesi_apl02))) {
-                        File::delete(public_path($existing->bukti_asesi_apl02));
-                    }
-
-                    $file->move($destinationPath, $fileName);
-                    $filePath = "images/bukti_apl02/{$idDataSertifikasi}/{$fileName}";
+                    // Refactored to use private_docs disk
+                    $folderName = "bukti_apl02/{$idDataSertifikasi}";
+                    // Store file using private_docs disk
+                    // putFileAs returns the path relative to the disk root
+                    $filePath = Storage::disk('private_docs')->putFileAs($folderName, $file, $fileName);
                 } else {
                     $filePath = $existing ? $existing->bukti_asesi_apl02 : null;
                 }

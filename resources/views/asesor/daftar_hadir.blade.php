@@ -207,9 +207,9 @@
                                         class="h-32 w-32 rounded-md overflow-hidden border bg-white group-img
                                         {{ ($data->presensi && $data->presensi->hadir == 1) ? '' : 'hidden' }}">
                                         
-                                        <img src="{{ asset($data->asesi->tanda_tangan) }}"
-                                            class="w-full h-full object-contain p-1 hover:scale-110 transition cursor-pointer"
-                                            onclick="window.open(this.src, '_blank')">
+                                        <img src="{{ route('secure.file', ['path' => $data->asesi->tanda_tangan]) }}" 
+                                             class="max-w-full max-h-full object-contain mx-auto"
+                                             alt="Tanda Tangan Asesi">
                                     </div>
                                 </div>
                             </td>

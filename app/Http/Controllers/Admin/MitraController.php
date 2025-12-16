@@ -64,8 +64,10 @@ class MitraController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('mitra_logos', 'public');
-            $data['logo'] = $path; // Simpan path relatif public/
+            $file = $request->file('logo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            // Simpan FULL PATH (mitra_logos/filename.jpg)
+            $data['logo'] = $file->storeAs('mitra_logos', $filename, 'public');
         }
 
         Mitra::create($data);
@@ -103,8 +105,10 @@ class MitraController extends Controller
             if ($mitra->logo && Storage::disk('public')->exists($mitra->logo)) {
                 Storage::disk('public')->delete($mitra->logo);
             }
-            $path = $request->file('logo')->store('mitra_logos', 'public');
-            $data['logo'] = $path;
+            $file = $request->file('logo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            // Simpan FULL PATH (mitra_logos/filename.jpg)
+            $data['logo'] = $file->storeAs('mitra_logos', $filename, 'public');
         }
 
         $mitra->update($data);

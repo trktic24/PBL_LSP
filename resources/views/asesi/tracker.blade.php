@@ -70,10 +70,9 @@
 
             {{-- 2. HEADER MOBILE (Data Dinamis) --}}
             @php
-                $gambarSkema =
-                    $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
-                        ? asset('images/' . $sertifikasi->jadwal->skema->gambar)
-                        : null;
+                $gambarSkema = $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
+                        ? asset('storage/' . $sertifikasi->jadwal->skema->gambar)
+                        : asset('images/default_pic.jpeg');
             @endphp
 
             <x-mobile_header :title="$sertifikasi->jadwal->skema->nama_skema ?? 'Skema Sertifikasi'" :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'" :image="$gambarSkema" />

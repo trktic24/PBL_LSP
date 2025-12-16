@@ -63,7 +63,10 @@
                             @if($berita->gambar)
                                 <div class="mt-2">
                                     <p class="text-xs text-gray-500 mb-1">Gambar saat ini:</p>
-                                    <img src="{{ asset($berita->gambar) }}" alt="Preview" class="h-24 rounded-lg border border-gray-200 object-cover">
+                                    <img src="{{ asset('storage/' . $berita->gambar) }}" 
+                                         alt="Preview" 
+                                         class="h-24 rounded-lg border border-gray-200 object-cover"
+                                         onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
                                 </div>
                             @endif
                         </div>

@@ -471,7 +471,7 @@
                             <div class="w-full h-40 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center">
                                 @if($tanda_tangan_asesor_path)
                                     {{-- Tampilkan gambar Tanda Tangan Asesor --}}
-                                    <img src="{{ asset('storage/' . $tanda_tangan_asesor_path) }}" alt="Tanda Tangan Asesor" class="h-full w-auto object-contain p-2">
+                                    <img src="{{ route('secure.file', ['path' => $tanda_tangan_asesor_path]) }}" alt="Tanda Tangan Asesor" class="h-full w-auto object-contain p-2">
                                 @else
                                     <p class="text-gray-400 text-sm">Tanda tangan Asesor belum tersedia</p>
                                 @endif
@@ -486,7 +486,7 @@
                             <div class="w-full h-40 bg-white border-2 border-dashed border-blue-300 rounded-xl flex items-center justify-center cursor-pointer hover:bg-blue-50 hover:border-blue-500 transition-all">
                                 @if($tanda_tangan_asesi_path)
                                     {{-- Tampilkan gambar Tanda Tangan Asesi jika sudah ada di DB --}}
-                                    <img src="{{ asset('storage/' . $tanda_tangan_asesi_path) }}" alt="Tanda Tangan Asesi" class="h-full w-auto object-contain p-2">
+                                    <img src="{{ route('secure.file', ['path' => $tanda_tangan_asesi_path]) }}" alt="Tanda Tangan Asesi" class="h-full w-auto object-contain p-2">
                                 @else
                                     {{-- Tampilkan placeholder interaktif jika belum ada --}}
                                     <div class="text-center">

@@ -7,6 +7,7 @@ use App\Models\Asesi;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\BuktiDasar;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class AsesiProfileController extends Controller
@@ -123,11 +124,9 @@ class AsesiProfileController extends Controller
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 $filename = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
-                $path = 'uploads/bukti_asesi/' . $id_asesi;
+                $path = 'bukti_asesi/' . $id_asesi;
                 
-                if (!File::exists(public_path($path))) File::makeDirectory(public_path($path), 0755, true);
-                
-                $file->move(public_path($path), $filename);
+                Storage::disk('private_docs')->putFileAs($path, $file, $filename);
                 
                 $bukti = BuktiDasar::create([
                     'id_data_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi,
@@ -159,15 +158,16 @@ class AsesiProfileController extends Controller
 
             if ($request->hasFile('file')) {
                 // 1. Hapus File Lama
-                if (File::exists(public_path($bukti->bukti_dasar))) {
-                    File::delete(public_path($bukti->bukti_dasar));
+                if (Storage::disk('private_docs')->exists($bukti->bukti_dasar)) {
+                    Storage::disk('private_docs')->delete($bukti->bukti_dasar);
                 }
 
                 // 2. Upload File Baru
                 $file = $request->file('file');
                 $filename = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
-                $path = 'uploads/bukti_asesi/' . $id_asesi;
-                $file->move(public_path($path), $filename);
+                $path = 'bukti_asesi/' . $id_asesi;
+                
+                Storage::disk('private_docs')->putFileAs($path, $file, $filename);
 
                 // 3. Update Database
                 // Ambil jenis dokumen lama dari keterangan agar konsisten
@@ -194,8 +194,8 @@ class AsesiProfileController extends Controller
 
         if ($bukti) {
             // Hapus File Fisik
-            if (File::exists(public_path($bukti->bukti_dasar))) {
-                File::delete(public_path($bukti->bukti_dasar));
+            if (Storage::disk('private_docs')->exists($bukti->bukti_dasar)) {
+                Storage::disk('private_docs')->delete($bukti->bukti_dasar);
             }
             
             $bukti->delete();
@@ -216,30 +216,28 @@ class AsesiProfileController extends Controller
 
             if ($request->hasFile('file_ttd')) {
                 // Hapus file lama jika ada
-                if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
-                    File::delete(public_path($asesi->tanda_tangan));
+                if ($asesi->tanda_tangan && Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
+                    Storage::disk('private_docs')->delete($asesi->tanda_tangan);
                 }
 
                 $file = $request->file('file_ttd');
                 $filename = 'ttd_' . time() . '_' . $id_asesi . '.' . $file->getClientOriginalExtension();
                 
                 // Simpan di folder ttd_asesi
-                $path = 'images/ttd_asesi';
-                if (!File::exists(public_path($path))) {
-                    File::makeDirectory(public_path($path), 0755, true);
-                }
+                $path = 'ttd_asesi'; 
                 
-                $file->move(public_path($path), $filename);
+                // Simpan FULL PATH
+                $storedPath = Storage::disk('private_docs')->putFileAs($path, $file, $filename);
                 
                 // Simpan Path ke Database
                 $asesi->update([
-                    'tanda_tangan' => $path . '/' . $filename
+                    'tanda_tangan' => $storedPath
                 ]);
 
                 return response()->json([
                     'success' => true, 
                     'message' => 'Tanda tangan berhasil diupload',
-                    'url' => asset($path . '/' . $filename)
+                    'url' => route('secure.file', ['path' => $storedPath])
                 ]);
             }
             
@@ -256,9 +254,9 @@ class AsesiProfileController extends Controller
             $asesi = Asesi::findOrFail($id_asesi);
 
             if ($asesi->tanda_tangan) {
-                // Hapus File Fisik
-                if (File::exists(public_path($asesi->tanda_tangan))) {
-                    File::delete(public_path($asesi->tanda_tangan));
+                // Hapus File Fisik (Path sudah lengkap di DB)
+                if (Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
+                    Storage::disk('private_docs')->delete($asesi->tanda_tangan);
                 }
                 
                 // Hapus path di DB

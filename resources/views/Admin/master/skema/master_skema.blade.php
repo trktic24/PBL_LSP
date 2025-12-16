@@ -114,27 +114,17 @@
                             <td class="px-4 py-4">{{ $skema->id_skema }}</td>
 
                             <td class="px-4 py-4">
-                                <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50">
-                                    @php
-                                        $imgSrc = 'images/default.jpg';
-                                        if ($skema->gambar) {
-                                            if (str_starts_with($skema->gambar, 'images/')) {
-                                                if(file_exists(public_path($skema->gambar))) {
-                                                    $imgSrc = $skema->gambar;
-                                                }
-                                            } elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
-                                                $imgSrc = 'images/skema/foto_skema/' . $skema->gambar;
-                                            } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
-                                                $imgSrc = 'images/skema/' . $skema->gambar;
-                                            }
-                                        }
-                                    @endphp
-                                    <img src="{{ asset($imgSrc) }}" 
-                                            alt="{{ $skema->nama_skema }}" 
-                                            class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
-                                            onclick="window.open(this.src, '_blank')"
-                                    >
-                                </div>
+                                    <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50">
+                                        @php
+                                            $imgSrc = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default.jpg');
+                                        @endphp
+                                        <img src="{{ $imgSrc }}" 
+                                                alt="{{ $skema->nama_skema }}" 
+                                                class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
+                                                onclick="window.open(this.src, '_blank')"
+                                                onerror="this.onerror=null;this.src='{{ asset('images/default.jpg') }}';"
+                                        >
+                                    </div>
                             </td>
 
                             <td class="px-4 py-4 font-medium">{{ $skema->nomor_skema }}</td>

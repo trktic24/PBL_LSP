@@ -177,26 +177,7 @@ html { scroll-behavior: smooth; }
                     @foreach($chunk as $skema)
                         @php
                             $categoryName = $skema->category?->nama_kategori ?? 'Tidak Terkategori';
-                            
-                            // 🟩 PERBAIKAN: Logika Placeholder Skema
-                            $imgSrc = 'images/default_pic.jpg'; // Default ke default_pic tadi
-
-                            if (!empty($skema->gambar)) {
-                                // Cek path 1: Jika path sudah lengkap (dimulai dengan images/)
-                                if (str_starts_with($skema->gambar, 'images/')) {
-                                    if (file_exists(public_path($skema->gambar))) {
-                                        $imgSrc = $skema->gambar;
-                                    }
-                                } 
-                                // Cek path 2: Folder foto_skema
-                                elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
-                                    $imgSrc = 'images/skema/foto_skema/' . $skema->gambar;
-                                } 
-                                // Cek path 3: Folder skema root
-                                elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
-                                    $imgSrc = 'images/skema/' . $skema->gambar;
-                                }
-                            }
+                            $imgSrc = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default_pic.jpeg');
                         @endphp
                         
                         <div class="transition-all duration-300 hover:scale-[1.02] skema-card group" data-category="{{ $categoryName }}">
@@ -204,7 +185,8 @@ html { scroll-behavior: smooth; }
                                 <div class="rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-shadow duration-300 bg-white border border-gray-100/50 mb-3">
                                     <div class="overflow-hidden">
                                         {{-- Tampilkan gambar hasil logika di atas --}}
-                                        <img src="{{ asset($imgSrc) }}"
+                                        <img src="{{ $imgSrc }}"
+                                             onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';"
                                             alt="Gambar Skema"
                                             class="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500">
                                     </div>
@@ -517,19 +499,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                 
                                 <a href="{{ route('berita.detail', ['id' => $berita->id]) }}" class="flex flex-col h-full"> 
                                     
-                                    {{-- 🟩 PERBAIKAN: Logika Placeholder Berita --}}
+                                    {{-- 🟩 PERBAIKAN: Logika Placeholder Berita (Smart Prefix) --}}
                                     @php
-                                        $imgBerita = 'images/default_pic.jpg'; // Default
-                                        
-                                        // Cek apakah gambar tidak kosong DAN filenya benar-benar ada di storage
-                                        if (!empty($berita->gambar) && file_exists(public_path('storage/berita/' . $berita->gambar))) {
-                                            $imgBerita = 'storage/berita/' . $berita->gambar;
-                                        }
+                                        $imgBerita = $berita->gambar ? asset('storage/' . $berita->gambar) : asset('images/default_pic.jpeg');
                                     @endphp
-
-                                    <img src="{{ asset($imgBerita) }}" 
-                                         alt="{{ $berita->judul }}" 
-                                         class="w-full h-48 object-cover">
+                                    <img src="{{ $imgBerita }}" 
+                                         alt="{{ $berita->judul_berita }}" 
+                                         class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
+                                         onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
                                     
                                     {{-- Diberi flex-grow agar 'Baca Selengkapnya' rata bawah --}}
                                     <div class="p-6 flex flex-col flex-grow">
