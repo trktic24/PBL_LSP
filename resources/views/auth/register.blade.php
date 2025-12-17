@@ -390,7 +390,7 @@
                                     <div class="md:col-span-2">
                                         <x-login-form-input id="asesi_alamat_rumah" name="alamat_rumah" label="Alamat Rumah" :error="$errors->first('alamat_rumah')" required />
                                     </div>
-                                    <x-login-form-input id="asesi_kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required/>
+                                    <x-login-form-input id="asesi_kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required type="tel" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     {{-- 'kabupaten' di form -> 'kabupaten_kota' di DB --}}
@@ -412,8 +412,8 @@
                                     {{-- 'alamat_kantor_1' di form -> 'alamat_kantor' di DB --}}
                                     <x-login-form-input id="asesi_alamat_institusi" name="alamat_institusi" label="Alamat Institusi" :error="$errors->first('alamat_kantor')" required />
                                     <x-login-form-input id="asesi_jabatan" name="jabatan" label="Jabatan" :error="$errors->first('jabatan')" required />
-                                    <x-login-form-input id="kode_pos_institusi" name="kode_pos_institusi" label="Kode Pos Institusi" :error="$errors->first('kode_pos_institusi')" required />
-                                    <x-login-form-input id="no_telepon_institusi" name="no_telepon_institusi" label="No Telepon Institusi" :error="$errors->first('no_telepon_institusi')" required/>
+                                    <x-login-form-input id="kode_pos_institusi" name="kode_pos_institusi" label="Kode Pos Institusi" :error="$errors->first('kode_pos_institusi')" required type="tel" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                                    <x-login-form-input id="no_telepon_institusi" name="no_telepon_institusi" label="No Telepon Institusi" :error="$errors->first('no_telepon_institusi')" required type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                                 </div>
                             </div>
                         </div>
@@ -505,7 +505,7 @@
                                     <div class="md:col-span-2">
                                         <x-login-form-input id="asesor_alamat_rumah" name="alamat_rumah" label="Alamat Rumah" :error="$errors->first('alamat_rumah')" required />
                                     </div>
-                                    <x-login-form-input id="asesor_kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required />
+                                    <x-login-form-input id="asesor_kode_pos" name="kode_pos" label="Kode POS" :error="$errors->first('kode_pos')" required type="tel" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                     {{-- 'kabupaten' di form -> 'kabupaten_kota' di DB --}}
@@ -646,7 +646,7 @@ document.addEventListener('alpine:init', () => {
             const requiredFields = [
                 'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin', 'kebangsaan', 
                 'kualifikasi', 'pekerjaan', 'alamat_rumah', 'kode_pos', 'kabupaten', 'provinsi', 
-                'nama_institusi', 'alamat_institusi', 'jabatan', 'kode_pos_institusi',
+                'nama_institusi', 'alamat_institusi', 'jabatan', 'kode_pos_institusi', 'no_telepon_institusi',
                 'npwp', 'nama_bank', 'nomor_rekening', 'asesor_kebangsaan'
             ];
             

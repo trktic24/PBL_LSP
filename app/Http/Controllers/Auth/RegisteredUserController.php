@@ -107,7 +107,7 @@ class RegisteredUserController extends Controller
                 'nama_institusi' => ['required', 'string', 'max:255'], // -> nama_institusi_perusahaan
                 'alamat_institusi' => ['required', 'string'], // -> alamat_kantor
                 'jabatan' => ['required', 'string', 'max:255'],
-                'kode_pos_institusi' => ['required', 'string', 'max:15'],
+                'kode_pos_institusi' => ['required', 'string', 'max:10'],
                 'no_telepon_institusi' => ['required', 'string', 'max:16'], // Ini opsional
             ];
             $rules = array_merge($rules, $asesiRules);
