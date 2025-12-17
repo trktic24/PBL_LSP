@@ -102,7 +102,7 @@
                                     <option value="">Pilih Skema</option>
                                     @foreach($skemas as $skema)
                                         <option value="{{ $skema->id_skema }}" {{ old('id_skema') == $skema->id_skema ? 'selected' : '' }}>
-                                            {{ $skema->nama_skema }} ({{ $skema->kode_unit }})
+                                            {{ $skema->nama_skema }} @if($skema->kode_unit) ({{ $skema->kode_unit }}) @endif
                                         </option>
                                     @endforeach
                                 </select>

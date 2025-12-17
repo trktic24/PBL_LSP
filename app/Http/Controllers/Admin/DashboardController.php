@@ -132,7 +132,7 @@ class DashboardController extends Controller
                           ->orWhere('nomor_skema', 'like', '%' . $searchTerm . '%');
                   })
                   // Pastikan nama relasi di model Jadwal sesuai ('tuk' atau 'masterTuk')
-                  ->orWhereHas('master_tuk', function($tq) use ($searchTerm) { 
+                  ->orWhereHas('masterTuk', function($tq) use ($searchTerm) { 
                       $tq->where('nama_lokasi', 'like', '%' . $searchTerm . '%');
                   })
                   ->orWhereHas('asesor', function($aq) use ($searchTerm) {

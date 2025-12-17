@@ -362,11 +362,11 @@
                                 <td class="px-4 py-4 text-center font-medium text-gray-500">{{ $jadwal->id_jadwal }}</td>
                                 <td class="px-4 py-4">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50 mx-auto">
-                                        @if($jadwal->skema && $jadwal->skema->gambar)
-                                            <img src="{{ asset($jadwal->skema->gambar) }}" alt="{{ $jadwal->skema->nama_skema }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer" onclick="window.open(this.src, '_blank')">
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image text-lg"></i></div>
-                                        @endif
+                                        <img src="{{ $jadwal->skema && $jadwal->skema->gambar ? asset('storage/' . $jadwal->skema->gambar) : asset('images/default_pic.jpeg') }}" 
+                                             alt="{{ $jadwal->skema->nama_skema ?? 'Skema Image' }}" 
+                                             class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer" 
+                                             onclick="window.open(this.src, '_blank')"
+                                             onerror="this.onerror=null; this.src='{{ asset('images/default_pic.jpeg') }}';">
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 font-medium text-gray-700">{{ $jadwal->skema->nomor_skema ?? '-' }}</td>

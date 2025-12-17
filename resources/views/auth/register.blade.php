@@ -272,7 +272,7 @@
                                         </div>
                                         <p class="text-xs text-gray-500 mt-1 ml-1 leading-relaxed">
                                             <i class="fa-solid fa-circle-info mr-1"></i>
-                                            Password minimal 8 karakter. Gunakan kombinasi huruf dan angka.
+                                            Minimal 8 karakter, huruf besar, huruf kecil, dan angka.
                                         </p>
                                         <p x-show="conf.length > 0 && pass !== conf"
                                             class="text-sm text-red-600 mt-2"
@@ -397,7 +397,8 @@
                                     <x-login-form-input id="asesi_kabupaten" name="kabupaten" label="Kabupaten / Kota" :error="$errors->first('kabupaten')" required />
                                     <x-login-form-input id="asesi_provinsi" name="provinsi" label="Provinsi" :error="$errors->first('provinsi')" required />
                                     {{-- 'no_hp' di form -> 'nomor_hp' di DB --}}
-                                    <x-login-form-input id="asesi_no_hp" name="no_hp" label="Nomor HP" :error="$errors->first('no_hp')" required />
+                                    <x-login-form-input id="asesi_no_hp" name="no_hp" label="Nomor HP" :error="$errors->first('no_hp')" required
+                                        type="tel" maxlength="14" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                                 </div>
                             </div>
                             <div class="space-y-5">
@@ -511,7 +512,8 @@
                                     <x-login-form-input id="asesor_kabupaten" name="kabupaten" label="Kabupaten / Kota" :error="$errors->first('kabupaten')" required />
                                     <x-login-form-input id="asesor_provinsi" name="provinsi" label="Provinsi" :error="$errors->first('provinsi')" required />
                                     {{-- 'no_hp' di form -> 'nomor_hp' di DB --}}
-                                    <x-login-form-input id="asesor_no_hp" name="no_hp" label="Nomor HP" :error="$errors->first('no_hp')" required />
+                                    <x-login-form-input id="asesor_no_hp" name="no_hp" label="Nomor HP" :error="$errors->first('no_hp')" required 
+                                        type="tel" maxlength="14" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                                     {{-- 'npwp' di form -> 'NPWP' di DB --}}
                                     <x-login-form-input id="npwp" name="npwp" label="NPWP" :error="$errors->first('npwp')" required />
                             </div>
@@ -632,7 +634,7 @@ document.addEventListener('alpine:init', () => {
             if (field === 'no_hp') {
                  if (!value) error = "Nomor HP wajib diisi";
                  else if (!/^\d*$/.test(value)) error = "Nomor HP harus berupa angka";
-                 else if (value.length < 10 || value.length > 15) error = "Nomor HP tidak valid (10-15 digit)";
+                 else if (value.length < 10 || value.length > 14) error = "Nomor HP tidak valid (10-14 digit)";
             }
             if (field === 'no_registrasi_asesor') {
                 if (!value) error = "No Registrasi wajib diisi";

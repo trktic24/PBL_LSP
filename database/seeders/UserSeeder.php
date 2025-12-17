@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             ], [
                 'role_id' => $adminRole->id_role,
                 'email_verified_at' => now(),
-                'password' => Hash::make('password'),
+                'password' => Hash::make('Admin#Lsp'),
                 'google_id' => null,
                 'remember_token' => Str::random(10),
 
@@ -136,7 +136,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@polines.ac.id',
         ], [
             'role_id' => 1,
-            'password' => Hash::make('1234')
+            'password' => Hash::make('admin@Lsp')
         ]);
 
         // Buat Superadmin (Role ID assumed based on RoleSeeder order, likely 4)
@@ -146,7 +146,7 @@ class UserSeeder extends Seeder
                 'email' => 'superadmin@example.com',
             ], [
                 'role_id' => $superadminRole->id_role,
-                'password' => Hash::make('password'),
+                'password' => Hash::make('superadmin@Lsp'),
                 'email_verified_at' => now(),
             ]);
         }

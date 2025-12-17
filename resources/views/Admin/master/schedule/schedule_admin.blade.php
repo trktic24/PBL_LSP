@@ -494,7 +494,7 @@
                                 (String(jadwal.id_jadwal)).toLowerCase().includes(q) ||
                                 (String(jadwal.sesi)).toLowerCase().includes(q) ||
                                 (jadwal.skema?.nama_skema || '').toLowerCase().includes(q) ||
-                                (jadwal.tuk?.nama_lokasi || '').toLowerCase().includes(q) ||
+                                (jadwal.master_tuk?.nama_lokasi || '').toLowerCase().includes(q) ||
                                 (jadwal.asesor?.nama_lengkap || '').toLowerCase().includes(q)
                             );
                             if (!match) return false;
