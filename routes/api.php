@@ -102,7 +102,13 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('berita', BeritaAPIController::class);
     Route::apiResource('struktur', StrukturOrganisasiController::class);
     Route::apiResource('mitra', MitraController::class);
-    Route::apiResource('jadwal', JadwalControllerAPI::class);
+    Route::apiResource('jadwal', JadwalControllerAPI::class)->names([
+        'index' => 'api.jadwal.index',
+        'store' => 'api.jadwal.store',
+        'show' => 'api.jadwal.show',
+        'update' => 'api.jadwal.update',
+        'destroy' => 'api.jadwal.destroy',
+    ]);
 
 
     // ==========================
