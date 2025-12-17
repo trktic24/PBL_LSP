@@ -190,17 +190,11 @@
 
                                 <td class="px-6 py-4">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50 relative group">
-                                        @if($tuk->foto_tuk)
-                                            <img src="{{ asset($tuk->foto_tuk) }}" 
-                                                 alt="Foto {{ $tuk->nama_lokasi }}" 
-                                                 class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
-                                                 onclick="window.open(this.src, '_blank')"
-                                            >
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                                <i class="fas fa-image text-lg"></i>
-                                            </div>
-                                        @endif
+                                        <img src="{{ $tuk->foto_tuk ? asset('storage/' . $tuk->foto_tuk) : asset('images/default_pic.jpeg') }}" 
+                                             alt="Foto {{ $tuk->nama_lokasi ?? 'TUK' }}" 
+                                             class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
+                                             onclick="window.open(this.src, '_blank')"
+                                             onerror="this.onerror=null; this.src='{{ asset('images/default_pic.jpeg') }}';">
                                     </div>
                                 </td>
 

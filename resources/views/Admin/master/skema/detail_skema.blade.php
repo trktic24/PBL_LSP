@@ -242,7 +242,7 @@
                                     <td class="px-4 py-3 text-center border border-gray-200">
                                         <form action="{{ route('admin.skema.detail.destroy_unit', ['id_unit' => $unit->id_unit_kompetensi, 'no' => $currentNo]) }}" 
                                               method="POST" 
-                                              onsubmit="return confirm('Yakin ingin menghapus Unit No. {{ $currentNo }} ({{ $unit->kode_unit }})?');">
+                                              onsubmit="return confirm('Yakin ingin menghapus Unit No. {{ $currentNo }} @if($unit->kode_unit)({{ $unit->kode_unit }})@endif?');">
                                             @csrf
                                             @method('DELETE')
                                             

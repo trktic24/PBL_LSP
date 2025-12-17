@@ -63,6 +63,13 @@ class RegisteredUserController extends Controller
             ]);
         }
 
+        // SANITIZATION: Strip tags from name to prevent XSS
+        if ($request->has('nama_lengkap')) {
+            $request->merge([
+                'nama_lengkap' => strip_tags($request->input('nama_lengkap'))
+            ]);
+        }
+
         $isGoogle = $request->boolean('is_google_register');
         $roleName = $request->input('role'); // 'asesi' atau 'asesor'
 
@@ -74,7 +81,9 @@ class RegisteredUserController extends Controller
             'role' => ['required', 'string', 'in:asesi,asesor'],
             // Rule 'unique' akan diabaikan untuk user Google jika email sudah ada di request (dari session)
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password' => $isGoogle ? ['nullable'] : ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => $isGoogle 
+                            ? ['nullable'] 
+                            : ['required', 'string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'confirmed'],
             'is_google_register' => ['nullable', 'boolean'],
             'google_id' => ['nullable', 'string'],
         ];
@@ -94,11 +103,11 @@ class RegisteredUserController extends Controller
                 'kode_pos' => ['required', 'string', 'max:10'],
                 'kabupaten' => ['required', 'string', 'max:255'], // -> kabupaten_kota
                 'provinsi' => ['required', 'string', 'max:255'],
-                'no_hp' => ['required', 'string', 'max:16'], // -> nomor_hp
+                'no_hp' => ['required', 'numeric', 'digits_between:10,14', 'unique:asesi,nomor_hp'],
                 'nama_institusi' => ['required', 'string', 'max:255'], // -> nama_institusi_perusahaan
                 'alamat_institusi' => ['required', 'string'], // -> alamat_kantor
                 'jabatan' => ['required', 'string', 'max:255'],
-                'kode_pos_institusi' => ['required', 'string', 'max:15'],
+                'kode_pos_institusi' => ['required', 'string', 'max:10'],
                 'no_telepon_institusi' => ['required', 'string', 'max:16'], // Ini opsional
             ];
             $rules = array_merge($rules, $asesiRules);
@@ -119,7 +128,7 @@ class RegisteredUserController extends Controller
                 'kode_pos' => ['required', 'string', 'max:10'],
                 'kabupaten' => ['required', 'string', 'max:255'],
                 'provinsi' => ['required', 'string', 'max:255'],
-                'no_hp' => ['required', 'string', 'max:14'],
+                'no_hp' => ['required', 'numeric', 'digits_between:10,14', 'unique:asesor,nomor_hp'],
                 'npwp' => ['required', 'string', 'max:25'],
                 'skema' => ['required', 'integer', 'exists:skema,id_skema'],
                 'nama_bank' => ['required', 'string', 'max:100'],
