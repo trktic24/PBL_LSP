@@ -12,11 +12,11 @@ class MasterTUKFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama_lokasi' => 'TUK ' . $this->faker->company(),
-            'alamat_tuk' => $this->faker->address(),
-            'kontak_tuk' => $this->faker->phoneNumber(),
+            'nama_lokasi' => 'TUK ' . fake()->company(),
+            'alamat_tuk' => fake()->address(),
+            'kontak_tuk' => fake()->phoneNumber(),
             'foto_tuk' => 'path/to/fake_foto_tuk.jpg',
-            'link_gmap' => $this->faker->url(),
+            'link_gmap' => fake()->url(),
         ];
     }
 }
