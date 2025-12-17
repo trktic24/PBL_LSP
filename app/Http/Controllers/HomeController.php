@@ -9,9 +9,7 @@ use App\Models\Category;
 use App\Models\Jadwal; 
 use App\Models\Berita; 
 use Carbon\Carbon;
-use \DateTime;
-use Illuminate\Support\Collection; 
-use Illuminate\Http\RedirectResponse; 
+ 
 
 class HomeController extends Controller
 {
@@ -49,9 +47,7 @@ class HomeController extends Controller
         // Menggunakan Eager Loading untuk 'jadwal', 'masterTuk', 'category', 'asesor', dan 'unitKompetensi'
         $skema = Skema::with(['jadwal.masterTuk', 'category', 'asesor', 'unitKompetensi'])->findOrFail($id);
         
-        // --- INJEKSI DUMMY DATA YANG DIHAPUS (DIGANTI DATA REAL VIA EAGER LOAD) ---
-        // $skema->unit_kompetensi = collect([...]);
-        // $skema->skkni = collect([...]); -> Menggunakan $skema->SKKNI dari DB
+
         
         if (!isset($skema->gambar)) {
              $skema->gambar = 'default_skema_image.jpg'; 
