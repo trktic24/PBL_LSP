@@ -22,3 +22,12 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Storage Strictness
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/app/private_uploads/*
+!/storage/app/private_uploads/.gitignore
+
+# Allow Static Assets
+!/public/images/

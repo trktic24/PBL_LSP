@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Role; // <-- Import Role
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Hash; // <-- Import Hash
 use Illuminate\Support\Str;
 
 /**
@@ -12,11 +13,6 @@ use Illuminate\Support\Str;
 class UserFactory extends Factory
 {
     /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
-    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
@@ -24,10 +20,16 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            // Ambil role_id secara acak dari tabel roles
+            // Ini ASUMSI tabel roles-nya udah keisi dulu
+            'role_id' => Role::inRandomOrder()->first()->id_role,
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+
+            // Password default-nya adalah 'password'
+            'password' => Hash::make('password'),
+
+            'google_id' => null,
             'remember_token' => Str::random(10),
         ];
     }
@@ -39,6 +41,17 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * State khusus untuk membuat Asesor (role_id = 3)
+     * (Ini akan dipanggil oleh AsesorFactory)
+     */
+    public function asesor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role_id' => 3,
         ]);
     }
 }

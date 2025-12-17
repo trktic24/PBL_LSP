@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Jadwal;
+use App\Models\DataSertifikasiAsesi;
+use App\Models\Asesor;
+
+class DaftarHadirController extends Controller
+{
+    /**
+     * Menampilkan Daftar Hadir Peserta untuk Jadwal Tertentu.
+     */
+    public function daftarHadir(Request $request, $id_jadwal)
+    {
+        // 1. Ambil Data Jadwal Utama
+        $jadwal = Jadwal::with(['skema', 'asesor', 'masterTuk', 'jenisTuk', 'dataSertifikasiAsesi'])
+                    ->findOrFail($id_jadwal);
+
+        // 2. Cek Otorisasi HANYA jika role asesor
+        if (Auth::user()->role === 'asesor') {
+            $asesor = Asesor::where('id_user', Auth::id())->first();
+
+            if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
+        }
+
+        // 3. Setup Default Sorting
+        $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');
+        $sortDirection = $request->input('direction', 'asc');
+        
+        // 4. Base Query ke tabel Pivot (DataSertifikasiAsesi)
+        $query = DataSertifikasiAsesi::query()
+                    ->with(['asesi.user', 'asesi.dataPekerjaan', 'presensi'])
+                    ->where('id_jadwal', $id_jadwal)
+                    ->select('data_sertifikasi_asesi.*');
+
+        // 5. Logic Sorting Lanjutan (Join Table)
+        if (in_array($sortColumn, ['nama_lengkap', 'alamat_rumah', 'pekerjaan', 'nomor_hp'])) {
+            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
+                  ->orderBy('asesi.' . $sortColumn, $sortDirection);
+        } 
+        elseif ($sortColumn == 'institusi') {
+            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
+                  ->leftJoin('data_pekerjaan_asesi', 'asesi.id_asesi', '=', 'data_pekerjaan_asesi.id_asesi')
+                  ->orderBy('data_pekerjaan_asesi.nama_institusi_pekerjaan', $sortDirection);
+        } 
+        else {
+            $query->orderBy('id_data_sertifikasi_asesi', $sortDirection);
+        }
+
+        // 6. Search Logic
+        if ($request->has('search') && $request->input('search') != '') {
+            $searchTerm = $request->input('search');
+            $query->whereHas('asesi', function($q) use ($searchTerm) {
+                $q->where('nama_lengkap', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('alamat_rumah', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('nomor_hp', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('pekerjaan', 'like', '%' . $searchTerm . '%')
+                  ->orWhereHas('dataPekerjaan', function($q2) use ($searchTerm) {
+                      $q2->where('nama_institusi_pekerjaan', 'like', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+
+        // 7. Pagination
+        $perPage = $request->input('per_page', 10);
+        $pendaftar = $query->paginate($perPage)->appends($request->query());
+        
+        // Filter Role
+        $mode = Auth::user()->role === 'admin' ? 'view' : 'edit';
+
+        return view('admin.master.schedule.daftar_hadir', [
+            'jadwal' => $jadwal,
+            'pendaftar' => $pendaftar,
+            'perPage' => $perPage,
+            'sortColumn' => $sortColumn,
+            'sortDirection' => $sortDirection,
+            'role' => Auth::user()->role,
+            'mode' => $mode,
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        try {
+            // 1. Cari data pendaftaran berdasarkan PK-nya
+            // Gunakan findOrFail agar otomatis 404 jika data tidak ada
+            $dataSertifikasi = DataSertifikasiAsesi::findOrFail($id);
+
+            // 2. Ambil Nama Asesi dan ID Jadwal sebelum dihapus untuk keperluan redirect dan pesan
+            $namaAsesi = $dataSertifikasi->asesi->nama_lengkap ?? 'Peserta';
+            $idJadwal = $dataSertifikasi->id_jadwal;
+
+            // 3. Lakukan penghapusan
+            $dataSertifikasi->delete();
+
+            // 4. Redirect kembali ke halaman daftar hadir jadwal tersebut dengan pesan sukses
+            // Asumsi nama route index adalah 'schedule.attendance'
+            return redirect()->route('admin.schedule.attendance', $idJadwal)
+                             ->with('success', "Peserta atas nama '{$namaAsesi}' berhasil dihapus dari jadwal ini.");
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Handle jika ID tidak ditemukan
+            return redirect()->back()->with('error', 'Data peserta tidak ditemukan.');
+        } catch (\Exception $e) {
+            // Handle error umum lainnya
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus peserta: ' . $e->getMessage());
+        }
+    }
+}

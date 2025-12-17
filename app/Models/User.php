@@ -2,31 +2,40 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasApiTokens, Notifiable; // Hapus HasApiTokens jika tidak pakai Sanctum
+
+    /**
+     * TAMBAHKAN INI:
+     * Beri tahu Eloquent bahwa primary key Anda bukan 'id'.
+     */
+    protected $primaryKey = 'id_user';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
+        'role_id', // <-- Tambahkan ini
+        'google_id', // <-- Tambahkan ini
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -44,5 +53,35 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return $this->primaryKey;
+    }
+
+    public function role()
+    {
+        // Relasi ini perlu foreign key 'role_id' dan primary key 'id_role'
+        // Ini sudah benar sesuai migrasi users_table Anda
+        return $this->belongsTo(Role::class, 'role_id', 'id_role');
+    }
+
+    public function asesor()
+    {
+        // Relasi ini sudah benar, akan mencari 'user_id' di tabel data_asesor
+        return $this->hasOne(Asesor::class, 'id_user', 'id_user');
+    }
+
+    public function asesi()
+    {
+        // Relasi ini sudah benar, akan mencari 'user_id' di tabel data_asesi
+        return $this->hasOne(Asesi::class, 'id_user', 'id_user');
+    }
+
+    // Anda juga punya data_admin, tambahkan ini jika perlu
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'id_user', 'id_user');
     }
 }

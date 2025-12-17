@@ -3,48 +3,284 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Asesi;
+use App\Models\Asesor;
+use App\Models\DataPekerjaanAsesi;
+use App\Models\Role;
+use App\Models\Skema;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
+use Livewire\Attributes\Validate;
 
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Tampilkan view registrasi.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.register');
+        // Bersihkan session Google jika user kembali ke step 1
+        if (!$request->has('step') || $request->step == 1) {
+            session()->forget('google_register_data');
+        }
+        $allSkemas = Skema::orderBy('nama_skema', 'asc')->get();
+        $skemaOptions = $allSkemas->map(function ($skema) {
+        return [
+            'value' => $skema->id_skema, // Kirim ID-nya
+            'label' => $skema->nama_skema, // Tampilin Namanya
+        ];
+    });
+        return view('auth.register', [
+        'skemaOptions' => $skemaOptions
+    ]);
     }
 
     /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Tangani request registrasi.
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        // Gabungkan data session Google ke request jika ada
+        if (session()->has('google_register_data')) {
+            $request->merge([
+                'is_google_register' => true,
+                'google_id' => session('google_register_data.google_id'),
+                'email' => session('google_register_data.email'),
+                'nama_lengkap' => session('google_register_data.name'),
+                'role' => session('google_register_data.role'),
+            ]);
+        }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        // SANITIZATION: Strip tags from name to prevent XSS
+        if ($request->has('nama_lengkap')) {
+            $request->merge([
+                'nama_lengkap' => strip_tags($request->input('nama_lengkap'))
+            ]);
+        }
+
+        $isGoogle = $request->boolean('is_google_register');
+        $roleName = $request->input('role'); // 'asesi' atau 'asesor'
+
+        // Ambil model Role. Ini akan dipakai untuk 'role_id'
+        $role = Role::where('nama_role', $roleName)->firstOrFail();
+
+        // ✅ VALIDASI DASAR
+        $rules = [
+            'role' => ['required', 'string', 'in:asesi,asesor'],
+            // Rule 'unique' akan diabaikan untuk user Google jika email sudah ada di request (dari session)
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'password' => $isGoogle 
+                            ? ['nullable'] 
+                            : ['required', 'string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'confirmed'],
+            'is_google_register' => ['nullable', 'boolean'],
+            'google_id' => ['nullable', 'string'],
+        ];
+
+        // ✅ VALIDASI ASESI (GANTI DARI NULLABLE -> REQUIRED)
+        if ($roleName === 'asesi') {
+            $asesiRules = [
+                'nama_lengkap' => ['required', 'string', 'max:255'],
+                'nik' => ['required', 'string', 'size:16', 'unique:asesi,nik'],
+                'tempat_lahir' => ['required', 'string', 'max:100'],
+                'tanggal_lahir' => ['required', 'string', 'date_format:d-m-Y'],
+                'jenis_kelamin' => ['required', 'string', 'in:Laki-laki,Perempuan'],
+                'kebangsaan' => ['required', 'string', 'max:100'],
+                'kualifikasi' => ['required', 'string', 'max:255'], // -> pendidikan
+                'pekerjaan' => ['required', 'string', 'max:255'],
+                'alamat_rumah' => ['required', 'string'],
+                'kode_pos' => ['required', 'string', 'max:10'],
+                'kabupaten' => ['required', 'string', 'max:255'], // -> kabupaten_kota
+                'provinsi' => ['required', 'string', 'max:255'],
+                'no_hp' => ['required', 'numeric', 'digits_between:10,14', 'unique:asesi,nomor_hp'],
+                'nama_institusi' => ['required', 'string', 'max:255'], // -> nama_institusi_perusahaan
+                'alamat_institusi' => ['required', 'string'], // -> alamat_kantor
+                'jabatan' => ['required', 'string', 'max:255'],
+                'kode_pos_institusi' => ['required', 'string', 'max:10'],
+                'no_telepon_institusi' => ['required', 'string', 'max:16'], // Ini opsional
+            ];
+            $rules = array_merge($rules, $asesiRules);
+        }
+
+        // ✅ VALIDASI ASESOR (GANTI DARI NULLABLE -> REQUIRED)
+        if ($roleName === 'asesor') {
+            $asesorRules = [
+                'nama_lengkap' => ['required', 'string', 'max:255'],
+                'no_registrasi_asesor' => ['required', 'string', 'max:50', 'unique:asesor,nomor_regis'],
+                'nik' => ['required', 'string', 'size:16', 'unique:asesor,nik'],
+                'tempat_lahir' => ['required', 'string', 'max:100'],
+                'tanggal_lahir' => ['required', 'string', 'date_format:d-m-Y'],
+                'jenis_kelamin' => ['required', 'string', 'in:Laki-laki,Perempuan'],
+                'pekerjaan' => ['required', 'string', 'max:255'],
+                'asesor_kebangsaan' => ['required', 'string', 'max:100'],
+                'alamat_rumah' => ['required', 'string'],
+                'kode_pos' => ['required', 'string', 'max:10'],
+                'kabupaten' => ['required', 'string', 'max:255'],
+                'provinsi' => ['required', 'string', 'max:255'],
+                'no_hp' => ['required', 'numeric', 'digits_between:10,14', 'unique:asesor,nomor_hp'],
+                'npwp' => ['required', 'string', 'max:25'],
+                'skema' => ['required', 'integer', 'exists:skema,id_skema'],
+                'nama_bank' => ['required', 'string', 'max:100'],
+                'nomor_rekening' => ['required', 'string', 'max:20'],
+
+                // FILES (bisa 'required' atau 'nullable' tergantung logika form, 'nullable' oke)
+                'ktp_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'foto_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'npwp_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'rekening_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'cv_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'ijazah_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'sertifikat_asesor_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'sertifikat_kompetensi_file' => ['required', File::types(['pdf', 'jpg', 'png'])->max(5 * 1024)],
+                'ttd_file' => ['required', File::types(['png'])->max(5 * 1024)],
+            ];
+            $rules = array_merge($rules, $asesorRules);
+        }
+
+        $validated = $request->validate($rules);
+
+        DB::beginTransaction();
+
+        try {
+            // === USERS ===
+            $user = User::create([
+                'email' => $validated['email'],
+                'password' => $isGoogle
+                                ? Hash::make(Str::random(24)) // Password random
+                                : Hash::make($validated['password']), // Password dari form
+                'google_id' => $validated['google_id'] ?? null,
+
+
+                'role_id' => $role->id_role,
+
+
+                'email_verified_at' => $isGoogle ? now() : null, // Verifikasi jika Google
+            ]);
+
+            // Format tanggal & JK
+            $tanggalLahir = Carbon::createFromFormat('d-m-Y', $validated['tanggal_lahir'])->format('Y-m-d');
+
+            // === ASESI ===
+            if ($roleName === 'asesi') {
+                $asesi = Asesi::create([
+                    'id_user' => $user->id_user, // Asumsi 'id_user' adalah Primary Key
+                    'nama_lengkap' => $validated['nama_lengkap'],
+                    'nik' => $validated['nik'],
+                    'tempat_lahir' => $validated['tempat_lahir'],
+                    'tanggal_lahir' => $tanggalLahir,
+                    'jenis_kelamin' => $validated['jenis_kelamin'],
+                    'kebangsaan' => $validated['kebangsaan'],
+                    'pendidikan' => $validated['kualifikasi'],
+                    'pekerjaan' => $validated['pekerjaan'],
+                    'alamat_rumah' => $validated['alamat_rumah'],
+                    'kode_pos' => $validated['kode_pos'],
+                    'kabupaten_kota' => $validated['kabupaten'],
+                    'provinsi' => $validated['provinsi'],
+                    'nomor_hp' => $validated['no_hp'],
+                ]);
+
+                DataPekerjaanAsesi::create([
+                    'id_asesi' => $asesi->id_asesi,
+                    'nama_institusi_pekerjaan' => $validated['nama_institusi'],
+                    'jabatan' => $validated['jabatan'],
+                    'alamat_institusi' => $validated['alamat_institusi'],
+                    'kode_pos_institusi' => $validated['kode_pos_institusi'],
+                    'no_telepon_institusi' => $validated['no_telepon_institusi'] ?? null,
+                ]);
+            }
+
+            // === ASESOR ===
+            if ($roleName === 'asesor') {
+                $fileMapping = [
+                    'ktp_file' => 'ktp',
+                    'foto_file' => 'pas_foto',
+                    'npwp_file' => 'NPWP_foto',
+                    'rekening_file' => 'rekening_foto',
+                    'cv_file' => 'CV',
+                    'ijazah_file' => 'ijazah',
+                    'sertifikat_asesor_file' => 'sertifikat_asesor',
+                    'sertifikat_kompetensi_file' => 'sertifikasi_kompetensi',
+                    'ttd_file' => 'tanda_tangan',
+                ];
+
+                // SECURE STORAGE CHANGE
+                // Use 'asesor_docs' folder in private_docs disk.
+                $baseFolder = "asesor_docs/{$user->id_user}";
+                $filePaths = [];
+
+                foreach ($fileMapping as $form => $column) {
+                    if ($request->hasFile($form)) {
+                        // Store securely on private_docs
+                        $path = $request->file($form)->store($baseFolder, 'private_docs');
+                        $filePaths[$column] = $path;
+                    }
+                }
+
+                // $skema = Skema::where('id_skema', $validated['skema'])->first();
+
+                Asesor::create([
+                    'id_user' => $user->id_user,
+                    'id_skema' => $validated['skema'],
+                    'nama_lengkap' => $validated['nama_lengkap'],
+                    'nomor_regis' => $validated['no_registrasi_asesor'],
+                    'nik' => $validated['nik'],
+                    'tempat_lahir' => $validated['tempat_lahir'],
+                    'tanggal_lahir' => $tanggalLahir,
+                    'jenis_kelamin' => $validated['jenis_kelamin'],
+                    'pekerjaan' => $validated['pekerjaan'],
+                    'kebangsaan' => $validated['asesor_kebangsaan'],
+                    'alamat_rumah' => $validated['alamat_rumah'],
+                    'kode_pos' => $validated['kode_pos'],
+                    'kabupaten_kota' => $validated['kabupaten'],
+                    'provinsi' => $validated['provinsi'],
+                    'nomor_hp' => $validated['no_hp'],
+                    'NPWP' => $validated['npwp'],
+                    'nama_bank' => $validated['nama_bank'],
+                    'norek' => $validated['nomor_rekening'],
+                    ...$filePaths, // Gabungkan semua path file
+                ]);
+            }
+
+            DB::commit();
+
+            // Bersihkan session Google setelah sukses
+            session()->forget(['google_register_data']);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Hapus folder file jika gagal simpan asesor
+            if ($roleName === 'asesor' && isset($baseFolder)) {
+                Storage::disk('private_docs')->deleteDirectory($baseFolder);
+            }
+            // Kembalikan ke form dengan error
+            return back()->with('error', 'Terjadi kesalahan: '.$e->getMessage())->withInput();
+        }
 
         event(new Registered($user));
-
         Auth::login($user);
+        if ($user->role->nama_role === 'asesor' && $user->asesor?->status_verifikasi === 'pending') {
+            return redirect()->route('auth.wait');
+        }
 
-        return redirect(route('dashboard', absolute: false));
+        // Refresh user to load relationships (asesor)
+        $user->refresh();
+
+        if ($user->role->nama_role === 'asesor' && $user->asesor?->status_verifikasi === 'pending') {
+            return redirect()->route('auth.wait');
+        }
+
+        // Fallback
+        return redirect('/');
     }
 }
