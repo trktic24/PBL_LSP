@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Asesor;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Perbaikan typo 'belongsTo' jadi 'BelongsTo'
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 
 class Jadwal extends Model
 {
@@ -17,48 +21,87 @@ class Jadwal extends Model
         'id_tuk',
         'id_skema',
         'id_asesor',
-        'kuota_maksimal',
-        'kuota_minimal',
         'sesi',
         'tanggal_mulai',
         'tanggal_selesai',
         'tanggal_pelaksanaan',
         'waktu_mulai',
+        'waktu_selesai', // [TAMBAHAN 1] Masukkan ke fillable
         'Status_jadwal',
+        'kuota_maksimal',
+        'kuota_minimal',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
     protected $casts = [
         'tanggal_mulai' => 'datetime',
         'tanggal_selesai' => 'datetime',
-        'tanggal_pelaksanaan' => 'datetime',
+        'tanggal_pelaksanaan' => 'date',
+        'waktu_mulai' => 'datetime',
+        'waktu_selesai' => 'datetime', // [TAMBAHAN 2] Masukkan ke casts
     ];
 
-    // --- RELASI (Relationships) ---
+    // --- CUSTOM ACCESSORS ---
 
-    public function jenisTuk()
+    public function getTanggalMulaiAttribute($value)
     {
-        return $this->belongsTo(JenisTuk::class, 'id_jenis_tuk', 'id_jenis_tuk');
+        return $value ? Carbon::parse($value) : null;
     }
 
-    public function masterTuk()
+    public function getTanggalSelesaiAttribute($value)
     {
-        return $this->belongsTo(MasterTuk::class, 'id_tuk', 'id_tuk');
+        return $value ? Carbon::parse($value) : null;
     }
 
-    public function skema()
+    public function getTanggalPelaksanaanAttribute($value)
     {
-        // Asumsi nama model adalah Skema
+        return $value ? Carbon::parse($value) : null;
+    }
+    
+    public function getWaktuMulaiAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    // [TAMBAHAN 3] Accessor untuk Waktu Selesai
+    public function getWaktuSelesaiAttribute($value)
+    {
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    // --- RELASI ---
+
+    public function jenisTuk(): BelongsTo
+    {
+        return $this->belongsTo(JenisTUK::class, 'id_jenis_tuk', 'id_jenis_tuk');
+    }
+
+    public function masterTuk(): BelongsTo
+    {
+        return $this->belongsTo(MasterTUK::class, 'id_tuk', 'id_tuk'); 
+    }
+
+    public function skema(): BelongsTo
+    {
         return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
     }
 
-    public function asesor()
+    public function dataSertifikasiAsesi(): HasMany
     {
-        // Asumsi nama model adalah Asesor
+        return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
+    }
+
+    public function asesi(): HasMany
+    {
+        return $this->hasMany(DataSertifikasiAsesi::class, 'id_jadwal', 'id_jadwal');
+    }
+
+    public function asesor(): BelongsTo
+    {
         return $this->belongsTo(Asesor::class, 'id_asesor', 'id_asesor');
+    }
+    public function tuk(): BelongsTo
+    {
+        // Menghubungkan ke MasterTUK menggunakan foreign key 'id_tuk'
+        return $this->belongsTo(MasterTUK::class, 'id_tuk', 'id_tuk');
     }
 }

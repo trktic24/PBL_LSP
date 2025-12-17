@@ -31,10 +31,19 @@
            ($error ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200') .
            ' px-3 py-2.5 text-sm focus:outline-none focus:ring-2 transition duration-200 placeholder:text-gray-400'
         ]) }}
+    x-bind:class="{
+        '!border-red-500 !focus:border-red-500 !focus:ring-red-200': typeof touched !== 'undefined' && typeof errors !== 'undefined' && touched['{{ $name }}'] && errors['{{ $name }}'],
+        '!border-gray-300 !focus:border-blue-500 !focus:ring-blue-200': typeof touched !== 'undefined' && typeof errors !== 'undefined' && touched['{{ $name }}'] && !errors['{{ $name }}'] && !'{{ $error }}'
+    }"
     />
 
 
     @if($error)
         <p class="text-xs text-red-500 mt-1">{{ $error }}</p>
     @endif
+    <p x-show="typeof touched !== 'undefined' && typeof errors !== 'undefined' && touched['{{ $name }}'] && errors['{{ $name }}']"
+       x-text="errors['{{ $name }}']"
+       class="text-xs text-red-500 mt-1"
+       style="display: none;">
+    </p>
 </div>

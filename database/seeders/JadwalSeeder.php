@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Jadwal;
+use App\Models\Asesor; // Pastikan model Asesor di-use
+use App\Models\User;
 
 class JadwalSeeder extends Seeder
 {
@@ -13,9 +15,26 @@ class JadwalSeeder extends Seeder
      */
     public function run(): void
     {
-        // Buat 20 jadwal dummy.
-        // Ini akan otomatis membuat data JenisTuk, MasterTuk, Skema, dan Asesor
-        // yang baru untuk setiap jadwal, berkat definisi di Factory.
-        Jadwal::factory()->count(20)->create();
+        // 1. Ambil semua Asesor (Profile Asesor)
+        // Pastikan UserSeeder sudah jalan duluan
+        $allAsesor = Asesor::all();
+
+        if ($allAsesor->count() == 0) {
+            $this->command->error('Tidak ada data Asesor. Jalankan UserSeeder dulu.');
+            return;
+        }
+
+        // 2. Loop setiap Asesor
+        foreach ($allAsesor as $asesor) {
+            
+            // 3. Buatkan TEPAT 6 Jadwal untuk Asesor ini
+            Jadwal::factory()->count(6)->create([
+                'id_asesor' => $asesor->id_asesor, // Paksa ID Asesor ini
+            ]);
+            
+        }
+
+        $totalJadwal = $allAsesor->count() * 6;
+        $this->command->info("Berhasil membuat {$totalJadwal} Jadwal. Setiap Asesor punya 6 Jadwal.");
     }
 }

@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id('id_jenis_tuk');
 
             // isi kolom sesuai kebutuhan
-            $table->string('sewaktu');
-            $table->string('tempat_kerja');
-            $table->string('mandiri');
+            $table->enum('jenis_tuk', ['Sewaktu', 'Tempat Kerja'])->comment('Jenis TUK: Sewaktu atau Tempat Kerja');
             $table->timestamps();
         });
     }

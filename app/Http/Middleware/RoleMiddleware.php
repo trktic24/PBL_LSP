@@ -27,9 +27,15 @@ class RoleMiddleware
         // 2. Ambil role user
         $userRole = Auth::user()->role->nama_role;
 
-        // 3. Cek apakah role user ADA DI DALAM daftar role yang diizinkan
-        if (! in_array($userRole, $roles)) {
-            // Jika tidak ada, lempar 403
+        // 3. Cek apakah role user ada di dalam daftar $roles yang diizinkan
+        
+        // --- LOGIC TAMBAHAN: Superadmin bisa akses semua fitur Admin ---
+        if ($userRole === 'superadmin' && in_array('admin', $roles)) {
+            return $next($request);
+        }
+
+        if (!in_array($userRole, $roles)) { // <--- LOGIKA UTAMA DIUBAH DI SINI
+            // Jika role user TIDAK ADA di dalam array $roles, tolak aksesnya.
             abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
         }
 

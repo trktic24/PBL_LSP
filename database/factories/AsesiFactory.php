@@ -2,45 +2,58 @@
 
 namespace Database\Factories;
 
-use App\Models\Asesi;
+use App\Models\Asesi; // <-- 1. JANGAN LUPA USE MODELNYA
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User;
+use App\Models\DataPekerjaanAsesi;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Asesi>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<Asesi> // <-- 2. BENERIN INI
  */
+
 class AsesiFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = Asesi::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    public function definition():array
     {
-        // id_user akan kita isi dari Seeder
-
+        // Buat User baru dengan role_id 2 (Asesi)
+        $user = User::factory()->create(['role_id' => 2]); 
+        
+        $gender_string = $this->faker->randomElement(['Laki-laki', 'Perempuan']);
+        $fullName = $this->faker->firstName($gender_string) . ' ' . $this->faker->lastName();
+        
         return [
-            'nama_lengkap' => $this->faker->name(),
-            'nik' => $this->faker->unique()->numerify('################'), // 16 digit
-            'tempat_lahir' => $this->faker->city(),
-            'tanggal_lahir' => $this->faker->date('Y-m-d', '2003-01-01'),
-            'jenis_kelamin' => $this->faker->randomElement(['Laki-laki', 'Perempuan']),
-            'kebangsaan' => 'Indonesia',
-            'pendidikan' => $this->faker->randomElement(['SMA/SMK', 'D3', 'S1', 'S2']),
-            'pekerjaan' => $this->faker->jobTitle(),
-            'alamat_rumah' => $this->faker->address(),
-            'kode_pos' => $this->faker->postcode(),
+            'id_user'        => $user->id_user, 
+            'nama_lengkap'   => $fullName,
+            'nik'            => $this->faker->unique()->numerify('################'),
+            'tempat_lahir'   => $this->faker->city(),
+            'tanggal_lahir'  => $this->faker->dateTimeBetween('-25 years', '-18 years')->format('Y-m-d'),
+            'jenis_kelamin'  => $gender_string, // Sesuai dengan Enum
+            'kebangsaan'     => 'Indonesia',
+            'pendidikan'     => $this->faker->randomElement(['D3', 'D4', 'S1']),
+            'pekerjaan'      => $this->faker->randomElement(['Mahasiswa', 'Staf IT', 'Admin']),
+            'alamat_rumah'   => $this->faker->address(),
+            'kode_pos'       => $this->faker->postcode(),
             'kabupaten_kota' => $this->faker->city(),
-            'provinsi' => $this->faker->state(),
-            'nomor_hp' => '08' . $this->faker->numerify('##########'),
-            'tanda_tangan' => null, // Sesuai migration, file kita null-kan
+            'provinsi'       => $this->faker->state(),
+            'nomor_hp'       => $this->faker->numerify('082#########'),
+            'tanda_tangan'   => 'images/ttd_asesii.png',
         ];
     }
+
+    /**
+     * Konfigurasi factory hook.
+     * Method ini akan dijalankan SETELAH Asesi berhasil dibuat.
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (Asesi $asesi) {
+            // Buat 1 data pekerjaan untuk asesi ini
+            DataPekerjaanAsesi::factory()->create([
+                'id_asesi' => $asesi->id_asesi,
+            ]);
+        });
+    }
+
 }

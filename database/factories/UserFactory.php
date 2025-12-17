@@ -23,7 +23,6 @@ class UserFactory extends Factory
             // Ambil role_id secara acak dari tabel roles
             // Ini ASUMSI tabel roles-nya udah keisi dulu
             'role_id' => Role::inRandomOrder()->first()->id_role,
-
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
 
@@ -42,6 +41,17 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * State khusus untuk membuat Asesor (role_id = 3)
+     * (Ini akan dipanggil oleh AsesorFactory)
+     */
+    public function asesor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role_id' => 3,
         ]);
     }
 }

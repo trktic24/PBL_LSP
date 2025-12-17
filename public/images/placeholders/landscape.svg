@@ -1,0 +1,7 @@
+<svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder Image">
+    <rect width="100%" height="100%" fill="#f3f4f6"/>
+    <path fill="#9ca3af" d="M350 180h100v100H350z" opacity="0.5"/>
+    <circle cx="400" cy="230" r="30" fill="#9ca3af" opacity="0.8"/>
+    <path fill="#f3f4f6" d="M350 250l30-40 20 20 20-30 30 50H350z"/>
+    <text x="50%" y="65%" fill="#6b7280" font-family="ui-sans-serif, system-ui, sans-serif" font-size="24" font-weight="500" text-anchor="middle">No Image</text>
+</svg>

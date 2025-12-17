@@ -2,65 +2,59 @@
 
 namespace Database\Factories;
 
-use App\Models\Skema;
 use Illuminate\Database\Eloquent\Factories\Factory;
+// use App\Models\Skema; // Tidak perlu jika $model di-hardcode di bawah
 use App\Models\Category;
+use App\Models\KelompokPekerjaan; // <-- DITAMBAHKAN
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Skema>
+ */
 class SkemaFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
+     * Tentukan model yang terhubung dengan factory ini.
      *
      * @var string
      */
-    protected $model = Skema::class;
+    protected $model = \App\Models\Skema::class;
 
     /**
-     * Define the model's default state.
+     * Definisikan status default model.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        $categories = [
-            'Software Development',
-            'Network & Infrastructure',
-            'Data Science & AI',
-            'Cyber Security',
-            'Cloud Computing',
-            'UI/UX Design',
-            'Mobile Development',
-            'Database Administration',
-            'DevOps & Automation',
-            'Game Development',
-            'Business Analyst IT',
-            'Digital Marketing IT'
-        ];
-        $categoryIds = Category::pluck('id');
-
+        $nomorGambar = fake()->numberBetween(1, 12);
         return [
-            'kode_unit' => 'J.' . $this->faker->numberBetween(100000, 999999) . '.' . $this->faker->numberBetween(100, 999) . '.01',
-            'nama_skema' => 'Skema Sertifikasi ' . $this->faker->randomElement([
-                'Network Engineer',
-                'Software Developer',
-                'Database Administrator',
-                'UI/UX Designer',
-                'Cybersecurity Analyst',
-                'Cloud Specialist',
-                'AI Engineer',
-                'Data Scientist',
-                'IT Support Technician',
-                'Hardware Engineer',
+            'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
+
+            // Diubah dari 'kode_unit' menjadi 'nomor_skema' (DIUBAH)
+            // Ditambahkan unique() karena ada constraint ->unique() di migration
+            'nomor_skema' => fake()->unique()->numerify('J.620100.###.##'),
+
+            // Nama skema (tetap sama)
+            'nama_skema' => fake()->randomElement([
+                'Junior Web Developer',
+                'Ahli Digital Marketing',
+                'Operator Komputer Madya',
+                'Desainer Grafis Muda',
+                'Network Administrator',
+                'Data Analyst',
             ]),
-            'deskripsi_skema' => $this->faker->paragraph(2),
 
-            // Field opsional (boleh null)
-            'SKKNI' => null,
-            'gambar' => null,
+            // Deskripsi skema (tetap sama)
+            'deskripsi_skema' => fake()->paragraph(3, true),
 
-            // Field baru hasil migrasi
-            'harga' => $this->faker->numberBetween(100000, 1000000), // harga antara 100 ribu - 1 juta
-            'category_id' => $this->faker->randomElement($categoryIds),
+            // Kolom 'harga' (BARU)
+            'harga' => fake()->numberBetween(500000, 3000000),
+
+            // SKKNI (tetap sama)
+            'SKKNI' => '/storage/files/dummy_skkni.pdf',
+
+            // Gambar (tetap sama)
+            'gambar' => 'skema/foto_skema/skema' . $nomorGambar . '.jpg',
         ];
     }
 }

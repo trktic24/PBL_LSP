@@ -2,101 +2,176 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Jadwal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+
+use App\Models\Asesor;
+use App\Models\Asesi;
+use App\Models\Skema;
+use App\Models\MasterTUK;
 
 class JadwalController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of jadwal with filters, search and pagination.
+     */
+    public function index(Request $request)
     {
-        $now = Carbon::now();
-        
-        $jadwalList = [
-            ['id' => 1, 'skema' => 'Junior Web Dev', 'pendaftaran_mulai' => Carbon::create(2025, 10, 1), 'pendaftaran_selesai' => Carbon::create(2025, 10, 15), 'tanggal_asesmen' => Carbon::create(2025, 10, 25), 'tuk' => 'Polines', 'kuota' => 30, 'terisi' => 25],
-            ['id' => 2, 'skema' => 'Junior Web Dev', 'pendaftaran_mulai' => Carbon::create(2025, 10, 1), 'pendaftaran_selesai' => Carbon::create(2025, 10, 15), 'tanggal_asesmen' => Carbon::create(2025, 10, 25), 'tuk' => 'Polines', 'kuota' => 30, 'terisi' => 30],
-            ['id' => 3, 'skema' => 'Junior Web Dev', 'pendaftaran_mulai' => Carbon::create(2025, 9, 1), 'pendaftaran_selesai' => Carbon::create(2025, 9, 15), 'tanggal_asesmen' => Carbon::create(2025, 9, 25), 'tuk' => 'Polines', 'kuota' => 30, 'terisi' => 28],
-            ['id' => 4, 'skema' => 'Junior Web Dev', 'pendaftaran_mulai' => Carbon::create(2025, 12, 1), 'pendaftaran_selesai' => Carbon::create(2025, 12, 15), 'tanggal_asesmen' => Carbon::create(2025, 12, 25), 'tuk' => 'Polines', 'kuota' => 30, 'terisi' => 10],
-        ];
+        $query = Jadwal::with(['skema', 'masterTuk', 'asesi']);
 
-        // Proses setiap jadwal untuk menentukan status otomatis
-        foreach ($jadwalList as &$jadwal) {
-            // Cek apakah kuota penuh
-            if ($jadwal['terisi'] >= $jadwal['kuota']) {
-                $jadwal['status'] = 'Full';
-                $jadwal['statusColor'] = 'text-yellow-700';
-                $jadwal['statusBg'] = 'bg-yellow-200';
-                $jadwal['dapat_daftar'] = false;
-            }
-            // Cek apakah sudah melewati tanggal selesai pendaftaran
-            elseif ($now->greaterThan($jadwal['pendaftaran_selesai'])) {
-                $jadwal['status'] = 'Selesai';
-                $jadwal['statusColor'] = 'text-gray-700';
-                $jadwal['statusBg'] = 'bg-gray-200';
-                $jadwal['dapat_daftar'] = false;
-            }
-            // Cek apakah belum dimulai pendaftaran
-            elseif ($now->lessThan($jadwal['pendaftaran_mulai'])) {
-                $jadwal['status'] = 'Akan datang';
-                $jadwal['statusColor'] = 'text-blue-700';
-                $jadwal['statusBg'] = 'bg-blue-100';
-                $jadwal['dapat_daftar'] = false;
-            }
-            // Jika dalam periode pendaftaran dan masih ada kuota
-            else {
-                $jadwal['status'] = 'Dibuka';
-                $jadwal['statusColor'] = 'text-teal-700';
-                $jadwal['statusBg'] = 'bg-teal-100';
-                $jadwal['dapat_daftar'] = true;
+        // Global search: cari di nama skema, nama lokasi TUK, atau Status_jadwal
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('skema', function ($q2) use ($search) {
+                    $q2->where('nama_skema', 'like', "%{$search}%");
+                })
+                ->orWhereHas('masterTuk', function ($q3) use ($search) {
+                    $q3->where('nama_lokasi', 'like', "%{$search}%");
+                })
+                ->orWhere('Status_jadwal', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter skema (by nama_skema strings passed)
+        if ($request->filled('skema')) {
+            $skemaNames = (array) $request->skema;
+            $skemaIds = Skema::whereIn('nama_skema', $skemaNames)->pluck('id_skema')->toArray();
+            if (!empty($skemaIds)) {
+                $query->whereIn('id_skema', $skemaIds);
             }
         }
 
-        return view('landing_page.jadwal', compact('jadwalList'));
+        // Filter TUK (by nama_lokasi strings passed)
+        if ($request->filled('tuk')) {
+            $tukNames = (array) $request->tuk;
+            $tukIds = MasterTUK::whereIn('nama_lokasi', $tukNames)->pluck('id_tuk')->toArray();
+            if (!empty($tukIds)) {
+                $query->whereIn('id_tuk', $tukIds);
+            }
+        }
+
+        // Filter status
+        if ($request->filled('status')) {
+            $statuses = (array) $request->status;
+            $query->whereIn('Status_jadwal', $statuses);
+        }
+
+        // Filter tanggal pelaksanaan range
+        if ($request->filled('tgl_mulai')) {
+            $query->whereDate('tanggal_pelaksanaan', '>=', $request->tgl_mulai);
+        }
+        if ($request->filled('tgl_selesai')) {
+            $query->whereDate('tanggal_pelaksanaan', '<=', $request->tgl_selesai);
+        }
+
+        // Order & paginate (20 per halaman)
+        $jadwal = $query->orderBy('tanggal_pelaksanaan', 'asc')
+                       ->paginate(20)
+                       ->appends($request->except('page'));
+
+        // Update status otomatis
+        foreach ($jadwal as $item) {
+            $this->updateStatusJadwal($item);
+        }
+
+        /**
+         * PERBAIKAN DI SINI
+         * ------------------
+         * Ubah dari pluck() → all() supaya hasilnya bukan string,
+         * tetapi objek model sehingga di Blade bisa pakai $sk->nama_skema
+         */
+        $listSkema = Skema::selectRaw('MIN(id_skema) as id_skema, TRIM(LOWER(nama_skema)) as nama_skema')
+            ->groupBy('nama_skema')
+            ->orderBy('nama_skema')
+            ->get();
+
+
+        $listTuk = MasterTUK::selectRaw('MIN(id_tuk) as id_tuk, TRIM(LOWER(nama_lokasi)) as nama_lokasi')
+            ->groupBy('nama_lokasi')
+            ->orderBy('nama_lokasi')
+            ->get();
+
+
+        return view('landing_page.jadwal', compact('jadwal', 'listSkema', 'listTuk'));
     }
 
-    // Method baru untuk detail jadwal
+    /**
+     * Update status jadwal otomatis berdasarkan kondisi
+     */
+    private function updateStatusJadwal(Jadwal $jadwal)
+    {
+        $tanggalPelaksanaan = $jadwal->tanggal_pelaksanaan ? Carbon::parse($jadwal->tanggal_pelaksanaan) : null;
+        $tanggalMulai = $jadwal->tanggal_mulai ? Carbon::parse($jadwal->tanggal_mulai) : null;
+        $tanggalSelesai = $jadwal->tanggal_selesai ? Carbon::parse($jadwal->tanggal_selesai) : null;
+        $jumlahPeserta = $jadwal->relationLoaded('asesi') ? $jadwal->asesi->count() : $jadwal->asesi()->count();
+
+        if ($tanggalPelaksanaan && $tanggalPelaksanaan->isPast()) {
+            if ($jadwal->Status_jadwal !== 'Selesai') {
+                $jadwal->update(['Status_jadwal' => 'Selesai']);
+            }
+            return;
+        }
+
+        if (!is_null($jadwal->kuota_maksimal) && $jumlahPeserta >= $jadwal->kuota_maksimal) {
+            if ($jadwal->Status_jadwal !== 'Full') {
+                $jadwal->update(['Status_jadwal' => 'Full']);
+            }
+            return;
+        }
+
+        if ($tanggalSelesai && $tanggalSelesai->isPast() && $jumlahPeserta < ($jadwal->kuota_maksimal ?? PHP_INT_MAX)) {
+            if ($jadwal->Status_jadwal !== 'Full') {
+                $jadwal->update(['Status_jadwal' => 'Full']);
+            }
+            return;
+        }
+
+        if ($tanggalMulai && $tanggalSelesai && $tanggalMulai->isPast() && $tanggalSelesai->isFuture() && $jumlahPeserta < ($jadwal->kuota_maksimal ?? PHP_INT_MAX)) {
+            if ($jadwal->Status_jadwal !== 'Terjadwal') {
+                $jadwal->update(['Status_jadwal' => 'Terjadwal']);
+            }
+            return;
+        }
+    }
+
+    /**
+     * Show single jadwal (detail/admin view)
+     */
+    public function show($id)
+    {
+        $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor', 'asesi'])
+                        ->findOrFail($id);
+
+        $this->updateStatusJadwal($jadwal);
+
+        if ($jadwal->Status_jadwal === 'Terjadwal') {
+            return redirect()->route('jadwal.detail', $id);
+        }
+
+        return view('jadwal.show', compact('jadwal'));
+    }
+
+    /**
+     * Halaman detail jadwal untuk pendaftaran peserta
+     */
     public function detail($id)
     {
-        $now = Carbon::now();
-        
-        // Data jadwal yang sama (idealnya simpan di method terpisah atau database)
-        $jadwalList = [
-            ['id' => 1, 'skema' => 'Junior Web Dev', 'pendaftaran_mulai' => Carbon::create(2025, 10, 1), 'pendaftaran_selesai' => Carbon::create(2025, 10, 15), 'tanggal_asesmen' => Carbon::create(2025, 10, 25), 'tuk' => 'Polines', 'kuota' => 30, 'terisi' => 25],
-            ['id' => 2, 'skema' => 'Junior Web Dev', 'pendaftaran_mulai' => Carbon::create(2025, 10, 1), 'pendaftaran_selesai' => Carbon::create(2025, 10, 15), 'tanggal_asesmen' => Carbon::create(2025, 10, 25), 'tuk' => 'Polines', 'kuota' => 30, 'terisi' => 30],
-            ['id' => 3, 'skema' => 'Junior Web Dev', 'pendaftaran_mulai' => Carbon::create(2025, 9, 1), 'pendaftaran_selesai' => Carbon::create(2025, 9, 15), 'tanggal_asesmen' => Carbon::create(2025, 9, 25), 'tuk' => 'Polines', 'kuota' => 30, 'terisi' => 28],
-            ['id' => 4, 'skema' => 'Junior Web Dev', 'pendaftaran_mulai' => Carbon::create(2025, 12, 1), 'pendaftaran_selesai' => Carbon::create(2025, 12, 15), 'tanggal_asesmen' => Carbon::create(2025, 12, 25), 'tuk' => 'Polines', 'kuota' => 30, 'terisi' => 10],
-        ];
+        $jadwal = Jadwal::with(['jenisTuk', 'masterTuk', 'skema', 'asesor', 'asesi'])
+                        ->findOrFail($id);
 
-        // Cari jadwal berdasarkan ID
-        $jadwal = collect($jadwalList)->firstWhere('id', $id);
+        $this->updateStatusJadwal($jadwal);
 
-        // Jika tidak ditemukan
-        if (!$jadwal) {
-            abort(404, 'Jadwal tidak ditemukan');
+        if (!in_array($jadwal->Status_jadwal, ['Terjadwal'])) {
+            return redirect()->route('jadwal.index')
+                             ->with('error', 'Pendaftaran untuk jadwal ini sudah ditutup atau belum dibuka.');
         }
 
-        // Tentukan status
-        if ($jadwal['terisi'] >= $jadwal['kuota']) {
-            $jadwal['status'] = 'Full';
-            $jadwal['statusColor'] = 'text-yellow-700';
-            $jadwal['statusBg'] = 'bg-yellow-200';
-            $jadwal['dapat_daftar'] = false;
-        } elseif ($now->greaterThan($jadwal['pendaftaran_selesai'])) {
-            $jadwal['status'] = 'Selesai';
-            $jadwal['statusColor'] = 'text-gray-700';
-            $jadwal['statusBg'] = 'bg-gray-200';
-            $jadwal['dapat_daftar'] = false;
-        } elseif ($now->lessThan($jadwal['pendaftaran_mulai'])) {
-            $jadwal['status'] = 'Akan datang';
-            $jadwal['statusColor'] = 'text-blue-700';
-            $jadwal['statusBg'] = 'bg-blue-100';
-            $jadwal['dapat_daftar'] = false;
-        } else {
-            $jadwal['status'] = 'Dibuka';
-            $jadwal['statusColor'] = 'text-teal-700';
-            $jadwal['statusBg'] = 'bg-teal-100';
-            $jadwal['dapat_daftar'] = true;
-        }
+        $jumlahPeserta = $jadwal->asesi->count();
+        $sisaKuota = $jadwal->kuota_maksimal - $jumlahPeserta;
 
-        return view('detail_jadwal', compact('jadwal'));
+        return view('landing_page.detail.detail_jadwal', compact('jadwal', 'jumlahPeserta', 'sisaKuota'));
     }
 }

@@ -2,67 +2,45 @@
 
 namespace Database\Factories;
 
-use App\Models\Asesor;
-use App\Models\Skema; // <-- Import Skema
-use App\Models\User;  // <-- Import User
+use App\Models\User;
+use App\Models\Skema;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Asesor>
- */
 class AsesorFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
-    protected $model = Asesor::class;
-
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            // Kita ambil ID User dan Skema secara acak
-            // Ini ASUMSI tabel user & skema udah keisi dulu
-            'id_user' => User::inRandomOrder()->first()->id_user,
-            'id_skema' => Skema::inRandomOrder()->first()->id_skema,
-
-            'nomor_regis' => 'MET.' . $this->faker->unique()->numberBetween(1000000, 9999999),
-            'nama_lengkap' => $this->faker->name(),
-            'nik' => $this->faker->unique()->numerify('################'), // 16 digit NIK
-            'tempat_lahir' => $this->faker->city(),
-            'tanggal_lahir' => $this->faker->date('Y-m-d', '2000-01-01'),
-            'jenis_kelamin' => $this->faker->randomElement(['Laki-laki', 'Perempuan']),
+            'id_user' => User::factory()->state(['role_id' => 3]),
+            'id_skema' => Skema::inRandomOrder()->value('id_skema'),
+            'nomor_regis' => 'MET.' . fake()->unique()->numberBetween(1000000, 9999999),
+            'nama_lengkap' => fake()->name(),
+            'nik' => fake()->unique()->numerify('################'),
+            'tempat_lahir' => fake()->city(),
+            'tanggal_lahir' => fake()->date(),
+            'jenis_kelamin' => fake()->randomElement(['Laki-laki', 'Perempuan']),
             'kebangsaan' => 'Indonesia',
-            'pekerjaan' => $this->faker->jobTitle(),
+            'pekerjaan' => fake()->jobTitle(),
+            'alamat_rumah' => fake()->address(),
+            'kode_pos' => fake()->postcode(),
+            'kabupaten_kota' => fake()->city(),
+            'provinsi' => fake()->state(),
+            'nomor_hp' => '+62' . fake()->numerify('8##########'),
+            'NPWP' => fake()->numerify('##.###.###.#-###.###'),
+            'nama_bank' => fake()->randomElement(['Mandiri', 'BCA', 'BRI']),
+            'norek' => fake()->numerify('################'),
 
-            'alamat_rumah' => $this->faker->address(),
-            'kode_pos' => $this->faker->postcode(),
-            'kabupaten_kota' => $this->faker->city(),
-            'provinsi' => $this->faker->state(),
-            'nomor_hp' => '08' . $this->faker->numerify('##########'),
-            'NPWP' => $this->faker->numerify('##.###.###.#-###.###'),
+            // file dummy
+            'ktp' => 'uploads/ktp/dummy.png',
+            'pas_foto' => 'uploads/pasfoto/dummy.png',
+            'NPWP_foto' => 'uploads/npwp/dummy.png',
+            'rekening_foto' => 'uploads/rekening/dummy.png',
+            'CV' => 'uploads/cv/dummy.pdf',
+            'ijazah' => 'uploads/ijazah/dummy.pdf',
+            'sertifikat_asesor' => 'uploads/sertifikat/dummy.pdf',
+            'sertifikasi_kompetensi' => 'uploads/kompetensi/dummy.pdf',
+            'tanda_tangan' => 'images/ttd_asesii.png',
 
-            'nama_bank' => $this->faker->randomElement(['BCA', 'Mandiri', 'BNI', 'BRI']),
-            'norek' => $this->faker->creditCardNumber(), // Formatnya mirip nomor rekening
-
-            // Biarkan path file null, kita ga generate file-nya
-            'ktp' => null,
-            'pas_foto' => null,
-            'NPWP_foto' => null,
-            'rekening_foto' => null,
-            'CV' => null,
-            'ijazah' => null,
-            'sertifikat_asesor' => null,
-            'sertifikasi_kompetensi' => null,
-            'tanda_tangan' => null,
-
-            // 80% user asesor langsung di-verify
             'status_verifikasi' => $this->faker->boolean(80) ? 'approved' : $this->faker->randomElement(['pending', 'rejected']),
         ];
     }

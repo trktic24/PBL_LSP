@@ -1,47 +1,97 @@
-{{-- 
-    File: ttdasesiasesor.blade.php
-    Ini adalah komponen untuk menampilkan bagian tanda tangan Asesi dan Asesor.
+@props(['sertifikasi' => null])
+
+@php
+    // Ambil data dari $sertifikasi
+    $asesi = $sertifikasi->asesi ?? null;
+    $asesor = $sertifikasi->asesor ?? null; // Menggunakan accessor getAsesorAttribute di model DataSertifikasiAsesi
+    $jadwal = $sertifikasi->jadwal ?? null;
+
+    // Data Asesi
+    $namaAsesi = $asesi->nama_lengkap ?? '-';
+    $ttdAsesi = $asesi->tanda_tangan ?? null;
     
-    Pastikan Anda memanggil file ini dari dalam file lain yang sudah 
-    menggunakan layout @extends('layouts.app-sidebar') 
-    agar style Tailwind CSS-nya berfungsi.
+    // Data Asesor
+    $namaAsesor = $asesor->nama_lengkap ?? '-';
+    $noRegMet = $asesor->nomor_regis ?? '-';
+    $ttdAsesor = $asesor->tanda_tangan ?? null;
 
-    Cara memanggilnya: @include('nama-folder.ttdasesiasesor')
---}}
+    // Tanggal (Ambil dari jadwal tanggal pelaksanaan, atau hari ini jika null)
+    $tanggal = $jadwal && $jadwal->tanggal_pelaksanaan 
+        ? \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('d-m-Y') 
+        : date('d-m-Y');
 
-<div class="mt-8">
-    <h3 class="font-semibold text-gray-700 mb-3">Pencatatan dan Validasi</h3>
+    // Logic Tampilan
+    $showAsesi = $showAsesi ?? true; 
+    $showAsesor = $showAsesor ?? true;
+    $cols = ($showAsesi && $showAsesor) ? 2 : 1; 
+@endphp
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gray-50 border border-gray-200 rounded-md shadow-sm">
+<div class="border border-gray-200 shadow-md p-4 rounded-lg bg-white mt-8">
+    <h3 class="text-lg font-semibold mb-4">Pencatatan dan Validasi</h3>
 
-        <div class="space-y-3">
-            <h4 class="font-medium text-gray-800">Asesi</h4>
-            <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                <span class="font-medium text-gray-700">Nama</span>
-                <span class="font-medium">:</span>
-                <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="John Doe">
+    <div class="flex flex-col gap-4">
 
-                <span class="font-medium text-gray-700">Tandatangan/Tanggal</span>
-                <span class="font-medium">:</span>
-                <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="[Tanda Tangan] / 28-09-2025">
+        {{-- BAGIAN ASESI --}}
+        @if ($showAsesi)
+            <div>
+                <h4 class="font-medium mb-2 text-base text-gray-800">Asesi</h4>
+                <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-sm">
+                    <div>Nama</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] font-medium text-gray-900">{{ $namaAsesi }}</div>
+
+                    <div>Tanggal</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] text-gray-900">{{ $tanggal }}</div>
+
+                    <div>Tanda Tangan</div>
+                    <div>:</div>
+                    <div class="h-16">
+                        @if($ttdAsesi)
+                            {{-- SURGICAL REFACTOR: Use secure route --}}
+                            <img src="{{ route('secure.file', ['path' => $ttdAsesi]) }}" alt="Tanda Tangan Asesi" class="h-full object-contain">
+                        @else
+                            <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
+                        @endif
+                    </div>
+                </div>
             </div>
-        </div>
+        @endif
 
-        <div class="space-y-3">
-            <h4 class="font-medium text-gray-800">Asesor</h4>
-            <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-center">
-                <span class="font-medium text-gray-700">Nama</span>
-                <span class="font-medium">:</span>
-                <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="Ajeng Febria H.">
+        {{-- SEPARATOR JIKA KEDUANYA DITAMPILKAN --}}
+        @if ($showAsesi && $showAsesor)
+            <hr class="border-gray-200">
+        @endif
 
-                <span class="font-medium text-gray-700">No. Reg. MET.</span>
-                <span class="font-medium">:</span>
-                <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="MET-12345">
+        {{-- BAGIAN ASESOR --}}
+        @if ($showAsesor)
+            <div>
+                <h4 class="font-medium mb-2 text-base text-gray-800">Asesor</h4>
+                <div class="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 text-sm">
+                    <div>Nama</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] font-medium text-gray-900">{{ $namaAsesor }}</div>
 
-                <span class="font-medium text-gray-700">Tandatangan/Tanggal</span>
-                <span class="font-medium">:</span>
-                <input type="text" class="p-1 w-full border-b border-gray-300 focus:border-blue-500 outline-none bg-transparent" value="[Tanda Tangan] / 28-09-2025">
+                    <div>No. Reg. MET.</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] text-gray-900">{{ $noRegMet }}</div>
+
+                    <div>Tanggal</div>
+                    <div>:</div>
+                    <div class="min-h-[1.5em] text-gray-900">{{ $tanggal }}</div>
+
+                    <div>Tanda Tangan</div>
+                    <div>:</div>
+                    <div class="h-16">
+                        @if($ttdAsesor)
+                            <img src="{{ route('secure.file', ['path' => $ttdAsesor]) }}" alt="Tanda Tangan Asesor" class="h-full object-contain">
+                        @else
+                            <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
+                        @endif
+                    </div>
+                </div>
             </div>
-        </div>
+        @endif
+        
     </div>
 </div>

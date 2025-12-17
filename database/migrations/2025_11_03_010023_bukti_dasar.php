@@ -18,6 +18,9 @@ return new class extends Migration
             // isi model DB
             $table->enum('status_kelengkapan', ['memenuhi', 'tidak_memenuhi', 'tidak_ada']);
             $table->string('bukti_dasar')->comment('Sertakan dokumen');
+            $table->string('keterangan')->comment('Sertakan keterangan');
+            $table->boolean('status_validasi')->default(false);
+
             $table->timestamps();
         });
     }

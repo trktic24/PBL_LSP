@@ -2,25 +2,19 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\JenisTuk;
+use App\Models\JenisTUK;
 
 class JenisTukSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Jalankan database seeds.
      */
     public function run(): void
     {
-        // Buat 3 data dummy JenisTuk
-        JenisTuk::factory()->count(3)->create();
-
-        // Atau, Anda bisa buat data spesifik
-        JenisTuk::create([
-            'sewaktu' => 'TUK Sewaktu',
-            'tempat_kerja' => 'TUK di Tempat Kerja',
-            'mandiri' => 'TUK Mandiri',
+        JenisTUK::insert([
+            ['jenis_tuk' => 'Sewaktu', 'created_at' => now(), 'updated_at' => now()],
+            ['jenis_tuk' => 'Tempat Kerja', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

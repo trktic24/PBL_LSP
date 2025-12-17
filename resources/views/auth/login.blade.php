@@ -1,6 +1,36 @@
 <x-register-layout>
 
-    <div class="bg-gray-100 w-full flex items-center justify-center py-5">
+    <div class="bg-gray-100 w-full flex items-center justify-center py-5"
+        x-data="{
+            errors: {},
+            touched: {},
+            validate(field, value) {
+                let error = null;
+                value = value || '';
+                if (field === 'email') {
+                    if (!value) error = 'Email wajib diisi';
+                    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Format email tidak valid';
+                }
+                if (field === 'password') {
+                    if (!value) error = 'Password wajib diisi';
+                }
+                this.errors[field] = error;
+            },
+            handleInput(e) {
+                if (e.target.tagName === 'INPUT') {
+                    this.validate(e.target.name, e.target.value);
+                }
+            },
+            handleBlur(e) {
+                if (e.target.tagName === 'INPUT') {
+                    this.touched[e.target.name] = true;
+                    this.validate(e.target.name, e.target.value);
+                }
+            }
+        }"
+        @input.capture="handleInput($event)"
+        @focusout.capture="handleBlur($event)"
+    >
         <div class="w-full max-w-4xl bg-white rounded-3xl p-10 md:p-12 border border-gray-300 shadow-md">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
 
@@ -19,7 +49,7 @@
                     <x-auth-session-status class="mb-4" :status="session('status')" />
 
                     <div class="mt-6 mb-8">
-                        <h1 class="text-2xl font-semibold text-gray-900 mb-1">Masuk ke Akun Anda</h1>
+                        <h1 class="font-poppins text-2xl font-semibold text-gray-900 mb-1">Masuk ke Akun Anda</h1>
                         <p class="text-sm text-gray-500">
                             Belum punya akun?
                             <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-700 font-medium">

@@ -4,38 +4,37 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
+use App\Models\Skema;
+use App\Models\Jadwal;
+use Illuminate\Support\Facades\Storage; 
 
 class Asesor extends Model
 {
     use HasFactory;
 
     protected $table = 'asesor';
-
-    // Primary key
     protected $primaryKey = 'id_asesor';
 
-    // Kolom yang boleh diisi (sesuaikan dengan migration & form step 2 & 3 asesor)
     protected $fillable = [
         'id_user',
-        'id_skema',
-        'nomor_regis', // Mapping dari 'no_registrasi_asesor'
+        'id_skema', // Skema Utama (One-to-Many)
+        'nomor_regis',
         'nama_lengkap',
         'nik',
         'tempat_lahir',
-        'tanggal_lahir', // Simpan YYYY-MM-DD
-        'jenis_kelamin', // Simpan 0/1
+        'tanggal_lahir',
+        'jenis_kelamin',
         'kebangsaan',
+        'pekerjaan',
         'alamat_rumah',
-        'kode_pos', // <-- Ditambahkan
-        'kabupaten_kota', // <-- Ditambahkan (menggantikan tempat_tinggal)
+        'kode_pos',
+        'kabupaten_kota',
         'provinsi',
         'nomor_hp',
         'NPWP',
         'nama_bank',
-        'norek', // Mapping dari 'nomor_rekening'
-        'pekerjaan', // Mapping dari 'pekerjaan_asesor'
-        // Path file (nama samain sama migration)
+        'norek',
         'ktp',
         'pas_foto',
         'NPWP_foto',
@@ -44,23 +43,37 @@ class Asesor extends Model
         'ijazah',
         'sertifikat_asesor',
         'sertifikasi_kompetensi',
-        'tanda_tangan'
+        'tanda_tangan',
+        'status_verifikasi',
     ];
 
-    // Casting
-    protected $casts = [
-        'tanggal_lahir' => 'date',
-    ];
-
-    // Relasi: Satu Asesor dimiliki oleh satu User
-    public function user(): BelongsTo
+    public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user'); // FK, Owner Key
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 
-    // Relasi: Satu Asesor punya satu Skema
-    public function skema(): BelongsTo
+    /**
+     * Sumber 1: Skema Profil Utama (Kolom id_skema di tabel asesor)
+     */
+    public function skema()
     {
-        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema'); // FK, Owner Key
+        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
+    }
+
+    /**
+     * Sumber 2: Skema Lisensi (Tabel Pivot Transaksi_asesor_skema)
+     * Sesuai file migrasi: 2025_10_30_080349_transaksi_asesor_skema.php
+     */
+    public function skemas()
+    {
+        return $this->belongsToMany(Skema::class, 'Transaksi_asesor_skema', 'id_asesor', 'id_skema');
+    }
+
+    /**
+     * Sumber 3: Skema Riwayat Penugasan (Tabel Jadwal)
+     */
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class, 'id_asesor', 'id_asesor');
     }
 }

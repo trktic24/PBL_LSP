@@ -29,6 +29,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $user = Auth::user();
 
+        // Cek untuk Asesor
         if ($user->role?->nama_role === 'asesor') {
             $status = $user->asesor?->status_verifikasi;
 
@@ -47,7 +48,22 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        return redirect()->intended(route('dashboard'));
+        // Cek untuk Asesi - pastikan profil asesi sudah ada
+        if ($user->role?->nama_role === 'asesi') {
+            if (!$user->asesi) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')->with('error', 'Profil Anda belum lengkap. Silakan daftar terlebih dahulu untuk melengkapi data profil.');
+            }
+        }
+
+        // Cek untuk Admin
+        if ($user->role?->nama_role === 'admin' || $user->role?->nama_role === 'superadmin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->intended(route('home.index'));
     }
 
     /**

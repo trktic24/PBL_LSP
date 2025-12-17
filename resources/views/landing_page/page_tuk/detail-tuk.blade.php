@@ -10,14 +10,14 @@
     
     {{-- Judul Halaman --}}
     <div class="max-w-4xl mx-auto text-center mb-10">
-        <h1 class="text-3xl font-semibold text-gray-800">Detail Tempat Uji Kompetensi</h1>
+        <h1 class="text-3xl font-semibold text-gray-800 font-poppins">Detail Tempat Uji Kompetensi</h1>
         <div class="mt-2 w-24 h-1 bg-yellow-400 mx-auto rounded-full"></div>
     </div>
 
     {{-- Kartu Detail TUK --}}
     <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 p-8">
         
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ $data_tuk->nama_lokasi }}</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-poppins">{{ $data_tuk->nama_lokasi }}</h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
@@ -59,7 +59,7 @@
                     
                     <img src="{{ $data_tuk->foto_tuk }}" alt="Foto Tempat Uji Kompetensi" 
                          class="w-full h-80 object-cover" 
-                         onerror="this.onerror=null;this.src='{{ asset('images/placeholder_tuk.png') }}';">
+                         onerror="this.onerror=null;this.src='{{ asset('images/placeholders/landscape.svg') }}';">
                 </div>
             </div>
             
