@@ -40,7 +40,9 @@ class IA02Controller extends Controller
 
         // 3. Cek Role (Hanya Admin & Superadmin yang bisa edit)
         // Jika user belum login/auth, default false
-        $isAdmin = Auth::check() && in_array(Auth::user()->role_id, [1, 4]);
+        $user = Auth::user();
+        $isAdmin = Auth::check() && in_array($user->role_id, [1, 4]);
+        $isAsesor = Auth::check() && $user->role_id == 3;
 
         // 4. Ambil Data Unit Kompetensi
         // Kita gunakan Collection kosong sebagai default
@@ -70,6 +72,7 @@ class IA02Controller extends Controller
             'ia02' => $ia02,
             'skenario' => $ia02, // Alias biar view yang pake $skenario tetap jalan
             'isAdmin' => $isAdmin,
+            'isAsesor' => $isAsesor,
             'daftarUnitKompetensi' => $daftarUnitKompetensi,
             'unitKompetensis' => $daftarUnitKompetensi, // Alias juga
             'jadwal' => $sertifikasi->jadwal,
@@ -84,8 +87,8 @@ class IA02Controller extends Controller
     public function store(Request $request, string $id_sertifikasi)
     {
         // 1. Cek Hak Akses (Security)
-        // Hanya admin (1) atau superadmin (4)
-        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 4])) {
+        // Hanya admin (1), superadmin (4), atau asesor (3)
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 3, 4])) {
             abort(403, 'ANDA TIDAK MEMILIKI AKSES UNTUK MENGUBAH DATA INI.');
         }
 
