@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class Ia06Controller extends Controller
+class IA06Controller extends Controller
 {
     // =======================================================================
     // BAGIAN 1: ADMIN (MANAJEMEN BANK SOAL)
