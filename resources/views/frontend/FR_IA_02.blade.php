@@ -20,10 +20,6 @@
 
         <!-- Box Info Atas (Dinamis) -->
         {{-- Menggunakan komponen identitas_skema_form dengan data dinamis --}}
-        <x-identitas_skema_form.identitas_skema_form :skema="$skema->nama_skema ?? ''" :nomorSkema="$skema->kode_unit ?? ''"
-            :tuk="$jadwal->masterTuk->nama_lokasi ?? 'Tempat Kerja'" {{-- Asumsi relasi TUK di Jadwal --}}
-            :namaAsesor="$jadwal->asesor->nama_lengkap ?? ''" :namaAsesi="$asesi->nama_lengkap ?? ''"
-            :tanggal="optional($jadwal->tanggal_pelaksanaan)->format('d F Y') ?? date('d F Y')" />
         @if($sertifikasi)
             <form action="{{ route('ia02.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
                 @csrf
@@ -33,7 +29,10 @@
 
                 {{-- IDENTITAS SKEMA --}}
                 <div class="mb-8">
-                    <x-identitas_skema_form.identitas_skema_form :sertifikasi="$sertifikasi" />
+                        <x-identitas_skema_form.identitas_skema_form :skema="$skema->nama_skema ?? ''" :nomorSkema="$skema->kode_unit ?? ''"
+                        :tuk="$jadwal->masterTuk->nama_lokasi ?? 'Tempat Kerja'" {{-- Asumsi relasi TUK di Jadwal --}}
+                        :namaAsesor="$jadwal->asesor->nama_lengkap ?? ''" :namaAsesi="$asesi->nama_lengkap ?? ''"
+                        :tanggal="optional($jadwal->tanggal_pelaksanaan)->format('d F Y') ?? date('d F Y')" />
                 </div>
 
                 {{-- PETUNJUK --}}
@@ -130,6 +129,13 @@
                         @endif
                     </div>
 
+                    {{-- HIDDEN INPUTS UNTUK ASESOR --}}
+                    @if(isset($isAsesor) && $isAsesor)
+                        <input type="hidden" name="skenario" value="{{ $ia02->skenario ?? '' }}">
+                        <input type="hidden" name="peralatan" value="{{ $ia02->peralatan ?? '' }}">
+                        <input type="hidden" name="waktu" value="{{ isset($ia02->waktu) ? \Carbon\Carbon::parse($ia02->waktu)->format('H:i') : '' }}">
+                    @endif
+
                 </div>
 
                 {{-- TANDA TANGAN --}}
@@ -146,9 +152,18 @@
                     </a>
 
                     @if($isAdmin)
+                        {{-- TOMBOL SAVE ADMIN --}}
                         <button type="submit"
                             class="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2">
                             Simpan Instruksi ✓
+                        </button>
+                    @endif
+
+                    @if(isset($isAsesor) && $isAsesor)
+                        {{-- TOMBOL SELESAI ASESOR --}}
+                        <button type="submit"
+                            class="px-8 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-full shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            Tutup dan selesai
                         </button>
                     @endif
 

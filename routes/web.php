@@ -50,12 +50,12 @@ use App\Http\Controllers\SoalController;
 use App\Http\Controllers\IA01Controller;
 use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\IA05Controller;
-use App\Http\Controllers\Ia06Controller;
+use App\Http\Controllers\IA06Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA08Controller;
 use App\Http\Controllers\IA09Controller;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\Ia11Controller;
+use App\Http\Controllers\IA11Controller;
 
 use App\Http\Controllers\Validator\ValidatorTrackerController;
 
@@ -175,10 +175,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [IA01Controller::class, 'index'])->name('ia01.index');
         Route::get('/cover', [IA01Controller::class, 'index'])->name('ia01.cover'); // Alias for compatibility
         Route::post('/store', [IA01Controller::class, 'store'])->name('ia01.store');
-        
+
         // Admin View
         Route::get('/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
-        
+
         // Deprecated / Redirects
         Route::get('/step/{urutan}', fn($id) => redirect()->route('ia01.index', $id));
         Route::get('/finish', fn($id) => redirect()->route('ia01.index', $id));
@@ -207,8 +207,8 @@ Route::middleware('auth')->group(function () {
     });
 
     // IA-11
-    Route::get('/FR_IA_11', [Ia11Controller::class, 'create'])->name('ia11.create');
-    Route::post('/FR_IA_11/store', [Ia11Controller::class, 'store'])->name('ia11.store');
+    Route::get('/FR_IA_11', [IA11Controller::class, 'create'])->name('ia11.create');
+    Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
 
     // MAPA-02
     Route::get('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');
@@ -237,7 +237,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/ia05/{id_asesi}', [IA05Controller::class, 'cetakPDF'])->name('ia05.cetak_pdf');
         Route::get('/ia10/{id_asesi}', [IA10Controller::class, 'cetakPDF'])->name('ia10.cetak_pdf');
         Route::get('/ia02/{id}', [IA02Controller::class, 'cetakPDF'])->name('ia02.cetak_pdf');
-        Route::get('/ia06/{id}', [Ia06Controller::class, 'cetakPDF'])->name('ia06.cetak_pdf');
+        Route::get('/ia06/{id}', [IA06Controller::class, 'cetakPDF'])->name('ia06.cetak_pdf');
         Route::get('/ia07/{id}', [IA07Controller::class, 'cetakPDF'])->name('ia07.cetak_pdf');
         Route::get('/apl01/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.cetak_pdf');
         Route::get('/mapa01/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.cetak_pdf');
