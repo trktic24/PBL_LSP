@@ -64,8 +64,8 @@ class IA01Controller extends Controller
             ->keyBy('id_kriteria');
 
         $data_sesi = [
-             'tuk' => old('tuk'), 
-        ]; 
+             'tuk' => old('tuk'),
+        ];
 
         // Calculate System Recommendation based on saved data
         // If ANY KUK is '0' (Belum Kompeten), then system recommends 'belum_kompeten'
@@ -94,13 +94,13 @@ class IA01Controller extends Controller
         }
 
         $sertifikasi = $this->getSertifikasi($id_sertifikasi);
-        
+
         // 1. VALIDATION RULES
         $rules = [
             // Data Diri
             'tuk' => 'required|in:sewaktu,tempat_kerja,mandiri',
             'tanggal_asesmen' => 'required|date',
-            
+
             // Units (Looping Logic)
             'hasil' => 'required|array',
             'hasil.*' => 'required|in:kompeten,belum_kompeten',
@@ -149,7 +149,7 @@ class IA01Controller extends Controller
 
         // Update Sertifikasi Header
         $feedback = $request->umpan_balik;
-        
+
         // Append BK Details if Rekomendasi is Belum Kompeten
         if ($request->rekomendasi === 'belum_kompeten' && $request->has('bk_unit')) {
             $feedback .= "\n\n--- DETAIL BELUM KOMPETEN ---\n";

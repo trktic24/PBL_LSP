@@ -17,7 +17,7 @@ class LoginController extends Controller
      */
     public function showLoginForm(): View
     {
-        return view('admin.login.login_admin'); 
+        return view('admin.login.login_admin');
     }
 
     /**
@@ -42,7 +42,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('login_admin');
     }
 
@@ -51,7 +51,7 @@ class LoginController extends Controller
      */
     public function showForgotPassword(): View
     {
-        return view('admin.login.forgot_pass'); 
+        return view('admin.login.forgot_pass');
     }
 
     /**
