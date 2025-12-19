@@ -27,7 +27,7 @@
 
 <body class="bg-gray-50 text-gray-800">
   <div class="min-h-screen flex flex-col">
-    <x-navbar.navbar_admin />
+    <x-navbar.navbar-admin />
     
     <main class="flex-1 flex flex-col items-center pt-10 pb-12 px-4">
       <div class="w-full max-w-4xl bg-white border border-gray-200 rounded-xl shadow-lg p-10">

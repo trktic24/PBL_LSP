@@ -20,7 +20,7 @@
 
 <div class="h-screen overflow-y-auto">
 
-    <x-navbar.navbar_admin/>
+    <x-navbar.navbar-admin />
     
     <main class="p-8" 
         x-data="{ 

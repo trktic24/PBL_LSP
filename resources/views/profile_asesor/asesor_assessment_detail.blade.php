@@ -24,7 +24,7 @@
   <div class="flex min-h-[calc(100vh-80px)]">
     
     {{-- Sidebar --}}
-    <x-sidebar_profile_asesor :asesor="$asesor" />
+    <x-sidebar.sidebar_profile_asesor :asesor="$asesor" />
 
     {{-- Konten Utama --}}
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">

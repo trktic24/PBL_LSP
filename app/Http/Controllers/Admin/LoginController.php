@@ -17,7 +17,7 @@ class LoginController extends Controller
      */
     public function showLoginForm(): View
     {
-        return view('admin.login.login_admin');
+        return view('Admin.login.login_admin');
     }
 
     /**
@@ -51,7 +51,7 @@ class LoginController extends Controller
      */
     public function showForgotPassword(): View
     {
-        return view('admin.login.forgot_pass');
+        return view('Admin.login.forgot_pass');
     }
 
     /**

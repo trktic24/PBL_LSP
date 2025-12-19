@@ -176,8 +176,17 @@ html { scroll-behavior: smooth; }
                 <div class="flex-none w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 px-4 skema-slide" data-slide-index="{{ $index }}">
                     @foreach($chunk as $skema)
                         @php
+                            $imgSrc = empty($skema->gambar) ? asset('images/default_pic.jpeg') : (
+                                (str_starts_with($skema->gambar, 'images/') || str_starts_with($skema->gambar, 'assets/') || in_array($skema->gambar, ['default.jpg', 'default_pic.jpeg']))
+                                ? asset(in_array($skema->gambar, ['default.jpg', 'default_pic.jpeg']) ? 'images/' . $skema->gambar : $skema->gambar)
+                                : (
+                                    // 🟢 FIX FOR SEEDED DATA: Jika path 'skema/foto_skema/...', arahkan ke public/images/skema
+                                    str_contains($skema->gambar, 'skema/foto_skema/') 
+                                    ? asset('images/skema/' . basename($skema->gambar))
+                                    : asset('storage/' . $skema->gambar)
+                                )
+                            );
                             $categoryName = $skema->category?->nama_kategori ?? 'Tidak Terkategori';
-                            $imgSrc = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default_pic.jpeg');
                         @endphp
                         
                         <div class="transition-all duration-300 hover:scale-[1.02] skema-card group" data-category="{{ $categoryName }}">
@@ -501,7 +510,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                     
                                     {{-- 🟩 PERBAIKAN: Logika Placeholder Berita (Smart Prefix) --}}
                                     @php
-                                        $imgBerita = $berita->gambar ? asset('storage/' . $berita->gambar) : asset('images/default_pic.jpeg');
+                                        $imgBerita = empty($berita->gambar) ? asset('images/default_pic.jpeg') : (
+                                            (str_starts_with($berita->gambar, 'images/') || str_starts_with($berita->gambar, 'assets/'))
+                                            ? asset($berita->gambar)
+                                            : (
+                                                 // 🟢 FIX FOR SEEDED DATA: Jika formatnya 'beritaX.jpg' (tanpa path), anggap dummy dan gunakan default/placeholder
+                                                 (preg_match('/^berita\d+\.(jpg|jpeg|png)$/', $berita->gambar))
+                                                 ? asset('images/default_pic.jpeg') // Tidak ada file beritaX.jpg di public, jadi fallback
+                                                 : asset('storage/' . $berita->gambar)
+                                            )
+                                        );
                                     @endphp
                                     <img src="{{ $imgBerita }}" 
                                          alt="{{ $berita->judul_berita }}" 

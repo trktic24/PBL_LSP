@@ -20,7 +20,7 @@
 
 <body class="text-gray-800">
 
-  <x-navbar.navbar_admin />
+  <x-navbar.navbar-admin />
   
   {{-- Layout Utama --}}
   <div class="flex min-h-[calc(100vh-80px)]">

@@ -74,7 +74,7 @@ class DaftarHadirController extends Controller
         // Filter Role
         $mode = Auth::user()->role === 'admin' ? 'view' : 'edit';
 
-        return view('admin.master.schedule.daftar_hadir', [
+        return view('Admin.master.schedule.daftar_hadir', [
             'jadwal' => $jadwal,
             'pendaftar' => $pendaftar,
             'perPage' => $perPage,

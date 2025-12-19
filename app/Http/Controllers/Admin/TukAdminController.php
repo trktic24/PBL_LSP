@@ -57,7 +57,7 @@ class TukAdminController extends Controller
         // 7. Appends parameter ke link pagination
         $tuks->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
-        return view('admin.tuk.master_tuk', [
+        return view('Admin.tuk.master_tuk', [
             'tuks' => $tuks,
             'perPage' => $perPage 
         ]);
@@ -68,7 +68,7 @@ class TukAdminController extends Controller
      */
     public function create()
     {
-        return view('admin.tuk.add_tuk');
+        return view('Admin.tuk.add_tuk');
     }
 
     /**
@@ -111,7 +111,7 @@ class TukAdminController extends Controller
     public function edit($id)
     {
         $tuk = MasterTUK::findOrFail($id);
-        return view('admin.tuk.edit_tuk', ['tuk' => $tuk]);
+        return view('Admin.tuk.edit_tuk', ['tuk' => $tuk]);
     }
 
     /**
