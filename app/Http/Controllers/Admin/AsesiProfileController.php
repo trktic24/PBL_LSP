@@ -21,7 +21,7 @@ class AsesiProfileController extends Controller
     public function settings($id_asesi)
     {
         $asesi = $this->getAsesi($id_asesi);
-        return view('admin.profile_asesi.asesi_profile_settings', compact('asesi'));
+        return view('Admin.profile_asesi.asesi_profile_settings', compact('asesi'));
     }
 
    public function form($id_asesi)
@@ -85,7 +85,7 @@ class AsesiProfileController extends Controller
         // DEBUGGING SEMENTARA (Hapus tanda komentar // di bawah jika masih kosong)
         // dd($activeForms, $namaSkema, $pendaftaran);
 
-        return view('admin.profile_asesi.asesi_profile_form', compact('asesi', 'activeForms', 'namaSkema'));
+        return view('Admin.profile_asesi.asesi_profile_form', compact('asesi', 'activeForms', 'namaSkema'));
     }
     
     /**
@@ -104,7 +104,7 @@ class AsesiProfileController extends Controller
             ['jenis' => 'Surat Keterangan Kerja / Portofolio', 'desc' => 'Dokumen Hasil Pekerjaan (Min. 2 tahun).']
         ];
 
-        return view('admin.profile_asesi.asesi_profile_bukti', compact('asesi', 'persyaratan'));
+        return view('Admin.profile_asesi.asesi_profile_bukti', compact('asesi', 'persyaratan'));
     }
 
     public function storeBukti(Request $request, $id_asesi)
@@ -291,7 +291,7 @@ class AsesiProfileController extends Controller
         ])->findOrFail($id_asesi);
 
         // 2. Kirim ke View
-        return view('admin.profile_asesi.asesi_profile_tracker', compact('asesi'));
+        return view('Admin.profile_asesi.asesi_profile_tracker', compact('asesi'));
     }
 
 }

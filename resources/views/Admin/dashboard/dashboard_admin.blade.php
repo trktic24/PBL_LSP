@@ -22,7 +22,7 @@
 
     <div class="h-screen overflow-y-auto">
 
-        <x-navbar.navbar_admin/>
+        <x-navbar.navbar-admin/>
         
         <main class="p-6">
             <div class="flex flex-col sm:flex-row justify-between items-end mb-6 gap-4">

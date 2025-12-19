@@ -82,7 +82,7 @@ use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\IA02Controller;
 use App\Http\Controllers\Asesi\IA03\IA03Controller;
 use App\Http\Controllers\IA05Controller;
-use App\Http\Controllers\Ia06Controller;
+use App\Http\Controllers\IA06Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\IA11Controller;
@@ -171,12 +171,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
     // APL-01 & MAPA
-    Route::get('/apl-01-1/view/{id}', [APL01Controller::class, 'step1'])->name('APL_01_1');
-    Route::post('/apl-01-1/store', [APL01Controller::class, 'storeStep1'])->name('apl01_1.store');
-    Route::get('/apl-01-2/view/{id}', [APL01Controller::class, 'step2'])->name('APL_01_2');
-    Route::post('/apl-01-2/store', [APL01Controller::class, 'storeStep2'])->name('apl01_2.store');
-    Route::get('/apl-01-3/view/{id}', [APL01Controller::class, 'step3'])->name('APL_01_3');
-    Route::post('/apl-01-3/store', [APL01Controller::class, 'storeStep3'])->name('apl01_3.store');
+    Route::get('/apl-01-1/view/{id}', [APL01Controller::class, 'step1'])->name('apl01.step1');
+    Route::post('/apl-01-1/store', [APL01Controller::class, 'storeStep1'])->name('apl01.step1.store');
+    Route::get('/apl-01-2/view/{id}', [APL01Controller::class, 'step2'])->name('apl01.step2');
+    Route::post('/apl-01-2/store', [APL01Controller::class, 'storeStep2'])->name('apl01.step2.store');
+    Route::get('/apl-01-3/view/{id}', [APL01Controller::class, 'step3'])->name('apl01.step3');
+    Route::post('/apl-01-3/store', [APL01Controller::class, 'storeStep3'])->name('apl01.step3.store');
 
     Route::get('/mapa01/show/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
     Route::post('/mapa01/store', [FrMapa01Controller::class, 'store'])->name('mapa01.store');
@@ -363,13 +363,13 @@ Route::middleware('auth')->group(function () {
         });
 
         // Bank Soal IA-06 (View Only for Admin, Full Access for Superadmin)
-        Route::get('/bank-soal-ia06', [Ia06Controller::class, 'adminIndex'])->name('ia06.index');
+        Route::get('/bank-soal-ia06', [IA06Controller::class, 'adminIndex'])->name('ia06.index');
 
         // Superadmin ONLY Actions
         Route::middleware(['role:superadmin'])->group(function () {
-            Route::post('/bank-soal-ia06', [Ia06Controller::class, 'adminStoreSoal'])->name('ia06.store');
-            Route::put('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
-            Route::delete('/bank-soal-ia06/{id}', [Ia06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
+            Route::post('/bank-soal-ia06', [IA06Controller::class, 'adminStoreSoal'])->name('ia06.store');
+            Route::put('/bank-soal-ia06/{id}', [IA06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
+            Route::delete('/bank-soal-ia06/{id}', [IA06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
         });
     });
 
@@ -421,8 +421,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
 
         // IA-06 Penilaian
-        Route::get('/penilaian/ia-06/{id}', [Ia06Controller::class, 'asesorShow'])->name('ia06.edit');
-        Route::put('/penilaian/ia-06/{id}', [Ia06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+        Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
+        Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
     });
 
     // ======================================================
@@ -489,8 +489,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])->name('asesmen.ia06.view');
 
         // IA-06 Form
-        Route::get('/asesmen/ia-06/{id}', [Ia06Controller::class, 'asesiShow'])->name('ia06.index');
-        Route::put('/asesmen/ia-06/{id}', [Ia06Controller::class, 'asesiStoreJawaban'])->name('ia06.update');
+        Route::get('/asesmen/ia-06/{id}', [IA06Controller::class, 'asesiShow'])->name('ia06.index');
+        Route::put('/asesmen/ia-06/{id}', [IA06Controller::class, 'asesiStoreJawaban'])->name('ia06.update');
 
         // IA-02, IA-03, IA-07, IA-11
         Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');

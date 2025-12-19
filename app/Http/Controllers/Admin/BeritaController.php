@@ -44,7 +44,7 @@ class BeritaController extends Controller
         $beritas = $query->paginate($perPage)->onEachSide(0.5);
         $beritas->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
-        return view('admin.master.berita.master_berita', [
+        return view('Admin.master.berita.master_berita', [
             'beritas' => $beritas,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -57,7 +57,7 @@ class BeritaController extends Controller
      */
     public function create()
     {
-        return view('admin.master.berita.add_berita');
+        return view('Admin.master.berita.add_berita');
     }
 
     /**
@@ -102,7 +102,7 @@ class BeritaController extends Controller
     public function edit($id)
     {
         $berita = Berita::findOrFail($id);
-        return view('admin.master.berita.edit_berita', compact('berita'));
+        return view('Admin.master.berita.edit_berita', compact('berita'));
     }
 
     /**

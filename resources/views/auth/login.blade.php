@@ -103,7 +103,7 @@
                 </div>
 
                 <div class="hidden md:flex items-center justify-center">
-                    <img src="{{ asset('images/ilustrasi-1.jpg') }}" alt="Ilustrasi Login"
+                    <img src="{{ asset('images/Ilustrasi-1.jpg') }}" alt="Ilustrasi Login"
                          class="max-w-[200px] mx-auto">
                 </div>
             </div>

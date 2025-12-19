@@ -21,7 +21,7 @@ class AsesorProfileController extends Controller
     {
         $asesor = Asesor::with('user')->findOrFail($id_asesor);
         
-        return view('admin.profile_asesor.asesor_profile_settings', compact('asesor'));
+        return view('Admin.profile_asesor.asesor_profile_settings', compact('asesor'));
     }
 
     // ==========================================================
@@ -42,7 +42,7 @@ class AsesorProfileController extends Controller
             ['key' => 'sertifikasi_kompetensi', 'title' => 'Sertifikasi Kompetensi', 'subtitle' => 'Sertifikat teknis', 'file_path' => $asesor->sertifikasi_kompetensi],
         ];
 
-        return view('admin.profile_asesor.asesor_profile_bukti', compact('asesor', 'documents'));
+        return view('Admin.profile_asesor.asesor_profile_bukti', compact('asesor', 'documents'));
     }
 
     // ==========================================================
@@ -58,7 +58,7 @@ class AsesorProfileController extends Controller
             ->orderBy('tanggal_pelaksanaan', 'desc')
             ->get();
 
-        return view('admin.profile_asesor.asesor_profile_tinjauan', compact('asesor', 'tinjauan_data'));
+        return view('Admin.profile_asesor.asesor_profile_tinjauan', compact('asesor', 'tinjauan_data'));
     }
 
     // ==========================================================
@@ -121,7 +121,7 @@ class AsesorProfileController extends Controller
         });
 
         // 8. Return View
-        return view('admin.profile_asesor.daftar_asesi', compact(
+        return view('Admin.profile_asesor.daftar_asesi', compact(
             'asesor',
             'jadwal',
             'pendaftar',
@@ -196,7 +196,7 @@ class AsesorProfileController extends Controller
             ];
 
             // Menggunakan asesor_profile_tracker_skema untuk detail timeline (sesuai permintaan user)
-            return view('admin.profile_asesor.asesor_profile_tracker_skema', compact('asesor', 'timelineData', 'dataSertifikasi'));
+            return view('Admin.profile_asesor.asesor_profile_tracker_skema', compact('asesor', 'timelineData', 'dataSertifikasi'));
         } 
         
         // --- MODE 2: Tampilkan Daftar Skema/Jadwal (Index) (File: asesor_profile_tracker.blade.php) ---
@@ -208,7 +208,7 @@ class AsesorProfileController extends Controller
             ->get();
             
         // Menggunakan asesor_profile_tracker untuk daftar skema (sesuai permintaan user)
-        return view('admin.profile_asesor.asesor_profile_tracker', compact('asesor', 'tracker_data'));
+        return view('Admin.profile_asesor.asesor_profile_tracker', compact('asesor', 'tracker_data'));
     }
 
     // ==========================================================
@@ -276,7 +276,7 @@ class AsesorProfileController extends Controller
         ];
 
         // Gunakan view tracker_skema dengan data timeline skema
-        return view('admin.profile_asesor.asesor_profile_tracker_skema', compact('asesor', 'jadwal', 'schemeTimelineData'));
+        return view('Admin.profile_asesor.asesor_profile_tracker_skema', compact('asesor', 'jadwal', 'schemeTimelineData'));
     }
 
     // ==========================================================
@@ -304,7 +304,7 @@ class AsesorProfileController extends Controller
 
         $asesi = $dataSertifikasi->asesi;
 
-        return view('admin.profile_asesor.asesor_assessment_detail', compact('asesor', 'dataSertifikasi', 'asesi'));
+        return view('Admin.profile_asesor.asesor_assessment_detail', compact('asesor', 'dataSertifikasi', 'asesi'));
     }
 
     // ==========================================================

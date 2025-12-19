@@ -62,7 +62,7 @@ class SkemaController extends Controller
         $skemas = $query->paginate($perPage)->onEachSide(0.5);
         $skemas->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
-        return view('admin.master.skema.master_skema', [
+        return view('Admin.master.skema.master_skema', [
             'skemas' => $skemas,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -76,7 +76,7 @@ class SkemaController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('admin.master.skema.add_skema', compact('categories'));
+        return view('Admin.master.skema.add_skema', compact('categories'));
     }
 
     /**
@@ -130,7 +130,7 @@ class SkemaController extends Controller
         $skema = Skema::findOrFail($id);
         $categories = Category::all();
         $skema->category_id = (string) $skema->category_id;
-        return view('admin.master.skema.edit_skema', compact('skema', 'categories'));
+        return view('Admin.master.skema.edit_skema', compact('skema', 'categories'));
     }
 
     /**

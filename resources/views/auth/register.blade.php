@@ -292,8 +292,8 @@
                             </div>
 
                             <div class="hidden md:flex items-center justify-center">
-                                <img x-show="role === 'asesi'" style="display: none;" src="{{ asset('images/ilustrasi-4.jpg') }}" alt="Ilustasi Asesi" class="max-w-[250px] mx-auto">
-                                <img x-show="role === 'asesor'" style="display: none;" src="{{ asset('images/ilustrasi-2.jpg') }}" alt="Ilustrasi Asesor" class="max-w-[250px] mx-auto">
+                                <img x-show="role === 'asesi'" style="display: none;" src="{{ asset('images/Ilustrasi-4.jpg') }}" alt="Ilustasi Asesi" class="max-w-[250px] mx-auto">
+                                <img x-show="role === 'asesor'" style="display: none;" src="{{ asset('images/Ilustrasi-2.jpg') }}" alt="Ilustrasi Asesor" class="max-w-[250px] mx-auto">
                             </div>
                         </div>
 

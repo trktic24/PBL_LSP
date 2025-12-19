@@ -19,7 +19,7 @@ class JadwalController extends Controller
                              ->orderBy('tanggal_pelaksanaan', 'asc')
                              ->get();
 
-        return view('admin.master.schedule.schedule_admin', [
+        return view('Admin.master.schedule.schedule_admin', [
             'schedules' => $schedules
         ]);
     }
@@ -108,7 +108,7 @@ class JadwalController extends Controller
 
         
         // 10. Kirim data lengkap ke view
-        return view('admin.master.schedule.master_schedule', [
+        return view('Admin.master.schedule.master_schedule', [
             'jadwals' => $jadwals,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -125,7 +125,7 @@ class JadwalController extends Controller
         $asesors = Asesor::all();
         $jenisTuks = JenisTUK::all(); 
 
-        return view('admin.master.schedule.add_schedule', [
+        return view('Admin.master.schedule.add_schedule', [
             'skemas' => $skemas,
             'tuks' => $tuks,
             'asesors' => $asesors,
@@ -203,7 +203,7 @@ class JadwalController extends Controller
         $asesors = Asesor::all();
         $jenisTuks = JenisTUK::all();
 
-        return view('admin.master.schedule.edit_schedule', [
+        return view('Admin.master.schedule.edit_schedule', [
             'jadwal' => $jadwal,
             'skemas' => $skemas,
             'tuks' => $tuks,

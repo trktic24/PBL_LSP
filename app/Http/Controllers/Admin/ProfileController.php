@@ -20,7 +20,7 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         // [PERBAIKAN] Arahkan ke view profile_admin yang sudah kita buat
-        return view('admin.profile.profile_admin', [
+        return view('Admin.profile.profile_admin', [
             'user' => $request->user(),
         ]);
     }
