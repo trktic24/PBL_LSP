@@ -87,7 +87,7 @@ class AsesiController extends Controller
         ]));
         
         // 10. Kirim data lengkap ke view
-        return view('admin.master.asesi.master_asesi', [
+        return view('Admin.master.asesi.master_asesi', [
             'asesis' => $asesis,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -98,7 +98,7 @@ class AsesiController extends Controller
 
     public function create()
     {
-        return view('admin.master.asesi.add_asesi');
+        return view('Admin.master.asesi.add_asesi');
     }
 
     /**
@@ -208,7 +208,7 @@ class AsesiController extends Controller
     {
         $asesi = Asesi::with('user')->findOrFail($id_asesi);
         $dataPekerjaanSingle = $asesi->dataPekerjaan()->latest()->first();
-        return view('admin.master.asesi.edit_asesi', [
+        return view('Admin.master.asesi.edit_asesi', [
         'asesi' => $asesi,
         'dataPekerjaan' => $dataPekerjaanSingle // Kirim HANYA model tunggal
         ]);

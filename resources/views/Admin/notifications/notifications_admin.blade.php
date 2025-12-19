@@ -26,7 +26,7 @@
 <body class="bg-gray-100 text-gray-800">
 <div class="h-screen overflow-y-auto">
 
-  <x-navbar.navbar_admin/>
+  <x-navbar.navbar-admin />
   <main class="p-8">
     <div class="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 max-w-6xl mx-auto">
       <div class="flex items-center justify-between mb-8">

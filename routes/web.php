@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\V1\MitraController;
 // ==========================
 // 2. AUTHENTICATION & USER
 // ==========================
-use App\Http\Controllers\LoginController;
+
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 
@@ -121,7 +121,6 @@ Route::middleware('auth')->group(function () {
 
     // User Profile
     // User Profile
-    // (Routes removed as they were commented out)
 
     // ========================
     // 0. SECURE FILE ACCESS (SURGICAL REFACTOR)
@@ -134,10 +133,7 @@ Route::middleware('auth')->group(function () {
     // 1. ASESMEN & FORMULIR
     // ========================
 
-    // APL-01 (Permohonan)
-    Route::get('/APL_01_1', fn() => view('frontend/APL_01/APL_01_1'))->name('APL_01_1');
-    Route::get('/APL_01_2', fn() => view('frontend/APL_01/APL_01_2'))->name('APL_01_2');
-    Route::get('/APL_01_3', fn() => view('frontend/APL_01/APL_01_3'))->name('APL_01_3');
+
 
     // APL-02 (Asesmen Mandiri)
     Route::get('/APL_02', fn() => view('frontend/APL_02/APL_02'))->name('APL_02');
@@ -147,8 +143,7 @@ Route::middleware('auth')->group(function () {
 
     // FR-AK (Ceklis, Banding, dll)
     Route::get('/FR_AK_01', fn() => view('frontend/FR_AK_01'))->name('FR_AK_01');
-    Route::post('/FR_AK_01/simpan/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
-        ->name('ak01.store');
+
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
     Route::get('/FR_AK_03', fn() => view('frontend/AK_03/FR_AK_03'))->name('FR_AK_03');
     Route::get('/FR_AK_04', fn() => view('frontend/FR_AK_04'))->name('FR_AK_04');
@@ -211,8 +206,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
 
     // MAPA-02
-    Route::get('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'show'])->name('mapa02.show');
-    Route::post('/mapa02/{id_sertifikasi}', [Mapa02Controller::class, 'store'])->name('mapa02.store');
+
 
     // Portofolio
     Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');

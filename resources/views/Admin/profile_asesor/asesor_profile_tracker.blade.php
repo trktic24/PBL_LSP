@@ -15,7 +15,7 @@
 </head>
 <body class="text-gray-800">
 
-  <x-navbar.navbar_admin />
+  <x-navbar.navbar-admin />
   
   <div class="flex min-h-[calc(100vh-80px)]">
     

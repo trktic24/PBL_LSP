@@ -10,7 +10,16 @@
     <section class="max-w-screen-xl mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
             @php
-                $detailImgSrc = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default_pic.jpeg');
+                $detailImgSrc = empty($skema->gambar) ? asset('images/default_pic.jpeg') : (
+                    (str_starts_with($skema->gambar, 'images/') || str_starts_with($skema->gambar, 'assets/') || in_array($skema->gambar, ['default.jpg', 'default_pic.jpeg']))
+                    ? asset(in_array($skema->gambar, ['default.jpg', 'default_pic.jpeg']) ? 'images/' . $skema->gambar : $skema->gambar)
+                    : (
+                        // 🟢 FIX FOR SEEDED DATA
+                        str_contains($skema->gambar, 'skema/foto_skema/') 
+                        ? asset('images/skema/' . basename($skema->gambar))
+                        : asset('storage/' . $skema->gambar)
+                    )
+                );
             @endphp
             
             <img src="{{ $detailImgSrc }}"

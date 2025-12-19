@@ -35,7 +35,7 @@ class StrukturOrganisasiController extends Controller
         $organisasis = $query->paginate($perPage)->onEachSide(1);
         $organisasis->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
-        return view('admin.master.struktur.index', [
+        return view('Admin.master.struktur.index', [
             'organisasis' => $organisasis,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -48,7 +48,7 @@ class StrukturOrganisasiController extends Controller
      */
     public function create()
     {
-        return view('admin.master.struktur.create');
+        return view('Admin.master.struktur.create');
     }
 
     /**
@@ -83,7 +83,7 @@ class StrukturOrganisasiController extends Controller
     public function edit($id)
     {
         $struktur = StrukturOrganisasi::findOrFail($id);
-        return view('admin.master.struktur.edit', compact('struktur'));
+        return view('Admin.master.struktur.edit', compact('struktur'));
     }
 
     /**

@@ -93,7 +93,7 @@ class AsesorController extends Controller
         $skemas = Skema::orderBy('nama_skema')->get();
         $asesors = $query->paginate($perPage)->appends($requestData); 
         
-        return view('admin.master.asesor.master_asesor', compact('asesors', 'skemas', 'requestData', 'perPage', 'sortColumn', 'sortDirection'));
+        return view('Admin.master.asesor.master_asesor', compact('asesors', 'skemas', 'requestData', 'perPage', 'sortColumn', 'sortDirection'));
     }
 
     // ==========================================================
@@ -102,7 +102,7 @@ class AsesorController extends Controller
     public function createStep1(Request $request)
     {
         $asesor = $request->session()->get('asesor', new Asesor());
-        return view('admin.master.asesor.add_asesor1', compact('asesor'));
+        return view('Admin.master.asesor.add_asesor1', compact('asesor'));
     }
 
     public function postStep1(Request $request)
@@ -134,7 +134,7 @@ class AsesorController extends Controller
 
         $skemas = Skema::all();
         $selectedSkemas = isset($asesor->skema_ids) ? $asesor->skema_ids : [];
-        return view('admin.master.asesor.add_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
+        return view('Admin.master.asesor.add_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
     }
 
     public function postStep2(Request $request)
@@ -182,7 +182,7 @@ class AsesorController extends Controller
     {
         $asesor = $request->session()->get('asesor');
         if (!$asesor) return redirect()->route('admin.add_asesor1');
-        return view('admin.master.asesor.add_asesor3', compact('asesor'));
+        return view('Admin.master.asesor.add_asesor3', compact('asesor'));
     }
 
     public function store(Request $request)
@@ -269,7 +269,7 @@ class AsesorController extends Controller
     public function editStep1($id_asesor)
     {
         $asesor = Asesor::with(['user'])->findOrFail($id_asesor);
-        return view('admin.master.asesor.edit_asesor1', compact('asesor'));
+        return view('Admin.master.asesor.edit_asesor1', compact('asesor'));
     }
 
     public function updateStep1(Request $request, $id_asesor)
@@ -302,7 +302,7 @@ class AsesorController extends Controller
         $skemas = Skema::all();
         // Ambil array ID skema yang sudah dimiliki
         $selectedSkemas = $asesor->skemas->pluck('id_skema')->toArray();
-        return view('admin.master.asesor.edit_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
+        return view('Admin.master.asesor.edit_asesor2', compact('asesor', 'skemas', 'selectedSkemas'));
     }
 
     public function updateStep2(Request $request, $id_asesor)
@@ -348,7 +348,7 @@ class AsesorController extends Controller
     public function editStep3($id_asesor)
     {
         $asesor = Asesor::findOrFail($id_asesor);
-        return view('admin.master.asesor.edit_asesor3', compact('asesor'));
+        return view('Admin.master.asesor.edit_asesor3', compact('asesor'));
     }
 
     public function updateStep3(Request $request, $id_asesor)

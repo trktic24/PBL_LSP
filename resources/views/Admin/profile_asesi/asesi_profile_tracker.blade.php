@@ -108,7 +108,7 @@
 
 <body class="bg-gray-50 text-gray-800 text-sm">
 
-    <x-navbar.navbar_admin/>
+    <x-navbar.navbar-admin />
     
     <main class="flex min-h-[calc(100vh-80px)]">
         

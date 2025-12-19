@@ -34,7 +34,7 @@ class MitraController extends Controller
         $mitras = $query->paginate($perPage)->onEachSide(0.5);
         $mitras->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
-        return view('admin.master.mitra.master_mitra', [
+        return view('Admin.master.mitra.master_mitra', [
             'mitras' => $mitras,
             'perPage' => $perPage,
             'sortColumn' => $sortColumn,
@@ -47,7 +47,7 @@ class MitraController extends Controller
      */
     public function create()
     {
-        return view('admin.master.mitra.add_mitra');
+        return view('Admin.master.mitra.add_mitra');
     }
 
     /**
@@ -82,7 +82,7 @@ class MitraController extends Controller
     public function edit($id)
     {
         $mitra = Mitra::findOrFail($id);
-        return view('admin.master.mitra.edit_mitra', compact('mitra'));
+        return view('Admin.master.mitra.edit_mitra', compact('mitra'));
     }
 
     /**
