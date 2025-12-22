@@ -46,88 +46,89 @@
             </form>
         </div>
 
-        <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden">
+        <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden overflow-x-auto">
 
-            {{-- Grid kolom disesuaikan: 30% | 40% | 20% | 10% --}}
-            <div class="grid grid-cols-10 px-6 py-4 custom-table-header text-sm font-poppins">
-                
-                {{-- Tempat (3 Kolom) --}}
-                <div class="col-span-3 font-bold flex items-center">
-                    @php
-                        $currentSort = request('sort', 'nama_lokasi');
-                        $currentDirection = request('direction', 'asc');
-                        $newDirection = ($currentSort == 'nama_lokasi' && $currentDirection == 'asc') ? 'desc' : 'asc';
-                    @endphp
-                    <a href="{{ url('/info-tuk') }}?sort=nama_lokasi&direction={{ $newDirection }}&search={{ request('search') }}" class="flex items-center hover:text-gray-600">
-                        Tempat
-                        @if ($currentSort == 'nama_lokasi')
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $currentDirection == 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
-                            </svg>
-                        @endif
-                    </a>
-                </div>
-
-                {{-- Alamat (4 Kolom) --}}
-                <div class="col-span-4 font-bold flex items-center">
-                    @php
-                        $newDirection = ($currentSort == 'alamat_tuk' && $currentDirection == 'asc') ? 'desc' : 'asc';
-                    @endphp
-                    <a href="{{ url('/info-tuk') }}?sort=alamat_tuk&direction={{ $newDirection }}&search={{ request('search') }}" class="flex items-center hover:text-gray-600">
-                        Alamat
-                        @if ($currentSort == 'alamat_tuk')
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $currentDirection == 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
-                            </svg>
-                        @endif
-                    </a>
-                </div>
-
-                {{-- Kontak (2 Kolom) --}}
-                <div class="col-span-2 font-bold text-center">Kontak</div>
-
-                {{-- Detail (1 Kolom) --}}
-                <div class="col-span-1 font-bold text-center">Detail</div>
-            </div>
-
-            @forelse ($tuks as $tuk)
-                <div class="grid grid-cols-10 px-6 py-4 custom-table-row text-sm items-center">
+            <div class="min-w-[900px]">
+                {{-- Grid kolom disesuaikan: 30% | 40% | 20% | 10% --}}
+                <div class="grid grid-cols-10 px-6 py-4 custom-table-header text-sm font-poppins">
                     
-                    {{-- Tempat --}}
-                    <div class="col-span-3">
-                        <div class="font-medium text-gray-900">{{ $tuk->nama_lokasi }}</div>
-                        <div class="text-xs text-gray-500 mt-0.5">Terdaftar Resmi</div>
-                    </div>
-
-                    {{-- Alamat --}}
-                    <div class="col-span-4 text-gray-700 pr-4">
-                        {{ $tuk->alamat_tuk }}
-                    </div>
-
-                    {{-- Kontak --}}
-                    <div class="col-span-2 text-center text-gray-700">
-                        {{ $tuk->kontak_tuk }}
-                    </div>
-
-                    {{-- Detail --}}
-                    <div class="col-span-1 text-center">
-                        <a href="{{ route('info.tuk.detail', ['id' => $tuk->id_tuk]) }}"
-                           class="bg-yellow-400 hover:bg-yellow-500 text-black text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm transition">
-                            Detail
+                    {{-- Tempat (3 Kolom) --}}
+                    <div class="col-span-3 font-bold flex items-center">
+                        @php
+                            $currentSort = request('sort', 'nama_lokasi');
+                            $currentDirection = request('direction', 'asc');
+                            $newDirection = ($currentSort == 'nama_lokasi' && $currentDirection == 'asc') ? 'desc' : 'asc';
+                        @endphp
+                        <a href="{{ url('/info-tuk') }}?sort=nama_lokasi&direction={{ $newDirection }}&search={{ request('search') }}" class="flex items-center hover:text-gray-600">
+                            Tempat
+                            @if ($currentSort == 'nama_lokasi')
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $currentDirection == 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                </svg>
+                            @endif
                         </a>
                     </div>
 
-                </div>
-            @empty
-                <div class="py-8 text-center text-gray-500">Belum ada Tempat Uji Kompetensi yang terdaftar.</div>
-            @endforelse
+                    {{-- Alamat (4 Kolom) --}}
+                    <div class="col-span-4 font-bold flex items-center">
+                        @php
+                            $newDirection = ($currentSort == 'alamat_tuk' && $currentDirection == 'asc') ? 'desc' : 'asc';
+                        @endphp
+                        <a href="{{ url('/info-tuk') }}?sort=alamat_tuk&direction={{ $newDirection }}&search={{ request('search') }}" class="flex items-center hover:text-gray-600">
+                            Alamat
+                            @if ($currentSort == 'alamat_tuk')
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $currentDirection == 'asc' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7' }}"></path>
+                                </svg>
+                            @endif
+                        </a>
+                    </div>
 
+                    {{-- Kontak (2 Kolom) --}}
+                    <div class="col-span-2 font-bold text-center">Kontak</div>
+
+                    {{-- Detail (1 Kolom) --}}
+                    <div class="col-span-1 font-bold text-center">Detail</div>
+                </div>
+
+                @forelse ($tuks as $tuk)
+                    <div class="grid grid-cols-10 px-6 py-4 custom-table-row text-sm items-center">
+                        
+                        {{-- Tempat --}}
+                        <div class="col-span-3">
+                            <div class="font-medium text-gray-900">{{ $tuk->nama_lokasi }}</div>
+                            <div class="text-xs text-gray-500 mt-0.5">Terdaftar Resmi</div>
+                        </div>
+
+                        {{-- Alamat --}}
+                        <div class="col-span-4 text-gray-700 pr-4">
+                            {{ $tuk->alamat_tuk }}
+                        </div>
+
+                        {{-- Kontak --}}
+                        <div class="col-span-2 text-center text-gray-700">
+                            {{ $tuk->kontak_tuk }}
+                        </div>
+
+                        {{-- Detail --}}
+                        <div class="col-span-1 text-center">
+                            <a href="{{ route('info.tuk.detail', ['id' => $tuk->id_tuk]) }}"
+                            class="bg-yellow-400 hover:bg-yellow-500 text-black text-xs font-semibold px-4 py-1.5 rounded-full shadow-sm transition">
+                                Detail
+                            </a>
+                        </div>
+
+                    </div>
+                @empty
+                    <div class="py-8 text-center text-gray-500">Belum ada Tempat Uji Kompetensi yang terdaftar.</div>
+                @endforelse
+            </div>
         </div>
         
         {{-- PAGINATION LINKS --}}
         @if (isset($tuks) && method_exists($tuks, 'links'))
-            <div class="mt-4">
-                {{ $tuks->appends(request()->except('page'))->links() }}
+            <div class="mt-4 overflow-x-auto">
+                {{ $tuks->appends(request()->except('page'))->onEachSide(1)->links() }}
             </div>
         @endif
     </div>

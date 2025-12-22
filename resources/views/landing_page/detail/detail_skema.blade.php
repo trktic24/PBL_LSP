@@ -10,16 +10,7 @@
     <section class="max-w-screen-xl mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
             @php
-                $detailImgSrc = empty($skema->gambar) ? asset('images/default_pic.jpeg') : (
-                    (str_starts_with($skema->gambar, 'images/') || str_starts_with($skema->gambar, 'assets/') || in_array($skema->gambar, ['default.jpg', 'default_pic.jpeg']))
-                    ? asset(in_array($skema->gambar, ['default.jpg', 'default_pic.jpeg']) ? 'images/' . $skema->gambar : $skema->gambar)
-                    : (
-                        // 🟢 FIX FOR SEEDED DATA
-                        str_contains($skema->gambar, 'skema/foto_skema/') 
-                        ? asset('images/skema/' . basename($skema->gambar))
-                        : asset('storage/' . $skema->gambar)
-                    )
-                );
+                $detailImgSrc = $skema->gambar_url;
             @endphp
             
             <img src="{{ $detailImgSrc }}"
@@ -173,15 +164,28 @@
                     </div>
                     
                     {{-- Asumsi SKKNI adalah link atau path file --}}
-                    <a href="{{ $skema->SKKNI }}" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        class="text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center gap-1">
-                        Unduh / Lihat
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                        </svg>
-                    </a>
+                    <div class="flex gap-3">
+                        {{-- Tombol Lihat (Inline) --}}
+                        <a href="{{ route('skema.pdf', $skema->id_skema) }}" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            class="text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center gap-1 border border-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition">
+                            Lihat
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </a>
+
+                        {{-- Tombol Unduh (Download) --}}
+                        <a href="{{ route('skema.download', $skema->id_skema) }}" 
+                            class="text-white bg-blue-600 hover:bg-blue-700 font-semibold text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg transition shadow-sm">
+                            Unduh
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
             @else
                 <p class="text-gray-500 text-center py-4 border-dashed border-2 border-gray-300 rounded-lg">

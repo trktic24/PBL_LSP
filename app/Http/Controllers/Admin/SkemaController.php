@@ -110,8 +110,8 @@ class SkemaController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            // Simpan FULL PATH (skema/foto_skema/filename.jpg)
-            $validatedData['gambar'] = $file->storeAs('skema/foto_skema', $filename, 'public');
+            // Simpan FULL PATH (skema/filename.jpg)
+            $validatedData['gambar'] = $file->storeAs('skema', $filename, 'public');
         }
 
         $skema = Skema::create($validatedData);
@@ -169,7 +169,7 @@ class SkemaController extends Controller
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
             // Simpan FULL PATH
-            $validatedData['gambar'] = $file->storeAs('skema/foto_skema', $filename, 'public');
+            $validatedData['gambar'] = $file->storeAs('skema', $filename, 'public');
         }
 
         $skema->update($validatedData);

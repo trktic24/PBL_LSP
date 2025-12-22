@@ -99,4 +99,18 @@ class Skema extends Model
             'id_kelompok_pekerjaan'     // PK di tabel Perantara (kelompok_pekerjaan)
         );
     }
+    /**
+     * Accessor untuk URL Gambar
+     * Mengembalikan URL penyimpanan penuh.
+     */
+    public function getGambarUrlAttribute()
+    {
+        // Jika null, kembalikan placeholder default
+        if (empty($this->gambar)) {
+            return asset('images/default_pic.jpeg');
+        }
+
+        // Jika gambar disimpan di storage (default baru)
+        return asset('storage/' . $this->gambar);
+    }
 }

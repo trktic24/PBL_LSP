@@ -94,4 +94,41 @@ class HomeController extends Controller
             'berita' => $berita
         ]);
     }
+
+    public function viewPdf($id)
+    {
+        $skema = Skema::findOrFail($id);
+        
+        if (!$skema->SKKNI) {
+            abort(404, 'File SKKNI tidak ditemukan dalam database.');
+        }
+
+        $path = storage_path('app/public/' . $skema->SKKNI);
+
+        if (!file_exists($path)) {
+            abort(404, 'File fisik tidak ditemukan di server.');
+        }
+
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . basename($path) . '"'
+        ]);
+    }
+
+    public function downloadPdf($id)
+    {
+        $skema = Skema::findOrFail($id);
+        
+        if (!$skema->SKKNI) {
+            abort(404, 'File SKKNI tidak ditemukan dalam database.');
+        }
+
+        $path = storage_path('app/public/' . $skema->SKKNI);
+
+        if (!file_exists($path)) {
+            abort(404, 'File fisik tidak ditemukan di server.');
+        }
+
+        return response()->download($path, basename($path));
+    }
 }

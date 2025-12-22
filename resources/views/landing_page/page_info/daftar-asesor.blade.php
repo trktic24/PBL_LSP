@@ -140,36 +140,37 @@
     </div>
 
     {{-- TABLE --}}
-    <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden">
+    <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden overflow-x-auto">
 
-        <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm font-poppins">
-            <div class="font-bold">Nama Asesor</div>
-            <div class="font-bold text-center">No. Registrasi</div>
-            <div class="font-bold text-center">Bidang</div>
-            <div class="font-bold text-center">Provinsi</div>
-            <div class="font-bold text-center">Asesmen</div>
-        </div>
-
-        @forelse($asesors as $asesor)
-            <div class="grid grid-cols-5 px-6 py-4 custom-table-row text-sm items-center">
-                
-                <div class="font-medium text-gray-900">{{ $asesor->nama_lengkap }}</div>
-                <div class="text-center text-gray-600">{{ $asesor->nomor_regis }}</div>
-                <div class="text-center text-gray-600">{{ $asesor->pekerjaan }}</div>
-                <div class="text-center text-gray-600">{{ $asesor->provinsi }}</div>
-                <div class="text-center text-gray-600 font-semibold">{{ rand(70,130) }}</div>
-
+        <div class="min-w-[800px]">
+            <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm font-poppins">
+                <div class="font-bold">Nama Asesor</div>
+                <div class="font-bold text-center">No. Registrasi</div>
+                <div class="font-bold text-center">Bidang</div>
+                <div class="font-bold text-center">Provinsi</div>
+                <div class="font-bold text-center">Asesmen</div>
             </div>
-        @empty
-            <div class="py-8 text-center text-gray-500">Tidak ada data asesor ditemukan.</div>
-        @endforelse
 
+            @forelse($asesors as $asesor)
+                <div class="grid grid-cols-5 px-6 py-4 custom-table-row text-sm items-center">
+                    
+                    <div class="font-medium text-gray-900">{{ $asesor->nama_lengkap }}</div>
+                    <div class="text-center text-gray-600">{{ $asesor->nomor_regis }}</div>
+                    <div class="text-center text-gray-600">{{ $asesor->pekerjaan }}</div>
+                    <div class="text-center text-gray-600">{{ $asesor->provinsi }}</div>
+                    <div class="text-center text-gray-600 font-semibold">{{ rand(70,130) }}</div>
+
+                </div>
+            @empty
+                <div class="py-8 text-center text-gray-500">Tidak ada data asesor ditemukan.</div>
+            @endforelse
+        </div>
     </div>
 
     {{-- PAGINATION --}}
     @if (isset($asesors) && method_exists($asesors, 'links'))
-        <div class="mt-4">
-            {{ $asesors->appends(request()->except('page'))->links() }}
+        <div class="mt-4 overflow-x-auto">
+            {{ $asesors->appends(request()->except('page'))->onEachSide(1)->links() }}
         </div>
     @endif
 

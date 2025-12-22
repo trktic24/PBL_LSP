@@ -256,7 +256,7 @@ Route::middleware('auth')->group(function () {
         // Master Skema
         Route::controller(SkemaController::class)->prefix('master/skema')->group(function () {
             Route::get('/', 'index')->name('master_skema');
-            Route::match(['get', 'post'], '/add', 'store')->name('add_skema.store'); // Simplified for CRUD
+            Route::post('/add', 'store')->name('add_skema.store');
             Route::get('/add', 'create')->name('add_skema');
             Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
             Route::put('/update/{id_skema}', 'update')->name('update_skema');

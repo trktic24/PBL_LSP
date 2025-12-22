@@ -221,75 +221,76 @@
 
     <!-- ========== TABEL JADWAL (WARNA SUDAH MENYERUPAI GAMBAR) ========== -->
 <div id="jadwalContainer">
-    <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden">
+    <div class="shadow-sm border border-[#E5DFA3] rounded-xl overflow-hidden overflow-x-auto">
 
-        <!-- HEADER -->
-        <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm font-poppins">
-            <div>Skema Sertifikasi</div>
-            <div class="text-center">Pendaftaran</div>
-            <div class="text-center">Tanggal Asesmen</div>
-            <div class="text-center">TUK</div>
-            <div class="text-center">Status</div>
+        <div class="min-w-[800px]">
+            <!-- HEADER -->
+            <div class="grid grid-cols-5 px-6 py-4 custom-table-header text-sm font-poppins">
+                <div>Skema Sertifikasi</div>
+                <div class="text-center">Pendaftaran</div>
+                <div class="text-center">Tanggal Asesmen</div>
+                <div class="text-center">TUK</div>
+                <div class="text-center">Status</div>
+            </div>
+
+            @forelse($jadwal as $item)
+
+            @php
+                $statusClass = [
+                    'Terjadwal' => 'bg-green-100 text-green-800',
+                    'Full'      => 'bg-yellow-100 text-yellow-800',
+                    'Selesai'   => 'bg-gray-200 text-gray-700',
+                    'Dibatalkan'=> 'bg-red-100 text-red-700',
+                ][$item->Status_jadwal] ?? 'bg-gray-200 text-gray-700';
+            @endphp
+
+            <!-- ROW -->
+            <div class="jadwal-row grid grid-cols-5 px-6 py-4 custom-table-row text-sm">
+
+                <div class="flex items-center">
+                    {{ $item->skema->nama_skema ?? 'N/A' }}
+                </div>
+
+                <div class="text-center">
+                    {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M') }} -
+                    {{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d M Y') }}
+                </div>
+
+                <div class="text-center">
+                    {{ \Carbon\Carbon::parse($item->tanggal_pelaksanaan)->format('d M Y') }}
+                </div>
+
+                <div class="text-center">
+                    {{ $item->masterTuk->nama_lokasi ?? 'N/A' }}
+                </div>
+
+                <div class="text-center">
+                    @if($item->Status_jadwal === 'Terjadwal')
+                        <a href="{{ route('jadwal.detail', $item->id_jadwal) }}"
+                            class="px-3 py-1 rounded-full text-xs font-medium {{ $statusClass }}">
+                            Lihat Detail
+                        </a>
+                    @else
+                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ $statusClass }}">
+                            {{ $item->Status_jadwal }}
+                        </span>
+                    @endif
+                </div>
+
+            </div>
+
+            @empty
+            <div class="py-6 text-center text-gray-500">Tidak ada jadwal ditemukan.</div>
+            @endforelse
         </div>
-
-        @forelse($jadwal as $item)
-
-        @php
-            $statusClass = [
-                'Terjadwal' => 'bg-green-100 text-green-800',
-                'Full'      => 'bg-yellow-100 text-yellow-800',
-                'Selesai'   => 'bg-gray-200 text-gray-700',
-                'Dibatalkan'=> 'bg-red-100 text-red-700',
-            ][$item->Status_jadwal] ?? 'bg-gray-200 text-gray-700';
-        @endphp
-
-        <!-- ROW -->
-        <!-- ROW -->
-        <div class="jadwal-row grid grid-cols-5 px-6 py-4 custom-table-row text-sm">
-
-            <div class="flex items-center">
-                {{ $item->skema->nama_skema ?? 'N/A' }}
-            </div>
-
-            <div class="text-center">
-                {{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M') }} -
-                {{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d M Y') }}
-            </div>
-
-            <div class="text-center">
-                {{ \Carbon\Carbon::parse($item->tanggal_pelaksanaan)->format('d M Y') }}
-            </div>
-
-            <div class="text-center">
-                {{ $item->masterTuk->nama_lokasi ?? 'N/A' }}
-            </div>
-
-            <div class="text-center">
-                @if($item->Status_jadwal === 'Terjadwal')
-                    <a href="{{ route('jadwal.detail', $item->id_jadwal) }}"
-                        class="px-3 py-1 rounded-full text-xs font-medium {{ $statusClass }}">
-                        Lihat Detail
-                    </a>
-                @else
-                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $statusClass }}">
-                        {{ $item->Status_jadwal }}
-                    </span>
-                @endif
-            </div>
-
-        </div>
-
-        @empty
-        <div class="py-6 text-center text-gray-500">Tidak ada jadwal ditemukan.</div>
-        @endforelse
 
     </div>
 
 
     {{-- PAGINATION --}}
     @if (isset($jadwal) && method_exists($jadwal, 'links'))
-        <div class="mt-4">
-            {{ $jadwal->appends(request()->except('page'))->links() }}
+        <div class="mt-4 overflow-x-auto">
+            {{ $jadwal->appends(request()->except('page'))->onEachSide(1)->links() }}
         </div>
     @endif
 
