@@ -40,7 +40,7 @@
     $statusClassSelesai = 'text-xs text-green-600 font-medium';
     $statusClassProses = 'text-xs text-blue-600 font-medium';
     $statusClassTunggu = 'text-xs text-yellow-600 font-medium';
-    $statusClassTerkunci = 'text-xs text-gray-400 font-medium'; 
+    $statusClassTerkunci = 'text-xs text-gray-400 font-medium';
 
     // BUTTON STYLES
     $btnBase = 'mt-2 px-4 py-1.5 text-xs font-semibold rounded-md inline-block transition-all';
@@ -65,12 +65,13 @@
         @if ($sertifikasi)
             {{-- 1. SIDEBAR (Desktop Only) --}}
             <div class="hidden md:block md:w-80 flex-shrink-0">
-                <x-sidebar :idAsesi="$sertifikasi->id_asesi" :sertifikasi="$sertifikasi" backUrl="/" />
+                <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" backUrl="/" />
             </div>
 
             {{-- 2. HEADER MOBILE (Data Dinamis) --}}
             @php
-                $gambarSkema = $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
+                $gambarSkema =
+                    $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
                         ? asset('storage/' . $sertifikasi->jadwal->skema->gambar)
                         : asset('images/default_pic.jpeg');
             @endphp
@@ -90,13 +91,19 @@
                         {{-- ============================================= --}}
                         {{-- UPDATE: pl-4 dihapus biar sejajar dengan item bawahnya --}}
                         <li class="relative flex items-center md:items-start md:pb-10">
-                            {{-- GARIS: Mobile left-5 (geser kanan dikit) | Desktop -bottom-10 (Nyambung) --}}
+                            {{-- DEFINISI LOGIC STATUS --}}
+                            @php
+                                $isFormSelesai = $sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI;
+                            @endphp
+
+                            {{-- GARIS VERTIKAL --}}
                             <div
                                 class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 
-                                {{ $level >= $LVL_DAFTAR_SELESAI ? 'bg-green-500' : 'bg-gray-200' }}">
+        {{ $isFormSelesai ? 'bg-green-500' : 'bg-gray-200' }}">
                             </div>
 
                             <div class="relative flex-shrink-0 ml-1 mr-4 md:mr-6 z-10">
+                                {{-- ICON DESKTOP --}}
                                 <div
                                     class="hidden md:flex w-12 h-12 rounded-lg bg-gray-100 items-center justify-center">
                                     <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -105,9 +112,11 @@
                                             d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                     </svg>
                                 </div>
+
+                                {{-- BULATAN MOBILE --}}
                                 <div
                                     class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    @if ($level >= $LVL_DAFTAR_SELESAI)
+                                    @if ($isFormSelesai)
                                         <div
                                             class="w-4 h-4 left-1 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.6)]">
                                         </div>
@@ -115,20 +124,32 @@
                                         <div class="w-4 h-4 bg-gray-300 rounded-full"></div>
                                     @endif
                                 </div>
-                                @if ($level >= $LVL_DAFTAR_SELESAI && $unlockAPL02)
+
+                                {{-- CENTANG HIJAU --}}
+                                @if ($isFormSelesai && $unlockAPL02)
                                     <div class="hidden md:block">{!! renderCheckmark() !!}</div>
                                 @endif
                             </div>
 
+                            {{-- KONTEN CARD --}}
                             <div class="{{ $responsiveCardClass }}">
-                                <a href="{{ route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+
+                                {{-- ========================================================== --}}
+                                {{-- BAGIAN INI YANG GUA UBAH LOGIC HREF-NYA --}}
+                                {{-- ========================================================== --}}
+                                <a href="{{ $isFormSelesai
+                                    ? route('asesi.pendaftaran.selesai', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi])
+                                    : route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                     class="{{ $linkClassEnabled }}">
                                     Formulir Pendaftaran Sertifikasi
                                 </a>
+                                {{-- ========================================================== --}}
+
                                 <p class="text-sm text-gray-500">{{ $sertifikasi->tanggal_daftar->format('l, d F Y') }}
                                 </p>
 
-                                @if ($sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI)
+                                {{-- STATUS & TOMBOL UNDUH --}}
+                                @if ($isFormSelesai)
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
                                     <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         target="_blank" class="{{ $btnBlue }}">
@@ -507,7 +528,8 @@
                                                                 stroke-width="2"
                                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                                             </path>
-                                                        </svg> Terkunci</div>
+                                                        </svg> Terkunci
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -563,7 +585,8 @@
                                                                 stroke-width="2"
                                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                                             </path>
-                                                        </svg> Terkunci</div>
+                                                        </svg> Terkunci
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -620,7 +643,8 @@
                                                                 stroke-width="2"
                                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                                             </path>
-                                                        </svg> Terkunci</div>
+                                                        </svg> Terkunci
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -678,7 +702,8 @@
                                                                 stroke-width="2"
                                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                                             </path>
-                                                        </svg> Terkunci</div>
+                                                        </svg> Terkunci
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -735,7 +760,8 @@
                                                                 stroke-width="2"
                                                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                                             </path>
-                                                        </svg> Terkunci</div>
+                                                        </svg> Terkunci
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>

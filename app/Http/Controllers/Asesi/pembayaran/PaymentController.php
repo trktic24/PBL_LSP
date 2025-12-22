@@ -150,7 +150,7 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Midtrans Error: ' . $e->getMessage());
-            return redirect("/tracker/{$idJadwal}")->with('error', 'Gagal: ' . $e->getMessage());
+            return redirect("/asesi/tracker/{$idJadwal}")->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
@@ -205,10 +205,10 @@ class PaymentController extends Controller
         if ($orderId) {
             $pembayaran = Pembayaran::where('order_id', $orderId)->first();
             if ($pembayaran && $pembayaran->sertifikasi) {
-                return redirect("/tracker/" . $pembayaran->sertifikasi->id_jadwal);
+                return redirect("/asesi/tracker/" . $pembayaran->sertifikasi->id_jadwal);
             }
         }
-        return redirect('/tracker');
+        return redirect('/asesi/tracker');
     }
     public function downloadInvoice($id_sertifikasi) 
     {

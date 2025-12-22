@@ -114,7 +114,7 @@ class TandaTanganAPIController extends Controller
 
         } catch (\Exception $e) {
             // 2. Handle jika data tidak ditemukan atau error lain
-            return redirect('/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
+            return redirect('/asesi/tracker')->with('error', 'Data Pendaftaran tidak ditemukan.');
         }
     }
 }
