@@ -116,7 +116,7 @@
                             <td class="px-4 py-4">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50">
                                         @php
-                                            $imgSrc = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default_pic.jpeg');
+                                            $imgSrc = $skema->gambar_url;
                                         @endphp
                                         <img src="{{ $imgSrc }}" 
                                                 alt="{{ $skema->nama_skema }}" 
@@ -138,7 +138,7 @@
                             
                             <td class="px-4 py-4 text-center">
                                 @if($skema->SKKNI)
-                                    <a href="{{ asset($skema->SKKNI) }}" target="_blank" class="text-red-600 hover:text-red-800">
+                                    <a href="{{ asset('storage/' . $skema->SKKNI) }}" target="_blank" class="text-red-600 hover:text-red-800">
                                         <i class="fas fa-file-pdf fa-2x"></i>
                                     </a>
                                 @else

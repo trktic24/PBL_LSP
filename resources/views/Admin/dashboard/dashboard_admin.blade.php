@@ -362,7 +362,7 @@
                                 <td class="px-4 py-4 text-center font-medium text-gray-500">{{ $jadwal->id_jadwal }}</td>
                                 <td class="px-4 py-4">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50 mx-auto">
-                                        <img src="{{ $jadwal->skema && $jadwal->skema->gambar ? asset('storage/' . $jadwal->skema->gambar) : asset('images/default_pic.jpeg') }}" 
+                                        <img src="{{ $jadwal->skema?->gambar_url }}" 
                                              alt="{{ $jadwal->skema->nama_skema ?? 'Skema Image' }}" 
                                              class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer" 
                                              onclick="window.open(this.src, '_blank')"

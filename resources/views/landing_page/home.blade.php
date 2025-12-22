@@ -176,16 +176,7 @@ html { scroll-behavior: smooth; }
                 <div class="flex-none w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 px-4 skema-slide" data-slide-index="{{ $index }}">
                     @foreach($chunk as $skema)
                         @php
-                            $imgSrc = empty($skema->gambar) ? asset('images/default_pic.jpeg') : (
-                                (str_starts_with($skema->gambar, 'images/') || str_starts_with($skema->gambar, 'assets/') || in_array($skema->gambar, ['default.jpg', 'default_pic.jpeg']))
-                                ? asset(in_array($skema->gambar, ['default.jpg', 'default_pic.jpeg']) ? 'images/' . $skema->gambar : $skema->gambar)
-                                : (
-                                    // 🟢 FIX FOR SEEDED DATA: Jika path 'skema/foto_skema/...', arahkan ke public/images/skema
-                                    str_contains($skema->gambar, 'skema/foto_skema/') 
-                                    ? asset('images/skema/' . basename($skema->gambar))
-                                    : asset('storage/' . $skema->gambar)
-                                )
-                            );
+                            $imgSrc = $skema->gambar_url;
                             $categoryName = $skema->category?->nama_kategori ?? 'Tidak Terkategori';
                         @endphp
                         

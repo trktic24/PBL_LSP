@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8" />
@@ -115,17 +115,15 @@
 
                             <td class="px-4 py-4">
                                 <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50">
-                                    @if($skema->gambar)
-                                        <img src="{{ asset($skema->gambar) }}" 
-                                             alt="{{ $skema->nama_skema }}" 
-                                             class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
-                                             onclick="window.open(this.src, '_blank')"
-                                        >
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                            <i class="fas fa-image text-lg"></i>
-                                        </div>
-                                    @endif
+                                    @php
+                                        $imgSrc = $skema->gambar_url;
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" 
+                                         alt="{{ $skema->nama_skema }}" 
+                                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
+                                         onclick="window.open(this.src, '_blank')"
+                                         onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';"
+                                    >
                                 </div>
                             </td>
 
