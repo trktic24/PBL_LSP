@@ -86,7 +86,8 @@
                                 @php
                                     $ext = strtolower(pathinfo($doc['file_path'], PATHINFO_EXTENSION));
                                     $isImage = in_array($ext, ['jpg', 'jpeg', 'png']);
-                                    $fileUrl = Storage::url(str_replace('public/', '', $doc['file_path']));
+                                    // PERBAIKAN: Gunakan route secure.file karena file ada di private_docs
+                                    $fileUrl = route('secure.file', ['path' => $doc['file_path']]);
                                 @endphp
 
                                 @if ($isImage)

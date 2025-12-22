@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, \Illuminate\Http\Request $request) {
+            return redirect()->back()->with('error', 'Ukuran total file yang diunggah terlalu besar. Silakan kurangi ukuran file atau kompres dokumen Anda.');
+        });
     })
     ->create();

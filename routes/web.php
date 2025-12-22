@@ -78,6 +78,8 @@ Route::get('/dashboard', fn() => redirect()->route('home'))->name('dashboard');
 // Skema Sertifikasi
 Route::get('/skema/{id}', [HomeController::class, 'show'])->name('skema.detail');
 Route::get('/detail_skema/{id}', [HomeController::class, 'show'])->name('detail_skema'); // Alias
+Route::get('/skema/{id}/pdf', [HomeController::class, 'viewPdf'])->name('skema.pdf');
+Route::get('/skema/{id}/download', [HomeController::class, 'downloadPdf'])->name('skema.download');
 
 // Jadwal & Detail
 Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MasterTuk;
+use App\Models\MasterTUK;
 use Illuminate\Http\Request;
 
 class TukController extends Controller
@@ -13,7 +13,7 @@ class TukController extends Controller
     public function index(Request $request)
     {
         // 1. Inisialisasi Query Builder
-        $query = MasterTuk::query();
+        $query = MasterTUK::query();
 
         // 2. LOGIKA SEARCHING (Berdasarkan nama_lokasi atau alamat_tuk)
         if ($request->filled('search')) {

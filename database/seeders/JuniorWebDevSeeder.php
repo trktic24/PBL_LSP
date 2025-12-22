@@ -28,7 +28,7 @@ class JuniorWebDevSeeder extends Seeder
                 'nama_skema' => 'Junior Web Developers',
                 'deskripsi_skema' => 'Skema sertifikasi untuk pengembang web tingkat pemula.',
                 'harga' => 500000,
-                'gambar' => 'default.jpg',
+                'gambar' => 'skema/skema' . rand(1, 15) . '.jpg',
                 'SKKNI' => 'file_dummy.pdf',
             ]
         );

@@ -44,8 +44,10 @@
       {{-- Tombol Close (Mobile) --}}
       <button
         @click="openMenu = false"
-        class="lg:hidden fixed top-3 right-4 z-60 rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer">
-        âœ•
+        class="lg:hidden absolute top-3 right-4 z-[60] rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-600">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
 
       {{-- ðŸŸ© Menu utama --}}
@@ -213,19 +215,22 @@
         <nav
           :class="{'max-lg:translate-x-0': openMenu, 'max-lg:-translate-x-full': !openMenu}"
           class="lg:block max-lg:fixed max-lg:bg-white max-lg:w-2/3 max-lg:min-w-[300px]
-                 max-lg:top-0 max-lg:left-0 max-lg:h-full max-lg:shadow-md max-lg:p-4 max-lg:overflow-auto
+                 max-lg:top-0 max-lg:left-0 max-lg:h-full max-lg:shadow-md
                  z-50 mx-auto transition-transform duration-300"
           x-cloak
         >
           {{-- Tombol Close (Mobile) --}}
           <button
             @click="openMenu = false"
-            class="lg:hidden fixed top-3 right-4 z-60 rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer"
+            class="lg:hidden absolute top-3 right-4 z-[60] rounded-full bg-white w-9 h-9 flex items-center justify-center border border-gray-200 cursor-pointer"
           >
-            âœ•
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-600">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
 
-          <ul class="lg:flex lg:items-center lg:justify-center lg:gap-x-8 max-lg:space-y-4">
+          <div class="h-full overflow-y-auto p-4">
+              <ul class="lg:flex lg:items-center lg:justify-center lg:gap-x-8 max-lg:space-y-4">
 
             {{-- Logo versi mobile --}}
             <li class="max-lg:border-b max-lg:border-gray-300 max-lg:pb-4 px-3 lg:hidden">
@@ -370,6 +375,7 @@
               @endauth
             </li>
           </ul>
+          </div>
         </nav>
 
         {{-- ðŸŸ¦ Dropdown User (Desktop) --}}
