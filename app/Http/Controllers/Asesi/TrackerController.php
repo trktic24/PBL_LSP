@@ -130,7 +130,7 @@ class TrackerController extends Controller
             }
         }
 
-        return view('asesi.tracker', compact('sertifikasi', 'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09', 'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04', 'statusAPL01', 'statusAPL02', 'isWaktuHabis', 'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus', 'isAPL01Ditolak', 'isAPL02Ditolak', 'isTidakKompeten'));
+        return view('asesi.tracker', compact('sertifikasi', 'asesi', 'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09', 'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04', 'statusAPL01', 'statusAPL02', 'isWaktuHabis', 'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus', 'isAPL01Ditolak', 'isAPL02Ditolak', 'isTidakKompeten'));
     }
 
     /**
