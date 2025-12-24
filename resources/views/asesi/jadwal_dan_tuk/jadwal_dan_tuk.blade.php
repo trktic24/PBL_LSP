@@ -120,8 +120,9 @@
                 </div>
 
                 <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 mb-6 text-sm font-medium">
-                    <span class="font-bold">Panduan Singkat:</span> Dari Gerbang Utama, lurus terus sampai bundaran,
-                    belok kanan ke Gedung Magister Terapan.
+                    <span class="font-bold">Perhatian:</span> Harap hadir <span class="font-bold">30 menit</span>
+                    sebelum jadwal dimulai dan wajib membawa <span class="font-bold">Kartu Identitas (KTP/KTM)</span>
+                    asli.
                 </div>
 
                 {{-- CARD 3: FOTO GEDUNG --}}
@@ -154,81 +155,76 @@
     {{-- JAVASCRIPT --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const idSertifikasi = document.querySelector('main').dataset.sertifikasiId;
+            const mainElement = document.querySelector('main');
+            const idSertifikasi = mainElement.dataset.sertifikasiId;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            const nextUrl = "{{ route('asesi.kerahasiaan.fr_ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
-
+            const nextUrl =
+                "{{ route('asesi.kerahasiaan.fr_ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}";
 
             if (!idSertifikasi) {
                 alert("ID Sertifikasi tidak ditemukan");
                 return;
             }
 
-            // 1. FETCH DATA
-            fetch(/api/v1/jadwal-tuk/${idSertifikasi})
-                .then(res => res.json())
-                .then(resp => {
-                    if (resp.success) {
-                        const data = resp.data;
+            // 1. FETCH DATA (Gua benerin tanda kutipnya pake backtick ` )
+        // Pastikan url-nya bener (/api/v1/... atau /api/...)
+        fetch(`/api/v1/jadwal-tuk/${idSertifikasi}`)
+            .then(res => res.json())
+            .then(resp => {
+                if (resp.success) {
+                    const data = resp.data;
 
-                        // A. Isi Checkbox TUK
-                        const tukEl = document.getElementById(tuk_${data.jenis_tuk});
-                        if (tukEl) tukEl.checked = true;
+                    // A. Isi Checkbox TUK (Pake backtick)
+                    const tukEl = document.getElementById(`tuk_${data.jenis_tuk}`);
+                    if (tukEl) tukEl.checked = true;
 
-                        // B. Isi Teks Informasi
-                        document.getElementById('text_lokasi').innerText = data.lokasi;
-                        document.getElementById('text_alamat').innerText = data.alamat;
-                        document.getElementById('text_kontak').innerText = data.kontak;
+                    // B. Isi Teks Informasi
+                    document.getElementById('text_lokasi').innerText = data.lokasi;
+                    document.getElementById('text_alamat').innerText = data.alamat;
+                    document.getElementById('text_kontak').innerText = data.kontak;
 
-                        // C. Format Tanggal (Indo)
-                        const date = new Date(data.tanggal);
-                        const options = {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        };
-                        document.getElementById('text_tanggal').innerText = date.toLocaleDateString('id-ID',
-                            options);
+                    // C. Format Tanggal (Pake kode asli lu)
+                    const date = new Date(data.tanggal);
+                    const options = {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    };
+                    document.getElementById('text_tanggal').innerText = date.toLocaleDateString('id-ID',
+                        options);
 
-                        const waktuObj = new Date(data.waktu);
+                    // D. Format Waktu (INI PAKE KODE ASLI LU YANG BENER)
+                    const waktuObj = new Date(data.waktu);
+                    const jamWib = waktuObj.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false // Format 24 jam
+                    });
+                    document.getElementById('text_waktu').innerText = jamWib + ' WIB';
 
-                        // 2. Format jadi Jam:Menit sesuai zona waktu Jakarta (WIB)
-                        const jamWib = waktuObj.toLocaleTimeString('id-ID', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false // Format 24 jam
-                        });
-
-                        // 3. Tampilkan
-                        document.getElementById('text_waktu').innerText = jamWib + ' WIB';
-
-                        // E. Isi Maps
-                        if (data.link_gmap) {
-                            document.getElementById('iframe_maps').src = data.link_gmap;
-                        }
-
-                        // F. Isi Foto Gedung
-                        if (data.foto_gedung) {
-                            // Pastikan path-nya bener (kalau cuma nama file, tambah /images/tuk/)
-                            // Asumsi: data.foto_gedung adalah path lengkap atau nama file
-                            // Kalau nama file doang: {{ asset('images') }}/${data.foto_gedung}
-                            // Di sini saya asumsi path lengkap/url
-                            const imgEl = document.getElementById('img_gedung');
-                            imgEl.src = /${data.foto_gedung}; // Tambah slash depan buat root
-                            imgEl.classList.remove('hidden');
-                            document.getElementById('placeholder_gedung').classList.add('hidden');
-                        } else {
-                            document.getElementById('placeholder_gedung').innerText = "FOTO TIDAK TERSEDIA";
-                        }
+                    // E. Isi Maps
+                    if (data.link_gmap) {
+                        document.getElementById('iframe_maps').src = data.link_gmap;
                     }
-                })
-                .catch(err => console.error(err));
 
-            // 2. TOMBOL NAVIGASI
-            document.getElementById('btn_selanjutnya').addEventListener('click', () => {
-                // Konfirmasi/Simpan Status (Opsional)
-                fetch(/api/v1/jadwal-tuk/konfirmasi/${idSertifikasi}, {
+                    // F. Isi Foto Gedung (Pake backtick buat path)
+                    if (data.foto_gedung) {
+                        const imgEl = document.getElementById('img_gedung');
+                        imgEl.src = `/storage/${data.foto_gedung}`;
+                        imgEl.classList.remove('hidden');
+                        document.getElementById('placeholder_gedung').classList.add('hidden');
+                    } else {
+                        document.getElementById('placeholder_gedung').innerText = "FOTO TIDAK TERSEDIA";
+                    }
+                }
+            })
+            .catch(err => console.error(err));
+
+        // 2. TOMBOL NAVIGASI
+        document.getElementById('btn_selanjutnya').addEventListener('click', () => {
+            // Konfirmasi (Pake backtick)
+            fetch(`/api/v1/jadwal-tuk/konfirmasi/${idSertifikasi}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -244,7 +240,7 @@
                     });
             });
 
-            // Tombol Sebelumnya (Balik ke Tracker juga bisa, atau ke halaman bayar)
+            // Tombol Sebelumnya
             document.getElementById('btn_sebelumnya').addEventListener('click', () => {
                 window.history.back();
             });
