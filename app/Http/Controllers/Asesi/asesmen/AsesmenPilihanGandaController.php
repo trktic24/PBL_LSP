@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Asesi\asesmen;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Models\LembarJawabIa05;
-use App\Models\KunciJawabanIa05;
+use App\Models\LembarJawabIA05;
+use App\Models\KunciJawabanIA05;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -33,7 +33,8 @@ class AsesmenPilihanGandaController extends Controller
         $tanggal = Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
 
         // Gabungkan Tanggal + Jam Selesai
-        $waktuSelesai = Carbon::parse($tanggal . ' ' . $jadwal->waktu_selesai, 'Asia/Jakarta');
+        $jamSaja = Carbon::parse($jadwal->waktu_selesai)->format('H:i:s');
+        $waktuSelesai = Carbon::parse($tanggal . ' ' . $jamSaja, 'Asia/Jakarta');
         $waktuSekarang = Carbon::now('Asia/Jakarta');
 
         // Hitung selisih waktu dalam detik
@@ -56,7 +57,7 @@ class AsesmenPilihanGandaController extends Controller
     {
         try {
             // Ambil data dari lembar jawab, join (eager load) ke master soal
-            $data = LembarJawabIa05::with(['soal'])
+            $data = LembarJawabIA05::with(['soal'])
                 ->where('id_data_sertifikasi_asesi', $idSertifikasi)
                 // Optional: Urutkan berdasarkan ID soal biar konsisten
                 // ->whereHas('soal', function($q) { $q->orderBy('id_soal_ia05'); })
@@ -126,16 +127,16 @@ class AsesmenPilihanGandaController extends Controller
             $lembarJawabIds = array_column($request->jawaban, 'id_lembar_jawab');
 
             // Cari tahu ID Soal Master apa saja yang sedang dijawab
-            $soalIds = LembarJawabIa05::whereIn('id_lembar_jawab_ia05', $lembarJawabIds)->pluck('id_soal_ia05')->unique()->toArray();
+            $soalIds = LembarJawabIA05::whereIn('id_lembar_jawab_ia05', $lembarJawabIds)->pluck('id_soal_ia05')->unique()->toArray();
 
             // Ambil KUNCI JAWABAN BENAR dari tabel kunci_jawaban_ia05
             // [PERUBAHAN PENTING: GUNAAN NAMA KOLOM BARU 'jawaban_benar_ia05']
-            $kunciJawabanMap = KunciJawabanIa05::whereIn('id_soal_ia05', $soalIds)->pluck('jawaban_benar_ia05', 'id_soal_ia05')->toArray();
+            $kunciJawabanMap = KunciJawabanIA05::whereIn('id_soal_ia05', $soalIds)->pluck('jawaban_benar_ia05', 'id_soal_ia05')->toArray();
 
             // --- TAHAP 2: PROSES SIMPAN & KOREKSI ---
             foreach ($request->jawaban as $item) {
                 // Cari record lembar jawab yang akan diupdate
-                $lembarJawab = LembarJawabIa05::where('id_lembar_jawab_ia05', $item['id_lembar_jawab'])
+                $lembarJawab = LembarJawabIA05::where('id_lembar_jawab_ia05', $item['id_lembar_jawab'])
                     ->where('id_data_sertifikasi_asesi', $idSertifikasi) // Keamanan tambahan
                     ->first();
 

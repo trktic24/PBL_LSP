@@ -19,8 +19,8 @@ class PersetujuanKerahasiaanAPIController extends Controller
 
         if (
             $sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' ||
-            $sertifikasi->progres_level >= 30
-        ) { // Asumsi level 30 itu LVL_SETUJU
+            $sertifikasi->progres_level >= 70
+        ) { 
 
             return redirect()->route('asesi.persetujuan.selesai', ['id_sertifikasi' => $id_sertifikasi]);
         }
@@ -66,7 +66,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
                 'asesor' => $sertifikasi->jadwal->asesor ?? (object) ['nama_lengkap' => '-'],
                 'tuk' => $jenisTuk,
                 'master_bukti' => $masterBukti,
-                'respon_bukti' => $responBukti, // ID Bukti yang akan tercentang
+                'respon_bukti' => $responBukti, 
                 'status_sekarang' => $sertifikasi->status_sertifikasi,
                 'tanda_tangan_valid' => !empty($sertifikasi->asesi->tanda_tangan)
             ], 200);

@@ -405,7 +405,7 @@
                         
                         // Redirect
                         if (result.redirect_id_jadwal) {
-                            window.location.href = 'asesi/tracker/' + result.redirect_id_jadwal;
+                            window.location.href = '/asesi/tracker/' + result.redirect_id_jadwal;
                         } else {
                             window.location.reload();
                         }

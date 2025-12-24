@@ -439,7 +439,7 @@
                                 <div class="flex justify-between items-center mb-6">
                                     <h3
                                         class="text-lg font-bold {{ $unlockAsesmen ? 'text-gray-900' : 'text-gray-400' }}">
-                                        Daftar Asesmen
+                                        Asesmen
                                     </h3>
                                     @if ($unlockAsesmen)
                                         <span
@@ -738,7 +738,7 @@
                                                         Hasil</a>
                                                 @elseif ($unlockAsesmen)
                                                     {{-- GANTI ROUTE DI SINI UNTUK IA.09 --}}
-                                                    <a href="{{ route('asesi.ia09.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                    <a href="#"
                                                         class="flex items-center justify-center w-full sm:w-36 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
                                                         <svg class="w-4 h-4 mr-2" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">

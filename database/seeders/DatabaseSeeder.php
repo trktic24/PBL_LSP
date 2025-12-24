@@ -99,6 +99,7 @@ class DatabaseSeeder extends Seeder
             Ia01DummySeeder::class,
             // Ia02 covered by SkenarioIa02Seeder? available in list
             // DummyIA05Seeder::class,
+            SoalDanKunciia05Seeder::class,
             LembarJawabIa05Seeder::class,
             
             SoalIa06MasterSeeder::class,
@@ -116,7 +117,6 @@ class DatabaseSeeder extends Seeder
 
         // 7. EXTRAS
         $this->call([
-            // SoalDanKunciSeeder::class,
             // KonfirmasiOrangRelevanSeeder::class,
             TenSchemesSeeder::class, // Might duplicate Skemas, check logic inside if needed
             JuniorWebDevSeeder::class, // Specific Scheme Seeder
