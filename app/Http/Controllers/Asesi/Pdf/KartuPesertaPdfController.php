@@ -7,115 +7,94 @@ use App\Models\DataSertifikasiAsesi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage; // <--- WAJIB ADA
 
 class KartuPesertaPdfController extends Controller
 {
-    /**
-     * Generate Kartu Peserta PDF (Stream)
-     */
     public function generateKartuPeserta($id_sertifikasi)
     {
-        // try {
-        // Ambil data dengan relasi lengkap
+        // 1. AMBIL DATA
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',
             'jadwal.skema',
             'jadwal.masterTuk',
             'jadwal.jenisTuk',
             'jadwal.asesor',
-            'buktiDasar', // Tambahkan relasi bukti dasar untuk foto
+            'buktiDasar', 
         ])->findOrFail($id_sertifikasi);
 
-        // Validasi data lengkap
+        // Validasi dasar
         if (!$sertifikasi->asesi || !$sertifikasi->jadwal) {
-            return back()->with('error', 'Data tidak lengkap untuk membuat kartu peserta.');
+            return back()->with('error', 'Data tidak lengkap.');
         }
 
-        // Load logo sebagai base64
-        $logoBnspBase64 = null;
-        $logoLspBase64 = null;
+        // 2. SETUP LOGO (Aset Aplikasi = Public Path)
+        $logoBnspBase64 = $this->getBase64Image(public_path('images/Logo_BNSP.png'));
+        $logoLspBase64 = $this->getBase64Image(public_path('images/Logo_LSP_No_BG.png'));
 
-        $logoBnspPath = public_path('images/logo_BNSP.png');
-        if (file_exists($logoBnspPath)) {
-            $logoBnspBase64 = base64_encode(file_get_contents($logoBnspPath));
-        }
-
-        $logoLspPath = public_path('images/logo_LSP_No_BG.png');
-        if (file_exists($logoLspPath)) {
-            $logoLspBase64 = base64_encode(file_get_contents($logoLspPath));
-        }
-
-        // Load foto asesi dari BUKTI DASAR
+        // 3. SETUP FOTO ASESI (STRICT PRIVATE STORAGE)
         $fotoAsesiBase64 = null;
 
-        // Cari bukti dasar yang keterangannya adalah "Foto Background Merah"
+        // Cari bukti yang mengandung kata "Foto" dan "Background" di keterangannya
+        // Sesuai dengan controller upload lu: $finalKeterangan = $request->jenis_dokumen ...
         $buktiFoto = $sertifikasi->buktiDasar->first(function ($bukti) {
-            // Cek apakah keterangan mengandung kata kunci foto
             return stripos($bukti->keterangan, 'Foto') !== false && stripos($bukti->keterangan, 'Background') !== false;
         });
 
+        // LOGIC KHUSUS PRIVATE DOCS
         if ($buktiFoto && $buktiFoto->bukti_dasar) {
-            // Path dari DB: images/bukti_dasar/121/Foto_Background_Merah.jpg
-            $pathFromDb = $buktiFoto->bukti_dasar;
+            $path = $buktiFoto->bukti_dasar; // Contoh: bukti_dasar/10/Foto_Background_Merah.jpg
 
-            // Hapus leading slash jika ada
-            $pathFromDb = ltrim($pathFromDb, '/');
-
-            // Karena path sudah lengkap dari database: images/bukti_dasar/...
-            // Langsung gunakan public_path()
-            $fotoPath = public_path($pathFromDb);
-
-            Log::info('Mencari foto dengan keterangan: ' . $buktiFoto->keterangan);
-            Log::info('Path dari DB: ' . $pathFromDb);
-            Log::info('Full path: ' . $fotoPath);
-
-            if (file_exists($fotoPath)) {
-                $fotoAsesiBase64 = base64_encode(file_get_contents($fotoPath));
-                Log::info('✓ Foto berhasil dimuat!');
+            // Cek langsung ke Disk 'private_docs'
+            if (Storage::disk('private_docs')->exists($path)) {
+                // Ambil konten file
+                $fileContent = Storage::disk('private_docs')->get($path);
+                
+                // Convert ke Base64 biar PDF bisa baca
+                $fotoAsesiBase64 = base64_encode($fileContent);
+                
+                Log::info("PDF: Foto ditemukan di Private Storage ($path)");
             } else {
-                Log::warning('✗ File foto tidak ditemukan: ' . $fotoPath);
-            }
-        } else {
-            Log::warning("Tidak ada bukti dasar dengan keterangan 'Foto Background Merah'");
-        }
-
-        // Jika tidak ada foto dari bukti dasar, cek foto_asesi di tabel asesi
-        if (!$fotoAsesiBase64 && $sertifikasi->asesi->foto_asesi) {
-            $fotoPath = public_path('storage/' . $sertifikasi->asesi->foto_asesi);
-            if (file_exists($fotoPath)) {
-                $fotoAsesiBase64 = base64_encode(file_get_contents($fotoPath));
+                Log::warning("PDF: Data ada di DB tapi fisik file tidak ada di private_docs ($path)");
             }
         }
 
-        // Jika masih tidak ada, gunakan default
+        // 4. FALLBACK (Jaga-jaga kalau user belum upload foto merah)
+        // Kita pakai default image aja, GAK USAH cek foto profil user di public lagi sesuai request
         if (!$fotoAsesiBase64) {
-            $defaultFotoPath = public_path('images/default_photo.jpg');
-            if (file_exists($defaultFotoPath)) {
-                $fotoAsesiBase64 = base64_encode(file_get_contents($defaultFotoPath));
-            }
+            $fotoAsesiBase64 = $this->getBase64Image(public_path('images/default_photo.jpg'));
         }
 
-        $tanggalPelaksanaan = $sertifikasi->jadwal->tanggal_pelaksanaan ? \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->locale('id')->isoFormat('D MMMM YYYY') : '-';
+        // 5. FORMAT TANGGAL & WAKTU
+        setlocale(LC_TIME, 'id_ID');
+        \Carbon\Carbon::setLocale('id');
 
-        $hari = $sertifikasi->jadwal->tanggal_pelaksanaan ? \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->locale('id')->isoFormat('dddd') : '-';
+        $tglPelaksanaan = $sertifikasi->jadwal->tanggal_pelaksanaan 
+            ? \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM YYYY') 
+            : '-';
+            
+        $hari = $sertifikasi->jadwal->tanggal_pelaksanaan 
+            ? \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('dddd') 
+            : '-';
 
         $waktuMulai = $sertifikasi->jadwal->waktu_mulai ? \Carbon\Carbon::parse($sertifikasi->jadwal->waktu_mulai)->format('H:i') : '-';
         $waktuSelesai = $sertifikasi->jadwal->waktu_selesai ? \Carbon\Carbon::parse($sertifikasi->jadwal->waktu_selesai)->format('H:i') : '-';
-        $waktu = $waktuMulai . ' - ' . $waktuSelesai . ' WIB';
+        $waktu = "$waktuMulai - $waktuSelesai WIB";
 
-        // Format tanggal lahir
-        $tanggalLahir = $sertifikasi->asesi->tanggal_lahir ? \Carbon\Carbon::parse($sertifikasi->asesi->tanggal_lahir)->locale('id')->isoFormat('D MMMM YYYY') : '-';
+        $tglLahir = $sertifikasi->asesi->tanggal_lahir 
+            ? \Carbon\Carbon::parse($sertifikasi->asesi->tanggal_lahir)->isoFormat('D MMMM YYYY') 
+            : '-';
 
-        // Data untuk view
+        // 6. RENDER PDF
         $data = [
             'logoBnsp' => $logoBnspBase64,
             'logoLsp' => $logoLspBase64,
-            'fotoAsesi' => $fotoAsesiBase64,
+            'fotoAsesi' => $fotoAsesiBase64, 
             'namaAsesi' => $sertifikasi->asesi->nama_lengkap ?? '-',
-            'tanggalLahir' => $tanggalLahir,
             'nik' => $sertifikasi->asesi->nik ?? '-',
+            'tanggalLahir' => $tglLahir,
             'hari' => $hari,
-            'tanggal' => $tanggalPelaksanaan,
+            'tanggal' => $tglPelaksanaan,
             'pukul' => $waktu,
             'jenisTuk' => $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? '-',
             'lokasi' => $sertifikasi->jadwal->masterTuk->nama_lokasi ?? '-',
@@ -125,20 +104,18 @@ class KartuPesertaPdfController extends Controller
             'namaAsesor' => $sertifikasi->jadwal->asesor->nama_lengkap ?? '-',
         ];
 
-        // Generate PDF
         $pdf = Pdf::loadView('asesi.pdf.kartu_peserta', $data);
         $pdf->setPaper('A4', 'portrait');
 
-        // Stream PDF (tampilkan di browser)
-        return $pdf->download('Kartu_Peserta_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+        return $pdf->stream('Kartu_Peserta.pdf');
+    }
 
-        // Uncomment untuk download langsung
-        //
-
-        // } catch (\Exception $e) {
-        //     Log::error('Error Generate Kartu Peserta: ' . $e->getMessage());
-        //     Log::error('Stack Trace: ' . $e->getTraceAsString());
-        //     return back()->with('error', 'Gagal membuat kartu peserta: ' . $e->getMessage());
-        // }
+    // Helper kecil biar kodingan rapi
+    private function getBase64Image($path)
+    {
+        if (file_exists($path)) {
+            return base64_encode(file_get_contents($path));
+        }
+        return null;
     }
 }

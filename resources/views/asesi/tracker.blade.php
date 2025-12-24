@@ -253,7 +253,7 @@
                                         <div class="w-4 h-4 bg-gray-300 rounded-full"></div>
                                     @endif
                                 </div>
-                                @if ($level >= $LVL_PRA_ASESMEN && $unlockAPL0)
+                                @if ($level >= $LVL_PRA_ASESMEN && $unlockAPL02)
                                     <div class="hidden md:block">{!! renderCheckmark() !!}</div>
                                 @endif
                             </div>
@@ -342,9 +342,9 @@
                                 @if ($level >= $LVL_PRA_ASESMEN && $unlockAK01)
                                     <a href="{{ route('asesi.pdf.kartu_peserta', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         class="{{ $btnBlue }}" target="_blank">
-                                        Unduh Dokumen
+                                        Unduh Kartu Peserta
                                     </a>
-                                    <p class="{{ $statusClassSelesai }}">Terverifikasi</p>
+                                    <p class="{{ $statusClassSelesai }} mt-2">Terverifikasi</p>
                                 @else
                                     <p class="{{ $statusClassTerkunci }}">Menunggu Verifikasi Pra-Asesmen</p>
                                 @endif

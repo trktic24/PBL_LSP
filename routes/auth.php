@@ -511,6 +511,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01');
         Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
         Route::get('/cetak/ak01/{id_sertifikasi}', [Ak01PdfController::class, 'generateAk01'])->name('cetak.ak01');
+        Route::get('/kartu-peserta/{id_sertifikasi}', [KartuPesertaPdfController::class, 'generateKartuPeserta'])->name('pdf.kartu_peserta');
     });
 
     // ======================================================
