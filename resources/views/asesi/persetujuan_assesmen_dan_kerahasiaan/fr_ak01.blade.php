@@ -196,7 +196,7 @@
                         ttdContainer.innerHTML = `
                             <div class="text-center">
                                 <p class="text-red-500 font-medium">Tanda tangan belum tersedia.</p>
-                                <a href="/halaman-tanda-tangan/${idSertifikasi}" class="text-blue-600 underline text-sm">Klik di sini untuk tanda tangan</a>
+                                <a href="/asesi/halaman-tanda-tangan/${idSertifikasi}" class="text-blue-600 underline text-sm">Klik di sini untuk tanda tangan</a>
                             </div>
                         `;
                     }

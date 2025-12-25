@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class SoalIa05 extends Model
+class SoalIA05 extends Model
 {
     use HasFactory;
 
@@ -42,6 +42,11 @@ class SoalIa05 extends Model
     public function lembarJawab()
     {
         return $this->hasMany(LembarJawabIa05::class, 'id_soal_ia05', 'id_soal_ia05');
+    }
+
+    public function skema()
+    {
+        return $this->belongsTo(Skema::class, 'id_skema', 'id_skema');
     }
 
     

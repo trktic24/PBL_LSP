@@ -14,7 +14,8 @@ class LembarJawabIa05Seeder extends Seeder
     {
         // 1. Ambil data induk (Asesi & Soal)
         // Kita butuh ID yang valid agar tidak error Foreign Key
-        $list_asesi = DataSertifikasiAsesi::pluck('id_data_sertifikasi_asesi');
+        $list_asesi = DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', '>', 1000)
+                        ->pluck('id_data_sertifikasi_asesi');
         $list_soal  = SoalIA05::pluck('id_soal_ia05');
 
         // Cek apakah data induk ada
@@ -27,7 +28,7 @@ class LembarJawabIa05Seeder extends Seeder
 
         // 2. Loop: Setiap Asesi menjawab Setiap Soal
         foreach ($list_asesi as $id_asesi) {
-            foreach ($list_soal as $id_soal) {
+            foreach ($list_soal->random(5) as $id_soal) {
                 
                 // Tentukan status kompeten secara acak untuk simulasi
                 $is_kompeten = $faker->boolean(80); // 80% kemungkinan kompeten (ya)
