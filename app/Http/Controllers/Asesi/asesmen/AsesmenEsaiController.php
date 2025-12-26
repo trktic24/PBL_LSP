@@ -163,6 +163,11 @@ class AsesmenEsaiController extends Controller
                 }
             }
 
+            $sertifikasi = DataSertifikasiAsesi::findOrFail($idSertifikasi);
+            $sertifikasi->update([
+                'status_sertifikasi' => 'asesmen_praktek_selesai', 
+            ]);
+
             // Ambil ID Jadwal untuk redirect
             $sertifikasiData = DataSertifikasiAsesi::select('id_jadwal')->findOrFail($idSertifikasi);
             $idJadwalRedirect = $sertifikasiData->id_jadwal;

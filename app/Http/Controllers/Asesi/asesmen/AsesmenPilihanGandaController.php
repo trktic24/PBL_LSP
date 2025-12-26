@@ -142,7 +142,7 @@ class AsesmenPilihanGandaController extends Controller
         $request->validate([
             'jawaban' => 'required|array',
             'jawaban.*.id_lembar_jawab' => 'required|exists:lembar_jawab_ia05,id_lembar_jawab_ia05',
-            'jawaban.*.jawaban' => 'required|in:a,b,c,d',
+            'jawaban.*.jawaban' => 'nullable|in:a,b,c,d',
         ]);
 
         DB::beginTransaction();
@@ -175,6 +175,11 @@ class AsesmenPilihanGandaController extends Controller
                     ]);
                 }
             }
+
+            $sertifikasi = DataSertifikasiAsesi::findOrFail($idSertifikasi);
+            $sertifikasi->update([
+                'status_sertifikasi' => 'asesmen_praktek_selesai', 
+            ]);
 
             $sertifikasiData = DataSertifikasiAsesi::select('id_jadwal')->findOrFail($idSertifikasi);
             $idJadwalRedirect = $sertifikasiData->id_jadwal;
