@@ -136,18 +136,6 @@
                     </div>
                 </div>
 
-                {{-- TOMBOL NAVIGASI --}}
-                <div class="flex justify-between items-center mt-10">
-                    <button id="btn_sebelumnya"
-                        class="px-12 py-3 bg-gray-300 text-gray-700 font-semibold rounded-full hover:bg-gray-400 transition-all shadow-sm">
-                        Kembali
-                    </button>
-                    <button id="btn_selanjutnya"
-                        class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 transition-all shadow-md">
-                        Selanjutnya
-                    </button>
-                </div>
-
             </div>
         </main>
     </div>

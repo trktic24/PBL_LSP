@@ -14,8 +14,7 @@ class LembarJawabIa05Seeder extends Seeder
     {
         // 1. Ambil data induk (Asesi & Soal)
         // Kita butuh ID yang valid agar tidak error Foreign Key
-        $list_asesi = DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', '>', 1000)
-                        ->pluck('id_data_sertifikasi_asesi');
+        $list_asesi = DataSertifikasiAsesi::pluck('id_data_sertifikasi_asesi');
         $list_soal  = SoalIA05::pluck('id_soal_ia05');
 
         // Cek apakah data induk ada

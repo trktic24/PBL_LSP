@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Asesi;
 use Carbon\Carbon;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
+use App\Models\LembarJawabIA05;
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\JawabanIa06;
 use Illuminate\Support\Facades\Auth;
 
 class TrackerController extends Controller
@@ -45,6 +47,8 @@ class TrackerController extends Controller
         $pesanWaktu = null;
         $pesanStatus = null;
         $isTidakKompeten = false;
+        $isIA05Started = false;
+        $isIA06Started = false;
 
         if ($asesi) {
             $query = $asesi->dataSertifikasi()->with(['jadwal.skema.listForm', 'jadwal.asesor', 'daftarHadir']);
@@ -80,6 +84,15 @@ class TrackerController extends Controller
                     $showIA09 = $setting->fr_ia_09 == 1;
                 }
 
+                if ($showIA05) {
+                    // Cek di tabel lembar_jawab_ia05 apakah ada data milik sertifikasi ini
+                    $isIA05Started = LembarJawabIA05::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)->exists();
+                }
+
+                if ($showIA06) {
+                    $isIA06Started = JawabanIa06::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)->exists();
+                }
+
                 // --- 3. LOGIC WAKTU (MULAI & SELESAI) ---
                 $jadwalDB = $sertifikasi->jadwal;
                 if ($jadwalDB) {
@@ -95,16 +108,27 @@ class TrackerController extends Controller
 
                     $now = Carbon::now();
 
-                    // Cek Mulai
-                    if ($now->greaterThanOrEqualTo($waktuMulai)) {
+                    if ($now->greaterThanOrEqualTo($waktuSelesai)) {
+                        $isWaktuHabis = true;
+                        $unlockAK03 = true; 
+                        
+                        // KUNCI ASESMEN KARNA WAKTU HABIS
+                        $unlockAsesmen = false; 
+                    } 
+                    // Baru Cek Waktu Mulai (Jika waktu belum habis)
+                    elseif ($now->greaterThanOrEqualTo($waktuMulai)) {
                         if (!$isAsesorVerified) {
                             $pesanStatus = 'Menunggu Verifikasi Asesor (APL-02).';
                         } elseif (!$isSudahHadir) {
                             $pesanStatus = 'Anda belum mengisi Daftar Hadir.';
+                        } elseif ($sertifikasi->progres_level < 50) { 
+                            $pesanStatus = 'Anda belum menyetujui Persetujuan Asesmen.';
+                            $unlockAsesmen = false; 
                         } else {
-                            $unlockAsesmen = true; // Ujian Buka
+                            $unlockAsesmen = true; // Buka akses
                         }
                     } else {
+                        // Belum Mulai
                         $pesanStatus = 'Asesmen belum dimulai.';
                         $pesanWaktu = 'Mulai: ' . $waktuMulai->format('d M Y, H:i') . ' WIB';
                     }
@@ -130,7 +154,7 @@ class TrackerController extends Controller
             }
         }
 
-        return view('asesi.tracker', compact('sertifikasi', 'asesi', 'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09', 'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04', 'statusAPL01', 'statusAPL02', 'isWaktuHabis', 'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus', 'isAPL01Ditolak', 'isAPL02Ditolak', 'isTidakKompeten'));
+        return view('asesi.tracker', compact('sertifikasi', 'asesi', 'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09', 'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04', 'statusAPL01', 'statusAPL02', 'isWaktuHabis', 'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus', 'isAPL01Ditolak', 'isAPL02Ditolak', 'isTidakKompeten', 'isIA05Started', 'isIA06Started'));
     }
 
     /**

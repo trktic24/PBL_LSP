@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Asesor;
 use App\Models\Skema;
 use App\Models\Asesi;
+use App\Models\ListForm;
 
 class DatabaseSeeder extends Seeder
 {
@@ -61,9 +62,9 @@ class DatabaseSeeder extends Seeder
             PenyusunValidatorSeeder::class,
         ]);
 
-        // Create dummy users if seeders didn't populate enough
-        if (Asesor::count() < 5) Asesor::factory(10)->create();
-        if (Asesi::count() < 5) Asesi::factory(10)->create();
+        // // Create dummy users if seeders didn't populate enough
+        // if (Asesor::count() < 5) Asesor::factory(10)->create();
+        // if (Asesi::count() < 5) Asesi::factory(10)->create();
 
         // 5. JADWAL & TRANSAKSI
         $this->call([
@@ -118,6 +119,7 @@ class DatabaseSeeder extends Seeder
         // 7. EXTRAS
         $this->call([
             // KonfirmasiOrangRelevanSeeder::class,
+            ListFormSeeder::class,
             TenSchemesSeeder::class, // Might duplicate Skemas, check logic inside if needed
             JuniorWebDevSeeder::class, // Specific Scheme Seeder
             PrivateFileSeeder::class,
