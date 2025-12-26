@@ -61,9 +61,9 @@ class DatabaseSeeder extends Seeder
             PenyusunValidatorSeeder::class,
         ]);
 
-        // Create dummy users if seeders didn't populate enough
-        if (Asesor::count() < 5) Asesor::factory(10)->create();
-        if (Asesi::count() < 5) Asesi::factory(10)->create();
+        // // Create dummy users if seeders didn't populate enough
+        // if (Asesor::count() < 5) Asesor::factory(10)->create();
+        // if (Asesi::count() < 5) Asesi::factory(10)->create();
 
         // 5. JADWAL & TRANSAKSI
         $this->call([

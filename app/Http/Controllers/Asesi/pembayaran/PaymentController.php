@@ -34,13 +34,13 @@ class PaymentController extends Controller
         try {
             $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema'])->findOrFail($id_sertifikasi);
         } catch (\Exception $e) {
-            return redirect('/tracker')->with('error', 'Data sertifikasi tidak ditemukan.');
+            return redirect('/asesi/tracker')->with('error', 'Data sertifikasi tidak ditemukan.');
         }
 
         $idJadwal = $sertifikasi->id_jadwal;
 
         if ($sertifikasi->id_asesi != $user->asesi->id_asesi) {
-            return redirect("/tracker/{$idJadwal}")->with('error', 'Akses ditolak.');
+            return redirect("/asesi/tracker/{$idJadwal}")->with('error', 'Akses ditolak.');
         }
 
         // =================================================================
@@ -70,7 +70,7 @@ class PaymentController extends Controller
             }
 
             // Fallback kalau data pembayaran di DB gak ketemu tapi status sertifikasi udah lunas
-            return redirect("/tracker/{$idJadwal}")->with('success', 'Pembayaran Anda sudah lunas.');
+            return redirect("/asesi/tracker/{$idJadwal}")->with('success', 'Pembayaran Anda sudah lunas.');
         }
         
         // =================================================================
@@ -79,7 +79,7 @@ class PaymentController extends Controller
         $harga = $skema->harga ?? 0;
         
         if ($harga <= 0) {
-            return redirect("/tracker/{$idJadwal}")->with('error', 'Harga skema belum diatur.');
+            return redirect("/asesi/tracker/{$idJadwal}")->with('error', 'Harga skema belum diatur.');
         }
 
         // ... (Kode Generate Order ID, Param Midtrans, Snap Token TETAP SAMA) ...
