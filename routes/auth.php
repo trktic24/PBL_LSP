@@ -371,6 +371,9 @@ Route::middleware('auth')->group(function () {
             Route::put('/bank-soal-ia06/{id}', [IA06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
             Route::delete('/bank-soal-ia06/{id}', [IA06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
         });
+
+        // FR.IA.01 - View Only for Admin (Cek Observasi Demonstrasi/Praktik)
+        Route::get('/ia01/{id_sertifikasi}', [\App\Http\Controllers\IA01Controller::class, 'showView'])->name('ia01.admin.view');
     });
 
     // ======================================================
