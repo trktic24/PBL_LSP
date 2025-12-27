@@ -25,7 +25,7 @@ class JawabanIa06 extends Model
      */
     public function soal(): BelongsTo
     {
-        return $this->belongsTo(SoalIa06::class, 'id_soal_ia06', 'id_soal_ia06');
+        return $this->belongsTo(SoalIA06::class, 'id_soal_ia06', 'id_soal_ia06');
     }
 
     /**
