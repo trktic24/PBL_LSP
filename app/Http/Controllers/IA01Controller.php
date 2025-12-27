@@ -18,11 +18,22 @@ use Illuminate\Support\Facades\DB;
 class IA01Controller extends Controller
 {
     // ============================================================================
-    // 🛡️ HELPER: CEK ADMIN
+    // 🛡️ HELPER: CEK ROLE
     // ============================================================================
     private function isAdmin()
     {
-        return Auth::check() && Auth::user()->role->nama_role === 'admin';
+        $role = Auth::user()->role->nama_role ?? '';
+        return in_array($role, ['admin', 'superadmin']);
+    }
+
+    private function isAsesor()
+    {
+        return Auth::check() && Auth::user()->role->nama_role === 'asesor';
+    }
+
+    private function isAsesi()
+    {
+        return Auth::check() && Auth::user()->role->nama_role === 'asesi';
     }
 
     // ============================================================================
@@ -44,9 +55,14 @@ class IA01Controller extends Controller
      */
     public function index(Request $request, $id_sertifikasi)
     {
-        // 1. Admin redirect
-        if ($this->isAdmin()) {
-            return redirect()->route('ia01.admin.show', ['id_sertifikasi' => $id_sertifikasi]);
+        // 1. Admin/Asesi → Redirect to Read-Only View
+        if ($this->isAdmin() || $this->isAsesi()) {
+            return redirect()->route('ia01.view', ['id_sertifikasi' => $id_sertifikasi]);
+        }
+
+        // 2. Proteksi: Hanya Asesor yang bisa akses form editable
+        if (!$this->isAsesor()) {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
         // 2. Load Data
@@ -89,8 +105,9 @@ class IA01Controller extends Controller
      */
     public function store(Request $request, $id_sertifikasi)
     {
-        if ($this->isAdmin()) {
-            abort(403, 'Admin tidak diizinkan menyimpan data.');
+        // Hanya Asesor yang bisa submit
+        if (!$this->isAsesor()) {
+            abort(403, 'Hanya Asesor yang dapat mengisi form ini.');
         }
 
         $sertifikasi = $this->getSertifikasi($id_sertifikasi);
@@ -148,20 +165,24 @@ class IA01Controller extends Controller
             }
 
         // Update Sertifikasi Header
-        $feedback = $request->umpan_balik;
+        $updateData = [
+            'feedback_ia01' => $request->umpan_balik,
+            'rekomendasi_ia01' => $request->rekomendasi,
+        ];
 
-        // Append BK Details if Rekomendasi is Belum Kompeten
-        if ($request->rekomendasi === 'belum_kompeten' && $request->has('bk_unit')) {
-            $feedback .= "\n\n--- DETAIL BELUM KOMPETEN ---\n";
-            $feedback .= "Unit: " . $request->bk_unit . "\n";
-            $feedback .= "Elemen: " . $request->bk_elemen . "\n";
-            $feedback .= "No. KUK: " . $request->bk_kuk . "\n";
+        // Save BK Details to dedicated columns if Belum Kompeten
+        if ($request->rekomendasi === 'belum_kompeten') {
+            $updateData['bk_unit_ia01'] = $request->bk_unit;
+            $updateData['bk_elemen_ia01'] = $request->bk_elemen;
+            $updateData['bk_kuk_ia01'] = $request->bk_kuk;
+        } else {
+            // Clear BK details if Kompeten
+            $updateData['bk_unit_ia01'] = null;
+            $updateData['bk_elemen_ia01'] = null;
+            $updateData['bk_kuk_ia01'] = null;
         }
 
-        $sertifikasi->update([
-            'feedback_ia01' => $feedback,
-            'rekomendasi_ia01' => $request->rekomendasi,
-        ]);
+        $sertifikasi->update($updateData);
 
             DB::commit();
 
@@ -183,13 +204,13 @@ class IA01Controller extends Controller
 
 
     /**
-     * 7. HALAMAN KHUSUS ADMIN (READ ONLY - ALL UNITS)
+     * VIEW READ-ONLY (Admin & Asesi)
      */
-    public function showAdmin($id_sertifikasi)
+    public function showView($id_sertifikasi)
     {
-        if (!$this->isAdmin()) {
-            // Redirect to index for normal user
-             return redirect()->route('ia01.index', ['id_sertifikasi' => $id_sertifikasi]);
+        // Asesor diarahkan ke form editable
+        if ($this->isAsesor()) {
+            return redirect()->route('ia01.index', ['id_sertifikasi' => $id_sertifikasi]);
         }
 
         $sertifikasi = $this->getSertifikasi($id_sertifikasi);
