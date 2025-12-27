@@ -707,7 +707,7 @@
                                             </div>
                                             <div class="w-full sm:w-auto flex-shrink-0">
                                                 @if ($unlockHasil)
-                                                    <a href="#"
+                                                    <a href="{{ route('asesi.asesmen.fr_ia_09.index', $sertifikasi->id_data_sertifikasi_asesi) }}"
                                                         class="flex items-center justify-center w-full sm:w-36 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
                                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>

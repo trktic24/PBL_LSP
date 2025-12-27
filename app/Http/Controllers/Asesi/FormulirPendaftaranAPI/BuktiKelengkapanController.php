@@ -6,35 +6,33 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\File; 
 use Illuminate\Support\Facades\Storage;
-use App\Models\BuktiDasar; // Asumsi nama model kamu BuktiDasar atau BuktiDasar (sesuaikan)
-use App\Models\BuktiKelengkapan; // Pakai ini jika modelnya BuktiKelengkapan
+use Illuminate\Support\Str; // Tambahin ini buat string helper
+use App\Models\BuktiDasar; 
 use App\Models\DataSertifikasiAsesi;
 
 class BuktiKelengkapanController extends Controller
 {
-    // ... (Fungsi getDataBuktiKelengkapanApi TETAP SAMA, gak perlu diubah) ...
+    // GET LIST (Tetap Sama)
     public function getDataBuktiKelengkapanApi($id_data_sertifikasi_asesi)
     {
-        Log::info("API (Bukti): Get data ID {$id_data_sertifikasi_asesi}...");
         try {
-            // Pastikan pakai Model yang benar (BuktiKelengkapan atau BuktiDasar)
             $data = BuktiDasar::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
             return response()->json(['success' => true, 'data' => $data], 200);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal server.'], 500);
+            return response()->json(['success' => false, 'message' => 'Gagal mengambil data.'], 500);
         }
     }
 
+    // STORE (UPLOAD) - LOGIC BARU
     public function storeAjax(Request $request)
     {
         // 1. Validasi
         $validator = Validator::make($request->all(), [
             'id_data_sertifikasi_asesi' => 'required|integer',
             'jenis_dokumen' => 'required|string|max:255',
-            'keterangan' => 'nullable|string|max:255',
-            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'keterangan' => 'nullable|string|max:255', // Ini gabungan "Jenis - Ket User"
+            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120', // Max 5MB biar lega dikit
         ]);
 
         if ($validator->fails()) {
@@ -42,97 +40,118 @@ class BuktiKelengkapanController extends Controller
         }
 
         try {
-            // 2. Cari ID Asesi untuk nama folder
             $sertifikasi = DataSertifikasiAsesi::find($request->id_data_sertifikasi_asesi);
             if (!$sertifikasi) {
                 return response()->json(['success' => false, 'message' => 'Data sertifikasi tidak valid.'], 404);
             }
             $idAsesi = $sertifikasi->id_asesi;
 
-            // 3. Cek Data Lama (Logic 'LIKE' ini OK untuk struktur tabelmu sekarang)
-            // Pastikan pakai Model yang benar
-            $existing = BuktiDasar::where('id_data_sertifikasi_asesi', $request->id_data_sertifikasi_asesi)
-                ->where('keterangan', 'LIKE', "%{$request->jenis_dokumen}%") 
-                ->first();
+            // 2. Tentukan Tipe Dokumen: SINGLE (Update) atau MULTI (Create)
+            $singleUploadTypes = ['Foto Background Merah', 'KTP', 'Ijazah']; 
+            
+            // Cek apakah jenis dokumen ini masuk kategori SINGLE
+            // Kita pakai str_contains jaga-jaga kalau stringnya agak beda dikit
+            $isSingle = false;
+            foreach ($singleUploadTypes as $type) {
+                if (str_contains($request->jenis_dokumen, $type)) {
+                    $isSingle = true;
+                    break;
+                }
+            }
 
-            $pathDatabase = $existing ? $existing->bukti_dasar : null; // Sesuai kolom DB 'bukti_dasar'
+            $existing = null;
 
-            // 4. Proses Upload File
+            // HANYA cari data lama kalau ini tipe SINGLE
+            if ($isSingle) {
+                $existing = BuktiDasar::where('id_data_sertifikasi_asesi', $request->id_data_sertifikasi_asesi)
+                    ->where('keterangan', 'LIKE', "%{$request->jenis_dokumen}%") 
+                    ->first();
+            }
+
+            // 3. Proses Upload File
+            $pathDatabase = $existing ? $existing->bukti_dasar : null;
+
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 
-                // [PERBAIKAN] Nama file jadi konsisten sesuai jenis dokumen
+                // [PENTING] Tambahkan UniqID/Time biar file baru GAK NIMPA file lama di folder
                 $extension = $file->getClientOriginalExtension();
                 $safeName = str_replace(' ', '_', $request->jenis_dokumen); 
-                $filename = "{$safeName}.{$extension}"; 
+                $uniqueSuffix = time() . '_' . Str::random(5); // Tambah unik
+                $filename = "{$safeName}_{$uniqueSuffix}.{$extension}"; 
                 
-                // Secure Storage: bukti_dasar/{idAsesi}
                 $folderPath = "bukti_dasar/{$idAsesi}";
                 $relPath = $folderPath . '/' . $filename;
                 
-                // Hapus file lama DULU jika ada
+                // Kalau UPDATE (Single) dan ada file lama, hapus dulu file fisiknya
                 if ($existing && $existing->bukti_dasar) {
                      if (Storage::disk('private_docs')->exists($existing->bukti_dasar)) {
                         Storage::disk('private_docs')->delete($existing->bukti_dasar);
                      }
                 }
 
-                // Simpan ke private_docs
+                // Simpan File Baru
                 Storage::disk('private_docs')->putFileAs($folderPath, $file, $filename);
-                
-                // Update path database (relative to private_docs root)
                 $pathDatabase = $relPath;
             }
 
-            // 5. Simpan ke Database
-            // Format keterangan: "Jenis Dokumen - Keterangan User"
-            $finalKeterangan = $request->jenis_dokumen . ($request->keterangan ? " - " . $request->keterangan : "");
+            // 4. Simpan ke Database
+            // Keterangan diambil dari input frontend (sudah digabung di JS: "Jenis - Input User")
+            // Kalau kosong, fallback ke jenis_dokumen
+            $finalKeterangan = $request->keterangan ?? $request->jenis_dokumen; 
 
             if ($existing) {
-                // Update
+                // UPDATE (Khusus KTP, Foto, Ijazah)
                 $existing->update([
                     'bukti_dasar' => $pathDatabase,
-                    'status_kelengkapan' => 'memenuhi',
-                    'keterangan' => $finalKeterangan, // Update keterangan juga biar sinkron
+                    'keterangan' => $finalKeterangan, 
+                    'status_kelengkapan' => 'memenuhi', // Default status saat upload
                 ]);
+                $data = $existing;
             } else {
-                // Create Baru
-                $existing = BuktiDasar::create([
+                // CREATE BARU (Sertifikasi, Surat Kerja, ATAU KTP baru)
+                $data = BuktiDasar::create([
                     'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
                     'bukti_dasar' => $pathDatabase,
-                    'status_kelengkapan' => 'memenuhi',
                     'keterangan' => $finalKeterangan,
+                    'status_kelengkapan' => 'memenuhi',
                     'status_validasi' => false
                 ]);
             }
 
             return response()->json([
                 'success' => true, 
-                'message' => 'Berhasil diupload! (Secure)',
-                'path' => $pathDatabase,
-                'data' => $existing
+                'message' => 'Berhasil disimpan!',
+                'data' => $data
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error('API (Bukti): Error - ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Server Error: ' . $e->getMessage()], 500);
+            Log::error('API Upload Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Server Error.'], 500);
         }
     }
 
-    // ... (Fungsi deleteAjax TETAP SAMA) ...
-     public function deleteAjax($id)
+    // DELETE (HAPUS FILE)
+    public function deleteAjax($id)
     {
          try {
             $data = BuktiDasar::find($id);
-            if (!$data) return response()->json(['success'=>false], 404);
+            if (!$data) {
+                return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
+            }
             
+            // Hapus File Fisik
             if ($data->bukti_dasar && Storage::disk('private_docs')->exists($data->bukti_dasar)) {
                 Storage::disk('private_docs')->delete($data->bukti_dasar);
             }
+
+            // Hapus Record Database
             $data->delete();
-            return response()->json(['success' => true]);
+
+            return response()->json(['success' => true, 'message' => 'Dokumen berhasil dihapus.']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false], 500);
+            Log::error('API Delete Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus data.'], 500);
         }
     }
 

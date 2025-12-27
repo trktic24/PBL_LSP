@@ -17,55 +17,55 @@ class AssessmenFRIA09Controller extends Controller
     {
         if (!$id_skema) {
              return [
-                'unitsToDisplay' => [], 
-                'kelompok_pekerjaan' => 'Skema tidak terhubung', 
+                'data_unit_kompetensi' => [], // Kita ganti struktur return-nya
             ];
         }
 
-        $kelompokPekerjaanDB = DB::table('kelompok_pekerjaan')->where('id_skema', $id_skema)->first();
-        $units_for_table = [];
-        $nama_kelompok_pekerjaan = 'Kelompok Pekerjaan Tidak Ditemukan';
+        // 1. Ambil SEMUA kelompok pekerjaan, bukan cuma first()
+        $kelompokPekerjaanList = DB::table('kelompok_pekerjaan')
+            ->where('id_skema', $id_skema)
+            ->get();
+        
+        $structuredData = [];
 
-        if ($kelompokPekerjaanDB) {
-            $nama_kelompok_pekerjaan = $kelompokPekerjaanDB->nama_kelompok_pekerjaan;
-            $id_kelompok_pekerjaan = $kelompokPekerjaanDB->id_kelompok_pekerjaan;
+        // 2. Loop setiap kelompok pekerjaan
+        foreach ($kelompokPekerjaanList as $kelompok) {
+            // Ambil unit kompetensi KHUSUS buat kelompok pekerjaan ini
+            $units = DB::table('unit_kompetensi')
+                ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
+                ->get()
+                ->map(function ($unit) {
+                    return [
+                        'code' => $unit->kode_unit,
+                        'title' => $unit->judul_unit,
+                    ];
+                })->toArray();
 
-            $unitKompetensiList = DB::table('unit_kompetensi')
-                ->where('id_kelompok_pekerjaan', $id_kelompok_pekerjaan)
-                ->get();
-            
-            $units_for_table = $unitKompetensiList->map(function ($unit) {
-                return [
-                    'code' => $unit->kode_unit,
-                    'title' => $unit->judul_unit,
+            // Masukin ke array kalau unitnya ada isinya
+            if (!empty($units)) {
+                $structuredData[] = [
+                    'nama_kelompok' => $kelompok->nama_kelompok_pekerjaan,
+                    'units' => $units
                 ];
-            })->toArray();
+            }
         }
 
         return [
-            'unitsToDisplay' => $units_for_table, 
-            'kelompok_pekerjaan' => $nama_kelompok_pekerjaan, 
+            // Kita return satu variabel array besar yang isinya Groups + Units
+            'data_unit_kompetensi' => $structuredData, 
         ];
     }
     
-    public function index()
+    public function index($id)
     {
-        $sertifikasi = null;
-        if (Auth::check()) {
-            $asesi = optional(Auth::user())->asesi;
-            if ($asesi) {
-                $sertifikasi = $asesi->dataSertifikasi()->latest()->first();
-            }
-        } 
         
-        if (!$sertifikasi) {
-            $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk'])
-                                ->orderBy('id_data_sertifikasi_asesi', 'asc')
-                                ->first();
-        }
-
-        if (!$sertifikasi) {
-             return redirect()->back()->with('error', 'Data tidak ditemukan');
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk'])
+                            ->findOrFail($id);
+        if (Auth::check()) {
+             $asesiLogin = Auth::user()->asesi;
+             if ($asesiLogin && $sertifikasi->id_asesi != $asesiLogin->id_asesi) {
+                 abort(403, 'Anda tidak berhak mengakses data ini.');
+             }
         }
 
         $asesi = $sertifikasi->asesi;
@@ -80,7 +80,6 @@ class AssessmenFRIA09Controller extends Controller
                                                 ->get()
                                                 ->keyBy('id_portofolio');
 
-        // --- BAGIAN YANG DIUBAH: MENGHUBUNGKAN KE KOLOM daftar_pertanyaan_wawancara ---
         $merged_data = $bukti_portofolio_data->map(function($bukti) use ($ia09_data_map) {
             $id_input = $bukti->id_bukti_dasar;
             $ia09_record = $ia09_data_map->get($id_input);
@@ -88,7 +87,6 @@ class AssessmenFRIA09Controller extends Controller
             return (object)[
                 'id_input' => $id_input, 
                 'bukti_dasar' => $bukti->bukti_dasar,
-                // Mengambil pertanyaan dari kolom database baru
                 'pertanyaan_teks' => optional($ia09_record)->daftar_pertanyaan_wawancara ?? 'Pertanyaan belum diinput oleh Asesor',
                 'kesimpulan_jawaban_asesi' => optional($ia09_record)->kesimpulan_jawaban_asesi ?? '', 
             ];
@@ -105,20 +103,11 @@ class AssessmenFRIA09Controller extends Controller
             'skema' => $skema,
             'tanggal_pelaksanaan' => $tanggal_pelaksanaan,
             'jenis_tuk_db' => $jenis_tuk_db,
-            'unitsToDisplay' => $skemaData['unitsToDisplay'],
-            'kelompok_pekerjaan' => $skemaData['kelompok_pekerjaan'],
+            'data_unit_kompetensi' => $skemaData['data_unit_kompetensi'],
             'tanda_tangan_asesor_path' => optional($asesor)->tanda_tangan,
             'tanda_tangan_asesi_path' => optional($asesi)->tanda_tangan,
             'merged_data' => $merged_data, 
         ]));
     }
 
-    public function store(Request $request)
-    {
-        foreach ($request->kesimpulan as $id_portofolio => $jawaban) {
-            BuktiPortofolioIA08IA09::where('id_portofolio', $id_portofolio)
-                ->update(['kesimpulan_jawaban_asesi' => $jawaban]);
-        }
-        return redirect()->route('tracker')->with('success', 'Penilaian wawancara berhasil disimpan.');
-    }
 }
