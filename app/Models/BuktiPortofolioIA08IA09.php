@@ -22,6 +22,7 @@ class BuktiPortofolioIA08IA09 extends Model
         'is_asli', 
         'is_terkini', 
         'is_memadai',
+        'daftar_pertanyaan_wawancara',
         'kesimpulan_jawaban_asesi', 
         'pencapaian_ia09'
     ];

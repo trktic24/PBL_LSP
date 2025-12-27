@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->boolean('is_asli')->default(null)->comment('ya/tidak');       // ya/tidak
             $table->boolean('is_terkini')->default(null)->comment('ya/tidak');    // ya/tidak
             $table->boolean('is_memadai')->default(null)->comment('ya/tidak');    // ya/tidak
+            $table->text('daftar_pertanyaan_wawancara')->nullable();
             $table->text('kesimpulan_jawaban_asesi')->nullable();
             $table->boolean('pencapaian_ia09')->default(null)->comment('Apakah asesi mencapai IA09 berdasarkan bukti portofolio yang diajukan');
             $table->timestamps();
