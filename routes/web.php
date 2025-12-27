@@ -168,13 +168,18 @@ Route::middleware('auth')->group(function () {
 
     // IA-01
     Route::prefix('ia01/{id_sertifikasi}')->group(function () {
-        // Single Page Routes
+        // Form Editable (Asesor Only)
         Route::get('/', [IA01Controller::class, 'index'])->name('ia01.index');
         Route::get('/cover', [IA01Controller::class, 'index'])->name('ia01.cover'); // Alias for compatibility
+        
+        // Store (Asesor Only - protected in controller)
         Route::post('/store', [IA01Controller::class, 'store'])->name('ia01.store');
 
-        // Admin View
-        Route::get('/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
+        // View Read-Only (Admin & Asesi)
+        Route::get('/view', [IA01Controller::class, 'showView'])->name('ia01.view');
+        
+        // Legacy route for backward compatibility
+        Route::get('/admin', [IA01Controller::class, 'showView'])->name('ia01.admin.show');
 
         // Deprecated / Redirects
         Route::get('/step/{urutan}', fn($id) => redirect()->route('ia01.index', $id));
