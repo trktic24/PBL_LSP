@@ -229,7 +229,7 @@
             </svg>
           </button>
 
-          <div class="h-full overflow-y-auto p-4">
+          <div class="h-full max-lg:overflow-y-auto lg:overflow-visible p-4">
               <ul class="lg:flex lg:items-center lg:justify-center lg:gap-x-8 max-lg:space-y-4">
 
             {{-- Logo versi mobile --}}

@@ -135,7 +135,22 @@ Route::middleware('auth')->group(function () {
     // 1. ASESMEN & FORMULIR
     // ========================
 
+    /// ========================
+    // APL-01 (Updated sesuai Controller)
+    // ========================
+    
+    // Halaman 1: Data Pribadi (Ini yang tadi error)
+    Route::get('/apl01/step-1/{id}', [APL01Controller::class, 'step1'])->name('APL_01_1');
+    Route::post('/apl01/step-1/store', [APL01Controller::class, 'storeStep1'])->name('apl01.step1.store');
 
+    // Halaman 2: Data Pekerjaan (Dipanggil pas redirect dari step 1)
+    Route::get('/apl01/step-2/{id}', [APL01Controller::class, 'step2'])->name('APL_01_2');
+    Route::post('/apl01/step-2/store', [APL01Controller::class, 'storeStep2'])->name('apl01.step2.store');
+
+    // Halaman 3: Bukti Kelengkapan
+    Route::get('/apl01/step-3/{id}', [APL01Controller::class, 'step3'])->name('APL_01_3');
+
+    
 
     // APL-02 (Asesmen Mandiri)
     Route::get('/APL_02', fn() => view('frontend/APL_02/APL_02'))->name('APL_02');
@@ -168,13 +183,18 @@ Route::middleware('auth')->group(function () {
 
     // IA-01
     Route::prefix('ia01/{id_sertifikasi}')->group(function () {
-        // Single Page Routes
+        // Form Editable (Asesor Only)
         Route::get('/', [IA01Controller::class, 'index'])->name('ia01.index');
         Route::get('/cover', [IA01Controller::class, 'index'])->name('ia01.cover'); // Alias for compatibility
+        
+        // Store (Asesor Only - protected in controller)
         Route::post('/store', [IA01Controller::class, 'store'])->name('ia01.store');
 
-        // Admin View
-        Route::get('/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
+        // View Read-Only (Admin & Asesi)
+        Route::get('/view', [IA01Controller::class, 'showView'])->name('ia01.view');
+        
+        // Legacy route for backward compatibility
+        Route::get('/admin', [IA01Controller::class, 'showView'])->name('ia01.admin.show');
 
         // Deprecated / Redirects
         Route::get('/step/{urutan}', fn($id) => redirect()->route('ia01.index', $id));
