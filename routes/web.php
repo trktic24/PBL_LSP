@@ -241,10 +241,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
     Route::post('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
 
-    //FRIA09
-    Route::get('/asesmen/ia09', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.ia09.view'); // <-- URL: /asesmen/ia09
-    Route::post('/asesmen/ia09/store', [AssessmenFRIA09Controller::class, 'store'])->name('asesmen.ia09.store');
-
     // ========================
     // 3. CETAK PDF
     // ========================

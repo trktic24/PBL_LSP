@@ -106,7 +106,7 @@ class TrackerController extends Controller
                     $jamSelesai = Carbon::parse($jadwalDB->waktu_selesai)->format('H:i:s');
                     $waktuSelesai = Carbon::parse($tgl . ' ' . $jamSelesai);
 
-                    $now = Carbon::now();
+                    $now = Carbon::now('Asia/Jakarta');
 
                     if ($now->greaterThanOrEqualTo($waktuSelesai)) {
                         $isWaktuHabis = true;
