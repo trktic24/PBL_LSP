@@ -392,70 +392,10 @@ Route::middleware('auth')->group(function () {
                 Route::put('/bank-soal-ia06/{id}', [IA06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
                 Route::delete('/bank-soal-ia06/{id}', [IA06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
             });
+
+            // FR.IA.01 - View Only for Admin (Cek Observasi Demonstrasi/Praktik)
+            Route::get('/ia01/{id_sertifikasi}', [\App\Http\Controllers\IA01Controller::class, 'showView'])->name('ia01.admin.view');
         });
-
-        // Master Struktur Organisasi
-        Route::resource('master/struktur', StrukturOrganisasiController::class)->names([
-            'index' => 'master_struktur',
-            'create' => 'add_struktur',
-            'store' => 'add_struktur.store',
-            'edit' => 'edit_struktur',
-            'update' => 'update_struktur',
-            'destroy' => 'delete_struktur'
-        ]);
-
-        // ==========================================================
-        // DETAIL PROFIL ASESOR (Admin View) - [UPDATED SECTION]
-        // ==========================================================
-        Route::controller(AsesorProfileController::class)->prefix('asesor/{id_asesor}')->group(function () {
-            Route::get('/profile', 'showProfile')->name('asesor.profile');
-            Route::get('/bukti', 'showBukti')->name('asesor.bukti');
-            Route::get('/tinjauan', 'showTinjauan')->name('asesor_profile_tinjauan');
-
-            // [FIX] Mengubah nama route agar sesuai dengan View (daftar_asesi)
-            Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.daftar_asesi');
-
-            // [FIX] Parameter Tracker dibuat OPSIONAL (?) agar tidak error di Sidebar
-            Route::get('/tracker/{id_data_sertifikasi_asesi?}', 'showTracker')->name('asesor.tracker');
-
-            // Route untuk Tracker Skema (Timeline per Jadwal/Asesi)
-            Route::get('/tracker_skema/{id_jadwal}', 'showTrackerSkema')->name('asesor.tracker_skema');
-
-            Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
-            Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
-        });
-
-        // Master Jadwal
-        Route::resource('master/jadwal', AdminJadwalController::class)->names([
-            'index' => 'master_schedule',
-            'create' => 'add_schedule',
-            'store' => 'add_schedule.store',
-            'edit' => 'edit_schedule',
-            'update' => 'update_schedule',
-            'destroy' => 'delete_schedule'
-        ]);
-        Route::get('/jadwal_admin', [AdminJadwalController::class, 'showCalendar'])->name('schedule_admin');
-
-        // Daftar Hadir & Berita Acara
-        Route::controller(DaftarHadirController::class)->prefix('master/jadwal/{id_jadwal}')->group(function () {
-            Route::get('/daftar_hadir', 'daftarHadir')->name('schedule.attendance');
-            Route::delete('/attendance/delete/{id}', 'destroy')->name('schedule.attendance.destroy');
-            Route::get('/daftar_hadir/pdf', 'exportPdfdaftarhadir')->name('attendance.pdf');
-        });
-
-        // Bank Soal IA-06 (View Only for Admin, Full Access for Superadmin)
-        Route::get('/bank-soal-ia06', [IA06Controller::class, 'adminIndex'])->name('ia06.index');
-
-        // Superadmin ONLY Actions
-        Route::middleware(['role:superadmin'])->group(function () {
-            Route::post('/bank-soal-ia06', [IA06Controller::class, 'adminStoreSoal'])->name('ia06.store');
-            Route::put('/bank-soal-ia06/{id}', [IA06Controller::class, 'adminUpdateSoal'])->name('ia06.update');
-            Route::delete('/bank-soal-ia06/{id}', [IA06Controller::class, 'adminDestroySoal'])->name('ia06.destroy');
-        });
-
-        // FR.IA.01 - View Only for Admin (Cek Observasi Demonstrasi/Praktik)
-        Route::get('/ia01/{id_sertifikasi}', [\App\Http\Controllers\IA01Controller::class, 'showView'])->name('ia01.admin.view');
-    });
 
     // ======================================================
     // 4. AREA ASESOR
