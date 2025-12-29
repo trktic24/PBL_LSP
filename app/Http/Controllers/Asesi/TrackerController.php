@@ -38,6 +38,7 @@ class TrackerController extends Controller
         $unlockAK03 = false; // Umpan Balik
         $unlockHasil = false; // Trigger Lihat Nilai
         $unlockAK04 = false; // Banding Asesmen
+        $unlockSertifikat = false; // Lihat Sertifikat
         $isAPL01Ditolak = false;
         $isAPL02Ditolak = false;
 
@@ -55,6 +56,11 @@ class TrackerController extends Controller
             $sertifikasi = $jadwal_id ? $query->where('id_jadwal', $jadwal_id)->first() : $query->latest()->first();
 
             if ($sertifikasi) {
+
+                if (!empty($sertifikasi->sertifikat)) {
+                $unlockSertifikat = true;
+                }
+
                 // --- 1. STATUS AWAL ---
                 $statusAPL01 = $sertifikasi->rekomendasi_apl01;
                 $statusAPL02 = $sertifikasi->rekomendasi_apl02;
@@ -154,7 +160,7 @@ class TrackerController extends Controller
             }
         }
 
-        return view('asesi.tracker', compact('sertifikasi', 'asesi', 'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09', 'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04', 'statusAPL01', 'statusAPL02', 'isWaktuHabis', 'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus', 'isAPL01Ditolak', 'isAPL02Ditolak', 'isTidakKompeten', 'isIA05Started', 'isIA06Started'));
+        return view('asesi.tracker', compact('sertifikasi', 'asesi', 'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09', 'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04', 'statusAPL01', 'statusAPL02', 'isWaktuHabis', 'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus', 'isAPL01Ditolak', 'isAPL02Ditolak', 'isTidakKompeten', 'isIA05Started', 'isIA06Started', 'unlockSertifikat'));
     }
 
     /**
