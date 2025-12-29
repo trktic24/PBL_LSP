@@ -401,7 +401,7 @@
                                 </div>
                                 <div
                                     class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    @if ($level >= $LVL_PRA_ASESMEN)
+                                    @if ($unlockAK01)
                                         <div
                                             class="w-4 h-4 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.6)]">
                                         </div>
@@ -862,9 +862,13 @@
                                             </div>
                                             <div class="w-full sm:w-auto flex-shrink-0">
                                                 @if ($unlockHasil)
-                                                    <a href="#"
-                                                        class="flex items-center justify-center w-full sm:w-36 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat
-                                                        Hasil</a>
+                                                    <a href="{{ route('asesi.asesmen.fr_ia_09.index', $sertifikasi->id_data_sertifikasi_asesi) }}"
+                                                        class="flex items-center justify-center w-full sm:w-36 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                        </svg> Lihat Hasil
+                                                    </a>
                                                 @else
                                                     <div
                                                         class="flex items-center justify-center w-full sm:w-36 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">
@@ -923,7 +927,6 @@
 
                                 @if ($level >= $LVL_UMPAN_BALIK)
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
-                                    <button class="{{ $btnBlue }}">Unduh Dokumen</button>
                                 @elseif ($unlockAK03 & ($level >= $LVL_ASESMEN))
                                     <p class="{{ $statusClassProses }}">Siap Diisi</p>
                                 @else
@@ -939,7 +942,7 @@
                             {{-- UPDATE: left-4 jadi left-5 --}}
                             <div
                                 class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 
-                                {{ $level >= $LVL_BANDING ? 'bg-green-500' : 'bg-gray-200' }}">
+                                {{ $unlockSertifikat && $level >= $LVL_UMPAN_BALIK ? 'bg-green-500' : 'bg-gray-200' }}">
                             </div>
 
                             <div class="relative flex-shrink-0 ml-1 mr-4 md:mr-6 z-10">
@@ -953,7 +956,7 @@
                                 </div>
                                 <div
                                     class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    @if ($level >= $LVL_BANDING)
+                                    @if ($isTidakKompeten || ($level >= $LVL_UMPAN_BALIK))
                                         <div
                                             class="w-4 h-4 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.6)]">
                                         </div>
@@ -1002,7 +1005,7 @@
                                 </div>
                                 <div
                                     class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    @if ($level >= $LVL_REKOMENDASI)
+                                    @if ($unlockSertifikat && $level >= $LVL_UMPAN_BALIK)
                                         <div
                                             class="w-4 h-4 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.6)]">
                                         </div>
@@ -1010,15 +1013,19 @@
                                         <div class="w-4 h-4 bg-gray-300 rounded-full"></div>
                                     @endif
                                 </div>
-                                @if ($level >= $LVL_REKOMENDASI)
+                                @if ($unlockSertifikat && $level >= $LVL_UMPAN_BALIK)
                                     <div class="hidden md:block">{!! renderCheckmark() !!}</div>
                                 @endif
                             </div>
 
                             <div class="{{ $responsiveCardClass }}">
+                                @if ($unlockSertifikat && $level >= $LVL_UMPAN_BALIK)
+                                    <span class="{{ $linkClassEnabled }}">Keputusan Komite</span>
+                                @else
                                 <h3 class="{{ $linkClassDisabled }}">Keputusan Komite</h3>
+                                @endif
 
-                                @if ($level == $LVL_REKOMENDASI)
+                                @if ($unlockSertifikat && $level >= $LVL_UMPAN_BALIK)
                                     <p class="{{ $statusClassSelesai }}">Kompeten - Direkomendasikan Menerima
                                         Sertifikat</p>
                                     <button
@@ -1027,6 +1034,8 @@
                                 @elseif ($isTidakKompeten)
                                     <p class="text-xs text-red-600 font-medium">Belum Kompeten - Tidak Direkomendasikan
                                     </p>
+                                @elseif ($unlockSertifikat && $level <= $LVL_UMPAN_BALIK)
+                                    <p class="{{ $statusClassTunggu }}">Silahkan isi Umpan Balik</p>
                                 @else
                                     <p class="{{ $statusClassTunggu }}">Menunggu Keputusan</p>
                                 @endif
