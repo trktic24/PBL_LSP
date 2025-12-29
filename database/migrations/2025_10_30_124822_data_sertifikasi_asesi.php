@@ -41,6 +41,7 @@ return new class extends Migration {
             $table->text('rekomendasi1_AK06')->nullable();
             $table->text('rekomendasi2_AK06')->nullable();
             $table->string('rekomendasi_ia01')->nullable();
+            $table->string('sertifikat')->nullable()->comment("Path file sertifikat yang diberikan kepada asesi jika kompeten");
             $table->string('status_sertifikasi', 50)->default('sedang_mendaftar');
             $table->timestamps();
         });

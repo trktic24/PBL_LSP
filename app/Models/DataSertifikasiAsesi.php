@@ -318,4 +318,9 @@ class DataSertifikasiAsesi extends Model
         // Cek apakah relasi ada DAN kolom ttd terisi
         return $this->daftarHadir && !empty($this->daftarHadir->tanda_tangan_asesi);
     }
+
+    public function portofolio(): HasMany
+    {
+        return $this->hasMany(DataPortofolio::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
 }
