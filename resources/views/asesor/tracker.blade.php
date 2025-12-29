@@ -333,7 +333,7 @@
                                 <div class="flex gap-2 ml-4">
                                     {{-- TOMBOL BARU IA.05 --}}
                                     @php $btnIa05 = getActionBtn($stIa05, $isFinalized); @endphp
-                                    <a href="{{ route('FR_IA_05_A', $asesi->id_asesi) }}"
+                                    <a href="{{ route('FR_IA_05_A', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                     class="{{ $btnIa05['class'] }} text-xs font-bold py-1 px-3 rounded-md">
                                     {{ $btnIa05['label'] }}
                                     </a>

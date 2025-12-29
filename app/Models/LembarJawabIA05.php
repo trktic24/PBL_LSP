@@ -15,12 +15,14 @@ class LembarJawabIA05 extends Model
     // Ini sepertinya typo di database Anda, tapi Model harus mengikutinya.
     protected $primaryKey = 'id_lembar_jawab_ia05'; 
 
-    protected $fillable = [
-        'id_data_sertifikasi_asesi',
-        'id_soal_ia05',
-        'jawaban_asesi_ia05', // <-- Enum ['a', 'b', 'c', 'd']
-        'pencapaian_ia05',    // <-- Enum ['ya', 'tidak']
-    ];
+    // protected $fillable = [
+    //     'id_data_sertifikasi_asesi',
+    //     'id_soal_ia05',
+    //     'jawaban_asesi_ia05', // <-- Enum ['a', 'b', 'c', 'd']
+    //     'pencapaian_ia05',    // <-- Enum ['ya', 'tidak']
+    // ];
+
+    protected $guarded = [];
 
     // ================= RELASI =================
 

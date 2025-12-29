@@ -3,58 +3,40 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\LembarJawabIA05;
-use App\Models\SoalIA05; // Pastikan nama model Soal benar
+use App\Models\SoalIa05;       // Pastikan Model Soal bener
+use App\Models\LembarJawabIa05; // Pastikan Model Lembar Jawab bener
 use App\Models\DataSertifikasiAsesi;
-use Illuminate\Support\Facades\DB;
 
 class LembarJawabIa05Seeder extends Seeder
 {
-    public function run()
+   public function run()
     {
-        // 1. Ambil data induk (Asesi & Soal)
-        // Kita butuh ID yang valid agar tidak error Foreign Key
-        $list_asesi = DataSertifikasiAsesi::pluck('id_data_sertifikasi_asesi');
-        $list_soal  = SoalIA05::pluck('id_soal_ia05');
+        $targetIdSertifikasi = 1; 
 
-        // Cek apakah data induk ada
-        if ($list_asesi->isEmpty() || $list_soal->isEmpty()) {
-            $this->command->error("Gagal: Tabel 'data_sertifikasi_asesi' atau 'soal_ia05' masih kosong. Isi dulu data tersebut.");
-            return;
-        }
+        // Debug 1: Cek Asesi
+        $asesi = \App\Models\DataSertifikasiAsesi::find($targetIdSertifikasi);
+        if (!$asesi) { dd("ASESI ID $targetIdSertifikasi GAK KETEMU WIR!"); }
 
-        $faker = \Faker\Factory::create('id_ID');
+        // Debug 2: Cek Soal
+        $daftarSoal = \App\Models\SoalIa05::all();
+        dump("Jumlah Soal Ditemukan: " . $daftarSoal->count()); // <--- Debug ini
 
-        // 2. Loop: Setiap Asesi menjawab Setiap Soal
-        foreach ($list_asesi as $id_asesi) {
-            foreach ($list_soal->random(5) as $id_soal) {
-                
-                // Tentukan status kompeten secara acak untuk simulasi
-                $is_kompeten = $faker->boolean(80); // 80% kemungkinan kompeten (ya)
+        if ($daftarSoal->count() == 0) { dd("SOAL KOSONG!"); }
 
-                LembarJawabIA05::updateOrCreate(
-                    [
-                        // Kunci pencarian (agar tidak duplikat)
-                        'id_data_sertifikasi_asesi' => $id_asesi,
-                        'id_soal_ia05'              => $id_soal,
-                    ],
-                    [
-                        // PENTING: Sesuai gambar, kolom ini ENUM ('a','b','c','d')
-                        // Jadi kita acak memilih salah satu huruf saja
-                        'jawaban_asesi_ia05' => $faker->randomElement(['a', 'b', 'c', 'd']),
-
-                        // PENTING: Sesuai gambar, kolom ini ENUM ('ya', 'tidak')
-                        'pencapaian_ia05'    => $is_kompeten ? 'ya' : 'tidak',
-
-                        // OPSI: Jika kamu SUDAH menambahkan kolom 'umpan_balik_ia05' di database,
-                        // hapus tanda komentar (//) di baris bawah ini:
-                        
-                        // 'umpan_balik_ia05' => $is_kompeten ? 'Jawaban sudah tepat.' : 'Perlu pendalaman materi.',
-                    ]
-                );
+        foreach ($daftarSoal as $soal) {
+            // Debug 3: Cek ID Soal yang mau diinput
+            dump("Mencoba input soal ID: " . $soal->id_soal_ia05); 
+            
+            try {
+                \App\Models\LembarJawabIA05::create([ // Ganti updateOrCreate jadi create dulu biar kelihatan errornya
+                    'id_data_sertifikasi_asesi' => $targetIdSertifikasi,
+                    'id_soal_ia05' => $soal->id_soal_ia05,
+                    'jawaban_asesi_ia05' => 'a',
+                    'pencapaian_ia05' => null,
+                ]);
+            } catch (\Exception $e) {
+                dd("ERROR WIR: " . $e->getMessage()); // <--- Ini bakal nangkep errornya
             }
         }
-        
-        $this->command->info("Berhasil membuat dummy data Lembar Jawab IA.05!");
     }
 }
