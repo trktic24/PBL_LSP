@@ -27,7 +27,7 @@ class LembarJawabIa05Seeder extends Seeder
 
         // 2. Loop: Setiap Asesi menjawab Setiap Soal
         foreach ($list_asesi as $id_asesi) {
-            foreach ($list_soal as $id_soal) {
+            foreach ($list_soal->random(5) as $id_soal) {
                 
                 // Tentukan status kompeten secara acak untuk simulasi
                 $is_kompeten = $faker->boolean(80); // 80% kemungkinan kompeten (ya)

@@ -40,6 +40,6 @@ class LembarJawabIA05 extends Model
      */
     public function soal()
     {
-        return $this->belongsTo(SoalIa05::class, 'id_soal_ia05', 'id_soal_ia05');
+        return $this->belongsTo(SoalIA05::class, 'id_soal_ia05', 'id_soal_ia05');
     }
 }
