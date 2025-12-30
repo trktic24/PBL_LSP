@@ -8,6 +8,7 @@ use App\Models\Asesor;
 use App\Models\Skema;
 use App\Models\Asesi;
 use App\Models\ListForm;
+use Database\Seeders\SoalIa05Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -100,10 +101,7 @@ class DatabaseSeeder extends Seeder
             Ia01DummySeeder::class,
             // Ia02 covered by SkenarioIa02Seeder? available in list
             // DummyIA05Seeder::class,
-            SoalDanKunciia05Seeder::class,
-            LembarJawabIa05Seeder::class,
             
-            SoalIa06MasterSeeder::class,
             // KunciIa06TransaksiSeeder::class,
 
             Ia07Seeder::class, // Pertanyaan Lisan?
@@ -119,10 +117,22 @@ class DatabaseSeeder extends Seeder
         // 7. EXTRAS
         $this->call([
             // KonfirmasiOrangRelevanSeeder::class,
-            ListFormSeeder::class,
             TenSchemesSeeder::class, // Might duplicate Skemas, check logic inside if needed
             JuniorWebDevSeeder::class, // Specific Scheme Seeder
             PrivateFileSeeder::class,
+            ListFormSeeder::class,
+            // SoalDanKunciia05Seeder::class,
+            SoalIa05Seeder::class,
+            LembarJawabIa05Seeder::class,
+            SoalIa06MasterSeeder::class,
         ]);
+
+        // ... di dalam method run() ...
+
+        // 1. Bikin Soalnya Dulu (Yang tadi udah kamu benerin jadi 10)
+        $this->call(SoalIa05Seeder::class);
+
+        // 2. Baru Isi Jawabannya (Tambahin baris ini)
+        $this->call(LembarJawabIa05Seeder::class);
     }
 }

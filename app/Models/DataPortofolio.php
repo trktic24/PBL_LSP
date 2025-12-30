@@ -9,9 +9,14 @@ class DataPortofolio extends Model
 {
     use HasFactory;
 
-    protected $table = 'data_portofolio';
-    protected $primaryKey = 'id_portofolio_asesi';
+    protected $table = 'portofolio';
+    protected $primaryKey = 'id_portofolio';
     protected $guarded = [];
+    protected $fillable = [
+        'id_data_sertifikasi_asesi',
+        'persyaratan_dasar',
+        'persyaratan_administratif',
+    ];
 
     /**
      * Relasi ke DataSertifikasiAsesi
