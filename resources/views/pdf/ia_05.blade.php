@@ -91,13 +91,16 @@
                         
                         <td class="text-center font-bold">{{ $nomor_kiri }}.</td>
                         <td class="text-center font-bold" style="color: blue;">
-                            {{ $jawaban_kiri->teks_jawaban_asesi_ia05 ?? '-' }}
+                            {{-- PERBAIKAN 1: Typo 'awaban' jadi 'jawaban' --}}
+                            {{ $jawaban_kiri->jawaban_asesi_ia05 ?? '-' }}
                         </td>
                         <td class="text-center check-mark">
-                            {{ ($jawaban_kiri && $jawaban_kiri->pencapaian_ia05_iya == 1) ? 'V' : '' }}
+                            {{-- PERBAIKAN 2: Cek logic 'ya' --}}
+                            {{ ($jawaban_kiri && $jawaban_kiri->pencapaian_ia05 == 'ya') ? 'V' : '' }}
                         </td>
                         <td class="text-center check-mark">
-                            {{ ($jawaban_kiri && $jawaban_kiri->pencapaian_ia05_tidak == 1) ? 'V' : '' }}
+                            {{-- PERBAIKAN 3: Cek logic 'tidak' --}}
+                            {{ ($jawaban_kiri && $jawaban_kiri->pencapaian_ia05 == 'tidak') ? 'V' : '' }}
                         </td>
                     @endif
 
@@ -114,13 +117,15 @@
                         
                         <td class="text-center font-bold">{{ $nomor_kanan }}.</td>
                         <td class="text-center font-bold" style="color: blue;">
-                            {{ $jawaban_kanan->teks_jawaban_asesi_ia05 ?? '-' }}
+                            {{ $jawaban_kanan->jawaban_asesi_ia05 ?? '-' }}
                         </td>
                         <td class="text-center check-mark">
-                            {{ ($jawaban_kanan && $jawaban_kanan->pencapaian_ia05_iya == 1) ? 'V' : '' }}
+                            {{-- PERBAIKAN 4: Cek logic 'ya' untuk Kanan --}}
+                            {{ ($jawaban_kanan && $jawaban_kanan->pencapaian_ia05 == 'ya') ? 'V' : '' }}
                         </td>
                         <td class="text-center check-mark">
-                            {{ ($jawaban_kanan && $jawaban_kanan->pencapaian_ia05_tidak == 1) ? 'V' : '' }}
+                            {{-- PERBAIKAN 5: Cek logic 'tidak' untuk Kanan --}}
+                            {{ ($jawaban_kanan && $jawaban_kanan->pencapaian_ia05 == 'tidak') ? 'V' : '' }}
                         </td>
                     @else
                         {{-- Jika Ganjil, Kolom Kanan Kosong --}}

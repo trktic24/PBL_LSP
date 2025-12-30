@@ -10,6 +10,6 @@ class SoalIa05Seeder extends Seeder
     public function run()
     {
         // Membuat 10 data dummy soal
-        SoalIa05::factory()->count(5)->create();
+        SoalIa05::factory()->count(10)->create();
     }
 }

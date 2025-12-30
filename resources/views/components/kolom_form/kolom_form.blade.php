@@ -9,21 +9,22 @@
     {{-- LOGIKA BERSYARAT: Cek apakah inputnya adalah 'textarea' --}}
     @if (isset($type) && $type === 'textarea')
         
-        {{-- Jika TYPE adalah TEXTAREA (seperti di gambar) --}}
+        {{-- PERBAIKAN 1: Masukkan variable $value di ANTARA tag textarea --}}
         <textarea 
             id="{{ $id }}" 
             name="{{ $name }}" 
-            rows="{{ $rows ?? 4 }}" {{-- Tambahkan variabel ROWS, default 4, kalo mau 4 rows gausa didefinisiin lagi ketika dipanggil --}}
+            rows="{{ $rows ?? 4 }}"
             class="form-input w-full border-gray-300 rounded-md shadow-sm"
-        ></textarea>
+        >{{ $value ?? '' }}</textarea>
 
     @else
 
-        {{-- Jika TYPE adalah TEXT (default) atau tidak disetel --}}
+        {{-- PERBAIKAN 2: Tambahkan atribut value="..." di tag input --}}
         <input 
-            type="{{ $type ?? 'text' }}" {{-- Default type adalah 'text' --}}
+            type="{{ $type ?? 'text' }}" 
             id="{{ $id }}" 
             name="{{ $name }}" 
+            value="{{ $value ?? '' }}" 
             class="form-input w-full border-gray-300 rounded-md shadow-sm"
         >
 

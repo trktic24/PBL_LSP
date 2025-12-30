@@ -150,20 +150,22 @@
                                 <td class="border border-gray-900 p-2 text-sm">
                                     <input type="text" 
                                            class="form-input w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-center font-bold text-blue-800"
-                                           value="{{ $jawaban_kiri->teks_jawaban_asesi_ia05 ?? '-' }}"
+                                           value="{{ $jawaban_kiri->jawaban_asesi_ia05 ?? '-' }}"
                                            readonly>
                                 </td>
                                 <td class="border border-gray-900 p-2 text-sm text-center">
                                     <input type="radio" name="penilaian[{{ $soal_kiri->id_soal_ia05 }}]" value="ya"
-                                           class="form-radio h-5 w-5 text-green-600"
-                                           @checked($jawaban_kiri && $jawaban_kiri->pencapaian_ia05_iya == 1)
-                                           @disabled(!$is_asesor) required>
+                                        class="form-radio h-5 w-5 text-green-600"
+                                        {{-- CEK APAKAH STRINGNYA 'ya' --}}
+                                        @checked($jawaban_kiri && $jawaban_kiri->pencapaian_ia05 == 'ya')
+                                        @disabled(!$is_asesor) required>
                                 </td>
                                 <td class="border border-gray-900 p-2 text-sm text-center">
                                     <input type="radio" name="penilaian[{{ $soal_kiri->id_soal_ia05 }}]" value="tidak"
-                                           class="form-radio h-5 w-5 text-red-600"
-                                           @checked($jawaban_kiri && $jawaban_kiri->pencapaian_ia05_tidak == 1)
-                                           @disabled(!$is_asesor)>
+                                        class="form-radio h-5 w-5 text-red-600"
+                                        {{-- CEK APAKAH STRINGNYA 'tidak' --}}
+                                        @checked($jawaban_kiri && $jawaban_kiri->pencapaian_ia05 == 'tidak')
+                                        @disabled(!$is_asesor)>
                                 </td>
                             @endif
 
@@ -182,20 +184,22 @@
                                 <td class="border border-gray-900 p-2 text-sm">
                                     <input type="text" 
                                            class="form-input w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-center font-bold text-blue-800"
-                                           value="{{ $jawaban_kanan->teks_jawaban_asesi_ia05 ?? '-' }}"
+                                           value="{{ $jawaban_kanan->jawaban_asesi_ia05 ?? '-' }}"
                                            readonly>
                                 </td>
                                 <td class="border border-gray-900 p-2 text-sm text-center">
-                                    <input type="radio" name="penilaian[{{ $soal_kanan->id_soal_ia05 }}]" value="ya"
-                                           class="form-radio h-5 w-5 text-green-600"
-                                           @checked($jawaban_kanan && $jawaban_kanan->pencapaian_ia05_iya == 1)
-                                           @disabled(!$is_asesor) required>
+                                   <input type="radio" name="penilaian[{{ $soal_kanan->id_soal_ia05 }}]" value="ya"
+                                        class="form-radio h-5 w-5 text-green-600"
+                                        {{-- CEK APAKAH STRINGNYA 'ya' --}}
+                                        @checked($jawaban_kanan && $jawaban_kanan->pencapaian_ia05 == 'ya')
+                                        @disabled(!$is_asesor) required>
                                 </td>
                                 <td class="border border-gray-900 p-2 text-sm text-center">
                                     <input type="radio" name="penilaian[{{ $soal_kanan->id_soal_ia05 }}]" value="tidak"
-                                           class="form-radio h-5 w-5 text-red-600"
-                                           @checked($jawaban_kanan && $jawaban_kanan->pencapaian_ia05_tidak == 1)
-                                           @disabled(!$is_asesor)>
+                                        class="form-radio h-5 w-5 text-red-600"
+                                        {{-- CEK APAKAH STRINGNYA 'tidak' --}}
+                                        @checked($jawaban_kanan && $jawaban_kanan->pencapaian_ia05 == 'tidak')
+                                        @disabled(!$is_asesor)>
                                 </td>
                             @else
                                 {{-- Jika Ganjil, Kolom Kanan Kosong --}}

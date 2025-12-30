@@ -124,9 +124,8 @@ class IA05Controller extends Controller
                         'id_soal_ia05' => $id_soal,
                     ],
                     [
-                        'teks_jawaban_asesi_ia05' => $pilihan_jawaban,
-                        'pencapaian_ia05_iya' => 0, // Reset penilaian
-                        'pencapaian_ia05_tidak' => 0, // Reset penilaian
+                        'jawaban_asesi_ia05' => $pilihan_jawaban, // <-- Perbaiki nama kolom (hapus teks_)
+                        'pencapaian_ia05' => null, // Reset penilaian jadi kosong
                     ]
                 );
             }
@@ -249,25 +248,28 @@ class IA05Controller extends Controller
         DB::beginTransaction();
         try {
             foreach ($request->penilaian as $id_soal => $hasil_penilaian) {
-                $jawaban = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                    ->where('id_soal_ia05', $id_soal)
-                    ->first();
-
-                if ($jawaban) {
-                    $jawaban->update([
-                        'pencapaian_ia05_iya' => ($hasil_penilaian == 'ya') ? 1 : 0,
-                        'pencapaian_ia05_tidak' => ($hasil_penilaian == 'tidak') ? 1 : 0,
-                    ]);
-                }
+                // Pakai updateOrCreate biar kalau datanya belum ada (kasus ID nyasar), dia otomatis bikin baru
+                LembarJawabIA05::updateOrCreate(
+                    [
+                        'id_data_sertifikasi_asesi' => $id_asesi,
+                        'id_soal_ia05' => $id_soal,
+                    ],
+                    [
+                        // Masukin langsung string 'ya' atau 'tidak' ke kolom ENUM
+                        'pencapaian_ia05' => $hasil_penilaian, 
+                    ]
+                );
             }
 
-            if ($request->has('umpan_balik')) {
-                LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-                    ->update(['pencapaian_ia05' => $request->umpan_balik]);
-            }
+            // Simpan Umpan Balik (Jika ada kolomnya di DB)
+            // if ($request->has('umpan_balik')) {
+            //     // Pastikan kolom 'umpan_balik_ia05' ada di database kamu
+            //      LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+            //         ->update(['umpan_balik_ia05' => $request->umpan_balik]);
+            // }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Penilaian (IA-05 C) berhasil disimpan.');
+            return redirect()->back()->with('success', 'Penilaian berhasil disimpan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan penilaian: ' . $e->getMessage());
