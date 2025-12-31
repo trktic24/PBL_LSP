@@ -1,4 +1,4 @@
-@props(['asesi', 'backUrl'])
+@props(['asesi', 'backUrl', 'activeSertifikasi'])
 
 <aside class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-[22%] 
               bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
@@ -22,10 +22,13 @@
     <div class="w-[85%] border-t-2 border-gray-300 opacity-50 mt-4 -mb-2 relative z-10"></div>
 
 @php
-    // Logika: Ambil sertifikasi terakhir yang didaftarkan user
-    $sertifikasiTerbaru = $asesi->dataSertifikasi->sortByDesc('created_at')->first();
-    $namaSkema = $sertifikasiTerbaru?->jadwal?->skema?->nama_skema ?? '-';
-    $nomorSkema = $sertifikasiTerbaru?->jadwal?->skema?->nomor_skema ?? '-';
+    // --- LOGIKA UTAMA DIREVISI DI SINI ---
+    // 1. Prioritaskan $activeSertifikasi (data yang dikirim dari View Daftar Hadir)
+    // 2. Jika $activeSertifikasi null, baru gunakan pendaftaran terbaru.
+    $sertifikasiAcuan = $activeSertifikasi ?? $asesi->dataSertifikasi->sortByDesc('created_at')->first();
+    
+    $namaSkema = $sertifikasiAcuan?->jadwal?->skema?->nama_skema ?? '-';
+    $nomorSkema = $sertifikasiAcuan?->jadwal?->skema?->nomor_skema ?? '-';
 @endphp
 
 <!-- [REVISI] Menampilkan Nama Skema & Nomor Skema -->
