@@ -35,33 +35,38 @@
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Data Pihak Ketiga</h2>
 
                     {{-- Perhatikan: value="{{ $header->kolom ?? '' }}" untuk pre-fill data lama --}}
+                    {{-- 1. NAMA PENGAWAS --}}
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'supervisor_name',
                         'name'  => 'supervisor_name',
                         'label' => 'Nama Pengawas/penyelia',
-                        'value' => $header->nama_pengawas ?? '' 
+                        // PENTING: Pakai old() biar aman validasi, pakai optional() biar aman database kosong
+                        'value' => old('supervisor_name', $header?->nama_pengawas) 
                     ]) 
 
+                    {{-- 2. TEMPAT KERJA --}}
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'workplace',
                         'name'  => 'workplace',
                         'label' => 'Tempat kerja',
-                        'value' => $header->tempat_kerja ?? ''
+                        'value' => old('workplace', $header?->tempat_kerja)
                     ]) 
 
+                    {{-- 3. ALAMAT --}}
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'address',
                         'name'  => 'address',
                         'label' => 'Alamat',
-                        'value' => $header->alamat ?? ''
+                        'value' => old('address', $header?->alamat)
                     ]) 
 
+                    {{-- 4. TELEPON --}}
                     @include('components.kolom_form.kolom_form', [
                         'id'    => 'phone',
                         'name'  => 'phone',
                         'label' => 'Telepon',
-                        'value' => $header->telepon ?? ''
-                    ]) 
+                        'value' => old('phone', $header?->telepon)
+                    ])
                 </div>
 
                 {{-- --- BAGIAN 2: CHECKLIST PERTANYAAN (Tabel pertanyaan_ia10) --- --}}
@@ -119,9 +124,10 @@
                     <h2 class="text-xl font-semibold text-gray-900 border-b pb-2 mb-4">Detail Verifikasi</h2>
 
                     @php
-                        // Helper kecil untuk ambil value lama dari array essay_answers
+                        // Helper: Prioritas ambil dari OLD input (kalau validasi gagal),
+                        // Kalau gak ada, baru ambil dari DATABASE ($essay_answers)
                         $getVal = function($key) use ($essay_answers) {
-                            // Map key form ke pertanyaan lengkap (sama seperti di Controller)
+                            // 1. Definisikan Map Pertanyaan (SAMA PERSIS DENGAN CONTROLLER)
                             $map = [
                                 'relation'       => 'Apa hubungan Anda dengan asesi?',
                                 'duration'       => 'Berapa lama Anda bekerja dengan asesi?',
@@ -131,6 +137,13 @@
                                 'training_needs' => 'Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:',
                                 'other_comments' => 'Ada komentar lain:'
                             ];
+                            
+                            // 2. Cek apakah ada old input? (misal: old('essay.relation'))
+                            if(old("essay.$key")) {
+                                return old("essay.$key");
+                            }
+
+                            // 3. Kalau gak ada old, ambil dari Database
                             $fullQuestion = $map[$key] ?? '';
                             return $essay_answers[$fullQuestion] ?? '';
                         };

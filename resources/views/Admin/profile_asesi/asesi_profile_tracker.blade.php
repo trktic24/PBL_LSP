@@ -426,11 +426,22 @@
                                     
                                     @if ($level >= $LVL_ASESMEN)
                                         <p class="{{ $statusClassSelesai }}">Asesmen Selesai</p>
-                                        <a href="{{ route('admin.rekomendasi.ak02', ['id_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnBlue }} inline-flex items-center bg-purple-600 hover:bg-purple-700">
-                                            <i class="fas fa-star mr-1"></i> Lihat Rekaman Nilai
-                                        </a>
+                                        <div class="flex flex-wrap gap-2 mt-2">
+                                            <a href="{{ route('admin.ia01.admin.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                                               class="{{ $btnBlue }} inline-flex items-center">
+                                                <i class="fas fa-clipboard-list mr-1"></i> Lihat FR.IA.01
+                                            </a>
+                                            <a href="{{ route('admin.rekomendasi.ak02', ['id_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                                               class="{{ $btnBlue }} inline-flex items-center bg-purple-600 hover:bg-purple-700">
+                                                <i class="fas fa-star mr-1"></i> Lihat Rekaman Nilai
+                                            </a>
+                                        </div>
                                     @elseif ($unlockAsesmen)
                                         <p class="{{ $statusClassProses }}">Sedang Berlangsung / Menunggu Input Asesor</p>
+                                        <a href="{{ route('admin.ia01.admin.view', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                                           class="{{ $btnBlue }} inline-flex items-center mt-2">
+                                            <i class="fas fa-clipboard-list mr-1"></i> Lihat Progress FR.IA.01
+                                        </a>
                                     @else
                                         <p class="{{ $statusClassTerkunci }}">Menunggu Jadwal / Persetujuan</p>
                                     @endif

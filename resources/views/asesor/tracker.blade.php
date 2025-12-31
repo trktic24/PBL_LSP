@@ -58,6 +58,41 @@
             return 'bg-gray-200 text-gray-400';
         }
 
+
+        // [BARU] Helper Tombol Aksi Khusus Asesmen (IA.05 dst)
+        function getActionBtn($status, $isFinalized)
+        {
+            // 1. Kalau Asesmen udah Final (AK.02 dikunci), tombol mati
+            if ($isFinalized) {
+                return [
+                    'label' => 'Selesai',
+                    'class' => 'bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed'
+                ];
+            }
+
+            // 2. Kalau Status DONE (Sudah Dinilai) -> Tombol Kuning (Edit)
+            if ($status == 'DONE') {
+                return [
+                    'label' => 'Edit Penilaian',
+                    'class' => 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer'
+                ];
+            }
+
+            // 3. Kalau Status ACTIVE (Bisa Dinilai) -> Tombol Biru Solid (Lakukan)
+            if ($status == 'ACTIVE') {
+                return [
+                    'label' => 'Lakukan Penilaian',
+                    'class' => 'bg-blue-100 text-blue-600 hover:bg-blue-200 cursor-pointer'
+                ];
+            }
+
+            // 4. Sisanya (LOCKED) -> Tombol Abu
+            return [
+                'label' => 'Terkunci',
+                'class' => 'bg-gray-100 text-gray-400 pointer-events-none cursor-not-allowed'
+            ];
+        }
+
         // =========================================================================
         // 3. CEK STATUS PER ITEM (UNTUK AK.02 LOCK)
         // =========================================================================
@@ -296,8 +331,12 @@
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold text-gray-800">FR.IA.05 - Pertanyaan Tertulis</h3>
                                 <div class="flex gap-2 ml-4">
-                                    <a href="{{ route('FR_IA_05_A', $asesi->id_asesi) }}"
-                                        class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                    {{-- TOMBOL BARU IA.05 --}}
+                                    @php $btnIa05 = getActionBtn($stIa05, $isFinalized); @endphp
+                                    <a href="{{ route('FR_IA_05_A', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                    class="{{ $btnIa05['class'] }} text-xs font-bold py-1 px-3 rounded-md">
+                                    {{ $btnIa05['label'] }}
+                                    </a>
                                     <a href="{{ route('ia05.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat
@@ -325,8 +364,12 @@
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold text-gray-800">FR.IA.10 - Verifikasi Pihak Ketiga</h3>
                                 <div class="flex gap-2 ml-4">
+                                    {{-- TOMBOL BARU IA.10 --}}
+                                    @php $btnIa10 = getActionBtn($stIa10, $isFinalized); @endphp
                                     <a href="{{ route('fr-ia-10.create', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
-                                        class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                    class="{{ $btnIa10['class'] }} text-xs font-bold py-1 px-3 rounded-md">
+                                    {{ $btnIa10['label'] }}
+                                    </a>
                                     <a href="{{ route('ia10.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat
@@ -354,8 +397,12 @@
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold text-gray-800">FR.IA.02 - Tugas Praktik Demonstrasi</h3>
                                 <div class="flex gap-2 ml-4">
+                                    {{-- TOMBOL BARU IA.02 --}}
+                                    @php $btnIa02 = getActionBtn($stIa02, $isFinalized); @endphp
                                     <a href="{{ route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
-                                        class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                    class="{{ $btnIa02['class'] }} text-xs font-bold py-1 px-3 rounded-md">
+                                    {{ $btnIa02['label'] }}
+                                    </a>
                                     <a href="{{ route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat
@@ -383,8 +430,12 @@
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold text-gray-800">FR.IA.06 - Pertanyaan Lisan</h3>
                                 <div class="flex gap-2 ml-4">
+                                    {{-- TOMBOL BARU IA.06 --}}
+                                    @php $btnIa06 = getActionBtn($stIa06, $isFinalized); @endphp
                                     <a href="{{ route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
-                                        class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                    class="{{ $btnIa06['class'] }} text-xs font-bold py-1 px-3 rounded-md">
+                                    {{ $btnIa06['label'] }}
+                                    </a>
                                     <a href="{{ route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat
@@ -412,8 +463,12 @@
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold text-gray-800">FR.IA.07 - Daftar Pertanyaan Lisan</h3>
                                 <div class="flex gap-2 ml-4">
+                                    {{-- TOMBOL BARU IA.07 --}}
+                                    @php $btnIa07 = getActionBtn($stIa07, $isFinalized); @endphp
                                     <a href="{{ route('FR_IA_07') }}"
-                                        class="{{ btnState($level, 40, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
+                                    class="{{ $btnIa07['class'] }} text-xs font-bold py-1 px-3 rounded-md">
+                                    {{ $btnIa07['label'] }}
+                                    </a>
                                     <a href="{{ route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="{{ pdfState($level, 40) }} text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1">Lihat

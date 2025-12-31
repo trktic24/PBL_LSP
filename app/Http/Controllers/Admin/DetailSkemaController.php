@@ -39,7 +39,7 @@ class DetailSkemaController extends Controller
             ['code' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 'db_field' => 'fr_mapa_01', 'checked' => (bool)$configDB->fr_mapa_01, 'url' => null],
             ['code' => 'FR.MAPA.02', 'name' => 'Peta Instrumen Asesmen', 'db_field' => 'fr_mapa_02', 'checked' => (bool)$configDB->fr_mapa_02, 'url' => null],
             // FASE 3 (IA)
-            ['code' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'db_field' => 'fr_ia_01', 'checked' => (bool)$configDB->fr_ia_01, 'url' => null],
+            ['code' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'db_field' => 'fr_ia_01', 'checked' => (bool)$configDB->fr_ia_01, 'url' => null], // Akses via Tracker per Asesi
             ['code' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi', 'db_field' => 'fr_ia_02', 'checked' => (bool)$configDB->fr_ia_02, 'url' => null],
             ['code' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi', 'db_field' => 'fr_ia_03', 'checked' => (bool)$configDB->fr_ia_03, 'url' => null],
             ['code' => 'FR.IA.04', 'name' => 'Ceklis Verifikasi Portofolio', 'db_field' => 'fr_ia_04', 'checked' => (bool)$configDB->fr_ia_04, 'url' => null],

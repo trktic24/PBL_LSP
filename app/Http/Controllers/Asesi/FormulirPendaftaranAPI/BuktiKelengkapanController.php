@@ -2,39 +2,38 @@
 
 namespace App\Http\Controllers\Asesi\FormulirPendaftaranAPI;
 
-use App\Http\Controllers\Controller;
+use App\Models\BuktiDasar; 
 use Illuminate\Http\Request;
+use App\Models\DataPortofolio;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\File; 
-use Illuminate\Support\Facades\Storage;
-use App\Models\BuktiDasar; // Asumsi nama model kamu BuktiDasar atau BuktiDasar (sesuaikan)
-use App\Models\BuktiKelengkapan; // Pakai ini jika modelnya BuktiKelengkapan
+use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str; // Tambahin ini buat string helper
 
 class BuktiKelengkapanController extends Controller
 {
-    // ... (Fungsi getDataBuktiKelengkapanApi TETAP SAMA, gak perlu diubah) ...
+    // GET LIST (Tetap Sama)
     public function getDataBuktiKelengkapanApi($id_data_sertifikasi_asesi)
     {
-        Log::info("API (Bukti): Get data ID {$id_data_sertifikasi_asesi}...");
         try {
-            // Pastikan pakai Model yang benar (BuktiKelengkapan atau BuktiDasar)
             $data = BuktiDasar::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
             return response()->json(['success' => true, 'data' => $data], 200);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal server.'], 500);
+            return response()->json(['success' => false, 'message' => 'Gagal mengambil data.'], 500);
         }
     }
 
+    // STORE (UPLOAD) - LOGIC BARU
     public function storeAjax(Request $request)
     {
         // 1. Validasi
         $validator = Validator::make($request->all(), [
             'id_data_sertifikasi_asesi' => 'required|integer',
-            'jenis_dokumen' => 'required|string|max:255',
-            'keterangan' => 'nullable|string|max:255',
-            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'jenis_dokumen' => 'required|string',
+            'keterangan' => 'nullable|string',
+            'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         if ($validator->fails()) {
@@ -42,97 +41,206 @@ class BuktiKelengkapanController extends Controller
         }
 
         try {
-            // 2. Cari ID Asesi untuk nama folder
             $sertifikasi = DataSertifikasiAsesi::find($request->id_data_sertifikasi_asesi);
-            if (!$sertifikasi) {
-                return response()->json(['success' => false, 'message' => 'Data sertifikasi tidak valid.'], 404);
-            }
+            if (!$sertifikasi) return response()->json(['success' => false, 'message' => 'Data tidak valid.'], 404);
+            
             $idAsesi = $sertifikasi->id_asesi;
+            $jenisDokumen = $request->jenis_dokumen; // Ini string panjang dari Frontend
 
-            // 3. Cek Data Lama (Logic 'LIKE' ini OK untuk struktur tabelmu sekarang)
-            // Pastikan pakai Model yang benar
-            $existing = BuktiDasar::where('id_data_sertifikasi_asesi', $request->id_data_sertifikasi_asesi)
-                ->where('keterangan', 'LIKE', "%{$request->jenis_dokumen}%") 
-                ->first();
+            // ====================================================
+            // A. TENTUKAN KATEGORI (Dasar vs Administratif)
+            // ====================================================
+            // Cek keyword untuk menentukan dia masuk "Dasar"
+            $isDasar = false;
+            $dasarKeywords = ['Foto Background Merah', 'KTP'];
+            
+            foreach ($dasarKeywords as $keyword) {
+                if (str_contains($jenisDokumen, $keyword)) {
+                    $isDasar = true;
+                    break;
+                }
+            }
+            $kategori = $isDasar ? 'dasar' : 'administratif';
 
-            $pathDatabase = $existing ? $existing->bukti_dasar : null; // Sesuai kolom DB 'bukti_dasar'
+            // ====================================================
+            // B. CEK MULTI UPLOAD
+            // ====================================================
+            $multiKeywords = [
+                'Pengalaman Kerja', 
+                'Curriculum Vitae',
+                'Surat Keterangan Kerja', 
+                'Portofolio', 
+                'Sertifikat Pelatihan',
+                'Sertifikat Kompetensi'
+            ];
+            
+            $isMultiUpload = false;
+            foreach ($multiKeywords as $keyword) {
+                if (str_contains($jenisDokumen, $keyword)) {
+                    $isMultiUpload = true;
+                    break;
+                }
+            }
 
-            // 4. Proses Upload File
+            // ====================================================
+            // C. LOGIC PENAMAAN (FULL NAME - JANGAN DIPOTONG)
+            // ====================================================
+            $finalNamaDokumen = $jenisDokumen;
+
+            if ($isMultiUpload) {
+                // Hitung dokumen sejenis yang sudah ada di database
+                // Kita pakai 'LIKE' query dengan awalan string biar akurat
+                // Ambil 15 karakter pertama aja buat pencocokan biar aman (ex: "Sertifikat Pela...")
+                $prefix = substr($jenisDokumen, 0, 15); 
+
+                $count = DataPortofolio::where('id_data_sertifikasi_asesi', $request->id_data_sertifikasi_asesi)
+                            ->where('persyaratan_administratif', 'LIKE', "{$prefix}%")
+                            ->count();
+                
+                $nextIndex = $count + 1;
+                
+                // [REVISI] Gunakan Nama Full + Index
+                // Contoh Hasil: "Sertifikat Pelatihan / Sertifikat Kompetensi 1"
+                $finalNamaDokumen = "{$jenisDokumen} {$nextIndex}";
+                
+                // Tambahan keterangan user (jika ada)
+                if ($request->keterangan) {
+                    $finalNamaDokumen .= " ({$request->keterangan})";
+                }
+            }
+
+            // ====================================================
+            // D. CEK UPDATE ATAU CREATE (Khusus Single)
+            // ====================================================
+            $existingBukti = null;
+            $existingPortofolio = null;
+
+            if (!$isMultiUpload) {
+                // Cari di Portofolio
+                $existingPortofolio = DataPortofolio::where('id_data_sertifikasi_asesi', $request->id_data_sertifikasi_asesi)
+                    ->where(function($q) use ($jenisDokumen) {
+                        $q->where('persyaratan_dasar', $jenisDokumen)
+                          ->orWhere('persyaratan_administratif', $jenisDokumen);
+                    })->first();
+
+                // Cari di BuktiDasar
+                $existingBukti = BuktiDasar::where('id_data_sertifikasi_asesi', $request->id_data_sertifikasi_asesi)
+                    ->where('keterangan', $jenisDokumen)
+                    ->first();
+            }
+
+            // ====================================================
+            // E. PROSES UPLOAD FILE
+            // ====================================================
+            $pathDatabase = $existingBukti ? $existingBukti->bukti_dasar : null;
+
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                
-                // [PERBAIKAN] Nama file jadi konsisten sesuai jenis dokumen
                 $extension = $file->getClientOriginalExtension();
-                $safeName = str_replace(' ', '_', $request->jenis_dokumen); 
-                $filename = "{$safeName}.{$extension}"; 
                 
-                // Secure Storage: bukti_dasar/{idAsesi}
+                // [PENTING] Nama File Fisik HARUS Aman (Ganti tanda baca aneh jadi underscore)
+                // Tapi nama di Database tetep cantik sesuai $finalNamaDokumen
+                $safeName = Str::slug(substr($jenisDokumen, 0, 50), '_'); 
+                $filename = "{$safeName}_" . time() . "_" . Str::random(3) . ".{$extension}";
+                
                 $folderPath = "bukti_dasar/{$idAsesi}";
                 $relPath = $folderPath . '/' . $filename;
-                
-                // Hapus file lama DULU jika ada
-                if ($existing && $existing->bukti_dasar) {
-                     if (Storage::disk('private_docs')->exists($existing->bukti_dasar)) {
-                        Storage::disk('private_docs')->delete($existing->bukti_dasar);
+
+                if ($existingBukti && $existingBukti->bukti_dasar) {
+                     if (Storage::disk('private_docs')->exists($existingBukti->bukti_dasar)) {
+                        Storage::disk('private_docs')->delete($existingBukti->bukti_dasar);
                      }
                 }
 
-                // Simpan ke private_docs
                 Storage::disk('private_docs')->putFileAs($folderPath, $file, $filename);
-                
-                // Update path database (relative to private_docs root)
                 $pathDatabase = $relPath;
             }
 
-            // 5. Simpan ke Database
-            // Format keterangan: "Jenis Dokumen - Keterangan User"
-            $finalKeterangan = $request->jenis_dokumen . ($request->keterangan ? " - " . $request->keterangan : "");
+            // ====================================================
+            // F. SIMPAN KE DATABASE
+            // ====================================================
 
-            if ($existing) {
-                // Update
-                $existing->update([
+            // 1. TABEL BUKTI DASAR (Simpan Path & Keterangan Full)
+            if ($existingBukti) {
+                $existingBukti->update([
                     'bukti_dasar' => $pathDatabase,
-                    'status_kelengkapan' => 'memenuhi',
-                    'keterangan' => $finalKeterangan, // Update keterangan juga biar sinkron
+                    'keterangan' => $isMultiUpload ? $finalNamaDokumen : $jenisDokumen,
+                    'status_kelengkapan' => 'memenuhi'
                 ]);
+                $buktiRecord = $existingBukti;
             } else {
-                // Create Baru
-                $existing = BuktiDasar::create([
+                $buktiRecord = BuktiDasar::create([
                     'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
                     'bukti_dasar' => $pathDatabase,
+                    'keterangan' => $isMultiUpload ? $finalNamaDokumen : $jenisDokumen,
                     'status_kelengkapan' => 'memenuhi',
-                    'keterangan' => $finalKeterangan,
                     'status_validasi' => false
+                ]);
+            }
+
+            // 2. TABEL PORTOFOLIO (Simpan Nama Dokumen Full, Path NULL)
+            $kolomDasar = null;
+            $kolomAdmin = null;
+
+            if ($kategori == 'dasar') {
+                $kolomDasar = $isMultiUpload ? $finalNamaDokumen : $jenisDokumen;
+            } else {
+                $kolomAdmin = $isMultiUpload ? $finalNamaDokumen : $jenisDokumen;
+            }
+
+            if ($existingPortofolio) {
+                $existingPortofolio->update([
+                    'persyaratan_dasar' => $kolomDasar,
+                    'persyaratan_administratif' => $kolomAdmin
+                ]);
+            } else {
+                DataPortofolio::create([
+                    'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
+                    'persyaratan_dasar' => $kolomDasar,
+                    'persyaratan_administratif' => $kolomAdmin
                 ]);
             }
 
             return response()->json([
                 'success' => true, 
-                'message' => 'Berhasil diupload! (Secure)',
-                'path' => $pathDatabase,
-                'data' => $existing
+                'message' => 'Berhasil disimpan!',
+                'data' => $buktiRecord
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error('API (Bukti): Error - ' . $e->getMessage());
+            Log::error('API Error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Server Error: ' . $e->getMessage()], 500);
         }
     }
 
-    // ... (Fungsi deleteAjax TETAP SAMA) ...
-     public function deleteAjax($id)
+    // DELETE AJAX
+    public function deleteAjax($id)
     {
          try {
-            $data = BuktiDasar::find($id);
-            if (!$data) return response()->json(['success'=>false], 404);
+            $bukti = BuktiDasar::find($id);
+            if (!$bukti) return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
             
-            if ($data->bukti_dasar && Storage::disk('private_docs')->exists($data->bukti_dasar)) {
-                Storage::disk('private_docs')->delete($data->bukti_dasar);
+            $namaDokumen = $bukti->keterangan; 
+            $idSertifikasi = $bukti->id_data_sertifikasi_asesi;
+
+            // Hapus Fisik
+            if ($bukti->bukti_dasar && Storage::disk('private_docs')->exists($bukti->bukti_dasar)) {
+                Storage::disk('private_docs')->delete($bukti->bukti_dasar);
             }
-            $data->delete();
-            return response()->json(['success' => true]);
+
+            // Hapus Portofolio (Match NULLABLE columns)
+            DataPortofolio::where('id_data_sertifikasi_asesi', $idSertifikasi)
+                ->where(function($query) use ($namaDokumen) {
+                    $query->where('persyaratan_dasar', $namaDokumen)
+                          ->orWhere('persyaratan_administratif', $namaDokumen);
+                })->delete();
+
+            // Hapus BuktiDasar
+            $bukti->delete();
+
+            return response()->json(['success' => true, 'message' => 'Dokumen berhasil dihapus.']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false], 500);
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus data.'], 500);
         }
     }
 
