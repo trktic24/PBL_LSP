@@ -11,17 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        ::-webkit-scrollbar {
-            width: 0;
-        }
-
-        [x-cloak] {
-            display: none !important;
-        }
+        body { font-family: 'Poppins', sans-serif; }
+        ::-webkit-scrollbar { width: 0; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 
@@ -34,13 +26,33 @@
 
             <div class="flex flex-col xl:flex-row justify-between items-end mb-8 gap-6">
                 <div class="w-full xl:max-w-lg">
-                    <p class="text-sm text-gray-500 mb-2">Master Schedule > Daftar Hadir</p>
-                    <a href="{{ route('admin.master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-base font-medium w-fit transition mb-4">
+                     @php
+                        // [PERBAIKAN 1] Logika Tombol Kembali yang Kuat
+                        $routeKembali = route('admin.master_schedule'); // Default ke Master
+                        $labelKembali = 'Master Schedule';
+
+                        if (request('from') == 'schedule_admin') {
+                            // Pastikan route ini ada di web.php
+                            $routeKembali = route('admin.schedule_admin'); 
+                            $labelKembali = 'Schedule Calendar';
+                        }
+                    @endphp
+
+                    <p class="text-sm text-gray-500 mb-2">
+                        {{ $labelKembali }} > Daftar Hadir
+                    </p>
+
+                    <a href="{{ $routeKembali }}" class="flex items-center text-gray-700 hover:text-blue-600 text-base font-medium w-fit transition mb-4">
                         <i class="fas fa-arrow-left mr-2"></i> Kembali
                     </a>
                     <h2 class="text-3xl font-bold text-gray-900 mb-6">Daftar Hadir Peserta</h2>
 
                     <form action="{{ route('admin.schedule.attendance', $jadwal->id_jadwal) }}" method="GET" class="w-full max-w-sm" x-data="{ search: '{{ request('search', '') }}' }">
+                        {{-- [PERBAIKAN 2] Bawa parameter 'from' saat searching agar tombol back tidak rusak --}}
+                        @if(request('from'))
+                            <input type="hidden" name="from" value="{{ request('from') }}">
+                        @endif
+                        
                         <div class="relative">
                             <input type="text" name="search" x-model="search" placeholder="Search..." class="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
                             <button type="submit" class="absolute left-3 top-0 h-full text-gray-400 hover:text-gray-600"><i class="fas fa-search"></i></button>
@@ -74,7 +86,13 @@
                                     </div>
                                     <div>
                                         <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider">Asesor</span>
-                                        <span class="font-medium text-gray-900">{{ $jadwal->asesor->nama_lengkap }}</span>
+                                        
+                                        {{-- [PERBAIKAN 3] Link ke Profil Asesor --}}
+                                        <a href="{{ route('admin.asesor.profile', $jadwal->id_asesor) }}" 
+                                           class="font-medium text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                                           title="Lihat Profil Asesor">
+                                            {{ $jadwal->asesor->nama_lengkap }}
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="flex items-center">
@@ -109,7 +127,12 @@
                         <tr class="divide-x divide-gray-200 border-b border-gray-200">
 
                             @php
-                            $baseParams = ['search' => request('search'), 'per_page' => request('per_page')];
+                                // [PERBAIKAN 4] Bawa 'from' saat sorting
+                                $baseParams = [
+                                    'search' => request('search'), 
+                                    'per_page' => request('per_page'),
+                                    'from' => request('from') 
+                                ];
                             @endphp
 
                             <th class="px-4 py-3 font-semibold w-16 text-center">
@@ -173,8 +196,12 @@
                     <tbody class="divide-y divide-gray-200">
                         @forelse ($pendaftar as $index => $data)
 
+                        {{-- 
+                            [PERBAIKAN 5] Pass 'sertifikasi_id' saat klik baris tabel.
+                            Ini PENTING agar sidebar di halaman profil tahu jadwal mana yang aktif.
+                        --}}
                         <tr class="hover:bg-blue-50 transition divide-x divide-gray-200 cursor-pointer group"
-                            onclick="window.location='{{ route('admin.asesi.profile.settings', $data->asesi->id_asesi) }}'">
+                            onclick="window.location='{{ route('admin.asesi.profile.settings', ['id_asesi' => $data->asesi->id_asesi, 'sertifikasi_id' => $data->id_data_sertifikasi_asesi]) }}'">
 
                             <td class="px-4 py-4 text-center font-medium text-gray-500">
                                 {{ $data->id_data_sertifikasi_asesi }}
