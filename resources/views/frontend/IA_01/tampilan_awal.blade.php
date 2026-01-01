@@ -39,7 +39,7 @@
                     <div class="grid grid-cols-[100px_10px_1fr] border-b border-gray-800 p-2 items-center">
                         <div class="font-semibold text-gray-600">Judul</div>
                         <div>:</div>
-                        <div class="font-bold uppercase">{{ $kelompok->nama_kelompok_pekerjaan ?? '-' }}</div>
+                        <div class="font-bold uppercase">{{ $skema->nama_skema ?? '-' }}</div>
                     </div>
                     <div class="grid grid-cols-[100px_10px_1fr] p-2 items-center">
                         <div class="font-semibold text-gray-600">Tanggal</div>
@@ -136,7 +136,7 @@
                 </thead>
                 <tbody class="align-top">
                     @php
-                        $units = $kelompok->unitKompetensis ?? [];
+                        $units = $kelompok->unitKompetensi ?? [];
                         $totalUnits = max(count($units), 1);
                     @endphp
 

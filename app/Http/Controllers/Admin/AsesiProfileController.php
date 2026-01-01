@@ -7,6 +7,7 @@ use App\Models\Asesi;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\BuktiDasar;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class AsesiProfileController extends Controller
@@ -34,13 +35,16 @@ class AsesiProfileController extends Controller
         return $query->latest('created_at')->first();
     }
 
-    public function settings($id_asesi, $id_sertifikasi = null) 
+    public function settings(Request $request, $id_asesi) 
     {
+        // 1. Tangkap ID sertifikasi dari URL (?sertifikasi_id=55)
+        $id_sertifikasi = $request->input('sertifikasi_id');
+
         $asesi = $this->getAsesi($id_asesi);
-        // Ambil sertifikasi acuan untuk Sidebar
+        
+        // 2. Kirim ke helper
         $sertifikasiAcuan = $this->getSertifikasiAcuan($id_asesi, $id_sertifikasi);
 
-        // Kirim $sertifikasiAcuan agar View dapat membuat link Sidebar yang benar
         return view('admin.profile_asesi.asesi_profile_settings', compact('asesi', 'sertifikasiAcuan'));
     }
 
@@ -48,9 +52,10 @@ class AsesiProfileController extends Controller
 
     // ... (kode awal)
 
-    public function form($id_asesi, $id_sertifikasi = null)
+    public function form(Request $request, $id_asesi)
     {
-        // 1. Cari Data Sertifikasi (Ganti $pendaftaran menjadi $sertifikasi)
+        $id_sertifikasi = $request->input('sertifikasi_id'); // Tangkap ID
+
         $sertifikasiAcuan = $this->getSertifikasiAcuan($id_asesi, $id_sertifikasi);
 
         $activeForms = [];
@@ -116,11 +121,11 @@ class AsesiProfileController extends Controller
     /**
      * Menampilkan Halaman Bukti Kelengkapan
      */
-    public function bukti($id_asesi, $id_sertifikasi = null)
+    public function bukti(Request $request, $id_asesi)
     {
+        $id_sertifikasi = $request->input('sertifikasi_id'); // Tangkap ID
+
         $asesi = Asesi::with(['buktiDasar', 'dataPekerjaan'])->findOrFail($id_asesi);
-        
-        // Ambil Sertifikasi Acuan untuk konteks Skema di Sidebar/Bukti
         $sertifikasiAcuan = $this->getSertifikasiAcuan($id_asesi, $id_sertifikasi);
 
         $persyaratan = [
@@ -187,15 +192,16 @@ class AsesiProfileController extends Controller
 
             if ($request->hasFile('file')) {
                 // 1. Hapus File Lama
-                if (File::exists(public_path($bukti->bukti_dasar))) {
-                    File::delete(public_path($bukti->bukti_dasar));
+                if (Storage::disk('private_docs')->exists($bukti->bukti_dasar)) {
+                    Storage::disk('private_docs')->delete($bukti->bukti_dasar);
                 }
 
                 // 2. Upload File Baru
                 $file = $request->file('file');
                 $filename = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
-                $path = 'uploads/bukti_asesi/' . $id_asesi;
-                $file->move(public_path($path), $filename);
+                $path = 'bukti_asesi/' . $id_asesi;
+                
+                Storage::disk('private_docs')->putFileAs($path, $file, $filename);
 
                 // 3. Update Database
                 // Ambil jenis dokumen lama dari keterangan agar konsisten
@@ -222,8 +228,8 @@ class AsesiProfileController extends Controller
 
         if ($bukti) {
             // Hapus File Fisik
-            if (File::exists(public_path($bukti->bukti_dasar))) {
-                File::delete(public_path($bukti->bukti_dasar));
+            if (Storage::disk('private_docs')->exists($bukti->bukti_dasar)) {
+                Storage::disk('private_docs')->delete($bukti->bukti_dasar);
             }
 
             $bukti->delete();
@@ -244,8 +250,8 @@ class AsesiProfileController extends Controller
 
             if ($request->hasFile('file_ttd')) {
                 // Hapus file lama jika ada
-                if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
-                    File::delete(public_path($asesi->tanda_tangan));
+                if ($asesi->tanda_tangan && Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
+                    Storage::disk('private_docs')->delete($asesi->tanda_tangan);
                 }
 
                 $file = $request->file('file_ttd');
@@ -261,13 +267,13 @@ class AsesiProfileController extends Controller
 
                 // Simpan Path ke Database
                 $asesi->update([
-                    'tanda_tangan' => $path . '/' . $filename
+                    'tanda_tangan' => $storedPath
                 ]);
 
                 return response()->json([
                     'success' => true,
                     'message' => 'Tanda tangan berhasil diupload',
-                    'url' => asset($path . '/' . $filename)
+                    'url' => route('secure.file', ['path' => $storedPath])
                 ]);
             }
 
@@ -283,9 +289,9 @@ class AsesiProfileController extends Controller
             $asesi = Asesi::findOrFail($id_asesi);
 
             if ($asesi->tanda_tangan) {
-                // Hapus File Fisik
-                if (File::exists(public_path($asesi->tanda_tangan))) {
-                    File::delete(public_path($asesi->tanda_tangan));
+                // Hapus File Fisik (Path sudah lengkap di DB)
+                if (Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
+                    Storage::disk('private_docs')->delete($asesi->tanda_tangan);
                 }
 
                 // Hapus path di DB
@@ -300,13 +306,11 @@ class AsesiProfileController extends Controller
         }
     }
 
-    public function tracker($id_asesi, $id_sertifikasi = null)
+    public function tracker(Request $request, $id_asesi)
     {
-        // 1. Ambil data asesi dasar (tanpa relasi dalam, karena sertifikasi diurus helper)
+        $id_sertifikasi = $request->input('sertifikasi_id'); // Tangkap ID
+
         $asesi = $this->getAsesi($id_asesi); 
-        
-        // 2. Ambil Sertifikasi Acuan dengan semua relasi yang dibutuhkan Sidebar/Tracker
-        // Helper getSertifikasiAcuan sudah memuat relasi: jadwal.skema.listForm, jadwal.masterTuk, jadwal.asesor
         $sertifikasiAcuan = $this->getSertifikasiAcuan($id_asesi, $id_sertifikasi);
 
         // 3. Kirim ke View

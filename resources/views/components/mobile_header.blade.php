@@ -64,10 +64,10 @@
     <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-12 z-30">
         <div class="w-24 h-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white ring-1 ring-gray-100">
             @if($image)
-                <img src="{{ $image }}" 
+                <img src="{{ $image }}"
+                     onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';" 
                      alt="Logo" 
-                     class="w-full h-full object-cover"
-                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($title) }}&background=0D8ABC&color=fff'">
+                     class="w-full h-full object-cover">
             @else
                 <img src="https://ui-avatars.com/api/?name={{ urlencode($title) }}&background=0D8ABC&color=fff" 
                      alt="Placeholder" 

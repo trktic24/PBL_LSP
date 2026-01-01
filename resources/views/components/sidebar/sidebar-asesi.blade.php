@@ -42,7 +42,7 @@
     </div>
 
     <!-- Tombol Kembali -->
-    <a href="{{$backUrl}}"
+    <a href="javascript:history.back()"
        class="flex items-center space-x-2 text-sm font-medium opacity-80 hover:opacity-100 mb-10 transition">
         <svg xmlns="http://www.w3.org/2000/svg"
              class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -55,7 +55,8 @@
     <!-- Profil Skema -->
     <div class="flex flex-col items-center text-center">
         <div class="relative w-36 h-36 mb-4">
-            <img src="{{ $jadwal->skema->gambar ? asset('uploads/skema/' . $jadwal->skema->gambar_skema) : asset('images/default_skema.jpg') }}"
+            <img src="{{ $jadwal->skema->gambar ? asset('storage/' . $jadwal->skema->gambar) : asset('images/default_pic.jpeg') }}"
+                 onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';"
                  alt="{{ $jadwal->skema->nama_skema ?? 'Skema' }}"
                  class="w-full h-full object-cover rounded-full border-4 border-white shadow-md">
         </div>

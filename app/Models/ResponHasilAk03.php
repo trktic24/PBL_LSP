@@ -13,9 +13,12 @@ class ResponHasilAk03 extends Model
     
     // Pastikan field ini sesuai dengan kolom di tabel Anda
     protected $fillable = [
+        'id_data_sertifikasi_asesi',
         'id_poin_ak03',
         'hasil',
         'catatan'
     ];
+
+    protected $guarded = [];
 }
 

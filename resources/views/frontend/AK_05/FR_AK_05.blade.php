@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-skema')
 
 @section('content')
     {{-- Style Internal untuk konsistensi UI --}}

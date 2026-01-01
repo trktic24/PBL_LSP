@@ -38,7 +38,8 @@
           
           <div class="mt-6 w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] bg-gray-100 flex items-center justify-center">
              @if($asesor->pas_foto)
-                <img src="{{ Storage::url($asesor->pas_foto) }}" alt="Foto Profil" class="w-full h-full object-cover">
+                <img src="{{ Storage::url($asesor->pas_foto) }}" alt="Foto Profil" class="w-full h-full object-cover"
+                     onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
              @else
                 <span class="text-5xl font-bold text-gray-400 select-none">
                     {{ strtoupper(substr($asesor->nama_lengkap, 0, 2)) }}

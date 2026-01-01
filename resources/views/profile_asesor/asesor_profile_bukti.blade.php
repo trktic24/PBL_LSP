@@ -93,7 +93,7 @@
                   {{-- Action Buttons --}}
                   <div class="flex items-center space-x-2">
                     {{-- Tombol View --}}
-                    <a href="{{ Storage::url($doc['file_path']) }}" target="_blank"
+                    <a href="{{ route('secure.file', ['path' => $doc['file_path']]) }}" target="_blank"
                        class="bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110" 
                        title="Lihat File">
                       <i class="fas fa-eye text-xs"></i>
@@ -179,7 +179,10 @@
           <div class="flex flex-col items-center justify-center">
               <div class="group relative mt-2 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl w-full max-w-md h-48 flex items-center justify-center bg-gray-50 transition-colors duration-300">
                   @if($asesor->tanda_tangan)
-                    <img src="{{ Storage::url($asesor->tanda_tangan) }}" alt="Tanda Tangan" class="object-contain h-32 transition-transform duration-300 group-hover:scale-105">
+                    <img src="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}" 
+                         alt="Tanda Tangan" 
+                         class="object-contain h-32 transition-transform duration-300 group-hover:scale-105"
+                         onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
                   @else
                     <div class="text-center p-4">
                         <i class="fas fa-signature text-gray-300 text-4xl mb-2"></i>

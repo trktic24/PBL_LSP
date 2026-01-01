@@ -9,24 +9,12 @@
     {{-- HERO SECTION: Menampilkan detail utama Skema --}}
     <section class="max-w-screen-xl mx-auto px-8 mt-20">
         <div class="relative h-[500px] rounded-[2rem] overflow-hidden shadow-xl">
-             @php
-                $detailImgSrc = 'images/placeholder_default.jpg';
-                if ($skema->gambar) {
-                    if (str_starts_with($skema->gambar, 'images/')) {
-                        if (file_exists(public_path($skema->gambar))) {
-                            $detailImgSrc = $skema->gambar;
-                        }
-                    } else {
-                         if (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
-                            $detailImgSrc = 'images/skema/foto_skema/' . $skema->gambar;
-                        } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
-                            $detailImgSrc = 'images/skema/' . $skema->gambar;
-                        }
-                    }
-                }
+            @php
+                $detailImgSrc = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default_pic.jpeg');
             @endphp
-            {{-- Menggunakan $skema->gambar (Menggunakan isset untuk keamanan) --}}
-            <img src="{{ asset($detailImgSrc) }}"
+            
+            <img src="{{ $detailImgSrc }}"
+                 onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';"
                 alt="{{ $skema->nama_skema ?? 'Skema Sertifikasi' }}"
                 class="w-full h-full object-cover">
 

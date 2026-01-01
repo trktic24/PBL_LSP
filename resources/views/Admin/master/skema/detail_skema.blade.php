@@ -70,21 +70,10 @@
         @endif
 
         @php
-            $bgImage = 'images/default.jpg';
-            if ($skema->gambar) {
-                if (str_starts_with($skema->gambar, 'images/')) {
-                     if (file_exists(public_path($skema->gambar))) {
-                        $bgImage = $skema->gambar;
-                    }
-                } elseif (file_exists(public_path('images/skema/foto_skema/' . $skema->gambar))) {
-                    $bgImage = 'images/skema/foto_skema/' . $skema->gambar;
-                } elseif (file_exists(public_path('images/skema/' . $skema->gambar))) {
-                    $bgImage = 'images/skema/' . $skema->gambar;
-                }
-            }
+            $bgImage = $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default.jpg');
         @endphp
         <div class="relative rounded-xl overflow-hidden shadow-xl mb-8 border border-gray-200">
-            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset($bgImage) }}'); filter: brightness(0.3);"></div>
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ $bgImage }}'); filter: brightness(0.3);"></div>
 
             <div class="relative p-6 md:p-10 text-white flex flex-col justify-end min-h-[300px]">
                 <div class="absolute top-4 right-4 text-base font-semibold px-3 py-1 rounded-full bg-blue-600/80 backdrop-blur-sm">

@@ -12,11 +12,19 @@
             Dipublikasikan pada: {{ $berita->created_at->format('d F Y') }}
         </p>
         
+        {{-- Logic Penentuan Gambar Berita --}}
+        @php
+            $gambarBerita = 'images/default_pic.jpeg'; 
+            if ($berita->gambar) {
+                $gambarBerita = asset('storage/' . $berita->gambar);
+            }
+        @endphp
+
         {{-- Gambar Utama --}}
-        <img src="{{ asset('storage/berita/' . $berita->gambar) }}" 
+        <img src="{{ asset($gambarBerita) }}" 
+             onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';" 
              alt="{{ $berita->judul }}" 
              class="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg mb-8">
-        
         {{-- Konten Berita (Dari Database) --}}
         <div class="text-gray-800 text-lg leading-relaxed space-y-6">
             {!! nl2br(e($berita->isi)) !!}

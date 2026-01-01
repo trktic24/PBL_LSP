@@ -38,7 +38,7 @@
     </div>
 
     {{-- Tombol --}}
-    <a href="{{ route('home') }}"
+    <a href="{{ route('asesi.profile.tracker') }}"
        class="px-10 md:px-12 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-full shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus:ring-2 focus:ring-blue-300">
         Selesai
     </a>

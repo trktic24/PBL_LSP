@@ -7,6 +7,7 @@ use App\Models\Skema;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class SkemaController extends Controller
@@ -101,16 +102,16 @@ class SkemaController extends Controller
         if ($request->hasFile('SKKNI')) {
             $file = $request->file('SKKNI');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/skema/skkni'), $filename);
-            $validatedData['SKKNI'] = 'images/skema/skkni/' . $filename;
+            // Simpan FULL PATH (skema/skkni/filename.pdf)
+            $validatedData['SKKNI'] = $file->storeAs('skema/skkni', $filename, 'public');
         }
 
         // Upload Gambar
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/skema/foto_skema'), $filename);
-            $validatedData['gambar'] = 'images/skema/foto_skema/' . $filename;
+            // Simpan FULL PATH (skema/foto_skema/filename.jpg)
+            $validatedData['gambar'] = $file->storeAs('skema/foto_skema', $filename, 'public');
         }
 
         $skema = Skema::create($validatedData);
@@ -151,24 +152,24 @@ class SkemaController extends Controller
 
         // Update File SKKNI
         if ($request->hasFile('SKKNI')) {
-            if ($skema->SKKNI && File::exists(public_path($skema->SKKNI))) {
-                File::delete(public_path($skema->SKKNI));
+            if ($skema->SKKNI && Storage::disk('public')->exists($skema->SKKNI)) {
+                Storage::disk('public')->delete($skema->SKKNI);
             }
             $file = $request->file('SKKNI');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/skema/skkni'), $filename);
-            $validatedData['SKKNI'] = 'images/skema/skkni/' . $filename;
+            // Simpan FULL PATH
+            $validatedData['SKKNI'] = $file->storeAs('skema/skkni', $filename, 'public');
         }
 
         // Update Gambar
         if ($request->hasFile('gambar')) {
-            if ($skema->gambar && File::exists(public_path($skema->gambar))) {
-                File::delete(public_path($skema->gambar));
+            if ($skema->gambar && Storage::disk('public')->exists($skema->gambar)) { // Hapus prefix manual
+                Storage::disk('public')->delete($skema->gambar);
             }
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/skema/foto_skema'), $filename);
-            $validatedData['gambar'] = 'images/skema/foto_skema/' . $filename;
+            // Simpan FULL PATH
+            $validatedData['gambar'] = $file->storeAs('skema/foto_skema', $filename, 'public');
         }
 
         $skema->update($validatedData);
@@ -186,12 +187,12 @@ class SkemaController extends Controller
         $nama = $skema->nama_skema;
         $idSkema = $skema->id_skema;
 
-        if ($skema->SKKNI && File::exists(public_path($skema->SKKNI))) {
-            File::delete(public_path($skema->SKKNI));
+        if ($skema->SKKNI && Storage::disk('public')->exists($skema->SKKNI)) {
+            Storage::disk('public')->delete($skema->SKKNI);
         }
 
-        if ($skema->gambar && File::exists(public_path($skema->gambar))) {
-            File::delete(public_path($skema->gambar));
+        if ($skema->gambar && Storage::disk('public')->exists($skema->gambar)) {
+            Storage::disk('public')->delete($skema->gambar);
         }
 
         $skema->delete();

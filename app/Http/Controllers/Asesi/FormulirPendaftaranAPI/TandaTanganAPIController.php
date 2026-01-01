@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\File;
 use App\Http\Resources\AsesiResource;
 use App\Http\Resources\AsesiTTDResource;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class TandaTanganAPIController extends Controller
 {
@@ -49,20 +50,12 @@ class TandaTanganAPIController extends Controller
                 $image_base64 = base64_decode($image_parts[1]);
 
                 $fileName = 'tanda_tangan_' . $id_asesi . '.png'; 
-                $folderPath = 'images/tanda_tangan/';
-                $filePath = public_path($folderPath . $fileName);
-
-                if (!File::exists(public_path($folderPath))) {
-                    File::makeDirectory(public_path($folderPath), 0755, true);
-                }
+                $folderPath = 'ttd_asesi'; // Standardized folder
                 
-                if ($asesi->tanda_tangan && File::exists(public_path($asesi->tanda_tangan))) {
-                    File::delete(public_path($asesi->tanda_tangan));
-                }
-
-                File::put($filePath, $image_base64);
+                // Store using private_docs disk
+                Storage::disk('private_docs')->put($folderPath . '/' . $fileName, $image_base64);
                 
-                $asesi->tanda_tangan = $folderPath . $fileName;
+                $asesi->tanda_tangan = $folderPath . '/' . $fileName;
                 $asesi->save();
                 
             } else {

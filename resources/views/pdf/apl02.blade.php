@@ -131,7 +131,7 @@
             <td style="width: 50%; text-align: center;">
                 Asesi,
                 <br><br><br><br>
-                <img src="{{ public_path($asesi->tanda_tangan) }}" style="height: 100px; width: auto;">                
+                <img src="{{ storage_path('app/private_uploads/' . $asesi->tanda_tangan) }}" style="height: 100px; width: auto;">                
                 <br><br><br><br>
                 <strong>{{ $asesi->nama_lengkap ?? '(.......................)' }}</strong>
                 <br>{{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
@@ -139,7 +139,7 @@
             <td style="width: 50%; text-align: center;">
                 Asesor,
                 <br><br><br><br>
-                <img src="{{ public_path($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="height: 100px; width: auto;">
+                <img src="{{ storage_path('app/private_uploads/' . $sertifikasi->jadwal->asesor->tanda_tangan) }}" style="height: 100px; width: auto;">
                 <br><br><br><br>
                 <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
                 <br>{{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}

@@ -3,7 +3,7 @@
 
 @php
     // Ambil data sertifikasi yang paling utama/terbaru (sesuai logic Controller Admin)
-    $sertifikasi = $asesi->dataSertifikasi->first();
+    $sertifikasi = $sertifikasiAcuan;
 
     // --- DEFINISI LEVEL (SAMA DENGAN ASESI) ---
     $LVL_DAFTAR_SELESAI = 10;
@@ -113,14 +113,19 @@
     <main class="flex min-h-[calc(100vh-80px)]">
         
         @php
-            $firstSertifikasi = $asesi->dataSertifikasi->first();
-            $defaultBackUrl = route('admin.master_asesi'); 
-            $backUrl = $firstSertifikasi ? route('admin.schedule.attendance', $firstSertifikasi->id_jadwal) : $defaultBackUrl;
+            // [PERBAIKAN 2] Logic URL Kembali
+            $urlKembali = route('admin.master_asesi'); 
+
+            // Gunakan variable yang sudah didefinisikan di atas
+            if (isset($sertifikasi) && $sertifikasi) {
+                $urlKembali = route('admin.schedule.attendance', $sertifikasi->id_jadwal);
+            }
         @endphp
 
         <x-sidebar.sidebar_profile_asesi 
             :asesi="$asesi" 
-            :backUrl="$backUrl" 
+            :backUrl="$urlKembali" 
+            :activeSertifikasi="$sertifikasi"
         />
 
         {{-- 3. KONTEN UTAMA --}}
@@ -184,7 +189,7 @@
 
                                     @if ($level >= $LVL_DAFTAR_SELESAI)
                                         <p class="{{ $statusClassSelesai }}">Selesai Diisi Asesi</p>
-                                        <a href="{{ route('admin.asesi.form', ['id_asesi' => $asesi->id_asesi]) }}" 
+                                        <a href="{{ route('admin.asesi.profile.form', ['id_asesi' => $asesi->id_asesi, 'sertifikasi_id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
                                             class="{{ $btnBlue }} mr-2">
                                             <i class="fas fa-eye mr-1"></i> Lihat Data Asesi
                                         </a>

@@ -22,23 +22,29 @@ class TrackerController extends Controller
         $sertifikasi = null;
 
         // Default Flags View
-        $showIA02 = false; $showIA05 = false; $showIA06 = false; 
-        $showIA07 = false; $showIA09 = false; 
+        $showIA02 = false;
+        $showIA05 = false;
+        $showIA06 = false;
+        $showIA07 = false;
+        $showIA09 = false;
 
         // Status Flags
         $unlockAPL02 = false;
         $unlockAK01 = false;
         $unlockAsesmen = false; // Start Ujian
-        $isWaktuHabis = false;  // End Ujian -> Trigger AK.03
-        $unlockAK03 = false;    // Umpan Balik
-        $unlockHasil = false;   // Trigger Lihat Nilai
-        $unlockAK04 = false;    // Banding Asesmen
-        
+        $isWaktuHabis = false; // End Ujian -> Trigger AK.03
+        $unlockAK03 = false; // Umpan Balik
+        $unlockHasil = false; // Trigger Lihat Nilai
+        $unlockAK04 = false; // Banding Asesmen
+        $isAPL01Ditolak = false;
+        $isAPL02Ditolak = false;
+
         $isSudahHadir = false;
         $statusAPL01 = 'menunggu';
         $statusAPL02 = 'menunggu';
         $pesanWaktu = null;
         $pesanStatus = null;
+        $isTidakKompeten = false;
 
         if ($asesi) {
             $query = $asesi->dataSertifikasi()->with(['jadwal.skema.listForm', 'jadwal.asesor', 'daftarHadir']);
@@ -48,9 +54,19 @@ class TrackerController extends Controller
                 // --- 1. STATUS AWAL ---
                 $statusAPL01 = $sertifikasi->rekomendasi_apl01;
                 $statusAPL02 = $sertifikasi->rekomendasi_apl02;
-                if ($statusAPL01 == 'diterima') $unlockAPL02 = true;
-                if ($statusAPL02 == 'diterima') $unlockAK01 = true;
-                
+                if ($statusAPL01 == 'diterima') {
+                    $unlockAPL02 = true;
+                } elseif ($statusAPL01 == 'tidak diterima') {
+                    $isAPL01Ditolak = true;
+                    $unlockAPL02 = false;
+                }
+                if ($statusAPL02 == 'diterima') {
+                    $unlockAK01 = true;
+                } elseif ($statusAPL02 == 'tidak diterima') {
+                    $isAPL02Ditolak = true; // Trigger Merah APL 02
+                    $unlockAK01 = false;
+                }
+
                 $isSudahHadir = $sertifikasi->is_sudah_hadir;
                 $isAsesorVerified = $sertifikasi->rekomendasi_apl02 == 'diterima';
 
@@ -68,7 +84,7 @@ class TrackerController extends Controller
                 $jadwalDB = $sertifikasi->jadwal;
                 if ($jadwalDB) {
                     $tgl = Carbon::parse($jadwalDB->tanggal_pelaksanaan)->format('Y-m-d');
-                    
+
                     // Waktu Mulai
                     $jamMulai = Carbon::parse($jadwalDB->waktu_mulai)->format('H:i:s');
                     $waktuMulai = Carbon::parse($tgl . ' ' . $jamMulai);
@@ -104,18 +120,17 @@ class TrackerController extends Controller
                 // Cek apakah Asesor sudah input rekomendasi di AK.02
                 if (!is_null($sertifikasi->rekomendasi_hasil_asesmen_AK02)) {
                     $unlockHasil = true;
-                    $unlockAK04 = true; // Banding Kebuka bareng Hasil
+                    $unlockAK04 = true;
+
+                    // Cek Kompeten (K) atau Belum Kompeten (BK)
+                    if ($sertifikasi->rekomendasi_hasil_asesmen_AK02 == 'belum kompeten') {
+                        $isTidakKompeten = true; // Trigger Merah Hasil
+                    }
                 }
             }
         }
 
-        return view('asesi.tracker', compact(
-            'sertifikasi',
-            'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09',
-            'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04',
-            'statusAPL01', 'statusAPL02', 'isWaktuHabis',
-            'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus'
-        ));
+        return view('asesi.tracker', compact('sertifikasi', 'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09', 'unlockAPL02', 'unlockAK01', 'unlockAsesmen', 'unlockAK03', 'unlockAK04', 'statusAPL01', 'statusAPL02', 'isWaktuHabis', 'pesanWaktu', 'isSudahHadir', 'unlockHasil', 'pesanStatus', 'isAPL01Ditolak', 'isAPL02Ditolak', 'isTidakKompeten'));
     }
 
     /**
@@ -148,15 +163,20 @@ class TrackerController extends Controller
         $existing = DataSertifikasiAsesi::where('id_asesi', $asesi->id_asesi)->where('id_jadwal', $id_jadwal)->first();
 
         // Helper untuk redirect response
-        $redirectToTracker = function($jadwalId, $msg, $isError = false) use ($request) {
+        $redirectToTracker = function ($jadwalId, $msg, $isError = false) use ($request) {
             if ($request->expectsJson()) {
-                 return response()->json([
-                    'success' => !$isError,
-                    'redirect_url' => route('asesi.tracker', ['jadwal_id' => $jadwalId]),
-                    'message' => $msg,
-                ], $isError ? 409 : 200);
+                return response()->json(
+                    [
+                        'success' => !$isError,
+                        'redirect_url' => route('asesi.tracker', ['jadwal_id' => $jadwalId]),
+                        'message' => $msg,
+                    ],
+                    $isError ? 409 : 200,
+                );
             }
-            return redirect()->route('asesi.tracker', ['jadwal_id' => $jadwalId])->with($isError ? 'info' : 'success', $msg);
+            return redirect()
+                ->route('asesi.tracker', ['jadwal_id' => $jadwalId])
+                ->with($isError ? 'info' : 'success', $msg);
         };
 
         if ($existing) {
@@ -173,7 +193,6 @@ class TrackerController extends Controller
             ]);
 
             return $redirectToTracker($newSertifikasi->id_jadwal, 'Berhasil mendaftar! Selamat datang di halaman Tracker.');
-
         } catch (\Exception $e) {
             $msg = 'Terjadi kesalahan server saat mendaftar: ' . $e->getMessage();
             if ($request->expectsJson()) {
@@ -186,7 +205,7 @@ class TrackerController extends Controller
     public function pendaftaranSelesai($id_sertifikasi)
     {
         $user = Auth::user();
-        
+
         // Ambil sertifikasi spesifik berdasarkan ID & User yang login (biar aman)
         $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
             ->where('id_asesi', $user->asesi->id_asesi) // Pastikan punya dia
@@ -194,7 +213,7 @@ class TrackerController extends Controller
 
         return view('asesi.tunggu_or_berhasil.berhasil', [
             'sertifikasi' => $sertifikasi,
-            'asesi'       => $sertifikasi->asesi
+            'asesi' => $sertifikasi->asesi,
         ]);
     }
 
@@ -212,7 +231,7 @@ class TrackerController extends Controller
 
         return view('asesi.tunggu_or_berhasil.berhasil', [
             'sertifikasi' => $sertifikasi,
-            'asesi'       => $sertifikasi->asesi
+            'asesi' => $sertifikasi->asesi,
         ]);
     }
 
@@ -228,7 +247,7 @@ class TrackerController extends Controller
         // Pakai view universal yang tadi kita buat
         return view('asesi.tunggu_or_berhasil.berhasil', [
             'sertifikasi' => $sertifikasi,
-            'asesi'       => $sertifikasi->asesi
+            'asesi' => $sertifikasi->asesi,
         ]);
     }
 }

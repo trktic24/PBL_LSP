@@ -179,7 +179,9 @@
                     // Isi Tanda Tangan
                     if (data.tanda_tangan_valid) {
                         const img = document.createElement('img');
-                        img.src = `/${data.asesi.tanda_tangan}`;
+                        // Gunakan route secure.file untuk path
+                        const secureUrl = `{{ route('secure.file', ['path' => 'PLACEHOLDER']) }}`.replace('PLACEHOLDER', data.asesi.tanda_tangan);
+                        img.src = secureUrl;
                         img.alt = "Tanda Tangan Asesi";
                         img.className = "max-h-full max-w-full object-contain";
 

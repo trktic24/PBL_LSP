@@ -37,14 +37,7 @@
         @php
             $gambarSkema = null;
             if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) {
-                $gambar = $sertifikasi->jadwal->skema->gambar;
-                if (str_starts_with($gambar, 'images/')) {
-                    $gambarSkema = asset($gambar);
-                } elseif (file_exists(public_path('images/skema/foto_skema/' . $gambar))) {
-                    $gambarSkema = asset('images/skema/foto_skema/' . $gambar);
-                } else {
-                    $gambarSkema = asset('images/skema/' . $gambar);
-                }
+                 $gambarSkema = asset('storage/' . $sertifikasi->jadwal->skema->gambar);
             }
         @endphp
 
@@ -121,9 +114,9 @@
                     <div class="border-2 border-dashed border-gray-300 rounded-lg bg-white relative overflow-hidden h-64">
                         {{-- Preview Gambar --}}
                         <div id="signature-image-container" class="w-full h-full flex items-center justify-center {{ $asesi->tanda_tangan ? '' : 'hidden' }}">
-                            <img id="signature-image-display" 
-                                 src="{{ $asesi->tanda_tangan ? asset($asesi->tanda_tangan) : '' }}" 
-                                 class="max-h-full max-w-full object-contain p-4" alt="Tanda Tangan">
+                            <img id="signature-image-prev" 
+                                 src="{{ $asesi->tanda_tangan ? route('secure.file', ['path' => $asesi->tanda_tangan]) : '' }}" 
+                                 class="max-h-full max-w-full object-contain" />
                         </div>
 
                         {{-- Canvas --}}

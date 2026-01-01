@@ -24,13 +24,19 @@
   <main class="flex min-h-[calc(100vh-80px)]">
     
     @php
-        $firstSertifikasi = $asesi->dataSertifikasi->first();
-        $defaultBackUrl = route('admin.master_asesi'); 
+        // [PERBAIKAN] Logic URL Kembali & Context Sidebar
+        $urlKembali = route('admin.master_asesi'); 
+
+        // Gunakan $sertifikasiAcuan dari Controller agar link kembali sesuai jadwal
+        if (isset($sertifikasiAcuan) && $sertifikasiAcuan) {
+            $urlKembali = route('admin.schedule.attendance', $sertifikasiAcuan->id_jadwal);
+        }
     @endphp
 
     <x-sidebar.sidebar_profile_asesi 
         :asesi="$asesi" 
-        :backUrl="$firstSertifikasi ? route('admin.schedule.attendance', $firstSertifikasi->id_jadwal) : $defaultBackUrl" 
+        :backUrl="$urlKembali"
+        :activeSertifikasi="$sertifikasiAcuan" 
     />
 
     <section class="ml-[22%] flex-1 p-8 h-[calc(100vh-80px)] overflow-y-auto bg-gray-50">
@@ -213,12 +219,19 @@
         </div>
         {{-- BAGIAN UPLOAD TTD --}}
         <div class="flex flex-col items-center" x-data="{ hasTtd: {{ $asesi->tanda_tangan ? 'true' : 'false' }} }">
-            
+            <h3 class="text-sm text-gray-700 font-medium mb-2">Tanda Tangan Saat Ini</h3>
+            <div class="h-32 w-auto mb-2 border rounded-md p-1 overflow-hidden" x-show="hasTtd">
+                <img :src="hasTtd ? '{{ $asesi->tanda_tangan ? route('secure.file', ['path' => $asesi->tanda_tangan]) : '' }}' : ''" 
+                     src="{{ $asesi->tanda_tangan ? route('secure.file', ['path' => $asesi->tanda_tangan]) : '' }}" 
+                     alt="Tanda Tangan" 
+                     class="h-full object-contain">
+            </div>
+            <p x-show="!hasTtd" class="text-xs text-gray-500 italic mb-2">Belum ada tanda tangan</p>
             {{-- 1. AREA PREVIEW GAMBAR --}}
             <div class="w-full max-w-3xl h-64 border-2 border-dashed border-gray-300 rounded-xl bg-white flex items-center justify-center overflow-hidden relative group">
                 
                 <img id="img-ttd-preview" 
-                     src="{{ $asesi->tanda_tangan ? asset($asesi->tanda_tangan) : '' }}" 
+                     src="{{ $asesi->tanda_tangan ? route('secure.file', ['path' => $asesi->tanda_tangan]) : '' }}" 
                      class="max-h-full max-w-full object-contain p-6" 
                      :class="hasTtd ? '' : 'hidden'">
                 

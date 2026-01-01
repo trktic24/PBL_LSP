@@ -4,7 +4,7 @@
               bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
               shadow-inner border-r border-gray-200 flex flex-col items-center pt-8 z-40">
 
-    <a href="{{ route('admin.master_asesor') }}" 
+    <a href="javascript:history.back()" 
        class="absolute top-4 left-6 flex items-center text-gray-500 hover:text-blue-600 transition-all duration-200 cursor-pointer z-50 hover:-translate-x-1">
         <i class="fas fa-arrow-left text-lg"></i>
         <span class="ml-2 font-medium text-sm">Kembali</span>

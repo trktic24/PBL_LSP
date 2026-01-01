@@ -82,8 +82,8 @@
                     </tr>
                 </thead>
                 <tbody class="text-sm text-gray-700 divide-y divide-gray-200">
-                    @foreach ($unit->elemens as $elemen)
-                        @foreach ($elemen->kriteriaUnjukKerja as $index => $kuk)
+                    @foreach ($unit->elemen as $elemen)
+                        @foreach ($elemen->kriteria as $index => $kuk)
                             @php
                                 $response = $responses[$kuk->id_kriteria] ?? null;
                                 $isKompeten = $response ? $response->pencapaian_ia01 == 1 : false;
@@ -92,7 +92,7 @@
                             <tr class="hover:bg-gray-50">
                                 {{-- Elemen (Rowspan logic handled simply by repeating for now, or use logic if strict layout needed) --}}
                                 @if ($index === 0)
-                                    <td rowspan="{{ $elemen->kriteriaUnjukKerja->count() }}" class="p-4 align-top font-medium bg-white border-r border-gray-100">
+                                    <td rowspan="{{ $elemen->kriteria->count() }}" class="p-4 align-top font-medium bg-white border-r border-gray-100">
                                         {{ $elemen->elemen }}
                                     </td>
                                 @endif

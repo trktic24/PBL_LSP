@@ -19,64 +19,56 @@ class APIBandingController extends Controller
      */
     public function show(string $id_sertifikasi)
     {
-        // [TAMBAHAN KEAMANAN] Ambil asesi yang sedang login
         $user = Auth::user();
         $asesi = $user->asesi;
 
         if (!$asesi) {
-             // Redirect atau error jika yang akses bukan asesi
             return redirect('/tracker')->with('error', 'Akses ditolak.');
         }
 
         try {
-            // ------------------------------------------------------------------
-            // [REVISI UTAMA DI SINI]
-            // Cek apakah sudah pernah mengisi banding untuk sertifikasi ini
-            // ------------------------------------------------------------------
-            $sudahIsi = ResponAk04::where('id_data_sertifikasi_asesi', $id_sertifikasi)->exists();
-
-            if ($sudahIsi) {
-                // Jika sudah, langsung tampilkan halaman universal "Sudah Mengisi"
-                // Kita gunakan view yang sama dengan umpan balik seperti permintaan
-                return view('asesi.tunggu_or_berhasil.berhasil', [
-                    'id_sertifikasi' => $id_sertifikasi,
-                    // Opsional: bisa kirim variabel judul agar halaman universalnya lebih spesifik
-                    // 'page_title' => 'Banding Asesmen' 
-                ]); 
-            }
-            // ------------------------------------------------------------------
-
-            // Jika BELUM mengisi, baru kita lanjut ambil data untuk menampilkan form
-
-            // [TAMBAHAN KEAMANAN] Pastikan mengambil data milik asesi yang login saja
-            $dataSertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor'])
+            // 1. [PINDAH KE ATAS] Ambil Data Sertifikasi Lengkap Dulu
+            // Kita butuh data ini untuk Sidebar di halaman 'berhasil' maupun halaman 'form'
+            $dataSertifikasi = DataSertifikasiAsesi::with([
+                    'asesi', 
+                    'jadwal.asesor', 
+                    'jadwal.skema',    // Penting buat sidebar/header
+                    'jadwal.jenisTuk'
+                ])
                 ->where('id_asesi', $asesi->id_asesi) // Cek kepemilikan
                 ->findOrFail($id_sertifikasi);
 
-            // --- Ekstraksi data untuk Sidebar (Kode Asli) ---
+            // 2. Cek apakah sudah pernah mengisi banding
+            $sudahIsi = ResponAk04::where('id_data_sertifikasi_asesi', $id_sertifikasi)->exists();
+
+            if ($sudahIsi) {
+                // Return view 'berhasil' dengan DATA LENGKAP
+                return view('asesi.tunggu_or_berhasil.berhasil', [
+                    'id_sertifikasi'     => $id_sertifikasi,
+                    'id_jadwal_redirect' => $dataSertifikasi->id_jadwal,
+                    'asesi'              => $asesi,            // <--- INI SOLUSI ERRORNYA
+                    'sertifikasi'        => $dataSertifikasi   // <--- INI JUGA WAJIB
+                ]); 
+            }
+
+            // 3. Jika BELUM mengisi, siapkan data untuk Form Banding
             $asesor = $dataSertifikasi->jadwal->asesor;
-            // $asesi = $dataSertifikasi->asesi; // Tidak perlu lagi karena sudah ada $asesi di atas
             
             $asesorData = [
                 'nama'   => $asesor->nama_lengkap ?? 'Nama Asesor Tidak Tersedia',
                 'no_reg' => $asesor->no_reg ?? '-',
             ];
 
-            $idAsesi = $asesi->id_asesi;
-            
-            // --- Kirim data ke View Form Banding ---
             return view('asesi.banding.banding', [
                 'id_sertifikasi' => $id_sertifikasi,
                 'sertifikasi'    => $dataSertifikasi,
                 'asesor'         => $asesorData,
-                'idAsesi'        => $idAsesi,
+                'idAsesi'        => $asesi->id_asesi,
                 'asesi'          => $asesi,
             ]);
             
         } catch (\Exception $e) {
-            // Log::error(...)
-            // Jika data tidak ditemukan atau bukan miliknya, lempar ke tracker
-            return redirect('/tracker')->with('error', 'Data Sertifikasi tidak ditemukan atau Anda tidak memiliki akses.');
+            return redirect('/asesi/tracker')->with('error', 'Data Sertifikasi tidak ditemukan atau Anda tidak memiliki akses.');
         }
     }
 

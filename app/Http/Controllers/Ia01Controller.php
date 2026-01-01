@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\UnitKompetensi;
 use App\Models\ResponApl02Ia01;
 use App\Models\Skema;
+use App\Models\KriteriaUnjukKerja; // Added import
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+
+
 
 class IA01Controller extends Controller
 {
@@ -16,7 +22,6 @@ class IA01Controller extends Controller
     // ============================================================================
     private function isAdmin()
     {
-        // Asumsi relasi user->role->nama_role ada dan valid
         return Auth::check() && Auth::user()->role->nama_role === 'admin';
     }
 
@@ -30,283 +35,152 @@ class IA01Controller extends Controller
             'jadwal.masterTuk',
             'jadwal.skema',
             'jadwal.asesor',
-            'jadwal.skema.kelompokPekerjaans.UnitKompetensis'
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteria' // Eager load ALL nested data
         ])->findOrFail($id_sertifikasi);
     }
 
     /**
-     * 1. HALAMAN COVER / HEADER
+     * SHOW SINGLE PAGE FORM
      */
-    public function showCover(Request $request, $id_sertifikasi)
+    public function index(Request $request, $id_sertifikasi)
     {
-        // 🔥 [ADMIN CHECK]: Redirect ke halaman khusus admin
+        // 1. Admin redirect
         if ($this->isAdmin()) {
             return redirect()->route('ia01.admin.show', ['id_sertifikasi' => $id_sertifikasi]);
         }
 
+        // 2. Load Data
         $sertifikasi = $this->getSertifikasi($id_sertifikasi);
         $skema = $sertifikasi->jadwal->skema;
-        $kelompok = $skema->kelompokPekerjaans->first();
+        $kelompok = $skema->kelompokPekerjaan->first();
 
         if (!$kelompok) {
             return back()->with('error', 'Skema ini belum memiliki Kelompok Pekerjaan.');
         }
 
-        $unitKompetensi = $kelompok->unitKompetensis()->orderBy('urutan')->first();
-        $data_sesi = $request->session()->get("ia01.sertifikasi_{$id_sertifikasi}", []);
+        // 3. Get existing session data AND DB data
+        $existingResponses = ResponApl02Ia01::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
+            ->get()
+            ->keyBy('id_kriteria');
 
-        return view('frontend.IA_01.tampilan_awal', compact(
-            'kelompok',
-            'skema',
-            'unitKompetensi',
-            'data_sesi',
-            'sertifikasi'
-        ));
-    }
+        $data_sesi = [
+             'tuk' => old('tuk'), 
+        ]; 
 
-    /**
-     * 2. SIMPAN DATA COVER KE SESSION
-     */
-    public function storeCover(Request $request, $id_sertifikasi)
-    {
-        if ($this->isAdmin()) {
-            abort(403, 'Admin tidak diizinkan mengisi form.');
-        }
+        // Calculate System Recommendation based on saved data
+        // If ANY KUK is '0' (Belum Kompeten), then system recommends 'belum_kompeten'
+        $hasBK = $existingResponses->contains(function ($response) {
+            return $response->pencapaian_ia01 == 0;
+        });
+        $rekomendasiSistem = $hasBK ? 'belum_kompeten' : 'kompeten';
 
-        $validatedData = $request->validate([
-            'tuk' => 'required|in:sewaktu,tempat_kerja,mandiri',
-            'tanggal_asesmen' => 'required|date',
-        ]);
-
-        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
-
-        $metaData = [
-            'nama_asesor' => $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor',
-            'nama_asesi' => $sertifikasi->asesi->nama_lengkap ?? 'Asesi',
-        ];
-
-        // Simpan ke Session
-        $sessionKey = "ia01.sertifikasi_{$id_sertifikasi}";
-        $oldData = $request->session()->get($sessionKey, []);
-
-        // Gabung data: (Data Lama) + (Input User) + (Data Meta)
-        $newData = array_merge($oldData, $validatedData, $metaData);
-        $request->session()->put($sessionKey, $newData);
-
-        // Lanjut ke Step 1
-        return redirect()->route('ia01.showStep', ['id_sertifikasi' => $id_sertifikasi, 'urutan' => 1]);
-    }
-
-    /**
-     * 3. FORM WIZARD (UNIT KOMPETENSI 1, 2, DST)
-     */
-    public function showStep(Request $request, $id_sertifikasi, $urutan)
-    {
-        // 🔥 [ADMIN CHECK]: Redirect ke halaman khusus admin
-        if ($this->isAdmin()) {
-            return redirect()->route('ia01.admin.show', ['id_sertifikasi' => $id_sertifikasi]);
-        }
-
-        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
-        $skema = $sertifikasi->jadwal->skema;
-        $kelompok = $skema->kelompokPekerjaans->firstOrFail();
-
-        $unitKompetensi = UnitKompetensi::with(['elemens.kriteriaUnjukKerja'])
-            ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
-            ->where('urutan', $urutan)
-            ->firstOrFail();
-
-        $kuks = $unitKompetensi->kriteriaUnjukKerja()->orderBy('no_kriteria')->get();
-        $totalSteps = $kelompok->unitKompetensis()->count();
-        $data_sesi = $request->session()->get("ia01.sertifikasi_{$id_sertifikasi}", []);
-
-        // Cek tipe form (Aktivitas vs Demonstrasi, opsional)
-        $formType = $kuks->first()->tipe ?? 'aktivitas';
-
-        return view('frontend.IA_01.IA_01', compact(
-            'unitKompetensi',
-            'kuks',
-            'skema',
-            'data_sesi',
-            'totalSteps',
-            'formType',
-            'sertifikasi'
-        ));
-    }
-
-    /**
-     * 4. SIMPAN DATA PER STEP (PER UNIT)
-     */
-    public function storeStep(Request $request, $id_sertifikasi, $urutan)
-    {
-        if ($this->isAdmin()) {
-            abort(403, 'Admin tidak diizinkan mengisi form.');
-        }
-
-        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
-        $skema = $sertifikasi->jadwal->skema;
-        $kelompok = $skema->kelompokPekerjaans->firstOrFail();
-        $unitKompetensi = UnitKompetensi::where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
-            ->where('urutan', $urutan)
-            ->firstOrFail();
-
-        $kukIds = $unitKompetensi->kriteriaUnjukKerja()->pluck('id_kriteria')->toArray();
-
-        // Validasi Input Dinamis
-        $validationRules = [
-            'hasil' => 'required|array',
-            'standar_industri' => 'nullable|array',
-            'penilaian_lanjut' => 'nullable|array',
-        ];
-
-        foreach ($kukIds as $id) {
-            $validationRules["hasil.{$id}"] = ['required', Rule::in(['kompeten', 'belum_kompeten'])];
-            $validationRules["standar_industri.{$id}"] = ['nullable', 'string'];
-            $validationRules["penilaian_lanjut.{$id}"] = ['nullable', 'string'];
-        }
-
-        $validatedData = $request->validate($validationRules, [
-            'hasil.*.required' => 'Semua poin pencapaian (Ya/Tidak) harus dipilih.',
-        ]);
-
-        $sessionKey = "ia01.sertifikasi_{$id_sertifikasi}";
-        $currentSession = $request->session()->get($sessionKey, []);
-
-        // Gunakan array_replace biar data baru (revisi) nimpah data lama
-        $currentSession['hasil'] = array_replace(
-            ($currentSession['hasil'] ?? []),
-            $validatedData['hasil']
-        );
-
-        if ($request->has('standar_industri')) {
-            $currentSession['standar_industri'] = array_replace(
-                ($currentSession['standar_industri'] ?? []),
-                $request->input('standar_industri')
-            );
-        }
-        if ($request->has('penilaian_lanjut')) {
-            $currentSession['penilaian_lanjut'] = array_replace(
-                ($currentSession['penilaian_lanjut'] ?? []),
-                $request->input('penilaian_lanjut')
-            );
-        }
-
-        $request->session()->put($sessionKey, $currentSession);
-
-        // Navigasi Next / Finish
-        $totalSteps = $kelompok->unitKompetensis()->count();
-        if ($urutan < $totalSteps) {
-            return redirect()->route('ia01.showStep', ['id_sertifikasi' => $id_sertifikasi, 'urutan' => $urutan + 1]);
-        } else {
-            return redirect()->route('ia01.finish', ['id_sertifikasi' => $id_sertifikasi]);
-        }
-    }
-
-    /**
-     * 5. HALAMAN FINISH (REKOMENDASI & TTD)
-     */
-    public function showFinish(Request $request, $id_sertifikasi)
-    {
-        // 🔥 [ADMIN CHECK]: Redirect ke halaman khusus admin
-        if ($this->isAdmin()) {
-            return redirect()->route('ia01.admin.show', ['id_sertifikasi' => $id_sertifikasi]);
-        }
-
-        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
-        $skema = $sertifikasi->jadwal->skema;
-        $kelompok = $skema->kelompokPekerjaans->first();
-
-        $sessionKey = "ia01.sertifikasi_{$id_sertifikasi}";
-        $data_sesi = $request->session()->get($sessionKey, []);
-
-        if (empty($data_sesi)) {
-            return redirect()->route('ia01.cover', ['id_sertifikasi' => $id_sertifikasi]);
-        }
-
-        // LOGIC: Jika ada satu saja 'belum_kompeten', sistem menyarankan BK
-        $adaBK = in_array('belum_kompeten', $data_sesi['hasil'] ?? []);
-        $rekomendasiSistem = $adaBK ? 'belum_kompeten' : 'kompeten';
-
-        return view('frontend.IA_01.finish', compact(
+        return view('frontend.IA_01.single_page', compact(
             'skema',
             'kelompok',
-            'rekomendasiSistem',
             'sertifikasi',
-            'data_sesi'
+            'data_sesi',
+            'existingResponses',
+            'rekomendasiSistem'
         ));
     }
 
-
-
     /**
-     * 6. FINAL SUBMIT KE DATABASE
+     * STORE ALL DATA (Validation & Save)
      */
-    public function storeFinish(Request $request, $id_sertifikasi)
+    public function store(Request $request, $id_sertifikasi)
     {
         if ($this->isAdmin()) {
             abort(403, 'Admin tidak diizinkan menyimpan data.');
         }
 
-        $sessionKey = "ia01.sertifikasi_{$id_sertifikasi}";
-        $finalData = $request->session()->get($sessionKey);
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+        
+        // 1. VALIDATION RULES
+        $rules = [
+            // Data Diri
+            'tuk' => 'required|in:sewaktu,tempat_kerja,mandiri',
+            'tanggal_asesmen' => 'required|date',
+            
+            // Units (Looping Logic)
+            'hasil' => 'required|array',
+            'hasil.*' => 'required|in:kompeten,belum_kompeten',
+            'standar_industri' => 'nullable|array',
+            'penilaian_lanjut' => 'nullable|array',
 
-        // Validasi Logic Backend (Double Check)
-        $adaBK = in_array('belum_kompeten', $finalData['hasil'] ?? []);
-        $statusWajib = $adaBK ? 'belum_kompeten' : 'kompeten';
+            // Finish
+             'umpan_balik' => 'required|string|min:5',
+             'rekomendasi' => 'required|in:kompeten,belum_kompeten',
+        ];
 
-        $request->validate([
-            'rekomendasi' => [
-                'required',
-                'in:kompeten,belum_kompeten',
-                // Custom Rule: Kalau sistem BK, user gaboleh pilih K
-                function ($attribute, $value, $fail) use ($statusWajib) {
-                    if ($statusWajib === 'belum_kompeten' && $value === 'kompeten') {
-                        $fail('Sistem mendeteksi ada KUK yang bernilai "TIDAK". Rekomendasi akhir wajib "Belum Kompeten".');
-                    }
-                },
-            ],
-            'umpan_balik' => 'required|string|min:5',
+        // 2. Custom Validator for K vs BK Consistency
+        $request->validate($rules, [
+            'hasil.required' => 'Hasil observasi belum diisi.',
+            'hasil.*.required' => 'Setiap Kriteria Unjuk Kerja harus dinilai (K/BK).',
+            'umpan_balik.required' => 'Umpan balik wajib diisi.',
+            'rekomendasi.required' => 'Rekomendasi akhir wajib dipilih.'
         ]);
 
-        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
-        $idDataSertifikasi = $sertifikasi->id_data_sertifikasi_asesi;
+        // 3. Logic Check: If any 'belum_kompeten', Rekomendasi MUST be 'belum_kompeten'
+        if (in_array('belum_kompeten', $request->input('hasil', [])) && $request->input('rekomendasi') === 'kompeten') {
+            return back()->withErrors([
+                'rekomendasi' => 'Terdapat penilaian "Belum Kompeten" pada unit kompetensi. Rekomendasi akhir tidak boleh "Kompeten".'
+            ])->withInput();
+        }
 
+        // 4. SAVE TO DB (ResponApl02Ia01 & Update Sertifikasi)
         try {
-            // Simpan data per KUK ke tabel Respon
-            if (!empty($finalData['hasil'])) {
-                foreach ($finalData['hasil'] as $kukId => $status) {
-                    $isKompeten = ($status === 'kompeten') ? 1 : 0;
+            DB::beginTransaction();
 
-                    ResponApl02Ia01::updateOrCreate(
-                        [
-                            'id_data_sertifikasi_asesi' => $idDataSertifikasi,
-                            'id_kriteria' => $kukId
-                        ],
-                        [
-                            'pencapaian_ia01' => $isKompeten,
-                            'standar_industri_ia01' => $finalData['standar_industri'][$kukId] ?? null,
-                            'penilaian_lanjut_ia01' => $finalData['penilaian_lanjut'][$kukId] ?? null,
-                        ]
-                    );
-                }
+            // Save Details (KUK Results)
+            $idDataSertifikasi = $sertifikasi->id_data_sertifikasi_asesi;
+            foreach ($request->input('hasil', []) as $kukId => $status) {
+                ResponApl02Ia01::updateOrCreate(
+                    [
+                        'id_data_sertifikasi_asesi' => $idDataSertifikasi,
+                        'id_kriteria' => $kukId
+                    ],
+                    [
+                        'pencapaian_ia01' => ($status === 'kompeten') ? 1 : 0,
+                        'standar_industri_ia01' => $request->input("standar_industri.{$kukId}"),
+                        'penilaian_lanjut_ia01' => $request->input("penilaian_lanjut.{$kukId}"),
+                    ]
+                );
             }
 
-            // Update Data Sertifikasi (Umpan Balik & Rekomendasi)
-            $sertifikasi->update([
-                'feedback_ia01' => $request->umpan_balik,
-                'rekomendasi_ia01' => $request->rekomendasi,
-            ]);
+        // Update Sertifikasi Header
+        $feedback = $request->umpan_balik;
+        
+        // Append BK Details if Rekomendasi is Belum Kompeten
+        if ($request->rekomendasi === 'belum_kompeten' && $request->has('bk_unit')) {
+            $feedback .= "\n\n--- DETAIL BELUM KOMPETEN ---\n";
+            $feedback .= "Unit: " . $request->bk_unit . "\n";
+            $feedback .= "Elemen: " . $request->bk_elemen . "\n";
+            $feedback .= "No. KUK: " . $request->bk_kuk . "\n";
+        }
 
+        $sertifikasi->update([
+            'feedback_ia01' => $feedback,
+            'rekomendasi_ia01' => $request->rekomendasi,
+        ]);
 
-            // Bersihkan Session setelah sukses
-            $request->session()->forget($sessionKey);
+            DB::commit();
 
             return redirect()->route('ia01.success_page');
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())->withInput();
         }
     }
+
+    /**
+     * SUCCESS PAGE (No Change)
+     */
+    public function successPage()
+    {
+        return view('frontend.IA_01.success'); // Ensure this view exists
+    }
+
 
     /**
      * 7. HALAMAN KHUSUS ADMIN (READ ONLY - ALL UNITS)
@@ -314,15 +188,16 @@ class IA01Controller extends Controller
     public function showAdmin($id_sertifikasi)
     {
         if (!$this->isAdmin()) {
-            return redirect()->route('ia01.cover', ['id_sertifikasi' => $id_sertifikasi]);
+            // Redirect to index for normal user
+             return redirect()->route('ia01.index', ['id_sertifikasi' => $id_sertifikasi]);
         }
 
         $sertifikasi = $this->getSertifikasi($id_sertifikasi);
         $skema = $sertifikasi->jadwal->skema;
-        $kelompok = $skema->kelompokPekerjaans->firstOrFail();
+        $kelompok = $skema->kelompokPekerjaan->firstOrFail();
 
         // Ambil SEMUA unit kompetensi beserta elemen dan KUK
-        $units = UnitKompetensi::with(['elemens.kriteriaUnjukKerja'])
+        $units = UnitKompetensi::with(['elemen.kriteria'])
             ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
             ->orderBy('urutan')
             ->get();

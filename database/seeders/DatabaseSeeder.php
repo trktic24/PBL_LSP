@@ -120,6 +120,7 @@ class DatabaseSeeder extends Seeder
             // KonfirmasiOrangRelevanSeeder::class,
             TenSchemesSeeder::class, // Might duplicate Skemas, check logic inside if needed
             JuniorWebDevSeeder::class, // Specific Scheme Seeder
+            PrivateFileSeeder::class,
         ]);
     }
 }

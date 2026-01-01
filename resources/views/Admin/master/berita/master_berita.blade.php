@@ -173,11 +173,10 @@
                                 <td class="px-6 py-4">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50 relative group mx-auto">
                                         @if($berita->gambar)
-                                            <img src="{{ asset($berita->gambar) }}" 
-                                                 alt="Thumbnail" 
-                                                 class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
-                                                 onclick="window.open(this.src, '_blank')"
-                                            >
+                                            <img src="{{ asset('storage/' . $berita->gambar) }}" 
+                                                 alt="{{ $berita->judul_berita }}" 
+                                                 class="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
+                                                 onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center text-gray-400">
                                                 <i class="fas fa-image text-lg"></i>

@@ -48,7 +48,8 @@
                     <div>:</div>
                     <div class="h-16">
                         @if($ttdAsesi)
-                            <img src="{{ asset('storage/' . $ttdAsesi) }}" alt="Tanda Tangan Asesi" class="h-full object-contain">
+                            {{-- SURGICAL REFACTOR: Use secure route --}}
+                            <img src="{{ route('secure.file', ['path' => $ttdAsesi]) }}" alt="Tanda Tangan Asesi" class="h-full object-contain">
                         @else
                             <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                         @endif
@@ -83,7 +84,7 @@
                     <div>:</div>
                     <div class="h-16">
                         @if($ttdAsesor)
-                            <img src="{{ asset('storage/' . $ttdAsesor) }}" alt="Tanda Tangan Asesor" class="h-full object-contain">
+                            <img src="{{ route('secure.file', ['path' => $ttdAsesor]) }}" alt="Tanda Tangan Asesor" class="h-full object-contain">
                         @else
                             <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                         @endif

@@ -92,7 +92,7 @@
                    x-data="{ 
                       open: false,
                       fileName: '',
-                      imageUrl: '{{ $field['existing'] ? Storage::url(str_replace('public/', '', $field['existing'])) : '' }}',
+                      imageUrl: '{{ $field['existing'] ? route('secure.file', ['path' => $field['existing']]) : '' }}',
                       isImage: {{ isset($field['is_image']) && $field['is_image'] ? 'true' : 'false' }},
                       isDeleted: false,
                       fileExt: '{{ $field['existing'] ? pathinfo($field['existing'], PATHINFO_EXTENSION) : '' }}'

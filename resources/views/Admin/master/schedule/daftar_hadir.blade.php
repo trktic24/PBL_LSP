@@ -34,8 +34,22 @@
 
             <div class="flex flex-col xl:flex-row justify-between items-end mb-8 gap-6">
                 <div class="w-full xl:max-w-lg">
-                    <p class="text-sm text-gray-500 mb-2">Master Schedule > Daftar Hadir</p>
-                    <a href="{{ route('admin.master_schedule') }}" class="flex items-center text-gray-700 hover:text-blue-600 text-base font-medium w-fit transition mb-4">
+                    @php
+                        // Default: Kembali ke Master Schedule
+                        $routeKembali = route('admin.master_schedule');
+
+                        // Cek parameter 'from' dari URL
+                        if (request('from') == 'schedule_admin') {
+                            // GANTI 'admin.schedule_admin' DENGAN NAMA ROUTE YANG BENAR UNTUK PAGE SCHEDULE ADMIN ANDA
+                            $routeKembali = route('admin.schedule_admin'); 
+                        }
+                    @endphp
+
+                    <p class="text-sm text-gray-500 mb-2">
+                        {{ request('from') == 'schedule_admin' ? 'Schedule Admin' : 'Master Schedule' }} > Daftar Hadir
+                    </p>
+
+                    <a href="{{ $routeKembali }}" class="flex items-center text-gray-700 hover:text-blue-600 text-base font-medium w-fit transition mb-4">
                         <i class="fas fa-arrow-left mr-2"></i> Kembali
                     </a>
                     <h2 class="text-3xl font-bold text-gray-900 mb-6">Daftar Hadir Peserta</h2>
@@ -74,7 +88,12 @@
                                     </div>
                                     <div>
                                         <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-wider">Asesor</span>
-                                        <span class="font-medium text-gray-900">{{ $jadwal->asesor->nama_lengkap }}</span>
+                                        
+                                        <a href="{{ route('admin.asesor.profile', $jadwal->id_asesor) }}" 
+                                        class="font-medium text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                                        title="Lihat Profil Asesor">
+                                            {{ $jadwal->asesor->nama_lengkap }}
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="flex items-center">
@@ -174,7 +193,10 @@
                         @forelse ($pendaftar as $index => $data)
 
                         <tr class="hover:bg-blue-50 transition divide-x divide-gray-200 cursor-pointer group"
-                            onclick="window.location='{{ route('admin.asesi.profile.settings', $data->asesi->id_asesi) }}'">
+                            onclick="window.location='{{ route('admin.asesi.profile.settings', [
+                                'id_asesi' => $data->asesi->id_asesi, // <--- SUDAH DIPERBAIKI (Sesuaikan dengan nama parameter di Route)
+                                'sertifikasi_id' => $data->id_data_sertifikasi_asesi
+                            ]) }}'">
 
                             <td class="px-4 py-4 text-center font-medium text-gray-500">
                                 {{ $data->id_data_sertifikasi_asesi }}
@@ -204,7 +226,7 @@
                                 <div onclick="event.stopPropagation()" class="flex justify-center">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-white relative group-img">
                                         @if($data->asesi->tanda_tangan)
-                                        <img src="{{ asset($data->asesi->tanda_tangan) }}"
+                                        <img src="{{ route('secure.file', ['path' => $data->asesi->tanda_tangan]) }}"
                                             class="w-full h-full object-contain p-1 hover:scale-110 transition-transform duration-200 cursor-pointer"
                                             alt="TTD"
                                             onclick="window.open(this.src, '_blank')">

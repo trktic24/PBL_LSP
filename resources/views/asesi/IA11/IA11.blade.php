@@ -66,7 +66,7 @@
                     // === AMBIL TANDA TANGAN ASESI ===
                     $ttdAsesi = null;
                     if ($asesi->tanda_tangan ?? false) {
-                        $pathAsesi = public_path($asesi->tanda_tangan);
+                        $pathAsesi = storage_path('app/private_uploads/' . $asesi->tanda_tangan);
                         if (file_exists($pathAsesi)) {
                             $ttdAsesi = base64_encode(file_get_contents($pathAsesi));
                         }
@@ -75,7 +75,7 @@
                     // === AMBIL TANDA TANGAN ASESOR ===
                     $ttdAsesor = null;
                     if ($asesor->tanda_tangan ?? false) {
-                        $pathAsesor = public_path($asesor->tanda_tangan);
+                        $pathAsesor = storage_path('app/private_uploads/' . $asesor->tanda_tangan);
                         if (file_exists($pathAsesor)) {
                             $ttdAsesor = base64_encode(file_get_contents($pathAsesor));
                         }

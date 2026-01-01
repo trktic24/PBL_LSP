@@ -379,7 +379,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-center">
-                                <a href="{{ route('admin.schedule.attendance', $jadwal->id_jadwal) }}" class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded-md transition">
+                                <a href="{{ route('admin.schedule.attendance', ['id_jadwal' => $jadwal->id_jadwal, 'from' => 'master']) }}" class="flex items-center justify-center space-x-1 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded-md transition">
                                     <i class="fas fa-list-check"></i> <span>Lihat</span>
                                 </a>
                             </td>

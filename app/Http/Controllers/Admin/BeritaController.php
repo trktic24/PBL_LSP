@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Berita;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File; // [PENTING] Untuk hapus file fisik
+use Illuminate\Support\Facades\Storage;
 
 class BeritaController extends Controller
 {
@@ -74,16 +75,15 @@ class BeritaController extends Controller
             'gambar.image' => 'File harus berupa gambar.',
         ]);
 
-        // Upload Gambar (Direct Public Path)
+        // Upload Gambar (Storage Public)
         $gambarPath = null;
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $destinationPath = public_path('images/berita');
             
-            // Pindahkan file
-            $file->move($destinationPath, $filename);
-            $gambarPath = 'images/berita/' . $filename;
+            // Simpan ke storageapp/public/berita
+            // Simpan FULL PATH (berita/filename.jpg)
+            $gambarPath = $file->storeAs('berita', $filename, 'public');
         }
 
         $berita = Berita::create([
@@ -123,17 +123,16 @@ class BeritaController extends Controller
         // Update Gambar
         if ($request->hasFile('gambar')) {
             // Hapus gambar lama jika ada
-            if ($berita->gambar && File::exists(public_path($berita->gambar))) {
-                File::delete(public_path($berita->gambar));
+            if ($berita->gambar && Storage::disk('public')->exists($berita->gambar)) {
+                Storage::disk('public')->delete($berita->gambar);
             }
 
             // Upload gambar baru
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $destinationPath = public_path('images/berita');
             
-            $file->move($destinationPath, $filename);
-            $gambarPath = 'images/berita/' . $filename;
+            // Simpan FULL PATH (berita/filename.jpg)
+            $gambarPath = $file->storeAs('berita', $filename, 'public');
         }
 
         $berita->update([
@@ -156,8 +155,8 @@ class BeritaController extends Controller
         $idBerita = $berita->id;
 
         // Hapus gambar fisik
-        if ($berita->gambar && File::exists(public_path($berita->gambar))) {
-            File::delete(public_path($berita->gambar));
+        if ($berita->gambar && Storage::disk('public')->exists($berita->gambar)) {
+            Storage::disk('public')->delete($berita->gambar);
         }
 
         $berita->delete();

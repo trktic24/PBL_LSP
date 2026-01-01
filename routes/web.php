@@ -9,7 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TukController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\Asesor\AsesorTableController;
-use App\Http\Controllers\Api\V1\CountryController; // Used for helper API
+use App\Http\Controllers\Api\V1\CountryController;
 use App\Http\Controllers\Api\V1\MitraController;
 
 // ==========================
@@ -120,9 +120,15 @@ Route::post('/register-asesi', [RegisteredUserController::class, 'store'])->name
 Route::middleware('auth')->group(function () {
 
     // User Profile
-    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // User Profile
+    // (Routes removed as they were commented out)
+
+    // ========================
+    // 0. SECURE FILE ACCESS (SURGICAL REFACTOR)
+    // ========================
+    Route::get('secure-doc/{path}', [App\Http\Controllers\SecureFileController::class, 'show'])
+        ->where('path', '.*')
+        ->name('secure.file');
 
     // ========================
     // 1. ASESMEN & FORMULIR
@@ -135,15 +141,12 @@ Route::middleware('auth')->group(function () {
 
     // APL-02 (Asesmen Mandiri)
     Route::get('/APL_02', fn() => view('frontend/APL_02/APL_02'))->name('APL_02');
-    // Buka routes/web.php
-    // Pastikan kamu punya route seperti ini (sesuaikan controller-nya):
 
     Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
         ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
 
     // FR-AK (Ceklis, Banding, dll)
     Route::get('/FR_AK_01', fn() => view('frontend/FR_AK_01'))->name('FR_AK_01');
-    // --- TAMBAHKAN BARIS INI (Fix Route AK01) ---
     Route::post('/FR_AK_01/simpan/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])
         ->name('ak01.store');
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
@@ -164,17 +167,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/tracker/{id}/validasi', [ValidatorTrackerController::class, 'validasi'])->name('validator.tracker.validasi');
     });
 
+    Route::get('/ia01/success', fn() => view('frontend.IA_01.success'))->name('ia01.success_page');
+
     // IA-01
     Route::prefix('ia01/{id_sertifikasi}')->group(function () {
-        Route::get('/cover', [IA01Controller::class, 'showCover'])->name('ia01.cover');
-        Route::post('/cover', [IA01Controller::class, 'storeCover'])->name('ia01.storeCover');
-        Route::get('/step/{urutan}', [IA01Controller::class, 'showStep'])->name('ia01.showStep');
-        Route::post('/step/{urutan}', [IA01Controller::class, 'storeStep'])->name('ia01.storeStep');
-        Route::get('/finish', [IA01Controller::class, 'showFinish'])->name('ia01.finish');
-        Route::post('/finish', [IA01Controller::class, 'storeFinish'])->name('ia01.storeFinish');
+        // Single Page Routes
+        Route::get('/', [IA01Controller::class, 'index'])->name('ia01.index');
+        Route::get('/cover', [IA01Controller::class, 'index'])->name('ia01.cover'); // Alias for compatibility
+        Route::post('/store', [IA01Controller::class, 'store'])->name('ia01.store');
+        
+        // Admin View
         Route::get('/admin', [IA01Controller::class, 'showAdmin'])->name('ia01.admin.show');
+        
+        // Deprecated / Redirects
+        Route::get('/step/{urutan}', fn($id) => redirect()->route('ia01.index', $id));
+        Route::get('/finish', fn($id) => redirect()->route('ia01.index', $id));
     });
-    Route::get('/ia01/success', fn() => view('frontend.IA_01.success'))->name('ia01.success_page');
 
     // IA-02
     Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');

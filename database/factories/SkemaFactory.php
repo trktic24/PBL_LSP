@@ -54,7 +54,7 @@ class SkemaFactory extends Factory
             'SKKNI' => '/storage/files/dummy_skkni.pdf',
 
             // Gambar (tetap sama)
-            'gambar' => 'skema' . $nomorGambar . '.jpg',
+            'gambar' => 'skema/foto_skema/skema' . $nomorGambar . '.jpg',
         ];
     }
 }

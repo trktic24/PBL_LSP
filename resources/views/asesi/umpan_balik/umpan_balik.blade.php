@@ -35,17 +35,10 @@
 
         {{-- 2. HEADER MOBILE (Component Baru) --}}
         @php
-            // Logika gambar skema dari referensi
+            // Logika gambar skema dari referensi (Standardized)
             $gambarSkema = null;
             if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) {
-                $gambar = $sertifikasi->jadwal->skema->gambar;
-                if (str_starts_with($gambar, 'images/')) {
-                    $gambarSkema = asset($gambar);
-                } elseif (file_exists(public_path('images/skema/foto_skema/' . $gambar))) {
-                    $gambarSkema = asset('images/skema/foto_skema/' . $gambar);
-                } else {
-                    $gambarSkema = asset('images/skema/' . $gambar);
-                }
+                 $gambarSkema = asset('storage/' . $sertifikasi->jadwal->skema->gambar);
             }
         @endphp
 

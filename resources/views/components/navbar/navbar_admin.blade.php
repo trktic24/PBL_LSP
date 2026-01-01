@@ -12,8 +12,9 @@
     $isBeritaActive = request()->is('admin/master/berita*');
     $isTukActive = request()->is('admin/master/tuk*'); // Koreksi: Pastikan TUK juga punya /admin
     $isMitraActive = request()->is('admin/master/mitra*');
+    $isStrukturActive = request()->is('admin/master/struktur*');
 
-    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive || $isMitraActive;
+    $isMasterActive = $isSkemaActive || $isAsesorActive || $isAsesiActive || $isMasterScheduleActive || $isCategoryActive || $isBeritaActive || $isMitraActive || $isStrukturActive;
     
     // PENTING: Menggunakan 'admin.' pada request()->routeIs() karena ini membandingkan NAMA route
     $isScheduleActive = request()->routeIs('admin.schedule_admin');
@@ -71,6 +72,10 @@
                             <a href="{{ route('admin.master_schedule') }}" 
                             class="block px-4 py-2 {{ $isMasterScheduleActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
                             Schedule
+                        </a>
+                        <a href="{{ route('admin.master_struktur') }}" 
+                            class="block px-4 py-2 {{ $isStrukturActive ? 'text-blue-600 bg-blue-50 font-semibold rounded-lg' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg' }}">
+                            Struktur
                         </a>
                     </div>
 

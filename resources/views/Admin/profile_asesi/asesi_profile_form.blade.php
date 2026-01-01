@@ -32,9 +32,21 @@
 
   <div class="flex pt-0">
 
+    @php
+        // [PERBAIKAN] Logic URL Kembali dan Context Passing
+        $urlKembali = route('admin.master_asesi'); // Default
+
+        // Gunakan variable $sertifikasiAcuan yang dikirim dari Controller
+        if (isset($sertifikasiAcuan) && $sertifikasiAcuan) {
+            $urlKembali = route('admin.schedule.attendance', $sertifikasiAcuan->id_jadwal);
+        }
+    @endphp
+
     <x-sidebar.sidebar_profile_asesi
       :asesi="$asesi"
-      :backUrl="route('admin.schedule.attendance', $asesi->dataSertifikasi->first()->id_jadwal)" />
+      :backUrl="$urlKembali"
+      :activeSertifikasi="$sertifikasiAcuan" 
+    />
 
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">
 

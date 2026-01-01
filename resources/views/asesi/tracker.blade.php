@@ -40,7 +40,7 @@
     $statusClassSelesai = 'text-xs text-green-600 font-medium';
     $statusClassProses = 'text-xs text-blue-600 font-medium';
     $statusClassTunggu = 'text-xs text-yellow-600 font-medium';
-    $statusClassTerkunci = 'text-xs text-gray-400 font-medium';
+    $statusClassTerkunci = 'text-xs text-gray-400 font-medium'; 
 
     // BUTTON STYLES
     $btnBase = 'mt-2 px-4 py-1.5 text-xs font-semibold rounded-md inline-block transition-all';
@@ -70,10 +70,9 @@
 
             {{-- 2. HEADER MOBILE (Data Dinamis) --}}
             @php
-                $gambarSkema =
-                    $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
-                        ? asset('images/' . $sertifikasi->jadwal->skema->gambar)
-                        : null;
+                $gambarSkema = $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
+                        ? asset('storage/' . $sertifikasi->jadwal->skema->gambar)
+                        : asset('images/default_pic.jpeg');
             @endphp
 
             <x-mobile_header :title="$sertifikasi->jadwal->skema->nama_skema ?? 'Skema Sertifikasi'" :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'" :image="$gambarSkema" />
@@ -122,29 +121,14 @@
                             </div>
 
                             <div class="{{ $responsiveCardClass }}">
-                                {{-- LOGIC GANTI LINK --}}
-                                @php
-                                    // Cek apakah user sudah selesai daftar (sudah TTD)
-                                    $isSelesai = $sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI;
-
-                                    // Jika selesai, arahkan ke halaman berhasil. Jika belum, ke form input.
-                                    $targetUrl = $isSelesai
-                                        ? route('asesi.pendaftaran.selesai', [
-                                            'id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi,
-                                        ])
-                                        : route('asesi.data.sertifikasi', [
-                                            'id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi,
-                                        ]);
-                                @endphp
-
-                                <a href="{{ $targetUrl }}" class="{{ $linkClassEnabled }}">
+                                <a href="{{ route('asesi.data.sertifikasi', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                    class="{{ $linkClassEnabled }}">
                                     Formulir Pendaftaran Sertifikasi
                                 </a>
-
                                 <p class="text-sm text-gray-500">{{ $sertifikasi->tanggal_daftar->format('l, d F Y') }}
                                 </p>
 
-                                @if ($isSelesai)
+                                @if ($sertifikasi->progres_level >= $LVL_DAFTAR_SELESAI)
                                     <p class="{{ $statusClassSelesai }}">Selesai</p>
                                     <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         target="_blank" class="{{ $btnBlue }}">
@@ -248,7 +232,7 @@
                                         <div class="w-4 h-4 bg-gray-300 rounded-full"></div>
                                     @endif
                                 </div>
-                                @if ($level >= $LVL_PRA_ASESMEN && $unlockAK01)
+                                @if ($level >= $LVL_PRA_ASESMEN && $unlockAPL0)
                                     <div class="hidden md:block">{!! renderCheckmark() !!}</div>
                                 @endif
                             </div>
@@ -335,6 +319,10 @@
                                 @endif
                                 <p class="text-sm text-gray-500">Dilakukan oleh Admin</p>
                                 @if ($level >= $LVL_PRA_ASESMEN && $unlockAK01)
+                                    <a href="{{ route('asesi.pdf.kartu_peserta', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        class="{{ $btnBlue }}" target="_blank">
+                                        Unduh Dokumen
+                                    </a>
                                     <p class="{{ $statusClassSelesai }}">Terverifikasi</p>
                                 @else
                                     <p class="{{ $statusClassTerkunci }}">Menunggu Verifikasi Pra-Asesmen</p>
@@ -663,7 +651,7 @@
                                             </div>
                                             <div class="w-full sm:w-auto flex-shrink-0">
                                                 @if ($unlockHasil)
-                                                    <a href="#"
+                                                    <a href="{{ route('asesi.ia07.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                                         class="flex items-center justify-center w-full sm:w-36 h-10 text-blue-600 text-sm font-semibold hover:underline">Lihat
                                                         Hasil</a>
                                                 @elseif ($unlockAsesmen)

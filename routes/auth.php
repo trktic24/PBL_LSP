@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\MitraController;
 use App\Http\Controllers\Admin\AsesorProfileController;
 use App\Http\Controllers\Admin\AsesiProfileController;
+use App\Http\Controllers\Admin\StrukturOrganisasiController;
 
 // ======================================================
 // 3. CONTROLLERS ASESOR
@@ -311,6 +312,16 @@ Route::middleware('auth')->group(function () {
             Route::patch('/update-asesor-step-3/{id_asesor}', 'updateStep3')->name('asesor.update.step3');
             Route::delete('/asesor/{id_asesor}', 'destroy')->name('asesor.destroy');
         });
+
+        // Master Struktur Organisasi
+        Route::resource('master/struktur', StrukturOrganisasiController::class)->names([
+            'index' => 'master_struktur',
+            'create' => 'add_struktur',
+            'store' => 'add_struktur.store',
+            'edit' => 'edit_struktur',
+            'update' => 'update_struktur',
+            'destroy' => 'delete_struktur'
+        ]);
 
         // ==========================================================
         // DETAIL PROFIL ASESOR (Admin View) - [UPDATED SECTION]

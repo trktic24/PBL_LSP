@@ -40,33 +40,23 @@
     </div>
 
     {{-- Tombol Kembali --}}
-    @php
-    // Cek apakah ada parameter 'id_asesi' atau 'id_sertifikasi' di URL saat ini
-    $idParam = request()->route('id_asesi') ?? request()->route('id_sertifikasi') ?? request()->route('id');
-
-    // Tentukan Link Tujuan
-    // Jika User adalah Asesor DAN ada ID -> Ke Tracker Asesor
-    // Jika tidak -> Ke Home
-    $backLink = (Auth::check() && Auth::user()->role->nama_role === 'asesor' && $idParam)
-                ? route('asesor.tracker', $idParam)
-                : route('home');
-    @endphp
-
-    <a href="{{ $backLink }}"
+    {{-- Tombol Kembali --}}
+    <a href="javascript:history.back()"
     class="flex items-center space-x-2 text-sm font-medium opacity-80 hover:opacity-100 mb-10 transition mt-2">
         <svg xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        <span>{{ $idParam && Auth::user()->role->nama_role === 'asesor' ? 'Kembali ke Tracker' : 'Kembali ke Menu' }}</span>
+        <span>Kembali</span>
     </a>
 
     {{-- SISA KONTEN (Profil dll) --}}
     <div class="flex flex-col items-center text-center">
         <div class="relative w-36 h-36 mb-4">
             {{-- Foto Skema --}}
-            <img src="{{ $skema && $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/junior_web.jpg') }}"
+            <img src="{{ $skema && $skema->gambar ? asset('storage/' . $skema->gambar) : asset('images/default.jpg') }}"
+                 onerror="this.onerror=null;this.src='{{ asset('images/default.jpg') }}';"
                  alt="{{ $skema->nama_skema ?? 'Skema' }}"
                  class="w-full h-full object-cover rounded-full border-4 border-white shadow-md">
         </div>

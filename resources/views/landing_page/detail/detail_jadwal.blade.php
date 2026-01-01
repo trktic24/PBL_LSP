@@ -40,9 +40,10 @@
         <hr class="border-gray-900 mb-6">
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {{-- KOLOM KIRI (Deskripsi & Syarat) --}}
             <div class="lg:col-span-2">
                 
-                {{-- Deskripsi Skema (Tetap Ambil dari Database) --}}
+                {{-- Deskripsi Skema --}}
                 <div class="mb-12">
                     <h2 class="text-xl font-bold mb-3 font-poppins">Deskripsi Skema</h2>
                     <p class="text-gray-600 leading-relaxed text-justify">
@@ -50,7 +51,7 @@
                     </p>
                 </div>
 
-                {{-- 🟦 PERBAIKAN: PERSYARATAN PESERTA (STATIS) --}}
+                {{-- Persyaratan Peserta --}}
                 <div class="mb-6">
                     <h2 class="text-xl font-bold mb-3 font-poppins">Persyaratan Peserta</h2>
                     <div class="text-gray-600 leading-relaxed">
@@ -65,35 +66,70 @@
 
             </div>
 
+            {{-- KOLOM KANAN (Harga, Kuota & Tombol) --}}
             <div class="lg:col-span-1">
                 <div class="bg-white border border-gray-300 rounded-lg p-12" style="box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.12);">
-                    <div class="flex justify-between items-center mb-5">
+                    
+                    {{-- 🟩 LOGIKA HITUNG KUOTA (Berdasarkan kolom 'kuota_maksimal') --}}
+                    @php
+                        $kuotaMaksimal = $jadwal->kuota_maksimal ?? 0; 
+                        $totalPendaftar = $jumlahPeserta ?? 0;
+                        
+                        // Sisa kuota (cegah minus)
+                        $sisaKuota = max(0, $kuotaMaksimal - $totalPendaftar);
+                        
+                        // Status Penuh
+                        $isFull = ($sisaKuota <= 0);
+                    @endphp
+
+                    {{-- Harga --}}
+                    <div class="flex justify-between items-center mb-4">
                         <span class="font-semibold text-gray-700">Harga :</span>
                         <span class="font-bold text-lg">RP. {{ number_format($jadwal->skema?->harga ?? 0, 0, ',', '.') }}</span>
                     </div>
-                    <div class="flex justify-between items-center mb-10">
+
+                    {{-- Jumlah Pendaftar --}}
+                    <div class="flex justify-between items-center mb-4">
                         <span class="font-semibold text-gray-700">Jumlah Pendaftar :</span>
-                        <span class="font-bold">{{ $jumlahPeserta ?? 0 }} Orang</span>
+                        <span class="font-bold">{{ $totalPendaftar }} Orang</span>
                     </div>
-                    @auth
-                        @if(Auth::user()->role->nama_role == 'asesi')
-                            <form action="{{ route('asesi.daftar.jadwal') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id_jadwal" value="{{ $jadwal->id_jadwal }}">
-                                <button type="submit" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
-                                    Daftar Sekarang
-                                </button>
-                            </form>
-                        @else
-                             <button disabled class="block w-full bg-gray-300 text-center text-gray-500 font-semibold py-3 rounded-lg cursor-not-allowed mb-3">
-                                Khusus Asesi
-                            </button>
-                        @endif
+
+                    {{-- 🟩 SISA KUOTA (Baru) --}}
+                    <div class="flex justify-between items-center mb-10">
+                        <span class="font-semibold text-gray-700">Sisa Kuota :</span>
+                        <span class="font-bold {{ $sisaKuota <= 5 ? 'text-red-600' : 'text-black-600' }}">
+                            {{ $sisaKuota }} Orang
+                        </span>
+                    </div>
+
+                    {{-- 🟩 LOGIKA TOMBOL --}}
+                    @if($isFull)
+                        {{-- Opsi 1: JIKA PENUH --}}
+                        <button disabled class="block w-full bg-gray-400 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
+                            Sudah Penuh
+                        </button>
                     @else
-                        <a href="{{ route('login') }}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
-                            Daftar Sekarang
-                        </a>
-                    @endauth
+                        {{-- Opsi 2: MASIH ADA KUOTA (Cek Auth & Role) --}}
+                        @auth
+                            @if(Auth::user()->role->nama_role == 'asesi')
+                                <form action="{{ route('asesi.daftar.jadwal') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="id_jadwal" value="{{ $jadwal->id_jadwal }}">
+                                    <button type="submit" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
+                                        Daftar Sekarang
+                                    </button>
+                                </form>
+                            @else
+                                <button disabled class="block w-full bg-gray-300 text-center text-gray-500 font-semibold py-3 rounded-lg cursor-not-allowed mb-3">
+                                    Khusus Asesi
+                                </button>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
+                                Daftar Sekarang
+                            </a>
+                        @endauth
+                    @endif
                     
                     <p class="text-center text-gray-500 text-xs">
                         Pendaftaran ditutup tanggal 
