@@ -483,7 +483,7 @@
         <!-- TANDA TANGAN -->
         <div class="signature-section" style="margin-top: 30px;">
             <div class="signature-left">
-                <div class="signature-title">Pemohon</div>
+                <div class="signature-title">Asesi</div>
                 <div class="signature-space">
                     @if ($ttdAsesiBase64)
                         <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi"

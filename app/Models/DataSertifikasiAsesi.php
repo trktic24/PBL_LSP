@@ -178,9 +178,9 @@ class DataSertifikasiAsesi extends Model
         return $this->hasOne(KomentarAk05::class, 'id_data_sertifikasi_asesi');
     }
 
-    public function responApl2Ia01(): HasOne
+    public function responApl2Ia01(): HasMany
     {
-        return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi');
+        return $this->hasMany(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi');
     }
 
     public function lembarJawabIa05(): HasMany
