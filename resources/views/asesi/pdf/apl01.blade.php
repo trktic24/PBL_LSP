@@ -98,6 +98,7 @@
         .bordered-table {
             border: 1px solid #000;
             margin-top: 10px;
+            margin-left: 20px;
         }
 
         .bordered-table td {
@@ -112,22 +113,30 @@
             background-color: #e2e2e2;
         }
 
+        .bordered-table .filename-cell {
+            word-wrap: break-word;
+            word-break: break-all;
+            max-width: 300px;
+        }
+
+        .checkmark {
+            font-family: "DejaVu Sans", sans-serif;
+            font-size: 18pt;
+            font-weight: bold;
+            line-height: 1;
+            color: #000;
+        }
+
         .rekomendasi-box {
             margin-top: 10px;
             padding: 10px 0;
             text-align: center;
         }
 
-        .status-diterima {
+        .status-text {
             font-weight: bold;
             font-size: 12pt;
-            color: #0066cc;
-        }
-
-        .status-tidak-diterima {
-            font-weight: bold;
-            font-size: 12pt;
-            color: #dc3545;
+            color: #000;
         }
 
         .signature-section {
@@ -136,14 +145,13 @@
             width: 100%;
         }
 
-        .signature-left,
-        {
-        display: table-cell;
-        width: 50%;
-        text-align: left;
-        vertical-align: top;
-        padding: 5px;
-        margin-left: 20px;
+        .signature-left {
+            display: table-cell;
+            width: 50%;
+            text-align: left;
+            vertical-align: top;
+            padding: 5px;
+            margin-left: 20px;
         }
 
         .signature-right {
@@ -167,6 +175,11 @@
             font-weight: bold;
             margin-top: 10px;
         }
+
+        .signature-date {
+            margin-top: 5px;
+            font-size: 9pt;
+        }
     </style>
 </head>
 
@@ -175,13 +188,11 @@
     <!-- HEADER dengan Logo -->
     <div class="header">
         <div class="header-left">
-            <!-- Gunakan Base64 untuk Logo BNSP -->
             @if ($logoBnspBase64)
                 <img src="data:image/png;base64,{{ $logoBnspBase64 }}" alt="BNSP" class="logo-bnsp">
             @endif
         </div>
         <div class="header-right">
-            <!-- Gunakan Base64 untuk Logo LSP -->
             @if ($logoLspBase64)
                 <img src="data:image/png;base64,{{ $logoLspBase64 }}" alt="LSP" class="logo-lsp">
             @endif
@@ -194,10 +205,10 @@
         <h2>FR.APL.01</h2>
     </div>
 
-    <!-- BAGIAN A: RINCIAN DATA PEMOHON -->
-    <div class="section-title">A. Rincian Data Pemohon Sertifikasi</div>
+    <!-- BAGIAN 1: RINCIAN DATA PEMOHON -->
+    <div class="section-title">1. Rincian Data Pemohon Sertifikasi</div>
     <p style="margin-left: 20px; margin-top: 5px;">
-        Pada bagian ini, cantumkan data pribadi, data pendidikan formal serta data pekerjaan Anda pada saat ini.
+        Pada bagian ini, tercantum data pribadi, data pendidikan formal, serta data pekerjaan Anda pada saat ini.
     </p>
 
     <div class="subsection-title">a. Data Pribadi</div>
@@ -278,8 +289,8 @@
         </tr>
     </table>
 
-    <!-- BAGIAN B: DATA SERTIFIKASI -->
-    <div class="section-title" style="margin-top: 30px;">B. Data Sertifikasi</div>
+    <!-- BAGIAN 2: DATA SERTIFIKASI -->
+    <div class="section-title" style="margin-top: 30px;">2. Data Sertifikasi</div>
     <p style="margin-left: 20px; margin-top: 5px;">
         Berikut Judul dan Nomor Skema Sertifikasi yang Anda ajukan serta Unit Kompetensi sesuai kemasan pada skema
         sertifikasi untuk mendapatkan pengakuan sesuai dengan latar belakang pendidikan, pelatihan serta pengalaman
@@ -347,10 +358,11 @@
         </tbody>
     </table>
 
-    <!-- BAGIAN C: BUKTI KELENGKAPAN -->
-    <div class="section-title" style="margin-top: 30px;">C. Bukti Kelengkapan Pemohon</div>
+    <!-- BAGIAN 3: BUKTI KELENGKAPAN -->
+    <div class="section-title" style="margin-top: 30px;">3. Bukti Kelengkapan Pemohon</div>
 
-    <div class="subsection-title">a. Bukti Persyaratan Dasar Pemohon</div>
+    <!-- 3.1. Bukti Persyaratan Dasar Pemohon -->
+    <div class="subsection-title">3.1. Bukti Persyaratan Dasar Pemohon</div>
 
     <table class="bordered-table">
         <thead>
@@ -366,71 +378,147 @@
             </tr>
         </thead>
         <tbody>
-            @php $no = 1; @endphp
-            @foreach ($sertifikasi->buktiDasar as $bukti)
+            @forelse ($persyaratanDasarData as $index => $bukti)
                 <tr>
-                    <td style="text-align: center;">{{ $no++ }}</td>
-                    <td>{{ $bukti->bukti_dasar }}</td>
+                    <td style="text-align: center;">{{ $index + 1 }}</td>
+                    <td class="filename-cell">{{ $bukti['label'] }}</td>
                     <td style="text-align: center;">
-                        @if (strtoupper($bukti->status_kelengkapan) == 'M' || strtoupper($bukti->status_kelengkapan) == 'MEMENUHI')
-                            <img src="{{ public_path('images/bukti_dasar/checkmark.jpg') }}" width="14">
-                        @endif
-                    </td>
-                    </td>
-                    <td style="text-align:center;">
-                        @if ($bukti->status_kelengkapan == 'tidak_memenuhi')
-                            <strong style="color:red;">X</strong> {{-- Menggunakan X sesuai gambar output --}}
+                        @if ($bukti['status_kelengkapan'] == 'memenuhi')
+                            <span class="checkmark">✓</span>
+                        @else
+                            -
                         @endif
                     </td>
                     <td style="text-align: center;">
-                        @if ($bukti->status_kelengkapan == 'tidak_ada')
-                            <strong style="color:black;">-</strong> {{-- Menggunakan - sesuai gambar output --}}
+                        @if ($bukti['status_kelengkapan'] == 'tidak_memenuhi')
+                            <span class="checkmark">✓</span>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td style="text-align: center;">
+                        @if ($bukti['status_kelengkapan'] == 'tidak_ada')
+                            <span class="checkmark">✓</span>
+                        @else
+                            -
                         @endif
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="5" style="text-align: center;">Tidak ada data persyaratan dasar</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
-    <!-- BAGIAN D: REKOMENDASI -->
-    <div class="section-title" style="margin-top: 30px;">D. Rekomendasi</div>
-    <p style="margin-left: 20px; margin-top: 5px;">
-        Berdasarkan ketentuan persyaratan dasar, maka pemohon
-        <span class="rekomendasi-box">
-            @if (isset($sertifikasi->status_rekomendasi) && $sertifikasi->status_rekomendasi == 'diterima')
-                <span class="status-diterima">Diterima</span>
-            @elseif(isset($sertifikasi->status_rekomendasi) && $sertifikasi->status_rekomendasi == 'tidak_diterima')
-                <span class="status-tidak-diterima">Tidak Diterima</span>
-            @else
-                <span class="status-diterima">Diterima</span>
-            @endif
-        </span>
-        sebagai peserta sertifikasi
-    </p>
 
-    <!-- TANDA TANGAN -->
-    <div class="signature-section">
-        <div class="signature-left">
-            <div class="signature-title">Pemohon</div>
-            <div class="signature-space">
-                @if ($asesi->tanda_tangan)
-                    <img src="{{ public_path($asesi->tanda_tangan) }}"
-                        style="max-width: 120px; max-height: 70px; margin-top: 5px;">
+    <!-- 3.2. Bukti Administratif -->
+    <div class="subsection-title">3.2. Bukti Administratif</div>
+
+    <table class="bordered-table">
+        <thead>
+            <tr>
+                <td rowspan="2" style="width: 8%; text-align: center;">No.</td>
+                <td rowspan="2" style="width: 52%; text-align: center;">Bukti Administratif</td>
+                <td colspan="2" style="width: 30%; text-align: center;">Ada</td>
+                <td rowspan="2" style="width: 10%; text-align: center;">Tidak Ada</td>
+            </tr>
+            <tr>
+                <td style="text-align: center; width: 15%;">Memenuhi Syarat</td>
+                <td style="text-align: center; width: 15%;">Tidak Memenuhi Syarat</td>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($persyaratanAdministratifData as $index => $bukti)
+                <tr>
+                    <td style="text-align: center;">{{ $index + 1 }}</td>
+                    <td class="filename-cell">{{ $bukti['label'] }}</td>
+                    <td style="text-align: center;">
+                        @if ($bukti['status_kelengkapan'] == 'memenuhi')
+                            <span class="checkmark">✓</span>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td style="text-align: center;">
+                        @if ($bukti['status_kelengkapan'] == 'tidak_memenuhi')
+                            <span class="checkmark">✓</span>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td style="text-align: center;">
+                        @if ($bukti['status_kelengkapan'] == 'tidak_ada')
+                            <span class="checkmark">✓</span>
+                        @else
+                            -
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" style="text-align: center;">Tidak ada data bukti administratif</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <!-- BAGIAN 4: REKOMENDASI -->
+    <div style="page-break-inside: avoid;">
+        <div class="section-title" style="margin-top: 30px; page-break-inside: avoid;">4. Rekomendasi</div>
+        <p style="margin-left: 20px; margin-top: 5px;">
+            Berdasarkan ketentuan persyaratan dasar, maka pemohon
+            <span class="rekomendasi-box">
+                @if ($sertifikasi->rekomendasi_apl01 == 'diterima')
+                    <span class="status-text">Diterima</span>
+                @elseif($sertifikasi->rekomendasi_apl01 == 'tidak_diterima')
+                    <span class="status-text">Tidak Diterima</span>
+                @else
+                    <span class="status-text">Belum Direkomendasikan</span>
                 @endif
+            </span>
+            sebagai peserta sertifikasi
+        </p>
+
+        <!-- TANDA TANGAN -->
+        <div class="signature-section" style="margin-top: 30px;">
+            <div class="signature-left">
+                <div class="signature-title">Pemohon</div>
+                <div class="signature-space">
+                    @if ($ttdAsesiBase64)
+                        <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi"
+                            style="max-width: 120px; max-height: 70px; margin-top: 5px;">
+                    @endif
+                </div>
+                <div class="signature-name">
+                    ({{ $asesi->nama_lengkap }})
+                </div>
+                <div class="signature-date">
+                    @if ($portofolio && $portofolio->created_at)
+                        {{ \Carbon\Carbon::parse($portofolio->created_at)->isoFormat('dddd, DD MMM YYYY') }}
+                    @else
+                        {{ \Carbon\Carbon::parse($sertifikasi->created_at)->isoFormat('dddd, DD MMM YYYY') }}
+                    @endif
+                </div>
             </div>
-            <div class="signature-name">
-                ({{ $asesi->nama_lengkap }})
-            </div>
-        </div>
-        <div class="signature-right">
-            <div class="signature-title">Lembaga Sertifikasi Profesi</div>
-            <div class="signature-space">
-                @if ($ttdBase64)
-                    <img src="data:image/png;base64,{{ $ttdBase64 }}" alt="Tanda Tangan Admin"
-                        style="max-width: 120px; max-height: 70px; margin-top: 5px;">
-                @endif
-            </div>
-            <div class="signature-name">
-                ({{ $admin->nama_admin ?? 'nama admin disini' }})
+            <div class="signature-right">
+                <div class="signature-title">Lembaga Sertifikasi Profesi</div>
+                <div class="signature-space">
+                    @if ($ttdAdminBase64)
+                        <img src="data:image/png;base64,{{ $ttdAdminBase64 }}" alt="Tanda Tangan Admin"
+                            style="max-width: 120px; max-height: 70px; margin-top: 5px;">
+                    @endif
+                </div>
+                <div class="signature-name">
+                    ({{ $admin->nama_admin ?? 'nama admin disini' }})
+                </div>
+                <div class="signature-date">
+                    @if ($portofolio && $portofolio->created_at)
+                        {{ \Carbon\Carbon::parse($portofolio->created_at)->isoFormat('dddd, DD MMM YYYY') }}
+                    @else
+                        {{ \Carbon\Carbon::parse($sertifikasi->created_at)->isoFormat('dddd, DD MMM YYYY') }}
+                    @endif
+                </div>
             </div>
         </div>
     </div>
