@@ -91,7 +91,7 @@ class RegisteredUserController extends Controller
         // ✅ VALIDASI ASESI (GANTI DARI NULLABLE -> REQUIRED)
         if ($roleName === 'asesi') {
             $asesiRules = [
-                'nama_lengkap' => ['required', 'string', 'max:255'],
+                'nama_lengkap' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s\.\,\-\']+$/'],
                 'nik' => ['required', 'string', 'size:16', 'unique:asesi,nik'],
                 'tempat_lahir' => ['required', 'string', 'max:100'],
                 'tanggal_lahir' => ['required', 'string', 'date_format:d-m-Y'],

@@ -105,7 +105,7 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->middleware('throttle:5,1');
 
     // Password Reset
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
@@ -182,13 +182,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
     // APL-01 & MAPA
-    Route::get('/apl-01-1/view/{id}', [APL01Controller::class, 'step1'])->name('apl01.step1');
-    Route::post('/apl-01-1/store', [APL01Controller::class, 'storeStep1'])->name('apl01.step1.store');
-    Route::get('/apl-01-2/view/{id}', [APL01Controller::class, 'step2'])->name('apl01.step2');
-    Route::post('/apl-01-2/store', [APL01Controller::class, 'storeStep2'])->name('apl01.step2.store');
-    Route::get('/apl-01-3/view/{id}', [APL01Controller::class, 'step3'])->name('apl01.step3');
-    Route::post('/apl-01-3/store', [APL01Controller::class, 'storeStep3'])->name('apl01.step3.store');
-
     Route::get('/mapa01/show/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
     Route::post('/mapa01/store', [FrMapa01Controller::class, 'store'])->name('mapa01.store');
 
