@@ -216,7 +216,6 @@ class Apl01PdfController extends Controller
         $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
         $namaFile = 'FR.APL.01_' . $namaAsesiClean . '_' . date('YmdHis') . '.pdf';
 
-        return $pdf->stream($namaFile);
-        // return $pdf->download($namaFile);
+        return $pdf->download($namaFile);
     }
 }
