@@ -13,33 +13,55 @@ use Illuminate\Http\Request;
 class AsesiProfileController extends Controller
 {
     // Helper function untuk mengambil data asesi
+    // [PERBAIKAN] Tambahkan relasi dataSertifikasi agar sidebar tidak perlu query ulang
     private function getAsesi($id)
     {
-        return Asesi::with(['user', 'dataPekerjaan'])->findOrFail($id);
+        return Asesi::with(['user', 'dataPekerjaan', 'dataSertifikasi.jadwal.skema'])->findOrFail($id);
     }
 
+    // [PERBAIKAN] Helper function untuk menentukan Sertifikasi Acuan
+    // Fungsi ini menangkap 'sertifikasi_id' dari URL, atau fallback ke yang terbaru
+    private function getSertifikasiAcuan($asesi)
+    {
+        $sertifikasiId = request('sertifikasi_id');
+        
+        if ($sertifikasiId) {
+            // Jika ada di URL, cari yang spesifik
+            return $asesi->dataSertifikasi->where('id_data_sertifikasi_asesi', $sertifikasiId)->first();
+        }
+
+        // Fallback: Ambil yang paling baru dibuat
+        return $asesi->dataSertifikasi->sortByDesc('created_at')->first();
+    }
+
+    // --- MENU 1: SETTINGS ---
     public function settings($id_asesi)
     {
         $asesi = $this->getAsesi($id_asesi);
-        return view('Admin.profile_asesi.asesi_profile_settings', compact('asesi'));
+        
+        // [PERBAIKAN] Ambil sertifikasi acuan
+        $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
+
+        return view('Admin.profile_asesi.asesi_profile_settings', compact('asesi', 'sertifikasiAcuan'));
     }
 
-   public function form($id_asesi)
+    // --- MENU 2: FORM ---
+    public function form($id_asesi)
     {
-        // 1. Cari Data Sertifikasi (Pendaftaran) milik Asesi ini
-        // Kita cari yang paling baru dibuat (latest)
-        $pendaftaran = \App\Models\DataSertifikasiAsesi::with(['jadwal.skema.listForm'])
-                            ->where('id_asesi', $id_asesi)
-                            ->latest() // Urutkan dari yang terbaru
-                            ->first();
+        $asesi = $this->getAsesi($id_asesi);
+
+        // [PERBAIKAN] Gunakan Helper untuk mendapatkan sertifikasi acuan
+        // Jadi tidak lagi hardcode ->latest()->first() di sini
+        $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
         
         $activeForms = [];
         $namaSkema = 'Belum mendaftar skema';
 
         // 2. Cek Validitas Data Pendaftaran -> Jadwal -> Skema
-        if ($pendaftaran && $pendaftaran->jadwal && $pendaftaran->jadwal->skema) {
+        // Gunakan $sertifikasiAcuan yang sudah didapat
+        if ($sertifikasiAcuan && $sertifikasiAcuan->jadwal && $sertifikasiAcuan->jadwal->skema) {
             
-            $skema = $pendaftaran->jadwal->skema;
+            $skema = $sertifikasiAcuan->jadwal->skema;
             $namaSkema = $skema->nama_skema;
 
             // 3. Mapping Kode Form
@@ -61,41 +83,34 @@ class AsesiProfileController extends Controller
                 $formsFound = false;
 
                 foreach ($map as $dbColumn => $displayCode) {
-                    // Pastikan nilainya 1 (True)
                     if ($config->$dbColumn == 1) {
                         $activeForms[] = $displayCode;
                         $formsFound = true;
                     }
                 }
 
-                // FALLBACK: Jika config ada tapi isinya 0 semua (Admin belum centang)
                 if (!$formsFound) {
-                     $activeForms = array_values($map); // Tampilkan semua
+                     $activeForms = array_values($map); 
                 }
 
             } else {
-                // FALLBACK: Jika Admin belum pernah simpan config sama sekali
-                $activeForms = array_values($map); // Tampilkan semua
+                $activeForms = array_values($map); 
             }
         } 
 
-        // 5. Ambil Data Asesi untuk Sidebar (Optional, jika view butuh object $asesi)
-        $asesi = \App\Models\Asesi::findOrFail($id_asesi);
-
-        // DEBUGGING SEMENTARA (Hapus tanda komentar // di bawah jika masih kosong)
-        // dd($activeForms, $namaSkema, $pendaftaran);
-
-        return view('Admin.profile_asesi.asesi_profile_form', compact('asesi', 'activeForms', 'namaSkema'));
+        // [PERBAIKAN] Kirim $sertifikasiAcuan ke View
+        return view('Admin.profile_asesi.asesi_profile_form', compact('asesi', 'activeForms', 'namaSkema', 'sertifikasiAcuan'));
     }
     
-    /**
-     * Menampilkan Halaman Bukti Kelengkapan
-     */
+    // --- MENU 3: BUKTI ---
     public function bukti($id_asesi)
     {
-        // Ambil asesi beserta bukti dasarnya (lewat relasi HasManyThrough yang baru dibuat)
-        $asesi = Asesi::with(['buktiDasar', 'dataPekerjaan'])->findOrFail($id_asesi);
+        // [PERBAIKAN] Ambil asesi dengan relasi yang dibutuhkan
+        $asesi = Asesi::with(['buktiDasar', 'dataPekerjaan', 'dataSertifikasi.jadwal.skema'])->findOrFail($id_asesi);
         
+        // [PERBAIKAN] Ambil sertifikasi acuan
+        $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
+
         $persyaratan = [
             ['jenis' => 'Pas Foto (Background Merah)', 'desc' => 'Format: JPG/PNG, Maks 2MB.'],
             ['jenis' => 'Kartu Tanda Penduduk (KTP)', 'desc' => 'Format: JPG/PDF. Pastikan NIK terlihat jelas.'],
@@ -104,8 +119,34 @@ class AsesiProfileController extends Controller
             ['jenis' => 'Surat Keterangan Kerja / Portofolio', 'desc' => 'Dokumen Hasil Pekerjaan (Min. 2 tahun).']
         ];
 
-        return view('Admin.profile_asesi.asesi_profile_bukti', compact('asesi', 'persyaratan'));
+        // [PERBAIKAN] Kirim $sertifikasiAcuan ke View
+        return view('Admin.profile_asesi.asesi_profile_bukti', compact('asesi', 'persyaratan', 'sertifikasiAcuan'));
     }
+
+    // --- MENU 4: TRACKER ---
+    public function tracker($id_asesi)
+    {
+        // [PERBAIKAN] Ambil data asesi beserta relasi yang dibutuhkan
+        $asesi = Asesi::with([
+            'user', 
+            'dataPekerjaan', 
+            'dataSertifikasi' => function($q) {
+                $q->with([
+                    'jadwal.masterTuk',
+                    'jadwal.asesor',
+                    'jadwal.skema'
+                ])->latest(); 
+            }
+        ])->findOrFail($id_asesi);
+
+        // [PERBAIKAN] Ambil sertifikasi acuan
+        $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
+
+        // [PERBAIKAN] Kirim $sertifikasiAcuan ke View
+        return view('Admin.profile_asesi.asesi_profile_tracker', compact('asesi', 'sertifikasiAcuan'));
+    }
+
+    // --- FUNGSI UPLOAD & MANAGEMEN FILE (Semua menggunakan disk 'private_docs') ---
 
     public function storeBukti(Request $request, $id_asesi)
     {
@@ -116,6 +157,10 @@ class AsesiProfileController extends Controller
         ]);
 
         try {
+            // [CATATAN] Logika ini mengambil sertifikasi terbaru untuk dikaitkan dengan bukti
+            // Jika ingin lebih spesifik, bisa gunakan request('sertifikasi_id') juga di sini
+            // Tapi biasanya bukti dasar itu menempel ke Asesi (general) atau Sertifikasi Terakhir.
+            // Biarkan default logic ini untuk sementara.
             $sertifikasi = DataSertifikasiAsesi::where('id_asesi', $id_asesi)
                                             ->latest('created_at')->first();
 
@@ -123,14 +168,18 @@ class AsesiProfileController extends Controller
 
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
+                // Format nama file: TIMESTAMP_NamaAsliFile
                 $filename = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+                
+                // Folder: bukti_asesi/ID_Asesi
                 $path = 'bukti_asesi/' . $id_asesi;
                 
-                Storage::disk('private_docs')->putFileAs($path, $file, $filename);
+                // Simpan ke PRIVATE DISK
+                $storedPath = Storage::disk('private_docs')->putFileAs($path, $file, $filename);
                 
                 $bukti = BuktiDasar::create([
                     'id_data_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi,
-                    'bukti_dasar' => $path . '/' . $filename,
+                    'bukti_dasar' => $storedPath, // Simpan path lengkap
                     'status_kelengkapan' => 'memenuhi',
                     'status_validasi' => 0,
                     'keterangan' => $request->jenis_dokumen . ($request->keterangan ? ' - ' . $request->keterangan : ''),
@@ -143,40 +192,36 @@ class AsesiProfileController extends Controller
         }
     }
 
-    // FUNGSI 2: MURNI UPDATE (GANTI FILE)
     public function updateBukti(Request $request, $id_asesi, $id_bukti)
     {
         $request->validate([
             'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            // Jenis dokumen tidak perlu validasi strict karena sudah ada
             'keterangan' => 'nullable|string',
         ]);
 
         try {
-            // Cari data bukti berdasarkan ID
             $bukti = BuktiDasar::findOrFail($id_bukti);
 
             if ($request->hasFile('file')) {
-                // 1. Hapus File Lama
+                // 1. Hapus File Lama dari Private Disk
                 if (Storage::disk('private_docs')->exists($bukti->bukti_dasar)) {
                     Storage::disk('private_docs')->delete($bukti->bukti_dasar);
                 }
 
-                // 2. Upload File Baru
+                // 2. Upload File Baru ke Private Disk
                 $file = $request->file('file');
                 $filename = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
                 $path = 'bukti_asesi/' . $id_asesi;
                 
-                Storage::disk('private_docs')->putFileAs($path, $file, $filename);
+                $storedPath = Storage::disk('private_docs')->putFileAs($path, $file, $filename);
 
                 // 3. Update Database
-                // Ambil jenis dokumen lama dari keterangan agar konsisten
                 $jenisDokumenLama = explode(' - ', $bukti->keterangan)[0];
 
                 $bukti->update([
-                    'bukti_dasar' => $path . '/' . $filename,
+                    'bukti_dasar' => $storedPath,
                     'status_kelengkapan' => 'memenuhi',
-                    'status_validasi' => 0, // Reset validasi karena file berubah
+                    'status_validasi' => 0, 
                     'keterangan' => $jenisDokumenLama . ($request->keterangan ? ' - ' . $request->keterangan : ''),
                 ]);
 
@@ -189,11 +234,10 @@ class AsesiProfileController extends Controller
 
     public function deleteBukti($id_asesi, $id_bukti)
     {
-        // Cari bukti berdasarkan Primary Key yang ada di Model (id_bukti_dasar)
         $bukti = BuktiDasar::where('id_bukti_dasar', $id_bukti)->first();
 
         if ($bukti) {
-            // Hapus File Fisik
+            // Hapus File Fisik dari Private Disk
             if (Storage::disk('private_docs')->exists($bukti->bukti_dasar)) {
                 Storage::disk('private_docs')->delete($bukti->bukti_dasar);
             }
@@ -208,28 +252,25 @@ class AsesiProfileController extends Controller
     public function storeTandaTangan(Request $request, $id_asesi)
     {
         $request->validate([
-            'file_ttd' => 'required|image|mimes:png,jpg,jpeg|max:2048', // Max 2MB
+            'file_ttd' => 'required|image|mimes:png,jpg,jpeg|max:2048', 
         ]);
 
         try {
             $asesi = Asesi::findOrFail($id_asesi);
 
             if ($request->hasFile('file_ttd')) {
-                // Hapus file lama jika ada
+                // Hapus file lama jika ada (dari private disk)
                 if ($asesi->tanda_tangan && Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
                     Storage::disk('private_docs')->delete($asesi->tanda_tangan);
                 }
 
                 $file = $request->file('file_ttd');
                 $filename = 'ttd_' . time() . '_' . $id_asesi . '.' . $file->getClientOriginalExtension();
-                
-                // Simpan di folder ttd_asesi
                 $path = 'ttd_asesi'; 
                 
-                // Simpan FULL PATH
+                // Simpan ke Private Disk
                 $storedPath = Storage::disk('private_docs')->putFileAs($path, $file, $filename);
                 
-                // Simpan Path ke Database
                 $asesi->update([
                     'tanda_tangan' => $storedPath
                 ]);
@@ -237,6 +278,7 @@ class AsesiProfileController extends Controller
                 return response()->json([
                     'success' => true, 
                     'message' => 'Tanda tangan berhasil diupload',
+                    // Gunakan route secure.file agar bisa diakses di view
                     'url' => route('secure.file', ['path' => $storedPath])
                 ]);
             }
@@ -254,12 +296,11 @@ class AsesiProfileController extends Controller
             $asesi = Asesi::findOrFail($id_asesi);
 
             if ($asesi->tanda_tangan) {
-                // Hapus File Fisik (Path sudah lengkap di DB)
+                // Hapus File Fisik dari Private Disk
                 if (Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
                     Storage::disk('private_docs')->delete($asesi->tanda_tangan);
                 }
                 
-                // Hapus path di DB
                 $asesi->update(['tanda_tangan' => null]);
                 
                 return response()->json(['success' => true, 'message' => 'Tanda tangan dihapus']);
@@ -271,27 +312,4 @@ class AsesiProfileController extends Controller
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
-
-    public function tracker($id_asesi)
-    {
-        // 1. Ambil data asesi beserta relasi yang dibutuhkan oleh halaman Tracker
-        $asesi = Asesi::with([
-            'user', 
-            'dataPekerjaan', 
-            // Ambil semua data sertifikasi asesi (untuk sidebar)
-            'dataSertifikasi' => function($q) {
-                // Eager Load relasi mendalam yang dibutuhkan Blade
-                $q->with([
-                    'jadwal.masterTuk',
-                    'jadwal.asesor',
-                    // 'jadwal.waktuMulai', // Jika Anda punya accessor/relasi khusus untuk waktu
-                    // 'jadwal.waktuSelesai', // Jika Anda punya accessor/relasi khusus untuk waktu
-                ])->latest(); // Ambil yang paling baru (yang utama dilacak)
-            }
-        ])->findOrFail($id_asesi);
-
-        // 2. Kirim ke View
-        return view('Admin.profile_asesi.asesi_profile_tracker', compact('asesi'));
-    }
-
 }
