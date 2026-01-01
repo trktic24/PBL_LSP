@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,21 +10,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        ::-webkit-scrollbar { width: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0;
+        }
     </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 h-screen flex flex-col overflow-hidden">
 
-    <div class="h-screen overflow-y-auto">
+    <div class="flex-none z-50 relative bg-white shadow-sm">
+        <x-navbar.navbar_admin />
+    </div>
 
-        <x-navbar.navbar_admin/>
-        
+    <div class="flex-1 overflow-y-auto bg-gray-50 relative z-0">
+
         <main class="p-6">
             <div class="flex flex-col sm:flex-row justify-between items-end mb-6 gap-4">
                 <div>
@@ -46,7 +54,7 @@
                 <div class="bg-white p-6 rounded-xl shadow-lg flex items-center border-b-4 border-blue-600/30 min-h-[200px]">
                     <div class="flex justify-center items-center w-1/3">
                         <i class="far fa-calendar-alt text-8xl text-blue-600/80"></i>
-                        
+
                     </div>
                     <div class="relative flex-1 h-full flex items-center justify-center">
                         <p class="absolute top-4 text-sm text-gray-500">Asesmen Berlangsung</p>
@@ -79,7 +87,7 @@
                         <p class="absolute top-4 text-sm text-gray-500">Jumlah Asesor</p>
                         <p class="text-5xl font-bold text-gray-900">{{ $jumlahAsesor }}</p>
                     </div>
-                    
+
                 </div>
             </section>
 
@@ -95,9 +103,9 @@
                             <div class="mt-3 flex items-center text-sm font-medium {{ ($trenPendaftaran ?? 0) >= 0 ? 'text-green-600' : 'text-red-500' }}">
                                 <span class="flex items-center bg-white px-2 py-0.5 rounded-full shadow-sm">
                                     @if(($trenPendaftaran ?? 0) >= 0)
-                                        <i class="fas fa-arrow-trend-up mr-1.5"></i> +{{ $trenPendaftaran ?? 0 }}%
+                                    <i class="fas fa-arrow-trend-up mr-1.5"></i> +{{ $trenPendaftaran ?? 0 }}%
                                     @else
-                                        <i class="fas fa-arrow-trend-down mr-1.5"></i> {{ $trenPendaftaran ?? 0 }}%
+                                    <i class="fas fa-arrow-trend-down mr-1.5"></i> {{ $trenPendaftaran ?? 0 }}%
                                     @endif
                                 </span>
                                 <span class="text-gray-400 ml-2 text-xs font-normal">vs kemarin</span>
@@ -112,7 +120,7 @@
 
                 <div class="bg-gradient-to-br from-white to-emerald-50 p-6 rounded-xl shadow-md border border-emerald-100 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
                     <div class="flex justify-between items-start z-10 relative">
-                        <div class="flex-1 pr-4"> 
+                        <div class="flex-1 pr-4">
                             <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Tingkat Kelulusan (Kompeten)</p>
                             <div class="flex items-baseline gap-2">
                                 <h4 class="text-3xl font-bold text-gray-800">{{ $persentaseKelulusan ?? 0 }}%</h4>
@@ -151,7 +159,7 @@
             </section>
 
             <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                
+
                 <div class="bg-white p-4 rounded-xl shadow-lg flex flex-col">
                     <h3 class="text-md font-semibold mb-2">Statistik Skema</h3>
                     <div class="relative h-64 w-full border border-gray-100 rounded-lg p-2">
@@ -175,25 +183,25 @@
 
             </section>
             <section class="bg-white border border-gray-200 rounded-xl shadow-md p-6 overflow-visible">
-                
+
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                         <i class="fas fa-list-ul text-blue-600"></i>
                         Jadwal Terdekat
                     </h3>
                 </div>
-                
+
                 <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6">
-                    
+
                     <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
-                        
+
                         <form action="{{ route('admin.dashboard') }}" method="GET" class="w-full sm:w-96" x-data="{ search: '{{ request('search', '') }}' }">
                             @if(request('per_page')) <input type="hidden" name="per_page" value="{{ request('per_page') }}"> @endif
                             @if(request('filter_jenis_tuk')) <input type="hidden" name="filter_jenis_tuk" value="{{ request('filter_jenis_tuk') }}"> @endif
                             @if(request('filter_status')) <input type="hidden" name="filter_status" value="{{ request('filter_status') }}"> @endif
-                            
+
                             <div class="relative">
-                                <input type="text" name="search" x-model="search" placeholder="Search..." 
+                                <input type="text" name="search" x-model="search" placeholder="Search..."
                                     class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                 <button type="submit" class="absolute left-3 top-0 h-full text-gray-400 hover:text-gray-600"><i class="fas fa-search"></i></button>
                                 <button type="button" class="absolute right-3 top-0 h-full text-gray-400 hover:text-gray-600" x-show="search.length > 0" @click="search = ''; $nextTick(() => $el.form.submit())" x-cloak><i class="fas fa-times"></i></button>
@@ -205,7 +213,7 @@
                                     url.searchParams.set('per_page', this.perPage); 
                                     url.searchParams.set('page', 1); 
                                     window.location.href = url.href; 
-                                } }" 
+                                } }"
                             class="flex items-center space-x-2 w-full sm:w-auto">
                             <label for="per_page" class="text-sm text-gray-600 whitespace-nowrap">Show:</label>
                             <select id="per_page" x-model="perPage" @change="changePerPage()" class="bg-white text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -219,48 +227,46 @@
                     </div>
 
                     @php
-                        $allParams = request()->query();
-                        // AMBIL NILAI FILTER STATUS DARI REQUEST
-                        $filterStatus = request('filter_status'); 
-                        // Tentukan status yang sedang aktif (Controller default ke 'Terjadwal')
-                        $currentStatus = $filterStatus ?: 'Terjadwal'; 
-                        $filterJenisTuk = request('filter_jenis_tuk');
-                        $sortColumn = request('sort', 'tanggal_pelaksanaan');
-                        $sortDirection = request('direction', 'asc');
+                    $allParams = request()->query();
+                    // AMBIL NILAI FILTER STATUS DARI REQUEST
+                    $filterStatus = request('filter_status');
+                    // Tentukan status yang sedang aktif (Controller default ke 'Terjadwal')
+                    $currentStatus = $filterStatus ?: 'Terjadwal';
+                    $filterJenisTuk = request('filter_jenis_tuk');
+                    $sortColumn = request('sort', 'tanggal_pelaksanaan');
+                    $sortDirection = request('direction', 'asc');
                     @endphp
 
                     <div class="relative w-full lg:w-auto flex justify-end" x-data="{ openFilter: false }">
-                        <button 
+                        <button
                             @click="openFilter = !openFilter"
-                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 flex items-center transition-colors w-full sm:w-auto justify-center"
-                        >
+                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 flex items-center transition-colors w-full sm:w-auto justify-center">
                             <i class="fas fa-filter mr-2"></i> Filter
                             {{-- Tampilkan badge jika ada filter aktif (selain default 'Terjadwal') --}}
                             @if($filterJenisTuk || ($filterStatus && $filterStatus !== 'Terjadwal'))
-                                <span class="ml-2 w-2 h-2 bg-blue-600 rounded-full relative"></span>
+                            <span class="ml-2 w-2 h-2 bg-blue-600 rounded-full relative"></span>
                             @endif
                         </button>
 
-                        <div 
-                            x-show="openFilter" 
+                        <div
+                            x-show="openFilter"
                             @click.away="openFilter = false"
                             class="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50"
                             x-transition
-                            style="display: none;"
-                        >
+                            style="display: none;">
                             <div class="p-2">
                                 {{-- NEW: Status Filter Section --}}
                                 <div class="px-2 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">Status Jadwal</div>
                                 @foreach(['Terjadwal', 'Selesai', 'Dibatalkan'] as $status)
-                                    <a href="{{ route('admin.dashboard', array_merge($allParams, ['filter_status' => $status, 'page' => 1])) }}"
-                                        class="block w-full text-left px-3 py-2 rounded-md text-sm transition-colors {{ $currentStatus == $status ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
-                                        {{ $status }}
-                                    </a>
+                                <a href="{{ route('admin.dashboard', array_merge($allParams, ['filter_status' => $status, 'page' => 1])) }}"
+                                    class="block w-full text-left px-3 py-2 rounded-md text-sm transition-colors {{ $currentStatus == $status ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
+                                    {{ $status }}
+                                </a>
                                 @endforeach
-                                
+
                                 {{-- Existing Jenis TUK Filter Section --}}
                                 <div class="px-2 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-2 border-t pt-2">Jenis TUK</div>
-                                
+
                                 <a href="{{ route('admin.dashboard', array_merge($allParams, ['filter_jenis_tuk' => ($filterJenisTuk == 1 ? null : 1), 'page' => 1])) }}"
                                     class="block w-full text-left px-3 py-2 rounded-md text-sm transition-colors {{ $filterJenisTuk == 1 ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
                                     Sewaktu
@@ -273,23 +279,23 @@
 
                             {{-- NEW: Tombol Hapus Semua Filter --}}
                             @if($filterJenisTuk || $filterStatus)
-                                <div class="p-2 border-t border-gray-100 bg-gray-50 rounded-b-xl">
-                                    <a href="{{ route('admin.dashboard', array_merge(request()->except(['filter_jenis_tuk', 'filter_status', 'page']), ['filter_status' => null, 'filter_jenis_tuk' => null, 'page' => 1])) }}" 
-                                        class="block w-full text-center text-xs text-red-600 font-medium hover:underline">
-                                        Hapus Semua Filter
-                                    </a>
-                                </div>
+                            <div class="p-2 border-t border-gray-100 bg-gray-50 rounded-b-xl">
+                                <a href="{{ route('admin.dashboard', array_merge(request()->except(['filter_jenis_tuk', 'filter_status', 'page']), ['filter_status' => null, 'filter_jenis_tuk' => null, 'page' => 1])) }}"
+                                    class="block w-full text-center text-xs text-red-600 font-medium hover:underline">
+                                    Hapus Semua Filter
+                                </a>
+                            </div>
                             @endif
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-xs text-left border border-gray-200">
                         <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
                             <tr class="divide-x divide-gray-200 border-b border-gray-200">
-                                @php 
-                                    $baseParams = ['search' => request('search'), 'per_page' => request('per_page'), 'filter_jenis_tuk' => request('filter_jenis_tuk'), 'filter_status' => request('filter_status')]; // Tambahkan filter_status
+                                @php
+                                $baseParams = ['search' => request('search'), 'per_page' => request('per_page'), 'filter_jenis_tuk' => request('filter_jenis_tuk'), 'filter_status' => request('filter_status')]; // Tambahkan filter_status
                                 @endphp
 
                                 <th class="px-4 py-3 font-semibold w-16 text-center">
@@ -337,7 +343,7 @@
                                         <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                     </a>
                                 </th>
-                                
+
                                 <th class="px-4 py-3 font-semibold text-center">
                                     @php $isCurrent = $sortColumn == 'kuota_maksimal'; @endphp
                                     <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'kuota_maksimal', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
@@ -345,7 +351,7 @@
                                         <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
                                     </a>
                                 </th>
-                                
+
                                 <th class="px-4 py-3 font-semibold w-32">
                                     @php $isCurrent = $sortColumn == 'tanggal_pelaksanaan'; @endphp
                                     <a href="{{ route('admin.dashboard', array_merge($baseParams, ['sort' => 'tanggal_pelaksanaan', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
@@ -356,16 +362,16 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
-                            
+
                             @forelse ($jadwalTerbaru as $jadwal)
                             <tr class="hover:bg-gray-50 transition divide-x divide-gray-200">
                                 <td class="px-4 py-4 text-center font-medium text-gray-500">{{ $jadwal->id_jadwal }}</td>
                                 <td class="px-4 py-4">
                                     <div class="h-32 w-32 rounded-md overflow-hidden border border-gray-200 bg-gray-50 mx-auto">
                                         @if($jadwal->skema && $jadwal->skema->gambar)
-                                            <img src="{{ asset($jadwal->skema->gambar) }}" alt="{{ $jadwal->skema->nama_skema }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer" onclick="window.open(this.src, '_blank')">
+                                        <img src="{{ asset($jadwal->skema->gambar) }}" alt="{{ $jadwal->skema->nama_skema }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer" onclick="window.open(this.src, '_blank')">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image text-lg"></i></div>
+                                        <div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image text-lg"></i></div>
                                         @endif
                                     </div>
                                 </td>
@@ -378,9 +384,11 @@
                                 <td class="px-4 py-4 font-medium text-blue-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</td>
                             </tr>
                             @empty
-                            <tr><td colspan="9" class="px-6 py-8 text-center text-gray-400 italic">Tidak ada jadwal yang sedang berlangsung saat ini.</td></tr>
+                            <tr>
+                                <td colspan="9" class="px-6 py-8 text-center text-gray-400 italic">Tidak ada jadwal yang sedang berlangsung saat ini.</td>
+                            </tr>
                             @endforelse
-                            
+
                         </tbody>
                     </table>
                 </div>
@@ -388,9 +396,9 @@
                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
                     <div class="text-sm text-gray-500 font-bold">
                         @if ($jadwalTerbaru->total() > 0)
-                            Showing {{ $jadwalTerbaru->firstItem() }} - {{ $jadwalTerbaru->lastItem() }} of {{ $jadwalTerbaru->total() }} results
+                        Showing {{ $jadwalTerbaru->firstItem() }} - {{ $jadwalTerbaru->lastItem() }} of {{ $jadwalTerbaru->total() }} results
                         @else
-                            Showing 0 results
+                        Showing 0 results
                         @endif
                     </div>
                     <div>
@@ -403,11 +411,11 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            
+        document.addEventListener('DOMContentLoaded', function() {
+
             // --- AMBIL DATA DARI CONTROLLER ---
             // Data ini sekarang sudah terkirim dari controller yang diperbaiki sebelumnya.
-            const dataSkema = @json($dataSkemaChart); 
+            const dataSkema = @json($dataSkemaChart);
             const dataAsesi = @json($dataAsesiChart);
             const dataProgress = @json($dataProgress);
 
@@ -433,15 +441,25 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 }, // Agar angka bulat (tidak ada 1.5 skema)
-                            title: { display: true, text: 'Jumlah Skema' }
+                            ticks: {
+                                stepSize: 1
+                            }, // Agar angka bulat (tidak ada 1.5 skema)
+                            title: {
+                                display: true,
+                                text: 'Jumlah Skema'
+                            }
                         },
                         x: {
-                            title: { display: true, text: 'Bulan' }
+                            title: {
+                                display: true,
+                                text: 'Bulan'
+                            }
                         }
                     },
                     plugins: {
-                        legend: { position: 'bottom' },
+                        legend: {
+                            position: 'bottom'
+                        },
                         tooltip: {
                             mode: 'index',
                             intersect: false,
@@ -469,22 +487,32 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 },
-                            title: { display: true, text: 'Jumlah Asesi' }
+                            ticks: {
+                                stepSize: 1
+                            },
+                            title: {
+                                display: true,
+                                text: 'Jumlah Asesi'
+                            }
                         },
                         x: {
-                            title: { display: true, text: 'Bulan' }
+                            title: {
+                                display: true,
+                                text: 'Bulan'
+                            }
                         }
                     },
                     plugins: {
-                        legend: { position: 'bottom' }
+                        legend: {
+                            position: 'bottom'
+                        }
                     }
                 }
             });
 
             // --- 3. Progress Skema (Doughnut Chart) ---
             const ctxProgress = document.getElementById('chartProgress').getContext('2d');
-            
+
             // Cek jika datanya kosong semua, kita beri fallback visual atau biarkan 0
             const totalData = dataProgress.reduce((a, b) => a + b, 0);
 
@@ -497,7 +525,7 @@
                         backgroundColor: [
                             '#3b82f6', // Biru (Terjadwal)
                             '#10b981', // Hijau (Selesai)
-                            '#ef4444'  // Merah (Dibatalkan)
+                            '#ef4444' // Merah (Dibatalkan)
                         ],
                         hoverOffset: 4
                     }]
@@ -508,7 +536,9 @@
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: { usePointStyle: true }
+                            labels: {
+                                usePointStyle: true
+                            }
                         },
                         tooltip: {
                             callbacks: {
@@ -527,4 +557,5 @@
     </script>
 
 </body>
+
 </html>
