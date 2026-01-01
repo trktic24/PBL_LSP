@@ -54,7 +54,7 @@
     <!-- Profil Skema -->
     <div class="flex flex-col items-center text-center">
         <div class="relative w-36 h-36 mb-4">
-            <img src="{{ ($jadwal?->skema?->gambar) ? asset('storage/' . $jadwal->skema->gambar) : asset('images/default_pic.jpeg') }}"
+            <img src="{{ ($jadwal?->skema?->gambar) ? asset('storage/' . $jadwal?->skema?->gambar) : asset('images/default_pic.jpeg') }}"
                  alt="{{ $jadwal?->skema?->nama_skema ?? 'Skema' }}"
                  onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';"
                  class="w-full h-full object-cover rounded-full border-4 border-white shadow-md">
