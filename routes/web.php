@@ -215,14 +215,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/ia08/store', [IA08Controller::class, 'store'])
         ->name('ia08.store');
 
-
-    // IA-09
-    Route::prefix('IA09')->group(function () {
-        Route::get('/asesor', [IA09Controller::class, 'showWawancaraAsesor'])->name('ia09.asesor');
-        Route::post('/store', [IA09Controller::class, 'storeWawancara'])->name('ia09.store');
-        Route::get('/admin', [IA09Controller::class, 'showWawancaraAdmin'])->name('ia09.admin');
-    });
-
     // IA-11
     Route::get('/FR_IA_11', [IA11Controller::class, 'create'])->name('ia11.create');
     Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');

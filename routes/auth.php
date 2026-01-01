@@ -395,6 +395,9 @@ Route::middleware('auth')->group(function () {
 
             // FR.IA.01 - View Only for Admin (Cek Observasi Demonstrasi/Praktik)
             Route::get('/ia01/{id_sertifikasi}', [\App\Http\Controllers\IA01Controller::class, 'showView'])->name('ia01.admin.view');
+
+            Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
+                ->name('ia09.admin.view');
         });
 
     // ======================================================
@@ -449,6 +452,11 @@ Route::middleware('auth')->group(function () {
             // IA-06 Penilaian
             Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
             Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+
+            Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
+                ->name('ia09.edit');
+            Route::post('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'storeWawancara'])
+                ->name('ia09.store');
         });
 
     // ======================================================
