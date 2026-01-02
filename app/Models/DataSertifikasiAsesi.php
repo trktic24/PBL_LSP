@@ -27,6 +27,7 @@ use App\Models\DaftarHadirAsesi;
 use App\Models\KomentarAk05;
 use App\Models\ResponApl2Ia01;
 use App\Models\Skema; // Tambahan
+use App\Models\PenyusunValidator;
 
 class DataSertifikasiAsesi extends Model
 {
@@ -322,6 +323,11 @@ class DataSertifikasiAsesi extends Model
     public function portofolio(): HasMany
     {
         return $this->hasMany(DataPortofolio::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function penyusunValidator(): HasOne
+    {
+        return $this->hasOne(PenyusunValidator::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
     public function asesmenMandiri()
     {
