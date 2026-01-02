@@ -92,7 +92,7 @@ class FrAk07Controller extends Controller
             'potensi_asesi' => 'nullable|array',
             'potensi_asesi.*' => 'exists:poin_potensi_AK07,id_poin_potensi_AK07',
 
-            'penyesuaian' => 'nullable|array',
+            'penyesuaian' => 'required|array',
             'penyesuaian.*.status' => 'required|in:Ya,Tidak',
             'penyesuaian.*.keterangan' => 'nullable|array',
             'penyesuaian.*.keterangan.*' => 'exists:catatan_keterangan_AK07,id_catatan_keterangan_AK07',
@@ -123,26 +123,26 @@ class FrAk07Controller extends Controller
             ResponDiperlukanPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->delete();
             if ($request->has('penyesuaian')) {
                 foreach ($request->penyesuaian as $id_modifikasi => $data) {
-                    // Jika ada beberapa keterangan yang dipilih
-                    if (!empty($data['keterangan'])) {
+                    // 1. Simpan Base Record (Selalu simpan status dan catatan manual di sini)
+                    ResponDiperlukanPenyesuaianAK07::create([
+                        'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
+                        'id_persyaratan_modifikasi_AK07' => $id_modifikasi,
+                        'id_catatan_keterangan_AK07' => null,
+                        'respon_penyesuaian' => $data['status'],
+                        'respon_catatan_keterangan' => $data['catatan_manual'] ?? null
+                    ]);
+
+                    // 2. Simpan record tambahan untuk setiap checkbox yang dipilih
+                    if (!empty($data['keterangan']) && is_array($data['keterangan'])) {
                         foreach ($data['keterangan'] as $id_keterangan) {
                             ResponDiperlukanPenyesuaianAK07::create([
                                 'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
                                 'id_persyaratan_modifikasi_AK07' => $id_modifikasi,
                                 'id_catatan_keterangan_AK07' => $id_keterangan,
                                 'respon_penyesuaian' => $data['status'],
-                                'respon_catatan_keterangan' => $data['catatan_manual'] ?? null
+                                'respon_catatan_keterangan' => null // Jangan duplikasi catatan manual di sini
                             ]);
                         }
-                    } else {
-                        // Jika tidak ada keterangan yang dipilih tetap simpan status Ya/Tidak
-                        ResponDiperlukanPenyesuaianAK07::create([
-                            'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
-                            'id_persyaratan_modifikasi_AK07' => $id_modifikasi,
-                            'id_catatan_keterangan_AK07' => null,
-                            'respon_penyesuaian' => $data['status'],
-                            'respon_catatan_keterangan' => $data['catatan_manual'] ?? null
-                        ]);
                     }
                 }
             }

@@ -111,7 +111,7 @@
                         $respon = $sertifikasi->responPenyesuaianAk07->where('id_persyaratan_modifikasi_AK07', $soal->id_persyaratan_modifikasi_AK07);
                         $isYa = $respon->where('respon_penyesuaian', 'Ya')->isNotEmpty();
                         $existingKeterangan = $respon->pluck('id_catatan_keterangan_AK07')->filter()->toArray();
-                        $catatanManual = $respon->first()?->respon_catatan_keterangan;
+                        $catatanManual = $respon->whereNull('id_catatan_keterangan_AK07')->first()?->respon_catatan_keterangan;
                         @endphp
                         {{-- Gunakan Alpine.js untuk interaksi Ya/Tidak --}}
                         <tr class="bg-white hover:bg-gray-50 transition" x-data="{ showOptions: {{ $isYa ? 'true' : 'false' }} }">
