@@ -39,8 +39,8 @@ class Ak01PdfController extends Controller
         
         // Ambil tanggal dari respon bukti AK01 (created_at)
         $tanggalRespon = $responBukti->first() 
-            ? Carbon::parse($responBukti->first()->created_at)->isoFormat('D MMMM Y')
-            : Carbon::now()->isoFormat('D MMMM Y');
+            ? Carbon::parse($responBukti->first()->created_at)->isoFormat('dddd, DD MMM YYYY')
+            : Carbon::now()->isoFormat('dddd, DD MMM YYYY');
 
         // Format tanggal pelaksanaan
         $tanggalPelaksanaan = $jadwal->tanggal_pelaksanaan 
@@ -70,7 +70,17 @@ class Ak01PdfController extends Controller
         // --- LOGIKA TANDA TANGAN ASESOR ---
         $ttdAsesorBase64 = null;
         if ($asesor && $asesor->tanda_tangan) {
-            $pathTtdAsesor = storage_path('app/private_uploads/tanda_tangan/' . basename($asesor->tanda_tangan));
+            // Path: storage/app/private_uploads/asesor_docs/{id_user}/filename.png
+            // Ambil id_user dari asesor
+            $idUser = $asesor->user_id ?? $asesor->id_user ?? null;
+            
+            if ($idUser) {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . $idUser . '/' . basename($asesor->tanda_tangan));
+            } else {
+                // Fallback jika tidak ada id_user
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
+            }
+            
             if (file_exists($pathTtdAsesor)) {
                 $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
             }
@@ -98,6 +108,7 @@ class Ak01PdfController extends Controller
         $pdf = Pdf::loadView('asesi.pdf.fr_ak_01', $data);
         $pdf->setPaper('a4', 'portrait');
 
+        // return $pdf->stream('FR.AK.01_Persetujuan_' . $asesi->nama_lengkap . '.pdf');
         return $pdf->download('FR.AK.01_Persetujuan_' . $asesi->nama_lengkap . '.pdf');
     }
 }
