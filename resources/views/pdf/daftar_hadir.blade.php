@@ -85,7 +85,7 @@
             <td class="text-center">
                 @if ($data->presensi && $data->presensi->hadir == 1)
                     <div class="ttd-box">
-                        <img src="{{ storage_path('app/private_uploads/' . $data->asesi->tanda_tangan) }}" style="width: 100%; height: 100%; object-fit: contain;" />
+                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($data->asesi->tanda_tangan) }}" style="width: 100%; height: 100%; object-fit: contain;" />
                     </div>
                 @else
                     -
@@ -105,7 +105,7 @@
 <br>
 <div class="ttd-box" style="margin: 0 auto;">
     @if($jadwal->asesor && $jadwal->asesor->tanda_tangan)
-        <img src="{{ storage_path('app/private_uploads/' . $jadwal->asesor->tanda_tangan) }}" style="width: 100%; height: 100%; object-fit: contain;" />
+        <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($jadwal->asesor->tanda_tangan) }}" style="width: 100%; height: 100%; object-fit: contain;" />
     @endif
 </div>
 <br>

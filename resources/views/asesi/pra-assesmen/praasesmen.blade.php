@@ -46,14 +46,26 @@
 <body class="bg-gray-100">
 
     {{-- LAYOUT UTAMA: SIDEBAR & KONTEN --}}
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden">
 
         {{-- SIDEBAR (Menggunakan Komponen Sidebar Kita) --}}
-        <x-sidebar2 :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
+        <div class="hidden md:block md:w-80 flex-shrink-0">
+            <x-sidebar2 :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
+        </div>
 
+        {{-- 2. HEADER MOBILE (Component Baru) --}}
+        @php
+            // Logika gambar skema dari referensi (Standardized)
+            $gambarSkema = null;
+            if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) {
+                $gambarSkema = asset('storage/' . $sertifikasi->jadwal->skema->gambar);
+            }
+        @endphp
+
+        <x-mobile_header :title="'Pra-Asesmen Mandiri'" :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" :name="$asesi->nama_lengkap ?? Auth::user()->name" :image="$gambarSkema" :sertifikasi="$sertifikasi" />
 
         {{-- MAIN CONTENT --}}
-        <main class="flex-1 p-8 md:p-12 bg-white overflow-y-auto">
+        <main class="flex-1 px-6 pt-20 pb-12 md:p-12 bg-white overflow-y-auto">
             <div class="max-w-6xl mx-auto">
 
                 {{-- JUDUL HALAMAN & SKEMA --}}

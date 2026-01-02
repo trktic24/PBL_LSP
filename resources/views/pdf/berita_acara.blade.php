@@ -152,7 +152,7 @@
                             <td style="border: none;">Tanda Tangan</td>
                             <td style="border: none;">:</td>
                             <td style="border: none;">
-                                <img src="{{ storage_path('app/private_uploads/' . $jadwal->asesor->tanda_tangan) }}" class="signature-img">
+                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($jadwal->asesor->tanda_tangan) }}" class="signature-img">
                             </td>
                         </tr>
                     </table>
@@ -173,7 +173,7 @@
                             <td style="border: none;">Tanda Tangan</td>
                             <td style="border: none;">:</td>
                             <td style="border: none;">
-                                <img src="{{ storage_path('app/private_uploads/' . $jadwal->asesor->tanda_tangan) }}" class="signature-img">
+                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($jadwal->asesor->tanda_tangan) }}" class="signature-img">
                             </td>
                         </tr>
                     </table>
