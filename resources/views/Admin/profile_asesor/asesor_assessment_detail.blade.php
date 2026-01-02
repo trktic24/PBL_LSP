@@ -183,83 +183,115 @@
             // 2. Pelaksanaan Asesmen Items
             $pelaksanaanItems = [];
 
+            // Helper to check if unlocking is allowed (AK01 Accepted OR Level >= 40)
+            // Using AK01 recommendation directly is safer than level
+            $isPelaksanaanUnlocked = ($dataSertifikasi->rekomendasi_ak01 == 'diterima') || ($level >= 40);
+
             // IA.05
-            $ia05Done = $dataSertifikasi->lembarJawabIa05()->whereNotNull('pencapaian_ia05')->exists();
-            $stIa05 = $ia05Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+            $ia05Filled = $dataSertifikasi->lembarJawabIa05()->whereNotNull('pencapaian_ia05')->exists();
+            $statusIa05 = $dataSertifikasi->rekomendasi_ia05;
+            $isIa05Done = $statusIa05 == 'diterima';
+            $isIa05Rejected = $statusIa05 == 'tidak diterima';
+            
+            $stIa05 = $isIa05Done ? 'DONE' : ($isIa05Rejected ? 'REJECTED' : ($ia05Filled ? 'WAITING' : ($isPelaksanaanUnlocked ? 'ACTIVE' : 'LOCKED')));
+            
             $pelaksanaanItems[] = [
                 'id' => 'IA05',
                 'title' => 'FR.IA.05 - Pertanyaan Tertulis',
                 'desc' => 'Daftar pertanyaan tertulis esai.',
                 'status' => $stIa05,
-                'status_label' => $stIa05 == 'DONE' ? 'Selesai' : ($stIa05 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                'status_label' => $isIa05Done ? 'Diterima' : ($isIa05Rejected ? 'Ditolak' : ($ia05Filled ? 'Menunggu' : ($stIa05 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'))),
                 'verify_url' => route('FR_IA_05_C', $asesi->id_asesi),
                 'pdf_url' => route('ia05.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $level >= 40,
+                'can_verify' => $stIa05 !== 'LOCKED',
                 'can_pdf' => $level >= 40
             ];
 
             // IA.10
-            $ia10Done = $dataSertifikasi->ia10()->exists();
-            $stIa10 = $ia10Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+            $ia10Filled = $dataSertifikasi->ia10()->exists();
+            $statusIa10 = $dataSertifikasi->rekomendasi_ia10;
+            $isIa10Done = $statusIa10 == 'diterima';
+            $isIa10Rejected = $statusIa10 == 'tidak diterima';
+            
+            $stIa10 = $isIa10Done ? 'DONE' : ($isIa10Rejected ? 'REJECTED' : ($ia10Filled ? 'WAITING' : ($isPelaksanaanUnlocked ? 'ACTIVE' : 'LOCKED')));
+
             $pelaksanaanItems[] = [
                 'id' => 'IA10',
                 'title' => 'FR.IA.10 - Verifikasi Pihak Ketiga',
                 'desc' => 'Verifikasi portofolio dari pihak ketiga.',
                 'status' => $stIa10,
-                'status_label' => $stIa10 == 'DONE' ? 'Selesai' : ($stIa10 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                'status_label' => $isIa10Done ? 'Diterima' : ($isIa10Rejected ? 'Ditolak' : ($ia10Filled ? 'Menunggu' : ($stIa10 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'))),
                 'verify_url' => route('fr-ia-10.create', $asesi->id_asesi),
                 'pdf_url' => route('ia10.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $level >= 40,
+                'can_verify' => $stIa10 !== 'LOCKED',
                 'can_pdf' => $level >= 40
             ];
 
             // IA.02
-            $ia02Done = $dataSertifikasi->ia02()->exists();
-            $stIa02 = $ia02Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+            $ia02Filled = $dataSertifikasi->ia02()->exists();
+            $statusIa02 = $dataSertifikasi->rekomendasi_ia02;
+            $isIa02Done = $statusIa02 == 'diterima';
+            $isIa02Rejected = $statusIa02 == 'tidak diterima';
+
+            $stIa02 = $isIa02Done ? 'DONE' : ($isIa02Rejected ? 'REJECTED' : ($ia02Filled ? 'WAITING' : ($isPelaksanaanUnlocked ? 'ACTIVE' : 'LOCKED')));
+
             $pelaksanaanItems[] = [
                 'id' => 'IA02',
                 'title' => 'FR.IA.02 - Tugas Praktik Demonstrasi',
                 'desc' => 'Ceklis observasi tugas praktik.',
                 'status' => $stIa02,
-                'status_label' => $stIa02 == 'DONE' ? 'Selesai' : ($stIa02 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                'status_label' => $isIa02Done ? 'Diterima' : ($isIa02Rejected ? 'Ditolak' : ($ia02Filled ? 'Menunggu' : ($stIa02 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'))),
                 'verify_url' => route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $level >= 40,
+                'can_verify' => $stIa02 !== 'LOCKED',
                 'can_pdf' => $level >= 40
             ];
 
             // IA.06
-            $ia06Done = $dataSertifikasi->ia06Answers()->whereNotNull('pencapaian')->exists(); 
-            $stIa06 = $ia06Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+            $ia06Filled = $dataSertifikasi->ia06Answers()->whereNotNull('pencapaian')->exists(); 
+            $statusIa06 = $dataSertifikasi->rekomendasi_ia06;
+            $isIa06Done = $statusIa06 == 'diterima';
+            $isIa06Rejected = $statusIa06 == 'tidak diterima';
+
+            $stIa06 = $isIa06Done ? 'DONE' : ($isIa06Rejected ? 'REJECTED' : ($ia06Filled ? 'WAITING' : ($isPelaksanaanUnlocked ? 'ACTIVE' : 'LOCKED')));
+
             $pelaksanaanItems[] = [
                 'id' => 'IA06',
                 'title' => 'FR.IA.06 - Pertanyaan Lisan',
                 'desc' => 'Daftar pertanyaan lisan.',
                 'status' => $stIa06,
-                'status_label' => $stIa06 == 'DONE' ? 'Selesai' : ($stIa06 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                'status_label' => $isIa06Done ? 'Diterima' : ($isIa06Rejected ? 'Ditolak' : ($ia06Filled ? 'Menunggu' : ($stIa06 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'))),
                 'verify_url' => route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $level >= 40,
+                'can_verify' => $stIa06 !== 'LOCKED',
                 'can_pdf' => $level >= 40
             ];
 
             // IA.07
-            $ia07Done = $dataSertifikasi->ia07()->whereNotNull('pencapaian')->exists();
-            $stIa07 = $ia07Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+            $ia07Filled = $dataSertifikasi->ia07()->whereNotNull('pencapaian')->exists();
+            $statusIa07 = $dataSertifikasi->rekomendasi_ia07;
+            $isIa07Done = $statusIa07 == 'diterima';
+            $isIa07Rejected = $statusIa07 == 'tidak diterima';
+
+            $stIa07 = $isIa07Done ? 'DONE' : ($isIa07Rejected ? 'REJECTED' : ($ia07Filled ? 'WAITING' : ($isPelaksanaanUnlocked ? 'ACTIVE' : 'LOCKED')));
+
             $pelaksanaanItems[] = [
                 'id' => 'IA07',
                 'title' => 'FR.IA.07 - Daftar Pertanyaan Lisan',
                 'desc' => 'Daftar pertanyaan lisan (alternatif).',
                 'status' => $stIa07,
-                'status_label' => $stIa07 == 'DONE' ? 'Selesai' : ($stIa07 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                'status_label' => $isIa07Done ? 'Diterima' : ($isIa07Rejected ? 'Ditolak' : ($ia07Filled ? 'Menunggu' : ($stIa07 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'))),
                 'verify_url' => route('FR_IA_07'),
                 'pdf_url' => route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $level >= 40,
+                'can_verify' => $stIa07 !== 'LOCKED',
                 'can_pdf' => $level >= 40
             ];
 
             // AK.02
-            $allIADone = ($ia05Done && $ia10Done && $ia02Done && $ia06Done && $ia07Done);
+            // Must use $isIaXXDone (Verification status) or $iaXXFilled (Submission status)?
+            // Assuming we require Verification before decision:
+            $allIADone = ($isIa05Done && $isIa10Done && $isIa02Done && $isIa06Done && $isIa07Done);
+            
             $pelaksanaanItems[] = [
                 'id' => 'AK02',
                 'title' => 'FR.AK.02 - Keputusan Asesmen',

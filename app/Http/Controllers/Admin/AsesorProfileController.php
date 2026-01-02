@@ -510,6 +510,21 @@ class AsesorProfileController extends Controller
             case 'AK01':
                 $dataSertifikasi->rekomendasi_ak01 = $status;
                 break;
+            case 'IA02':
+                $dataSertifikasi->rekomendasi_ia02 = $status;
+                break;
+            case 'IA05':
+                $dataSertifikasi->rekomendasi_ia05 = $status;
+                break;
+            case 'IA06':
+                $dataSertifikasi->rekomendasi_ia06 = $status;
+                break;
+            case 'IA07':
+                $dataSertifikasi->rekomendasi_ia07 = $status;
+                break;
+            case 'IA10':
+                $dataSertifikasi->rekomendasi_ia10 = $status;
+                break;
             case 'APL02':
                 $dataSertifikasi->rekomendasi_apl02 = $status;
                 break;
