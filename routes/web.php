@@ -275,6 +275,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/asesor/{id}/bukti/delete/{jenis_dokumen}', [AsesorProfileController::class, 'deleteBukti'])->name('asesor.bukti.delete');
     Route::post('/asesor/{id}/ttd/store', [AsesorProfileController::class, 'storeTtd'])->name('asesor.ttd.store');
     Route::delete('/asesor/{id}/ttd/delete', [AsesorProfileController::class, 'deleteTtd'])->name('asesor.ttd.delete');
+    
+    // Quick Verification Route
+    Route::post('/asesor/{id}/document/verify', [AsesorProfileController::class, 'verifyDocument'])->name('asesor.document.verify');
 });
 
 // ==========================================================

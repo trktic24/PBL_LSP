@@ -49,11 +49,42 @@
             $isFinalized = ($level >= 100);
 
             // --- HELPER FUNCTIONS ---
-            function getStatusColor($isDone, $isActive = false) {
+            function getStatusColor($isDone, $isActive = false, $isRejected = false) {
+                if ($isRejected) return 'bg-red-100 text-red-800';
                 if ($isDone) return 'bg-green-100 text-green-800';
                 if ($isActive) return 'bg-yellow-100 text-yellow-800';
                 return 'bg-gray-100 text-gray-500';
             }
+
+            // ... (inside item definitions)
+            
+            // FR.MAPA.01
+            $statusMapa01 = $dataSertifikasi->rekomendasi_mapa01;
+            $isMapa01Done = $statusMapa01 == 'diterima';
+            $isMapa01Rejected = $statusMapa01 == 'tidak diterima';
+            
+            $praAsesmenItems[] = [
+                'id' => 'MAPA01',
+                // ...
+                'status' => $isMapa01Done ? 'DONE' : ($isMapa01Rejected ? 'REJECTED' : 'WAITING'),
+                'status_label' => $isMapa01Done ? 'Diterima' : ($isMapa01Rejected ? 'Ditolak' : 'Menunggu'),
+                // ...
+            ];
+
+            // FR.MAPA.02
+            $statusMapa02 = $dataSertifikasi->rekomendasi_mapa02;
+            $isMapa02Done = $statusMapa02 == 'diterima';
+            $isMapa02Rejected = $statusMapa02 == 'tidak diterima';
+
+            $praAsesmenItems[] = [
+                'id' => 'MAPA02',
+                // ...
+                'status' => $isMapa02Done ? 'DONE' : ($isMapa02Rejected ? 'REJECTED' : 'WAITING'),
+                'status_label' => $isMapa02Done ? 'Diterima' : ($isMapa02Rejected ? 'Ditolak' : 'Menunggu'),
+                // ...
+            ];
+            
+            // ... (Similar for APL01/APL02)
 
             function getStatusText($isDone, $isActive = false) {
                 if ($isDone) return 'Selesai / Diterima';
@@ -67,27 +98,33 @@
             $praAsesmenItems = [];
 
             // FR.APL.01
-            $isApl01Done = $dataSertifikasi->rekomendasi_apl01 == 'diterima';
+            $statusApl01 = $dataSertifikasi->rekomendasi_apl01;
+            $isApl01Done = $statusApl01 == 'diterima';
+            $isApl01Rejected = $statusApl01 == 'tidak diterima';
+
             $praAsesmenItems[] = [
                 'id' => 'APL01',
                 'title' => 'FR.APL.01 - Permohonan Sertifikasi',
                 'desc' => 'Formulir permohonan sertifikasi kompetensi.',
-                'status' => $isApl01Done ? 'DONE' : 'WAITING',
-                'status_label' => $isApl01Done ? 'Diterima' : 'Menunggu',
+                'status' => $isApl01Done ? 'DONE' : ($isApl01Rejected ? 'REJECTED' : 'WAITING'),
+                'status_label' => $isApl01Done ? 'Diterima' : ($isApl01Rejected ? 'Ditolak' : 'Menunggu'),
                 'verify_url' => route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => true, // Always accessible for view/verify
+                'can_verify' => true, 
                 'can_pdf' => true
             ];
 
             // FR.MAPA.01
-            $isMapa01Done = $level >= 20;
+            $statusMapa01 = $dataSertifikasi->rekomendasi_mapa01;
+            $isMapa01Done = $statusMapa01 == 'diterima';
+            $isMapa01Rejected = $statusMapa01 == 'tidak diterima';
+
             $praAsesmenItems[] = [
                 'id' => 'MAPA01',
                 'title' => 'FR.MAPA.01 - Merencanakan Aktivitas',
                 'desc' => 'Perencanaan aktivitas dan proses asesmen.',
-                'status' => $isMapa01Done ? 'DONE' : 'WAITING',
-                'status_label' => $isMapa01Done ? 'Diterima' : 'Menunggu',
+                'status' => $isMapa01Done ? 'DONE' : ($isMapa01Rejected ? 'REJECTED' : 'WAITING'),
+                'status_label' => $isMapa01Done ? 'Diterima' : ($isMapa01Rejected ? 'Ditolak' : 'Menunggu'),
                 'verify_url' => route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('mapa01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'can_verify' => true,
@@ -95,17 +132,20 @@
             ];
 
             // FR.MAPA.02
-            $isMapa02Done = $level >= 20;
+            $statusMapa02 = $dataSertifikasi->rekomendasi_mapa02;
+            $isMapa02Done = $statusMapa02 == 'diterima';
+            $isMapa02Rejected = $statusMapa02 == 'tidak diterima';
+
             $praAsesmenItems[] = [
                 'id' => 'MAPA02',
                 'title' => 'FR.MAPA.02 - Peta Instrumen',
                 'desc' => 'Peta instrumen asesmen yang akan digunakan.',
-                'status' => $isMapa02Done ? 'DONE' : ($level >= 10 ? 'WAITING' : 'LOCKED'),
-                'status_label' => $isMapa02Done ? 'Diterima' : ($level >= 10 ? 'Menunggu' : 'Terkunci'),
+                'status' => $isMapa02Done ? 'DONE' : ($isMapa02Rejected ? 'REJECTED' : 'WAITING'),
+                'status_label' => $isMapa02Done ? 'Diterima' : ($isMapa02Rejected ? 'Ditolak' : 'Menunggu'),
                 'verify_url' => route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $level >= 10, // Example logic
-                'can_pdf' => $level >= 10
+                'can_verify' => true, 
+                'can_pdf' => true
             ];
 
             // FR.APL.02
@@ -123,17 +163,20 @@
             ];
 
             // FR.AK.01
-            $ak01Done = ($level >= 40 || $dataSertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui');
+            $statusAk01 = $dataSertifikasi->rekomendasi_ak01;
+            $isAk01Done = $statusAk01 == 'diterima';
+            $isAk01Rejected = $statusAk01 == 'tidak diterima';
+            
             $praAsesmenItems[] = [
                 'id' => 'AK01',
                 'title' => 'FR.AK.01 - Persetujuan & Kerahasiaan',
                 'desc' => 'Persetujuan asesmen dan kerahasiaan.',
-                'status' => $ak01Done ? 'DONE' : ($level >= 30 ? 'WAITING' : 'LOCKED'),
-                'status_label' => $ak01Done ? 'Diterima' : ($level >= 30 ? 'Menunggu' : 'Terkunci'),
+                'status' => $isAk01Done ? 'DONE' : ($isAk01Rejected ? 'REJECTED' : 'WAITING'),
+                'status_label' => $isAk01Done ? 'Diterima' : ($isAk01Rejected ? 'Ditolak' : 'Menunggu'),
                 'verify_url' => route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('ak01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => true, // Viewable
-                'can_pdf' => $level >= 30
+                'can_verify' => true,
+                'can_pdf' => $isAk01Done
             ];
 
 
@@ -237,7 +280,72 @@
                 showAllPra: false,
                 showAllPelaksanaan: false,
                 praItems: {{ json_encode($praAsesmenItems) }},
-                pelItems: {{ json_encode($pelaksanaanItems) }}
+                pelItems: {{ json_encode($pelaksanaanItems) }},
+                embedUrl: null,
+                showEmbed: false,
+                loading: false,
+                openVerify(url) {
+                    if (!url) return;
+                    this.embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=true';
+                    this.showEmbed = true;
+                    // Scroll to embed view
+                    setTimeout(() => {
+                        document.getElementById('embed-section').scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                },
+                selectItem(item) {
+                    this.activeItem = item;
+                    // Automatically open verify if available
+                    if (item.verify_url) {
+                        this.openVerify(item.verify_url);
+                    }
+                },
+                async updateStatus(action) {
+                    if (!this.activeItem) {
+                        alert('Dokumen belum dipilih.');
+                        return;
+                    }
+                    
+                    if (!confirm('Apakah anda yakin ingin mengubah status dokumen ini?')) return;
+
+                    this.loading = true;
+                    const endpoint = `{{ route('asesor.document.verify', $asesor->id_asesor) }}`;
+                    const items = this.praItems.concat(this.pelItems);
+                    
+                    try {
+                        let response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                id_data_sertifikasi_asesi: '{{ $dataSertifikasi->id_data_sertifikasi_asesi }}',
+                                document_id: this.activeItem.id,
+                                action: action
+                            })
+                        });
+
+                        let result = await response.json();
+
+                        if (result.success) {
+                            // Update UI
+                            this.activeItem.status_label = result.new_label;
+                            this.activeItem.status = 'DONE'; // Force done status or depend on backend
+                            if (result.new_status === 'ditolak') {
+                                this.activeItem.status = 'REJECTED'; // Custom status if needed
+                            }
+                            alert(result.message);
+                        } else {
+                            alert(result.message);
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert('Terjadi kesalahan saat memproses permintaan.');
+                    } finally {
+                        this.loading = false;
+                    }
+                }
              }"
              class="space-y-8">
 
@@ -261,18 +369,18 @@
                             <div x-show="showAllPra || index < 2" 
                                  class="p-4 rounded-xl border transition-all duration-200 cursor-pointer group"
                                  :class="activeItem && activeItem.id === item.id ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-100 hover:border-blue-300 hover:shadow-sm bg-gray-50'"
-                                 @click="activeItem = item">
+                                 @click="selectItem(item)">
                                 
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                                             :class="item.status === 'DONE' ? 'bg-green-100 text-green-600' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-200 text-gray-500')">
-                                            <i class="fas" :class="item.status === 'DONE' ? 'fa-check' : (item.status === 'WAITING' ? 'fa-clock' : 'fa-lock')"></i>
+                                             :class="item.status === 'DONE' ? 'bg-green-100 text-green-600' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-600' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-200 text-gray-500'))">
+                                            <i class="fas" :class="item.status === 'DONE' ? 'fa-check' : (item.status === 'REJECTED' ? 'fa-times' : (item.status === 'WAITING' ? 'fa-clock' : 'fa-lock'))"></i>
                                         </div>
                                         <div>
                                             <h3 class="text-sm font-semibold text-gray-800 group-hover:text-blue-700 transition" x-text="item.title"></h3>
                                             <span class="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                                                  :class="item.status === 'DONE' ? 'bg-green-100 text-green-700' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500')"
+                                                  :class="item.status === 'DONE' ? 'bg-green-100 text-green-700' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-700' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500'))"
                                                   x-text="item.status_label"></span>
                                         </div>
                                     </div>
@@ -302,18 +410,18 @@
                             <div x-show="showAllPelaksanaan || index < 2" 
                                  class="p-4 rounded-xl border transition-all duration-200 cursor-pointer group"
                                  :class="activeItem && activeItem.id === item.id ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-100 hover:border-blue-300 hover:shadow-sm bg-gray-50'"
-                                 @click="activeItem = item">
+                                 @click="selectItem(item)">
                                 
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                                             :class="item.status === 'DONE' ? 'bg-green-100 text-green-600' : (item.status === 'ACTIVE' ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-200 text-gray-500')">
-                                            <i class="fas" :class="item.status === 'DONE' ? 'fa-check' : (item.status === 'ACTIVE' ? 'fa-pen' : 'fa-lock')"></i>
+                                             :class="item.status === 'DONE' ? 'bg-green-100 text-green-600' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-600' : (item.status === 'ACTIVE' ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-200 text-gray-500'))">
+                                            <i class="fas" :class="item.status === 'DONE' ? 'fa-check' : (item.status === 'REJECTED' ? 'fa-times' : (item.status === 'ACTIVE' ? 'fa-pen' : 'fa-lock'))"></i>
                                         </div>
                                         <div>
                                             <h3 class="text-sm font-semibold text-gray-800 group-hover:text-blue-700 transition" x-text="item.title"></h3>
                                             <span class="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                                                  :class="item.status === 'DONE' ? 'bg-green-100 text-green-700' : (item.status === 'ACTIVE' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500')"
+                                                  :class="item.status === 'DONE' ? 'bg-green-100 text-green-700' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-700' : (item.status === 'ACTIVE' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500'))"
                                                   x-text="item.status_label"></span>
                                         </div>
                                     </div>
@@ -378,31 +486,65 @@
                             </p>
                         </div>
 
+                        {{-- EMBED SECTION (Moved Inside) --}}
+                        <div x-show="showEmbed" 
+                             class="mb-8 border border-gray-200 rounded-xl overflow-hidden shadow-sm"
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 translate-y-2">
+                            
+                            {{-- Embed Toolbar --}}
+                            <div class="bg-gray-100 px-4 py-2 flex items-center justify-between border-b border-gray-200">
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Pratinjau Dokumen</span>
+                                <div class="flex items-center gap-2">
+                                     <a :href="embedUrl" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium">
+                                        <i class="fas fa-external-link-alt"></i> Buka Fullscreen
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="relative w-full h-[800px] bg-gray-50">
+                                <div class="absolute inset-0 flex items-center justify-center text-gray-400 z-0">
+                                    <div class="flex flex-col items-center">
+                                        <i class="fas fa-circle-notch fa-spin text-3xl mb-2 text-blue-500"></i>
+                                        <span class="text-sm">Memuat Dokumen...</span>
+                                    </div>
+                                </div>
+                                <iframe :src="embedUrl" class="relative z-10 w-full h-full border-0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
                         {{-- Action Buttons (Bottom Right) --}}
                         <div class="flex justify-end items-center gap-4 pt-6 border-t border-gray-100">
                             
                             {{-- PDF Button --}}
                             <a :href="activeItem?.pdf_url" target="_blank"
                                class="px-5 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2"
-                               :class="activeItem?.can_pdf ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900' : 'bg-gray-50 text-gray-300 cursor-not-allowed pointer-events-none'">
+                               :class="activeItem?.can_pdf ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900' : 'bg-gray-50 text-gray-300 cursor-not-allowed pointer-events-none'"
+                               :disabled="loading">
                                 <i class="fas fa-file-pdf text-red-500"></i>
                                 Download PDF
                             </a>
 
-                            {{-- Tolak Verifikasi Button (Disabled) --}}
-                            <button type="button" disabled
-                                    class="px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm flex items-center gap-2 bg-red-100 text-red-400 cursor-not-allowed opacity-60">
+                            {{-- Tolak Verifikasi Button (Enabled) --}}
+                            <button type="button" 
+                                    @click="updateStatus('reject')"
+                                    :disabled="loading"
+                                    class="px-6 py-2.5 rounded-lg font-bold text-sm shadow-sm flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 transition">
                                 <i class="fas fa-times-circle"></i>
                                 Tolak Verifikasi
+                                <i x-show="loading" class="fas fa-spinner fa-spin ml-2"></i>
                             </button>
 
-                            {{-- Verifikasi Button --}}
-                            <a :href="activeItem?.verify_url"
-                               class="px-6 py-2.5 rounded-lg font-bold text-sm shadow-md transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
-                               :class="activeItem?.can_verify ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'">
+                            {{-- Verifikasi Button (Global Action) --}}
+                            <button @click="updateStatus('verify')"
+                                    type="button"
+                                    :disabled="loading || !activeItem?.can_verify"
+                                    class="px-6 py-2.5 rounded-lg font-bold text-sm shadow-md transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
+                                    :class="activeItem?.can_verify && !loading ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg' : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'">
                                 <i class="fas fa-check-double"></i>
                                 Verifikasi Formulir
-                            </a>
+                                <i x-show="loading" class="fas fa-spinner fa-spin ml-2"></i>
+                            </button>
                         </div>
                     </div>
 

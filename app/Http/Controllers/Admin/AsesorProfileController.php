@@ -480,4 +480,50 @@ class AsesorProfileController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Tanda tangan berhasil dihapus.']);
     }
+
+    // ==========================================================
+    // QUICK VERIFICATION (AJAX)
+    // ==========================================================
+    public function verifyDocument(Request $request, $id_asesor)
+    {
+        $request->validate([
+            'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
+            'document_id' => 'required|string',
+            'action' => 'required|in:verify,reject'
+        ]);
+
+        $dataSertifikasi = DataSertifikasiAsesi::findOrFail($request->id_data_sertifikasi_asesi);
+        // Fix: Use correct ENUM values from migration (tidak diterima vs ditolak)
+        $status = $request->action === 'verify' ? 'diterima' : 'tidak diterima';
+
+        // Logic based on Document ID
+        switch ($request->document_id) {
+            case 'APL01':
+                $dataSertifikasi->rekomendasi_apl01 = $status;
+                break;
+            case 'MAPA01':
+                $dataSertifikasi->rekomendasi_mapa01 = $status;
+                break;
+            case 'MAPA02':
+                $dataSertifikasi->rekomendasi_mapa02 = $status;
+                break;
+            case 'AK01':
+                $dataSertifikasi->rekomendasi_ak01 = $status;
+                break;
+            case 'APL02':
+                $dataSertifikasi->rekomendasi_apl02 = $status;
+                break;
+            default:
+                return response()->json(['success' => false, 'message' => 'Dokumen tidak dapat diverifikasi secara instan atau ID salah.'], 400);
+        }
+
+        $dataSertifikasi->save();
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Status dokumen berhasil diperbarui.',
+            'new_status' => $status,
+            'new_label' => $status === 'diterima' ? 'Diterima' : 'Ditolak' // Frontend might expect 'Ditolak' label even if DB is 'tidak diterima'
+        ]);
+    }
 }
