@@ -46,8 +46,10 @@ use App\Http\Controllers\FrMapa01Controller; // MAPA-01
 use App\Http\Controllers\Mapa02Controller; // MAPA-02
 use App\Http\Controllers\FrAk07Controller; // AK-07
 use App\Http\Controllers\Ak02Controller; // AK-02
+use App\Http\Controllers\Asesi\Ak03Controller; // AK-03
 use App\Http\Controllers\Asesi\Ak04Controller; // AK-04
 use App\Http\Controllers\SoalController;
+use App\Http\Controllers\Asesor\Ak05Controller; // AK-05
 
 // Instrumen Asesmen
 use App\Http\Controllers\IA01Controller;
@@ -179,6 +181,14 @@ Route::prefix('apl02')->name('apl02.')->group(function () {
     Route::get('/ak04/form/{id}', [Ak04Controller::class, 'create'])->name('ak04.create');
     Route::post('/ak04/store/{id}', [Ak04Controller::class, 'store'])->name('ak04.store');
     Route::get('/FR_AK_05', fn() => view('frontend/AK_05/FR_AK_05'))->name('FR_AK_05');
+
+    // FR-AK-03
+    Route::get('/ak03/form/{id}', [Ak03Controller::class, 'create'])->name('ak03.create');
+    Route::post('/ak03/store/{id}', [Ak03Controller::class, 'store'])->name('ak03.store');
+    
+    // FR-AK-05
+    Route::get('/ak05/{id_jadwal}', [Ak05Controller::class, 'index'])->name('ak05.index');
+    Route::post('/ak05/store/{id_jadwal}', [Ak05Controller::class, 'store'])->name('ak05.store');
 
     // FR-AK-07
     Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
