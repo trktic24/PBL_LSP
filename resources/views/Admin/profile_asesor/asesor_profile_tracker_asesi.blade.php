@@ -1,5 +1,5 @@
 @php
-    // Helper Checkmark
+    // Helper Checkmark (modified to fit inside ball)
     if (!function_exists('renderCheckmark')) {
         function renderCheckmark() {
             return '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="white" class="w-3.5 h-3.5">
@@ -8,7 +8,7 @@
         }
     }
 
-    // Unify data source
+    // Unify data source: $schemeTimelineData (from showTrackerSkema) OR $timelineData (from showTracker)
     $finalTimelineData = $schemeTimelineData ?? $timelineData ?? [];
 @endphp
 
@@ -27,7 +27,7 @@
     ::-webkit-scrollbar { width: 0; }
   </style>
 </head>
-<body class="text-gray-800" x-data="{ activeUrl: null, activeTitle: '' }">
+<body class="text-gray-800">
 
   <x-navbar.navbar-admin />
   
@@ -65,12 +65,13 @@
         @else
             <div class="max-w-4xl mx-auto px-4 mt-8">
                 
-                {{-- MODE 1: SINGLE ASESI VIEW --}}
+                {{-- MODE 1: SINGLE ASESI VIEW (MATCHING ASESOR TRACKER DESIGN) --}}
                 @if(isset($dataSertifikasi))
                     @php
                         $level = $dataSertifikasi->level_status;
                         $isFinalized = ($level >= 100);
 
+                        // Helper Button State
                         function adminBtnState($isDone) {
                             return $isDone 
                                 ? 'bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer' 
@@ -78,6 +79,7 @@
                         }
                     @endphp
 
+                    {{-- SECTION: PRA-ASESMEN --}}
                     <div class="mb-8">
                          <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
                             <i class="fas fa-clipboard-check text-blue-600 mr-2"></i> Pra-Asesmen
@@ -88,7 +90,11 @@
                             <div class="relative pl-12 group">
                                 <div class="absolute -left-[17px] top-0 z-10 w-9 h-9 rounded-full flex items-center justify-center border-4 border-white shadow-sm
                                     {{ $dataSertifikasi->rekomendasi_apl01 == 'diterima' ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white' }}">
-                                    @if($dataSertifikasi->rekomendasi_apl01 == 'diterima') <i class="fas fa-check text-xs"></i> @else <span class="font-bold text-[10px]">01</span> @endif
+                                    @if($dataSertifikasi->rekomendasi_apl01 == 'diterima') 
+                                        <i class="fas fa-check text-xs"></i> 
+                                    @else 
+                                        <span class="font-bold text-[10px]">01</span> 
+                                    @endif
                                 </div>
                                 <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
                                     <div class="flex justify-between items-start">
@@ -97,16 +103,15 @@
                                             <p class="text-xs text-gray-500 mt-0.5">Permohonan Sertifikasi Kompetensi</p>
                                         </div>
                                         <a href="{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                           @click.prevent="activeUrl = '{{ route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.APL.01 - Pendaftaran'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md {{ adminBtnState($dataSertifikasi->rekomendasi_apl01 == 'diterima') }}">
                                             Verifikasi
                                         </a>
                                     </div>
-                                    <div class="mt-2 text-xs">
+                                    <div class="mt-2">
                                         @if($dataSertifikasi->rekomendasi_apl01 == 'diterima') 
-                                            <span class="bg-green-50 text-green-600 px-2 py-0.5 rounded font-medium">Diterima</span>
+                                            <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded font-medium">Diterima</span>
                                         @else 
-                                            <span class="bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded font-medium">Menunggu</span>
+                                            <span class="text-[10px] bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded font-medium">Menunggu</span>
                                         @endif
                                     </div>
                                 </div>
@@ -126,7 +131,6 @@
                                             <p class="text-xs text-gray-500 mt-0.5">Merencanakan Aktivitas dan Proses Asesmen</p>
                                         </div>
                                         <a href="{{ route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                           @click.prevent="activeUrl = '{{ route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.MAPA.01 - Merencanakan Aktivitas'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md {{ adminBtnState($isMapa01) }}">
                                             Verifikasi
                                         </a>
@@ -148,7 +152,6 @@
                                             <p class="text-xs text-gray-500 mt-0.5">Peta Instrumen Asesmen</p>
                                         </div>
                                         <a href="{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                           @click.prevent="activeUrl = '{{ route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.MAPA.02 - Peta Instrumen'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md {{ adminBtnState($isMapa02) }}">
                                             Verifikasi
                                         </a>
@@ -170,7 +173,6 @@
                                             <p class="text-xs text-gray-500 mt-0.5">Asesmen Mandiri Asesi</p>
                                         </div>
                                         <a href="{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                           @click.prevent="activeUrl = '{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.APL.02 - Asesmen Mandiri'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md {{ adminBtnState($isApl02) }}">
                                             Verifikasi
                                         </a>
@@ -192,7 +194,6 @@
                                             <p class="text-xs text-gray-500 mt-0.5">Persetujuan Asesmen dan Kerahasiaan</p>
                                         </div>
                                         <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                           @click.prevent="activeUrl = '{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.AK.01 - Persetujuan'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md {{ adminBtnState($isAk01) }}">
                                             Verifikasi
                                         </a>
@@ -227,16 +228,15 @@
                                             <p class="text-xs text-gray-500 mt-0.5">Hasil Observasi & Tes Tertulis (IA.02, IA.05, dll)</p>
                                         </div>
                                         <a href="{{ route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $dataSertifikasi->id_data_sertifikasi_asesi]) }}" 
-                                           @click.prevent="activeUrl = '{{ route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $dataSertifikasi->id_data_sertifikasi_asesi]) }}'; activeTitle = 'Pelaksanaan Asesmen'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md bg-purple-100 text-purple-600 hover:bg-purple-200">
                                             Lihat Detail
                                         </a>
                                     </div>
-                                    <div class="mt-2 text-xs">
+                                    <div class="mt-2">
                                         @if($hasAk05)
-                                            <span class="bg-green-50 text-green-600 px-2 py-0.5 rounded font-medium">Selesai Dinilai</span>
+                                            <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded font-medium">Selesai Dinilai</span>
                                         @elseif($isAsesmenStart)
-                                            <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">Sedang Berlangsung</span>
+                                            <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">Sedang Berlangsung</span>
                                         @endif
                                     </div>
                                 </div>
@@ -255,14 +255,13 @@
                                             <p class="text-xs text-gray-500 mt-0.5">Keputusan Asesmen & Umpan Balik</p>
                                         </div>
                                         <a href="{{ route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                           @click.prevent="activeUrl = '{{ route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.AK.02 - Keputusan'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md {{ adminBtnState($isFinalized) }}">
                                             Verifikasi
                                         </a>
                                     </div>
-                                    <div class="mt-2 text-xs">
+                                    <div class="mt-2">
                                         @if($isFinalized)
-                                            <span class="bg-green-50 text-green-600 px-2 py-0.5 rounded font-medium">Final</span>
+                                            <span class="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded font-medium">Final</span>
                                         @endif
                                     </div>
                                 </div>
@@ -283,12 +282,16 @@
                                         $isCompleted = true;
                                     }
                                 }
+                                
+                                // Dynamic Color for Cycle
                                 $iconBg = $isCompleted ? 'bg-green-500 text-white' : 'bg-gray-300 text-white';
+                                $borderClass = $isCompleted ? 'border-green-500' : 'border-gray-200';
                             @endphp
 
                             <div class="relative pl-12 group">
+                                {{-- Circle Icon --}}
                                 <div class="absolute -left-[17px] top-0 z-10 w-9 h-9 rounded-full flex items-center justify-center border-4 border-white shadow-sm {{ $iconBg }}">
-                                    @if(isset($item['icon']) && str_contains($item['icon'], 'fa-')) 
+                                    @if(isset($item['icon']) && str_contains($item['icon'], 'fa-'))
                                         <i class="{{ $item['icon'] }} text-xs"></i>
                                     @elseif($isCompleted)
                                         <i class="fas fa-check text-xs"></i>
@@ -297,17 +300,21 @@
                                     @endif
                                 </div>
                                 
+                                {{-- Card Content --}}
                                 <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
                                     <div class="flex justify-between items-start">
                                         <div>
                                             <h4 class="font-bold text-gray-800 text-sm">{{ $item['title'] ?? 'Aktivitas' }}</h4>
+                                            
                                             @php
                                                 $statusText = $item['status_text'] ?? '';
                                                 $isShortStatus = in_array(strtolower($statusText), ['selesai', 'terjadwal', 'berlangsung', 'kompeten', 'belum kompeten', 'diterima', 'menunggu', 'siap dibuat', 'dapat dicetak', 'disetujui', 'jadwal dibuat']);
                                             @endphp
                                             
                                             @if(!$isShortStatus && $statusText != '-' && $statusText != '')
-                                                <p class="text-xs text-gray-500 mt-1">{{ $statusText }}</p>
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    {{ $statusText }}
+                                                </p>
                                             @endif
                                             
                                             <p class="text-[10px] text-gray-400 mt-2">
@@ -349,38 +356,6 @@
                 @endif
             </div>
         @endif
-
-        {{-- INLINE IFRAME PREVIEW SECTION --}}
-        <div x-show="activeUrl" x-transition.opacity 
-             x-ref="previewSection"
-             class="mt-12 bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 overflow-hidden">
-            
-            {{-- Header Preview --}}
-            <div class="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-4">
-                        <i class="fas fa-file-alt text-lg"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-800 text-lg" x-text="activeTitle"></h3>
-                        <p class="text-sm text-gray-500">Mode Pratinjau & Verifikasi</p>
-                    </div>
-                </div>
-                <button @click="activeUrl = null" class="text-gray-400 hover:text-red-500 transition duration-200">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-
-            {{-- Iframe Content --}}
-            <div class="relative bg-gray-100 p-4 min-h-[800px]">
-                <div class="absolute inset-0 flex items-center justify-center z-0 text-gray-400">
-                    <i class="fas fa-spinner fa-spin text-4xl"></i>
-                    <span class="ml-3 font-medium">Memuat Dokumen...</span>
-                </div>
-                {{-- z-10 ensures iframe is on top of loader --}}
-                <iframe :src="activeUrl" class="w-full h-[800px] rounded-xl shadow-inner border border-gray-200 relative z-10 bg-white"></iframe>
-            </div>
-        </div>
 
       </div>
     </main>

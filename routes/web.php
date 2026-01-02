@@ -24,6 +24,7 @@ use App\Http\Controllers\ProfileController;
 // ==========================
 use App\Http\Controllers\Admin\SkemaController;
 use App\Http\Controllers\AsesorController; // Master Asesor
+use App\Http\Controllers\Admin\AsesorProfileController; // Asesor Profile
 use App\Http\Controllers\Admin\AsesiController;
 use App\Http\Controllers\Admin\TukAdminController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -266,6 +267,14 @@ Route::middleware('auth')->group(function () {
     });
     // Legacy mapping (just in case)
     Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF']);
+
+    // ========================
+    // 4. ASESOR FILE AJAX ROUTES
+    // ========================
+    Route::post('/asesor/{id}/bukti/store', [AsesorProfileController::class, 'storeBukti'])->name('asesor.bukti.store');
+    Route::delete('/asesor/{id}/bukti/delete/{jenis_dokumen}', [AsesorProfileController::class, 'deleteBukti'])->name('asesor.bukti.delete');
+    Route::post('/asesor/{id}/ttd/store', [AsesorProfileController::class, 'storeTtd'])->name('asesor.ttd.store');
+    Route::delete('/asesor/{id}/ttd/delete', [AsesorProfileController::class, 'deleteTtd'])->name('asesor.ttd.delete');
 });
 
 // ==========================================================

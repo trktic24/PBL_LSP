@@ -38,7 +38,7 @@ class FrMapa01Controller extends Controller
         FrMapa01::create($data);
 
         // 3. Kembali ke halaman form dengan pesan sukses
-        return redirect()->route('mapa01.index')->with('success', 'Data FR.MAPA.01 berhasil disimpan!');
+        return redirect()->route('mapa01.index', $data['id_data_sertifikasi_asesi'])->with('success', 'Data FR.MAPA.01 berhasil disimpan!');
     }
 
     public function cetakPDF($idSertifikasi)
