@@ -15,33 +15,89 @@ class Ak01PdfController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Ambil Data Sertifikasi beserta relasi yang dibutuhkan
-        // Kita butuh data Asesi, Jadwal, Skema, TUK, dan Asesor
+        // Ambil Data Sertifikasi beserta relasi yang dibutuhkan
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',
             'jadwal.skema',
-            'jadwal.masterTuk',    // Pastikan relasi 'masterTuk' ada di model Jadwal
-            'jadwal.asesor'  // Pastikan relasi 'asesor' ada di model Jadwal
+            'jadwal.masterTuk',
+            'jadwal.jenisTuk',
+            'jadwal.asesor',
+            'responbuktiAk01.buktiMaster' // Relasi ke respon bukti AK01 dan master bukti
         ])
-            // ->where('id_asesi', $user->asesi->id_asesi) // Removed to allow Asesor access
             ->findOrFail($id_sertifikasi);
 
-        // 2. Siapkan Data untuk View
+        // Ambil data yang diperlukan
+        $asesi = $sertifikasi->asesi;
+        $jadwal = $sertifikasi->jadwal;
+        $skema = $jadwal->skema;
+        $tuk = $jadwal->masterTuk;
+        $jenisTuk = $jadwal->jenisTuk;
+        $asesor = $jadwal->asesor;
+
+        // Ambil respon bukti AK01 yang sudah diceklis oleh asesor
+        $responBukti = $sertifikasi->responbuktiAk01;
+        
+        // Ambil tanggal dari respon bukti AK01 (created_at)
+        $tanggalRespon = $responBukti->first() 
+            ? Carbon::parse($responBukti->first()->created_at)->isoFormat('D MMMM Y')
+            : Carbon::now()->isoFormat('D MMMM Y');
+
+        // Format tanggal pelaksanaan
+        $tanggalPelaksanaan = $jadwal->tanggal_pelaksanaan 
+            ? Carbon::parse($jadwal->tanggal_pelaksanaan)
+            : Carbon::now();
+
+        $hari = $tanggalPelaksanaan->isoFormat('dddd');
+        $tanggal = $tanggalPelaksanaan->isoFormat('D MMMM Y');
+        
+        // Format waktu mulai
+        $waktuMulai = $jadwal->waktu_mulai 
+            ? Carbon::parse($jadwal->waktu_mulai)->format('H:i')
+            : '00:00';
+
+        // Lokasi TUK
+        $lokasiTuk = ($tuk->nama_lokasi ?? '') . ($tuk->alamat_tuk ? ', ' . $tuk->alamat_tuk : '');
+
+        // --- LOGIKA TANDA TANGAN ASESI ---
+        $ttdAsesiBase64 = null;
+        if ($asesi && $asesi->tanda_tangan) {
+            $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($asesi->tanda_tangan));
+            if (file_exists($pathTtdAsesi)) {
+                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+            }
+        }
+
+        // --- LOGIKA TANDA TANGAN ASESOR ---
+        $ttdAsesorBase64 = null;
+        if ($asesor && $asesor->tanda_tangan) {
+            $pathTtdAsesor = storage_path('app/private_uploads/tanda_tangan/' . basename($asesor->tanda_tangan));
+            if (file_exists($pathTtdAsesor)) {
+                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+            }
+        }
+
+        // Siapkan Data untuk View
         $data = [
             'sertifikasi' => $sertifikasi,
-            'asesi' => $sertifikasi->asesi,
-            'skema' => $sertifikasi->jadwal->skema,
-            'tuk' => $sertifikasi->jadwal->masterTuk,
-            'asesor' => $sertifikasi->jadwal->asesor,
-            'tanggal' => Carbon::now()->isoFormat('D MMMM Y'),
-            'hari' => Carbon::now()->isoFormat('dddd'),
-            'jam' => Carbon::now()->format('H:i'),
+            'asesi' => $asesi,
+            'skema' => $skema,
+            'tuk' => $tuk,
+            'jenisTuk' => $jenisTuk,
+            'asesor' => $asesor,
+            'responBukti' => $responBukti,
+            'tanggal' => $tanggal,
+            'hari' => $hari,
+            'jam' => $waktuMulai,
+            'lokasiTuk' => $lokasiTuk,
+            'tanggalRespon' => $tanggalRespon,
+            'ttdAsesiBase64' => $ttdAsesiBase64,
+            'ttdAsesorBase64' => $ttdAsesorBase64,
         ];
 
-        // 3. Load View PDF
+        // Load View PDF
         $pdf = Pdf::loadView('asesi.pdf.fr_ak_01', $data);
         $pdf->setPaper('a4', 'portrait');
 
-        return $pdf->stream('FR.AK.01_Persetujuan_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+        return $pdf->stream('FR.AK.01_Persetujuan_' . $asesi->nama_lengkap . '.pdf');
     }
 }
