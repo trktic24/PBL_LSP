@@ -225,10 +225,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
 
     // IA-08
-    Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])
+    Route::middleware(['auth', 'ia08'])->group(function () {
+        Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])
         ->name('ia08.show');
-    Route::post('/ia08/store', [IA08Controller::class, 'store'])
+         Route::post('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'store'])
         ->name('ia08.store');
+        Route::get('/admin/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])
+        ->name('admin.ia08.show');
+    });
 
     // IA-11
     Route::get('/FR_IA_11', [IA11Controller::class, 'create'])->name('ia11.create');
