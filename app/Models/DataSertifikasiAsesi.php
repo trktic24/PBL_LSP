@@ -323,4 +323,8 @@ class DataSertifikasiAsesi extends Model
     {
         return $this->hasMany(DataPortofolio::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+    public function asesmenMandiri()
+    {
+        return $this->hasMany(\App\Models\ResponApl2Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
 }
