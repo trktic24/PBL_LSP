@@ -77,7 +77,7 @@
         </div><br>
 
         {{-- Form Tanda Tangan --}}
-        <form id="signature-upload-form" method="POST" enctype="multipart/form-data">
+        <form id="signature-upload-form" data-asesi-id="{{ $asesi->id_asesi }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg mb-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-6">Area Tanda Tangan</h3>
@@ -168,7 +168,7 @@
             let currentBase64 = null;
 
             // === 1. Load data pemohon + tanda tangan lama ===
-            fetch(`/api/show-detail/${asesiId}`)
+            fetch(`/api/v1/show-detail/${asesiId}`)
                 .then(r => r.ok ? r.json() : Promise.reject('Gagal mengambil data'))
                 .then(res => {
                     const d = res.data;

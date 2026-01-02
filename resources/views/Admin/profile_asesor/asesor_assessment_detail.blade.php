@@ -123,8 +123,8 @@
                 'id' => 'MAPA01',
                 'title' => 'FR.MAPA.01 - Merencanakan Aktivitas',
                 'desc' => 'Perencanaan aktivitas dan proses asesmen.',
-                'status' => $isMapa01Done ? 'DONE' : ($isMapa01Rejected ? 'REJECTED' : 'WAITING'),
-                'status_label' => $isMapa01Done ? 'Diterima' : ($isMapa01Rejected ? 'Ditolak' : 'Menunggu'),
+                'status' => $isMapa01Done ? 'DONE' : ($isMapa01Rejected ? 'REJECTED' : 'ACTIVE'),
+                'status_label' => $isMapa01Done ? 'Diterima' : ($isMapa01Rejected ? 'Ditolak' : 'Belum Dinilai'),
                 'verify_url' => route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('mapa01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'can_verify' => true,
@@ -140,8 +140,8 @@
                 'id' => 'MAPA02',
                 'title' => 'FR.MAPA.02 - Peta Instrumen',
                 'desc' => 'Peta instrumen asesmen yang akan digunakan.',
-                'status' => $isMapa02Done ? 'DONE' : ($isMapa02Rejected ? 'REJECTED' : 'WAITING'),
-                'status_label' => $isMapa02Done ? 'Diterima' : ($isMapa02Rejected ? 'Ditolak' : 'Menunggu'),
+                'status' => $isMapa02Done ? 'DONE' : ($isMapa02Rejected ? 'REJECTED' : 'ACTIVE'),
+                'status_label' => $isMapa02Done ? 'Diterima' : ($isMapa02Rejected ? 'Ditolak' : 'Belum Dinilai'),
                 'verify_url' => route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'can_verify' => true, 
@@ -171,8 +171,8 @@
                 'id' => 'AK01',
                 'title' => 'FR.AK.01 - Persetujuan & Kerahasiaan',
                 'desc' => 'Persetujuan asesmen dan kerahasiaan.',
-                'status' => $isAk01Done ? 'DONE' : ($isAk01Rejected ? 'REJECTED' : 'WAITING'),
-                'status_label' => $isAk01Done ? 'Diterima' : ($isAk01Rejected ? 'Ditolak' : 'Menunggu'),
+                'status' => $isAk01Done ? 'DONE' : ($isAk01Rejected ? 'REJECTED' : 'ACTIVE'),
+                'status_label' => $isAk01Done ? 'Diterima' : ($isAk01Rejected ? 'Ditolak' : 'Belum Dinilai'),
                 'verify_url' => route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('ak01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'can_verify' => true,
@@ -406,13 +406,13 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                                             :class="item.status === 'DONE' ? 'bg-green-100 text-green-600' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-600' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-200 text-gray-500'))">
-                                            <i class="fas" :class="item.status === 'DONE' ? 'fa-check' : (item.status === 'REJECTED' ? 'fa-times' : (item.status === 'WAITING' ? 'fa-clock' : 'fa-lock'))"></i>
+                                             :class="item.status === 'DONE' ? 'bg-green-100 text-green-600' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-600' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-600' : (item.status === 'ACTIVE' ? 'bg-blue-100 text-blue-600' : 'bg-gray-200 text-gray-500')))">
+                                            <i class="fas" :class="item.status === 'DONE' ? 'fa-check' : (item.status === 'REJECTED' ? 'fa-times' : (item.status === 'WAITING' ? 'fa-clock' : (item.status === 'ACTIVE' ? 'fa-pen' : 'fa-lock')))"></i>
                                         </div>
                                         <div>
                                             <h3 class="text-sm font-semibold text-gray-800 group-hover:text-blue-700 transition" x-text="item.title"></h3>
                                             <span class="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                                                  :class="item.status === 'DONE' ? 'bg-green-100 text-green-700' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-700' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500'))"
+                                                  :class="item.status === 'DONE' ? 'bg-green-100 text-green-700' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-700' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-700' : (item.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500')))"
                                                   x-text="item.status_label"></span>
                                         </div>
                                     </div>
@@ -447,13 +447,13 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                                             :class="item.status === 'DONE' ? 'bg-green-100 text-green-600' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-600' : (item.status === 'ACTIVE' ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-200 text-gray-500'))">
-                                            <i class="fas" :class="item.status === 'DONE' ? 'fa-check' : (item.status === 'REJECTED' ? 'fa-times' : (item.status === 'ACTIVE' ? 'fa-pen' : 'fa-lock'))"></i>
+                                             :class="item.status === 'DONE' ? 'bg-green-100 text-green-600' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-600' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-600' : (item.status === 'ACTIVE' ? 'bg-blue-100 text-blue-600' : 'bg-gray-200 text-gray-500')))">
+                                            <i class="fas" :class="item.status === 'DONE' ? 'fa-check' : (item.status === 'REJECTED' ? 'fa-times' : (item.status === 'WAITING' ? 'fa-clock' : (item.status === 'ACTIVE' ? 'fa-pen' : 'fa-lock')))"></i>
                                         </div>
                                         <div>
                                             <h3 class="text-sm font-semibold text-gray-800 group-hover:text-blue-700 transition" x-text="item.title"></h3>
                                             <span class="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                                                  :class="item.status === 'DONE' ? 'bg-green-100 text-green-700' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-700' : (item.status === 'ACTIVE' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-500'))"
+                                                  :class="item.status === 'DONE' ? 'bg-green-100 text-green-700' : (item.status === 'REJECTED' ? 'bg-red-100 text-red-700' : (item.status === 'WAITING' ? 'bg-yellow-100 text-yellow-700' : (item.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500')))"
                                                   x-text="item.status_label"></span>
                                         </div>
                                     </div>
