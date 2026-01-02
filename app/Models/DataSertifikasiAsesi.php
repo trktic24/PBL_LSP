@@ -45,6 +45,14 @@ class DataSertifikasiAsesi extends Model
         'id_asesi',
         'id_jadwal',
         'rekomendasi_apl01',
+        'rekomendasi_mapa01', // New
+        'rekomendasi_mapa02', // New
+        'rekomendasi_ak01', // New
+        'rekomendasi_ia02',
+        'rekomendasi_ia05',
+        'rekomendasi_ia06',
+        'rekomendasi_ia07',
+        'rekomendasi_ia10',
         'tujuan_asesmen',
         'rekomendasi_apl02',
         'tanggal_daftar',

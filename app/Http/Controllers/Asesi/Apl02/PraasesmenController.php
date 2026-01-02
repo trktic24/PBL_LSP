@@ -132,4 +132,39 @@ class PraasesmenController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+    /**
+     * Generate PDF APL-02
+     */
+    public function generatePDF($idDataSertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi dengan Relasi Lengkap
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi.user',
+            'jadwal.asesor',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteria',
+        ])->findOrFail($idDataSertifikasi);
+
+        $skema = $sertifikasi->jadwal->skema;
+        $asesorObj = $sertifikasi->jadwal->asesor;
+
+        // 2. Ambil Respon yang SUDAH ADA
+        $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
+
+        // 3. Load View PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.APL_02', [
+            'sertifikasi' => $sertifikasi,
+            'skema' => $skema,
+            'asesi' => $sertifikasi->asesi,
+            'idDataSertifikasi' => $idDataSertifikasi,
+            'existingResponses' => $existingResponses,
+            'asesor' => [
+                'nama' => $asesorObj->nama_lengkap ?? 'Belum Ditentukan',
+                'no_reg' => $asesorObj->nomor_regis ?? '-',
+            ],
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR.APL.02 ' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    }
 }

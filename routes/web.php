@@ -24,6 +24,7 @@ use App\Http\Controllers\ProfileController;
 // ==========================
 use App\Http\Controllers\Admin\SkemaController;
 use App\Http\Controllers\AsesorController; // Master Asesor
+use App\Http\Controllers\Admin\AsesorProfileController; // Asesor Profile
 use App\Http\Controllers\Admin\AsesiController;
 use App\Http\Controllers\Admin\TukAdminController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -33,9 +34,9 @@ use App\Http\Controllers\Admin\CategoryController;
 // ==========================
 use App\Http\Controllers\APL01Controller; // Permohonan
 use App\Http\Controllers\Asesi\Apl02\PraasesmenController; // APL-02
-use App\Http\Controllers\Asesi\Apl02\Apl02Controller;
+/* use App\Http\Controllers\Asesi\Apl02\Apl02Controller; */
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController; // AK-01
-use App\Http\Controllers\Asesi\Ak01Controller;
+use App\Http\Controllers\Asesi\AK01Controller;
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Asesi\Pdf\Ak01PdfController;
 use App\Http\Controllers\PortofolioController;
@@ -46,7 +47,7 @@ use App\Http\Controllers\FrMapa01Controller; // MAPA-01
 use App\Http\Controllers\Mapa02Controller; // MAPA-02
 use App\Http\Controllers\FrAk07Controller; // AK-07
 use App\Http\Controllers\Ak02Controller; // AK-02
-use App\Http\Controllers\Asesi\Ak04Controller; // AK-04
+use App\Http\Controllers\Asesi\AK04Controller; // AK-04
 use App\Http\Controllers\SoalController;
 
 // Instrumen Asesmen
@@ -157,13 +158,13 @@ Route::middleware('auth')->group(function () {
 
     // APL-02 (Asesmen Mandiri)
     // Route APL-02 Asesi form
-    Route::prefix('apl02')->name('apl02.')->group(function () {
-        // Menampilkan Form
-        Route::get('/form/{id}', [Apl02Controller::class, 'show'])->name('show');
+    // Route::prefix('apl02')->name('apl02.')->group(function () {
+    //     // Menampilkan Form
+    //     // Route::get('/form/{id}', [Apl02Controller::class, 'show'])->name('show');
 
-        // Menyimpan Form
-        Route::post('/store/{id}', [Apl02Controller::class, 'store'])->name('store');
-    });
+    //     // Menyimpan Form
+    //     // Route::post('/store/{id}', [Apl02Controller::class, 'store'])->name('store');
+    // });
 
     Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
         ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
@@ -266,6 +267,17 @@ Route::middleware('auth')->group(function () {
     });
     // Legacy mapping (just in case)
     Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF']);
+
+    // ========================
+    // 4. ASESOR FILE AJAX ROUTES
+    // ========================
+    Route::post('/asesor/{id}/bukti/store', [AsesorProfileController::class, 'storeBukti'])->name('asesor.bukti.store');
+    Route::delete('/asesor/{id}/bukti/delete/{jenis_dokumen}', [AsesorProfileController::class, 'deleteBukti'])->name('asesor.bukti.delete');
+    Route::post('/asesor/{id}/ttd/store', [AsesorProfileController::class, 'storeTtd'])->name('asesor.ttd.store');
+    Route::delete('/asesor/{id}/ttd/delete', [AsesorProfileController::class, 'deleteTtd'])->name('asesor.ttd.delete');
+    
+    // Quick Verification Route
+    Route::post('/asesor/{id}/document/verify', [AsesorProfileController::class, 'verifyDocument'])->name('asesor.document.verify');
 });
 
 // ==========================================================
