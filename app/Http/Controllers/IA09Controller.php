@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\DataPortofolio;
 use App\Models\BuktiPortofolioIA08IA09; 
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class IA09Controller extends Controller
 {
@@ -93,7 +93,7 @@ class IA09Controller extends Controller
                 foreach ($buktiData as $index => $bukti) {
                     $pertanyaan[] = [
                         'no' => $index + 1,
-                        'pertanyaan' => $bukti->pertanyaan ?? "Pertanyaan untuk bukti no. " . ($index + 1),
+                        'pertanyaan' => $bukti->daftar_pertanyaan_wawancara ?? "Pertanyaan untuk bukti no. " . ($index + 1),
                         'jawaban' => $bukti->kesimpulan_jawaban_asesi ?? '',
                         'pencapaian' => isset($bukti->pencapaian_ia09) ? ($bukti->pencapaian_ia09 ? 'Ya' : 'Tidak') : '',
                         'id_jawaban' => $bukti->id_bukti_portofolio,
@@ -117,21 +117,21 @@ class IA09Controller extends Controller
         $dataIA09 = [
             'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
             'skema' => [
-                'judul' => $dataSertifikasi->jadwal->skema->nama_skema ?? '-',
-                'nomor' => $dataSertifikasi->jadwal->skema->nomor_skema ?? '-',
+                'judul' => $dataSertifikasi->jadwal?->skema?->nama_skema ?? '-',
+                'nomor' => $dataSertifikasi->jadwal?->skema?->nomor_skema ?? '-',
             ],
             'info_umum' => [
-                'tuk_type' => $dataSertifikasi->jadwal->jenisTuk->jenis_tuk ?? '-',
-                'nama_asesor' => $dataSertifikasi->jadwal->asesor->nama_lengkap ?? '-',
-                'no_reg_met' => $dataSertifikasi->jadwal->asesor->nomor_regis ?? '-',
-                'nama_asesi' => $dataSertifikasi->asesi->nama_lengkap ?? '-',
-                'tanggal' => $dataSertifikasi->jadwal->tanggal_pelaksanaan ?? date('Y-m-d'),
-                'rekomendasi' => $portofolio->rekomendasi_asesor ?? '', 
-                'catatan' => $portofolio->catatan_asesor ?? '', 
+                'tuk_type' => $dataSertifikasi->jadwal?->jenisTuk?->jenis_tuk ?? '-',
+                'nama_asesor' => $dataSertifikasi->jadwal?->asesor?->nama_lengkap ?? '-',
+                'no_reg_met' => $dataSertifikasi->jadwal?->asesor?->nomor_regis ?? '-',
+                'nama_asesi' => $dataSertifikasi->asesi?->nama_lengkap ?? '-',
+                'tanggal' => $dataSertifikasi->jadwal?->tanggal_pelaksanaan ?? date('Y-m-d'),
+                'rekomendasi' => $portofolio?->rekomendasi_asesor ?? '', 
+                'catatan' => $portofolio?->catatan_asesor ?? '', 
             ],
             'ttd' => [
-                'asesi' => $dataSertifikasi->asesi->tanda_tangan ?? null,
-                'asesor' => $dataSertifikasi->jadwal->asesor->tanda_tangan ?? null,
+                'asesi' => $dataSertifikasi->asesi?->tanda_tangan ?? null,
+                'asesor' => $dataSertifikasi->jadwal?->asesor?->tanda_tangan ?? null,
             ],  
             'penyusun' => [
                 'nama' => $penyusunValidator?->penyusun?->nama ?? 'Data Penyusun tidak ditemukan',
@@ -171,7 +171,7 @@ class IA09Controller extends Controller
         $dataIA09 = $this->prepareIA09Data($id_data_sertifikasi_asesi);
         
         // Mode 'edit' jika role adalah asesor, 'view' jika role adalah admin/lainnya
-        $mode = auth()->user()->role->nama_role === 'asesor' ? 'edit' : 'view';
+        $mode = auth()->user()?->role?->nama_role === 'asesor' ? 'edit' : 'view';
 
         return view('frontend.IA09', compact('dataIA09', 'mode'));
     }
@@ -189,6 +189,7 @@ class IA09Controller extends Controller
         $request->validate([
             'pertanyaan' => 'required|array',
             'pertanyaan.*.no' => 'required|integer',
+            'pertanyaan.*.pertanyaan' => 'nullable|string',
             'pertanyaan.*.jawaban' => 'required|string|min:10',
             'pertanyaan.*.pencapaian' => 'required|in:Ya,Tidak',
             'pertanyaan.*.id_jawaban' => 'nullable|integer',
@@ -242,6 +243,7 @@ class IA09Controller extends Controller
                 
                 $updateData = [
                     'id_portofolio' => $idPortofolio,
+                    'daftar_pertanyaan_wawancara' => $item['pertanyaan'] ?? null,
                     'kesimpulan_jawaban_asesi' => $item['jawaban'], 
                     'pencapaian_ia09' => $pencapaian_value,
                     'id_ia08' => $id_ia08_value,
