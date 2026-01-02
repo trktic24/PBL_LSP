@@ -47,7 +47,7 @@
                 <div>:</div>
                 <div class="h-16">
                     @if($ttdPenyusun)
-                        <img src="{{ asset('storage/' . $ttdPenyusun) }}" alt="Tanda Tangan Penyusun" class="h-full object-contain">
+                        <img src="{{ route('secure.file', ['path' => $ttdPenyusun]) }}" alt="Tanda Tangan Penyusun" class="h-full object-contain">
                     @else
                         <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                     @endif
@@ -77,7 +77,7 @@
                 <div>:</div>
                 <div class="h-16">
                     @if($ttdValidator)
-                        <img src="{{ asset('storage/' . $ttdValidator) }}" alt="Tanda Tangan Validator" class="h-full object-contain">
+                        <img src="{{ route('secure.file', ['path' => $ttdValidator]) }}" alt="Tanda Tangan Validator" class="h-full object-contain">
                     @else
                         <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                     @endif

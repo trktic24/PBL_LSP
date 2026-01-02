@@ -130,8 +130,11 @@
         <tr>
             <td style="width: 50%; text-align: center;">
                 Asesi,
-                <br><br><br><br>
-                <img src="{{ storage_path('app/private_uploads/' . $asesi->tanda_tangan) }}" style="height: 100px; width: auto;">                
+                @if($asesi->tanda_tangan)
+                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($asesi->tanda_tangan) }}" style="height: 100px; width: auto;">
+                @else
+                    <br><br><br><br>
+                @endif
                 <br><br><br><br>
                 <strong>{{ $asesi->nama_lengkap ?? '(.......................)' }}</strong>
                 <br>{{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
@@ -139,7 +142,11 @@
             <td style="width: 50%; text-align: center;">
                 Asesor,
                 <br><br><br><br>
-                <img src="{{ storage_path('app/private_uploads/' . $sertifikasi->jadwal->asesor->tanda_tangan) }}" style="height: 100px; width: auto;">
+                @if($sertifikasi->jadwal->asesor && $sertifikasi->jadwal->asesor->tanda_tangan)
+                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="height: 100px; width: auto;">
+                @else
+                    <br><br><br><br>
+                @endif
                 <br><br><br><br>
                 <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
                 <br>{{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
