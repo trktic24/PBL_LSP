@@ -98,6 +98,6 @@ class Ak01PdfController extends Controller
         $pdf = Pdf::loadView('asesi.pdf.fr_ak_01', $data);
         $pdf->setPaper('a4', 'portrait');
 
-        return $pdf->stream('FR.AK.01_Persetujuan_' . $asesi->nama_lengkap . '.pdf');
+        return $pdf->download('FR.AK.01_Persetujuan_' . $asesi->nama_lengkap . '.pdf');
     }
 }
