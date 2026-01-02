@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             ], [
                 'role_id' => $adminRole->id_role,
                 'email_verified_at' => now(),
-                'password' => Hash::make('Admin#Lsp'),
+                'password' => Hash::make('1234'),
                 'google_id' => null,
                 'remember_token' => Str::random(10),
 

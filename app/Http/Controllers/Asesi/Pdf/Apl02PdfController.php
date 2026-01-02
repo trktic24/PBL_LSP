@@ -11,33 +11,75 @@ use Carbon\Carbon;
 
 class Apl02PdfController extends Controller
 {
-    // App/Http/Controllers/Asesi/Apl02/Apl02PdfController.php
+    public function generateApl02($id_sertifikasi)
+    {
+        $user = Auth::user();
 
-public function generateApl02($id_sertifikasi)
-{
-    $user = Auth::user();
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.skema.unitKompetensi.elemen.kriteria',
+            'jadwal.asesor', // Tambahkan relasi asesor
+            'responApl2ia01', // Tambahkan relasi respon APL02
+        ])
+            ->where('id_asesi', $user->asesi->id_asesi)
+            ->findOrFail($id_sertifikasi);
 
-    $sertifikasi = DataSertifikasiAsesi::with([
-        'asesi',
-        'jadwal.skema',
-        // PENTING: Muat relasi sampai ke Kriteria Unjuk Kerja (KUK)
-        // Pastikan nama relasi (method) di model Anda sesuai (misal: 'elemen', 'kriteria')
-        'jadwal.skema.unitKompetensi.elemen.kriteria' 
-    ])
-    ->where('id_asesi', $user->asesi->id_asesi)
-    ->findOrFail($id_sertifikasi);
+        $asesor = $sertifikasi->jadwal->asesor ?? null;
 
-    $data = [
-        'sertifikasi' => $sertifikasi,
-        'asesi'       => $sertifikasi->asesi,
-        'skema'       => $sertifikasi->jadwal->skema,
-        'tanggal'     => Carbon::now()->isoFormat('D MMMM Y'),
-    ];
+        // --- LOGIKA BASE64 UNTUK GAMBAR LOGO ---
+        $logoBnspBase64 = null;
+        $logoLspBase64 = null;
 
-    $pdf = Pdf::loadView('asesi.pdf.fr_apl_02', $data);
-    $pdf->setPaper('a4', 'portrait');
+        $logoBnspPath = public_path('images/logo_BNSP.png');
+        if (file_exists($logoBnspPath)) {
+            $logoBnspBase64 = base64_encode(file_get_contents($logoBnspPath));
+        }
 
-    // return $pdf->stream('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
-    return $pdf->download('FR.APL.02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
-}
+        $logoLspPath = public_path('images/logo_LSP_No_BG.png');
+        if (file_exists($logoLspPath)) {
+            $logoLspBase64 = base64_encode(file_get_contents($logoLspPath));
+        }
+
+        // --- LOGIKA TANDA TANGAN ASESI ---
+        $ttdAsesiBase64 = null;
+        if ($sertifikasi->asesi && $sertifikasi->asesi->tanda_tangan) {
+            $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($sertifikasi->asesi->tanda_tangan));
+            if (file_exists($pathTtdAsesi)) {
+                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+            }
+        }
+
+        // --- LOGIKA TANDA TANGAN ASESOR ---
+        $ttdAsesorBase64 = null;
+        if ($asesor && $asesor->tanda_tangan) {
+            $pathTtdAsesor = storage_path('app/private_uploads/tanda_tangan/' . basename($asesor->tanda_tangan));
+            if (file_exists($pathTtdAsesor)) {
+                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+            }
+        }
+
+        $data = [
+            'sertifikasi' => $sertifikasi,
+            'asesi' => $sertifikasi->asesi,
+            'skema' => $sertifikasi->jadwal->skema,
+            'asesor' => $asesor,
+            'tanggal' => Carbon::parse($sertifikasi->updated_at)->isoFormat('dddd, DD MMM YYYY'),
+            'logoBnspBase64' => $logoBnspBase64,
+            'logoLspBase64' => $logoLspBase64,
+            'ttdAsesiBase64' => $ttdAsesiBase64,
+            'ttdAsesorBase64' => $ttdAsesorBase64,
+        ];
+
+        $pdf = Pdf::loadView('asesi.pdf.fr_apl_02', $data);
+        $pdf->setPaper('a4', 'portrait');
+
+        // Format nama file sama seperti APL01
+        $nama = $sertifikasi->asesi->nama_lengkap;
+        $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
+        $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
+        $namaFile = 'FR.APL.02_' . $namaAsesiClean . '_' . date('YmdHis') . '.pdf';
+
+        return $pdf->download($namaFile);
+        // return $pdf->stream($namaFile);
+    }
 }

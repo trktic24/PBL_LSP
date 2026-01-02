@@ -23,13 +23,19 @@
   <div class="flex pt-0">
     
     @php
-        $firstSertifikasi = $asesi->dataSertifikasi->first();
-        $defaultBackUrl = route('admin.master_asesi'); // Fallback ke daftar master asesi
+        // Default URL: Kembali ke Master Asesi (jika tidak ada konteks jadwal)
+        $urlKembali = route('admin.master_asesi'); 
+
+        // Jika Controller mengirim data sertifikasi acuan, arahkan kembali ke Daftar Hadir jadwal tersebut
+        if (isset($sertifikasiAcuan) && $sertifikasiAcuan) {
+            $urlKembali = route('admin.schedule.attendance', $sertifikasiAcuan->id_jadwal);
+        }
     @endphp
 
     <x-sidebar.sidebar_profile_asesi 
         :asesi="$asesi" 
-        :backUrl="$firstSertifikasi ? route('admin.schedule.attendance', $firstSertifikasi->id_jadwal) : $defaultBackUrl" 
+        :backUrl="$urlKembali"
+        :activeSertifikasi="$sertifikasiAcuan ?? null" 
     />
 
     <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">

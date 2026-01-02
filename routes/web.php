@@ -33,7 +33,9 @@ use App\Http\Controllers\Admin\CategoryController;
 // ==========================
 use App\Http\Controllers\APL01Controller; // Permohonan
 use App\Http\Controllers\Asesi\Apl02\PraasesmenController; // APL-02
+use App\Http\Controllers\Asesi\Apl02\Apl02Controller; 
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController; // AK-01
+use App\Http\Controllers\Asesi\Ak01Controller;
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Asesi\Pdf\Ak01PdfController;
 use App\Http\Controllers\PortofolioController;
@@ -44,6 +46,7 @@ use App\Http\Controllers\FrMapa01Controller; // MAPA-01
 use App\Http\Controllers\Mapa02Controller; // MAPA-02
 use App\Http\Controllers\FrAk07Controller; // AK-07
 use App\Http\Controllers\Ak02Controller; // AK-02
+use App\Http\Controllers\Asesi\Ak04Controller; // AK-04
 use App\Http\Controllers\SoalController;
 
 // Instrumen Asesmen
@@ -153,17 +156,28 @@ Route::middleware('auth')->group(function () {
     
 
     // APL-02 (Asesmen Mandiri)
-    Route::get('/APL_02', fn() => view('frontend/APL_02/APL_02'))->name('APL_02');
+    // Route APL-02 Asesi form
+Route::prefix('apl02')->name('apl02.')->group(function () {
+    // Menampilkan Form
+    Route::get('/form/{id}', [Apl02Controller::class, 'show'])->name('show');
+    
+    // Menyimpan Form
+    Route::post('/store/{id}', [Apl02Controller::class, 'store'])->name('store');
+});
 
     Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
         ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
 
     // FR-AK (Ceklis, Banding, dll)
-    Route::get('/FR_AK_01', fn() => view('frontend/FR_AK_01'))->name('FR_AK_01');
+    Route::middleware(['auth'])->group(function () {
+    Route::get('/ak01/form/{id}', [Ak01Controller::class, 'create'])->name('ak01.create');
+    Route::post('/ak01/store/{id}', [Ak01Controller::class, 'store'])->name('ak01.store');
+});
 
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
     Route::get('/FR_AK_03', fn() => view('frontend/AK_03/FR_AK_03'))->name('FR_AK_03');
-    Route::get('/FR_AK_04', fn() => view('frontend/FR_AK_04'))->name('FR_AK_04');
+    Route::get('/ak04/form/{id}', [Ak04Controller::class, 'create'])->name('ak04.create');
+    Route::post('/ak04/store/{id}', [Ak04Controller::class, 'store'])->name('ak04.store');
     Route::get('/FR_AK_05', fn() => view('frontend/AK_05/FR_AK_05'))->name('FR_AK_05');
 
     // FR-AK-07

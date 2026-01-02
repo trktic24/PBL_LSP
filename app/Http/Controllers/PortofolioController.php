@@ -3,26 +3,36 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth; // Hapus atau nonaktifkan ini
-use App\Models\Asesi; // Pastikan Anda mengimpor Model Asesi
+use Illuminate\Support\Facades\Auth;
+use App\Models\Asesi;
+use App\Models\BuktiDasar;
 
 class PortofolioController extends Controller
 {
     public function index()
     {
-        // Pilihan 1: Tampilkan data Asesi dengan ID spesifik
-        // Ganti angka 1 dengan ID Asesi yang ingin Anda tampilkan
-        $asesi = Asesi::find(1); 
-        
-        // Pilihan 2: Ambil data Asesi PERTAMA di tabel
-        // $asesi = Asesi::first();
+        $sertifikasi = null;
+        $nama_skema = 'Belum Ada Skema';
+        $nama_lengkap = Auth::user()->name ?? 'Nama Tidak Terdeteksi';
+        $dokumen_db = collect();
 
-        if (!$asesi) {
-            // Berikan nilai default jika data tidak ditemukan (misalnya tabel kosong)
-            $asesi = (object) ['nama_lengkap' => 'Data Asesi Tidak Ditemukan'];
+        if (Auth::check()) {
+            $asesi = optional(Auth::user())->asesi;
+            
+            if ($asesi) {
+                $nama_lengkap = $asesi->nama_lengkap;
+                $sertifikasi = $asesi->dataSertifikasi()->latest()->first();
+                
+                if ($sertifikasi) {
+                    $dokumen_db = BuktiDasar::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)->get();
+                }
+            }
         }
 
-        // Kirim data ke view
-        return view('frontend.PORTOFOLIO', compact('asesi'));
+        if ($sertifikasi && $sertifikasi->jadwal && $sertifikasi->jadwal->skema) {
+            $nama_skema = $sertifikasi->jadwal->skema->nama_skema;
+        }
+
+        return view('frontend.PORTOFOLIO', compact('asesi', 'nama_lengkap', 'nama_skema', 'dokumen_db'));
     }
 }
