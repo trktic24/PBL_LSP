@@ -68,12 +68,16 @@
                 <h3 class="font-bold text-gray-800">A. POTENSI ASESI</h3>
             </div>
             <div class="p-4 sm:p-6 space-y-3">
+                @php
+                $existingPotensi = $sertifikasi->responPotensiAk07->pluck('id_poin_potensi_AK07')->toArray();
+                @endphp
                 @forelse($masterPotensi as $potensi)
                 <label class="flex items-start space-x-3 cursor-pointer p-2 hover:bg-gray-50 rounded transition">
                     {{-- Value adalah ID dari tabel master --}}
                     <input type="checkbox"
                         name="potensi_asesi[]"
                         value="{{ $potensi->id_poin_potensi_AK07 }}"
+                        {{ in_array($potensi->id_poin_potensi_AK07, $existingPotensi) ? 'checked' : '' }}
                         {{ $isReadOnly ? 'disabled' : '' }}
                         class="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                     <span class="text-sm text-gray-700">{{ $potensi->deskripsi_potensi }}</span>
@@ -103,8 +107,14 @@
                     <tbody class="divide-y divide-gray-200">
 
                         @forelse($masterPersyaratan as $soal)
+                        @php
+                        $respon = $sertifikasi->responPenyesuaianAk07->where('id_persyaratan_modifikasi_AK07', $soal->id_persyaratan_modifikasi_AK07);
+                        $isYa = $respon->where('respon_penyesuaian', 'Ya')->isNotEmpty();
+                        $existingKeterangan = $respon->pluck('id_catatan_keterangan_AK07')->filter()->toArray();
+                        $catatanManual = $respon->first()?->respon_catatan_keterangan;
+                        @endphp
                         {{-- Gunakan Alpine.js untuk interaksi Ya/Tidak --}}
-                        <tr class="bg-white hover:bg-gray-50 transition" x-data="{ showOptions: false }">
+                        <tr class="bg-white hover:bg-gray-50 transition" x-data="{ showOptions: {{ $isYa ? 'true' : 'false' }} }">
 
                             <td class="px-4 py-4 text-center font-semibold align-top">{{ $loop->iteration }}</td>
 
@@ -121,6 +131,7 @@
                                             name="penyesuaian[{{ $soal->id_persyaratan_modifikasi_AK07 }}][status]"
                                             value="Ya"
                                             @click="showOptions = true"
+                                            {{ $isYa ? 'checked' : '' }}
                                             {{ $isReadOnly ? 'disabled' : '' }}
                                             class="text-blue-600 form-radio focus:ring-blue-500">
                                         <span class="ml-1">Ya</span>
@@ -130,7 +141,7 @@
                                             name="penyesuaian[{{ $soal->id_persyaratan_modifikasi_AK07 }}][status]"
                                             value="Tidak"
                                             @click="showOptions = false"
-                                            checked
+                                            {{ !$isYa ? 'checked' : '' }}
                                             {{ $isReadOnly ? 'disabled' : '' }}
                                             class="text-gray-600 form-radio focus:ring-gray-500">
                                         <span class="ml-1">Tidak</span>
@@ -153,6 +164,7 @@
                                             <input type="checkbox"
                                                 name="penyesuaian[{{ $soal->id_persyaratan_modifikasi_AK07 }}][keterangan][]"
                                                 value="{{ $opsi->id_catatan_keterangan_AK07 }}"
+                                                {{ in_array($opsi->id_catatan_keterangan_AK07, $existingKeterangan) ? 'checked' : '' }}
                                                 {{ $isReadOnly ? 'disabled' : '' }}
                                                 class="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                             <span class="leading-snug">{{ $opsi->isi_opsi }}</span>
@@ -164,6 +176,7 @@
                                     {{-- Input Manual Tambahan (Opsional) --}}
                                     <input type="text"
                                         name="penyesuaian[{{ $soal->id_persyaratan_modifikasi_AK07 }}][catatan_manual]"
+                                        value="{{ $catatanManual }}"
                                         placeholder="Catatan tambahan (opsional)..."
                                         {{ $isReadOnly ? 'disabled' : '' }}
                                         class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
@@ -195,6 +208,7 @@
                     label="1) Acuan Pembanding Asesmen"
                     id="acuan_pembanding"
                     name="acuan_pembanding"
+                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Acuan_Pembanding_Asesmen ?? '' }}"
                     :disabled="$isReadOnly"
                     type="text" />
 
@@ -202,6 +216,7 @@
                     label="2) Metode Asesmen"
                     id="metode_asesmen"
                     name="metode_asesmen"
+                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Metode_Asesmen ?? '' }}"
                     :disabled="$isReadOnly"
                     type="text" />
 
@@ -209,6 +224,7 @@
                     label="3) Instrumen Asesmen"
                     id="instrumen_asesmen"
                     name="instrumen_asesmen"
+                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Instrumen_Asesmen ?? '' }}"
                     :disabled="$isReadOnly"
                     type="text" />
 

@@ -70,76 +70,98 @@ class FrAk07Controller extends Controller
         ]);
     }
 
+    public function success($id_data_sertifikasi_asesi)
+    {
+        $dataSertifikasi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.skema',
+            'jadwal.asesor'
+        ])->findOrFail($id_data_sertifikasi_asesi);
+
+        return view('frontend.AK_07.success', [
+            'sertifikasi' => $dataSertifikasi,
+            'asesi' => $dataSertifikasi->asesi,
+            'jadwal' => $dataSertifikasi->jadwal,
+        ]);
+    }
+
     public function store(Request $request, $id_data_sertifikasi_asesi)
     {
+        // Validasi sesuai input di view
         $request->validate([
-            'respon_potensi' => 'array',
-            'respon_potensi.*.id_poin_potensi_AK07' => 'required|exists:poin_potensi_AK07,id_poin_potensi_AK07',
-            'respon_potensi.*.respon_asesor' => 'nullable|string',
+            'potensi_asesi' => 'nullable|array',
+            'potensi_asesi.*' => 'exists:poin_potensi_AK07,id_poin_potensi_AK07',
 
-            'respon_penyesuaian' => 'array',
-            'respon_penyesuaian.*.id_persyaratan_modifikasi_AK07' => 'required|exists:persyaratan_modifikasi_AK07,id_persyaratan_modifikasi_AK07',
-            'respon_penyesuaian.*.id_catatan_keterangan_AK07' => 'nullable|exists:catatan_keterangan_AK07,id_catatan_keterangan_AK07',
-            'respon_penyesuaian.*.respon_penyesuaian' => 'required|in:Ya,Tidak',
-            'respon_penyesuaian.*.respon_catatan_keterangan' => 'nullable|string',
+            'penyesuaian' => 'nullable|array',
+            'penyesuaian.*.status' => 'required|in:Ya,Tidak',
+            'penyesuaian.*.keterangan' => 'nullable|array',
+            'penyesuaian.*.keterangan.*' => 'exists:catatan_keterangan_AK07,id_catatan_keterangan_AK07',
+            'penyesuaian.*.catatan_manual' => 'nullable|string',
 
-            'hasil_penyesuaian' => 'array',
-            'hasil_penyesuaian.Acuan_Pembanding_Asesmen' => 'nullable|string',
-            'hasil_penyesuaian.Metode_Asesmen' => 'nullable|string',
-            'hasil_penyesuaian.Instrumen_Asesmen' => 'nullable|string',
+            'acuan_pembanding' => 'nullable|string',
+            'metode_asesmen' => 'nullable|string',
+            'instrumen_asesmen' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
         try {
             // 1. Save Respon Potensi
-            if ($request->has('respon_potensi')) {
-                foreach ($request->respon_potensi as $potensi) {
-                    ResponPotensiAK07::updateOrCreate(
-                        [
-                            'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
-                            'id_poin_potensi_AK07' => $potensi['id_poin_potensi_AK07']
-                        ],
-                        [
-                            'respon_asesor' => $potensi['respon_asesor']
-                        ]
-                    );
+            // Hapus yang lama dulu karena ini sistem checklist asesi
+            ResponPotensiAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->delete();
+            if ($request->has('potensi_asesi')) {
+                foreach ($request->potensi_asesi as $id_potensi) {
+                    ResponPotensiAK07::create([
+                        'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
+                        'id_poin_potensi_AK07' => $id_potensi,
+                        'respon_asesor' => null // Bisa disesuaikan jika asesor yang isi
+                    ]);
                 }
             }
 
             // 2. Save Respon Penyesuaian
-            if ($request->has('respon_penyesuaian')) {
-                foreach ($request->respon_penyesuaian as $penyesuaian) {
-                    ResponDiperlukanPenyesuaianAK07::updateOrCreate(
-                        [
+            // Hapus yang lama dulu
+            ResponDiperlukanPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->delete();
+            if ($request->has('penyesuaian')) {
+                foreach ($request->penyesuaian as $id_modifikasi => $data) {
+                    // Jika ada beberapa keterangan yang dipilih
+                    if (!empty($data['keterangan'])) {
+                        foreach ($data['keterangan'] as $id_keterangan) {
+                            ResponDiperlukanPenyesuaianAK07::create([
+                                'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
+                                'id_persyaratan_modifikasi_AK07' => $id_modifikasi,
+                                'id_catatan_keterangan_AK07' => $id_keterangan,
+                                'respon_penyesuaian' => $data['status'],
+                                'respon_catatan_keterangan' => $data['catatan_manual'] ?? null
+                            ]);
+                        }
+                    } else {
+                        // Jika tidak ada keterangan yang dipilih tetap simpan status Ya/Tidak
+                        ResponDiperlukanPenyesuaianAK07::create([
                             'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
-                            'id_persyaratan_modifikasi_AK07' => $penyesuaian['id_persyaratan_modifikasi_AK07']
-                        ],
-                        [
-                            'id_catatan_keterangan_AK07' => $penyesuaian['id_catatan_keterangan_AK07'] ?? null,
-                            'respon_penyesuaian' => $penyesuaian['respon_penyesuaian'],
-                            'respon_catatan_keterangan' => $penyesuaian['respon_catatan_keterangan'] ?? null
-                        ]
-                    );
+                            'id_persyaratan_modifikasi_AK07' => $id_modifikasi,
+                            'id_catatan_keterangan_AK07' => null,
+                            'respon_penyesuaian' => $data['status'],
+                            'respon_catatan_keterangan' => $data['catatan_manual'] ?? null
+                        ]);
+                    }
                 }
             }
 
             // 3. Save Hasil Penyesuaian
-            if ($request->has('hasil_penyesuaian')) {
-                HasilPenyesuaianAK07::updateOrCreate(
-                    ['id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi],
-                    [
-                        'Acuan_Pembanding_Asesmen' => $request->hasil_penyesuaian['Acuan_Pembanding_Asesmen'] ?? '',
-                        'Metode_Asesmen' => $request->hasil_penyesuaian['Metode_Asesmen'] ?? '',
-                        'Instrumen_Asesmen' => $request->hasil_penyesuaian['Instrumen_Asesmen'] ?? ''
-                    ]
-                );
-            }
+            HasilPenyesuaianAK07::updateOrCreate(
+                ['id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi],
+                [
+                    'Acuan_Pembanding_Asesmen' => $request->acuan_pembanding ?? '',
+                    'Metode_Asesmen' => $request->metode_asesmen ?? '',
+                    'Instrumen_Asesmen' => $request->instrumen_asesmen ?? ''
+                ]
+            );
 
             DB::commit();
-            return response()->json(['message' => 'Data saved successfully']);
+            return redirect()->route('fr-ak-07.success', $id_data_sertifikasi_asesi)->with('success', 'Data FR.AK.07 berhasil disimpan');
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Error saving data', 'error' => $e->getMessage()], 500);
+            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
 }
