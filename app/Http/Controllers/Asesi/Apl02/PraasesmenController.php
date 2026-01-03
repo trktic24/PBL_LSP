@@ -167,4 +167,67 @@ class PraasesmenController extends Controller
 
         return $pdf->stream('FR.APL.02 ' . $sertifikasi->asesi->nama_lengkap . '.pdf');
     }
+    /**
+     * Menampilkan halaman APL-02 untuk Asesor (View & Verifikasi)
+     */
+    public function view($idDataSertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi dengan Relasi Lengkap
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi.user',
+            'jadwal.asesor',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteria',
+        ])->findOrFail($idDataSertifikasi);
+
+        $skema = $sertifikasi->jadwal->skema;
+        $asesorObj = $sertifikasi->jadwal->asesor;
+
+        // 2. Ambil Respon (History Jawaban)
+        $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
+
+        // 3. Return View Frontend (Shared View) dengan Mode 'view'
+        // Kita menggunakan view yang sama dengan asesi tapi dengan mode berbeda
+        return view('frontend.apl02', [
+            'sertifikasi' => $sertifikasi,
+            'skema' => $skema,
+            'asesi' => $sertifikasi->asesi,
+            'idDataSertifikasi' => $idDataSertifikasi,
+            'existingResponses' => $existingResponses,
+            'mode' => 'view', // Mode View untuk Asesor
+            'asesor' => [
+                'nama' => $asesorObj->nama_lengkap ?? 'Belum Ditentukan',
+                'no_reg' => $asesorObj->nomor_regis ?? '-',
+            ],
+            // Variable tambahan biar gak error di view
+            // 'backUrl' => route('asesor.jadwal.index') // Atau route lain yang sesuai
+        ]);
+    }
+
+    /**
+     * Verifikasi APL-02 oleh Asesor
+     */
+    public function verifikasi(Request $request, $idDataSertifikasi)
+    {
+        try {
+            $sertifikasi = DataSertifikasiAsesi::findOrFail($idDataSertifikasi);
+
+            // Update Rekomendasi APL-02
+            $sertifikasi->update([
+                'rekomendasi_apl02' => 'diterima',
+                // Opsional: Update status sertifikasi jika perlu
+                // 'status_sertifikasi' => 'asesmen_mandiri_disetujui' 
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'APL-02 berhasil diverifikasi.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal verifikasi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
