@@ -47,7 +47,8 @@ use App\Http\Controllers\FrMapa01Controller; // MAPA-01
 use App\Http\Controllers\Mapa02Controller; // MAPA-02
 use App\Http\Controllers\FrAk07Controller; // AK-07
 use App\Http\Controllers\Ak02Controller; // AK-02
-use App\Http\Controllers\Asesi\AK04Controller; // AK-04
+use App\Http\Controllers\Asesi\Ak04Controller; // AK-04
+use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
 use App\Http\Controllers\SoalController;
 
 // Instrumen Asesmen
@@ -261,7 +262,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/ia07/{id}', [IA07Controller::class, 'cetakPDF'])->name('ia07.cetak_pdf');
         Route::get('/apl01/{id}', [APL01Controller::class, 'cetakPDF'])->name('apl01.cetak_pdf');
         Route::get('/mapa01/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.cetak_pdf');
-        Route::get('/apl02/{id}', [PraasesmenController::class, 'generatePDF'])->name('apl02.cetak_pdf');
+        Route::get('/apl02/{id}', [Apl02PdfController::class, 'generateApl02'])->name('apl02.cetak_pdf');
         Route::get('/ak01/{id}', [Ak01PdfController::class, 'generateAk01'])->name('ak01.cetak_pdf');
         Route::get('/ak02/{id}', [Ak02Controller::class, 'cetakPDF'])->name('ak02.cetak_pdf');
     });
