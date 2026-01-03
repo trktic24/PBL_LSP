@@ -62,7 +62,17 @@ class Apl02PdfController extends Controller
         // --- LOGIKA TANDA TANGAN ASESOR ---
         $ttdAsesorBase64 = null;
         if ($asesor && $asesor->tanda_tangan) {
-            $pathTtdAsesor = storage_path('app/private_uploads/tanda_tangan/' . basename($asesor->tanda_tangan));
+            // Path: storage/app/private_uploads/asesor_docs/{id_user}/filename.png
+            // Ambil id_user dari asesor
+            $idUser = $asesor->user_id ?? ($asesor->id_user ?? null);
+
+            if ($idUser) {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . $idUser . '/' . basename($asesor->tanda_tangan));
+            } else {
+                // Fallback jika tidak ada id_user
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
+            }
+
             if (file_exists($pathTtdAsesor)) {
                 $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
             }

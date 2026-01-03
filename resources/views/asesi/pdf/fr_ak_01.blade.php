@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>FR.AK.01 Persetujuan Asesmen</title>
     <style>
@@ -110,15 +111,18 @@
         .checkbox-item {
             margin-bottom: 5px;
             position: relative;
-            padding-left: 15px;
+            padding-left: 20px;
         }
 
-        .checkbox-item:before {
-            content: "•";
+        .checkmark {
+            font-family: "DejaVu Sans", sans-serif;
+            font-size: 12pt;
+            font-weight: bold;
+            line-height: 1;
+            color: #000;
             position: absolute;
             left: 0;
-            font-weight: bold;
-            font-size: 14pt;
+            top: 0;
         }
 
         .pelaksanaan-section {
@@ -207,6 +211,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- HEADER dengan Logo -->
@@ -231,12 +236,13 @@
 
     <!-- INTRO TEXT -->
     <div class="intro-text">
-        Persetujuan Asesmen ini untuk menjamin bahwa Asesi telah diberi arahan secara rinci tentang perencanaan dan proses asesmen.
+        Persetujuan Asesmen ini untuk menjamin bahwa Asesi telah diberi arahan secara rinci tentang perencanaan dan
+        proses asesmen.
     </div>
 
     <!-- SKEMA SERTIFIKASI -->
     <div class="section-title">Skema Sertifikasi</div>
-    
+
     <table class="info-table">
         <tr>
             <td>Judul</td>
@@ -279,18 +285,20 @@
     <div class="bukti-list">
         <div class="bukti-grid">
             <div class="bukti-col">
-                @foreach($buktiKiri as $respon)
-                <div class="checkbox-item">
-                    {{ $respon->buktiMaster->bukti ?? 'Bukti' }}
-                </div>
+                @foreach ($buktiKiri as $respon)
+                    <div class="checkbox-item">
+                        <span class="checkmark">✓</span>
+                        {{ $respon->buktiMaster->bukti ?? 'Bukti' }}
+                    </div>
                 @endforeach
             </div>
-            
+
             <div class="bukti-col">
-                @foreach($buktiKanan as $respon)
-                <div class="checkbox-item">
-                    {{ $respon->buktiMaster->bukti ?? 'Bukti' }}
-                </div>
+                @foreach ($buktiKanan as $respon)
+                    <div class="checkbox-item">
+                        <span class="checkmark">✓</span>
+                        {{ $respon->buktiMaster->bukti ?? 'Bukti' }}
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -298,7 +306,7 @@
 
     <!-- PELAKSANAAN ASESMEN -->
     <div class="section-title">Pelaksanaan Asesmen Disepakati pada</div>
-    
+
     <div class="pelaksanaan-section">
         <table>
             <tr>
@@ -317,7 +325,7 @@
                 <td></td>
             </tr>
         </table>
-        
+
         <table class="tuk-indent">
             <tr>
                 <td>Lokasi</td>
@@ -334,21 +342,24 @@
 
     <!-- PERNYATAAN -->
     <div class="section-title">Pernyataan</div>
-    
+
     <div class="pernyataan-section">
         <div class="pernyataan-item">
             <strong>Asesi:</strong><br>
             Bahwa saya telah mendapatkan penjelasan terkait hak dan prosedur banding asesmen dari asesor.
         </div>
-        
+
         <div class="pernyataan-item">
             <strong>Asesor:</strong><br>
-            Menyatakan tidak akan membuka hasil pekerjaan yang saya peroleh karena penugasan saya sebagai Asesor dalam pekerjaan Asesmen kepada siapapun atau organisasi apapun selain kepada pihak yang berwenang sehubungan dengan kewajiban saya sebagai Asesor yang ditugaskan oleh LSP.
+            Menyatakan tidak akan membuka hasil pekerjaan yang saya peroleh karena penugasan saya sebagai Asesor dalam
+            pekerjaan Asesmen kepada siapapun atau organisasi apapun selain kepada pihak yang berwenang sehubungan
+            dengan kewajiban saya sebagai Asesor yang ditugaskan oleh LSP.
         </div>
-        
+
         <div class="pernyataan-item">
             <strong>Asesi:</strong><br>
-            Saya setuju mengikuti asesmen dengan pemahaman bahwa informasi yang dikumpulkan hanya digunakan untuk pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.
+            Saya setuju mengikuti asesmen dengan pemahaman bahwa informasi yang dikumpulkan hanya digunakan untuk
+            pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.
         </div>
     </div>
 
@@ -357,7 +368,7 @@
         <div class="signature-left">
             <div class="signature-title">Asesi</div>
             <div class="signature-space">
-                @if($ttdAsesiBase64)
+                @if ($ttdAsesiBase64)
                     <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi"
                         style="max-width: 120px; max-height: 70px; margin-top: 5px;">
                 @endif
@@ -369,11 +380,11 @@
                 {{ $tanggalRespon }}
             </div>
         </div>
-        
+
         <div class="signature-right">
             <div class="signature-title">Asesor</div>
             <div class="signature-space">
-                @if($ttdAsesorBase64)
+                @if ($ttdAsesorBase64)
                     <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor"
                         style="max-width: 120px; max-height: 70px; margin-top: 5px;">
                 @endif
@@ -391,4 +402,5 @@
     </div>
 
 </body>
+
 </html>

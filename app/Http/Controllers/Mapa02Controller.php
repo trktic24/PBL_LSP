@@ -123,7 +123,7 @@ class Mapa02Controller extends Controller
         }
 
         // 3. Render PDF
-        $pdf = Pdf::loadView('pdf.mapa_02', [
+        $pdf = Pdf::loadView('pdf.MAPA_02', [
             'sertifikasi' => $sertifikasi,
             'mapa02Map' => $mapa02Map
         ]);

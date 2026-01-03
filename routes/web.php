@@ -24,6 +24,7 @@ use App\Http\Controllers\ProfileController;
 // ==========================
 use App\Http\Controllers\Admin\SkemaController;
 use App\Http\Controllers\AsesorController; // Master Asesor
+use App\Http\Controllers\Admin\AsesorProfileController; // Asesor Profile
 use App\Http\Controllers\Admin\AsesiController;
 use App\Http\Controllers\Admin\TukAdminController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -33,9 +34,9 @@ use App\Http\Controllers\Admin\CategoryController;
 // ==========================
 use App\Http\Controllers\APL01Controller; // Permohonan
 use App\Http\Controllers\Asesi\Apl02\PraasesmenController; // APL-02
-use App\Http\Controllers\Asesi\Apl02\Apl02Controller; 
+/* use App\Http\Controllers\Asesi\Apl02\Apl02Controller; */
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController; // AK-01
-use App\Http\Controllers\Asesi\Ak01Controller;
+use App\Http\Controllers\Asesi\AK01Controller;
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Asesi\Pdf\Ak01PdfController;
 use App\Http\Controllers\PortofolioController;
@@ -142,7 +143,7 @@ Route::middleware('auth')->group(function () {
     /// ========================
     // APL-01 (Updated sesuai Controller)
     // ========================
-    
+
     // Halaman 1: Data Pribadi (Ini yang tadi error)
     Route::get('/apl01/step-1/{id}', [APL01Controller::class, 'step1'])->name('APL_01_1');
     Route::post('/apl01/step-1/store', [APL01Controller::class, 'storeStep1'])->name('apl01.step1.store');
@@ -154,26 +155,26 @@ Route::middleware('auth')->group(function () {
     // Halaman 3: Bukti Kelengkapan
     Route::get('/apl01/step-3/{id}', [APL01Controller::class, 'step3'])->name('APL_01_3');
 
-    
+
 
     // APL-02 (Asesmen Mandiri)
     // Route APL-02 Asesi form
-Route::prefix('apl02')->name('apl02.')->group(function () {
-    // Menampilkan Form
-    Route::get('/form/{id}', [Apl02Controller::class, 'show'])->name('show');
-    
-    // Menyimpan Form
-    Route::post('/store/{id}', [Apl02Controller::class, 'store'])->name('store');
-});
+    // Route::prefix('apl02')->name('apl02.')->group(function () {
+    //     // Menampilkan Form
+    //     // Route::get('/form/{id}', [Apl02Controller::class, 'show'])->name('show');
+
+    //     // Menyimpan Form
+    //     // Route::post('/store/{id}', [Apl02Controller::class, 'store'])->name('store');
+    // });
 
     Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
         ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
 
     // FR-AK (Ceklis, Banding, dll)
     Route::middleware(['auth'])->group(function () {
-    Route::get('/ak01/form/{id}', [Ak01Controller::class, 'create'])->name('ak01.create');
-    Route::post('/ak01/store/{id}', [Ak01Controller::class, 'store'])->name('ak01.store');
-});
+        Route::get('/ak01/form/{id}', [Ak01Controller::class, 'create'])->name('ak01.create');
+        Route::post('/ak01/store/{id}', [Ak01Controller::class, 'store'])->name('ak01.store');
+    });
 
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
     Route::get('/FR_AK_03', fn() => view('frontend/AK_03/FR_AK_03'))->name('FR_AK_03');
@@ -184,6 +185,7 @@ Route::prefix('apl02')->name('apl02.')->group(function () {
     // FR-AK-07
     Route::get('/FR_AK_07/{id}', [FrAk07Controller::class, 'create'])->name('fr-ak-07.create');
     Route::post('/FR_AK_07/{id}', [FrAk07Controller::class, 'store'])->name('fr-ak-07.store');
+    Route::get('/FR_AK_07/{id}/success', [FrAk07Controller::class, 'success'])->name('fr-ak-07.success');
 
     // ========================
     // 2. INSTRUMEN ASESMEN (IA)
@@ -201,13 +203,13 @@ Route::prefix('apl02')->name('apl02.')->group(function () {
         // Form Editable (Asesor Only)
         Route::get('/', [IA01Controller::class, 'index'])->name('ia01.index');
         Route::get('/cover', [IA01Controller::class, 'index'])->name('ia01.cover'); // Alias for compatibility
-        
+
         // Store (Asesor Only - protected in controller)
         Route::post('/store', [IA01Controller::class, 'store'])->name('ia01.store');
 
         // View Read-Only (Admin & Asesi)
         Route::get('/view', [IA01Controller::class, 'showView'])->name('ia01.view');
-        
+
         // Legacy route for backward compatibility
         Route::get('/admin', [IA01Controller::class, 'showView'])->name('ia01.admin.show');
 
@@ -266,6 +268,17 @@ Route::prefix('apl02')->name('apl02.')->group(function () {
     });
     // Legacy mapping (just in case)
     Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF']);
+
+    // ========================
+    // 4. ASESOR FILE AJAX ROUTES
+    // ========================
+    Route::post('/asesor/{id}/bukti/store', [AsesorProfileController::class, 'storeBukti'])->name('asesor.bukti.store');
+    Route::delete('/asesor/{id}/bukti/delete/{jenis_dokumen}', [AsesorProfileController::class, 'deleteBukti'])->name('asesor.bukti.delete');
+    Route::post('/asesor/{id}/ttd/store', [AsesorProfileController::class, 'storeTtd'])->name('asesor.ttd.store');
+    Route::delete('/asesor/{id}/ttd/delete', [AsesorProfileController::class, 'deleteTtd'])->name('asesor.ttd.delete');
+    
+    // Quick Verification Route
+    Route::post('/asesor/{id}/document/verify', [AsesorProfileController::class, 'verifyDocument'])->name('asesor.document.verify');
 });
 
 // ==========================================================

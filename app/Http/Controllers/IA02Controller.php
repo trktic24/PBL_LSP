@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\IA02; // Pastikan nama Modelnya konsisten (IA02)
+use App\Models\Ia02; // Pastikan nama Modelnya konsisten (Ia02)
 use App\Models\DataSertifikasiAsesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,8 +35,8 @@ class IA02Controller extends Controller
                 ->with('error', 'Data Sertifikasi tidak ditemukan.');
         }
 
-        // 2. Ambil data IA02 untuk sertifikasi ini (jika sudah ada)
-        $ia02 = IA02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->first();
+        // 2. Ambil data Ia02 untuk sertifikasi ini (jika sudah ada)
+        $ia02 = Ia02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->first();
 
         // 3. Cek Role (Hanya Admin & Superadmin yang bisa edit)
         // Jika user belum login/auth, default false
@@ -100,7 +100,7 @@ class IA02Controller extends Controller
         ]);
 
         // 3. Simpan ke Database
-        IA02::updateOrCreate(
+        Ia02::updateOrCreate(
             ['id_data_sertifikasi_asesi' => $id_sertifikasi],
             [
                 'skenario' => $validated['skenario'],
@@ -129,7 +129,7 @@ class IA02Controller extends Controller
         ])->findOrFail($id);
 
         // 2. Ambil Data Skenario (IA02)
-        $skenario = IA02::where('id_data_sertifikasi_asesi', $id)->first();
+        $skenario = Ia02::where('id_data_sertifikasi_asesi', $id)->first();
 
         // 3. Ambil Unit Kompetensi (Menggunakan logika Model Skema yang baru)
         // Jika error, pastikan public function unitKompetensi() ada di Model Skema
