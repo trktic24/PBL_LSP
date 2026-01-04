@@ -9,6 +9,7 @@ use App\Models\BuktiDasar;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class AsesiProfileController extends Controller
 {
@@ -24,7 +25,7 @@ class AsesiProfileController extends Controller
     private function getSertifikasiAcuan($asesi)
     {
         $sertifikasiId = request('sertifikasi_id');
-        
+
         if ($sertifikasiId) {
             // Jika ada di URL, cari yang spesifik
             return $asesi->dataSertifikasi->where('id_data_sertifikasi_asesi', $sertifikasiId)->first();
@@ -38,7 +39,7 @@ class AsesiProfileController extends Controller
     public function settings($id_asesi)
     {
         $asesi = $this->getAsesi($id_asesi);
-        
+
         // [PERBAIKAN] Ambil sertifikasi acuan
         $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
 
@@ -53,27 +54,39 @@ class AsesiProfileController extends Controller
         // [PERBAIKAN] Gunakan Helper untuk mendapatkan sertifikasi acuan
         // Jadi tidak lagi hardcode ->latest()->first() di sini
         $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
-        
+
         $activeForms = [];
         $namaSkema = 'Belum mendaftar skema';
 
         // 2. Cek Validitas Data Pendaftaran -> Jadwal -> Skema
         // Gunakan $sertifikasiAcuan yang sudah didapat
         if ($sertifikasiAcuan && $sertifikasiAcuan->jadwal && $sertifikasiAcuan->jadwal->skema) {
-            
+
             $skema = $sertifikasiAcuan->jadwal->skema;
             $namaSkema = $skema->nama_skema;
 
             // 3. Mapping Kode Form
             $map = [
-                'apl_01' => 'FR.APL.01', 'apl_02' => 'FR.APL.02',
-                'fr_mapa_01' => 'FR.MAPA.01', 'fr_mapa_02' => 'FR.MAPA.02',
-                'fr_ak_01' => 'FR.AK.01', 'fr_ak_04' => 'FR.AK.04',
-                'fr_ia_01' => 'FR.IA.01', 'fr_ia_02' => 'FR.IA.02', 'fr_ia_03' => 'FR.IA.03',
-                'fr_ia_04' => 'FR.IA.04', 'fr_ia_05' => 'FR.IA.05', 'fr_ia_06' => 'FR.IA.06',
-                'fr_ia_07' => 'FR.IA.07', 'fr_ia_08' => 'FR.IA.08', 'fr_ia_09' => 'FR.IA.09',
-                'fr_ia_10' => 'FR.IA.10', 'fr_ia_11' => 'FR.IA.11',
-                'fr_ak_02' => 'FR.AK.02', 'fr_ak_03' => 'FR.AK.03', 'fr_ak_05' => 'FR.AK.05',
+                'apl_01' => 'FR.APL.01',
+                'apl_02' => 'FR.APL.02',
+                'fr_mapa_01' => 'FR.MAPA.01',
+                'fr_mapa_02' => 'FR.MAPA.02',
+                'fr_ak_01' => 'FR.AK.01',
+                'fr_ak_04' => 'FR.AK.04',
+                'fr_ia_01' => 'FR.IA.01',
+                'fr_ia_02' => 'FR.IA.02',
+                'fr_ia_03' => 'FR.IA.03',
+                'fr_ia_04' => 'FR.IA.04',
+                'fr_ia_05' => 'FR.IA.05',
+                'fr_ia_06' => 'FR.IA.06',
+                'fr_ia_07' => 'FR.IA.07',
+                'fr_ia_08' => 'FR.IA.08',
+                'fr_ia_09' => 'FR.IA.09',
+                'fr_ia_10' => 'FR.IA.10',
+                'fr_ia_11' => 'FR.IA.11',
+                'fr_ak_02' => 'FR.AK.02',
+                'fr_ak_03' => 'FR.AK.03',
+                'fr_ak_05' => 'FR.AK.05',
                 'fr_ak_06' => 'FR.AK.06',
             ];
 
@@ -90,24 +103,23 @@ class AsesiProfileController extends Controller
                 }
 
                 if (!$formsFound) {
-                     $activeForms = array_values($map); 
+                    $activeForms = array_values($map);
                 }
-
             } else {
-                $activeForms = array_values($map); 
+                $activeForms = array_values($map);
             }
-        } 
+        }
 
         // [PERBAIKAN] Kirim $sertifikasiAcuan ke View
         return view('Admin.profile_asesi.asesi_profile_form', compact('asesi', 'activeForms', 'namaSkema', 'sertifikasiAcuan'));
     }
-    
+
     // --- MENU 3: BUKTI ---
     public function bukti($id_asesi)
     {
         // [PERBAIKAN] Ambil asesi dengan relasi yang dibutuhkan
         $asesi = Asesi::with(['buktiDasar', 'dataPekerjaan', 'dataSertifikasi.jadwal.skema'])->findOrFail($id_asesi);
-        
+
         // [PERBAIKAN] Ambil sertifikasi acuan
         $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
 
@@ -124,26 +136,192 @@ class AsesiProfileController extends Controller
     }
 
     // --- MENU 4: TRACKER ---
-    public function tracker($id_asesi)
+    public function tracker(Request $request, $id_asesi)
     {
-        // [PERBAIKAN] Ambil data asesi beserta relasi yang dibutuhkan
+        // 1. Ambil data asesi
         $asesi = Asesi::with([
-            'user', 
-            'dataPekerjaan', 
-            'dataSertifikasi' => function($q) {
+            'user',
+            'dataPekerjaan',
+            'dataSertifikasi' => function ($q) {
                 $q->with([
                     'jadwal.masterTuk',
                     'jadwal.asesor',
                     'jadwal.skema'
-                ])->latest(); 
+                ])->latest();
             }
         ])->findOrFail($id_asesi);
 
-        // [PERBAIKAN] Ambil sertifikasi acuan
-        $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
+        // 2. Ambil sertifikasi yang sedang aktif/terbaru
+        // Pastikan function getSertifikasiAcuan mengembalikan object sertifikasi
+        $sertifikasi = $this->getSertifikasiAcuan($asesi);
 
-        // [PERBAIKAN] Kirim $sertifikasiAcuan ke View
-        return view('Admin.profile_asesi.asesi_profile_tracker', compact('asesi', 'sertifikasiAcuan'));
+        // Jika tidak ada sertifikasi, handle error atau return view kosong
+        if (!$sertifikasi) {
+            return back()->with('error', 'Data sertifikasi tidak ditemukan.');
+        }
+
+        // ==========================================================
+        // LOGIC STEP 2: PEMBAYARAN
+        // ==========================================================
+        $paymentVerified = $sertifikasi->rekomendasi_apl01 == 'diterima';
+        $paymentRejected = $sertifikasi->rekomendasi_apl01 === 'tidak diterima';
+        $isMidtransProcess = $sertifikasi->status_sertifikasi == 'menunggu_verifikasi_bayar';
+
+        // ==========================================================
+        // LOGIC STEP 3: PRA-ASESMEN (APL-02)
+        // ==========================================================
+        // Kuning = Menunggu Asesi, Biru = Menunggu Asesor, Hijau = Selesai, Merah = Ditolak
+
+        $apl02Diterima = $sertifikasi->rekomendasi_apl02 == 'diterima';       // Status dari Asesor
+        $apl02Ditolak  = $sertifikasi->rekomendasi_apl02 === 'tidak diterima'; // Status dari Asesor
+
+        // Asumsi Level: 
+        // 30 = Pembayaran Lunas (Asesi belum isi form)
+        // 40 = Asesi Sudah Submit APL-02 (Menunggu Asesor)
+        // 50 = Asesor Sudah Verifikasi
+        $sudahSubmitAPL02 = $sertifikasi->progres_level >= 40;
+
+        // Default Status
+        $statusStep3 = 'locked';
+
+        if ($paymentVerified) {
+            if ($apl02Diterima) {
+                $statusStep3 = 'selesai';         // HIJAU (Download Aktif)
+            } elseif ($apl02Ditolak) {
+                $statusStep3 = 'ditolak';         // MERAH (Silang & Tali Merah)
+            } elseif ($sudahSubmitAPL02) {
+                $statusStep3 = 'menunggu_asesor'; // BIRU (Admin/Asesor memantau)
+            } else {
+                $statusStep3 = 'menunggu_asesi';  // KUNING (Asesi belum isi)
+            }
+        }
+        // Jika pembayaran ditolak, statusStep3 tetap 'locked' (atau bisa dianggap stop)
+
+        // ==========================================================
+        // LOGIC STEP 6: ASESMEN & WAKTU (FIX ERROR DISINI)
+        // ==========================================================
+        
+        // 1. Hasil Akhir
+        $hasilAK02 = $sertifikasi->rekomendasi_hasil_asesmen_AK02;
+        $isFinished = !is_null($hasilAK02); // Sudah ada nilai
+
+        // 2. Logic Waktu (Time Constraints)
+        $jadwal = $sertifikasi->jadwal;
+        $now = Carbon::now();
+        
+        // [FIX] Ambil tanggalnya saja dan jamnya saja secara eksplisit
+        $tgl = Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
+        $jamMulai = Carbon::parse($jadwal->waktu_mulai)->format('H:i:s');
+        $jamSelesai = Carbon::parse($jadwal->waktu_selesai)->format('H:i:s');
+
+        // Baru digabungkan dengan format yang bersih
+        $startDateTime = Carbon::parse($tgl . ' ' . $jamMulai);
+        $endDateTime   = Carbon::parse($tgl . ' ' . $jamSelesai);
+
+        // Variable Flag Waktu
+        $hasStarted = $now->greaterThanOrEqualTo($startDateTime); // Sudah lewat jam mulai
+        $hasEnded   = $now->greaterThan($endDateTime);            // Sudah lewat jam selesai
+
+        // Format Teks Tanggal untuk View
+        $startDateFormatted = $startDateTime->translatedFormat('d M Y, H:i');
+
+        // Cek Hasil Akhir AK.02
+        $hasilAK02 = $sertifikasi->rekomendasi_hasil_asesmen_AK02;
+
+        // Jika belum ada logic ini, kita default true atau cek manual
+        $skemaId = $sertifikasi->id_skema ?? $sertifikasi->jadwal->id_skema;
+
+        // Misal: $showIA05 = Ia05::where('id_skema', $skemaId)->exists();
+        $showIA02 = true; // Praktik
+        $showIA05 = true; // Pilihan Ganda
+        $showIA06 = true; // Essay
+        $showIA07 = true; // Lisan
+        $showIA09 = true; // Wawancara
+
+        // ==========================================================
+        // KIRIM KE VIEW
+        // ==========================================================
+        // Kita kirim variable $sertifikasi (bukan sertifikasiAcuan agar konsisten dengan view)
+        return view('Admin.profile_asesi.asesi_profile_tracker', compact(
+            'asesi',
+            'sertifikasi',
+            'paymentVerified',
+            'paymentRejected',
+            'isMidtransProcess',
+            'statusStep3',
+            'hasilAK02',
+            'isFinished',
+            'hasStarted',
+            'hasEnded',
+            'startDateFormatted', // Kirim format tanggal ke view
+            'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09'
+        ));
+    }
+
+    // --- VERIFIKASI PEMBAYARAN (STEP 2) ---
+    public function verifikasiPembayaran(Request $request, $id_asesi, $id_sertifikasi)
+    {
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
+        $status = $request->input('status');
+
+        $updateData = [];
+        $pesan = '';
+
+        if ($status == 'diterima') {
+            $dbStatus = 'diterima';
+            $updateData['progres_level'] = 30; // Level Lunas
+            $pesan = 'Pembayaran berhasil diverifikasi.';
+        } elseif ($status == 'ditolak') {
+            // Menggunakan spasi sesuai request Anda
+            $dbStatus = 'tidak diterima';
+            $updateData['progres_level'] = 10; // Level Reset
+            $pesan = 'Pembayaran ditolak.';
+        } elseif ($status == 'menunggu') {
+            // Tombol Batal
+            $dbStatus = null;
+            $updateData['progres_level'] = 20; // Level Menunggu
+            $pesan = 'Verifikasi dibatalkan.';
+        }
+
+        $sertifikasi->update([
+            'rekomendasi_apl01' => $dbStatus,
+            'progres_level' => $updateData['progres_level'] ?? $sertifikasi->progres_level
+        ]);
+
+        return back()->with('success', $pesan);
+    }
+
+    public function verifikasiApl02($id_asesi, $id_sertifikasi)
+    {
+        return "Halaman Verifikasi APL-02 untuk Sertifikasi ID: " . $id_sertifikasi;
+    }
+
+    public function verifikasiIA02($id_asesi, $id_sertifikasi)
+    {
+        // Nanti kita buat View untuk melihat hasil upload observasi asesi
+        return "Halaman Verifikasi IA.02 (Praktik) - Coming Soon";
+    }
+
+    public function verifikasiIA05($id_asesi, $id_sertifikasi)
+    {
+        // Nanti kita buat View untuk melihat jawaban Pilihan Ganda
+        return "Halaman Verifikasi IA.05 (Pilihan Ganda) - Coming Soon";
+    }
+
+    public function verifikasiIA06($id_asesi, $id_sertifikasi)
+    {
+        // Nanti kita buat View untuk melihat jawaban Essay & memberi nilai
+        return "Halaman Verifikasi IA.06 (Essay) - Coming Soon";
+    }
+
+    public function verifikasiIA07($id_asesi, $id_sertifikasi)
+    {
+        return "Halaman Verifikasi IA.07 (Lisan) - Coming Soon";
+    }
+
+    public function verifikasiIA09($id_asesi, $id_sertifikasi)
+    {
+        return "Halaman Verifikasi IA.09 (Wawancara) - Coming Soon";
     }
 
     // --- FUNGSI UPLOAD & MANAGEMEN FILE (Semua menggunakan disk 'private_docs') ---
@@ -162,7 +340,7 @@ class AsesiProfileController extends Controller
             // Tapi biasanya bukti dasar itu menempel ke Asesi (general) atau Sertifikasi Terakhir.
             // Biarkan default logic ini untuk sementara.
             $sertifikasi = DataSertifikasiAsesi::where('id_asesi', $id_asesi)
-                                            ->latest('created_at')->first();
+                ->latest('created_at')->first();
 
             if (!$sertifikasi) return response()->json(['success' => false, 'message' => 'Sertifikasi tidak ditemukan'], 404);
 
@@ -170,13 +348,13 @@ class AsesiProfileController extends Controller
                 $file = $request->file('file');
                 // Format nama file: TIMESTAMP_NamaAsliFile
                 $filename = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
-                
+
                 // Folder: bukti_asesi/ID_Asesi
                 $path = 'bukti_asesi/' . $id_asesi;
-                
+
                 // Simpan ke PRIVATE DISK
                 $storedPath = Storage::disk('private_docs')->putFileAs($path, $file, $filename);
-                
+
                 $bukti = BuktiDasar::create([
                     'id_data_sertifikasi_asesi' => $sertifikasi->id_data_sertifikasi_asesi,
                     'bukti_dasar' => $storedPath, // Simpan path lengkap
@@ -212,7 +390,7 @@ class AsesiProfileController extends Controller
                 $file = $request->file('file');
                 $filename = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
                 $path = 'bukti_asesi/' . $id_asesi;
-                
+
                 $storedPath = Storage::disk('private_docs')->putFileAs($path, $file, $filename);
 
                 // 3. Update Database
@@ -221,7 +399,7 @@ class AsesiProfileController extends Controller
                 $bukti->update([
                     'bukti_dasar' => $storedPath,
                     'status_kelengkapan' => 'memenuhi',
-                    'status_validasi' => 0, 
+                    'status_validasi' => 0,
                     'keterangan' => $jenisDokumenLama . ($request->keterangan ? ' - ' . $request->keterangan : ''),
                 ]);
 
@@ -241,7 +419,7 @@ class AsesiProfileController extends Controller
             if (Storage::disk('private_docs')->exists($bukti->bukti_dasar)) {
                 Storage::disk('private_docs')->delete($bukti->bukti_dasar);
             }
-            
+
             $bukti->delete();
             return response()->json(['success' => true, 'message' => 'Dokumen berhasil dihapus']);
         }
@@ -252,7 +430,7 @@ class AsesiProfileController extends Controller
     public function storeTandaTangan(Request $request, $id_asesi)
     {
         $request->validate([
-            'file_ttd' => 'required|image|mimes:png,jpg,jpeg|max:2048', 
+            'file_ttd' => 'required|image|mimes:png,jpg,jpeg|max:2048',
         ]);
 
         try {
@@ -266,25 +444,24 @@ class AsesiProfileController extends Controller
 
                 $file = $request->file('file_ttd');
                 $filename = 'ttd_' . time() . '_' . $id_asesi . '.' . $file->getClientOriginalExtension();
-                $path = 'ttd_asesi'; 
-                
+                $path = 'ttd_asesi';
+
                 // Simpan ke Private Disk
                 $storedPath = Storage::disk('private_docs')->putFileAs($path, $file, $filename);
-                
+
                 $asesi->update([
                     'tanda_tangan' => $storedPath
                 ]);
 
                 return response()->json([
-                    'success' => true, 
+                    'success' => true,
                     'message' => 'Tanda tangan berhasil diupload',
                     // Gunakan route secure.file agar bisa diakses di view
                     'url' => route('secure.file', ['path' => $storedPath])
                 ]);
             }
-            
-            return response()->json(['success' => false, 'message' => 'File tidak valid'], 400);
 
+            return response()->json(['success' => false, 'message' => 'File tidak valid'], 400);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
         }
@@ -300,14 +477,13 @@ class AsesiProfileController extends Controller
                 if (Storage::disk('private_docs')->exists($asesi->tanda_tangan)) {
                     Storage::disk('private_docs')->delete($asesi->tanda_tangan);
                 }
-                
+
                 $asesi->update(['tanda_tangan' => null]);
-                
+
                 return response()->json(['success' => true, 'message' => 'Tanda tangan dihapus']);
             }
 
             return response()->json(['success' => false, 'message' => 'Tidak ada tanda tangan'], 404);
-
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
         }

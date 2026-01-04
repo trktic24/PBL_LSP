@@ -291,19 +291,28 @@ Route::middleware('auth')->group(function () {
             Route::controller(AsesiProfileController::class)
                 ->prefix('asesi/{id_asesi}')
                 ->group(function () {
-                Route::get('/settings', 'settings')->name('asesi.profile.settings');
-                Route::get('/form', 'form')->name('asesi.profile.form');
-                Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
+                    Route::get('/settings', 'settings')->name('asesi.profile.settings');
+                    Route::get('/form', 'form')->name('asesi.profile.form');
+                    Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
 
-                // --- FITUR BUKTI KELENGKAPAN ---
-                Route::get('/bukti', 'bukti')->name('asesi.profile.bukti'); // Halaman View
-                Route::post('/bukti/store', 'storeBukti')->name('asesi.profile.bukti.store'); // Upload
-                Route::post('/bukti/update/{id_bukti}', 'updateBukti')->name('asesi.profile.bukti.update');
-                Route::delete('/bukti/delete/{id_bukti}', 'deleteBukti')->name('asesi.profile.bukti.delete'); // Hapus
-    
-                Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
-                Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
-            });
+                    // --- FITUR BUKTI KELENGKAPAN ---
+                    Route::get('/bukti', 'bukti')->name('asesi.profile.bukti'); // Halaman View
+                    Route::post('/bukti/store', 'storeBukti')->name('asesi.profile.bukti.store'); // Upload
+                    Route::post('/bukti/update/{id_bukti}', 'updateBukti')->name('asesi.profile.bukti.update');
+                    Route::delete('/bukti/delete/{id_bukti}', 'deleteBukti')->name('asesi.profile.bukti.delete'); // Hapus
+
+                    Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
+                    Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
+                    
+                    // --- FITUR TRACKER ---
+                    Route::post('/sertifikasi/{id}/verifikasi-pembayaran', 'verifikasiPembayaran')->name('verifikasi.pembayaran');
+                    Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
+                    Route::get('/verifikasi-ia02/{id}', 'verifikasiIA02')->name('verifikasi.ia02');
+                    Route::get('/verifikasi-ia05/{id}', 'verifikasiIA05')->name('verifikasi.ia05');
+                    Route::get('/verifikasi-ia06/{id}', 'verifikasiIA06')->name('verifikasi.ia06');
+                    Route::get('/verifikasi-ia07/{id}', 'verifikasiIA07')->name('verifikasi.ia07');
+                    Route::get('/verifikasi-ia09/{id}', 'verifikasiIA09')->name('verifikasi.ia09');
+                });
 
             // Master Asesor
             Route::controller(AsesorController::class)->group(function () {
