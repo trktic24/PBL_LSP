@@ -29,17 +29,29 @@
 
 <body class="bg-gray-50">
 
-    <div class="flex h-screen overflow-auto">
+    <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden">
 
         {{-- SIDEBAR --}}
-        <x-sidebar2 :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
+        <div class="hidden md:block md:w-80 flex-shrink-0">
+            <x-sidebar2 :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" />
+        </div>
 
+        {{-- 2. HEADER MOBILE (Component Baru) --}}
+        @php
+            // Logika gambar skema dari referensi (Standardized)
+            $gambarSkema = null;
+            if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) {
+                $gambarSkema = asset('storage/' . $sertifikasi->jadwal->skema->gambar);
+            }
+        @endphp
+
+        <x-mobile_header :title="'Jadwal dan TUK'" :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" :name="$asesi->nama_lengkap ?? Auth::user()->name" :image="$gambarSkema" :sertifikasi="$sertifikasi" />
         {{-- MAIN CONTENT --}}
         {{-- Simpan ID Sertifikasi --}}
-        <main class="flex-1 p-8 md:p-12 overflow-y-auto" data-sertifikasi-id="{{ $id_sertifikasi }}">
+        <main class="flex-1 px-6 pt-20 pb-12 md:p-12 overflow-y-auto" data-sertifikasi-id="{{ $id_sertifikasi }}">
             <div class="max-w-4xl mx-auto">
 
-                <div class="text-center mb-10">
+                <div class="text-center mb-8">
                     <h1 class="text-3xl font-bold text-gray-900">Tempat Uji Kompetensi</h1>
                     <div class="w-full h-0.5 bg-gray-400 mt-4"></div>
                 </div>

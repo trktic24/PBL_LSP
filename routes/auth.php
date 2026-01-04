@@ -105,7 +105,7 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->middleware('throttle:5,1');
 
     // Password Reset
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
@@ -139,8 +139,10 @@ Route::middleware('auth')->group(function () {
     // 2. Shared Form Views (Formulir Asesmen IA)
 
     // FR.AK.01
-    Route::get('/fr-ak-01/{id}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('ak01.index');
-    Route::post('/fr-ak-01/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])->name('ak01.store');
+    Route::middleware(['role:asesi,asesor'])->group(function () {
+        Route::get('/fr-ak-01/{id}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('ak01.index');
+        Route::post('/fr-ak-01/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])->name('ak01.store');
+    });
 
     // FR.IA.02
     Route::get('/fr-ia-02/{id}', [IA02Controller::class, 'show'])->name('fr-ia-02.show');
@@ -182,13 +184,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
     // APL-01 & MAPA
-    Route::get('/apl-01-1/view/{id}', [APL01Controller::class, 'step1'])->name('apl01.step1');
-    Route::post('/apl-01-1/store', [APL01Controller::class, 'storeStep1'])->name('apl01.step1.store');
-    Route::get('/apl-01-2/view/{id}', [APL01Controller::class, 'step2'])->name('apl01.step2');
-    Route::post('/apl-01-2/store', [APL01Controller::class, 'storeStep2'])->name('apl01.step2.store');
-    Route::get('/apl-01-3/view/{id}', [APL01Controller::class, 'step3'])->name('apl01.step3');
-    Route::post('/apl-01-3/store', [APL01Controller::class, 'storeStep3'])->name('apl01.step3.store');
-
     Route::get('/mapa01/show/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
     Route::post('/mapa01/store', [FrMapa01Controller::class, 'store'])->name('mapa01.store');
 
@@ -215,7 +210,7 @@ Route::middleware('auth')->group(function () {
             });
 
             // ----------------- Master Data -----------------
-
+    
             // Master TUK
             Route::resource('master/tuk', TukAdminController::class)->names([
                 'index' => 'master_tuk',
@@ -270,45 +265,45 @@ Route::middleware('auth')->group(function () {
             Route::controller(SkemaController::class)
                 ->prefix('master/skema')
                 ->group(function () {
-                    Route::get('/', 'index')->name('master_skema');
-                    Route::post('/add', 'store')->name('add_skema.store');
-                    Route::get('/add', 'create')->name('add_skema');
-                    Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
-                    Route::put('/update/{id_skema}', 'update')->name('update_skema');
-                    Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
-                });
+                Route::get('/', 'index')->name('master_skema');
+                Route::post('/add', 'store')->name('add_skema.store');
+                Route::get('/add', 'create')->name('add_skema');
+                Route::get('/edit/{id_skema}', 'edit')->name('edit_skema');
+                Route::put('/update/{id_skema}', 'update')->name('update_skema');
+                Route::delete('/delete/{id_skema}', 'destroy')->name('delete_skema');
+            });
 
             // Detail Skema (Kelompok, Unit)
             Route::controller(DetailSkemaController::class)
                 ->prefix('master/skema/detail')
                 ->group(function () {
-                    Route::get('/{id_skema}', 'index')->name('skema.detail');
-                    Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
-                    Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
-                    Route::get('/kelompok/{id_kelompok}/edit', 'editKelompok')->name('skema.detail.edit_kelompok');
-                    Route::put('/kelompok/{id_kelompok}', 'updateKelompok')->name('skema.detail.update_kelompok');
-                    Route::delete('/kelompok/{id_kelompok}', 'destroyKelompok')->name('skema.detail.destroy_kelompok');
-                    Route::delete('/unit/{id_unit}', 'destroyUnit')->name('skema.detail.destroy_unit');
-                    Route::put('/{id_skema}/update-form', 'updateListForm')->name('skema.detail.update_form');
-                });
+                Route::get('/{id_skema}', 'index')->name('skema.detail');
+                Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
+                Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
+                Route::get('/kelompok/{id_kelompok}/edit', 'editKelompok')->name('skema.detail.edit_kelompok');
+                Route::put('/kelompok/{id_kelompok}', 'updateKelompok')->name('skema.detail.update_kelompok');
+                Route::delete('/kelompok/{id_kelompok}', 'destroyKelompok')->name('skema.detail.destroy_kelompok');
+                Route::delete('/unit/{id_unit}', 'destroyUnit')->name('skema.detail.destroy_unit');
+                Route::put('/{id_skema}/update-form', 'updateListForm')->name('skema.detail.update_form');
+            });
 
             // Profile Asesi
             Route::controller(AsesiProfileController::class)
                 ->prefix('asesi/{id_asesi}')
                 ->group(function () {
-                    Route::get('/settings', 'settings')->name('asesi.profile.settings');
-                    Route::get('/form', 'form')->name('asesi.profile.form');
-                    Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
+                Route::get('/settings', 'settings')->name('asesi.profile.settings');
+                Route::get('/form', 'form')->name('asesi.profile.form');
+                Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
 
-                    // --- FITUR BUKTI KELENGKAPAN ---
-                    Route::get('/bukti', 'bukti')->name('asesi.profile.bukti'); // Halaman View
-                    Route::post('/bukti/store', 'storeBukti')->name('asesi.profile.bukti.store'); // Upload
-                    Route::post('/bukti/update/{id_bukti}', 'updateBukti')->name('asesi.profile.bukti.update');
-                    Route::delete('/bukti/delete/{id_bukti}', 'deleteBukti')->name('asesi.profile.bukti.delete'); // Hapus
-
-                    Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
-                    Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
-                });
+                // --- FITUR BUKTI KELENGKAPAN ---
+                Route::get('/bukti', 'bukti')->name('asesi.profile.bukti'); // Halaman View
+                Route::post('/bukti/store', 'storeBukti')->name('asesi.profile.bukti.store'); // Upload
+                Route::post('/bukti/update/{id_bukti}', 'updateBukti')->name('asesi.profile.bukti.update');
+                Route::delete('/bukti/delete/{id_bukti}', 'deleteBukti')->name('asesi.profile.bukti.delete'); // Hapus
+    
+                Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
+                Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
+            });
 
             // Master Asesor
             Route::controller(AsesorController::class)->group(function () {
@@ -346,22 +341,22 @@ Route::middleware('auth')->group(function () {
             Route::controller(AsesorProfileController::class)
                 ->prefix('asesor/{id_asesor}')
                 ->group(function () {
-                    Route::get('/profile', 'showProfile')->name('asesor.profile');
-                    Route::get('/bukti', 'showBukti')->name('asesor.bukti');
-                    Route::get('/tinjauan', 'showTinjauan')->name('asesor_profile_tinjauan');
+                Route::get('/profile', 'showProfile')->name('asesor.profile');
+                Route::get('/bukti', 'showBukti')->name('asesor.bukti');
+                Route::get('/tinjauan', 'showTinjauan')->name('asesor_profile_tinjauan');
 
-                    // [FIX] Mengubah nama route agar sesuai dengan View (daftar_asesi)
-                    Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.daftar_asesi');
+                // [FIX] Mengubah nama route agar sesuai dengan View (daftar_asesi)
+                Route::get('/jadwal/{id_jadwal}/asesi', 'showDaftarAsesi')->name('asesor.daftar_asesi');
 
-                    // [FIX] Parameter Tracker dibuat OPSIONAL (?) agar tidak error di Sidebar
-                    Route::get('/tracker/{id_data_sertifikasi_asesi?}', 'showTracker')->name('asesor.tracker');
+                // [FIX] Parameter Tracker dibuat OPSIONAL (?) agar tidak error di Sidebar
+                Route::get('/tracker/{id_data_sertifikasi_asesi?}', 'showTracker')->name('asesor.tracker');
 
-                    // Route untuk Tracker Skema (Timeline per Jadwal/Asesi)
-                    Route::get('/tracker_skema/{id_jadwal}', 'showTrackerSkema')->name('asesor.tracker_skema');
+                // Route untuk Tracker Skema (Timeline per Jadwal/Asesi)
+                Route::get('/tracker_skema/{id_jadwal}', 'showTrackerSkema')->name('asesor.tracker_skema');
 
-                    Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
-                    Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
-                });
+                Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
+                Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
+            });
 
             // Master Jadwal
             Route::resource('master/jadwal', AdminJadwalController::class)->names([
@@ -378,10 +373,10 @@ Route::middleware('auth')->group(function () {
             Route::controller(DaftarHadirController::class)
                 ->prefix('master/jadwal/{id_jadwal}')
                 ->group(function () {
-                    Route::get('/daftar_hadir', 'daftarHadir')->name('schedule.attendance');
-                    Route::delete('/attendance/delete/{id}', 'destroy')->name('schedule.attendance.destroy');
-                    Route::get('/daftar_hadir/pdf', 'exportPdfdaftarhadir')->name('attendance.pdf');
-                });
+                Route::get('/daftar_hadir', 'daftarHadir')->name('schedule.attendance');
+                Route::delete('/attendance/delete/{id}', 'destroy')->name('schedule.attendance.destroy');
+                Route::get('/daftar_hadir/pdf', 'exportPdfdaftarhadir')->name('attendance.pdf');
+            });
 
             // Bank Soal IA-06 (View Only for Admin, Full Access for Superadmin)
             Route::get('/bank-soal-ia06', [IA06Controller::class, 'adminIndex'])->name('ia06.index');
@@ -395,6 +390,9 @@ Route::middleware('auth')->group(function () {
 
             // FR.IA.01 - View Only for Admin (Cek Observasi Demonstrasi/Praktik)
             Route::get('/ia01/{id_sertifikasi}', [\App\Http\Controllers\IA01Controller::class, 'showView'])->name('ia01.admin.view');
+
+            Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
+                ->name('ia09.admin.view');
         });
 
     // ======================================================
@@ -449,6 +447,11 @@ Route::middleware('auth')->group(function () {
             // IA-06 Penilaian
             Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
             Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+
+            Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
+                ->name('ia09.edit');
+            Route::post('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'storeWawancara'])
+                ->name('ia09.store');
         });
 
     // ======================================================

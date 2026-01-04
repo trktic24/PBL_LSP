@@ -18,9 +18,10 @@ class PersetujuanKerahasiaanAPIController extends Controller
         $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
 
         if (
-            $sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' ||
-            $sertifikasi->progres_level >= 70
-        ) { 
+            ($sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' ||
+                $sertifikasi->progres_level >= 70) &&
+            !Auth::user()->hasRole('asesor')
+        ) {
 
             return redirect()->route('asesi.persetujuan.selesai', ['id_sertifikasi' => $id_sertifikasi]);
         }
@@ -66,7 +67,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
                 'asesor' => $sertifikasi->jadwal->asesor ?? (object) ['nama_lengkap' => '-'],
                 'tuk' => $jenisTuk,
                 'master_bukti' => $masterBukti,
-                'respon_bukti' => $responBukti, 
+                'respon_bukti' => $responBukti,
                 'status_sekarang' => $sertifikasi->status_sertifikasi,
                 'tanda_tangan_valid' => !empty($sertifikasi->asesi->tanda_tangan)
             ], 200);
@@ -122,4 +123,4 @@ class PersetujuanKerahasiaanAPIController extends Controller
             'asesi' => $sertifikasi->asesi
         ]);
     }
-}   
+}

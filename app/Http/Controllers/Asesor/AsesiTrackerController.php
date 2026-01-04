@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\DataSertifikasiAsesi; // <-- Panggil model pivot-mu
 use App\Models\Asesor;
 use App\Models\ResponApl2Ia01;
+use App\Models\LembarJawabIA05;
 
 use App\Http\Controllers\Controller;
 
@@ -41,6 +42,16 @@ class AsesiTrackerController extends Controller
         }
         // --- Selesai Otorisasi ---
 
+        // ==========================================================
+        // 🔥 LOGIKA BARU: CEK STATUS IA.05 (Tanpa Kolom Status) 🔥
+        // ==========================================================
+        $is_ia05_graded = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
+            ->whereNotNull('pencapaian_ia05') // Cek apakah kolom nilai sudah terisi ('ya'/'tidak')
+            ->exists(); // Hasilnya TRUE (sudah dinilai) atau FALSE (belum)
+        
+
+        $has_ak02_data = \App\Models\Ak02::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+        // ==========================================================
 
         // 2. Siapkan data untuk view
         $asesi = $dataSertifikasi->asesi;
@@ -50,7 +61,11 @@ class AsesiTrackerController extends Controller
         return view('asesor.tracker', [
             'asesi' => $asesi,
             'jadwal' => $jadwal,
-            'dataSertifikasi' => $dataSertifikasi // Ini berisi semua status (pra_asesmen, dll)
+            'dataSertifikasi' => $dataSertifikasi, // Ini berisi semua status (pra_asesmen, dll)
+
+            // 👇 KIRIM VARIABEL BARU INI KE BLADE
+            'is_ia05_graded' => $is_ia05_graded,
+            'has_ak02_data' => $has_ak02_data,
         ]);
     }  
 }

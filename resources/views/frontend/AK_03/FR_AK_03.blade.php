@@ -19,81 +19,81 @@
         <x-header_form.header_form title="FR.AK.03. UMPAN BALIK DAN CATATAN ASESMEN" />
         <br>
 
+        {{-- ALERT --}}
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow-sm">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-sm">
+                {{ session('error') }}
+            </div>
+        @endif
+
         {{-- FORM WRAPPER --}}
-        <form action="#" method="POST">
+        <form action="{{ route('ak03.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
             @csrf
 
-            {{-- 1. IDENTITAS SKEMA (Manual HTML sesuai Source 2) --}}
+            {{-- 1. IDENTITAS SKEMA --}}
             <div class="bg-white p-6 rounded-xl shadow-sm mb-6 border border-gray-200">
                 <h3 class="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">Identitas Skema & Jadwal</h3>
                 
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left">
-                        {{-- Header --}}
                         <tr>
                             <td colspan="3" class="font-bold text-gray-900 pb-2">
                                 Skema Sertifikasi (KKNI/Okupasi/Klaster)
                             </td>
                         </tr>
-                        {{-- Judul --}}
                         <tr>
                             <td class="w-40 font-bold text-gray-700 py-2 align-top">Judul</td>
                             <td class="w-4 py-2 align-top">:</td>
-                            <td class="py-2 text-gray-900 font-medium"></td>
+                            <td class="py-2 text-gray-900 font-medium">{{ $sertifikasi->jadwal->skema->nama_skema ?? '-' }}</td>
                         </tr>
-                        {{-- Nomor --}}
                         <tr>
                             <td class="font-bold text-gray-700 py-2 align-top">Nomor</td>
                             <td class="py-2 align-top">:</td>
-                            <td class="py-2 text-gray-900 font-medium"></td>
+                            <td class="py-2 text-gray-900 font-medium">{{ $sertifikasi->jadwal->skema->nomor_skema ?? '-' }}</td>
                         </tr>
-                        {{-- TUK --}}
                         <tr>
                             <td class="font-bold text-gray-700 py-2 align-top">TUK</td>
                             <td class="py-2 align-top">:</td>
                             <td class="py-2">
                                 <div class="flex flex-wrap gap-4">
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" name="tuk" value="sewaktu" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    @php $jenisTuk = $sertifikasi->jadwal->jenis_tuk ?? ''; @endphp
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" disabled {{ $jenisTuk == 'Sewaktu' ? 'checked' : '' }} class="w-4 h-4 text-blue-600 border-gray-300">
                                         <span class="ml-2 text-gray-700">Sewaktu</span>
                                     </label>
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" name="tuk" value="tempat_kerja" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" disabled {{ $jenisTuk == 'Tempat Kerja' ? 'checked' : '' }} class="w-4 h-4 text-blue-600 border-gray-300">
                                         <span class="ml-2 text-gray-700">Tempat Kerja</span>
                                     </label>
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="radio" name="tuk" value="mandiri" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" disabled {{ $jenisTuk == 'Mandiri' ? 'checked' : '' }} class="w-4 h-4 text-blue-600 border-gray-300">
                                         <span class="ml-2 text-gray-700">Mandiri</span>
                                     </label>
                                 </div>
                             </td>
                         </tr>
-                        {{-- Asesor & Asesi --}}
                         <tr>
                             <td class="font-bold text-gray-700 py-2 align-top">Nama Asesor</td>
                             <td class="py-2 align-top">:</td>
-                            <td class="py-2 text-gray-900 font-medium">{{ Auth::user()->name ?? 'Nama Asesor' }}</td>
+                            <td class="py-2 text-gray-900 font-medium">{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Belum Ditentukan' }}</td>
                         </tr>
                         <tr>
                             <td class="font-bold text-gray-700 py-2 align-top">Nama Asesi</td>
                             <td class="py-2 align-top">:</td>
-                            <td class="py-2 text-gray-900 font-medium">Peserta Uji</td>
+                            <td class="py-2 text-gray-900 font-medium">{{ $sertifikasi->asesi->nama_lengkap }}</td>
                         </tr>
-                        {{-- Tanggal Spesifik (Mulai & Selesai) sesuai Source 2 --}}
                         <tr>
                             <td class="font-bold text-gray-700 py-2 align-top">Tanggal Asesmen</td>
                             <td class="py-2 align-top">:</td>
-                            <td class="py-2">
-                                <div class="flex flex-col sm:flex-row gap-4">
-                                    <div class="flex items-center">
-                                        <span class="w-16 font-semibold text-gray-600">Mulai:</span>
-                                        <input type="date" class="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 shadow-sm">
-                                    </div>
-                                    <div class="flex items-center">
-                                        <span class="w-16 font-semibold text-gray-600">Selesai:</span>
-                                        <input type="date" class="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 shadow-sm">
-                                    </div>
-                                </div>
+                            <td class="py-2 text-gray-900 font-medium">
+                                {{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_awal)->isoFormat('D MMMM Y') }} 
+                                s/d 
+                                {{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_akhir)->isoFormat('D MMMM Y') }}
                             </td>
                         </tr>
                     </table>
@@ -113,15 +113,9 @@
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
                         <thead class="bg-gray-900 text-white">
                             <tr>
-                                <th rowspan="2" class="px-4 py-4 text-left text-xs font-bold uppercase w-[50%] border-r border-gray-700">
-                                    Komponen
-                                </th>
-                                <th colspan="2" class="px-2 py-2 text-center text-xs font-bold uppercase border-b border-gray-700 border-r border-gray-700 w-24">
-                                    Hasil
-                                </th>
-                                <th rowspan="2" class="px-4 py-4 text-left text-xs font-bold uppercase w-[30%]">
-                                    Catatan / Komentar Asesi
-                                </th>
+                                <th rowspan="2" class="px-4 py-4 text-left text-xs font-bold uppercase w-[50%] border-r border-gray-700">Komponen</th>
+                                <th colspan="2" class="px-2 py-2 text-center text-xs font-bold uppercase border-b border-gray-700 border-r border-gray-700 w-24">Hasil</th>
+                                <th rowspan="2" class="px-4 py-4 text-left text-xs font-bold uppercase w-[30%]">Catatan / Komentar Asesi</th>
                             </tr>
                             <tr>
                                 <th class="px-2 py-2 text-center text-xs font-bold uppercase bg-gray-800 border-r border-gray-700">Ya</th>
@@ -129,22 +123,13 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
-                            @php
-                                $questions = [
-                                    "Saya mendapatkan penjelasan yang cukup memadai mengenai proses asesmen/uji kompetensi",
-                                    "Saya diberikan kesempatan untuk mempelajari standar kompetensi yang akan diujikan dan menilai diri sendiri terhadap pencapaiannya",
-                                    "Asesor memberikan kesempatan untuk mendiskusikan/ menegosiasikan metoda, instrumen dan sumber asesmen serta jadwal asesmen",
-                                    "Asesor berusaha menggali seluruh bukti pendukung yang sesuai dengan latar belakang pelatihan dan pengalaman yang saya miliki",
-                                    "Saya sepenuhnya diberikan kesempatan untuk mendemonstrasikan kompetensi yang saya miliki selama asesmen",
-                                    "Saya mendapatkan penjelasan yang memadai mengenai keputusan asesmen",
-                                    "Asesor memberikan umpan balik yang mendukung setelah asesmen serta tindak lanjutnya",
-                                    "Asesor bersama saya mempelajari semua dokumen asesmen serta menandatanganinya",
-                                    "Saya mendapatkan jaminan kerahasiaan hasil asesmen serta penjelasan penanganan dokumen asesmen",
-                                    "Asesor menggunakan keterampilan komunikasi yang efektif selama asesmen"
-                                ];
-                            @endphp
-
+                            {{-- Looping Variable $questions dari Controller --}}
                             @foreach ($questions as $index => $question)
+                                @php
+                                    $idPoin = $index + 1;
+                                    $data = $jawaban[$idPoin] ?? null;
+                                    $hasil = $data ? strtolower($data->hasil) : null;
+                                @endphp
                                 <tr class="hover:bg-blue-50 transition-colors">
                                     <td class="px-4 py-3 text-gray-800 align-middle border-r border-gray-200 leading-relaxed">
                                         {{ $question }}
@@ -152,16 +137,19 @@
                                     {{-- YA --}}
                                     <td class="px-2 py-3 text-center align-middle border-r border-gray-200">
                                         <input type="radio" name="umpan_balik[{{ $index }}]" value="ya" 
+                                            {{ $hasil == 'ya' ? 'checked' : '' }} required
                                             class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer">
                                     </td>
                                     {{-- TIDAK --}}
                                     <td class="px-2 py-3 text-center align-middle border-r border-gray-200">
                                         <input type="radio" name="umpan_balik[{{ $index }}]" value="tidak" 
+                                            {{ $hasil == 'tidak' ? 'checked' : '' }}
                                             class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer">
                                     </td>
                                     {{-- CATATAN --}}
                                     <td class="px-4 py-3 align-middle">
                                         <input type="text" name="catatan[{{ $index }}]" 
+                                            value="{{ $data->catatan ?? '' }}"
                                             class="block w-full text-sm border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm placeholder-gray-400"
                                             placeholder="Tulis catatan...">
                                     </td>
@@ -171,21 +159,21 @@
                     </table>
                 </div>
 
-                {{-- Catatan Lainnya [cite: 4] --}}
+                {{-- Catatan Lainnya --}}
                 <div class="mt-6">
                     <label class="block text-sm font-bold text-gray-700 mb-2">Catatan/komentar lainnya (apabila ada) :</label>
                     <textarea name="komentar_lain" rows="3" 
                         class="block w-full text-sm border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm p-3 resize-none"
-                        placeholder="Tambahkan komentar tambahan di sini..."></textarea>
+                        placeholder="Tambahkan komentar tambahan di sini...">{{ $sertifikasi->catatan_asesi_AK03 ?? '' }}</textarea>
                 </div>
             </div>
 
             {{-- BUTTONS --}}
             <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mt-8 border-t-2 border-gray-200 pt-6 mb-8">
-                <a href="#" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
+                <a href="{{ route('tracker') }}" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
                     Kembali
                 </a>
-                <button type="button" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
+                <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
                     Simpan Form FR.AK.03
                 </button>
             </div>

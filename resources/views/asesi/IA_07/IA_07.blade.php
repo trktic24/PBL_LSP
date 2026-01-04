@@ -11,10 +11,22 @@
         </style>
     </head>
 
-    <div class="flex h-screen overflow-hidden font-poppins">
+    <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden font-poppins">
 
-        {{-- SIDEBAR --}}
-        <x-sidebar2 :idAsesi="$sertifikasi->asesi->id_asesi ?? null" :sertifikasi="$sertifikasi" />
+        {{-- 1. SIDEBAR (Desktop Only) --}}
+            <div class="hidden md:block md:w-80 flex-shrink-0">
+                <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" backUrl="/" />
+            </div>
+
+            {{-- 2. HEADER MOBILE (Data Dinamis) --}}
+            @php
+                $gambarSkema =
+                    $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
+                        ? asset('storage/' . $sertifikasi->jadwal->skema->gambar)
+                        : asset('images/default_pic.jpeg');
+            @endphp
+
+            <x-mobile_header :title="$sertifikasi->jadwal->skema->nama_skema ?? 'Skema Sertifikasi'" :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'" :image="$gambarSkema" />
 
         {{-- MAIN CONTENT --}}
         <main class="flex-1 p-8 bg-gray-100 overflow-y-auto">

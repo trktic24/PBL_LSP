@@ -78,6 +78,21 @@ class ProfileController extends Controller
         }
         $user->save();
 
+        // SANITIZATION ROUTINE (Security Fix)
+        // Strip malicious tags from all string inputs in the validated array
+        \Illuminate\Support\Facades\Log::info('Profile Update Input - Raw:', $validated);
+
+        foreach ($validated as $key => $value) {
+            if (is_string($value)) {
+                $validated[$key] = strip_tags($value);
+            }
+        }
+        
+        \Illuminate\Support\Facades\Log::info('Profile Update Input - Sanitized:', $validated);
+
+        // request->merge is optional if we only use $validated below, but good for consistency
+        $request->merge($validated);
+
         // 3. Update/Create Asesi Table
         $asesi = Asesi::updateOrCreate(
             ['id_user' => $user->id_user],

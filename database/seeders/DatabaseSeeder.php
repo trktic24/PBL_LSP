@@ -8,6 +8,7 @@ use App\Models\Asesor;
 use App\Models\Skema;
 use App\Models\Asesi;
 use App\Models\ListForm;
+use Database\Seeders\SoalIa05Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -120,9 +121,20 @@ class DatabaseSeeder extends Seeder
             JuniorWebDevSeeder::class, // Specific Scheme Seeder
             PrivateFileSeeder::class,
             ListFormSeeder::class,
-            SoalDanKunciia05Seeder::class,
+            // SoalDanKunciia05Seeder::class,
+            SoalIa05Seeder::class,
             LembarJawabIa05Seeder::class,
             SoalIa06MasterSeeder::class,
         ]);
+
+        // ... di dalam method run() ...
+
+        // 1. Bikin Soalnya Dulu (Yang tadi udah kamu benerin jadi 10)
+        $this->call(SoalIa05Seeder::class);
+
+        // 2. Baru Isi Jawabannya (Tambahin baris ini)
+        $this->call(LembarJawabIa05Seeder::class);
+
+        $this->call(DataportofolioSeeder::class);
     }
 }

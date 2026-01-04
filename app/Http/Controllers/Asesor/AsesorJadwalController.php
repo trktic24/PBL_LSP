@@ -453,7 +453,7 @@ class AsesorJadwalController extends Controller
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        $asesor = Asesor::where('id_user', Auth::id())->first();
+
 
         // // 2.5 Cek apakah seluruh AK05 sudah diverifikasi validator
         // $belumVerifikasiValidator = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
