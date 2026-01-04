@@ -49,6 +49,8 @@ class AsesiTrackerController extends Controller
             ->whereNotNull('pencapaian_ia05') // Cek apakah kolom nilai sudah terisi ('ya'/'tidak')
             ->exists(); // Hasilnya TRUE (sudah dinilai) atau FALSE (belum)
         
+
+        $has_ak02_data = \App\Models\Ak02::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
         // ==========================================================
 
         // 2. Siapkan data untuk view
@@ -63,6 +65,7 @@ class AsesiTrackerController extends Controller
 
             // 👇 KIRIM VARIABEL BARU INI KE BLADE
             'is_ia05_graded' => $is_ia05_graded,
+            'has_ak02_data' => $has_ak02_data,
         ]);
     }  
 }
