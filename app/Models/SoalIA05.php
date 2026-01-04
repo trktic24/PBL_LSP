@@ -32,7 +32,7 @@ class SoalIA05 extends Model
     public function kunciJawaban()
     {
         // hasOne(RelatedModel, foreign_key_di_tabel_terkait, local_key_di_tabel_ini)
-        return $this->hasOne(KunciJawabanIa05::class, 'id_soal_ia05', 'id_soal_ia05');
+        return $this->hasOne(KunciJawabanIA05::class, 'id_soal_ia05', 'id_soal_ia05');
     }
 
     /**
@@ -41,7 +41,7 @@ class SoalIA05 extends Model
      */
     public function lembarJawab()
     {
-        return $this->hasMany(LembarJawabIa05::class, 'id_soal_ia05', 'id_soal_ia05');
+        return $this->hasMany(LembarJawabIA05::class, 'id_soal_ia05', 'id_soal_ia05');
     }
 
     public function skema()

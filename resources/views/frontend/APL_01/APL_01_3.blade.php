@@ -50,21 +50,21 @@
             <h3 class="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">Informasi Pemohon</h3>
 
             <dl class="grid grid-cols-1 md:grid-cols-4 gap-y-6 text-sm">
-                {{-- Nama Asesor --}}
+                {{-- Nama Asesi --}}
                 <dt class="col-span-1 font-medium text-gray-500">Nama Asesi</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="nama_asesor">[Memuat...]</span></dd>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="nama-pemohon">[Memuat...]</span></dd>
 
-                {{-- Nama Asesi --}}
-                <dt class="col-span-1 font-medium text-gray-500">Perusahaan</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="nama_asesi">[Memuat...]</span></dd>
-
-                {{-- Nama Asesi --}}
-                <dt class="col-span-1 font-medium text-gray-500">Nama Perusahaan</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="nama_asesi">[Memuat...]</span></dd>
-
-                {{-- Nama Asesi --}}
+                {{-- Jabatan --}}
                 <dt class="col-span-1 font-medium text-gray-500">Jabatan</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="nama_asesi">[Memuat...]</span></dd>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="jabatan-pemohon">[Memuat...]</span></dd>
+
+                {{-- Nama Perusahaan --}}
+                <dt class="col-span-1 font-medium text-gray-500">Nama Perusahaan</dt>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="perusahaan-pemohon">[Memuat...]</span></dd>
+
+                {{-- Alamat --}}
+                <dt class="col-span-1 font-medium text-gray-500">Alamat Perusahaan</dt>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="alamat-perusahaan-pemohon">[Memuat...]</span></dd>
             </dl>
         </div>
 
@@ -77,7 +77,7 @@
         </div><br>
 
         {{-- Form Tanda Tangan --}}
-        <form id="signature-upload-form" method="POST" enctype="multipart/form-data">
+        <form id="signature-upload-form" data-asesi-id="{{ $asesi->id_asesi }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg mb-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-6">Area Tanda Tangan</h3>
@@ -168,17 +168,26 @@
             let currentBase64 = null;
 
             // === 1. Load data pemohon + tanda tangan lama ===
-            fetch(`/api/show-detail/${asesiId}`)
-                .then(r => r.ok ? r.json() : Promise.reject('Gagal mengambil data'))
+            fetch(`/api/v1/show-detail/${asesiId}`)
+                .then(r => {
+                    if (!r.ok) throw new Error(`HTTP Error ${r.status}`);
+                    return r.json();
+                })
                 .then(res => {
                     const d = res.data;
                     document.getElementById('nama-pemohon').textContent = ': ' + (d.nama_lengkap || '-');
-                    const kerja = d.data_pekerjaan?.[0] || {};
+                    
+                    // Fix: Handle data_pekerjaan as Object (HasOne) or Array (HasMany)
+                    let kerja = {};
+                    if (Array.isArray(d.data_pekerjaan) && d.data_pekerjaan.length > 0) {
+                        kerja = d.data_pekerjaan[0];
+                    } else if (d.data_pekerjaan && typeof d.data_pekerjaan === 'object') {
+                        kerja = d.data_pekerjaan;
+                    }
+
                     document.getElementById('jabatan-pemohon').textContent = ': ' + (kerja.jabatan || '-');
-                    document.getElementById('perusahaan-pemohon').textContent = ': ' + (kerja
-                        .nama_institusi_pekerjaan || '-');
-                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + (kerja
-                        .alamat_institusi || '-');
+                    document.getElementById('perusahaan-pemohon').textContent = ': ' + (kerja.nama_institusi_pekerjaan || '-');
+                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + (kerja.alamat_institusi || '-');
 
                     if (d.tanda_tangan) {
                         previewImg.src = d.tanda_tangan.startsWith('http') ? d.tanda_tangan :
@@ -193,7 +202,7 @@
                 })
                 .catch(err => {
                     console.error(err);
-                    alert('Gagal memuat data pemohon.');
+                    alert('Gagal memuat data pemohon: ' + err.message);
                 });
 
             // === 2. Proses file yang diupload ===

@@ -3,138 +3,284 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use App\Models\IA09; // Di dunia nyata, Anda akan menggunakan Model
+use Illuminate\Support\Facades\DB;
+use App\Models\DataSertifikasiAsesi;
+use App\Models\DataPortofolio;
+use App\Models\BuktiPortofolioIA08IA09; 
+use Illuminate\Support\Facades\Log;
 
 class IA09Controller extends Controller
 {
     /**
-     * Data Dasar (Template Kosong) yang akan dilihat Asesor saat baru mengisi.
-     * Di dunia nyata, ini diambil dari record database yang baru dibuat.
+     * Pengekstrak data utama yang digunakan oleh Asesor dan Admin.
      */
-    private function getTemplateIA09() 
+    protected function prepareIA09Data($id_data_sertifikasi_asesi)
     {
-        return [
+        // 1. Ambil data utama DataSertifikasiAsesi
+        $dataSertifikasi = DataSertifikasiAsesi::with([
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'asesi',
+            'penyusunValidator.penyusun', 
+            'penyusunValidator.validator',
+            'portofolio.buktiPortofolioIA08IA09', 
+        ])->findOrFail($id_data_sertifikasi_asesi);
+
+        $portofolio = $dataSertifikasi->portofolio->first();
+        $penyusunValidator = $dataSertifikasi->penyusunValidator;
+
+        // 2. Pemetaan Unit Kompetensi
+        $unitKompetensi = [];
+        if ($dataSertifikasi->jadwal && $dataSertifikasi->jadwal->skema) {
+            $kelompokPekerjaanList = $dataSertifikasi->jadwal->skema->kelompokPekerjaan;
+            if ($kelompokPekerjaanList) {
+                foreach ($kelompokPekerjaanList as $kelompok) {
+                    foreach ($kelompok->unitKompetensi as $unit) {
+                        $unitKompetensi[] = [
+                            'kelompok' => $kelompok->nama_kelompok_pekerjaan ?? '-',
+                            'kode' => $unit->kode_unit ?? '-',
+                            'judul' => $unit->judul_unit ?? '-',
+                        ];
+                    }
+                }
+            }
+        }
+        if (empty($unitKompetensi)) {
+            $unitKompetensi = [['kelompok' => '-', 'kode' => '-', 'judul' => 'Data unit kompetensi belum tersedia']];
+        }
+
+        // 3. Pemetaan Bukti Portofolio (Mengambil dari kolom JSON 'persyaratan_dasar' dan 'persyaratan_administratif')
+        $buktiPortofolio = ['Data bukti portofolio belum tersedia'];
+        if ($portofolio) {
+            $buktiList = [];
+            $keys = ['persyaratan_dasar', 'persyaratan_administratif'];
+            foreach ($keys as $key) {
+                if (!empty($portofolio->{$key})) {
+                    $data = is_string($portofolio->{$key}) ? json_decode($portofolio->{$key}, true) : $portofolio->{$key};
+                    if (is_array($data)) {
+                        $buktiList = array_merge($buktiList, $data);
+                    } elseif ($data) {
+                        $buktiList[] = $data;
+                    }
+                }
+            }
+            $buktiPortofolio = array_unique(array_filter($buktiList));
+        }
+
+        // 4. *** PERBAIKAN: Ambil Pertanyaan dari Tabel bukti_portofolio_ia08_ia09 ***
+        $pertanyaan = [];
+        
+        if ($portofolio) {
+            // Ambil semua data bukti yang terkait dengan portofolio ini
+            $buktiData = BuktiPortofolioIA08IA09::where('id_portofolio', $portofolio->id_portofolio)
+                ->orderBy('id_bukti_portofolio', 'asc')
+                ->get();
+            
+            if ($buktiData->isEmpty()) {
+                // Jika belum ada data, buat pertanyaan kosong dari bukti portofolio
+                foreach ($buktiPortofolio as $index => $bukti) {
+                    $pertanyaan[] = [
+                        'no' => $index + 1,
+                        'pertanyaan' => "Sesuai dengan bukti no. " . ($index + 1) . ", jelaskan secara detail: " . $bukti,
+                        'jawaban' => '',
+                        'pencapaian' => '',
+                        'id_jawaban' => null,
+                    ];
+                }
+            } else {
+                // Jika sudah ada data, ambil dari database
+                foreach ($buktiData as $index => $bukti) {
+                    $pertanyaan[] = [
+                        'no' => $index + 1,
+                        'pertanyaan' => $bukti->daftar_pertanyaan_wawancara ?? "Pertanyaan untuk bukti no. " . ($index + 1),
+                        'jawaban' => $bukti->kesimpulan_jawaban_asesi ?? '',
+                        'pencapaian' => isset($bukti->pencapaian_ia09) ? ($bukti->pencapaian_ia09 ? 'Ya' : 'Tidak') : '',
+                        'id_jawaban' => $bukti->id_bukti_portofolio,
+                    ];
+                }
+            }
+        }
+        
+        // Jika tidak ada pertanyaan sama sekali, buat minimal 1 pertanyaan default
+        if (empty($pertanyaan)) {
+            $pertanyaan[] = [
+                'no' => 1,
+                'pertanyaan' => 'Jelaskan pengalaman Anda terkait kompetensi yang diujikan.',
+                'jawaban' => '',
+                'pencapaian' => '',
+                'id_jawaban' => null,
+            ];
+        }
+
+        // 5. Mapping data final
+        $dataIA09 = [
+            'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
             'skema' => [
-                'judul' => 'Sertifikasi Operator Komputer Madya',
-                'nomor' => 'OKM-01',
+                'judul' => $dataSertifikasi->jadwal?->skema?->nama_skema ?? '-',
+                'nomor' => $dataSertifikasi->jadwal?->skema?->nomor_skema ?? '-',
             ],
             'info_umum' => [
-                'tuk_type' => 'Mandiri',
-                'nama_asesor' => 'Dr. Rina Kusuma, M.Kom.',
-                'no_reg_met' => 'MET-12345',
-                'nama_asesi' => 'Bambang Sudiro',
-                'tanggal' => date('Y-m-d'),
-                'asesi_ttd_tgl' => '', // KOSONG di awal
-                'asesi_ttd_file' => '', // KOSONG di awal
-                'asesor_ttd_tgl' => '', // KOSONG di awal
-                'asesor_ttd_file' => '', // KOSONG di awal
+                'tuk_type' => $dataSertifikasi->jadwal?->jenisTuk?->jenis_tuk ?? '-',
+                'nama_asesor' => $dataSertifikasi->jadwal?->asesor?->nama_lengkap ?? '-',
+                'no_reg_met' => $dataSertifikasi->jadwal?->asesor?->nomor_regis ?? '-',
+                'nama_asesi' => $dataSertifikasi->asesi?->nama_lengkap ?? '-',
+                'tanggal' => $dataSertifikasi->jadwal?->tanggal_pelaksanaan ?? date('Y-m-d'),
+                'rekomendasi' => $portofolio?->rekomendasi_asesor ?? '', 
+                'catatan' => $portofolio?->catatan_asesor ?? '', 
+            ],
+            'ttd' => [
+                'asesi' => $dataSertifikasi->asesi?->tanda_tangan ?? null,
+                'asesor' => $dataSertifikasi->jadwal?->asesor?->tanda_tangan ?? null,
+            ],  
+            'penyusun' => [
+                'nama' => $penyusunValidator?->penyusun?->nama ?? 'Data Penyusun tidak ditemukan',
+                'no_reg_met' => $penyusunValidator?->penyusun?->no_reg_met ?? '-',
+                'ttd' => $penyusunValidator?->penyusun?->tanda_tangan ?? null,
+                'tanggal' => $penyusunValidator?->penyusun?->tanggal ?? null,
+            ],
+            'validator' => [
+                'nama' => $penyusunValidator?->validator?->nama ?? 'Data Validator tidak ditemukan',
+                'no_reg_met' => $penyusunValidator?->validator?->no_reg_met ?? '-',
+                'ttd' => $penyusunValidator?->validator?->tanda_tangan ?? null,
+                'tanggal' => $penyusunValidator?->validator?->tanggal ?? null,
+                'tanggal_validasi' => $penyusunValidator?->tanggal_validasi?->format('d F Y') ?? '-',
             ],
             'panduan_asesor' => [
                 'Pertanyaan wawancara dapat dilakukan untuk keseluruhan unit kompetensi dalam skema sertifikasi atau dilakukan untuk masing-masing kelompok pekerjaan dalam satu skema sertifikasi.',
-                'Isilah bukti portofolio sesuai dengan bukti yang diminta pada skema sertifikasi sebagaimana yang telah dibuat pada FR-IA.08.',
-                'Ajukan pertanyaan verifikasi portofolio untuk semua unit/elemen kompetensi yang di checklist pada FR-IA.08',
-                'Ajukan pertanyaan kepada asesi sebagai tindak lanjut hasil verifikasi portofolio.',
                 'Jika hasil verifikasi potofolio telah memenuhi aturan bukti maka pertanyaan wawancara tidak perlu dilakukan terhadap bukti tersebut.',
                 'Tuliskan pencapaian atas setiap kesimpulan pertanyaan wawancara dengan cara mencentang ( ) "Ya" atau "Tidak".',
             ],
-            'unit_kompetensi' => [
-                ['kelompok' => 'Pengolahan Data', 'kode' => 'TIK.OK02.001.01', 'judul' => 'Mengolah Data dengan Aplikasi Spreadsheet'],
-                ['kelompok' => 'Presentasi', 'kode' => 'TIK.OK02.002.01', 'judul' => 'Membuat Materi Presentasi'],
-            ],
-            'bukti_portofolio' => [
-                '1. Laporan hasil pengolahan data spreadsheet',
-                '2. File presentasi (.pptx)',
-                '3. Sertifikat pelatihan terkait',
-                '4. Surat Keterangan Pengalaman Kerja',
-            ],
-            // Pertanyaan dengan isian KOSONG (Asesor belum mengisi)
-            'pertanyaan' => [
-                [
-                    'no' => 1,
-                    'pertanyaan' => 'Sesuai dengan bukti no. 1, jelaskan langkah-langkah Anda dalam memvalidasi data yang dimasukkan ke spreadsheet.',
-                    'jawaban' => '', // KOSONG
-                    'pencapaian' => '', // KOSONG
-                ],
-                [
-                    'no' => 2,
-                    'pertanyaan' => 'Sesuai dengan bukti no. 2, bagaimana Anda memastikan bahwa slide presentasi yang Anda buat memenuhi prinsip desain visual?',
-                    'jawaban' => '', // KOSONG
-                    'pencapaian' => '', // KOSONG
-                ],
-            ],
-            'rekomendasi' => '',
-            'catatan' => '',
+            'unit_kompetensi' => $unitKompetensi,
+            'bukti_portofolio' => $buktiPortofolio,
+            'pertanyaan' => $pertanyaan,
         ];
-    }
-
-    /**
-     * Data yang SUDAH DIISI oleh Asesor, yang akan dilihat oleh Admin.
-     * Di dunia nyata, ini diambil dari record database yang sudah di-update.
-     */
-    private function getFilledDataIA09() 
-    {
-        $data = $this->getTemplateIA09();
         
-        // --- Simulasi ISIAN ASESOR ---
-        $data['pertanyaan'][0]['jawaban'] = 'Saya menggunakan fitur Data Validation di Excel untuk membatasi tipe data dan rentang nilai yang dapat dimasukkan.';
-        $data['pertanyaan'][0]['pencapaian'] = 'Ya'; 
-        
-        $data['pertanyaan'][1]['jawaban'] = 'Saya berpedoman pada prinsip KISS (Keep It Short and Simple) dan 5x5 Rule, serta memastikan kontras warna yang memadai.';
-        $data['pertanyaan'][1]['pencapaian'] = 'Ya';
-        
-        $data['rekomendasi'] = 'Asesi telah memenuhi pencapaian seluruh kriteria untuk kerja, direkomendasikan **KOMPETEN**';
-        $data['catatan'] = 'Asesi menunjukkan pemahaman yang sangat baik, terutama pada aspek validasi data.';
-        
-        // --- Simulasi TANDA TANGAN ---
-        $data['info_umum']['asesi_ttd_tgl'] = '2025-11-30';
-        $data['info_umum']['asesor_ttd_tgl'] = date('Y-m-d');
-        $data['info_umum']['asesor_ttd_file'] = 'base64_ttd_asesor'; // Data TTD
-        
-        return $data;
+        return $dataIA09;
     }
 
     // =======================================================
-    // METODE UNTUK ASESOR (Form Edit/Isi)
+    // METODE UNTUK ASESOR & ADMIN (Display)
     // =======================================================
 
     /**
-     * Menampilkan form wawancara (IA.09) untuk Asesor.
-     * Di sini, data yang ditampilkan bisa kosong (jika belum pernah diisi)
-     * atau terisi sebagian (jika sudah disimpan draft).
+     * Menampilkan form wawancara (IA.09) untuk Asesor (Edit) atau Admin (View).
      */
-    public function showWawancaraAsesor()
+    public function showWawancara(Request $request, $id_data_sertifikasi_asesi)
     {
-        // Di sini Anda bisa menggunakan $this->getTemplateIA09() untuk simulasi belum diisi,
-        // atau $this->getFilledDataIA09() jika Anda ingin menguji mode edit oleh Asesor.
-        $dataIA09 = $this->getTemplateIA09(); 
+        $dataIA09 = $this->prepareIA09Data($id_data_sertifikasi_asesi);
         
-        return view('frontend.IA09_asesor', compact('dataIA09'));
+        // Mode 'edit' jika role adalah asesor, 'view' jika role adalah admin/lainnya
+        $mode = auth()->user()?->role?->nama_role === 'asesor' ? 'edit' : 'view';
+
+        return view('frontend.IA09', compact('dataIA09', 'mode'));
     }
+
+    // =======================================================
+    // METODE UNTUK ASESOR (Store/Update)
+    // =======================================================
 
     /**
      * Menyimpan atau memperbarui data wawancara yang diisi Asesor.
      */
-    public function storeWawancara(Request $request)
+    public function storeWawancara(Request $request, $id_data_sertifikasi_asesi)
     {
-        // Logika untuk validasi dan menyimpan data $request ke database
-        // Misalnya: IA09::updateOrCreate([...], $request->all());
+        // 1. Validasi Input
+        $request->validate([
+            'pertanyaan' => 'required|array',
+            'pertanyaan.*.no' => 'required|integer',
+            'pertanyaan.*.pertanyaan' => 'nullable|string',
+            'pertanyaan.*.jawaban' => 'required|string|min:10',
+            'pertanyaan.*.pencapaian' => 'required|in:Ya,Tidak',
+            'pertanyaan.*.id_jawaban' => 'nullable|integer',
+            'rekomendasi' => 'nullable|string',
+            'catatan' => 'nullable|string',
+        ]);
 
-        return redirect()->back()->with('success', 'Data wawancara berhasil disimpan.');
-    }
+        try {
+            DB::beginTransaction();
 
-    // =======================================================
-    // METODE UNTUK ADMIN (View Read-Only)
-    // =======================================================
+            // 2. Cari Data Portofolio
+            $portofolio = DataPortofolio::firstOrCreate(
+                ['id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi],
+                [
+                    'rekomendasi_asesor' => null,
+                    'catatan_asesor' => null,
+                    'persyaratan_dasar' => json_encode([]), // Default empty array
+                    'persyaratan_administratif' => json_encode([]), // Default empty array
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );            
+            
+            if (!$portofolio) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Gagal membuat data portofolio untuk asesi ini.')->withInput();
+            }
+            
+            $idPortofolio = $portofolio->id_portofolio;
+            
+            // 3. Ambil id_ia08 dari tabel ia08
+            $id_ia08_value = DB::table('ia08')
+                ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi) 
+                ->value('id_ia08');
+            
+            if (!$id_ia08_value) {
+                DB::rollBack();
+                return redirect()->back()->with('error', "Gagal menyimpan: Data FR-IA.08 untuk asesi ini belum ada. Mohon pastikan data IA.08 sudah dibuat.")->withInput();
+            }
 
-    /**
-     * Menampilkan hasil wawancara (IA.09) untuk Admin (Read-Only).
-     * Data yang ditampilkan harus yang sudah diisi penuh oleh Asesor.
-     */
-    public function showWawancaraAdmin()
-    {
-        // Admin melihat data yang SUDAH DIISI oleh Asesor
-        $dataIA09 = $this->getFilledDataIA09(); 
+            // 4. Update Rekomendasi/Catatan di Model Portofolio
+            $portofolio->update([
+                'rekomendasi_asesor' => $request->rekomendasi,
+                'catatan_asesor' => $request->catatan,
+            ]);
 
-        return view('frontend.IA09_admin', compact('dataIA09'));
+            // 5. Loop dan simpan/update Jawaban Pertanyaan
+            foreach ($request->pertanyaan as $item) {
+                // Konversi 'Ya'/'Tidak' ke boolean/integer 1/0
+                $pencapaian_value = ($item['pencapaian'] === 'Ya') ? 1 : 0; 
+                
+                $updateData = [
+                    'id_portofolio' => $idPortofolio,
+                    'daftar_pertanyaan_wawancara' => $item['pertanyaan'] ?? null,
+                    'kesimpulan_jawaban_asesi' => $item['jawaban'], 
+                    'pencapaian_ia09' => $pencapaian_value,
+                    'id_ia08' => $id_ia08_value,
+                    // Nilai default untuk validasi portofolio
+                    'is_valid' => true, 
+                    'is_asli' => true,  
+                    'is_terkini' => true, 
+                    'is_memadai' => true,
+                    'updated_at' => now(),
+                ];
+
+                if (isset($item['id_jawaban']) && $item['id_jawaban']) {
+                    // Update data yang sudah ada
+                    BuktiPortofolioIA08IA09::where('id_bukti_portofolio', $item['id_jawaban'])
+                        ->update($updateData);
+                } else {
+                    // Buat data baru
+                    $createData = array_merge($updateData, [
+                        'created_at' => now(),
+                    ]);
+                    BuktiPortofolioIA08IA09::create($createData);
+                }
+            }
+            
+            DB::commit();
+            
+            return redirect()
+                ->route('asesor.tracker', ['id_sertifikasi_asesi' => $id_data_sertifikasi_asesi]) 
+                ->with('success', 'Data hasil wawancara (FR-IA.09) berhasil disimpan!');
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("IA09 Store Exception: " . $e->getMessage()); 
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 }

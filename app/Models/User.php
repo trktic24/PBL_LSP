@@ -84,4 +84,17 @@ class User extends Authenticatable
     {
         return $this->hasOne(Admin::class, 'id_user', 'id_user');
     }
+
+    /**
+     * Check if user has specific role
+     * @param string $roleName
+     * @return bool
+     */
+    public function hasRole($roleName)
+    {
+        if ($this->role && $this->role->nama_role === $roleName) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'check.asesor.approved' => \App\Http\Middleware\CheckAsesorApproved::class,
+            'ia08' => \App\Http\Middleware\IA08::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

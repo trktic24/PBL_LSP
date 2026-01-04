@@ -134,5 +134,7 @@ class DatabaseSeeder extends Seeder
 
         // 2. Baru Isi Jawabannya (Tambahin baris ini)
         $this->call(LembarJawabIa05Seeder::class);
+
+        $this->call(DataportofolioSeeder::class);
     }
 }
