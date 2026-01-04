@@ -30,7 +30,7 @@
     [x-cloak] { display: none !important; }
 </style>
 
-<nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-10 border-b border-gray-200 h-[80px] relative">
+<nav class="flex items-center justify-between px-10 bg-white shadow-md sticky top-0 z-50 border-b border-gray-200 h-[80px] relative">
     <div class="flex items-center space-x-4">
         <a href="{{ route('admin.dashboard') }}">
             <img src="{{ asset('images/logo_lsp.jpg') }}" alt="LSP Polines" class="h-16 w-auto">
@@ -138,28 +138,46 @@
                     class="flex items-center space-x-3 bg-white border border-gray-200 rounded-full pl-5 pr-2 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] 
                             hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),_inset_-2px_-2px_5px_rgba(255,255,255,0.8)] transition-all z-20 relative">
                 <span class="{{ $isProfileActive ? 'text-blue-600' : 'text-gray-800' }} font-semibold text-base mr-5 whitespace-nowrap">
-                    {{ Auth::check() ? (in_array(Auth::user()->role->nama_role, ['admin', 'superadmin']) ? 'Admin LSP' : Auth::user()->username) : 'Guest' }}
+                    @if (Auth::check())
+                        {{-- 1. Cek apakah data di tabel admin ada & nama_admin terisi --}}
+                        @if (Auth::user()->admin && Auth::user()->admin->nama_admin)
+                            {{ Auth::user()->admin->nama_admin }}
+                        
+                        {{-- 2. Jika tidak, cek role (Logic lama) --}}
+                        @elseif (in_array(Auth::user()->role->nama_role, ['admin', 'superadmin']))
+                            Admin LSP
+                        
+                        {{-- 3. Fallback ke username --}}
+                        @else
+                            {{ Auth::user()->username }}
+                        @endif
+                    @else
+                        Guest
+                    @endif
                 </span>
                 
                 <div class="h-10 w-10 rounded-full border-2 border-gray-300 overflow-hidden shadow-inner flex-shrink-0 flex items-center justify-center bg-blue-600 text-white font-bold text-sm select-none">
                     @php
-                        $initials = 'AD'; // Default: Admin Default
-                        
+                        $initials = 'AD'; // Default
+
                         if (Auth::check()) {
-                            $email = Auth::user()->email ?? 'admin.default@lsp.com';
+                            // [LOGIC BARU] Prioritas: 
+                            // 1. Nama dari tabel admin
+                            // 2. Username dari tabel users
+                            // 3. Email dari tabel users
+                            $displayName = Auth::user()->admin->nama_admin ?? Auth::user()->username ?? Auth::user()->email;
                             
-                            // 1. Ambil bagian email sebelum '@'
-                            $prefix = explode('@', $email)[0];
+                            // Bersihkan nama (ganti titik/underscore jadi spasi)
+                            $cleanName = str_replace(['.', '_', '@'], ' ', $displayName);
+                            $words = explode(' ', $cleanName);
                             
-                            // 2. Ganti titik atau underscore dengan spasi, lalu pisahkan kata
-                            $words = explode(' ', str_replace(['.', '_'], ' ', $prefix));
-                            
-                            // 3. Ambil inisial: Huruf pertama dari 2 kata pertama
+                            // Ambil Inisial
                             if (count($words) >= 2) {
+                                // Huruf pertama kata 1 + Huruf pertama kata 2
                                 $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
                             } else {
-                                // Jika hanya satu kata, ambil 2 huruf pertama
-                                $initials = strtoupper(substr($prefix, 0, 2));
+                                // 2 Huruf pertama dari satu kata
+                                $initials = strtoupper(substr($cleanName, 0, 2));
                             }
                         }
                     @endphp

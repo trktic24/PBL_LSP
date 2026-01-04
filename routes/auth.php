@@ -308,6 +308,15 @@ Route::middleware('auth')->group(function () {
 
                     Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
                     Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
+                    
+                    // --- FITUR TRACKER ---
+                    Route::post('/sertifikasi/{id}/verifikasi-pembayaran', 'verifikasiPembayaran')->name('verifikasi.pembayaran');
+                    Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
+                    Route::get('/verifikasi-ia02/{id}', 'verifikasiIA02')->name('verifikasi.ia02');
+                    Route::get('/verifikasi-ia05/{id}', 'verifikasiIA05')->name('verifikasi.ia05');
+                    Route::get('/verifikasi-ia06/{id}', 'verifikasiIA06')->name('verifikasi.ia06');
+                    Route::get('/verifikasi-ia07/{id}', 'verifikasiIA07')->name('verifikasi.ia07');
+                    Route::get('/verifikasi-ia09/{id}', 'verifikasiIA09')->name('verifikasi.ia09');
                 });
 
             // Master Asesor

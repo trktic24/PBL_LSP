@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage; // [PENTING] Untuk hapus/simpan file
 use Illuminate\View\View;
 use Illuminate\Validation\Rules\Password;
+use App\Models\Admin; // [PENTING] Import Model Admin
 
 class ProfileController extends Controller
 {
@@ -19,29 +20,59 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        // [PERBAIKAN] Arahkan ke view profile_admin yang sudah kita buat
+        // Pastikan view mengarah ke file yang benar
         return view('Admin.profile.profile_admin', [
             'user' => $request->user(),
         ]);
     }
 
     /**
-     * Update informasi profil user.
+     * Update informasi profil user (Gabungan User & Admin).
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        // $request->validated() berisi data yang sudah lolos validasi (username & email)
-        // Fungsi fill() akan otomatis mengisi kolom 'username' dan 'email' ke model User
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        // Reset verifikasi email jika email berubah
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // 1. Validasi Input
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'], // Masuk ke tabel admin
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id_user . ',id_user'], // Validasi Unique Email (abaikan punya sendiri)
+            'tanda_tangan_admin' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'], // Validasi Gambar (Max 2MB)
+        ]);
+
+        // 2. Update Data di Tabel USERS (Hanya Email)
+        // Kita tidak update 'name' di table users karena 'name' sekarang ada di table 'admin'
+        if ($user->email !== $request->email) {
+            $user->email = $request->email;
+            $user->email_verified_at = null; // Reset verifikasi jika email berubah
+            $user->save();
         }
 
-        $request->user()->save();
+        // 3. Update Data di Tabel ADMIN
+        // Cari data admin berdasarkan id_user, atau buat baru jika belum ada
+        $adminData = Admin::firstOrNew(['id_user' => $user->id_user]);
+        
+        // Update Nama Admin
+        $adminData->nama_admin = $request->name;
 
-        // [PERBAIKAN] Redirect ke route 'profile_admin' agar konsisten
+        // 4. Logika Upload Tanda Tangan
+        if ($request->hasFile('tanda_tangan_admin')) {
+            
+            // Hapus file lama jika ada di storage
+            if ($adminData->tanda_tangan_admin && Storage::disk('public')->exists($adminData->tanda_tangan_admin)) {
+                Storage::disk('public')->delete($adminData->tanda_tangan_admin);
+            }
+
+            // Simpan file baru ke folder 'tanda_tangan' di disk 'public'
+            $path = $request->file('tanda_tangan_admin')->store('tanda_tangan_admin', 'public');
+            
+            // Simpan path ke database
+            $adminData->tanda_tangan_admin = $path;
+        }
+
+        $adminData->save();
+
+        // Redirect kembali dengan pesan sukses
         return Redirect::route('admin.profile_admin')->with('status', 'profile-updated');
     }
 
@@ -58,6 +89,11 @@ class ProfileController extends Controller
 
         Auth::logout();
 
+        // Hapus file tanda tangan dulu sebelum hapus user (Opsional, biar bersih)
+        if ($user->admin && $user->admin->tanda_tangan_admin) {
+            Storage::disk('public')->delete($user->admin->tanda_tangan_admin);
+        }
+
         $user->delete();
 
         $request->session()->invalidate();
@@ -67,7 +103,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * [BARU] Update password user.
+     * Update password user.
      */
     public function updatePassword(Request $request): RedirectResponse
     {
@@ -84,7 +120,6 @@ class ProfileController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Redirect kembali dengan status sukses khusus password
         return back()->with('status', 'password-updated');
     }
 }
