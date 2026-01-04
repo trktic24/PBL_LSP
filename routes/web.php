@@ -36,7 +36,7 @@ use App\Http\Controllers\APL01Controller; // Permohonan
 use App\Http\Controllers\Asesi\Apl02\PraasesmenController; // APL-02
 /* use App\Http\Controllers\Asesi\Apl02\Apl02Controller; */
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController; // AK-01
-use App\Http\Controllers\Asesi\AK01Controller;
+use App\Http\Controllers\Asesi\Ak01Controller;
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Asesi\Pdf\Ak01PdfController;
 use App\Http\Controllers\PortofolioController;
@@ -173,10 +173,7 @@ Route::middleware('auth')->group(function () {
         ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
 
     // FR-AK (Ceklis, Banding, dll)
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/ak01/form/{id}', [Ak01Controller::class, 'create'])->name('ak01.create');
-        Route::post('/ak01/store/{id}', [Ak01Controller::class, 'store'])->name('ak01.store');
-    });
+
 
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
     Route::get('/FR_AK_03', fn() => view('frontend/AK_03/FR_AK_03'))->name('FR_AK_03');
