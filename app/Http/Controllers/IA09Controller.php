@@ -95,7 +95,7 @@ class IA09Controller extends Controller
                         'no' => $index + 1,
                         'pertanyaan' => $bukti->daftar_pertanyaan_wawancara ?? "Pertanyaan untuk bukti no. " . ($index + 1),
                         'jawaban' => $bukti->kesimpulan_jawaban_asesi ?? '',
-                        'pencapaian' => isset($bukti->pencapaian_ia09) ? ($bukti->pencapaian_ia09 ? 'Ya' : 'Tidak') : '',
+                        'pencapaian' => $bukti->pencapaian_ia09 ?? '',
                         'id_jawaban' => $bukti->id_bukti_portofolio,
                     ];
                 }
@@ -224,22 +224,16 @@ class IA09Controller extends Controller
             $id_ia08_value = DB::table('ia08')
                 ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi) 
                 ->value('id_ia08');
-            
-            if (!$id_ia08_value) {
-                DB::rollBack();
-                return redirect()->back()->with('error', "Gagal menyimpan: Data FR-IA.08 untuk asesi ini belum ada. Mohon pastikan data IA.08 sudah dibuat.")->withInput();
-            }
 
             // 4. Update Rekomendasi/Catatan di Model Portofolio
             $portofolio->update([
                 'rekomendasi_asesor' => $request->rekomendasi,
                 'catatan_asesor' => $request->catatan,
             ]);
-
+            
             // 5. Loop dan simpan/update Jawaban Pertanyaan
             foreach ($request->pertanyaan as $item) {
-                // Konversi 'Ya'/'Tidak' ke boolean/integer 1/0
-                $pencapaian_value = ($item['pencapaian'] === 'Ya') ? 1 : 0; 
+                $pencapaian_value = $item['pencapaian']; 
                 
                 $updateData = [
                     'id_portofolio' => $idPortofolio,
