@@ -574,7 +574,10 @@ class AsesorJadwalController extends Controller
             }
         }
 
-        return view('frontend.AK_05.FR_AK_05', compact('jadwal'));
+        $asesor = $jadwal->asesor;
+        $listAsesi = $jadwal->dataSertifikasiAsesi;
+
+        return view('frontend.AK_05.FR_AK_05', compact('jadwal', 'asesor', 'listAsesi'));
     }
 
     public function ak06($id_jadwal)
@@ -598,9 +601,11 @@ class AsesorJadwalController extends Controller
             ->findOrFail($id_sertifikasi_asesi);
 
         // Cek Otorisasi
-        $asesor = Asesor::where('id_user', Auth::id())->first();
-        if (!$asesor || $sertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
-            abort(403, 'Anda tidak berhak mengakses data ini.');
+        if (!in_array(Auth::user()->role->nama_role, ['admin', 'superadmin'])) {
+            $asesor = Asesor::where('id_user', Auth::id())->first();
+            if (!$asesor || $sertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses data ini.');
+            }
         }
 
         $masterPotensi = PoinPotensiAk07::all();
