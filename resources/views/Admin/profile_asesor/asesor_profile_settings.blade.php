@@ -36,11 +36,21 @@
         <div class="flex flex-col items-center text-center mb-10">
           <h1 class="text-3xl font-bold text-gray-800 mb-3">Profile Settings</h1>
           
-          <div class="mt-6 w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] bg-blue-600 flex items-center justify-center">
+          <div x-data="{ imgError: false }" class="mt-6 w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] bg-blue-600 flex items-center justify-center relative">
              @if($asesor->pas_foto)
-                <img src="{{ Storage::url(str_replace('public/', '', $asesor->pas_foto)) }}" alt="Foto Profil" class="w-full h-full object-cover"
-                     onerror="this.onerror=null;this.src='{{ asset('images/default_pic.jpeg') }}';">
+                {{-- Fallback Initials (shown if image error) --}}
+                <span x-show="imgError" class="text-5xl font-bold text-white select-none absolute">
+                    {{ strtoupper(substr($asesor->nama_lengkap, 0, 2)) }}
+                </span>
+
+                {{-- Image --}}
+                <img src="{{ Storage::url(str_replace('public/', '', $asesor->pas_foto)) }}" 
+                     alt="Foto Profil" 
+                     class="w-full h-full object-cover relative z-10"
+                     x-show="!imgError"
+                     x-on:error="imgError = true">
              @else
+                {{-- Initials (shown if no image) --}}
                 <span class="text-5xl font-bold text-white select-none">
                     {{ strtoupper(substr($asesor->nama_lengkap, 0, 2)) }}
                 </span>
