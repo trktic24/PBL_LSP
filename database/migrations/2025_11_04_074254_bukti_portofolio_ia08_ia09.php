@@ -13,30 +13,28 @@ return new class extends Migration {
         Schema::create('bukti_portofolio_ia08_ia09', function (Blueprint $table) {
             $table->id('id_bukti_portofolio');
             
-            // ✅ Relasi ke data_portofolio (sesuai nama tabel yang benar)
+            // ✅ Relasi ke portofolio
             $table->foreignId('id_portofolio')
                 ->constrained('portofolio', 'id_portofolio')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             
-            // ✅ Relasi ke ia08 (NULLABLE - tidak wajib ada)
+            // ✅ Relasi ke ia08 (NULLABLE)
             $table->foreignId('id_ia08')
-                ->nullable() // ✅ Bisa null, tidak wajib IA08 terisi
+                ->nullable()
                 ->constrained('ia08', 'id_ia08')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            // ✅ Kolom validasi untuk IA08 (NULLABLE - default untuk IA09)
-            $table->boolean('is_valid')->nullable()->comment('Apakah dokumen valid (untuk IA08)');
-            $table->boolean('is_asli')->nullable()->comment('Apakah dokumen asli (untuk IA08)');
-            $table->boolean('is_terkini')->nullable()->comment('Apakah dokumen terkini (untuk IA08)');
-            $table->boolean('is_memadai')->nullable()->comment('Apakah dokumen memadai (untuk IA08)');
+            // ✅ UBAH DARI BOOLEAN KE TEXT (seperti pencapaian_ia09)
+            $table->text('is_valid')->nullable()->comment('Daftar dokumen yang valid');
+            $table->text('is_asli')->nullable()->comment('Daftar dokumen yang asli');
+            $table->text('is_terkini')->nullable()->comment('Daftar dokumen yang terkini');
+            $table->text('is_memadai')->nullable()->comment('Daftar dokumen yang memadai');
 
-            // ✅ Kolom untuk IA09 (Pertanyaan Wawancara) - sesuai nama di database
-            $table->text('daftar_pertanyaan_wawancara')->nullable()->comment('Pertanyaan wawancara dari asesor');
-            $table->text('kesimpulan_jawaban_asesi')->nullable()->comment('Kesimpulan jawaban asesi dari asesor');
-            
-            // ✅ Pencapaian sebagai STRING ('Ya' atau 'Tidak')
+            // ✅ Kolom untuk IA09 (Pertanyaan Wawancara)
+            $table->text('daftar_pertanyaan_wawancara')->nullable();
+            $table->text('kesimpulan_jawaban_asesi')->nullable();
             $table->string('pencapaian_ia09', 10)->nullable()->comment('Pencapaian IA09: Ya atau Tidak');
             
             $table->timestamps();

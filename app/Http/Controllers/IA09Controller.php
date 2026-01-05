@@ -126,8 +126,6 @@ class IA09Controller extends Controller
                 'no_reg_met' => $dataSertifikasi->jadwal?->asesor?->nomor_regis ?? '-',
                 'nama_asesi' => $dataSertifikasi->asesi?->nama_lengkap ?? '-',
                 'tanggal' => $dataSertifikasi->jadwal?->tanggal_pelaksanaan ?? date('Y-m-d'),
-                'rekomendasi' => $portofolio?->rekomendasi_asesor ?? '', 
-                'catatan' => $portofolio?->catatan_asesor ?? '', 
             ],
             'ttd' => [
                 'asesi' => $dataSertifikasi->asesi?->tanda_tangan ?? null,
@@ -193,59 +191,49 @@ class IA09Controller extends Controller
             'pertanyaan.*.jawaban' => 'required|string|min:10',
             'pertanyaan.*.pencapaian' => 'required|in:Ya,Tidak',
             'pertanyaan.*.id_jawaban' => 'nullable|integer',
-            'rekomendasi' => 'nullable|string',
-            'catatan' => 'nullable|string',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // 2. Cari Data Portofolio
+            // 2. Cari atau Buat Data Portofolio
             $portofolio = DataPortofolio::firstOrCreate(
                 ['id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi],
                 [
-                    'rekomendasi_asesor' => null,
-                    'catatan_asesor' => null,
-                    'persyaratan_dasar' => json_encode([]), // Default empty array
-                    'persyaratan_administratif' => json_encode([]), // Default empty array
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'persyaratan_dasar' => json_encode([]),
+                    'persyaratan_administratif' => json_encode([]),
                 ]
             );            
             
             if (!$portofolio) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'Gagal membuat data portofolio untuk asesi ini.')->withInput();
+                return redirect()->back()
+                    ->with('error', 'Gagal membuat data portofolio untuk asesi ini.')
+                    ->withInput();
             }
             
             $idPortofolio = $portofolio->id_portofolio;
             
-            // 3. Ambil id_ia08 dari tabel ia08
+            // 3. Ambil id_ia08 dari tabel ia08 (nullable)
             $id_ia08_value = DB::table('ia08')
                 ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi) 
                 ->value('id_ia08');
 
-            // 4. Update Rekomendasi/Catatan di Model Portofolio
-            $portofolio->update([
-                'rekomendasi_asesor' => $request->rekomendasi,
-                'catatan_asesor' => $request->catatan,
-            ]);
-            
             // 5. Loop dan simpan/update Jawaban Pertanyaan
             foreach ($request->pertanyaan as $item) {
-                $pencapaian_value = $item['pencapaian']; 
+                $pencapaian_value = $item['pencapaian']; // 'Ya' atau 'Tidak'
                 
                 $updateData = [
                     'id_portofolio' => $idPortofolio,
                     'daftar_pertanyaan_wawancara' => $item['pertanyaan'] ?? null,
                     'kesimpulan_jawaban_asesi' => $item['jawaban'], 
-                    'pencapaian_ia09' => $pencapaian_value,
-                    'id_ia08' => $id_ia08_value,
-                    // Nilai default untuk validasi portofolio
-                    'is_valid' => true, 
-                    'is_asli' => true,  
-                    'is_terkini' => true, 
-                    'is_memadai' => true,
+                    'pencapaian_ia09' => $pencapaian_value, // ✅ String: 'Ya' atau 'Tidak'
+                    'id_ia08' => $id_ia08_value, // ✅ Nullable
+                    // ✅ PERBAIKAN: Kolom is_* diisi NULL (bukan boolean)
+                    'is_valid' => null,
+                    'is_asli' => null,
+                    'is_terkini' => null,
+                    'is_memadai' => null,
                     'updated_at' => now(),
                 ];
 
@@ -255,10 +243,9 @@ class IA09Controller extends Controller
                         ->update($updateData);
                 } else {
                     // Buat data baru
-                    $createData = array_merge($updateData, [
+                    BuktiPortofolioIA08IA09::create(array_merge($updateData, [
                         'created_at' => now(),
-                    ]);
-                    BuktiPortofolioIA08IA09::create($createData);
+                    ]));
                 }
             }
             
@@ -271,6 +258,7 @@ class IA09Controller extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("IA09 Store Exception: " . $e->getMessage()); 
+            
             return redirect()
                 ->back()
                 ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())
