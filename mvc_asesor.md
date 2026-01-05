@@ -103,6 +103,12 @@ View bertugas menampilkan data yang dikirim oleh Controller dan menyediakan form
 | `asesor_profile_tracker_skema.blade.php` | **Timeline View**: Visualisasi progres asesmen (Penetapan -> Asesmen -> Laporan). |
 | `daftar_asesi.blade.php` | Menampilkan tabel asesi dalam satu jadwal spesifik yang dinilai asesor tersebut. |
 
+**C. Fitur Khusus View (Alpine.js)**
+1.  **Fallback Foto Profil**:
+    *   Menggunakan Alpine.js (`x-data`, `x-show`, `x-on:error`) pada `asesor_profile_settings.blade.php` dan `sidebar_profile_asesor.blade.php`.
+    *   **Logic**: Menampilkan foto dari server terlebih dahulu. Jika gagal load (error event) atau belum ada foto, otomatis menampilkan inisial nama asesor (misal: "John Doe" -> "JD").
+    *   Mencegah tampilan "broken image" yang mengganggu estetika.
+
 ---
 
 ## Komponen Controller

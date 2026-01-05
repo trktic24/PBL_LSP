@@ -48,15 +48,29 @@ class AsesorProfileController extends Controller
     // ==========================================================
     // HALAMAN TINJAUAN ASESMEN (RIWAYAT JADWAL)
     // ==========================================================
-    public function showTinjauan($id_asesor)
+    public function showTinjauan(Request $request, $id_asesor)
     {
         $asesor = Asesor::findOrFail($id_asesor);
-        
-        // [REAL DATA] Mengambil jadwal milik asesor
-        $tinjauan_data = Jadwal::with(['skema', 'masterTuk'])
-            ->where('id_asesor', $id_asesor)
-            ->orderBy('tanggal_pelaksanaan', 'desc')
-            ->get();
+        $search = $request->input('search');
+
+        // [REAL DATA] Mengambil jadwal milik asesor dengan fitur search
+        $query = Jadwal::with(['skema', 'masterTuk'])
+            ->where('id_asesor', $id_asesor);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                // Cari berdasarkan Nama Skema
+                $q->whereHas('skema', function ($qSkema) use ($search) {
+                    $qSkema->where('nama_skema', 'like', "%{$search}%");
+                })
+                // Atau cari berdasarkan Nama Peserta (Asesi) yang terdaftar di jadwal tersebut
+                ->orWhereHas('dataSertifikasiAsesi.asesi', function ($qAsesi) use ($search) {
+                    $qAsesi->where('nama_lengkap', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $tinjauan_data = $query->orderBy('tanggal_pelaksanaan', 'desc')->get();
 
         return view('Admin.profile_asesor.asesor_profile_tinjauan', compact('asesor', 'tinjauan_data'));
     }
