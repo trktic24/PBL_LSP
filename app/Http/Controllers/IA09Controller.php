@@ -8,6 +8,7 @@ use App\Models\DataSertifikasiAsesi;
 use App\Models\DataPortofolio;
 use App\Models\BuktiPortofolioIA08IA09; 
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
 
 class IA09Controller extends Controller
 {
@@ -264,5 +265,26 @@ class IA09Controller extends Controller
                 ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+
+    // ... method lainnya ...
+
+    /**
+     * CETAK PDF FR.IA.09
+     */
+    public function cetakPDF($id_sertifikasi_asesi)
+    {
+        // 1. Siapkan Data (Reuse method prepareIA09Data yg sudah ada biar konsisten)
+        // Method ini sudah meng-handle logic pengambilan data sertifikasi, unit, dan pertanyaan.
+        $dataRaw = $this->prepareIA09Data($id_sertifikasi_asesi);
+
+        // 2. Render PDF
+        // Kita kirim array $dataRaw langsung ke view
+        $pdf = Pdf::loadView('pdf.ia_09', ['data' => $dataRaw]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $dataRaw['info_umum']['nama_asesi']);
+        return $pdf->stream('FR_IA_09_' . $namaAsesi . '.pdf');
     }
 }
