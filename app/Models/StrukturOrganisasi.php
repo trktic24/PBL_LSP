@@ -13,6 +13,7 @@ class StrukturOrganisasi extends Model
         'nama',
         'jabatan',
         'kode',
+        'urutan',
         'gambar',
         'deskripsi',
     ];
