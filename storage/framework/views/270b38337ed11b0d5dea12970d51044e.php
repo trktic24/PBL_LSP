@@ -171,4 +171,4 @@
     }
   }
 </script>
-<?php /**PATH D:\Kuliah\SMT 3\Internal\Web Dinamis\Xampp\htdocs\PBL_LSP\resources\views/components/footer/footer.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\PBL_LSP\resources\views/components/footer/footer.blade.php ENDPATH**/ ?>

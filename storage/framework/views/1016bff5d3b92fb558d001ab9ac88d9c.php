@@ -8,15 +8,34 @@
 
 <body class="bg-gray-50">
 <div class="min-h-screen flex flex-col">
-<x-navbar.navbar-admin/>
+<?php if (isset($component)) { $__componentOriginalcdcdca75794a1024cfa6b2324664d859 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalcdcdca75794a1024cfa6b2324664d859 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.navbar.navbar-admin','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('navbar.navbar-admin'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalcdcdca75794a1024cfa6b2324664d859)): ?>
+<?php $attributes = $__attributesOriginalcdcdca75794a1024cfa6b2324664d859; ?>
+<?php unset($__attributesOriginalcdcdca75794a1024cfa6b2324664d859); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalcdcdca75794a1024cfa6b2324664d859)): ?>
+<?php $component = $__componentOriginalcdcdca75794a1024cfa6b2324664d859; ?>
+<?php unset($__componentOriginalcdcdca75794a1024cfa6b2324664d859); ?>
+<?php endif; ?>
 
 <main class="flex justify-center pt-10">
 <div class="bg-white p-8 rounded shadow w-full max-w-lg">
 
-<form action="{{ route('admin.add_struktur.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-    @csrf
+<form action="<?php echo e(route('admin.add_struktur.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <?php echo csrf_field(); ?>
 
-    {{-- Dropdown Pilih Posisi (Otomatis mengisi urutan) --}}
+    
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Posisi / Jabatan</label>
         <select name="urutan" id="selectPosisi" class="border p-2 w-full rounded bg-white" required onchange="autoFillJabatan()">
@@ -47,19 +66,19 @@
         </select>
     </div>
 
-    {{-- Input Nama --}}
+    
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
         <input name="nama" placeholder="Contoh: Dr. Budi Santoso, M.Kom" class="border p-2 w-full rounded" required>
     </div>
 
-    {{-- Input Jabatan (Akan terisi otomatis, tapi bisa diedit) --}}
+    
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Teks Jabatan (Tampil di Web)</label>
         <input name="jabatan" id="inputJabatan" placeholder="Jabatan" class="border p-2 w-full rounded" required>
     </div>
 
-    {{-- Input Foto --}}
+    
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Foto Profil</label>
         <input type="file" name="gambar" class="border p-2 w-full rounded bg-white">
@@ -68,7 +87,7 @@
     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700 font-bold mt-4">Simpan Data</button>
 </form>
 
-{{-- Script Javascript Kecil untuk Auto-fill --}}
+
 <script>
     function autoFillJabatan() {
         var select = document.getElementById('selectPosisi');
@@ -87,3 +106,4 @@
 </div>
 </body>
 </html>
+<?php /**PATH C:\xampp\htdocs\PBL_LSP\resources\views/Admin/master/struktur/add_struktur.blade.php ENDPATH**/ ?>

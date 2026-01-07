@@ -28,6 +28,7 @@
                     <th class="border px-4 py-2">No</th>
                     <th class="border px-4 py-2">Nama</th>
                     <th class="border px-4 py-2">Jabatan</th>
+                    <th class="border px-4 py-2">Urutan</th>
                     <th class="border px-4 py-2">Aksi</th>
                 </tr>
                 </thead>
@@ -38,6 +39,7 @@
                         <td class="border px-4 py-2">{{ $loop->iteration }}</td>
                         <td class="border px-4 py-2">{{ $org->nama }}</td>
                         <td class="border px-4 py-2">{{ $org->jabatan }}</td>
+                        <td class="border px-4 py-2">{{ $org->urutan }}</td>
                         <td class="border px-4 py-2 text-center">
                             <a href="{{ route('admin.edit_struktur', $org->id) }}" class="text-blue-600">Edit</a>
                             |

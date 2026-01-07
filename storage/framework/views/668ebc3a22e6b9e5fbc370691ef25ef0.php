@@ -616,4 +616,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.app-profil', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Kuliah\SMT 3\Internal\Web Dinamis\Xampp\htdocs\PBL_LSP\resources\views/landing_page/home.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app-profil', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\PBL_LSP\resources\views/landing_page/home.blade.php ENDPATH**/ ?>

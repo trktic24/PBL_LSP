@@ -47,6 +47,7 @@
                     <th class="border px-4 py-2">No</th>
                     <th class="border px-4 py-2">Nama</th>
                     <th class="border px-4 py-2">Jabatan</th>
+                    <th class="border px-4 py-2">Urutan</th>
                     <th class="border px-4 py-2">Aksi</th>
                 </tr>
                 </thead>
@@ -57,6 +58,7 @@
                         <td class="border px-4 py-2"><?php echo e($loop->iteration); ?></td>
                         <td class="border px-4 py-2"><?php echo e($org->nama); ?></td>
                         <td class="border px-4 py-2"><?php echo e($org->jabatan); ?></td>
+                        <td class="border px-4 py-2"><?php echo e($org->urutan); ?></td>
                         <td class="border px-4 py-2 text-center">
                             <a href="<?php echo e(route('admin.edit_struktur', $org->id)); ?>" class="text-blue-600">Edit</a>
                             |
@@ -91,4 +93,4 @@
 </div>
 </body>
 </html>
-<?php /**PATH D:\Kuliah\SMT 3\Internal\Web Dinamis\Xampp\htdocs\PBL_LSP\resources\views/Admin/master/struktur/index.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\PBL_LSP\resources\views/Admin/master/struktur/index.blade.php ENDPATH**/ ?>

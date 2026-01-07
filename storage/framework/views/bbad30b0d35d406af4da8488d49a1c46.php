@@ -511,4 +511,4 @@ unset($__defined_vars, $__key, $__value); ?>
 
 <div class="h-[80px]"></div>
 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-<?php /**PATH D:\Kuliah\SMT 3\Internal\Web Dinamis\Xampp\htdocs\PBL_LSP\resources\views/components/navbar/navbar.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\PBL_LSP\resources\views/components/navbar/navbar.blade.php ENDPATH**/ ?>

@@ -14,11 +14,14 @@ class StrukturOrganisasiController extends Controller
      */
     public function index(Request $request)
     {
-        $sortColumn = $request->input('sort', 'id');
+        // MODIFIKASI: Tambahkan 'urutan' ke kolom yang diizinkan
+        $allowedColumns = ['id', 'nama', 'jabatan', 'urutan'];
+        
+        // Default sort kita ubah ke 'urutan' agar hierarki tampil rapi
+        $sortColumn = $request->input('sort', 'urutan'); 
         $sortDirection = $request->input('direction', 'asc');
-        $allowedColumns = ['id', 'nama', 'jabatan'];
 
-        if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'id';
+        if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'urutan';
         if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
 
         $query = StrukturOrganisasi::query();
@@ -29,6 +32,7 @@ class StrukturOrganisasiController extends Controller
                   ->orWhere('jabatan', 'like', '%' . $searchTerm . '%');
         }
 
+        // MODIFIKASI: Prioritaskan urutan
         $query->orderBy($sortColumn, $sortDirection);
 
         $perPage = $request->input('per_page', 10);
@@ -48,7 +52,7 @@ class StrukturOrganisasiController extends Controller
      */
     public function create()
     {
-        return view('Admin.master.struktur.create');
+        return view('Admin.master.struktur.add_struktur');
     }
 
     /**
@@ -59,6 +63,8 @@ class StrukturOrganisasiController extends Controller
         $request->validate([
             'nama'      => 'required|string|max:255',
             'jabatan'   => 'required|string|max:255',
+            // MODIFIKASI: Tambahkan validasi urutan (wajib diisi angka)
+            'urutan'    => 'required|integer', 
             'gambar'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -67,7 +73,6 @@ class StrukturOrganisasiController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            // Simpan ke folder struktur_organisasi
             $data['gambar'] = $file->storeAs('struktur_organisasi', $filename, 'public');
         }
 
@@ -83,7 +88,9 @@ class StrukturOrganisasiController extends Controller
     public function edit($id)
     {
         $struktur = StrukturOrganisasi::findOrFail($id);
-        return view('Admin.master.struktur.edit', compact('struktur'));
+        return view('Admin.master.struktur.edit_struktur', [
+            'organisasi' => $struktur
+        ]);
     }
 
     /**
@@ -96,13 +103,14 @@ class StrukturOrganisasiController extends Controller
         $request->validate([
             'nama'      => 'required|string|max:255',
             'jabatan'   => 'required|string|max:255',
+            // MODIFIKASI: Tambahkan validasi urutan saat update
+            'urutan'    => 'required|integer', 
             'gambar'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $data = $request->all();
 
         if ($request->hasFile('gambar')) {
-            // Hapus gambar lama jika ada
             if ($struktur->gambar && Storage::disk('public')->exists($struktur->gambar)) {
                 Storage::disk('public')->delete($struktur->gambar);
             }
