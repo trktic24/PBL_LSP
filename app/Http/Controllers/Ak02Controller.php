@@ -111,7 +111,7 @@ class Ak02Controller extends Controller
                 // Log::error($evt);
             }
 
-            return redirect()->route('asesor.tracker', $idSertifikasi)->with('success', 'Rekaman Asesmen FR.AK.02 berhasil disimpan.');
+            return redirect()->route('asesor.tracker', $id_asesi)->with('success', 'Rekaman Asesmen FR.AK.02 berhasil disimpan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
