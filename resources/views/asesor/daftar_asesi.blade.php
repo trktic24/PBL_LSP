@@ -124,6 +124,8 @@
                                 <td class="p-4 text-center">
                                     @php
                                     // Cek apakah data AK07 sudah ada
+                                    // responPotensiAk07 & responPenyesuaianAk07 = HasMany (collection)
+                                    // hasilPenyesuaianAk07 = HasOne (single model or null)
                                     $hasAk07Data = $item->responPotensiAk07->isNotEmpty() ||
                                     $item->responPenyesuaianAk07->isNotEmpty() ||
                                     $item->hasilPenyesuaianAk07 !== null;
