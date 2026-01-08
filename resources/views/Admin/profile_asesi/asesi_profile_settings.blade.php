@@ -1,165 +1,116 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Asesi Profile Settings | LSP Polines</title> 
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laporan Asesi | {{ $asesi->nama_lengkap }}</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
-  <style>
-    body { font-family: 'Poppins', sans-serif; background-color: #f9fafb; }
-    ::-webkit-scrollbar { width: 0; }
-  </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f9fafb; }
+        ::-webkit-scrollbar { width: 0; }
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 
-<body class="text-gray-800">
+<body class="bg-gray-50 text-gray-800">
 
-  <x-navbar.navbar-admin />
-  
-  <div class="flex pt-0">
-    
-    @php
-        // Default URL: Kembali ke Master Asesi (jika tidak ada konteks jadwal)
-        $urlKembali = route('admin.master_asesi'); 
+    <x-navbar.navbar-admin />
 
-        // Jika Controller mengirim data sertifikasi acuan, arahkan kembali ke Daftar Hadir jadwal tersebut
-        if (isset($sertifikasiAcuan) && $sertifikasiAcuan) {
-            $urlKembali = route('admin.schedule.attendance', $sertifikasiAcuan->id_jadwal);
-        }
-    @endphp
+    <main class="p-8">
 
-    <x-sidebar.sidebar_profile_asesi 
-        :asesi="$asesi" 
-        :backUrl="$urlKembali"
-        :activeSertifikasi="$sertifikasiAcuan ?? null" 
-    />
-
-    <main class="ml-[22%] h-[calc(100vh-80px)] overflow-y-auto p-8 bg-gray-50 flex-1">
-      <div class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-10 border border-gray-100">
-        
-        <div class="flex flex-col items-center text-center mb-10">
-          <h1 class="text-3xl font-bold text-gray-800 mb-3">Profile Settings</h1>
-          <div class="mt-6 w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] flex items-center justify-center bg-purple-300">
-             <span class="text-5xl font-bold text-white select-none">
-                 {{ strtoupper(substr($asesi->nama_lengkap, 0, 2)) }}
-             </span>
-          </div>
-          <h2 class="mt-4 font-semibold text-2xl text-gray-800">{{ $asesi->nama_lengkap }}</h2>
-          <p class="text-gray-500 text-lg">{{ $asesi->pekerjaan }}</p>
+        {{-- Breadcrumb & Header --}}
+        <div class="mb-6">
+            <p class="text-sm text-gray-500 mb-1">
+                @if($sertifikasiAcuan && $sertifikasiAcuan->jadwal && $sertifikasiAcuan->jadwal->skema)
+                    <a href="{{ route('admin.apl01.show', $sertifikasiAcuan->jadwal->skema->id_skema) }}" class="hover:text-blue-600">Daftar Asesi</a> / 
+                @endif
+                Detail Asesi
+            </p>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
+                    {{ strtoupper(substr($asesi->nama_lengkap, 0, 1)) }}
+                </div>
+                <div>
+                   <h2 class="text-2xl font-bold text-gray-900">{{ $asesi->nama_lengkap }}</h2>
+                   <p class="text-sm text-gray-500">{{ $sertifikasiAcuan->jadwal->skema->nama_skema ?? 'Skema Tidak Ditemukan' }}</p>
+                </div>
+            </div>
         </div>
 
-        <h3 class="text-xl font-bold text-center text-gray-900 mb-8 uppercase tracking-wide">Rincian Data Pemohon Sertifikasi</h3>
+        {{-- Tabel Laporan --}}
+        <div class="bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-900">Laporan Asesmen (Formulir)</h3>
+                <span class="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-600 rounded-md">
+                    Total: {{ count($activeForms) }} Formulir
+                </span>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-bold">
+                        <tr>
+                            <th class="px-6 py-4 border-b border-gray-200">Nama Formulir</th>
+                            <th class="px-6 py-4 border-b border-gray-200">Laporan</th>
+                            <th class="px-6 py-4 border-b border-gray-200 text-center">Status</th>
+                            <th class="px-6 py-4 border-b border-gray-200 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse($activeForms as $formCode)
+                            <tr class="hover:bg-gray-50 transition">
+                                {{-- Nama --}}
+                                <td class="px-6 py-4 font-medium text-gray-900">
+                                    {{ $formCode }}
+                                </td>
 
-        <section class="mb-10">
-          <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2 border-gray-200">Data Pribadi</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                <input type="text" value="{{ $asesi->nama_lengkap }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>
-                <input type="text" value="{{ $asesi->nik }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Tempat Lahir</label>
-                <input type="text" value="{{ $asesi->tempat_lahir }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
-                <input type="date" value="{{ $asesi->tanggal_lahir ? $asesi->tanggal_lahir->format('Y-m-d') : '' }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
-                <input type="text" value="{{ $asesi->jenis_kelamin }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kebangsaan</label>
-                <input type="text" value="{{ $asesi->kebangsaan }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kualifikasi Pendidikan</label>
-                <input type="text" value="{{ $asesi->pendidikan }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan</label>
-                <input type="text" value="{{ $asesi->pekerjaan }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-          </div>
-        </section>
+                                {{-- Laporan --}}
+                                <td class="px-6 py-4 text-gray-600">
+                                    Dokumen Laporan {{ $formCode }}
+                                </td>
 
-        <section class="mb-10">
-          <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2 border-gray-200">Alamat Lengkap & Kontak</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nomor HP</label>
-                <input type="text" value="{{ $asesi->nomor_hp }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kode Pos</label>
-                <input type="text" value="{{ $asesi->kode_pos }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten / Kota</label>
-                <input type="text" value="{{ $asesi->kabupaten_kota }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
-                <input type="text" value="{{ $asesi->provinsi }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Rumah</label>
-                <textarea rows="2" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm resize-none" readonly>{{ $asesi->alamat_rumah }}</textarea>
-            </div>
-          </div>
-        </section>
+                                {{-- Status (Dummy Logic per Form) --}}
+                                @php
+                                    $status = 'Menunggu';
+                                    $class = 'bg-yellow-100 text-yellow-700';
+                                    
+                                    // Logic Sederhana Status (Placeholder)
+                                    // Bisa diganti dengan query real status per form jika ada di DB
+                                    if(in_array($formCode, ['FR.APL.01', 'FR.APL.02'])) {
+                                        $status = 'Tersedia';
+                                        $class = 'bg-blue-100 text-blue-700';
+                                    }
+                                @endphp
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold {{ $class }}">
+                                        {{ $status }}
+                                    </span>
+                                </td>
 
-        <section class="mb-10">
-          <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2 border-gray-200">Data Pekerjaan Sekarang</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Institusi / Perusahaan</label>
-                <input type="text" value="{{ $asesi->dataPekerjaan->nama_institusi_pekerjaan ?? '-' }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
+                                {{-- Aksi --}}
+                                <td class="px-6 py-4 text-center">
+                                    <button class="text-blue-600 hover:text-blue-800 font-semibold text-xs flex items-center justify-center mx-auto transition">
+                                        <i class="fas fa-external-link-alt mr-1"></i> Buka
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                                    Tidak ada formulir yang aktif untuk skema ini.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
-                <input type="text" value="{{ $asesi->dataPekerjaan->jabatan ?? '-' }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">No. Telp Institusi</label>
-                <input type="text" value="{{ $asesi->dataPekerjaan->no_telepon_institusi ?? '-' }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kode Pos Institusi</label>
-                <input type="text" value="{{ $asesi->dataPekerjaan->kode_pos_institusi ?? '-' }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Institusi</label>
-                <textarea rows="2" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm resize-none" readonly>{{ $asesi->dataPekerjaan->alamat_institusi ?? '-' }}</textarea>
-            </div>
-          </div>
-        </section>
+        </div>
 
-        <section>
-          <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2 border-gray-200">Informasi Akun</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email Login</label>
-                <input type="text" value="{{ $asesi->user->email ?? '-' }}" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" value="********" class="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-gray-600 text-sm" readonly>
-            </div>
-          </div>
-        </section>
-
-      </div>
     </main>
-  </div>
+
 </body>
 </html>

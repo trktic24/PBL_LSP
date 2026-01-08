@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('content')
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -112,6 +112,9 @@
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
                     FR.IA.08 – Ceklis Verifikasi Portofolio
                 </h1>
+                @if(isset($isMasterView))
+                    <div class="text-center font-bold text-blue-600 mt-2">[TEMPLATE MASTER]</div>
+                @endif
             </div>
 
             {{-- SKEMA --}}
@@ -490,12 +493,20 @@
             </div>
 
             {{-- BUTTON --}}
-            @if(!$locked)
+            @if(!$locked && !isset($isMasterView))
             <div class="flex justify-end mb-16">
                 <button type="submit"
                     class="px-6 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 font-semibold">
                     Simpan
                 </button>
+            </div>
+            @endif
+            
+            @if(isset($isMasterView))
+            <div class="flex justify-end mb-16">
+                <a href="{{ url()->previous() }}" class="px-6 py-2 bg-gray-500 text-white rounded-md shadow hover:bg-gray-600 font-semibold">
+                    Kembali
+                </a>
             </div>
             @endif
         </div>

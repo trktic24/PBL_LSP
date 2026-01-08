@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('content')
     {{-- Style Internal untuk checkbox custom --}}
@@ -9,13 +9,20 @@
         }
     </style>
 
-    <x-header_form.header_form title="FR.AK.02. REKAMAN ASESMEN KOMPETENSI" /><br>
+    <x-header_form.header_form title="FR.AK.02. REKAMAN ASESMEN KOMPETENSI" />
+    @if(isset($isMasterView))
+        <div class="text-center font-bold text-blue-600 my-2">[TEMPLATE MASTER]</div>
+    @endif
+    <br>
 
     {{-- Form mengarah ke Route Update di Ak02Controller --}}
     {{-- Pastikan route 'ak02.update' sudah didefinisikan di routes/auth.php atau web.php --}}
-    <form action="{{ route('asesor.ak02.update', $asesi->id_data_sertifikasi_asesi) }}" method="POST">
+    {{-- Form mengarah ke Route Update di Ak02Controller --}}
+    <form action="{{ isset($isMasterView) ? '#' : route('asesor.ak02.update', $asesi->id_data_sertifikasi_asesi) }}" method="POST">
         @csrf
-        @method('PUT')
+        @if(!isset($isMasterView))
+            @method('PUT')
+        @endif
 
         {{-- Container Utama --}}
         <div class="p-3 sm:p-4 md:p-6">
@@ -23,8 +30,18 @@
             {{-- 1. IDENTITAS SKEMA (Menggunakan Component) --}}
             <div class="bg-white p-6 rounded-xl shadow-md mb-6 border border-gray-200">
                 <h3 class="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">Identitas Skema & Peserta</h3>
-                {{-- Kita bisa passing data asesi ke component jika component mendukung --}}
-                <x-identitas_skema_form.identitas_skema_form :sertifikasi="$asesi" />
+                @if(isset($isMasterView))
+                     <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <strong>Skema Sertifikasi:</strong> {{ $asesi->jadwal->skema->nama_skema ?? '-' }}
+                        </div>
+                         <div>
+                            <strong>Nomor Skema:</strong> {{ $asesi->jadwal->skema->nomor_skema ?? '-' }}
+                        </div>
+                    </div>
+                @else
+                    <x-identitas_skema_form.identitas_skema_form :sertifikasi="$asesi" />
+                @endif
             </div>
 
             {{-- 2. TABEL KELOMPOK PEKERJAAN & UNIT KOMPETENSI --}}
@@ -44,8 +61,14 @@
                         <tbody class="divide-y divide-gray-200 bg-white">
                             @php $no = 1; @endphp
 
+                            @php
+                                $kelompokPekerjaan = isset($isMasterView) 
+                                    ? $asesi->jadwal->skema->kelompokPekerjaan 
+                                    : $asesi->skema->kelompokPekerjaan;
+                            @endphp
+
                             {{-- Loop Kelompok Pekerjaan --}}
-                            @foreach ($asesi->skema->kelompokPekerjaan as $kelompok)
+                            @foreach ($kelompokPekerjaan ?? [] as $kelompok)
                                 @php
                                     $jumlahUnit = $kelompok->unitKompetensi->count();
                                 @endphp
@@ -105,7 +128,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
                             {{-- Kita Loop ulang untuk Matrix Bukti --}}
-                            @foreach ($asesi->skema->kelompokPekerjaan as $kelompok)
+                            @foreach ($kelompokPekerjaan ?? [] as $kelompok)
                                 @foreach ($kelompok->unitKompetensi as $unit)
 
                                     {{-- Ambil Data Penilaian dari Controller (Collection terpisah) --}}
@@ -230,12 +253,14 @@
 
             {{-- 7. FOOTER BUTTONS --}}
             <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mt-8 border-t-2 border-gray-200 pt-6">
-                <a href="{{ url()->previous() }}" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
+                <a href="{{ isset($backUrl) ? $backUrl : url()->previous() }}" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
                     Kembali
                 </a>
+                @if(!isset($isMasterView))
                 <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
                     Simpan Form
                 </button>
+                @endif
             </div>
 
         </div>

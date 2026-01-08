@@ -1,6 +1,6 @@
 {{-- File: resources/views/frontend/IA_01/admin_show.blade.php --}}
 
-@extends('layouts.app') {{-- Sesuaikan dengan layout utama admin Anda --}}
+@extends('layouts.app') 
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -10,7 +10,13 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">FR.IA.01 - Ceklis Observasi Aktivitas</h1>
-                <p class="text-sm text-gray-500 mt-1">Mode Tinjauan Admin (Read Only)</p>
+                <p class="text-sm text-gray-500 mt-1">
+                    @if(isset($isMasterView))
+                        Mode Pratinjau Template (Master Data)
+                    @else
+                        Mode Tinjauan Admin (Read Only)
+                    @endif
+                </p>
             </div>
             <a href="{{ url()->previous() }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
                 &larr; Kembali
@@ -42,12 +48,12 @@
                 <div class="grid grid-cols-[120px_10px_1fr] mb-2">
                     <span class="font-semibold text-gray-600">Asesor</span>
                     <span>:</span>
-                    <span class="font-bold text-gray-900">{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor' }}</span>
+                    <span class="font-bold text-gray-900">{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(Template)' }}</span>
                 </div>
                 <div class="grid grid-cols-[120px_10px_1fr] mb-2">
                     <span class="font-semibold text-gray-600">Asesi</span>
                     <span>:</span>
-                    <span class="font-bold text-gray-900">{{ $sertifikasi->asesi->nama_lengkap ?? 'Asesi' }}</span>
+                    <span class="font-bold text-gray-900">{{ $sertifikasi->asesi->nama_lengkap ?? '(Template)' }}</span>
                 </div>
                 <div class="grid grid-cols-[120px_10px_1fr]">
                     <span class="font-semibold text-gray-600">Tanggal</span>
@@ -145,6 +151,8 @@
     @endforeach
 
     {{-- REKOMENDASI & TTD --}}
+    {{-- REKOMENDASI & TTD --}}
+    @if(!isset($isMasterView))
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Rekomendasi & Tanda Tangan</h3>
 
@@ -221,6 +229,7 @@
             </div>
         </div>
     </div>
+    @endif
 
 </div>
 @endsection
