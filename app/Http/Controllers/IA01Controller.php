@@ -236,4 +236,49 @@ class IA01Controller extends Controller
             'responses'
         ));
     }
+
+    // ... method lainnya ...
+
+    /**
+     * CETAK PDF FR.IA.01
+     */
+    public function cetakPDF($id_sertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi Lengkap (Pakai helper yg udah ada)
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+        
+        // 2. Ambil Skema & Unit Kompetensi
+        $skema = $sertifikasi->jadwal->skema;
+        $kelompok = $skema->kelompokPekerjaan->first();
+
+        if (!$kelompok) {
+            return back()->with('error', 'Data Kelompok Pekerjaan tidak ditemukan.');
+        }
+
+        // Ambil Unit Kompetensi (sama seperti logic showView)
+        $units = \App\Models\UnitKompetensi::with(['elemen.kriteria'])
+            ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
+            ->orderBy('urutan')
+            ->get();
+
+        // 3. Ambil Jawaban (Respon)
+        // Pastikan nama Model sesuai dengan file kamu: ResponApl2Ia01
+        $responses = \App\Models\ResponApl2Ia01::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
+            ->get()
+            ->keyBy('id_kriteria');
+
+        // 4. Render PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.ia_01', [
+            'sertifikasi' => $sertifikasi,
+            'skema' => $skema,
+            'units' => $units,
+            'responses' => $responses
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        // Sanitasi nama file biar ga error karakter aneh
+        $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $sertifikasi->asesi->nama_lengkap);
+        return $pdf->stream('FR_IA_01_' . $namaAsesi . '.pdf');
+    }
 }

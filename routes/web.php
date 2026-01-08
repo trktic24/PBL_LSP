@@ -62,7 +62,9 @@ use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA08Controller;
 use App\Http\Controllers\IA09Controller;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\IA11Controller;
+use App\Http\Controllers\Asesi\IA11\IA11Controller;
+use App\Http\Controllers\Asesi\IA03\IA03Controller;
+use App\Http\Controllers\FrIa04aController;
 
 use App\Http\Controllers\Validator\ValidatorTrackerController;
 
@@ -276,6 +278,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/apl02/{id}', [Apl02PdfController::class, 'generateApl02'])->name('apl02.cetak_pdf');
         Route::get('/ak01/{id}', [Ak01PdfController::class, 'generateAk01'])->name('ak01.cetak_pdf');
         Route::get('/ak02/{id}', [Ak02Controller::class, 'cetakPDF'])->name('ak02.cetak_pdf');
+        Route::get('/ia-01/cetak-pdf/{id_sertifikasi}', [IA01Controller::class, 'cetakPDF'])->name('ia01.cetak_pdf');
+        Route::get('/ia-03/cetak-pdf/{id_sertifikasi}', [IA03Controller::class, 'cetakPDF'])->name('ia03.cetak_pdf');
+        Route::get('/ia-04/cetak-pdf/{id_sertifikasi}', [FrIa04aController::class, 'cetakPDF'])->name('ia04.cetak_pdf');
+        Route::get('/ia-08/cetak-pdf/{id_sertifikasi}', [IA08Controller::class, 'cetakPDF'])->name('ia08.cetak_pdf');
+        Route::get('/ia-09/cetak-pdf/{id_sertifikasi}', [IA09Controller::class, 'cetakPDF'])->name('ia09.cetak_pdf');
+        Route::get('/ia-11/cetak-pdf/{id_sertifikasi}', [IA11Controller::class, 'cetakPDF'])->name('ia11.cetak_pdf');
     });
     // Legacy mapping (just in case)
     Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF']);
