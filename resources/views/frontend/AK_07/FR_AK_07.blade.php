@@ -134,7 +134,7 @@
                                             {{ $isYa ? 'checked' : '' }}
                                             {{ $isReadOnly ? 'disabled' : '' }}
                                             class="text-blue-600 form-radio focus:ring-blue-500">
-                                        <span class="ml-2">Ya</span>
+                                        <span>Ya</span>
                                     </label>
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input type="radio"
@@ -144,7 +144,7 @@
                                             {{ !$isYa ? 'checked' : '' }}
                                             {{ $isReadOnly ? 'disabled' : '' }}
                                             class="text-gray-600 form-radio focus:ring-gray-500">
-                                        <span class="ml-2">Tidak</span>
+                                        <span>Tidak</span>
                                     </label>
                                 </div>
                             </td>

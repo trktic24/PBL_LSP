@@ -752,79 +752,82 @@ class AsesorJadwalController extends Controller
 
     public function storeAk07(Request $request, $id_sertifikasi_asesi)
     {
-        \DB::beginTransaction();
-        try {
-            // Cek apakah form sudah pernah diisi (di dalam transaction untuk mencegah race condition)
-            $hasPotensiData = ResponPotensiAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->lockForUpdate()->exists();
-            $hasPenyesuaianData = ResponDiperlukanPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->lockForUpdate()->exists();
-            $hasHasilData = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->lockForUpdate()->exists();
+        // Use DB transaction closure for automatic rollback on exception
+        return \DB::transaction(function () use ($request, $id_sertifikasi_asesi) {
+            // ---------- 1. Check for existing data (with row lock) ----------
+            $hasPotensiData = ResponPotensiAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
+                ->lockForUpdate()
+                ->exists();
+            $hasPenyesuaianData = ResponDiperlukanPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
+                ->lockForUpdate()
+                ->exists();
+            $hasHasilData = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
+                ->lockForUpdate()
+                ->exists();
 
-            // Jika sudah ada data, tolak permintaan update
             if ($hasPotensiData || $hasPenyesuaianData || $hasHasilData) {
-                \DB::rollBack();
+                // Data already exists – abort the whole transaction
                 return redirect()->back()->with('error', 'Form FR.AK.07 sudah pernah diisi dan tidak dapat diubah lagi.');
             }
 
-            // 1. Simpan Respon Potensi
-            // Frontend mengirim: potensi_asesi[] = [0 => id, 1 => id, ...]
+            // ---------- 2. Simpan Respon Potensi (checkbox list) ----------
             if ($request->has('potensi_asesi') && is_array($request->potensi_asesi)) {
                 foreach ($request->potensi_asesi as $idPoin) {
                     ResponPotensiAK07::create([
                         'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                        'id_poin_potensi_AK07' => $idPoin,
-                        'respon_asesor' => null // Asesor hanya mencentang, tidak ada input tambahan
+                        'id_poin_potensi_AK07'      => $idPoin,
+                        'respon_asesor'             => null,
                     ]);
                 }
             }
 
-            // 2. Simpan Penyesuaian
-            // Frontend mengirim: 
-            // penyesuaian[id_persyaratan][status] = 'Ya'/'Tidak'
-            // penyesuaian[id_persyaratan][keterangan][] = [id_keterangan1, id_keterangan2, ...]
-            // penyesuaian[id_persyaratan][catatan_manual] = 'text'
+            // ---------- 3. Simpan Penyesuaian ----------
             if ($request->has('penyesuaian') && is_array($request->penyesuaian)) {
                 foreach ($request->penyesuaian as $idPersyaratan => $data) {
                     $status = $data['status'] ?? 'Tidak';
                     $catatanManual = $data['catatan_manual'] ?? null;
+                    $keteranganList = $data['keterangan'] ?? [];
 
-                    // Simpan record base dengan status dan catatan manual
-                    ResponDiperlukanPenyesuaianAK07::create([
-                        'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                        'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
-                        'id_catatan_keterangan_AK07' => null, // Base record tidak punya keterangan checkbox
-                        'respon_penyesuaian' => $status,
-                        'respon_catatan_keterangan' => $catatanManual
-                    ]);
-
-                    // Simpan record tambahan untuk setiap checkbox keterangan yang dipilih
-                    if (!empty($data['keterangan']) && is_array($data['keterangan'])) {
-                        foreach ($data['keterangan'] as $idKeterangan) {
+                    // Jika ada keterangan (checkboxes) -> buat satu record per keterangan
+                    if (!empty($keteranganList) && is_array($keteranganList)) {
+                        foreach ($keteranganList as $idKeterangan) {
                             ResponDiperlukanPenyesuaianAK07::create([
-                                'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                                'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
-                                'id_catatan_keterangan_AK07' => $idKeterangan,
-                                'respon_penyesuaian' => $status,
-                                'respon_catatan_keterangan' => null // Jangan duplikasi catatan manual
+                                'id_data_sertifikasi_asesi'          => $id_sertifikasi_asesi,
+                                'id_persyaratan_modifikasi_AK07'    => $idPersyaratan,
+                                'id_catatan_keterangan_AK07'         => $idKeterangan,
+                                'respon_penyesuaian'                 => $status,
+                                // catatan manual hanya disimpan pada baris pertama (keterangan pertama) jika ada
+                                'respon_catatan_keterangan'          => $catatanManual,
                             ]);
                         }
+                    } else {
+                        // Tidak ada keterangan checkbox, cukup satu baris base
+                        ResponDiperlukanPenyesuaianAK07::create([
+                            'id_data_sertifikasi_asesi'          => $id_sertifikasi_asesi,
+                            'id_persyaratan_modifikasi_AK07'    => $idPersyaratan,
+                            'id_catatan_keterangan_AK07'         => null,
+                            'respon_penyesuaian'                 => $status,
+                            'respon_catatan_keterangan'          => $catatanManual,
+                        ]);
                     }
                 }
             }
 
-            // 3. Simpan Hasil Penyesuaian
-            // Frontend mengirim langsung di level root, bukan nested dalam 'hasil_penyesuaian'
-            HasilPenyesuaianAK07::create([
-                'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                'Acuan_Pembanding_Asesmen' => $request->acuan_pembanding ?? '',
-                'Metode_Asesmen' => $request->metode_asesmen ?? '',
-                'Instrumen_Asesmen' => $request->instrumen_asesmen ?? ''
-            ]);
+            // ---------- 4. Simpan Hasil Penyesuaian (only if at least one field filled) ----------
+            $acuan = $request->input('acuan_pembanding');
+            $metode = $request->input('metode_asesmen');
+            $instrumen = $request->input('instrumen_asesmen');
+            if (!empty($acuan) || !empty($metode) || !empty($instrumen)) {
+                HasilPenyesuaianAK07::create([
+                    'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                    'Acuan_Pembanding_Asesmen'   => $acuan ?? '',
+                    'Metode_Asesmen'             => $metode ?? '',
+                    'Instrumen_Asesmen'          => $instrumen ?? '',
+                ]);
+            }
 
-            \DB::commit();
+            // ---------- 5. Commit & redirect ----------
             return redirect()->back()->with('success', 'Form FR.AK.07 berhasil disimpan.');
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
-        }
+        });
     }
 }
