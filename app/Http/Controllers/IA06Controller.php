@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SoalIa06;
+use App\Models\SoalIA06;
 use App\Models\JawabanIa06;
 use App\Models\UmpanBalikIa06;
 use App\Models\DataSertifikasiAsesi;
@@ -30,7 +30,7 @@ class IA06Controller extends Controller
 
         $soals = [];
         if ($selectedSkema) {
-            $soals = SoalIa06::where('id_skema', $selectedSkema)->get();
+            $soals = SoalIA06::where('id_skema', $selectedSkema)->get();
         }
 
         // Pastikan Anda punya view: resources/views/admin/bank_soal/ia06/index.blade.php
@@ -50,7 +50,7 @@ class IA06Controller extends Controller
             'kunci_jawaban_ia06' => 'required|string',
         ]);
 
-        SoalIa06::create($request->all());
+        SoalIA06::create($request->all());
 
         return back()->with('success', 'Soal berhasil ditambahkan.');
     }
@@ -62,7 +62,7 @@ class IA06Controller extends Controller
     {
         // $this->authorizeRole(1);
 
-        $soal = SoalIa06::findOrFail($id);
+        $soal = SoalIA06::findOrFail($id);
         $soal->update($request->only(['soal_ia06', 'kunci_jawaban_ia06']));
 
         return back()->with('success', 'Soal berhasil diperbarui.');
@@ -74,7 +74,7 @@ class IA06Controller extends Controller
     public function adminDestroySoal($id)
     {
         // $this->authorizeRole(1);
-        SoalIa06::destroy($id);
+        SoalIA06::destroy($id);
         return back()->with('success', 'Soal dihapus.');
     }
 
@@ -257,7 +257,7 @@ class IA06Controller extends Controller
 
         if (!$exists) {
             // Ambil soal berdasarkan skema jadwal
-            $soals = SoalIa06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
+            $soals = SoalIA06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
 
             if ($soals->isEmpty())
                 return; // Tidak ada soal, skip

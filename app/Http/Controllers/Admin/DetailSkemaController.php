@@ -33,7 +33,7 @@ class DetailSkemaController extends Controller
         
         $formConfig = [
             // FASE 1
-            ['code' => 'FR.APL.01', 'name' => 'Permohonan Sertifikasi Kompetensi', 'db_field' => 'apl_01', 'checked' => (bool)$configDB->apl_01, 'url' => null],
+            ['code' => 'FR.APL.01', 'name' => 'Permohonan Sertifikasi Kompetensi', 'db_field' => 'apl_01', 'checked' => (bool)$configDB->apl_01, 'url' => route('admin.master_asesi')],
             ['code' => 'FR.APL.02', 'name' => 'Asesmen Mandiri', 'db_field' => 'apl_02', 'checked' => (bool)$configDB->apl_02, 'url' => null],
             // FASE 2
             ['code' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 'db_field' => 'fr_mapa_01', 'checked' => (bool)$configDB->fr_mapa_01, 'url' => null],
@@ -43,7 +43,7 @@ class DetailSkemaController extends Controller
             ['code' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi', 'db_field' => 'fr_ia_02', 'checked' => (bool)$configDB->fr_ia_02, 'url' => null],
             ['code' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi', 'db_field' => 'fr_ia_03', 'checked' => (bool)$configDB->fr_ia_03, 'url' => null],
             ['code' => 'FR.IA.04', 'name' => 'Ceklis Verifikasi Portofolio', 'db_field' => 'fr_ia_04', 'checked' => (bool)$configDB->fr_ia_04, 'url' => null],
-            ['code' => 'FR.IA.05', 'name' => 'Pertanyaan Tertulis Pilihan Ganda', 'db_field' => 'fr_ia_05', 'checked' => (bool)$configDB->fr_ia_05, 'url' => null],
+            ['code' => 'FR.IA.05', 'name' => 'Pertanyaan Tertulis Pilihan Ganda', 'db_field' => 'fr_ia_05', 'checked' => (bool)$configDB->fr_ia_05, 'url' => route('FR_IA_05_B')],
             ['code' => 'FR.IA.06', 'name' => 'Pertanyaan Tertulis Esai', 'db_field' => 'fr_ia_06', 'checked' => (bool)$configDB->fr_ia_06, 'url' => route('admin.ia06.index', ['skema_id' => $skema->id_skema])],
             ['code' => 'FR.IA.07', 'name' => 'Pertanyaan Lisan', 'db_field' => 'fr_ia_07', 'checked' => (bool)$configDB->fr_ia_07, 'url' => null],
             ['code' => 'FR.IA.08', 'name' => 'Ceklis Verifikasi Pihak Ketiga', 'db_field' => 'fr_ia_08', 'checked' => (bool)$configDB->fr_ia_08, 'url' => null],
