@@ -27,21 +27,59 @@
 
                 <div class="flex flex-col gap-4">
 
+                    <form method="GET" class="mb-4 flex gap-2">
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Cari nama asesi..."
+                            class="border border-gray-300 rounded-md px-3 py-2 text-sm w-64"
+                        >
+
+                        <button type="submit"
+                            class="bg-yellow-600 text-white px-4 py-2 rounded-md text-sm hover:bg-yellow-700">
+                            Cari
+                        </button>
+                    </form>
+
                     <div class="bg-yellow-50 rounded-lg shadow-xl overflow-x-auto w-full">
                         <table class="min-w-full divide-y divide-gray-200 table-fixed">
 
                             <thead class="bg-yellow-100 border-b-2 border-gray-500 text-gray-800">
                                 <th class="p-4 w-1/12 text-left text-sm font-semibold">No</th>
-                                <th class="p-4 w-2/12 text-left text-sm font-semibold">Nama Asesi</th>
-                                <th class="p-4 w-[12%] text-center text-sm font-semibold">Pra Asesmen</th>
-                                <th class="p-4 w-[12%] text-center text-sm font-semibolde">Asesmen</th>
-                                <th class="p-4 w-[12%] text-center text-sm font-semibold">Asesmen Mandiri</th>
+                                @php
+                                    $isNama = $sort === 'nama_lengkap';
+                                @endphp
+
+                                <th class="p-4 text-left text-sm font-semibold">
+                                    <a href="{{ request()->fullUrlWithQuery([
+                                        'sort' => 'nama_lengkap',
+                                        'direction' => ($isNama && $direction === 'asc') ? 'desc' : 'asc'
+                                    ]) }}">
+                                        Nama Asesi
+                                        {!! $isNama ? ($direction === 'asc' ? '↑' : '↓') : '' !!}
+                                    </a>
+                                </th>
+                                <th class="p-4 w-[12%] text-center text-sm font-semibold">Tracker</th>
+                                @php
+                                    $isMandiri = $sort === 'asesmen_mandiri';
+                                @endphp
+
+                                <th class="p-4 text-center text-sm font-semibold">
+                                    <a href="{{ request()->fullUrlWithQuery([
+                                        'sort' => 'asesmen_mandiri',
+                                        'direction' => ($isMandiri && $direction === 'asc') ? 'desc' : 'asc'
+                                    ]) }}">
+                                        Asesmen Mandiri
+                                        {!! $isMandiri ? ($direction === 'asc' ? '↑' : '↓') : '' !!}
+                                    </a>
+                                </th>
                                 <th class="p-4 w-[14%] text-center text-sm font-semibold">Penyesuaian</th>
                             </thead>
 
                             <tbody class="divide-y divide-gray-200">
                                 {{-- MODIFIKASI: Menggunakan data dari relasi jadwal --}}
-                                @forelse($jadwal->dataSertifikasiAsesi as $index => $item)
+                                @forelse($dataAsesi as $index => $item)
                                     <tr class="hover:bg-yellow-100">
                                         <td class="p-4 text-left text-sm text-gray-700">{{ $index + 1 }}</td>
 
@@ -50,12 +88,12 @@
                                             {{ $item->asesi->nama_lengkap ?? $item->asesi->nama ?? 'Nama Tidak Ditemukan' }}
                                         </td>
 
-                                        {{-- Pra Asesmen --}}
+                                        {{-- Tracker --}}
                                         @php
-                                            if (is_null($item->rekomendasi_apl02) && !$item->responBuktiAk01) {
+                                            if (is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)){
                                                 $status = 'Belum Direview';
-                                                $color = 'text-red-600 hover:text-blue-800';
-                                            } elseif (!is_null($item->rekomendasi_apl02) && !$item->responBuktiAk01) {
+                                                $color = 'text-red-600 hover:text-red-800';
+                                            } elseif (!is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)) {
                                                 $status = 'Dalam Proses';
                                                 $color = 'text-yellow-600 hover:text-yellow-800';
                                             } else {
@@ -71,33 +109,12 @@
                                             </a>
                                         </td>
 
-                                        {{-- Asesmen --}}
-                                        @php
-                                            if (!$item->lembarJawabIa05 && (is_null($item->rekomendasi_hasil_asesmen_AK02))) {
-                                                $status = 'Belum Direview';
-                                                $color = 'text-blue-600 hover:text-blue-800';
-                                            } elseif ($item->lembarJawabIa05 && (is_null($item->rekomendasi_hasil_asesmen_AK02))) {
-                                                $status = 'Dalam Proses';
-                                                $color = 'text-yellow-600 hover:text-yellow-800';
-                                            } else {
-                                                $status = 'Sudah Direview';
-                                                $color = 'text-green-600 hover:text-green-800';
-                                            }
-                                        @endphp
-
-                                        <td class="p-4 text-center">
-                                            <a href="{{ route('asesor.tracker', $item->id_data_sertifikasi_asesi) }}#asesmen"
-                                                class="font-medium hover:underline cursor-pointer {{ $color }}">
-                                                {{ $status }}
-                                            </a>
-                                        </td>
-
                                         {{-- Checkbox Asesmen Mandiri --}}
                                         <td class="p-4 text-center">
                                             @if ($item->rekomendasi_apl02 == 'diterima')
                                                 <span class="text-green-500 px-2 py-1 rounded-md text-s">Diterima</span>
                                             @elseif ($item->rekomendasi_apl02 == 'tidak diterima')
-                                                <span class="text-yellow-700 px-2 py-1 rounded-md text-s">Menunggu Verifikasi</span>
+                                                <span class="text-red-500 px-2 py-1 rounded-md text-s">Tidak Diterima</span>
                                             @else
                                                 <a href="{{ route('asesor.apl02', $item->id_data_sertifikasi_asesi) }}#btn-verifikasi"
                                                     class="text-yellow-700 px-2 py-1 rounded-md text-s">Verifikasi</a>
@@ -120,6 +137,9 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        <div class="mt-4">
+                            {{ $dataAsesi->links() }}
+                        </div>
                     </div>
 
                     <div class="flex gap-4 justify-between">

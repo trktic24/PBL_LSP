@@ -64,7 +64,7 @@ class PrivateFileSeeder extends Seeder
 
         // A. ASESI (tanda_tangan)
         // Path logic: tanda_tangan/dummy_file.jpg
-        $dbPathTtd = "tanda_tangan/$dummyFileName";
+        $dbPathTtd = 'tanda_tangan/ttd_asesii.png';
         $affected = DB::table('asesi')->update(['tanda_tangan' => $dbPathTtd]);
         $this->command->info("   Updated $affected Asesi records (tanda_tangan).");
 
@@ -83,13 +83,17 @@ class PrivateFileSeeder extends Seeder
         $dbPathAsesor = "asesor_docs/$dummyFileName";
         $asesorCols = [
             'ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 
-            'CV', 'ijazah', 'sertifikat_asesor', 'sertifikasi_kompetensi', 'tanda_tangan'
+            'CV', 'ijazah', 'sertifikat_asesor', 'sertifikasi_kompetensi'
         ];
         
         $updateData = [];
         foreach($asesorCols as $col) {
             $updateData[$col] = $dbPathAsesor;
         }
+
+        $defaultTtdPath = 'tanda_tangan/ttd_asesii.png';
+        // Kolom tanda tangan → gambar default
+        $updateData['tanda_tangan'] = $defaultTtdPath;
         
         $affected4 = DB::table('asesor')->update($updateData);
         $this->command->info("   Updated $affected4 Asesor records (All Docs).");
