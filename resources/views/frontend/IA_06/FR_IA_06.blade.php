@@ -1,7 +1,23 @@
 @extends('layouts.app-sidebar')
 @section('content')
 
-<div class="{{ $role == 2 ? 'bg-blue-600' : ($role == 3 ? 'bg-purple-700' : 'bg-gray-800') }} text-white p-4 shadow-md sticky top-0 z-50">
+
+<x-header_form.header_form title="FR.IA.06. PERTANYAAN ESAI" />
+
+<div class="max-w-5xl mx-auto px-4">
+    <div class="flex justify-between items-center text-sm text-gray-700 mt-2">
+
+        <div class="opacity-90">
+            {{ $sertifikasi->asesi->nama_lengkap }} — {{ $sertifikasi->jadwal->skema->nama_skema }}
+        </div>
+
+        <div class="px-3 py-1 bg-white/20 rounded font-semibold">
+            Mode: {{ $role == 2 ? 'ASESI (Ujian)' : ($role == 3 ? 'ASESOR (Penilaian)' : 'ADMIN (Monitor)') }}
+        </div>
+
+    </div>
+</div>
+<!--
     <div class="max-w-5xl mx-auto flex justify-between items-center">
         <div>
             <h1 class="text-xl font-bold">FR.IA.06 Pertanyaan Esai</h1>
@@ -11,7 +27,7 @@
             Mode: {{ $role == 2 ? 'ASESI (Ujian)' : ($role == 3 ? 'ASESOR (Penilaian)' : 'ADMIN (Monitor)') }}
         </div>
     </div>
-</div>
+-->
 
 <div class="max-w-5xl mx-auto px-4 py-8">
 
@@ -129,7 +145,7 @@
                 </div>
 
                 <button type="submit" class="px-8 py-3 rounded-lg font-bold text-white shadow-lg transition transform hover:scale-105 active:scale-95
-                    {{ $role == 2 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700' }}">
+                    {{ $role == 2 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-purple-700' }}">
                     {{ $role == 2 ? 'Simpan Jawaban Saya' : 'Simpan Penilaian' }}
                 </button>
             </div>
