@@ -210,7 +210,7 @@ Route::middleware('auth')->group(function () {
             });
 
             // ----------------- Master Data -----------------
-    
+
             // Master TUK
             Route::resource('master/tuk', TukAdminController::class)->names([
                 'index' => 'master_tuk',
@@ -291,19 +291,28 @@ Route::middleware('auth')->group(function () {
             Route::controller(AsesiProfileController::class)
                 ->prefix('asesi/{id_asesi}')
                 ->group(function () {
-                Route::get('/settings', 'settings')->name('asesi.profile.settings');
-                Route::get('/form', 'form')->name('asesi.profile.form');
-                Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
+                    Route::get('/settings', 'settings')->name('asesi.profile.settings');
+                    Route::get('/form', 'form')->name('asesi.profile.form');
+                    Route::get('/tracker', 'tracker')->name('asesi.profile.tracker');
 
-                // --- FITUR BUKTI KELENGKAPAN ---
-                Route::get('/bukti', 'bukti')->name('asesi.profile.bukti'); // Halaman View
-                Route::post('/bukti/store', 'storeBukti')->name('asesi.profile.bukti.store'); // Upload
-                Route::post('/bukti/update/{id_bukti}', 'updateBukti')->name('asesi.profile.bukti.update');
-                Route::delete('/bukti/delete/{id_bukti}', 'deleteBukti')->name('asesi.profile.bukti.delete'); // Hapus
-    
-                Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
-                Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
-            });
+                    // --- FITUR BUKTI KELENGKAPAN ---
+                    Route::get('/bukti', 'bukti')->name('asesi.profile.bukti'); // Halaman View
+                    Route::post('/bukti/store', 'storeBukti')->name('asesi.profile.bukti.store'); // Upload
+                    Route::post('/bukti/update/{id_bukti}', 'updateBukti')->name('asesi.profile.bukti.update');
+                    Route::delete('/bukti/delete/{id_bukti}', 'deleteBukti')->name('asesi.profile.bukti.delete'); // Hapus
+
+                    Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
+                    Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
+
+                    // --- FITUR TRACKER ---
+                    Route::post('/sertifikasi/{id}/verifikasi-pembayaran', 'verifikasiPembayaran')->name('verifikasi.pembayaran');
+                    Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
+                    Route::get('/verifikasi-ia02/{id}', 'verifikasiIA02')->name('verifikasi.ia02');
+                    Route::get('/verifikasi-ia05/{id}', 'verifikasiIA05')->name('verifikasi.ia05');
+                    Route::get('/verifikasi-ia06/{id}', 'verifikasiIA06')->name('verifikasi.ia06');
+                    Route::get('/verifikasi-ia07/{id}', 'verifikasiIA07')->name('verifikasi.ia07');
+                    Route::get('/verifikasi-ia09/{id}', 'verifikasiIA09')->name('verifikasi.ia09');
+                });
 
             // Master Asesor
             Route::controller(AsesorController::class)->group(function () {
@@ -427,8 +436,9 @@ Route::middleware('auth')->group(function () {
                 Route::get('/daftar-hadir/pdf/{id_jadwal}', 'exportPdfdaftarhadir')->name('daftar_hadir.pdf');
 
                 // Asesmen Links
-                Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
-                Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
+                // [FIX] Moved to Ak05Controller to fix 'Undefined variable $asesor' error
+                // Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
+                // Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
 
                 Route::get('/jadwal/{id_jadwal}/ak06', 'ak06')->name('ak06');
                 Route::post('/ak06/store/{id_jadwal}', 'storeAk06')->name('ak06.store');
@@ -437,9 +447,13 @@ Route::middleware('auth')->group(function () {
                 Route::post('/ak07/store/{id_sertifikasi_asesi}', 'storeAk07')->name('fr-ak-07.store');
             });
 
+            // [FIX] AK-05 Routes (Correct Controller)
+            Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
+            Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
+
             // AK-02
-            Route::get('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
-            Route::put('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
+            Route::get('/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
+            Route::put('/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
 
             // APL-02 (Verifikasi)
             Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');

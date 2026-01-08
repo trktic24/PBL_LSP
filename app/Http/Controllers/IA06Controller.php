@@ -199,7 +199,7 @@ class IA06Controller extends Controller
             );
         });
 
-        return back()->with('success', 'Penilaian berhasil disimpan.');
+        return redirect()->route('asesor.tracker', $idSertifikasi)->with('success', 'Penilaian FR.IA.06 berhasil disimpan.');
     }
 
     public function cetakPDF($idSertifikasi)

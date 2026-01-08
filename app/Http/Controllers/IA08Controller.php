@@ -10,6 +10,7 @@ use App\Models\BuktiPortofolioIA08IA09;
 use App\Models\IA08;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
 
 class IA08Controller extends Controller
 {
@@ -45,8 +46,8 @@ class IA08Controller extends Controller
 
                 $ia08 = $item->buktiPortofolioIA08IA09->first();
 
-                $item->array_valid   = $ia08 ? explode(', ', $ia08->is_valid)   : [];
-                $item->array_asli    = $ia08 ? explode(', ', $ia08->is_asli)    : [];
+                $item->array_valid = $ia08 ? explode(', ', $ia08->is_valid) : [];
+                $item->array_asli = $ia08 ? explode(', ', $ia08->is_asli) : [];
                 $item->array_terkini = $ia08 ? explode(', ', $ia08->is_terkini) : [];
                 $item->array_memadai = $ia08 ? explode(', ', $ia08->is_memadai) : [];
 
@@ -73,10 +74,10 @@ class IA08Controller extends Controller
                 'isLocked'
             ) + [
                 'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                'skema'    => $data->jadwal->skema,
+                'skema' => $data->jadwal->skema,
                 'jenisTuk' => $data->jadwal->jenisTuk,
-                'asesor'   => $data->jadwal->asesor,
-                'asesi'    => $data->asesi,
+                'asesor' => $data->jadwal->asesor,
+                'asesi' => $data->asesi,
                 'data_sesi' => [
                     'tanggal_asesmen' => $data->jadwal->tanggal_pelaksanaan
                         ? date('Y-m-d', strtotime($data->jadwal->tanggal_pelaksanaan))
@@ -123,8 +124,8 @@ class IA08Controller extends Controller
         // ===============================
         foreach ($request->id_portofolio as $id_portofolio) {
             $groups = [
-                'valid'   => $request->valid[$id_portofolio]   ?? [],
-                'asli'    => $request->asli[$id_portofolio]    ?? [],
+                'valid' => $request->valid[$id_portofolio] ?? [],
+                'asli' => $request->asli[$id_portofolio] ?? [],
                 'terkini' => $request->terkini[$id_portofolio] ?? [],
                 'memadai' => $request->memadai[$id_portofolio] ?? [],
             ];
@@ -152,23 +153,23 @@ class IA08Controller extends Controller
 
                 'kelompok_pekerjaan' =>
                     $request->rekomendasi === 'perlu observasi lanjut'
-                        ? $request->kelompok_pekerjaan
-                        : null,
+                    ? $request->kelompok_pekerjaan
+                    : null,
 
                 'unit_kompetensi' =>
                     $request->rekomendasi === 'perlu observasi lanjut'
-                        ? $request->unit_kompetensi
-                        : null,
+                    ? $request->unit_kompetensi
+                    : null,
 
                 'elemen' =>
                     $request->rekomendasi === 'perlu observasi lanjut'
-                        ? $request->elemen
-                        : null,
+                    ? $request->elemen
+                    : null,
 
                 'kuk' =>
                     $request->rekomendasi === 'perlu observasi lanjut'
-                        ? $request->kuk
-                        : null,
+                    ? $request->kuk
+                    : null,
             ]);
 
             foreach ($request->id_portofolio as $id_portofolio) {
@@ -176,8 +177,8 @@ class IA08Controller extends Controller
                     'id_portofolio' => $id_portofolio,
                     'id_ia08' => $ia08->id_ia08,
 
-                    'is_valid'   => collect($request->valid[$id_portofolio])->implode(', '),
-                    'is_asli'    => collect($request->asli[$id_portofolio])->implode(', '),
+                    'is_valid' => collect($request->valid[$id_portofolio])->implode(', '),
+                    'is_asli' => collect($request->asli[$id_portofolio])->implode(', '),
                     'is_terkini' => collect($request->terkini[$id_portofolio])->implode(', '),
                     'is_memadai' => collect($request->memadai[$id_portofolio])->implode(', '),
 
@@ -194,5 +195,70 @@ class IA08Controller extends Controller
             'success',
             'Verifikasi portofolio & rekomendasi asesor berhasil disimpan.'
         );
+    }
+
+    /**
+     * CETAK PDF FR.IA.08
+     */
+    public function cetakPDF($id_sertifikasi_asesi)
+    {
+        // 1. Ambil Data Sertifikasi
+        $data = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'jadwal.skema',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_sertifikasi_asesi);
+
+        // 2. Ambil Unit Kompetensi
+        $kelompokPekerjaan = \App\Models\KelompokPekerjaan::where(
+            'id_skema',
+            $data->jadwal->skema->id_skema
+        )->get();
+
+        $unitKompetensi = \App\Models\UnitKompetensi::whereIn(
+            'id_kelompok_pekerjaan',
+            $kelompokPekerjaan->pluck('id_kelompok_pekerjaan')
+        )
+            ->orderBy('urutan')
+            ->get();
+
+        // 3. Ambil Bukti Portofolio & Hasil Verifikasi IA.08
+        // Kita butuh data V-A-T-M yang tersimpan di tabel 'bukti_portofolio_ia08_ia09'
+        $buktiPortofolio = \App\Models\DataPortofolio::where(
+            'id_data_sertifikasi_asesi',
+            $id_sertifikasi_asesi
+        )
+            ->with('buktiPortofolioIA08IA09')
+            ->get()
+            ->map(function ($item) {
+                // Ambil record verifikasi pertama (jika ada)
+                $ia08 = $item->buktiPortofolioIA08IA09->first();
+
+                // Explode string "V, A, T, M" jadi array biar gampang dicek di view
+                $item->array_valid = $ia08 ? explode(', ', $ia08->is_valid) : [];
+                $item->array_asli = $ia08 ? explode(', ', $ia08->is_asli) : [];
+                $item->array_terkini = $ia08 ? explode(', ', $ia08->is_terkini) : [];
+                $item->array_memadai = $ia08 ? explode(', ', $ia08->is_memadai) : [];
+
+                return $item;
+            });
+
+        // 4. Ambil Data Rekomendasi (IA.08 Header)
+        $ia08Header = IA08::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->first();
+
+        // 5. Render PDF
+        $pdf = Pdf::loadView('pdf.ia_08', [
+            'data' => $data,
+            'unitKompetensi' => $unitKompetensi,
+            'buktiPortofolio' => $buktiPortofolio,
+            'ia08Header' => $ia08Header
+        ]);
+
+        $pdf->setPaper('A4', 'portrait'); // Bisa landscape jika tabel terlalu lebar
+
+        $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $data->asesi->nama_lengkap);
+        return $pdf->stream('FR_IA_08_' . $namaAsesi . '.pdf');
     }
 }

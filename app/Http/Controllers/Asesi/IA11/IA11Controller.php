@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 // Import semua Models TRANSAKSI dan DETAIL yang dibutuhkan
 use App\Models\IA11\IA11;
@@ -291,5 +292,49 @@ class IA11Controller extends Controller
             Log::error('Gagal menghapus IA.11: ' . $e->getMessage());
             return response()->json(['message' => 'Gagal menghapus data.', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    // ... method update & destroy ...
+
+    /**
+     * CETAK PDF FR.IA.11
+     */
+    public function cetakPDF($id_data_sertifikasi_asesi)
+    {
+        // 1. Ambil Data IA11 Lengkap (Copy dari method show biar lengkap relasinya)
+        $ia11 = IA11::with([
+            'spesifikasiProduk',
+            'bahanProduk',
+            'spesifikasiTeknis',
+            // Pastikan relasi ke item master ada untuk mengambil nama item-nya
+            'pencapaianSpesifikasi.spesifikasiItem',
+            'pencapaianPerforma.performaItem',
+            'dataSertifikasiAsesi.asesi',
+            'dataSertifikasiAsesi.jadwal.asesor',
+            'dataSertifikasiAsesi.jadwal.skema',
+            'dataSertifikasiAsesi.jadwal.masterTuk'
+        ])
+            ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
+            ->first();
+
+        // 2. Handle jika data IA11 belum diisi
+        if (!$ia11) {
+            // Ambil data header saja biar PDF tidak error, tapi isinya kosong
+            $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema', 'jadwal.asesor'])->find($id_data_sertifikasi_asesi);
+            // Kirim objek kosong/dummy
+            $ia11 = new IA11();
+            $ia11->setRelation('dataSertifikasiAsesi', $sertifikasi);
+        }
+
+        // 3. Render PDF
+        $pdf = Pdf::loadView('pdf.ia_11', [
+            'ia11' => $ia11,
+            'sertifikasi' => $ia11->dataSertifikasiAsesi
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $ia11->dataSertifikasiAsesi->asesi->nama_lengkap ?? 'Asesi');
+        return $pdf->stream('FR_IA_11_' . $namaAsesi . '.pdf');
     }
 }

@@ -158,6 +158,11 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(Ia07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
+    public function ia01(): HasOne
+    {
+        return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
     public function ia10(): HasOne
     {
         return $this->hasOne(Ia10::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
@@ -166,6 +171,25 @@ class DataSertifikasiAsesi extends Model
     public function ia02(): HasOne
     {
         return $this->hasOne(Ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function ia04(): HasOne
+    {
+        // Link to ResponIA04A as the indicator of completion
+        return $this->hasOne(ResponIA04A::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function ia09(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    {
+        // Relasi ke BuktiPortofolioIA08IA09 melalui DataPortofolio
+        return $this->hasOneThrough(
+            BuktiPortofolioIA08IA09::class,
+            DataPortofolio::class,
+            'id_data_sertifikasi_asesi', // FK di tabel DataPortofolio
+            'id_portofolio',             // FK di tabel BuktiPortofolioIA08IA09
+            'id_data_sertifikasi_asesi', // PK di tabel DataSertifikasiAsesi
+            'id_portofolio'              // PK di tabel DataPortofolio
+        );
     }
 
     public function ia06Answers(): HasMany

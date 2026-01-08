@@ -82,6 +82,16 @@
                 {{ session('error') }}
             </div>
         @endif
+        
+        @if ($errors->any())
+            <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded shadow-sm">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         {{-- Form Wrapper --}}
         <form action="{{ route('ak05.store', $jadwal->id_jadwal) }}" method="POST">
@@ -174,14 +184,14 @@
                                     {{-- Checkbox K (Kompeten) --}}
                                     <td class="px-2 py-3 text-center align-middle border-r border-gray-200">
                                         <input type="radio" name="asesi[{{ $index }}][rekomendasi]" value="K"
-                                            {{ $data->rekomendasi_AK05 == 'K' ? 'checked' : '' }}
+                                            {{ ($data->rekomendasi_AK05 == 'K' || $data->rekomendasi_AK05 == 'kompeten') ? 'checked' : '' }}
                                             class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer">
                                     </td>
 
                                     {{-- Checkbox BK (Belum Kompeten) --}}
                                     <td class="px-2 py-3 text-center align-middle border-r border-gray-200">
                                         <input type="radio" name="asesi[{{ $index }}][rekomendasi]" value="BK"
-                                            {{ $data->rekomendasi_AK05 == 'BK' ? 'checked' : '' }}
+                                            {{ ($data->rekomendasi_AK05 == 'BK' || $data->rekomendasi_AK05 == 'belum kompeten') ? 'checked' : '' }}
                                             class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer">
                                     </td>
 
