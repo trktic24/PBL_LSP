@@ -189,6 +189,7 @@ Route::middleware('auth')->group(function () {
     
     // FR-AK-05
     Route::get('/ak05/{id_jadwal}', [Ak05Controller::class, 'index'])->name('ak05.index');
+    // Route::get('/asesor/ak05/{id_jadwal}', [Ak05Controller::class, 'index'])->name('asesor.ak05'); // Alias REMOVED - handled in auth.php
     Route::post('/ak05/store/{id_jadwal}', [Ak05Controller::class, 'store'])->name('ak05.store');
 
     // FR-AK-07

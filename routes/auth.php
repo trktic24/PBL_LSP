@@ -436,8 +436,9 @@ Route::middleware('auth')->group(function () {
                 Route::get('/daftar-hadir/pdf/{id_jadwal}', 'exportPdfdaftarhadir')->name('daftar_hadir.pdf');
 
                 // Asesmen Links
-                Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
-                Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
+                // [FIX] Moved to Ak05Controller to fix 'Undefined variable $asesor' error
+                // Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
+                // Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
 
                 Route::get('/jadwal/{id_jadwal}/ak06', 'ak06')->name('ak06');
                 Route::post('/ak06/store/{id_jadwal}', 'storeAk06')->name('ak06.store');
@@ -445,6 +446,10 @@ Route::middleware('auth')->group(function () {
                 Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', 'ak07')->name('ak07');
                 Route::post('/ak07/store/{id_sertifikasi_asesi}', 'storeAk07')->name('fr-ak-07.store');
             });
+
+            // [FIX] AK-05 Routes (Correct Controller)
+            Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
+            Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
 
             // AK-02
             Route::get('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
