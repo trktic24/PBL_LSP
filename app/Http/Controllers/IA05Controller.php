@@ -320,11 +320,15 @@ class IA05Controller extends Controller
     {
         $skema = \App\Models\Skema::findOrFail($id_skema);
 
-        $query = DataSertifikasiAsesi::with([
+        $query = \App\Models\DataSertifikasiAsesi::with([
             'asesi.dataPekerjaan',
             'jadwal.skema',
             'jadwal.masterTuk',
-            'jadwal.asesor'
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
         ])->whereHas('jadwal', function($q) use ($id_skema) {
             $q->where('id_skema', $id_skema);
         });
@@ -355,7 +359,7 @@ class IA05Controller extends Controller
         $jadwal->setRelation('skema', $skema);
         $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
 
-        return view('Admin.profile_asesor.daftar_asesi', [
+        return view('Admin.master.skema.daftar_asesi', [
             'pendaftar' => $pendaftar,
             'asesor' => $asesor,
             'jadwal' => $jadwal,

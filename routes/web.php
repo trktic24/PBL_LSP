@@ -333,6 +333,9 @@ Route::middleware('auth')->group(function () {
 
         // Helper for individual tracker view from Laporan Master List
         Route::get('/admin/laporan/view/{id_data_sertifikasi_asesi}', [AsesiProfileController::class, 'showTrackerBySertifikasi'])->name('admin.laporan.asesi.view');
+
+        // Helper for Asesor Tracker (Individual View)
+        Route::get('/admin/asesor/tracker/view/{id_data_sertifikasi_asesi}', [AsesorProfileController::class, 'showTrackerBySertifikasi'])->name('admin.asesor.tracker.view');
     });
 
     // AK-02 Edit

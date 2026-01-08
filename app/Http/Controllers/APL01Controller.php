@@ -111,7 +111,7 @@ class APL01Controller extends Controller
         $skema = \App\Models\Skema::findOrFail($id_skema);
 
         // 1. Filter Asesi by Skema & Pagination
-        $query = DataSertifikasiAsesi::with([
+        $query = \App\Models\DataSertifikasiAsesi::with([
             'asesi.dataPekerjaan',
             'jadwal.skema',
             'jadwal.masterTuk',
@@ -157,7 +157,7 @@ class APL01Controller extends Controller
         // 3. Logic for "Berita Acara" button (always false/disabled for master view usually, or check all)
         $semuaSudahAdaKomentar = false; 
 
-        return view('Admin.profile_asesor.daftar_asesi', [
+        return view('Admin.master.skema.daftar_asesi', [
             'pendaftar' => $pendaftar,
             'asesor' => $asesor,
             'jadwal' => $jadwal,

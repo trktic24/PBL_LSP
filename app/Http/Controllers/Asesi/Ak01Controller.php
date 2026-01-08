@@ -9,14 +9,35 @@ use Illuminate\Support\Facades\Auth;
 
 class Ak01Controller extends Controller
 {
+    // ============================================================================
+    // 🛡️ HELPER: CEK ROLE
+    // ============================================================================
+    private function isAdmin()
+    {
+        $role = Auth::user()->role->nama_role ?? '';
+        return in_array($role, ['admin', 'superadmin']);
+    }
+
+    private function isAsesor()
+    {
+        return Auth::check() && Auth::user()->role->nama_role === 'asesor';
+    }
+
     // 1. MENAMPILKAN FORM AK-01
     public function create($id_sertifikasi)
     {
-        // Ambil data sertifikasi berdasarkan ID dan pastikan milik user yang login
-        $sertifikasi = DataSertifikasiAsesi::with(['jadwal.asesor', 'asesi'])
-            ->where('id_asesi', Auth::user()->asesi->id_asesi)
-            ->findOrFail($id_sertifikasi);
+        $query = DataSertifikasiAsesi::with(['jadwal.asesor', 'asesi']);
 
+        // Jika bukan admin/asesor, batasi hanya data milik asesi yang bersangkutan
+        if (!$this->isAdmin() && !$this->isAsesor()) {
+            $asesi = Auth::user()->asesi;
+            if (!$asesi) {
+                abort(403, 'Profil asesi tidak ditemukan.');
+            }
+            $query->where('id_asesi', $asesi->id_asesi);
+        }
+
+        $sertifikasi = $query->findOrFail($id_sertifikasi);
         $asesi = $sertifikasi->asesi;
 
         // Kirim variabel $sertifikasi dan $asesi ke View
@@ -26,17 +47,22 @@ class Ak01Controller extends Controller
     // 2. MENYIMPAN PERSETUJUAN (STORE)
     public function store(Request $request, $id_sertifikasi)
     {
-        // Cari data sertifikasi
-        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
+        $query = DataSertifikasiAsesi::query();
+
+        // Jika bukan admin/asesor, batasi hanya data milik asesi yang bersangkutan
+        if (!$this->isAdmin() && !$this->isAsesor()) {
+            $asesi = Auth::user()->asesi;
+            if (!$asesi) {
+                abort(403, 'Profil asesi tidak ditemukan.');
+            }
+            $query->where('id_asesi', $asesi->id_asesi);
+        }
+
+        $sertifikasi = $query->findOrFail($id_sertifikasi);
 
         // Disini logikanya: Update status atau simpan ke tabel khusus AK01
-        // Contoh sederhana: Kita anggap AK-01 selesai jika sudah diklik
-        // Jika Anda punya tabel 'respon_ak01', tambahkan kode simpannya di sini.
+        // Contoh: Set status bahwa AK-01 telah ditandatangani
         
-        // Contoh update status (opsional, sesuaikan dengan flow Anda)
-        // $sertifikasi->status_sertifikasi = 'asesmen_mandiri_selesai'; 
-        // $sertifikasi->save();
-
         return redirect()->route('jadwal.index')->with('success', 'Persetujuan Asesmen (AK-01) berhasil disetujui.');
     }
 
@@ -47,11 +73,15 @@ class Ak01Controller extends Controller
     {
         $skema = \App\Models\Skema::findOrFail($id_skema);
 
-        $query = DataSertifikasiAsesi::with([
+        $query = \App\Models\DataSertifikasiAsesi::with([
             'asesi.dataPekerjaan',
             'jadwal.skema',
             'jadwal.masterTuk',
-            'jadwal.asesor'
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
         ])->whereHas('jadwal', function($q) use ($id_skema) {
             $q->where('id_skema', $id_skema);
         });
@@ -82,7 +112,7 @@ class Ak01Controller extends Controller
         $jadwal->setRelation('skema', $skema);
         $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
 
-        return view('Admin.profile_asesor.daftar_asesi', [
+        return view('Admin.master.skema.daftar_asesi', [
             'pendaftar' => $pendaftar,
             'asesor' => $asesor,
             'jadwal' => $jadwal,

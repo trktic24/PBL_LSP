@@ -1,8 +1,37 @@
 @props(['asesor'])
 
-<aside class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-[22%] 
+<aside 
+    x-cloak
+    class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-80 
               bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
-              shadow-inner border-r border-gray-200 flex flex-col items-center pt-8 z-40">
+              shadow-inner border-r border-gray-200 flex flex-col items-center pt-8 z-50
+              transform transition-transform duration-300 ease-in-out"
+    :class="{
+        'translate-x-0': $store.sidebar.open,
+        '-translate-x-full': !$store.sidebar.open
+    }">
+
+    {{-- HEADER SIDEBAR (Tombol Close) --}}
+    <div class="absolute top-4 right-4 z-50">
+        {{-- Tombol Close Desktop --}}
+        <button
+            class="hidden lg:block text-gray-400 hover:text-blue-600 transition"
+            @click="$store.sidebar.setOpen(false)"
+            title="Tutup Sidebar"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+        </button>
+
+        {{-- Tombol Close Mobile --}}
+        <button
+            class="lg:hidden text-gray-400 text-xl opacity-80 hover:opacity-100"
+            @click="$store.sidebar.setOpen(false)"
+        >
+            ✕
+        </button>
+    </div>
 
     <a href="javascript:history.back()" 
        class="absolute top-4 left-6 flex items-center text-gray-500 hover:text-blue-600 transition-all duration-200 cursor-pointer z-50 hover:-translate-x-1">

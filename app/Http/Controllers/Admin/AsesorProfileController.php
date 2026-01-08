@@ -135,7 +135,7 @@ class AsesorProfileController extends Controller
         });
 
         // 8. Return View
-        return view('Admin.profile_asesor.daftar_asesi', compact(
+        return view('Admin.master.skema.daftar_asesi', compact(
             'asesor',
             'jadwal',
             'pendaftar',
@@ -143,7 +143,10 @@ class AsesorProfileController extends Controller
             'sortDirection',
             'perPage',
             'semuaSudahAdaKomentar'
-        ));
+        ), [
+            'targetRoute' => 'admin.asesor.tracker.view',
+            'buttonLabel' => 'Lacak Progres'
+        ]);
     }
 
     // ==========================================================
@@ -285,6 +288,17 @@ class AsesorProfileController extends Controller
             
         // Menggunakan asesor_profile_tracker untuk daftar skema (sesuai permintaan user)
         return view('Admin.profile_asesor.asesor_profile_tracker', compact('asesor', 'tracker_data'));
+    }
+
+    /**
+     * Helper to show tracker by Data Sertifikasi ID (used in Master View for Asesor Profile)
+     */
+    public function showTrackerBySertifikasi($id_data_sertifikasi_asesi)
+    {
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_data_sertifikasi_asesi);
+        $id_asesor = $sertifikasi->jadwal->id_asesor;
+        
+        return $this->showTracker($id_asesor, $id_data_sertifikasi_asesi);
     }
 
     // ==========================================================

@@ -25,17 +25,36 @@ class Ak03Controller extends Controller
         "Asesor menggunakan keterampilan komunikasi yang efektif selama asesmen"
     ];
 
+    // ============================================================================
+    // 🛡️ HELPER: CEK ROLE
+    // ============================================================================
+    private function isAdmin()
+    {
+        $role = Auth::user()->role->nama_role ?? '';
+        return in_array($role, ['admin', 'superadmin']);
+    }
+
+    private function isAsesor()
+    {
+        return Auth::check() && Auth::user()->role->nama_role === 'asesor';
+    }
+
     public function create($id_sertifikasi)
     {
-        $asesi_id = Auth::user()->asesi->id_asesi;
+        $query = DataSertifikasiAsesi::with(['jadwal.skema', 'jadwal.asesor', 'asesi']);
 
-        // Ambil data sertifikasi
-        $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'jadwal.asesor', 'asesi'])
-            ->where('id_asesi', $asesi_id)
-            ->findOrFail($id_sertifikasi);
+        // Jika bukan admin/asesor, batasi hanya data milik asesi yang bersangkutan
+        if (!$this->isAdmin() && !$this->isAsesor()) {
+            $asesi = Auth::user()->asesi;
+            if (!$asesi) {
+                abort(403, 'Profil asesi tidak ditemukan.');
+            }
+            $query->where('id_asesi', $asesi->id_asesi);
+        }
+
+        $sertifikasi = $query->findOrFail($id_sertifikasi);
 
         // Ambil jawaban yang sudah pernah diisi (Mapping berdasarkan urutan/index pertanyaan)
-        // Kita asumsikan id_poin_ak03 = index + 1
         $jawaban = ResponHasilAk03::where('id_data_sertifikasi_asesi', $id_sertifikasi)
             ->get()
             ->keyBy('id_poin_ak03');
@@ -49,6 +68,19 @@ class Ak03Controller extends Controller
 
     public function store(Request $request, $id_sertifikasi)
     {
+        $query = DataSertifikasiAsesi::query();
+
+        // Jika bukan admin/asesor, batasi hanya data milik asesi yang bersangkutan
+        if (!$this->isAdmin() && !$this->isAsesor()) {
+            $asesi = Auth::user()->asesi;
+            if (!$asesi) {
+                abort(403, 'Profil asesi tidak ditemukan.');
+            }
+            $query->where('id_asesi', $asesi->id_asesi);
+        }
+
+        $sertifikasi = $query->findOrFail($id_sertifikasi);
+
         // Validasi
         $request->validate([
             'umpan_balik' => 'required|array',
@@ -80,7 +112,6 @@ class Ak03Controller extends Controller
             }
 
             // 2. Simpan Komentar Umum ke Tabel Induk
-            $sertifikasi = DataSertifikasiAsesi::find($id_sertifikasi);
             $sertifikasi->catatan_asesi_AK03 = $request->komentar_lain;
             // $sertifikasi->status_sertifikasi = 'umpan_balik_selesai'; // Uncomment jika ingin update status
             $sertifikasi->save();
@@ -101,11 +132,15 @@ class Ak03Controller extends Controller
     {
         $skema = \App\Models\Skema::findOrFail($id_skema);
 
-        $query = DataSertifikasiAsesi::with([
+        $query = \App\Models\DataSertifikasiAsesi::with([
             'asesi.dataPekerjaan',
             'jadwal.skema',
             'jadwal.masterTuk',
-            'jadwal.asesor'
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
         ])->whereHas('jadwal', function($q) use ($id_skema) {
             $q->where('id_skema', $id_skema);
         });
@@ -136,7 +171,7 @@ class Ak03Controller extends Controller
         $jadwal->setRelation('skema', $skema);
         $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
 
-        return view('Admin.profile_asesor.daftar_asesi', [
+        return view('Admin.master.skema.daftar_asesi', [
             'pendaftar' => $pendaftar,
             'asesor' => $asesor,
             'jadwal' => $jadwal,
