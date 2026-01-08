@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\DataPortofolio;
-use App\Models\BuktiPortofolioIA08IA09; 
+use App\Models\BuktiPortofolioIA08IA09;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
 
@@ -23,9 +23,9 @@ class IA09Controller extends Controller
             'jadwal.asesor',
             'jadwal.jenisTuk',
             'asesi',
-            'penyusunValidator.penyusun', 
+            'penyusunValidator.penyusun',
             'penyusunValidator.validator',
-            'portofolio.buktiPortofolioIA08IA09', 
+            'portofolio.buktiPortofolioIA08IA09',
         ])->findOrFail($id_data_sertifikasi_asesi);
 
         $portofolio = $dataSertifikasi->portofolio->first();
@@ -71,13 +71,13 @@ class IA09Controller extends Controller
 
         // 4. *** PERBAIKAN: Ambil Pertanyaan dari Tabel bukti_portofolio_ia08_ia09 ***
         $pertanyaan = [];
-        
+
         if ($portofolio) {
             // Ambil semua data bukti yang terkait dengan portofolio ini
             $buktiData = BuktiPortofolioIA08IA09::where('id_portofolio', $portofolio->id_portofolio)
                 ->orderBy('id_bukti_portofolio', 'asc')
                 ->get();
-            
+
             if ($buktiData->isEmpty()) {
                 // Jika belum ada data, buat pertanyaan kosong dari bukti portofolio
                 foreach ($buktiPortofolio as $index => $bukti) {
@@ -102,7 +102,7 @@ class IA09Controller extends Controller
                 }
             }
         }
-        
+
         // Jika tidak ada pertanyaan sama sekali, buat minimal 1 pertanyaan default
         if (empty($pertanyaan)) {
             $pertanyaan[] = [
@@ -131,7 +131,7 @@ class IA09Controller extends Controller
             'ttd' => [
                 'asesi' => $dataSertifikasi->asesi?->tanda_tangan ?? null,
                 'asesor' => $dataSertifikasi->jadwal?->asesor?->tanda_tangan ?? null,
-            ],  
+            ],
             'penyusun' => [
                 'nama' => $penyusunValidator?->penyusun?->nama ?? 'Data Penyusun tidak ditemukan',
                 'no_reg_met' => $penyusunValidator?->penyusun?->no_reg_met ?? '-',
@@ -154,7 +154,7 @@ class IA09Controller extends Controller
             'bukti_portofolio' => $buktiPortofolio,
             'pertanyaan' => $pertanyaan,
         ];
-        
+
         return $dataIA09;
     }
 
@@ -168,7 +168,7 @@ class IA09Controller extends Controller
     public function showWawancara(Request $request, $id_data_sertifikasi_asesi)
     {
         $dataIA09 = $this->prepareIA09Data($id_data_sertifikasi_asesi);
-        
+
         // Mode 'edit' jika role adalah asesor, 'view' jika role adalah admin/lainnya
         $mode = auth()->user()?->role?->nama_role === 'asesor' ? 'edit' : 'view';
 
@@ -204,30 +204,30 @@ class IA09Controller extends Controller
                     'persyaratan_dasar' => json_encode([]),
                     'persyaratan_administratif' => json_encode([]),
                 ]
-            );            
-            
+            );
+
             if (!$portofolio) {
                 DB::rollBack();
                 return redirect()->back()
                     ->with('error', 'Gagal membuat data portofolio untuk asesi ini.')
                     ->withInput();
             }
-            
+
             $idPortofolio = $portofolio->id_portofolio;
-            
+
             // 3. Ambil id_ia08 dari tabel ia08 (nullable)
             $id_ia08_value = DB::table('ia08')
-                ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi) 
+                ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
                 ->value('id_ia08');
 
             // 5. Loop dan simpan/update Jawaban Pertanyaan
             foreach ($request->pertanyaan as $item) {
                 $pencapaian_value = $item['pencapaian']; // 'Ya' atau 'Tidak'
-                
+
                 $updateData = [
                     'id_portofolio' => $idPortofolio,
                     'daftar_pertanyaan_wawancara' => $item['pertanyaan'] ?? null,
-                    'kesimpulan_jawaban_asesi' => $item['jawaban'], 
+                    'kesimpulan_jawaban_asesi' => $item['jawaban'],
                     'pencapaian_ia09' => $pencapaian_value, // ✅ String: 'Ya' atau 'Tidak'
                     'id_ia08' => $id_ia08_value, // ✅ Nullable
                     // ✅ PERBAIKAN: Kolom is_* diisi NULL (bukan boolean)
@@ -249,17 +249,17 @@ class IA09Controller extends Controller
                     ]));
                 }
             }
-            
+
             DB::commit();
-            
+
             return redirect()
-                ->route('asesor.tracker', ['id_sertifikasi_asesi' => $id_data_sertifikasi_asesi]) 
+                ->route('asesor.tracker', ['id_sertifikasi_asesi' => $id_data_sertifikasi_asesi])
                 ->with('success', 'Data hasil wawancara (FR-IA.09) berhasil disimpan!');
-                
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("IA09 Store Exception: " . $e->getMessage()); 
-            
+            Log::error("IA09 Store Exception: " . $e->getMessage());
+
             return redirect()
                 ->back()
                 ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())

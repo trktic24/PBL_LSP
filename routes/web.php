@@ -186,7 +186,9 @@ Route::middleware('auth')->group(function () {
     // FR-AK-03
     Route::get('/ak03/form/{id}', [Ak03Controller::class, 'create'])->name('ak03.create');
     Route::post('/ak03/store/{id}', [Ak03Controller::class, 'store'])->name('ak03.store');
-    
+
+
+
     // FR-AK-05
     Route::get('/ak05/{id_jadwal}', [Ak05Controller::class, 'index'])->name('ak05.index');
     // Route::get('/asesor/ak05/{id_jadwal}', [Ak05Controller::class, 'index'])->name('asesor.ak05'); // Alias REMOVED - handled in auth.php
@@ -198,7 +200,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/FR_AK_07/{id}/success', [FrAk07Controller::class, 'success'])->name('fr-ak-07.success');
 
     // ========================
-    // 2. INSTRUMEN ASESMEN (IA)
+    // 2. INSTRUMEN ASESMEN (IA) - PUBLIC / MIXED ACCESS
     // ========================
 
     Route::middleware(['auth', 'role:superadmin'])->prefix('validator')->group(function () {
@@ -208,47 +210,73 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/ia01/success', fn() => view('frontend.IA_01.success'))->name('ia01.success_page');
 
-    // IA-01
+    // IA-01 (READ ONLY / ADMIN / ASESI)
     Route::prefix('ia01/{id_sertifikasi}')->group(function () {
-        // Form Editable (Asesor Only)
-        Route::get('/', [IA01Controller::class, 'index'])->name('ia01.index');
-        Route::get('/cover', [IA01Controller::class, 'index'])->name('ia01.cover'); // Alias for compatibility
-
-        // Store (Asesor Only - protected in controller)
-        Route::post('/store', [IA01Controller::class, 'store'])->name('ia01.store');
-
-        // View Read-Only (Admin & Asesi)
         Route::get('/view', [IA01Controller::class, 'showView'])->name('ia01.view');
-
-        // Legacy route for backward compatibility
         Route::get('/admin', [IA01Controller::class, 'showView'])->name('ia01.admin.show');
-
-        // Deprecated / Redirects
-        Route::get('/step/{urutan}', fn($id) => redirect()->route('ia01.index', $id));
-        Route::get('/finish', fn($id) => redirect()->route('ia01.index', $id));
     });
 
-    // IA-02
-    Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');
-    Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
+    // IA-05 (ASESI VIEW)
+    Route::get('/ia05/form-a/{id}', [IA05Controller::class, 'showSoalForm'])->name('FR_IA_05_A');
 
-    // IA-07
-    Route::get('/FR_IA_07', [IA07Controller::class, 'index'])->name('ia07.asesor');
-    Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
+    // ========================
+    // 3. INSTRUMEN ASESMEN (IA) - ASESOR ONLY
+    // ========================
+    Route::middleware(['auth', 'role:asesor'])->group(function () {
 
-    // IA-08
-    Route::middleware(['auth', 'ia08'])->group(function () {
-        Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])
-        ->name('ia08.show');
-         Route::post('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'store'])
-        ->name('ia08.store');
-        Route::get('/admin/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])
-        ->name('admin.ia08.show');
+        // IA-01 (EDITABLE)
+        Route::prefix('ia01/{id_sertifikasi}')->group(function () {
+            Route::get('/', [IA01Controller::class, 'index'])->name('ia01.index');
+            Route::get('/cover', [IA01Controller::class, 'index'])->name('ia01.cover');
+            Route::post('/store', [IA01Controller::class, 'store'])->name('ia01.store');
+            // Redirects
+            Route::get('/step/{urutan}', fn($id) => redirect()->route('ia01.index', $id));
+            Route::get('/finish', fn($id) => redirect()->route('ia01.index', $id));
+        });
+
+        // IA-02
+        Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');
+        Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
+
+        // IA-03
+        Route::get('/ia03/{id}', [IA03Controller::class, 'index'])->name('ia03.index');
+        Route::get('/ia03/{id}/show', [IA03Controller::class, 'show'])->name('ia03.show');
+
+        // IA-04 (Asesor) is handled below in FRIA04_Asesor block
+
+        // IA-05
+        Route::get('/ia05/form-c/{id}', [IA05Controller::class, 'showJawabanForm'])->name('ia05.asesor');
+        Route::post('/ia05/form-c/{id}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia05.store_penilaian');
+
+        // IA-06
+        Route::get('/ia06/asesor/{id}', [IA06Controller::class, 'asesorShow'])->name('asesor.ia06.edit');
+        Route::post('/ia06/asesor/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('asesor.ia06.update');
+
+        // IA-07
+        Route::get('/FR_IA_07/{id}', [IA07Controller::class, 'index'])->name('ia07.asesor');
+        Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
+
+        // IA-08
+        Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])->name('ia08.show');
+        Route::post('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'store'])->name('ia08.store');
+        Route::get('/admin/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])->name('admin.ia08.show');
+
+        // IA-09
+        Route::get('/ia09/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'showWawancara'])->name('ia09.edit');
+        Route::post('/ia09/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'storeWawancara'])->name('ia09.store');
+
+        // IA-10
+        Route::get('/FR_IA_10/{id}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
+        Route::post('/FR_IA_10/store', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
+
+        // IA-11
+        Route::get('/FR_IA_11/{id}', [IA11Controller::class, 'show'])->name('ia11.show');
+        Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+
+        // FRIA04_Asesor
+        Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
+        Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
     });
-
-    // IA-11
-    Route::get('/FR_IA_11', [IA11Controller::class, 'create'])->name('ia11.create');
-    Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
 
     // MAPA-02
 
@@ -261,8 +289,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'storeIA04AAsesi'])->name('fria04a.asesi.store');
 
     //FRIA04_Asesor
-    Route::get('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
-    Route::post('/FRIA04_Asesor', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
+    Route::middleware(['auth', 'role:asesor'])->group(function () {
+        // This block is now redundant as it's moved into the main Asesor group above.
+        // Keeping it here for now as per instruction to only make the specified change.
+        // It will be removed if a subsequent instruction asks for cleanup.
+        Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
+        Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
+    });
 
     // ========================
     // 3. CETAK PDF
@@ -296,7 +329,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/asesor/{id}/bukti/delete/{jenis_dokumen}', [AsesorProfileController::class, 'deleteBukti'])->name('asesor.bukti.delete');
     Route::post('/asesor/{id}/ttd/store', [AsesorProfileController::class, 'storeTtd'])->name('asesor.ttd.store');
     Route::delete('/asesor/{id}/ttd/delete', [AsesorProfileController::class, 'deleteTtd'])->name('asesor.ttd.delete');
-    
+
     // Quick Verification Route
     Route::post('/asesor/{id}/document/verify', [AsesorProfileController::class, 'verifyDocument'])->name('asesor.document.verify');
 });

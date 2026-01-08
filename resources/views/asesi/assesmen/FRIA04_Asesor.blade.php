@@ -158,7 +158,7 @@
                 @endphp
                 
                 {{-- FORM START --}}
-                <form action="{{ route('fria04a.store') }}" method="POST">
+                <form action="{{ route('fria04a.store', $sertifikasi->id_data_sertifikasi_asesi ?? 0) }}" method="POST">
                 @csrf
                 <input type="hidden" name="id_sertifikasi" value="{{ $sertifikasi->id_data_sertifikasi_asesi ?? 0 }}">
                 <input type="hidden" name="poin_id" value="{{ $poinIA04A->id_poin_ia04A ?? 0 }}">
