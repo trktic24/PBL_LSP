@@ -69,7 +69,7 @@
         <tr>
             <td class="text-center">{{ $i + 1 }}</td>
             <td>{{ $data->asesi->nama_lengkap }}</td>
-            <td>{{ $data->asesi->pekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
+            <td>{{ $data->asesi->dataPekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
             <td>{{ $data->asesi->alamat_rumah }}</td>
             <td>{{ $data->asesi->pekerjaan }}</td>
             <td>{{ $data->asesi->nomor_hp }}</td>

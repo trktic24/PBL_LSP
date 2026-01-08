@@ -62,12 +62,18 @@ class IA11Controller extends Controller
 
                 // Penilaian Checkbox (Gunakan request->has() untuk boolean)
                 'penilaian' => [
-                    'h1a_ya' => $request->has('h1a_ya'), 'p1a_ya' => $request->has('p1a_ya'),
-                    'h1b_ya' => $request->has('h1b_ya'), 'p1b_ya' => $request->has('p1b_ya'),
-                    'h2a_ya' => $request->has('h2a_ya'), 'p2a_ya' => $request->has('p2a_ya'),
-                    'h3a_ya' => $request->has('h3a_ya'), 'p3a_ya' => $request->has('p3a_ya'),
-                    'h3b_ya' => $request->has('h3b_ya'), 'p3b_ya' => $request->has('p3b_ya'),
-                    'h3c_ya' => $request->has('h3c_ya'), 'p3c_ya' => $request->has('p3c_ya'),
+                    'h1a_ya' => $request->has('h1a_ya'),
+                    'p1a_ya' => $request->has('p1a_ya'),
+                    'h1b_ya' => $request->has('h1b_ya'),
+                    'p1b_ya' => $request->has('p1b_ya'),
+                    'h2a_ya' => $request->has('h2a_ya'),
+                    'p2a_ya' => $request->has('p2a_ya'),
+                    'h3a_ya' => $request->has('h3a_ya'),
+                    'p3a_ya' => $request->has('p3a_ya'),
+                    'h3b_ya' => $request->has('h3b_ya'),
+                    'p3b_ya' => $request->has('p3b_ya'),
+                    'h3c_ya' => $request->has('h3c_ya'),
+                    'p3c_ya' => $request->has('p3c_ya'),
                     // Tambahkan semua 20 checkbox di sini
                 ],
 

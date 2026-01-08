@@ -231,48 +231,74 @@ class AsesorJadwalController extends Controller
         ]);
     }
 
-    public function showAsesi($id_jadwal) // <-- Variabel ini datang dari URL
+    public function showAsesi(Request $request, $id_jadwal)
     {
-        // 1. Dapatkan data jadwal (Hapus 'asesi' dari 'with')
-        $jadwal = Jadwal::with(['skema', 'masterTuk', 'dataSertifikasiAsesi.asesi', 'dataSertifikasiAsesi']) // <-- Modifikasi 1: Hapus 'asesi'
+        // 1. Ambil jadwal
+        $jadwal = Jadwal::with(['skema', 'masterTuk'])
             ->findOrFail($id_jadwal);
 
-        // 2. PENTING: Cek apakah asesor ini berhak melihat jadwal ini
-        // (Ambil $asesor dari Auth seperti di method index)
+        // 2. Autorisasi asesor
         $asesor = Asesor::where('id_user', Auth::id())->first();
         if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
             abort(403, 'Anda tidak berhak mengakses jadwal ini.');
         }
 
+        // 3. Status Berita Acara
         $sudahVerifikasiValidator = !DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
             ->where(function ($q) {
-                $q->whereDoesntHave('komentarAk05') // belum ada komentar
+                $q->whereDoesntHave('komentarAk05')
                 ->orWhereHas('komentarAk05', function ($q2) {
                     $q2->whereNull('verifikasi_validator');
                 });
             })
-            ->exists();                 
+            ->exists();
 
+        // ===============================
+        // 🔍 SEARCH & SORT PARAMETER
+        // ===============================
+        $search    = $request->input('search');
+        $sort      = $request->input('sort', 'nama_lengkap');
+        $direction = $request->input('direction', 'asc');
 
-        // 3. (MODIFIKASI UTAMA) Dapatkan daftar Asesi secara manual
-        //    melalui tabel 'data_sertifikasi_asesi'
+        // ===============================
+        // 📦 QUERY DATA ASESI
+        // ===============================
+        $dataAsesi = DataSertifikasiAsesi::query()
+            ->with([
+                'asesi',
+                'responBuktiAk01',
+                'lembarJawabIa05'
+            ])
+            ->where('id_jadwal', $id_jadwal)
+            ->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
+            ->select('data_sertifikasi_asesi.*')
 
-        // 3a. Dapatkan dulu semua ID Asesi dari tabel perantara
-        //     (Asumsi: tabel 'data_sertifikasi_asesi' punya kolom 'id_jadwal' dan 'id_asesi')
-        /*$asesiIds = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
-                                ->pluck('id_asesi') // ->pluck() hanya mengambil kolom 'id_asesi'
-                                ->unique(); // Pastikan tidak ada ID asesi yang duplikat
+            // 🔍 SEARCH nama asesi
+            ->when($search, function ($q) use ($search) {
+                $q->where('asesi.nama_lengkap', 'like', "%{$search}%");
+            })
 
-        // 3b. Ambil data lengkap Asesi berdasarkan ID yang kita temukan
-        //     (Asumsi: primary key di tabel 'asesi' adalah 'id_asesi')
-        $asesis = Asesi::whereIn('id_asesi', $asesiIds)->get();*/
+            // 🔃 SORTING
+            ->when($sort === 'nama_lengkap', function ($q) use ($direction) {
+                $q->orderBy('asesi.nama_lengkap', $direction);
+            })
+            ->when($sort === 'asesmen_mandiri', function ($q) use ($direction) {
+                $q->orderBy('rekomendasi_apl02', $direction);
+            }, function ($q) {
+                $q->orderBy('asesi.nama_lengkap', 'asc'); // default
+            })
 
-        // 4. Kirim data ke view 'daftar_asesi'
-        //    (Struktur data yang dikirim tetap sama, jadi view tidak perlu diubah)
+            // 📄 PAGINATION
+            ->paginate(10)
+            ->withQueryString();
+
         return view('asesor.daftar_asesi', [
             'jadwal' => $jadwal,
+            'dataAsesi' => $dataAsesi,
             'sudahVerifikasiValidator' => $sudahVerifikasiValidator,
-            //'asesis' => $asesis, // <-- Variabel $asesis berhasil kita buat
+            'search' => $search,
+            'sort' => $sort,
+            'direction' => $direction,
         ]);
     }
 
@@ -469,39 +495,54 @@ class AsesorJadwalController extends Controller
         //     abort(403, 'Berita Acara belum dapat diakses');
         // }
 
-        // 3. Setup Default Sorting
+        // Default sorting
         $sortColumn = $request->input('sort', 'id_data_sertifikasi_asesi');
         $sortDirection = $request->input('direction', 'asc');
 
-        // 4. Base Query ke tabel Pivot (DataSertifikasiAsesi)
+        // Base query
         $query = DataSertifikasiAsesi::query()
-            ->with(['asesi.user', 'asesi.dataPekerjaan', 'presensi', 'komentarAk05'])
+            ->with(['asesi.user', 'komentarAk05'])
             ->where('id_jadwal', $id_jadwal)
             ->select('data_sertifikasi_asesi.*');
 
-        // 5. Logic Sorting Lanjutan (Join Table)
-        if (in_array($sortColumn, ['nama_lengkap', 'alamat_rumah', 'pekerjaan', 'nomor_hp'])) {
+        // Sorting logic
+        if ($sortColumn === 'nama_lengkap') {
+
             $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
-                ->orderBy('asesi.' . $sortColumn, $sortDirection);
-        } elseif ($sortColumn == 'institusi') {
-            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
-                ->leftJoin('data_pekerjaan_asesi', 'asesi.id_asesi', '=', 'data_pekerjaan_asesi.id_asesi')
-                ->orderBy('data_pekerjaan_asesi.nama_institusi_pekerjaan', $sortDirection);
+                ->orderBy('asesi.nama_lengkap', $sortDirection);
+
+        } elseif (in_array($sortColumn, ['hasil_asesmen', 'rekomendasi'])) {
+
+            $query->leftJoin(
+                    'komentar_ak05',
+                    'data_sertifikasi_asesi.id_data_sertifikasi_asesi',
+                    '=',
+                    'komentar_ak05.id_data_sertifikasi_asesi'
+                )
+                ->orderBy('komentar_ak05.rekomendasi', $sortDirection);
+
         } else {
-            $query->orderBy('id_data_sertifikasi_asesi', $sortDirection);
+
+            $query->orderBy('data_sertifikasi_asesi.id_data_sertifikasi_asesi', $sortDirection);
         }
 
-        // 6. Search Logic
-        if ($request->has('search') && $request->input('search') != '') {
+        // 6. Search Logic (Berita Acara)
+        if ($request->filled('search')) {
             $searchTerm = $request->input('search');
-            $query->whereHas('asesi', function ($q) use ($searchTerm) {
-                $q->where('nama_lengkap', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('alamat_rumah', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('nomor_hp', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('pekerjaan', 'like', '%' . $searchTerm . '%')
-                    ->orWhereHas('dataPekerjaan', function ($q2) use ($searchTerm) {
-                        $q2->where('nama_institusi_pekerjaan', 'like', '%' . $searchTerm . '%');
-                    });
+
+            $query->where(function ($q) use ($searchTerm) {
+
+                // 🔹 Search dari tabel ASESI
+                $q->whereHas('asesi', function ($qa) use ($searchTerm) {
+                    $qa->where('nama_lengkap', 'like', "%{$searchTerm}%");
+                });
+
+                // 🔹 Search dari tabel KOMENTAR AK05
+                $q->orWhereHas('komentarAk05', function ($qk) use ($searchTerm) {
+                    $qk->where('rekomendasi', 'like', "%{$searchTerm}%")
+                    ->orWhere('keterangan', 'like', "%{$searchTerm}%");
+                });
+
             });
         }
 
