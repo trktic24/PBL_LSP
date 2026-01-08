@@ -256,9 +256,61 @@ class IA08Controller extends Controller
             'ia08Header' => $ia08Header
         ]);
 
-        $pdf->setPaper('A4', 'portrait'); // Bisa landscape jika tabel terlalu lebar
+        return $pdf->stream('FR_IA_08.pdf');
+    }
 
-        $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $data->asesi->nama_lengkap);
-        return $pdf->stream('FR_IA_08_' . $namaAsesi . '.pdf');
+    /**
+     * Menampilkan Template Form FR.IA.08 (Admin Master View)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.profile_asesor.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ia08.show',
+            'buttonLabel' => 'FR.IA.08',
+        ]);
     }
 }
