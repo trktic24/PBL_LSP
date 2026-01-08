@@ -20,16 +20,24 @@ class IA07Controller extends Controller
     /**
      * Menampilkan halaman Form FR.IA.07 (khusus Asesor, menggunakan view tunggal FR_IA_07.blade.php).
      */
-    public function index()
+    public function index($idSertifikasi)
     {
         // ----------------------------------------------------
         // 1. PENGAMBILAN DATA (MENGGUNAKAN MODEL NYATA)
         // ----------------------------------------------------
 
-        // Ambil data pertama sebagai contoh (Anda mungkin perlu mengubah ini 
-        // untuk mengambil data berdasarkan ID Asesi/Asesor yang sebenarnya)
-        $asesi = Asesi::first();
-        $asesor = Asesor::first();
+        // Ambil data berdasarkan ID Sertifikasi Asesi
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.skema.unitKompetensi',
+            'jadwal.jenisTuk'
+        ])->findOrFail($idSertifikasi);
+
+        $asesi = $sertifikasi->asesi;
+        $asesor = $sertifikasi->jadwal->asesor;
+        $skema = $sertifikasi->jadwal->skema;
+        $jadwal = $sertifikasi->jadwal;
 
         $skema = null;
         if ($asesor && $asesor->skema()->exists()) {
@@ -54,13 +62,13 @@ class IA07Controller extends Controller
         // Ambil data Jenis TUK untuk radio button
         $jenisTukOptions = JenisTuk::pluck('jenis_tuk', 'id_jenis_tuk');
 
-        // Data Dummy Unit Kompetensi (Harap ganti dengan data dinamis dari DB Anda)
-        $units = [
-            ['code' => 'J.620100.004.02', 'title' => 'Menggunakan Struktur Data'],
-            ['code' => 'J.620100.005.02', 'title' => 'Mengimplementasikan User Interface'],
-            ['code' => 'J.620100.009.01', 'title' => 'Melakukan Instalasi Software Tools'],
-            ['code' => 'J.620100.017.02', 'title' => 'Mengimplementasikan Pemrograman Terstruktur'],
-        ];
+        // Ambil Unit Kompetensi dari Skema
+        $units = $skema->unitKompetensi->map(function ($unit) {
+            return [
+                'code' => $unit->kode_unit,
+                'title' => $unit->judul_unit
+            ];
+        });
 
         // --- Handle Data Kosong (Fallbacks) ---
         if (!$asesi) {
@@ -78,7 +86,8 @@ class IA07Controller extends Controller
         // ----------------------------------------------------
 
         // Mengembalikan view ke file frontend/FR_IA_07.blade.php
-        return view('frontend.FR_IA_07', compact('asesi', 'asesor', 'skema', 'units', 'jenisTukOptions', 'jadwal'));
+        // Mengembalikan view ke file frontend/FR_IA_07.blade.php
+        return view('frontend.FR_IA_07', compact('asesi', 'asesor', 'skema', 'units', 'jenisTukOptions', 'jadwal', 'sertifikasi'));
     }
 
     /**
@@ -95,11 +104,12 @@ class IA07Controller extends Controller
             'id_jenis_tuk' => 'required',
             'tanggal_pelaksanaan' => 'required|date',
             'umpan_balik_asesi' => 'nullable|string',
+            'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
         ]);
 
-        // 2. Tentukan DataSertifikasiAsesi (Sementara ambil first() sesuai pola index)
-        //    Idealnya ini dikirim via hidden input atau parameter route
-        $sertifikasi = DataSertifikasiAsesi::first();
+        // 2. Tentukan DataSertifikasiAsesi
+        $idSertifikasi = $request->input('id_data_sertifikasi_asesi');
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($idSertifikasi);
         if (!$sertifikasi) {
             return redirect()->back()->with('error', 'Data Sertifikasi tidak ditemukan (DB Kosong).');
         }

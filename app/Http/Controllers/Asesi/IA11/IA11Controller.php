@@ -307,22 +307,22 @@ class IA11Controller extends Controller
             'bahanProduk',
             'spesifikasiTeknis',
             // Pastikan relasi ke item master ada untuk mengambil nama item-nya
-            'pencapaianSpesifikasi.spesifikasiItem', 
+            'pencapaianSpesifikasi.spesifikasiItem',
             'pencapaianPerforma.performaItem',
             'dataSertifikasiAsesi.asesi',
             'dataSertifikasiAsesi.jadwal.asesor',
             'dataSertifikasiAsesi.jadwal.skema',
             'dataSertifikasiAsesi.jadwal.masterTuk'
         ])
-        ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
-        ->first();
+            ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
+            ->first();
 
         // 2. Handle jika data IA11 belum diisi
         if (!$ia11) {
             // Ambil data header saja biar PDF tidak error, tapi isinya kosong
             $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema', 'jadwal.asesor'])->find($id_data_sertifikasi_asesi);
             // Kirim objek kosong/dummy
-            $ia11 = new IA11(); 
+            $ia11 = new IA11();
             $ia11->setRelation('dataSertifikasiAsesi', $sertifikasi);
         }
 

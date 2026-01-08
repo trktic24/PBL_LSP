@@ -46,8 +46,8 @@ class IA08Controller extends Controller
 
                 $ia08 = $item->buktiPortofolioIA08IA09->first();
 
-                $item->array_valid   = $ia08 ? explode(', ', $ia08->is_valid)   : [];
-                $item->array_asli    = $ia08 ? explode(', ', $ia08->is_asli)    : [];
+                $item->array_valid = $ia08 ? explode(', ', $ia08->is_valid) : [];
+                $item->array_asli = $ia08 ? explode(', ', $ia08->is_asli) : [];
                 $item->array_terkini = $ia08 ? explode(', ', $ia08->is_terkini) : [];
                 $item->array_memadai = $ia08 ? explode(', ', $ia08->is_memadai) : [];
 
@@ -74,10 +74,10 @@ class IA08Controller extends Controller
                 'isLocked'
             ) + [
                 'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                'skema'    => $data->jadwal->skema,
+                'skema' => $data->jadwal->skema,
                 'jenisTuk' => $data->jadwal->jenisTuk,
-                'asesor'   => $data->jadwal->asesor,
-                'asesi'    => $data->asesi,
+                'asesor' => $data->jadwal->asesor,
+                'asesi' => $data->asesi,
                 'data_sesi' => [
                     'tanggal_asesmen' => $data->jadwal->tanggal_pelaksanaan
                         ? date('Y-m-d', strtotime($data->jadwal->tanggal_pelaksanaan))
@@ -124,8 +124,8 @@ class IA08Controller extends Controller
         // ===============================
         foreach ($request->id_portofolio as $id_portofolio) {
             $groups = [
-                'valid'   => $request->valid[$id_portofolio]   ?? [],
-                'asli'    => $request->asli[$id_portofolio]    ?? [],
+                'valid' => $request->valid[$id_portofolio] ?? [],
+                'asli' => $request->asli[$id_portofolio] ?? [],
                 'terkini' => $request->terkini[$id_portofolio] ?? [],
                 'memadai' => $request->memadai[$id_portofolio] ?? [],
             ];
@@ -153,23 +153,23 @@ class IA08Controller extends Controller
 
                 'kelompok_pekerjaan' =>
                     $request->rekomendasi === 'perlu observasi lanjut'
-                        ? $request->kelompok_pekerjaan
-                        : null,
+                    ? $request->kelompok_pekerjaan
+                    : null,
 
                 'unit_kompetensi' =>
                     $request->rekomendasi === 'perlu observasi lanjut'
-                        ? $request->unit_kompetensi
-                        : null,
+                    ? $request->unit_kompetensi
+                    : null,
 
                 'elemen' =>
                     $request->rekomendasi === 'perlu observasi lanjut'
-                        ? $request->elemen
-                        : null,
+                    ? $request->elemen
+                    : null,
 
                 'kuk' =>
                     $request->rekomendasi === 'perlu observasi lanjut'
-                        ? $request->kuk
-                        : null,
+                    ? $request->kuk
+                    : null,
             ]);
 
             foreach ($request->id_portofolio as $id_portofolio) {
@@ -177,8 +177,8 @@ class IA08Controller extends Controller
                     'id_portofolio' => $id_portofolio,
                     'id_ia08' => $ia08->id_ia08,
 
-                    'is_valid'   => collect($request->valid[$id_portofolio])->implode(', '),
-                    'is_asli'    => collect($request->asli[$id_portofolio])->implode(', '),
+                    'is_valid' => collect($request->valid[$id_portofolio])->implode(', '),
+                    'is_asli' => collect($request->asli[$id_portofolio])->implode(', '),
                     'is_terkini' => collect($request->terkini[$id_portofolio])->implode(', '),
                     'is_memadai' => collect($request->memadai[$id_portofolio])->implode(', '),
 
@@ -237,11 +237,11 @@ class IA08Controller extends Controller
                 $ia08 = $item->buktiPortofolioIA08IA09->first();
 
                 // Explode string "V, A, T, M" jadi array biar gampang dicek di view
-                $item->array_valid   = $ia08 ? explode(', ', $ia08->is_valid)   : [];
-                $item->array_asli    = $ia08 ? explode(', ', $ia08->is_asli)    : [];
+                $item->array_valid = $ia08 ? explode(', ', $ia08->is_valid) : [];
+                $item->array_asli = $ia08 ? explode(', ', $ia08->is_asli) : [];
                 $item->array_terkini = $ia08 ? explode(', ', $ia08->is_terkini) : [];
                 $item->array_memadai = $ia08 ? explode(', ', $ia08->is_memadai) : [];
-                
+
                 return $item;
             });
 

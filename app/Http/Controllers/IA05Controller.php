@@ -256,7 +256,7 @@ class IA05Controller extends Controller
                     ],
                     [
                         // Masukin langsung string 'ya' atau 'tidak' ke kolom ENUM
-                        'pencapaian_ia05' => $hasil_penilaian, 
+                        'pencapaian_ia05' => $hasil_penilaian,
                     ]
                 );
             }
