@@ -13,7 +13,7 @@
 
     {{-- Form mengarah ke Route Update di Ak02Controller --}}
     {{-- Pastikan route 'ak02.update' sudah didefinisikan di routes/auth.php atau web.php --}}
-    <form action="{{ route('ak02.update', $asesi->id_data_sertifikasi_asesi) }}" method="POST">
+    <form action="{{ route('asesor.ak02.update', $asesi->id_data_sertifikasi_asesi) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -24,7 +24,7 @@
             <div class="bg-white p-6 rounded-xl shadow-md mb-6 border border-gray-200">
                 <h3 class="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">Identitas Skema & Peserta</h3>
                 {{-- Kita bisa passing data asesi ke component jika component mendukung --}}
-                <x-identitas_skema_form.identitas_skema_form :asesi="$asesi" />
+                <x-identitas_skema_form.identitas_skema_form :sertifikasi="$asesi" />
             </div>
 
             {{-- 2. TABEL KELOMPOK PEKERJAAN & UNIT KOMPETENSI --}}
@@ -234,7 +234,7 @@
                     Kembali
                 </a>
                 <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
-                    Simpan Form FR.AK.02
+                    Simpan Form
                 </button>
             </div>
 

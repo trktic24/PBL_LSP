@@ -45,9 +45,9 @@ class Ak02Controller extends Controller
         $isFinalized = ($asesi->level_status >= 100);
 
         // Jika data belum lengkap, lempar kembali (kecuali sudah final)
-        if (!$isFinalized && !($ia05Done && $ia06Done && $ia07Done && $ia10Done && $ia02Done)) {
-            return redirect()->back()->with('error', 'Penilaian Asesmen (IA) belum lengkap. Mohon selesaikan penilaian IA terlebih dahulu.');
-        }
+        //if (!$isFinalized && !($ia05Done && $ia06Done && $ia07Done && $ia10Done && $ia02Done)) {
+        //    return redirect()->back()->with('error', 'Penilaian Asesmen (IA) belum lengkap. Mohon selesaikan penilaian IA terlebih dahulu.');
+        //}
 
         // Ambil data penilaian yang sudah ada
         $penilaianList = Ak02::where('id_data_sertifikasi_asesi', $id_asesi)
@@ -111,7 +111,7 @@ class Ak02Controller extends Controller
                 // Log::error($evt);
             }
 
-            return redirect()->back()->with('success', 'Rekaman Asesmen FR.AK.02 berhasil disimpan.');
+            return redirect()->route('asesor.tracker', $idSertifikasi)->with('success', 'Rekaman Asesmen FR.AK.02 berhasil disimpan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

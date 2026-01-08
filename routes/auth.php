@@ -210,7 +210,7 @@ Route::middleware('auth')->group(function () {
             });
 
             // ----------------- Master Data -----------------
-    
+
             // Master TUK
             Route::resource('master/tuk', TukAdminController::class)->names([
                 'index' => 'master_tuk',
@@ -303,7 +303,7 @@ Route::middleware('auth')->group(function () {
 
                     Route::post('/ttd/store', 'storeTandaTangan')->name('asesi.profile.ttd.store');
                     Route::delete('/ttd/delete', 'deleteTandaTangan')->name('asesi.profile.ttd.delete');
-                    
+
                     // --- FITUR TRACKER ---
                     Route::post('/sertifikasi/{id}/verifikasi-pembayaran', 'verifikasiPembayaran')->name('verifikasi.pembayaran');
                     Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
@@ -452,8 +452,8 @@ Route::middleware('auth')->group(function () {
             Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
 
             // AK-02
-            Route::get('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
-            Route::put('/asesmen/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
+            Route::get('/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
+            Route::put('/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
 
             // APL-02 (Verifikasi)
             Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
