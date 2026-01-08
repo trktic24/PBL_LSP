@@ -18,6 +18,15 @@ class Ak05Controller extends Controller
         // Pastikan ID Jadwal valid, jika tidak ada akan otomatis 404
         $jadwal = Jadwal::with(['skema', 'asesor', 'tuk'])->findOrFail($id_jadwal);
         
+        // Cek Otorisasi: Hanya Asesor yang bersangkutan atau Admin yang bisa akses
+        $user = Auth::user();
+        // Gunakan helper hasRole dari model User untuk keamanan
+        if ($user->hasRole('asesor')) {
+            if (!$user->asesor || $jadwal->id_asesor != $user->asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
+        }
+        
         // Ambil Daftar Asesi yang ada di Jadwal ini
         $listAsesi = DataSertifikasiAsesi::with('asesi')
                     ->where('id_jadwal', $id_jadwal)
@@ -55,7 +64,7 @@ class Ak05Controller extends Controller
                 
                 if ($dataAsesi) {
                     $dataAsesi->update([
-                        'rekomendasi_AK05' => $item['rekomendasi'], // K atau BK
+                        'rekomendasi_AK05' => ($item['rekomendasi'] == 'K') ? 'kompeten' : 'belum kompeten', // Mapping K/BK ke ENUM DB
                         'keterangan_AK05' => $item['keterangan'],
                         
                         // 2. Simpan Catatan Umum ke SETIAP Asesi (Redundan tapi aman utk report)
