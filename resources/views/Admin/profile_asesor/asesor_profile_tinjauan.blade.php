@@ -41,11 +41,13 @@
 
         {{-- Search Bar --}}
         <div class="mb-6 relative w-full max-w-md">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="fas fa-search text-gray-400"></i>
-            </div>
-            <input type="text" placeholder="Cari skema atau peserta..." 
-                   class="w-full pl-10 pr-4 py-2.5 border border-gray-200 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm transition-all">
+            <form action="{{ url()->current() }}" method="GET">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari skema atau peserta..." 
+                       class="w-full pl-10 pr-4 py-2.5 border border-gray-200 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm transition-all">
+            </form>
         </div>
 
         {{-- Tabel Tinjauan --}}
