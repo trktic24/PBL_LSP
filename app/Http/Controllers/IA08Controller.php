@@ -143,6 +143,25 @@ class IA08Controller extends Controller
         }
 
         // ===============================
+        // VALIDASI OBSERVASI LANJUT (WAJIB ISI 4 KOLOM)
+        // ===============================
+        if ($request->rekomendasi === 'perlu observasi lanjut') {
+            if (
+                empty($request->kelompok_pekerjaan) ||
+                empty($request->unit_kompetensi) ||
+                empty($request->elemen) ||
+                empty($request->kuk)
+            ) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'observasi_lanjut' =>
+                            'Kelompok Pekerjaan, Unit Kompetensi, Elemen, dan KUK wajib diisi jika memilih Observasi Lanjut.',
+                    ]);
+            }
+        }
+
+        // ===============================
         // SIMPAN DATA (TRANSACTION)
         // ===============================
         DB::transaction(function () use ($request) {
