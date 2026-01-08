@@ -125,7 +125,7 @@
 
                             {{-- Radio Button (Ya/Tidak) --}}
                             <td class="px-4 py-4 text-center align-top">
-                                <div class="flex flex-col items-center gap-2">
+                                <div class="flex flex-row items-center justify-center gap-4">
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input type="radio"
                                             name="penyesuaian[{{ $soal->id_persyaratan_modifikasi_AK07 }}][status]"
@@ -134,7 +134,7 @@
                                             {{ $isYa ? 'checked' : '' }}
                                             {{ $isReadOnly ? 'disabled' : '' }}
                                             class="text-blue-600 form-radio focus:ring-blue-500">
-                                        <span class="ml-1">Ya</span>
+                                        <span class="ml-2">Ya</span>
                                     </label>
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input type="radio"
@@ -144,7 +144,7 @@
                                             {{ !$isYa ? 'checked' : '' }}
                                             {{ $isReadOnly ? 'disabled' : '' }}
                                             class="text-gray-600 form-radio focus:ring-gray-500">
-                                        <span class="ml-1">Tidak</span>
+                                        <span class="ml-2">Tidak</span>
                                     </label>
                                 </div>
                             </td>
