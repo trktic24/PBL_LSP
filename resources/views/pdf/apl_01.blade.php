@@ -49,11 +49,11 @@
         </tr>
         <tr>
             <td style="padding-left: 20px;">Alamat Rumah</td>
-            <td>: {{ $asesi->alamat ?? '-' }}</td>
+            <td>: {{ $asesi->alamat_rumah ?? '-' }}</td>
         </tr>
         <tr>
             <td style="padding-left: 20px;">No. Telepon/HP</td>
-            <td>: {{ $asesi->no_telp ?? '-' }}</td>
+            <td>: {{ $asesi->nomor_hp ?? '-' }}</td>
         </tr>
         <tr>
             <td style="padding-left: 20px;">Email</td>
@@ -61,7 +61,7 @@
         </tr>
         <tr>
             <td style="padding-left: 20px;">Kualifikasi Pendidikan</td>
-            <td>: {{ $asesi->pendidikan_terakhir ?? '-' }}</td>
+            <td>: {{ $asesi->pendidikan ?? '-' }}</td>
         </tr>
     </table>
 
@@ -72,19 +72,19 @@
         </tr>
         <tr>
             <td style="padding-left: 20px;">Nama Perusahaan</td>
-            <td>: {{ $asesi->data_pekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
+            <td>: {{ $asesi->dataPekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
         </tr>
         <tr>
             <td style="padding-left: 20px;">Jabatan</td>
-            <td>: {{ $asesi->data_pekerjaan->jabatan ?? '-' }}</td>
+            <td>: {{ $asesi->dataPekerjaan->jabatan ?? '-' }}</td>
         </tr>
         <tr>
             <td style="padding-left: 20px;">Alamat Kantor</td>
-            <td>: {{ $asesi->data_pekerjaan->alamat_institusi ?? '-' }}</td>
+            <td>: {{ $asesi->dataPekerjaan->alamat_institusi ?? '-' }}</td>
         </tr>
         <tr>
             <td style="padding-left: 20px;">No. Telp Perusahaan</td>
-            <td>: {{ $asesi->data_pekerjaan->no_telp_institusi ?? '-' }}</td>
+            <td>: {{ $asesi->dataPekerjaan->no_telepon_institusi ?? '-' }}</td>
         </tr>
     </table>
 
@@ -92,15 +92,15 @@
     <table class="no-border" style="margin-bottom: 10px;">
         <tr>
             <td width="150">Judul Skema</td>
-            <td>: {{ $skema->judul_skema ?? '-' }}</td>
+            <td>: {{ $skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td>Nomor Skema</td>
-            <td>: {{ $skema->kode_skema ?? '-' }}</td>
+            <td>: {{ $skema->nomor_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td>Tujuan Asesmen</td>
-            <td>: Sertifikasi</td> </tr>
+            <td>: {{ $sertifikasi->tujuan_asesmen ?? '-' }}</td> </tr>
     </table>
 
     <div style="margin-bottom: 5px; font-weight: bold;">Daftar Unit Kompetensi:</div>
@@ -170,15 +170,27 @@
         <tr>
             <td style="width: 60%; border-right: 1px solid black; vertical-align: top;">
                 Berdasarkan ketentuan persyaratan dasar, maka pemohon: <br>
-                <strong>[ ] Diterima</strong> <br>
-                <strong>[ ] Tidak Diterima</strong> <br>
+                <strong>{{ $sertifikasi->rekomendasi_apl01 ?? '-' }}</strong> <br>
                 sebagai peserta sertifikasi. <br><br>
                 <strong>Catatan:</strong> <br>
                 ..................................................................................
             </td>
             <td style="width: 40%; vertical-align: top; text-align: center;">
                 <strong>Pemohon,</strong>
-                <br><br><br><br>
+                <br><br>
+
+                {{-- TANDA TANGAN ASESI --}}
+                @if(!empty($sertifikasi->asesi->tanda_tangan))
+                    <img
+                        src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->asesi->tanda_tangan) }}"
+                        style="width: 100px; height: auto; display: block; margin: 0 auto;"
+                    >
+                @else
+                    <br><br><br>
+                @endif
+
+                <br>
+
                 <strong>{{ $asesi->nama_lengkap ?? '(.......................)' }}</strong>
                 <br>
                 Tanggal: {{ \Carbon\Carbon::now()->format('d-m-Y') }}
@@ -187,11 +199,14 @@
         <tr>
             <td colspan="2" style="border-top: 1px solid black; padding: 10px;">
                 <strong>Admin LSP:</strong> <br>
-                Nama: ........................................................... <br>
-                No. Reg: ........................................................ <br>
+                Nama: {{ $admin->nama_admin ?? '.......................' }} <br>
                 <br>
-                Tanda Tangan: ................................................
-                Tanggal: ..............................
+                    <img
+                        src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->asesi->tanda_tangan) }}"
+                        style="width: 100px; height: auto; display: block; margin: 0 auto;"
+                    >
+                <br><br><br><br>
+                Tanggal: {{ \Carbon\Carbon::now()->format('d-m-Y') }}
             </td>
         </tr>
     </table>

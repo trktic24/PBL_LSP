@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\Admin;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class APL01Controller extends Controller
@@ -85,6 +86,8 @@ class APL01Controller extends Controller
             'jadwal.skema.unitKompetensi' // Ambil unit kompetensi dari skema
         ])->findOrFail($id);
 
+        $admin = Admin::first();
+
         $asesi = $sertifikasi->asesi;
         $skema = $sertifikasi->jadwal->skema;
         $unitKompetensi = $skema->unitKompetensi ?? collect();
@@ -94,7 +97,8 @@ class APL01Controller extends Controller
             'sertifikasi'    => $sertifikasi,
             'asesi'          => $asesi,
             'skema'          => $skema,
-            'unitKompetensi' => $unitKompetensi
+            'unitKompetensi' => $unitKompetensi,
+            'admin'          => $admin,
         ]);
 
         $pdf->setPaper('A4', 'portrait');

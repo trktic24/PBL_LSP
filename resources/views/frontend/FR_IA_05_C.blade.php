@@ -267,9 +267,17 @@
                     <tbody>
                         <tr>
                             <td class="border border-gray-900 p-2 font-semibold w-40 bg-black text-white align-top">Umpan balik untuk asesi</td>
-                            <td class="border border-gray-900 p-2">
-                                <p class="text-sm font-medium text-gray-800 mb-1">Aspek pengetahuan seluruh unit kompetensi yang diujikan (tercapai / belum tercapai)*</p>
-                                <textarea name="umpan_balik" class="form-textarea w-full border-gray-300 rounded-md shadow-sm" rows="3" placeholder="..." @disabled(!$is_asesor)></textarea>
+                            <td class="p-2">
+                                <label class="font-bold">Aspek pengetahuan seluruh unit kompetensi yang diujikan (tercapai / belum tercapai)*</label>
+                                
+                                {{-- PASTIKAN NAME-NYA 'global_komentar' --}}
+                                <textarea 
+                                    name="umpan_balik"      {{-- UBAH JADI INI --}}
+                                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1" 
+                                    rows="3"
+                                    placeholder="Tulis umpan balik disini..."
+                                    {{-- Karena di Controller IA05 kita kirim variabel $umpan_balik, maka pakainya itu --}}
+                                >{{ old('umpan_balik', $umpan_balik ?? '') }}</textarea>
                             </td>
                         </tr>
                     </tbody>
