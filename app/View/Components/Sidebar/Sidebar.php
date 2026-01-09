@@ -22,9 +22,13 @@ class Sidebar extends Component
      */
     public function __construct($skema = null, $asesi = null, $jadwal = null)
     {
-        // 0. CEK ROUTE PARAMETER (Prioritas Utama)
-        // Jika data tidak dipassing secara eksplisit, coba ambil dari URL
-        if (!$skema && !$asesi && !$jadwal) {
+        // 1. SET PROPERTI DARI ARGUMEN (Prioritas Utama)
+        $this->skema = $skema;
+        $this->asesi = $asesi;
+        $this->jadwal = $jadwal;
+
+        // 2. JIKA DATA BELUM LENGKAP, COBA AMBIL DARI ROUTE PARAMETER
+        if (!$this->asesi || !$this->jadwal) {
             $idSertifikasi = request()->route('id_sertifikasi') ?? request()->route('id');
             
             if ($idSertifikasi) {
@@ -35,69 +39,42 @@ class Sidebar extends Component
                 ])->find($idSertifikasi);
 
                 if ($sertifikasi) {
-                    $this->asesi = $sertifikasi->asesi;
-                    $this->jadwal = $sertifikasi->jadwal;
-                    if ($this->jadwal) {
-                        $this->skema = $this->jadwal->skema;
-                    }
+                    // Hanya set jika belum ada
+                    if (!$this->asesi) $this->asesi = $sertifikasi->asesi;
+                    if (!$this->jadwal) $this->jadwal = $sertifikasi->jadwal;
+                    if (!$this->skema && $this->jadwal) $this->skema = $this->jadwal->skema;
                 }
             }
         }
 
-        // 1. ASESI (Fallback)
+        // 3. ASESI (Fallback ke Auth User)
         if (!$this->asesi) {
-            if ($asesi) {
-                $this->asesi = $asesi;
-            } else {
-                // Jika tidak dipassing, coba ambil dari Auth User
-                $user = Auth::user();
-                if ($user && $user->role && $user->role->nama_role === 'asesi') { 
-                     $this->asesi = Asesi::where('id_user', $user->id_user)->first();
-                } 
-                elseif ($user && $user->role && $user->role->nama_role === 'asesor') {
-                    // Opsional: Ambil asesi pertama untuk preview jika masih null
-                    // $this->asesi = Asesi::first(); 
-                }
-            }
+            $user = Auth::user();
+            if ($user && $user->role && $user->role->nama_role === 'asesi') { 
+                 $this->asesi = Asesi::where('id_user', $user->id_user)->first();
+            } 
         }
 
-        // 2. SKEMA (Fallback)
-        if (!$this->skema) {
-            if ($skema) {
-                $this->skema = $skema;
+        // 4. JIKA SKEMA MASIH KOSONG, COBA AMBIL DARI ASESI
+        if (!$this->skema && $this->asesi) {
+            // Coba cari sertifikasi terakhir asesi ini
+            $lastSertifikasi = \App\Models\DataSertifikasiAsesi::where('id_asesi', $this->asesi->id_asesi)
+                                ->with('jadwal.skema')
+                                ->latest()
+                                ->first();
+            
+            if ($lastSertifikasi && $lastSertifikasi->jadwal && $lastSertifikasi->jadwal->skema) {
+                $this->skema = $lastSertifikasi->jadwal->skema;
+                if (!$this->jadwal) $this->jadwal = $lastSertifikasi->jadwal;
             } else {
-                // Coba ambil dari Asesi yang sudah didapat
-                if ($this->asesi) {
-                    // Coba cari sertifikasi terakhir asesi ini untuk dapat skema
-                    $lastSertifikasi = \App\Models\DataSertifikasiAsesi::where('id_asesi', $this->asesi->id_asesi)
-                                        ->with('jadwal.skema')
-                                        ->latest()
-                                        ->first();
-                    
-                    if ($lastSertifikasi && $lastSertifikasi->jadwal && $lastSertifikasi->jadwal->skema) {
-                        $this->skema = $lastSertifikasi->jadwal->skema;
-                        // Jika jadwal juga belum ada, ambil dari sini
-                        if (!$this->jadwal) {
-                            $this->jadwal = $lastSertifikasi->jadwal;
-                        }
-                    } else {
-                        $this->skema = Skema::first(); 
-                    }
-                } else {
-                     $this->skema = Skema::first();
-                }
+                // Fallback terakhir: Skema Pertama
+                $this->skema = Skema::first(); 
             }
         }
-
-        // 3. JADWAL (Fallback)
-        if (!$this->jadwal) {
-            if ($jadwal) {
-                $this->jadwal = $jadwal;
-            } else {
-                // Ambil jadwal pertama sebagai default terakhir
-                $this->jadwal = Jadwal::first();
-            }
-        }
+        
+        // 5. JIKA MASIH KOSONG KARENA DB BARU/TESTING
+        if (!$this->skema) $this->skema = Skema::first();
+        if (!$this->jadwal) $this->jadwal = Jadwal::first();
     }
 
     /**
