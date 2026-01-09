@@ -169,10 +169,16 @@ class IA09Controller extends Controller
     {
         $dataIA09 = $this->prepareIA09Data($id_data_sertifikasi_asesi);
 
+        // Fetch objects for Sidebar
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi.user', 'jadwal.skema'])->find($id_data_sertifikasi_asesi);
+        $asesi = $sertifikasi->asesi;
+        $skema = $sertifikasi->jadwal->skema;
+        $jadwal = $sertifikasi->jadwal;
+
         // Mode 'edit' jika role adalah asesor, 'view' jika role adalah admin/lainnya
         $mode = auth()->user()?->role?->nama_role === 'asesor' ? 'edit' : 'view';
 
-        return view('frontend.IA09', compact('dataIA09', 'mode'));
+        return view('frontend.IA09', compact('dataIA09', 'mode', 'asesi', 'skema', 'jadwal'));
     }
 
     // =======================================================
@@ -286,5 +292,64 @@ class IA09Controller extends Controller
 
         $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $dataRaw['info_umum']['nama_asesi']);
         return $pdf->stream('FR_IA_09_' . $namaAsesi . '.pdf');
+    }
+
+    /**
+     * Menampilkan Template Master View untuk IA.09 (Admin)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ia09.edit',
+            'buttonLabel' => 'FR.IA.09',
+        ]);
     }
 }

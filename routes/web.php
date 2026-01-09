@@ -25,6 +25,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\SkemaController;
 use App\Http\Controllers\AsesorController; // Master Asesor
 use App\Http\Controllers\Admin\AsesorProfileController; // Asesor Profile
+use App\Http\Controllers\Admin\AsesiProfileController; 
 use App\Http\Controllers\Admin\AsesiController;
 use App\Http\Controllers\Admin\TukAdminController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -171,6 +172,8 @@ Route::middleware('auth')->group(function () {
     //     // Route::post('/store/{id}', [Apl02Controller::class, 'store'])->name('store');
     // });
 
+    Route::get('/asesor/apl02/view/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'view'])
+        ->name('apl02.view');
     Route::post('/asesor/apl02/verifikasi/{id}', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'verifikasi'])
         ->name('asesor.apl02.verifikasi'); // <--- BAGIAN INI YANG HILANG
 
@@ -178,6 +181,8 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/FR_AK_02', fn() => view('frontend/AK_02/FR_AK_02'))->name('FR_AK_02');
+    Route::get('/ak01/form/{id}', [Ak01Controller::class, 'create'])->name('ak01.create');
+    Route::post('/ak01/store/{id}', [Ak01Controller::class, 'store'])->name('ak01.store');
     Route::get('/FR_AK_03', fn() => view('frontend/AK_03/FR_AK_03'))->name('FR_AK_03');
     Route::get('/ak04/form/{id}', [Ak04Controller::class, 'create'])->name('ak04.create');
     Route::post('/ak04/store/{id}', [Ak04Controller::class, 'store'])->name('ak04.store');
@@ -234,6 +239,18 @@ Route::middleware('auth')->group(function () {
             Route::get('/finish', fn($id) => redirect()->route('ia01.index', $id));
         });
 
+    }); // End of role:asesor group
+
+    // ============================================================================
+    // 4. INSTRUMEN ASESMEN (IA) - ASESOR & ADMIN SHARED ACCESS
+    // ============================================================================
+    // Dipindahkan keluar dari role:asesor agar Admin bisa akses (Master View)
+    // [FIX] Secured with Middleware to prevent Asesi access
+    Route::middleware(['role:asesor,admin'])->group(function () {
+        
+        // IA-01 (EDITABLE - Asesor / Admin with permission)
+        // See above for IA-01 strict role
+
         // IA-02
         Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');
         Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
@@ -259,7 +276,6 @@ Route::middleware('auth')->group(function () {
         // IA-08
         Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])->name('ia08.show');
         Route::post('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'store'])->name('ia08.store');
-        Route::get('/admin/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])->name('admin.ia08.show');
 
         // IA-09
         Route::get('/ia09/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'showWawancara'])->name('ia09.edit');
@@ -272,13 +288,72 @@ Route::middleware('auth')->group(function () {
         // IA-11
         Route::get('/FR_IA_11/{id}', [IA11Controller::class, 'show'])->name('ia11.show');
         Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+        Route::put('/FR_IA_11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
 
         // FRIA04_Asesor
         Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
         Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
+
+        // MAPA-02
+        
+        // Laporan Asesi (Admin) - Used for APL 01 link
+        Route::get('/admin/master-asesi', [App\Http\Controllers\Admin\AsesiController::class, 'index'])->name('admin.master_asesi');
+        Route::get('/admin/laporan', [App\Http\Controllers\Admin\AsesiController::class, 'index'])->name('admin.laporan.index');
     });
 
-    // MAPA-02
+    // ========================
+    // 5. ADMIN MASTER VIEWS (Role: Admin)
+    // ========================
+    Route::middleware(['auth', 'role:admin'])->group(function () {
+        // IA-02
+        Route::get('/admin/skema/{id_skema}/ia02', [IA02Controller::class, 'adminShow'])->name('admin.ia02.show');
+
+        Route::prefix('admin/skema/{id_skema}')->group(function () {
+            // APL
+            Route::get('/apl01', [APL01Controller::class, 'adminShow'])->name('admin.apl01.show'); // [NEW] Master View APL-01
+            Route::get('/apl02', [App\Http\Controllers\Asesi\Apl02\PraasesmenController::class, 'adminShow'])->name('admin.apl02.show');
+            
+            // MAPA
+            Route::get('/mapa01', [FrMapa01Controller::class, 'adminShow'])->name('admin.mapa01.show');
+            Route::get('/mapa02', [Mapa02Controller::class, 'adminShow'])->name('admin.mapa02.show');
+            
+            // IA
+            Route::get('/ia01', [IA01Controller::class, 'adminShow'])->name('admin.ia01.show');
+            Route::get('/ia03', [IA03Controller::class, 'adminShow'])->name('admin.ia03.show');
+            Route::get('/ia04', [FrIa04aController::class, 'adminShow'])->name('admin.ia04.show');
+            Route::get('/ia05', [IA05Controller::class, 'adminShow'])->name('admin.ia05.show');
+            Route::get('/ia06', [IA06Controller::class, 'adminShow'])->name('admin.ia06.show');
+            Route::get('/ia07', [IA07Controller::class, 'adminShow'])->name('admin.ia07.show');
+            Route::get('/ia08', [IA08Controller::class, 'adminShow'])->name('admin.ia08.show');
+            Route::get('/ia09', [IA09Controller::class, 'adminShow'])->name('admin.ia09.show');
+            Route::get('/ia10', [IA10Controller::class, 'adminShow'])->name('admin.ia10.show');
+            Route::get('/ia11', [\App\Http\Controllers\IA11Controller::class, 'adminShow'])->name('admin.ia11.show');
+            
+            // AK (Reports)
+            Route::get('/ak01', [Ak01Controller::class, 'adminShow'])->name('admin.ak01.show'); 
+            Route::get('/ak02', [Ak02Controller::class, 'adminShow'])->name('admin.ak02.show');
+            Route::get('/ak03', [Ak03Controller::class, 'adminShow'])->name('admin.ak03.show');
+            Route::get('/ak04', [Ak04Controller::class, 'adminShow'])->name('admin.ak04.show');
+            Route::get('/ak05', [Ak05Controller::class, 'adminShow'])->name('admin.ak05.show');
+            Route::get('/ak06', [\App\Http\Controllers\FrAk06Controller::class, 'adminShow'])->name('admin.ak06.show');
+            Route::get('/laporan', [AsesiController::class, 'adminShow'])->name('admin.laporan.show');
+        });
+
+        // Helper for individual view redirection from Master List (Outside skema prefix)
+        Route::get('/admin/ak05/view/{id_sertifikasi}', [Ak05Controller::class, 'showBySertifikasi'])->name('admin.ak05.view');
+
+        // Helper for individual tracker view from Laporan Master List
+        Route::get('/admin/laporan/view/{id_data_sertifikasi_asesi}', [AsesiProfileController::class, 'showTrackerBySertifikasi'])->name('admin.laporan.asesi.view');
+
+        // Helper for Asesor Tracker (Individual View)
+        Route::get('/admin/asesor/tracker/view/{id_data_sertifikasi_asesi}', [AsesorProfileController::class, 'showTrackerBySertifikasi'])->name('admin.asesor.tracker.view');
+    });
+
+    // AK-02 Edit
+    // AK-02 Edit (Shared)
+    Route::get('/ak02/{id}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
+    Route::put('/ak02/{id}', [Ak02Controller::class, 'update'])->name('ak02.update');
+
 
 
     // Portofolio
@@ -288,14 +363,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'showIA04AAsesi'])->name('fria04a.asesi.show');
     Route::post('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'storeIA04AAsesi'])->name('fria04a.asesi.store');
 
-    //FRIA04_Asesor
-    Route::middleware(['auth', 'role:asesor'])->group(function () {
-        // This block is now redundant as it's moved into the main Asesor group above.
-        // Keeping it here for now as per instruction to only make the specified change.
-        // It will be removed if a subsequent instruction asks for cleanup.
-        Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
-        Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
-    });
+    //FRIA04_Asesor - Moved to shared auth group above (line 295)
+    // Removed redundant protected block.
+
+    // MAPA-01
+    Route::get('/mapa01/form/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
+    Route::post('/mapa01/store', [FrMapa01Controller::class, 'store'])->name('mapa01.store');
+
+    // MAPA-02
+    Route::get('/mapa02/form/{id}', [Mapa02Controller::class, 'show'])->name('mapa02.show');
+    Route::post('/mapa02/form/{id}/store', [Mapa02Controller::class, 'store'])->name('mapa02.store');
 
     // ========================
     // 3. CETAK PDF

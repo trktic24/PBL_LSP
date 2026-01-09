@@ -21,7 +21,7 @@ class Ak05Controller extends Controller
         // Cek Otorisasi: Hanya Asesor yang bersangkutan atau Admin yang bisa akses
         $user = Auth::user();
         // Gunakan helper hasRole dari model User untuk keamanan
-        if ($user->hasRole('asesor')) {
+        if ($user->hasRole('asesor') && !$user->hasRole('admin')) {
             if (!$user->asesor || $jadwal->id_asesor != $user->asesor->id_asesor) {
                 abort(403, 'Anda tidak berhak mengakses jadwal ini.');
             }
@@ -114,6 +114,12 @@ class Ak05Controller extends Controller
                 }
             }
 
+            // 3. Audit Trail Logging
+            \Illuminate\Support\Facades\Log::info("Asesor ID: " . ($request->user()->asesor->id_asesor ?? 'Admin') . " updated AK05 for Jadwal ID: {$id_jadwal}", [
+                'user_id' => $request->user()->id,
+                'updated_asesi_count' => count($request->asesi)
+            ]);
+
             DB::commit();
             return redirect()->back()->with('success', 'Laporan Asesmen (AK-05) berhasil disimpan!');
 
@@ -121,5 +127,73 @@ class Ak05Controller extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Menampilkan Template Form FR.AK.05 (Admin Master View)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'admin.ak05.view', 
+            'buttonLabel' => 'FR.AK.05',
+        ]);
+    }
+    
+    /**
+     * Helper to show AK.05 from Sertifikasi ID (for Admin redirection)
+     */
+    public function showBySertifikasi($id_sertifikasi)
+    {
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
+        return redirect()->route('ak05.index', $sertifikasi->id_jadwal);
     }
 }

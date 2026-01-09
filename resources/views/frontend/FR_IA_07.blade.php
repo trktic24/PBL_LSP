@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar') {{-- Menggunakan layout yang sama dengan IA.05A --}}
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('custom_styles')
     <style>
@@ -56,14 +56,19 @@
         {{-- 2. Main Content --}}
         <div class="max-w-6xl mx-auto">
 
-            <form action="{{ route('ia07.store') }}" method="POST">
+            <form action="{{ isset($isMasterView) ? '#' : route('ia07.store') }}" method="POST">
                 @csrf
+                @if($sertifikasi)
                 <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $sertifikasi->id_data_sertifikasi_asesi }}">
+                @endif
 
                 {{-- Header --}}
                 <div class="mb-8 border-b border-gray-200 pb-6">
                     <h1 class="text-2xl lg:text-4xl font-bold text-gray-900 mb-2">FR.IA.07. Pertanyaan Lisan (ASESOR)</h1>
                     <p class="text-gray-600">
+                        @if(isset($isMasterView))
+                           <span class="text-blue-600 font-bold">[TEMPLATE MASTER]</span>
+                        @endif
                         Daftar pertanyaan lisan yang diajukan asesor untuk menilai kompetensi asesi.
                     </p>
                 </div>
@@ -259,12 +264,14 @@
                 </div>
 
                 {{-- Tombol Navigasi --}}
+                @if(!isset($isMasterView))
                 <div class="flex justify-end items-center mt-12 border-t border-gray-200 pt-6">
                     <button type="submit"
                         class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-md transition transform hover:-translate-y-0.5">
                         Simpan Penilaian
                     </button>
                 </div>
+                @endif
 
         </div>
         </form>

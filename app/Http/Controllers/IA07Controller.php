@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Asesi;
 use App\Models\Asesor;
 use App\Models\Skema;
-use App\Models\JenisTuk;
+use App\Models\JenisTUK;
 use App\Models\Jadwal;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DataSertifikasiAsesi;
@@ -39,28 +39,10 @@ class IA07Controller extends Controller
         $skema = $sertifikasi->jadwal->skema;
         $jadwal = $sertifikasi->jadwal;
 
-        $skema = null;
-        if ($asesor && $asesor->skema()->exists()) {
-            $skema = $asesor->skema()->first();
-        } else {
-            $skema = Skema::first();
-        }
 
-        // Ambil Data Jadwal (Dummy/First) untuk mencegah error di view
-        $jadwal = Jadwal::with(['skema', 'asesor', 'jenisTuk'])->first();
-
-        // Fallback jika tidak ada jadwal di DB
-        if (!$jadwal) {
-            $jadwal = new Jadwal();
-            // Set dummy relations if needed, or rely on view's null coalescing operator if improved
-            if ($skema)
-                $jadwal->setRelation('skema', $skema);
-            if ($asesor)
-                $jadwal->setRelation('asesor', $asesor);
-        }
 
         // Ambil data Jenis TUK untuk radio button
-        $jenisTukOptions = JenisTuk::pluck('jenis_tuk', 'id_jenis_tuk');
+        $jenisTukOptions = JenisTUK::pluck('jenis_tuk', 'id_jenis_tuk');
 
         // Ambil Unit Kompetensi dari Skema
         $units = $skema->unitKompetensi->map(function ($unit) {
@@ -205,5 +187,60 @@ class IA07Controller extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('FR_IA_07_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.07 (Admin Master View)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ia07.asesor', 
+            'buttonLabel' => 'FR.IA.07',
+        ]);
     }
 }
