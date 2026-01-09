@@ -66,15 +66,14 @@ class Ak05Controller extends Controller
             // User Intention: "simpan catatan umumnya ke tabel ak05 ... kecuali catatan_AK05 ke KomentarAk05"
             // Let's create a NEW Ak05 record OR update existing if we can find it via existing KomentarAk05.
             
-            $firstAsesiId = array_key_first($request->asesi);
-            // Try to find existing link via first asesi in this batch
-            // (Assuming all asesis in one schedule share the same AK05 'Form' context if they were created together, 
-            // BUT Ak05 table structure suggests it's a "Report" entity. 
-            // If ID AK05 is not passed, we might create duplicates if we are not careful.
-            // However, without a direct link in Jadwal->Ak05, we rely on the pivot.)
-
-            // Best effort: Check if any asesi in this request already has a KomentarAk05.
-            $existingKomentar = \App\Models\KomentarAk05::where('id_data_sertifikasi_asesi', $request->asesi[$firstAsesiId]['id_asesi'] ?? 0)->first();
+            // Find existing Ak05 via any asesi in this jadwal
+            $firstAsesiData = DataSertifikasiAsesi::where('id_asesi', $request->asesi[array_key_first($request->asesi)]['id_asesi'] ?? 0)
+                ->where('id_jadwal', $id_jadwal)
+                ->first();
+            
+            $existingKomentar = $firstAsesiData 
+                ? \App\Models\KomentarAk05::where('id_data_sertifikasi_asesi', $firstAsesiData->id_data_sertifikasi_asesi)->first()
+                : null;
             
             if ($existingKomentar && $existingKomentar->Ak05) {
                 $ak05 = $existingKomentar->Ak05;
