@@ -845,8 +845,11 @@ class AsesorJadwalController extends Controller
                 $acuan = $request->input('acuan_pembanding');
                 $metode = $request->input('metode_asesmen');
                 $instrumen = $request->input('instrumen_asesmen');
+                $acuan = $request->input('acuan_pembanding');
+                $metode = $request->input('metode_asesmen');
+                $instrumen = $request->input('instrumen_asesmen');
                 if (!empty($acuan) || !empty($metode) || !empty($instrumen)) {
-                if (!empty($acuan) || !empty($metode) || !empty($instrumen)) {
+                    HasilPenyesuaianAK07::updateOrCreate(
                     HasilPenyesuaianAK07::updateOrCreate(
                         ['id_data_sertifikasi_asesi' => $id_sertifikasi_asesi],
                         [
