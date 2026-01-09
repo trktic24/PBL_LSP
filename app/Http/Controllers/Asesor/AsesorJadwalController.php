@@ -21,7 +21,7 @@ use App\Models\PoinPotensiAk07;
 use App\Models\PersyaratanModifikasiAk07;
 use App\Models\ResponPotensiAk07;
 use App\Models\ResponDiperlukanPenyesuaianAk07;
-use App\Models\HasilPenyesuaianAk07;
+use App\Models\HasilPenyesuaianAK07;
 use PDF;
 
 class AsesorJadwalController extends Controller
@@ -282,7 +282,8 @@ class AsesorJadwalController extends Controller
             ->with([
                 'asesi',
                 'responBuktiAk01',
-                'lembarJawabIa05'
+                'lembarJawabIa05',
+                'hasilPenyesuaianAk07'
             ])
             ->where('id_jadwal', $id_jadwal)
             ->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
@@ -664,12 +665,12 @@ class AsesorJadwalController extends Controller
         $masterPotensi = PoinPotensiAk07::all();
         $masterPersyaratan = PersyaratanModifikasiAk07::with('catatanKeterangan')->get();
         // Cek apakah form sudah pernah diisi
-        $alreadyFilled = HasilPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+        $alreadyFilled = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
 
         $isReadOnly = $alreadyFilled;
 
         // Optional: Admin tetap ReadOnly (atau logic lain sesuai kebutuhan)
-        if (Auth::user()->role && Auth::user()->role->nama_role === 'Admin') {
+        if (Auth::user()->role && Auth::user()->role->nama_role === 'admin') {
             $isReadOnly = true;
         }
 

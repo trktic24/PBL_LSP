@@ -59,7 +59,7 @@ class FrAk07Controller extends Controller
         }
 
         // Optional: Admin tetap ReadOnly (atau logic lain sesuai kebutuhan)
-        if ($user && $user->role && $user->role->nama_role === 'Admin') {
+        if ($user && $user->role && $user->role->nama_role === 'admin') {
             $isReadOnly = true;
         }
 
