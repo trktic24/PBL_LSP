@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataSertifikasiAsesi;
-use App\Models\HasilPenyesuaianAK07;
-use App\Models\PersyaratanModifikasiAK07;
-use App\Models\PoinPotensiAK07;
-use App\Models\ResponDiperlukanPenyesuaianAK07;
-use App\Models\ResponPotensiAK07;
+use App\Models\HasilPenyesuaianAk07;
+use App\Models\PersyaratanModifikasiAk07;
+use App\Models\PoinPotensiAk07;
+use App\Models\ResponDiperlukanPenyesuaianAk07;
+use App\Models\ResponPotensiAk07;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -25,8 +25,8 @@ class FrAk07Controller extends Controller
             'hasilPenyesuaianAk07'
         ])->findOrFail($id_data_sertifikasi_asesi);
 
-        $poinPotensi = PoinPotensiAK07::all();
-        $persyaratanModifikasi = PersyaratanModifikasiAK07::with('catatanKeterangan')->get();
+        $poinPotensi = PoinPotensiAk07::all();
+        $persyaratanModifikasi = PersyaratanModifikasiAk07::with('catatanKeterangan')->get();
 
         return response()->json([
             'data_sertifikasi' => $dataSertifikasi,
@@ -46,8 +46,8 @@ class FrAk07Controller extends Controller
             'hasilPenyesuaianAk07'
         ])->findOrFail($id_data_sertifikasi_asesi);
 
-        $poinPotensi = PoinPotensiAK07::all();
-        $persyaratanModifikasi = PersyaratanModifikasiAK07::with('catatanKeterangan')->get();
+        $poinPotensi = PoinPotensiAk07::all();
+        $persyaratanModifikasi = PersyaratanModifikasiAk07::with('catatanKeterangan')->get();
 
         $user = Auth::user();
 
@@ -100,7 +100,7 @@ class FrAk07Controller extends Controller
 
         $isReadOnly = false;
         // Cek apakah form sudah pernah diisi
-        $alreadyFilled = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->exists();
+        $alreadyFilled = HasilPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->exists();
 
         if ($alreadyFilled) {
             $isReadOnly = true;
@@ -141,7 +141,7 @@ class FrAk07Controller extends Controller
     public function store(Request $request, $id_data_sertifikasi_asesi)
     {
         // Security Check 1: Prevent re-submission if form already filled
-        $alreadyFilled = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->exists();
+        $alreadyFilled = HasilPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->exists();
         if ($alreadyFilled) {
             return redirect()->back()->with('error', 'Form ini sudah pernah diisi dan tidak dapat diubah lagi.');
         }
@@ -194,10 +194,10 @@ class FrAk07Controller extends Controller
         try {
             // 1. Save Respon Potensi
             // Hapus yang lama dulu karena ini sistem checklist asesi
-            ResponPotensiAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->delete();
+            ResponPotensiAk07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->delete();
             if ($request->has('potensi_asesi')) {
                 foreach ($request->potensi_asesi as $id_potensi) {
-                    ResponPotensiAK07::create([
+                    ResponPotensiAk07::create([
                         'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
                         'id_poin_potensi_AK07' => $id_potensi,
                         'respon_asesor' => null // Bisa disesuaikan jika asesor yang isi
@@ -207,11 +207,11 @@ class FrAk07Controller extends Controller
 
             // 2. Save Respon Penyesuaian
             // Hapus yang lama dulu
-            ResponDiperlukanPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->delete();
+            ResponDiperlukanPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->delete();
             if ($request->has('penyesuaian')) {
                 foreach ($request->penyesuaian as $id_modifikasi => $data) {
                     // 1. Simpan Base Record (Selalu simpan status dan catatan manual di sini)
-                    ResponDiperlukanPenyesuaianAK07::create([
+                    ResponDiperlukanPenyesuaianAk07::create([
                         'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
                         'id_persyaratan_modifikasi_AK07' => $id_modifikasi,
                         'id_catatan_keterangan_AK07' => null,
@@ -222,7 +222,7 @@ class FrAk07Controller extends Controller
                     // 2. Simpan record tambahan untuk setiap checkbox yang dipilih
                     if (!empty($data['keterangan']) && is_array($data['keterangan'])) {
                         foreach ($data['keterangan'] as $id_keterangan) {
-                            ResponDiperlukanPenyesuaianAK07::create([
+                            ResponDiperlukanPenyesuaianAk07::create([
                                 'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
                                 'id_persyaratan_modifikasi_AK07' => $id_modifikasi,
                                 'id_catatan_keterangan_AK07' => $id_keterangan,
@@ -235,7 +235,7 @@ class FrAk07Controller extends Controller
             }
 
             // 3. Save Hasil Penyesuaian
-            HasilPenyesuaianAK07::updateOrCreate(
+            HasilPenyesuaianAk07::updateOrCreate(
                 ['id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi],
                 [
                     'Acuan_Pembanding_Asesmen' => $request->acuan_pembanding ?? '',
