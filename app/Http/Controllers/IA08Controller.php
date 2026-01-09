@@ -7,7 +7,7 @@ use App\Models\KelompokPekerjaan;
 use App\Models\UnitKompetensi;
 use App\Models\DataPortofolio;
 use App\Models\BuktiPortofolioIA08IA09;
-use App\Models\IA08;
+use App\Models\Ia08;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
@@ -56,7 +56,7 @@ class IA08Controller extends Controller
 
 
         // 🔑 Ambil data IA08 (untuk recall UI rekomendasi)
-        $ia08 = IA08::where(
+        $ia08 = Ia08::where(
             'id_data_sertifikasi_asesi',
             $id_sertifikasi_asesi
         )->first();
@@ -78,6 +78,7 @@ class IA08Controller extends Controller
                 'jenisTuk' => $data->jadwal->jenisTuk,
                 'asesor' => $data->jadwal->asesor,
                 'asesi' => $data->asesi,
+                'jadwal' => $data->jadwal, // <--- Added for Sidebar
                 'data_sesi' => [
                     'tanggal_asesmen' => $data->jadwal->tanggal_pelaksanaan
                         ? date('Y-m-d', strtotime($data->jadwal->tanggal_pelaksanaan))

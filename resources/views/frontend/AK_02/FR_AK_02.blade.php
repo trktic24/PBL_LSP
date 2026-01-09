@@ -18,7 +18,7 @@
     {{-- Form mengarah ke Route Update di Ak02Controller --}}
     {{-- Pastikan route 'ak02.update' sudah didefinisikan di routes/auth.php atau web.php --}}
     {{-- Form mengarah ke Route Update di Ak02Controller --}}
-    <form action="{{ isset($isMasterView) ? '#' : route('asesor.ak02.update', $asesi->id_data_sertifikasi_asesi) }}" method="POST">
+    <form action="{{ isset($isMasterView) ? '#' : route('ak02.update', $asesi->id_data_sertifikasi_asesi) }}" method="POST">
         @csrf
         @if(!isset($isMasterView))
             @method('PUT')
@@ -231,7 +231,7 @@
                             </div>
                         </div>
                         <div class="mt-4">
-                            <input type="text" class="w-full text-sm font-bold text-gray-900 border-0 border-b-2 border-gray-300 bg-transparent" value="{{ Auth::user()->name ?? 'Nama Asesor' }}" readonly>
+                            <input type="text" class="w-full text-sm font-bold text-gray-900 border-0 border-b-2 border-gray-300 bg-transparent" value="{{ $asesi->jadwal->asesor->nama_lengkap ?? 'Nama Asesor' }}" readonly>
                         </div>
                     </div>
 
@@ -244,7 +244,7 @@
                             </div>
                         </div>
                         <div class="mt-4">
-                            <input type="text" class="w-full text-sm font-bold text-gray-900 border-0 border-b-2 border-gray-300 bg-transparent" value="{{ $asesi->user->name ?? 'Nama Asesi' }}" readonly>
+                            <input type="text" class="w-full text-sm font-bold text-gray-900 border-0 border-b-2 border-gray-300 bg-transparent" value="{{ $asesi->asesi->nama_lengkap ?? 'Nama Asesi' }}" readonly>
                             <p class="text-xs text-gray-500 mt-1">Tanggal: {{ date('d-m-Y') }}</p>
                         </div>
                     </div>

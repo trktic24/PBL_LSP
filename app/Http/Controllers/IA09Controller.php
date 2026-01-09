@@ -169,10 +169,16 @@ class IA09Controller extends Controller
     {
         $dataIA09 = $this->prepareIA09Data($id_data_sertifikasi_asesi);
 
+        // Fetch objects for Sidebar
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi.user', 'jadwal.skema'])->find($id_data_sertifikasi_asesi);
+        $asesi = $sertifikasi->asesi;
+        $skema = $sertifikasi->jadwal->skema;
+        $jadwal = $sertifikasi->jadwal;
+
         // Mode 'edit' jika role adalah asesor, 'view' jika role adalah admin/lainnya
         $mode = auth()->user()?->role?->nama_role === 'asesor' ? 'edit' : 'view';
 
-        return view('frontend.IA09', compact('dataIA09', 'mode'));
+        return view('frontend.IA09', compact('dataIA09', 'mode', 'asesi', 'skema', 'jadwal'));
     }
 
     // =======================================================

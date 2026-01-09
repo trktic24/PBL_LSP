@@ -33,7 +33,11 @@
 <body x-data x-cloak class="bg-gray-50 min-h-screen flex">
 
     @if(!request()->query('embed'))
-        <x-sidebar.sidebar />
+        <x-sidebar.sidebar 
+            :asesi="$asesi ?? null" 
+            :skema="$skema ?? null" 
+            :jadwal="$jadwal ?? null" 
+        />
     @endif
 
     {{-- KONTEN UTAMA --}}

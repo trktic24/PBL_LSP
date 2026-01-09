@@ -7,6 +7,7 @@ use App\Models\Jadwal;
 use App\Models\BuktiDasar;
 use App\Models\BuktiKelengkapan;
 use App\Models\Ia02;
+use App\Models\Ak02; // <--- Added
 
 // Pastikan semua model yang direlasikan di-import
 use Illuminate\Database\Eloquent\Model;
@@ -379,6 +380,11 @@ class DataSertifikasiAsesi extends Model
     {
         return $this->hasOne(PenyusunValidator::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+    public function ak02(): HasMany
+    {
+        return $this->hasMany(Ak02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
     public function asesmenMandiri()
     {
         return $this->hasMany(\App\Models\ResponApl2Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
