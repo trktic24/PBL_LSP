@@ -36,15 +36,15 @@ class Ak02Controller extends Controller
         // --- PERBAIKAN LOGIKA VALIDASI DI SINI ---
 
         // Relasi HasMany (Mengembalikan Collection -> Aman pakai count())
-        $ia05Done = $asesi->lembarJawabIa05->count() > 0;
-        $ia06Done = $asesi->ia06Answers->count() > 0;
-        $ia07Done = $asesi->ia07->count() > 0;
+        // $ia05Done = $asesi->lembarJawabIa05->count() > 0;
+        // $ia06Done = $asesi->ia06Answers->count() > 0;
+        // $ia07Done = $asesi->ia07->count() > 0;
 
         // Relasi HasOne (Mengembalikan Object atau Null -> Cek tidak null)
         $ia10Done = !is_null($asesi->ia10);
         $ia02Done = !is_null($asesi->ia02);
 
-        $isFinalized = ($asesi->level_status >= 100);
+        // $isFinalized = ($asesi->level_status >= 100);
 
         // Check if user is Admin/Superadmin
         $user = Auth::user();
@@ -97,6 +97,14 @@ class Ak02Controller extends Controller
                         'komentar' => $globalKomentar,
                     ]
                 );
+            }
+
+            $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+            
+            if ($globalKompeten) {
+                $asesi->update([
+                    'rekomendasi_hasil_asesmen_AK02' => $globalKompeten,
+                ]);
             }
 
             DB::commit();
