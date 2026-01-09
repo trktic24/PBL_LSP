@@ -121,8 +121,10 @@ class AsesorJadwalController extends Controller
                 * MONTH + YEAR (december 2025)
                 * ====================== */
                 if (preg_match('/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})/', $search, $m)) {
-                    $q->orWhereMonth('tanggal_pelaksanaan', $months[$m[1]])
-                        ->orWhereYear('tanggal_pelaksanaan', $m[2]);
+                    $q->orWhere(function ($subQuery) use ($months, $m) {
+                        $subQuery->whereMonth('tanggal_pelaksanaan', $months[$m[1]])
+                            ->whereYear('tanggal_pelaksanaan', $m[2]);
+                    });
                 }
 
                 /* ======================
@@ -752,6 +754,27 @@ class AsesorJadwalController extends Controller
 
     public function storeAk07(Request $request, $id_sertifikasi_asesi)
     {
+        // Validate request input
+        $request->validate([
+            'potensi_asesi' => 'nullable|array',
+            'potensi_asesi.*' => 'required|integer|exists:poin_potensi_ak07,id_poin_potensi_AK07',
+
+            'penyesuaian' => 'nullable|array',
+            'penyesuaian.*.status' => 'required|in:Ya,Tidak',
+            'penyesuaian.*.catatan_manual' => 'nullable|string|max:1000',
+            'penyesuaian.*.keterangan' => 'nullable|array',
+            'penyesuaian.*.keterangan.*' => 'required|integer|exists:catatan_keterangan_ak07,id_catatan_keterangan_AK07',
+
+            'acuan_pembanding' => 'nullable|string|max:500',
+            'metode_asesmen' => 'nullable|string|max:500',
+            'instrumen_asesmen' => 'nullable|string|max:500',
+        ]);
+
+        // Verify the sertifikasi record exists before starting transaction
+        if (!DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists()) {
+            abort(404, 'Data sertifikasi tidak ditemukan.');
+        }
+
         // Use DB transaction closure for automatic rollback on exception
         return \DB::transaction(function () use ($request, $id_sertifikasi_asesi) {
             // ---------- 1. Lock parent record and check for existing data ----------
@@ -785,6 +808,12 @@ class AsesorJadwalController extends Controller
             if ($request->has('penyesuaian') && is_array($request->penyesuaian)) {
                 foreach ($request->penyesuaian as $idPersyaratan => $data) {
                     $status = $data['status'] ?? 'Tidak';
+
+                    // Skip if status is 'Tidak' - no need to store negative responses
+                    if ($status === 'Tidak') {
+                        continue;
+                    }
+
                     $catatanManual = $data['catatan_manual'] ?? null;
                     $keteranganList = $data['keterangan'] ?? [];
 
