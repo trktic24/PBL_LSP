@@ -14,7 +14,9 @@ class IA10Controller extends Controller
 {
     public function create($id_asesi)
     {
-        $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+        $asesi = DataSertifikasiAsesi::with([
+            'jadwal.asesor',
+        ])->findOrFail($id_asesi);
 
         // 1. Ambil Data Header (Jika sudah ada)
         $header_ia10 = Ia10::where('id_data_sertifikasi_asesi', $id_asesi)->first();
