@@ -296,7 +296,7 @@
                 'desc' => 'Daftar pertanyaan lisan (alternatif).',
                 'status' => $stIa07,
                 'status_label' => $isIa07Done ? 'Diterima' : ($isIa07Rejected ? 'Ditolak' : ($ia07Filled ? 'Menunggu' : 'Belum Terisi')),
-                'verify_url' => route('FR_IA_07'),
+                'verify_url' => route('FR_IA_07', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'can_verify' => $stIa07 !== 'LOCKED' && $stIa07 !== 'ACTIVE',
                 'can_pdf' => $level >= 40
@@ -313,7 +313,7 @@
                 'desc' => 'Rekaman keputusan asesmen kompetensi.',
                 'status' => $isFinalized ? 'DONE' : 'LOCKED',
                 'status_label' => $isFinalized ? 'Final / Terkirim' : 'Terkunci',
-                'verify_url' => route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'verify_url' => route('ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('ak02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'can_verify' => false, // Always false for AK02 unless we want to verify it via button? User said 'Terkunci' so no verify.
                 'can_pdf' => $isFinalized

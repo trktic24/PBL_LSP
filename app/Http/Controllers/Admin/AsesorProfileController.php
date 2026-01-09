@@ -168,7 +168,7 @@ class AsesorProfileController extends Controller
         });
 
         // 8. Return View
-        return view('Admin.master.skema.daftar_asesi', compact(
+        return view('Admin.profile_asesor.daftar_asesi', compact(
             'asesor',
             'jadwal',
             'pendaftar',
