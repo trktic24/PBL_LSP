@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lembar_jawab_ia05', function (Blueprint $table) {
-        // Menambah kolom teks yang boleh kosong (nullable), ditaruh setelah pencapaian_ia05
-        $table->text('umpan_balik')->nullable()->after('pencapaian_ia05');
-            //
+            $table->text('umpan_balik')->nullable()->after('pencapaian_ia05');
         });
     }
 
