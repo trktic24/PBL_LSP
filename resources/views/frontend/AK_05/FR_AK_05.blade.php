@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-skema')
 
 {{-- =======================================================================
      BAGIAN 1: SIDEBAR KHUSUS ASESOR (MENIMPA SIDEBAR DEFAULT)
