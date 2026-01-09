@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar', ['asesi' => $sertifikasi->asesi, 'jadwal' => $sertifikasi->jadwal])
 
 @section('content')
 <div class="p-4 sm:p-6 md:p-8 font-[Poppins]">
