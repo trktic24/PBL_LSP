@@ -51,7 +51,7 @@ class IA02Controller extends Controller
         // Logika Pengambilan Unit Kompetensi (Menggabungkan logika loop manual agar aman)
         if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema) {
             // Jika relasi hasManyThrough di Model Skema sudah benar, kita bisa pakai ini:
-            if ($sertifikasi->jadwal->skema->unitKompetensi) {
+            if ($sertifikasi->jadwal->skema->unitKompetensi && $sertifikasi->jadwal->skema->unitKompetensi->isNotEmpty()) {
                 $daftarUnitKompetensi = $sertifikasi->jadwal->skema->unitKompetensi;
             }
             // Fallback: Jika relasi langsung gagal, kita loop manual lewat kelompokPekerjaan
@@ -64,6 +64,12 @@ class IA02Controller extends Controller
                     }
                 }
             }
+        }
+        
+        // Final Check: Warning if empty
+        if ($daftarUnitKompetensi->isEmpty()) {
+            // Optional: Log or flash warning. View should handle empty collection gracefully.
+             // session()->flash('warning', 'Tidak ada Unit Kompetensi ditemukan untuk Skema ini.');
         }
 
         // 5. Kirim ke View

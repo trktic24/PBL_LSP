@@ -21,14 +21,9 @@ class IA05Controller extends Controller
         if (!$user)
             return 'guest';
 
-        if ($user->role_id == 1)
-            return 'admin';
-        elseif ($user->role_id == 2)
-            return 'asesi';
-        elseif ($user->role_id == 3)
-            return 'asesor';
-        else
-            return 'guest';
+        // Gunakan relasi role->nama_role (admin, asesi, asesor)
+        // Pastikan model User punya relasi 'role' yang meload tabel roles
+        return $user->role ? $user->role->nama_role : 'guest';
     }
 
     /**

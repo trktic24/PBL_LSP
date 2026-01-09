@@ -80,6 +80,12 @@ class Ak05Controller extends Controller
                 }
             }
 
+            // 3. Audit Trail Logging
+            \Illuminate\Support\Facades\Log::info("Asesor ID: " . ($request->user()->asesor->id_asesor ?? 'Admin') . " updated AK05 for Jadwal ID: {$id_jadwal}", [
+                'user_id' => $request->user()->id,
+                'updated_asesi_count' => count($request->asesi)
+            ]);
+
             DB::commit();
             return redirect()->back()->with('success', 'Laporan Asesmen (AK-05) berhasil disimpan!');
 

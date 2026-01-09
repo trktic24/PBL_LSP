@@ -39,25 +39,7 @@ class IA07Controller extends Controller
         $skema = $sertifikasi->jadwal->skema;
         $jadwal = $sertifikasi->jadwal;
 
-        $skema = null;
-        if ($asesor && $asesor->skema()->exists()) {
-            $skema = $asesor->skema()->first();
-        } else {
-            $skema = Skema::first();
-        }
 
-        // Ambil Data Jadwal (Dummy/First) untuk mencegah error di view
-        $jadwal = Jadwal::with(['skema', 'asesor', 'jenisTuk'])->first();
-
-        // Fallback jika tidak ada jadwal di DB
-        if (!$jadwal) {
-            $jadwal = new Jadwal();
-            // Set dummy relations if needed, or rely on view's null coalescing operator if improved
-            if ($skema)
-                $jadwal->setRelation('skema', $skema);
-            if ($asesor)
-                $jadwal->setRelation('asesor', $asesor);
-        }
 
         // Ambil data Jenis TUK untuk radio button
         $jenisTukOptions = JenisTUK::pluck('jenis_tuk', 'id_jenis_tuk');

@@ -148,10 +148,9 @@ class AsesorProfileController extends Controller
 
         // 5. Logika Pengurutan (Sorting)
         if ($sortColumn === 'nama_lengkap') {
-            // Join table asesi untuk sorting berdasarkan nama
-            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
-                ->orderBy('asesi.nama_lengkap', $sortDirection)
-                ->select('data_sertifikasi_asesi.*'); // Penting: Pilih kolom tabel utama agar ID tidak tertimpa
+            // Optimization: Use subquery ordering to avoid join and redundant select
+            $query->orderBy(\App\Models\Asesi::select('nama_lengkap')
+                ->whereColumn('asesi.id_asesi', 'data_sertifikasi_asesi.id_asesi'), $sortDirection);
         } else {
             // Default sort
             $query->orderBy('id_data_sertifikasi_asesi', 'asc');
