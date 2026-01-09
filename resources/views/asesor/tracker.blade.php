@@ -724,7 +724,7 @@
                                     <h3 class="text-lg font-bold text-gray-800 mt-2">Keputusan Asesmen (AK.02)</h3>
                                     <div class="flex gap-2 ml-4 mt-2">
                                         {{-- Tombol Verifikasi --}}
-                                        <a href="{{ route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                        <a href="{{ route('ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                             class="{{ btnState($allIADone ? 100 : 0, 100, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
 
                                         {{-- Tombol Lihat PDF --}}
