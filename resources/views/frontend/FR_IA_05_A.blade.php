@@ -65,11 +65,11 @@
     <form class="form-body mt-6" action="{{ $formAction }}" method="POST"> 
         @csrf
         <x-identitas_skema_form.identitas_skema_form
-            skema="{{ $asesi->jadwal->skema->judul_skema ?? 'Judul Skema Tidak Ditemukan' }}"
-            nomorSkema="{{ $asesi->jadwal->skema->kode_skema ?? 'Kode Tidak Ditemukan' }}"
-            tuk="Tempat Kerja" 
-            namaAsesor="{{ $asesi->asesor->nama_asesor ?? 'Nama Asesor Tidak Ditemukan' }}"
-            namaAsesi="{{ $asesi->asesi->nama_asesi ?? 'Nama Asesi Tidak Ditemukan' }}"
+            skema="{{ $asesi->jadwal->skema->nama_skema ?? 'Judul Skema Tidak Ditemukan' }}"
+            nomorSkema="{{ $asesi->jadwal->skema->nomor_skema ?? 'Kode Tidak Ditemukan' }}"
+            tuk="{{ $asesi->jadwal->jenisTuk->jenis_tuk ?? 'Tempat Kerja' }}" 
+            namaAsesor="{{ $asesi->asesor->nama_lengkap ?? 'Nama Asesor Tidak Ditemukan' }}"
+            namaAsesi="{{ $asesi->asesi->nama_lengkap ?? 'Nama Asesi Tidak Ditemukan' }}"
             tanggal="{{ now()->format('d F Y') }}"
         />
 
@@ -173,9 +173,49 @@
 
         </div>
         
-        <div class="form-section my-8">
+        <!-- <div class="form-section my-8">
             @include('components.kolom_ttd.penyusunvalidator')
-        </div>
+        </div> -->
+
+        {{-- Tanda Tangan --}}
+        <div class="bg-white border border-gray-300 rounded-xl p-6 shadow-md mb-8">
+
+            <div class="mt-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gray-50 border border-gray-200 rounded-md shadow-sm">
+                    {{-- BAGIAN ASESOR --}}
+                        <div class="space-y-3">
+                            <h3 class="font-semibold text-gray-700 mb-3">Semarang, {{ \Carbon\Carbon::parse($asesi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</h3>
+                            <h4 class="font-medium text-gray-800">Penyusun</h4>
+                            <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-start">
+                                <!-- Baris Nama -->
+                                <span class="font-medium text-gray-700">Nama</span>
+                                <span class="font-medium">:</span>
+                                <span class="font-medium text-gray-700">{{ $asesi->asesor->nama_lengkap }}</span>
+                                <span class="font-medium text-gray-700">Tanda Tangan</span>
+                                <span class="font-medium">:</span>
+                                <img src="{{ route('secure.file', ['path' => $asesi->asesor->tanda_tangan]) }}" 
+                                     alt="Tanda Tangan Asesor" 
+                                     class="h-20 w-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                            </div>
+                        </div>
+
+                    {{-- BAGIAN PJ KEGIATAN --}}
+                        <div class="space-y-3 md:mt-10">
+                            <h4 class="font-medium text-gray-800">Validator</h4>
+                            <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-start">
+                                <!-- Baris Nama -->
+                                <span class="font-medium text-gray-700">Nama</span>
+                                <span class="font-medium">:</span>
+                                <span class="font-medium text-gray-700">Ajeng Febria H.</span>
+                                <span class="font-medium text-gray-700">Tanda Tangan</span>
+                                <span class="font-medium">:</span>
+                                <img src="{{ route('secure.file', ['path' => $asesi->asesor->tanda_tangan]) }}" 
+                                    class="w-20 h-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                            </div>
+                        </div>
+                    
+                </div>
+            </div>      
         
         <div class="form-footer flex justify-between mt-10">
             <button type="button" class="btn py-2 px-5 border border-blue-600 text-blue-600 rounded-md font-semibold hover:bg-blue-50">Sebelumnya</button>
