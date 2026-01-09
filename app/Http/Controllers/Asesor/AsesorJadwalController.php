@@ -754,13 +754,13 @@ class AsesorJadwalController extends Controller
 
     public function storeAk07(Request $request, $id_sertifikasi_asesi)
     {
-        // Validate request input
+        // 1. Validate request input
         $request->validate([
             'potensi_asesi' => 'nullable|array',
             'potensi_asesi.*' => 'required|integer|exists:poin_potensi_ak07,id_poin_potensi_AK07',
 
             'penyesuaian' => 'nullable|array',
-            'penyesuaian.*.status' => 'required|in:Ya,Tidak',
+            'penyesuaian.*.status' => 'nullable|in:Ya,Tidak', // Changed to nullable to support default 'Tidak' logic
             'penyesuaian.*.catatan_manual' => 'nullable|string|max:1000',
             'penyesuaian.*.keterangan' => 'nullable|array',
             'penyesuaian.*.keterangan.*' => 'required|integer|exists:catatan_keterangan_ak07,id_catatan_keterangan_AK07',
@@ -770,92 +770,95 @@ class AsesorJadwalController extends Controller
             'instrumen_asesmen' => 'nullable|string|max:500',
         ]);
 
-        // Verify the sertifikasi record exists before starting transaction
+        // 2. Verify the sertifikasi record exists
         if (!DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists()) {
             abort(404, 'Data sertifikasi tidak ditemukan.');
         }
 
-        // Use DB transaction closure for automatic rollback on exception
-        return \DB::transaction(function () use ($request, $id_sertifikasi_asesi) {
-            // ---------- 1. Lock parent record and check for existing data ----------
-            // Lock the parent data_sertifikasi_asesi record to prevent race conditions
-            $sertifikasi = DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
-                ->lockForUpdate()
-                ->firstOrFail();
+        try {
+            // 3. Execute transaction
+            \DB::transaction(function () use ($request, $id_sertifikasi_asesi) {
+                // ---------- Step 1: Lock parent record to prevent race conditions ----------
+                $sertifikasi = DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            // Check if form has already been submitted
-            $hasPotensiData = ResponPotensiAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
-            $hasPenyesuaianData = ResponDiperlukanPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
-            $hasHasilData = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+                // ---------- Step 2: Check for existing submissions ----------
+                $hasPotensiData = ResponPotensiAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+                $hasPenyesuaianData = ResponDiperlukanPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+                $hasHasilData = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
 
-            if ($hasPotensiData || $hasPenyesuaianData || $hasHasilData) {
-                // Data already exists – abort the whole transaction
-                return redirect()->back()->with('error', 'Form FR.AK.07 sudah pernah diisi dan tidak dapat diubah lagi.');
-            }
-
-            // ---------- 2. Simpan Respon Potensi (checkbox list) ----------
-            if ($request->has('potensi_asesi') && is_array($request->potensi_asesi)) {
-                foreach ($request->potensi_asesi as $idPoin) {
-                    ResponPotensiAK07::create([
-                        'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                        'id_poin_potensi_AK07'      => $idPoin,
-                        'respon_asesor'             => null,
-                    ]);
+                if ($hasPotensiData || $hasPenyesuaianData || $hasHasilData) {
+                    // Use a specific exception to trigger rollback and pass the error message
+                    throw new \Exception('Form FR.AK.07 sudah pernah diisi dan tidak dapat diubah lagi.');
                 }
-            }
 
-            // ---------- 3. Simpan Penyesuaian ----------
-            if ($request->has('penyesuaian') && is_array($request->penyesuaian)) {
-                foreach ($request->penyesuaian as $idPersyaratan => $data) {
-                    $status = $data['status'] ?? 'Tidak';
-
-                    // Skip if status is 'Tidak' - no need to store negative responses
-                    if ($status === 'Tidak') {
-                        continue;
+                // ---------- Step 3: Save Potential Responses ----------
+                if ($request->has('potensi_asesi') && is_array($request->potensi_asesi)) {
+                    foreach ($request->potensi_asesi as $idPoin) {
+                        ResponPotensiAK07::create([
+                            'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                            'id_poin_potensi_AK07'      => $idPoin,
+                            'respon_asesor'             => null,
+                        ]);
                     }
+                }
 
-                    $catatanManual = $data['catatan_manual'] ?? null;
-                    $keteranganList = $data['keterangan'] ?? [];
+                // ---------- Step 4: Save Adjustments (Penyesuaian) ----------
+                if ($request->has('penyesuaian') && is_array($request->penyesuaian)) {
+                    foreach ($request->penyesuaian as $idPersyaratan => $data) {
+                        $status = $data['status'] ?? 'Tidak';
 
-                    // Create master record with catatan_manual
-                    ResponDiperlukanPenyesuaianAK07::create([
-                        'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                        'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
-                        'id_catatan_keterangan_AK07' => null,
-                        'respon_penyesuaian' => $status,
-                        'respon_catatan_keterangan' => $catatanManual,
-                    ]);
+                        // Skip if status is 'Tidak' - no need to store negative responses
+                        if ($status === 'Tidak') {
+                            continue;
+                        }
 
-                    // Additional records for each keterangan checkbox
-                    if (!empty($keteranganList) && is_array($keteranganList)) {
-                        foreach ($keteranganList as $idKeterangan) {
-                            ResponDiperlukanPenyesuaianAK07::create([
-                                'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                                'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
-                                'id_catatan_keterangan_AK07' => $idKeterangan,
-                                'respon_penyesuaian' => $status,
-                                'respon_catatan_keterangan' => null,
-                            ]);
+                        $catatanManual = $data['catatan_manual'] ?? null;
+                        $keteranganList = $data['keterangan'] ?? [];
+
+                        // 4.1 Create master record with catatan_manual
+                        ResponDiperlukanPenyesuaianAK07::create([
+                            'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                            'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
+                            'id_catatan_keterangan_AK07' => null,
+                            'respon_penyesuaian' => $status,
+                            'respon_catatan_keterangan' => $catatanManual,
+                        ]);
+
+                        // 4.2 Additional records for each keterangan checkbox
+                        if (!empty($keteranganList) && is_array($keteranganList)) {
+                            foreach ($keteranganList as $idKeterangan) {
+                                ResponDiperlukanPenyesuaianAK07::create([
+                                    'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                                    'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
+                                    'id_catatan_keterangan_AK07' => $idKeterangan,
+                                    'respon_penyesuaian' => $status,
+                                    'respon_catatan_keterangan' => null,
+                                ]);
+                            }
                         }
                     }
                 }
-            }
 
-            // ---------- 4. Simpan Hasil Penyesuaian (only if at least one field filled) ----------
-            $acuan = $request->input('acuan_pembanding');
-            $metode = $request->input('metode_asesmen');
-            $instrumen = $request->input('instrumen_asesmen');
-            if (!empty($acuan) || !empty($metode) || !empty($instrumen)) {
-                HasilPenyesuaianAK07::create([
-                    'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
-                    'Acuan_Pembanding_Asesmen'   => $acuan ?? '',
-                    'Metode_Asesmen'             => $metode ?? '',
-                    'Instrumen_Asesmen'          => $instrumen ?? '',
-                ]);
-            }
+                // ---------- Step 5: Save Final Results (Hasil Penyesuaian) ----------
+                $acuan = $request->input('acuan_pembanding');
+                $metode = $request->input('metode_asesmen');
+                $instrumen = $request->input('instrumen_asesmen');
+                if (!empty($acuan) || !empty($metode) || !empty($instrumen)) {
+                    HasilPenyesuaianAK07::create([
+                        'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                        'Acuan_Pembanding_Asesmen'   => $acuan ?? '',
+                        'Metode_Asesmen'             => $metode ?? '',
+                        'Instrumen_Asesmen'          => $instrumen ?? '',
+                    ]);
+                }
+            });
 
-            // ---------- 5. Commit & redirect ----------
             return redirect()->back()->with('success', 'Form FR.AK.07 berhasil disimpan.');
-        });
+        } catch (\Exception $e) {
+            // Transaction is already rolled back because we threw an exception inside DB::transaction
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }
