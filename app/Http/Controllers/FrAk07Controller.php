@@ -105,8 +105,8 @@ class FrAk07Controller extends Controller
         }
 
         $roleName = $user->role->nama_role;
-        if (!in_array($roleName, ['asesor'])) {
-            abort(403, 'Anda tidak memiliki hak akses untuk menyimpan form ini.');
+        if (!in_array(strtolower($roleName), ['asesor'])) {
+            abort(403, "Anda tidak memiliki hak akses untuk menyimpan form ini. Role Anda: {$roleName}");
         }
 
         // Security Check 3: Verify data exists and user has access
@@ -114,8 +114,16 @@ class FrAk07Controller extends Controller
 
         // Verify asesor owns this data
         $asesor = \App\Models\Asesor::where('id_user', $user->id)->first();
-        if (!$asesor || $dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
-            abort(403, 'Anda tidak berhak mengakses data ini.');
+        if (!$asesor) {
+            abort(403, 'Data asesor tidak ditemukan untuk user Anda. Silakan lengkapi profil asesor terlebih dahulu.');
+        }
+
+        if (!$dataSertifikasi->jadwal) {
+            abort(403, 'Data jadwal tidak ditemukan untuk sertifikasi ini.');
+        }
+
+        if ($dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
+            abort(403, 'Anda tidak berhak mengakses data ini. Jadwal ini bukan milik Anda.');
         }
 
         // Validasi sesuai input di view
