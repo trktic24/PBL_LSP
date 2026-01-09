@@ -177,7 +177,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fr-ia-06-c', fn() => view('frontend.fr_IA_06_c'))->name('fr_IA_06_c');
 
     // FR.IA.07
-    Route::get('/fr-ia-07', [IA07Controller::class, 'index'])->name('FR_IA_07');
+    Route::get('/fr-ia-07/{id_sertifikasi}', [IA07Controller::class, 'index'])->name('FR_IA_07');
 
     // FR.IA.10
     Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
@@ -440,9 +440,7 @@ Route::middleware('auth')->group(function () {
 
             });
 
-            // [FIX] AK-05 Routes (Correct Controller)
-            Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
-            Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
+
 
             // AK-02 (Moved to web.php for shared access)
 
@@ -468,6 +466,10 @@ Route::middleware('auth')->group(function () {
             // Fixes 403 Forbidden for Admin
             Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
             Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+
+            // [FIX] AK-05 Routes (Correct Controller) - Moved to Shared Group
+            Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
+            Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
 
             Route::controller(AsesorJadwalController::class)->group(function () {
                 Route::get('/berita-acara/{id_jadwal}', 'beritaAcara')->name('berita_acara');

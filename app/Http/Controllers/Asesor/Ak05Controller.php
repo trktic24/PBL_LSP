@@ -21,7 +21,7 @@ class Ak05Controller extends Controller
         // Cek Otorisasi: Hanya Asesor yang bersangkutan atau Admin yang bisa akses
         $user = Auth::user();
         // Gunakan helper hasRole dari model User untuk keamanan
-        if ($user->hasRole('asesor')) {
+        if ($user->hasRole('asesor') && !$user->hasRole('admin')) {
             if (!$user->asesor || $jadwal->id_asesor != $user->asesor->id_asesor) {
                 abort(403, 'Anda tidak berhak mengakses jadwal ini.');
             }
