@@ -227,8 +227,13 @@ class IA05Controller extends Controller
             ->keyBy('id_soal_ia05');
 
         // Ambil Umpan Balik
-        $contoh_jawaban = $lembar_jawab->first();
-        $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
+        $data_feedback = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                            ->whereNotNull('umpan_balik') 
+                            ->first();
+
+        // Kalau ketemu, ambil isinya. Kalau tidak, string kosong.
+        // PENTING: Nama properti harus 'umpan_balik' (sesuai DB), JANGAN 'umpan_balik_ia05'
+        $umpan_balik = $data_feedback ? $data_feedback->umpan_balik : '';
 
         return view('frontend.FR_IA_05_C', [
             'user' => $user,
@@ -269,11 +274,11 @@ class IA05Controller extends Controller
             }
 
             // Simpan Umpan Balik (Jika ada kolomnya di DB)
-            // if ($request->has('umpan_balik')) {
-            //     // Pastikan kolom 'umpan_balik_ia05' ada di database kamu
-            //      LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-            //         ->update(['umpan_balik_ia05' => $request->umpan_balik]);
-            // }
+            if ($request->has('umpan_balik')) {
+                // Pastikan kolom 'umpan_balik_ia05' ada di database kamu
+                 LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                    ->update(['umpan_balik' => $request->umpan_balik]);
+            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Penilaian berhasil disimpan.');
@@ -293,6 +298,9 @@ class IA05Controller extends Controller
             'asesi',
             'jadwal.masterTuk',
             'jadwal.skema.asesor',
+            'jadwal.asesor',                                  // Data Asesor
+            'jadwal.jenisTuk',                                // Data TUK
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
 
         // 2. Ambil Soal (Urut ID)
@@ -304,8 +312,11 @@ class IA05Controller extends Controller
             ->keyBy('id_soal_ia05');
 
         // 4. Ambil Umpan Balik (Ambil dari salah satu record jawaban)
-        $contoh_jawaban = $lembar_jawab->first();
-        $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
+       $data_feedback = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                            ->whereNotNull('umpan_balik') 
+                            ->first();
+        
+        $umpan_balik = $data_feedback ? $data_feedback->umpan_balik : '-';
 
         // 5. Render PDF
         $pdf = Pdf::loadView('pdf.ia_05', [
