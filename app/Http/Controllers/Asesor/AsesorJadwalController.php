@@ -299,6 +299,7 @@ class AsesorJadwalController extends Controller
             'search' => $search,
             'sort' => $sort,
             'direction' => $direction,
+            'backUrl' => route('asesor.jadwal.index'),
         ]);
     }
 
