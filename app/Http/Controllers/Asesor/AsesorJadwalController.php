@@ -754,16 +754,16 @@ class AsesorJadwalController extends Controller
     {
         // Use DB transaction closure for automatic rollback on exception
         return \DB::transaction(function () use ($request, $id_sertifikasi_asesi) {
-            // ---------- 1. Check for existing data (with row lock) ----------
-            $hasPotensiData = ResponPotensiAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
+            // ---------- 1. Lock parent record and check for existing data ----------
+            // Lock the parent data_sertifikasi_asesi record to prevent race conditions
+            $sertifikasi = DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
                 ->lockForUpdate()
-                ->exists();
-            $hasPenyesuaianData = ResponDiperlukanPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
-                ->lockForUpdate()
-                ->exists();
-            $hasHasilData = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)
-                ->lockForUpdate()
-                ->exists();
+                ->firstOrFail();
+
+            // Check if form has already been submitted
+            $hasPotensiData = ResponPotensiAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+            $hasPenyesuaianData = ResponDiperlukanPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+            $hasHasilData = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
 
             if ($hasPotensiData || $hasPenyesuaianData || $hasHasilData) {
                 // Data already exists – abort the whole transaction
@@ -788,27 +788,26 @@ class AsesorJadwalController extends Controller
                     $catatanManual = $data['catatan_manual'] ?? null;
                     $keteranganList = $data['keterangan'] ?? [];
 
-                    // Jika ada keterangan (checkboxes) -> buat satu record per keterangan
+                    // Create master record with catatan_manual
+                    ResponDiperlukanPenyesuaianAK07::create([
+                        'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                        'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
+                        'id_catatan_keterangan_AK07' => null,
+                        'respon_penyesuaian' => $status,
+                        'respon_catatan_keterangan' => $catatanManual,
+                    ]);
+
+                    // Additional records for each keterangan checkbox
                     if (!empty($keteranganList) && is_array($keteranganList)) {
                         foreach ($keteranganList as $idKeterangan) {
                             ResponDiperlukanPenyesuaianAK07::create([
-                                'id_data_sertifikasi_asesi'          => $id_sertifikasi_asesi,
-                                'id_persyaratan_modifikasi_AK07'    => $idPersyaratan,
-                                'id_catatan_keterangan_AK07'         => $idKeterangan,
-                                'respon_penyesuaian'                 => $status,
-                                // catatan manual hanya disimpan pada baris pertama (keterangan pertama) jika ada
-                                'respon_catatan_keterangan'          => $catatanManual,
+                                'id_data_sertifikasi_asesi' => $id_sertifikasi_asesi,
+                                'id_persyaratan_modifikasi_AK07' => $idPersyaratan,
+                                'id_catatan_keterangan_AK07' => $idKeterangan,
+                                'respon_penyesuaian' => $status,
+                                'respon_catatan_keterangan' => null,
                             ]);
                         }
-                    } else {
-                        // Tidak ada keterangan checkbox, cukup satu baris base
-                        ResponDiperlukanPenyesuaianAK07::create([
-                            'id_data_sertifikasi_asesi'          => $id_sertifikasi_asesi,
-                            'id_persyaratan_modifikasi_AK07'    => $idPersyaratan,
-                            'id_catatan_keterangan_AK07'         => null,
-                            'respon_penyesuaian'                 => $status,
-                            'respon_catatan_keterangan'          => $catatanManual,
-                        ]);
                     }
                 }
             }
