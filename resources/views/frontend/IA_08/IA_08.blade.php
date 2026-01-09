@@ -469,13 +469,16 @@
                         <p class="mb-4 text-gray-800">{{ now()->format('d-m-Y') }}</p>
 
                         <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mb-2">
-                            @if($asesi->ttd_path)
-                                <img src="{{ asset($asesi->ttd_path) }}" class="h-full object-contain">
+                            @if($asesi->tanda_tangan)
+                                <img
+                                    src="{{ route('secure.file', ['path' => $asesi->tanda_tangan]) }}"
+                                    alt="Tanda Tangan Asesi"
+                                    class="h-full object-contain"
+                                >
                             @else
-                                <svg width="150" height="80" viewBox="0 0 200 100">
-                                    <path d="M10,80 Q50,10 90,80 T180,80"
-                                        stroke="black" fill="transparent" stroke-width="2"/>
-                                </svg>
+                                <div class="border-b border-gray-300 h-16 w-32 flex items-end text-xs text-gray-400 pb-1">
+                                    Belum ada TTD
+                                </div>
                             @endif
                         </div>
 
@@ -485,24 +488,28 @@
                     {{-- ASESOR --}}
                     <div>
                         <p class="font-bold">Asesor</p>
-                        <p>{{ now()->format('d-m-Y') }}</p>
+                        <p class="mb-4 text-gray-800">{{ now()->format('d-m-Y') }}</p>
 
-                        <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mt-4">
-                            @if($asesor->ttd_path ?? false)
-                                <img src="{{ asset($asesor->ttd_path) }}" class="h-full object-contain">
+                        <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mb-2">
+                            @if($asesor->tanda_tangan)
+                                <img
+                                    src="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}"
+                                    alt="Tanda Tangan Asesor"
+                                    class="h-full object-contain"
+                                >
                             @else
-                                <svg width="150" height="80" viewBox="0 0 200 100">
-                                    <path d="M20,50 C50,20 80,80 110,50 S170,20 190,80"
-                                        stroke="black" fill="transparent" stroke-width="2"/>
-                                </svg>
+                                <div class="border-b border-gray-300 h-16 w-32 flex items-end text-xs text-gray-400 pb-1">
+                                    Belum ada TTD
+                                </div>
                             @endif
                         </div>
 
-                        <p class="font-medium mt-2 text-center">{{ $asesor->nama_lengkap }}</p>
+                        <p class="font-medium text-center">{{ $asesor->nama_lengkap }}</p>
                     </div>
 
                 </div>
             </div>
+
 
             {{-- BUTTON --}}
             @if(!$locked)
