@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('struktur_organisasis', function (Blueprint $table) {
-            //
+            $table->dropColumn('urutan');
         });
     }
 };
