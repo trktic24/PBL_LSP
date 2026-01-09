@@ -16,6 +16,20 @@
     ::-webkit-scrollbar { width: 0; }
     [x-cloak] { display: none !important; }
   </style>
+  <script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.store("sidebar", {
+            open: true,
+            toggle() {
+                this.open = !this.open
+            },
+            setOpen(val) {
+                this.open = val
+            }
+        })
+    })
+  </script>
+  <style>[x-cloak] { display: none !important; }</style>
 </head>
 
 <body class="text-gray-800">
