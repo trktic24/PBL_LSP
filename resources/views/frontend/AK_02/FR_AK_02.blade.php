@@ -13,7 +13,7 @@
 
     {{-- Form mengarah ke Route Update di Ak02Controller --}}
     {{-- Pastikan route 'ak02.update' sudah didefinisikan di routes/auth.php atau web.php --}}
-    <form action="{{ route('ak02.update', $asesi->id_data_sertifikasi_asesi) }}" method="POST">
+    <form action="{{ route('asesor.ak02.update', $asesi->id_data_sertifikasi_asesi) }}" method="POST">
         @csrf
         @method('PUT')
 

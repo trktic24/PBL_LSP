@@ -33,21 +33,21 @@ class Ak02Controller extends Controller
         // --- PERBAIKAN LOGIKA VALIDASI DI SINI ---
 
         // Relasi HasMany (Mengembalikan Collection -> Aman pakai count())
-        $ia05Done = $asesi->lembarJawabIa05->count() > 0;
-        $ia06Done = $asesi->ia06Answers->count() > 0;
-        $ia07Done = $asesi->ia07->count() > 0;
+        // $ia05Done = $asesi->lembarJawabIa05->count() > 0;
+        // $ia06Done = $asesi->ia06Answers->count() > 0;
+        // $ia07Done = $asesi->ia07->count() > 0;
 
-        // Relasi HasOne (Mengembalikan Object atau Null -> Cek tidak null)
-        // JANGAN PAKAI ->count() > 0 untuk HasOne!
-        $ia10Done = !is_null($asesi->ia10);
-        $ia02Done = !is_null($asesi->ia02);
+        // // Relasi HasOne (Mengembalikan Object atau Null -> Cek tidak null)
+        // // JANGAN PAKAI ->count() > 0 untuk HasOne!
+        // $ia10Done = !is_null($asesi->ia10);
+        // $ia02Done = !is_null($asesi->ia02);
 
-        $isFinalized = ($asesi->level_status >= 100);
+        // $isFinalized = ($asesi->level_status >= 100);
 
-        // Jika data belum lengkap, lempar kembali (kecuali sudah final)
-        if (!$isFinalized && !($ia05Done && $ia06Done && $ia07Done && $ia10Done && $ia02Done)) {
-            return redirect()->back()->with('error', 'Penilaian Asesmen (IA) belum lengkap. Mohon selesaikan penilaian IA terlebih dahulu.');
-        }
+        // // Jika data belum lengkap, lempar kembali (kecuali sudah final)
+        // if (!$isFinalized && !($ia05Done && $ia06Done && $ia07Done && $ia10Done && $ia02Done)) {
+        //     return redirect()->back()->with('error', 'Penilaian Asesmen (IA) belum lengkap. Mohon selesaikan penilaian IA terlebih dahulu.');
+        // }
 
         // Ambil data penilaian yang sudah ada
         $penilaianList = Ak02::where('id_data_sertifikasi_asesi', $id_asesi)
@@ -89,6 +89,20 @@ class Ak02Controller extends Controller
                     ]
                 );
             }
+
+            $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+            
+            $asesi->update([
+                // Kolom ini yang dicek sama Tracker (Level 100)
+                'rekomendasi_hasil_asesmen_AK02' => $globalKompeten, 
+                
+                // Opsional: Simpan juga tindak lanjut/komentar global jika ada kolomnya
+                // 'tindakan_lanjut_AK02' => $globalTindakLanjut,
+                // 'komentar_AK02' => $globalKomentar,
+                
+                // Opsional: Ubah status sertifikasi jadi 'asesmen_selesai' atau sejenisnya
+                // 'status_sertifikasi' => 'asesmen_selesai', 
+            ]);
 
             DB::commit();
 

@@ -11,7 +11,7 @@ class LembarJawabIa05Seeder extends Seeder
 {
    public function run()
     {
-        $targetIdSertifikasi = 1; 
+        $targetIdSertifikasi = 490; 
 
         // Debug 1: Cek Asesi
         $asesi = \App\Models\DataSertifikasiAsesi::find($targetIdSertifikasi);
