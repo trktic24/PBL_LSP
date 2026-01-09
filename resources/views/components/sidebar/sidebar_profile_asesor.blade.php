@@ -1,6 +1,7 @@
 @props(['asesor'])
 
 <aside 
+    x-data
     x-cloak
     class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-80 
               bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
