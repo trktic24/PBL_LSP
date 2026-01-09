@@ -113,7 +113,7 @@ class FrAk07Controller extends Controller
         $dataSertifikasi = DataSertifikasiAsesi::with('jadwal.asesor')->findOrFail($id_data_sertifikasi_asesi);
 
         // Verify asesor owns this data
-        $asesor = \App\Models\Asesor::where('id_user', $user->id)->first();
+        $asesor = \App\Models\Asesor::where('id_user', Auth::id())->first();
         if (!$asesor) {
             abort(403, 'Data asesor tidak ditemukan untuk user Anda. Silakan lengkapi profil asesor terlebih dahulu.');
         }
