@@ -239,50 +239,61 @@ Route::middleware('auth')->group(function () {
             Route::get('/finish', fn($id) => redirect()->route('ia01.index', $id));
         });
 
-        // IA-02
-        Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');
-        Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
+    }); // End of role:asesor group
 
-        // IA-03
-        Route::get('/ia03/{id}', [IA03Controller::class, 'index'])->name('ia03.index');
-        Route::get('/ia03/{id}/show', [IA03Controller::class, 'show'])->name('ia03.show');
+    // ============================================================================
+    // 4. INSTRUMEN ASESMEN (IA) - ASESOR & ADMIN SHARED ACCESS
+    // ============================================================================
+    // Dipindahkan keluar dari role:asesor agar Admin bisa akses (Master View)
+    
+    // IA-01 (EDITABLE - Asesor / Admin with permission)
+    // Note: IA-01 View logic is handled separately, but let's ensure these are accessible if needed.
+    // Keeping IA-01 strict for now as Admin has ia01.admin.show. 
+    // But if Admin needs to EDIT, we might need to open this. 
+    // For now, leaving IA-01 in role:asesor (lines 232-240) as Admin has specific view.
 
-        // IA-04 (Asesor) is handled below in FRIA04_Asesor block
+    // IA-02
+    Route::get('/ia02/{id_sertifikasi}', [IA02Controller::class, 'show'])->name('ia02.show');
+    Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
 
-        // IA-05
-        Route::get('/ia05/form-c/{id}', [IA05Controller::class, 'showJawabanForm'])->name('ia05.asesor');
-        Route::post('/ia05/form-c/{id}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia05.store_penilaian');
+    // IA-03
+    Route::get('/ia03/{id}', [IA03Controller::class, 'index'])->name('ia03.index');
+    Route::get('/ia03/{id}/show', [IA03Controller::class, 'show'])->name('ia03.show');
 
-        // IA-06
-        Route::get('/ia06/asesor/{id}', [IA06Controller::class, 'asesorShow'])->name('asesor.ia06.edit');
-        Route::post('/ia06/asesor/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('asesor.ia06.update');
+    // IA-04 (Asesor) is handled below in FRIA04_Asesor block
 
-        // IA-07
-        Route::get('/FR_IA_07/{id}', [IA07Controller::class, 'index'])->name('ia07.asesor');
-        Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
+    // IA-05
+    Route::get('/ia05/form-c/{id}', [IA05Controller::class, 'showJawabanForm'])->name('ia05.asesor');
+    Route::post('/ia05/form-c/{id}', [IA05Controller::class, 'storePenilaianAsesor'])->name('ia05.store_penilaian');
 
-        // IA-08
-        Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])->name('ia08.show');
-        Route::post('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'store'])->name('ia08.store');
+    // IA-06
+    Route::get('/ia06/asesor/{id}', [IA06Controller::class, 'asesorShow'])->name('asesor.ia06.edit');
+    Route::post('/ia06/asesor/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('asesor.ia06.update');
 
+    // IA-07
+    Route::get('/FR_IA_07/{id}', [IA07Controller::class, 'index'])->name('ia07.asesor');
+    Route::post('/FR_IA_07/store', [IA07Controller::class, 'store'])->name('ia07.store');
 
-        // IA-09
-        Route::get('/ia09/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'showWawancara'])->name('ia09.edit');
-        Route::post('/ia09/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'storeWawancara'])->name('ia09.store');
+    // IA-08
+    Route::get('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'show'])->name('ia08.show');
+    Route::post('/ia08/{id_data_sertifikasi_asesi}', [IA08Controller::class, 'store'])->name('ia08.store');
 
-        // IA-10
-        Route::get('/FR_IA_10/{id}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
-        Route::post('/FR_IA_10/store', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
+    // IA-09
+    Route::get('/ia09/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'showWawancara'])->name('ia09.edit');
+    Route::post('/ia09/{id_data_sertifikasi_asesi}', [IA09Controller::class, 'storeWawancara'])->name('ia09.store');
 
-        // IA-11
-        Route::get('/FR_IA_11/{id}', [IA11Controller::class, 'show'])->name('ia11.show');
-        Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
-        Route::put('/FR_IA_11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
+    // IA-10
+    Route::get('/FR_IA_10/{id}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
+    Route::post('/FR_IA_10/store', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
-        // FRIA04_Asesor
-        Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
-        Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
-    });
+    // IA-11
+    Route::get('/FR_IA_11/{id}', [IA11Controller::class, 'show'])->name('ia11.show');
+    Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+    Route::put('/FR_IA_11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
+
+    // FRIA04_Asesor
+    Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
+    Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
 
     // MAPA-02
     
@@ -339,8 +350,9 @@ Route::middleware('auth')->group(function () {
     });
 
     // AK-02 Edit
-    Route::get('/ak02/{id}/edit', [Ak02Controller::class, 'edit'])->name('ak02.edit');
-    Route::post('/ak02/{id}/update', [Ak02Controller::class, 'update'])->name('ak02.update');
+    // AK-02 Edit (Shared)
+    Route::get('/ak02/{id}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
+    Route::put('/ak02/{id}', [Ak02Controller::class, 'update'])->name('ak02.update');
 
 
 
@@ -351,14 +363,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'showIA04AAsesi'])->name('fria04a.asesi.show');
     Route::post('/FRIA04_Asesi', [AssessmenFRIA04tController::class, 'storeIA04AAsesi'])->name('fria04a.asesi.store');
 
-    //FRIA04_Asesor
-    Route::middleware(['auth', 'role:asesor'])->group(function () {
-        // This block is now redundant as it's moved into the main Asesor group above.
-        // Keeping it here for now as per instruction to only make the specified change.
-        // It will be removed if a subsequent instruction asks for cleanup.
-        Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
-        Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
-    });
+    //FRIA04_Asesor - Moved to shared auth group above (line 295)
+    // Removed redundant protected block.
 
     // MAPA-01
     Route::get('/mapa01/form/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');

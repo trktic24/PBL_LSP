@@ -152,7 +152,10 @@ class IA06Controller extends Controller
      */
     public function asesorShow($idSertifikasi)
     {
-        $this->authorizeRole(3); // Cek apakah Asesor
+        // Allow Asesor (3) AND Admin (1/4)
+        if (!in_array(Auth::user()->role_id, [1, 3, 4])) {
+             abort(403, 'Unauthorized Action.');
+        }
 
         $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'asesi'])->findOrFail($idSertifikasi);
 
