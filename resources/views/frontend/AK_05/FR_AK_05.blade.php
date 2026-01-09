@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar-skema')
+@extends('layouts.app-sidebar')
 
 {{-- =======================================================================
      BAGIAN 1: SIDEBAR KHUSUS ASESOR (MENIMPA SIDEBAR DEFAULT)
@@ -184,21 +184,21 @@
                                     {{-- Checkbox K (Kompeten) --}}
                                     <td class="px-2 py-3 text-center align-middle border-r border-gray-200">
                                         <input type="radio" name="asesi[{{ $index }}][rekomendasi]" value="K"
-                                            {{ ($data->rekomendasi_AK05 == 'K' || $data->rekomendasi_AK05 == 'kompeten') ? 'checked' : '' }}
+                                            {{ ($data->komentarAk05?->rekomendasi == 'K' || $data->rekomendasi_AK05 == 'kompeten') ? 'checked' : '' }}
                                             class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer">
                                     </td>
 
                                     {{-- Checkbox BK (Belum Kompeten) --}}
                                     <td class="px-2 py-3 text-center align-middle border-r border-gray-200">
                                         <input type="radio" name="asesi[{{ $index }}][rekomendasi]" value="BK"
-                                            {{ ($data->rekomendasi_AK05 == 'BK' || $data->rekomendasi_AK05 == 'belum kompeten') ? 'checked' : '' }}
+                                            {{ ($data->komentarAk05?->rekomendasi == 'BK' || $data->rekomendasi_AK05 == 'belum kompeten') ? 'checked' : '' }}
                                             class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer">
                                     </td>
 
                                     {{-- Keterangan --}}
                                     <td class="px-4 py-3">
                                         <input type="text" name="asesi[{{ $index }}][keterangan]"
-                                            value="{{ $data->keterangan_AK05 }}"
+                                            value="{{ $data->komentarAk05?->keterangan ?? $data->keterangan_AK05 }}"
                                             class="block w-full text-sm border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                             placeholder="Keterangan...">
                                     </td>
@@ -216,19 +216,27 @@
             </div>
 
             {{-- 3. ASPEK & CATATAN --}}
-            @php $firstData = $listAsesi->first(); @endphp
+            @php 
+                // Ambil data Global dari salah satu asesi yang sudah punya KomentarAk05
+                // Logic: jika ada komentarAk05 -> Ak05, pake itu. 
+                $firstWithAk05 = $listAsesi->where('komentarAk05', '!=', null)->first();
+                $globalAk05 = $firstWithAk05?->komentarAk05?->Ak05;
+                
+                // Fallback ke kolom lama jika belum ada data baru (optional, for transition)
+                $firstData = $listAsesi->first(); 
+            @endphp
             <div class="grid grid-cols-1 gap-6 mb-6">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Aspek Negatif dan Positif dalam Asesmen</h3>
-                    <textarea name="aspek_asesmen" rows="4" class="block w-full text-sm border-gray-300 rounded-lg p-3" placeholder="Tuliskan aspek positif dan negatif...">{{ $firstData->aspek_dalam_AK05 ?? '' }}</textarea>
+                    <textarea name="aspek_asesmen" rows="4" class="block w-full text-sm border-gray-300 rounded-lg p-3" placeholder="Tuliskan aspek positif dan negatif...">{{ $globalAk05?->aspek_negatif_positif ?? $firstData->aspek_dalam_AK05 ?? '' }}</textarea>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Pencatatan Penolakan Hasil Asesmen</h3>
-                    <textarea name="catatan_penolakan" rows="3" class="block w-full text-sm border-gray-300 rounded-lg p-3" placeholder="Jika ada penolakan, tuliskan disini...">{{ $firstData->catatan_penolakan_AK05 ?? '' }}</textarea>
+                    <textarea name="catatan_penolakan" rows="3" class="block w-full text-sm border-gray-300 rounded-lg p-3" placeholder="Jika ada penolakan, tuliskan disini...">{{ $globalAk05?->penolakan_hasil_asesmen ?? $firstData->catatan_penolakan_AK05 ?? '' }}</textarea>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Saran Perbaikan (Asesor/Personil Terkait)</h3>
-                    <textarea name="saran_perbaikan" rows="3" class="block w-full text-sm border-gray-300 rounded-lg p-3" placeholder="Saran perbaikan untuk proses berikutnya...">{{ $firstData->saran_dan_perbaikan_AK05 ?? '' }}</textarea>
+                    <textarea name="saran_perbaikan" rows="3" class="block w-full text-sm border-gray-300 rounded-lg p-3" placeholder="Saran perbaikan untuk proses berikutnya...">{{ $globalAk05?->saran_perbaikan ?? $firstData->saran_dan_perbaikan_AK05 ?? '' }}</textarea>
                 </div>
             </div>
 
@@ -238,7 +246,10 @@
                 
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-gray-700 mb-2">Catatan:</label>
-                    <textarea name="catatan_akhir" rows="2" class="block w-full text-sm border-gray-300 rounded-lg p-2" placeholder="Catatan akhir...">{{ $firstData->catatan_AK05 ?? '' }}</textarea>
+                    {{-- Catatan is now stored in komentar_ak05->catatan_ak05 PER ASESI, but the form shows one global field? 
+                         If the user filled it once, we saved it to ALL asesi in store(). 
+                         So we can pick from the first asesi. --}}
+                    <textarea name="catatan_akhir" rows="2" class="block w-full text-sm border-gray-300 rounded-lg p-2" placeholder="Catatan akhir...">{{ $firstWithAk05?->komentarAk05?->catatan_ak05 ?? $firstData->catatan_AK05 ?? '' }}</textarea>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
