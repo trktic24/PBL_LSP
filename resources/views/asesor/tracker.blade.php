@@ -122,7 +122,8 @@
         $ia01Pass = $ia01Done || ($show['ia01'] != 1);
 
         // IA.02 (Existing)
-        $ia02Done = optional($dataSertifikasi->ia02)->exists() ?? false;
+        // Logic updated: IA02 is considered done if IA01 is done
+        $ia02Done = (optional($dataSertifikasi->ia02)->exists() ?? false) || $ia01Done;
         $stIa02 = $ia02Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia02Pass = $ia02Done || ($show['ia02'] != 1);
 
@@ -402,7 +403,12 @@
                                 <div class="flex justify-between items-start">
                                     <h3 class="text-lg font-semibold text-gray-800">FR.IA.02 - Tugas Praktik Demonstrasi</h3>
                                     <div class="flex gap-2 ml-4">
-                                        @php $btn = getActionBtn($stIa02, $isFinalized); @endphp
+                                        @php 
+                                            $btn = getActionBtn($stIa02, $isFinalized); 
+                                            if ($stIa02 == 'DONE') {
+                                                $btn['label'] = 'Lihat Instruksi';
+                                            }
+                                        @endphp
                                         {{-- Link ke Show karena itu formnya --}}
                                         <a href="{{ route('ia02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                             class="{{ $btn['class'] }} text-xs font-bold py-1 px-3 rounded-md">{{ $btn['label'] }}</a>
@@ -724,7 +730,7 @@
                                     <h3 class="text-lg font-bold text-gray-800 mt-2">Keputusan Asesmen (AK.02)</h3>
                                     <div class="flex gap-2 ml-4 mt-2">
                                         {{-- Tombol Verifikasi --}}
-                                        <a href="{{ route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                        <a href="{{ route('ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                             class="{{ btnState($allIADone ? 100 : 0, 100, $isFinalized) }} text-xs font-bold py-1 px-3 rounded-md">Verifikasi</a>
 
                                         {{-- Tombol Lihat PDF --}}

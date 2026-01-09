@@ -1,8 +1,8 @@
-@extends('layouts.app-sidebar-asesi')
+@extends($layout ?? 'layouts.app-sidebar-asesi')
 @php
-    $jadwal = $sertifikasi->jadwal;
-    $asesi = $sertifikasi->asesi;
-    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);  
+    $jadwal = $sertifikasi->jadwal ?? null;
+    $asesi = $sertifikasi->asesi ?? null;
+    $backUrl = isset($backUrl) ? $backUrl : ($sertifikasi ? route('asesor.tracker', $sertifikasi->jadwal->id_jadwal) : '#');
 @endphp
 
 @section('content')
@@ -23,7 +23,7 @@
         </div>
     @endif
 
-    <form action="{{ route('mapa02.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+    <form action="{{ isset($isMasterView) ? '#' : route('mapa02.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
         @csrf
         
         {{-- HEADER --}}
@@ -31,10 +31,20 @@
         
         {{-- IDENTITAS SKEMA --}}
         <div class="mb-8">
-            <x-identitas_skema_form.identitas_skema_form :sertifikasi="$sertifikasi" />
+            @if(isset($isMasterView))
+                <div class="p-4 bg-gray-100 rounded-lg">
+                    <p class="font-bold">Skema: {{ $skema->nama_skema }}</p>
+                    <p>Nomor: {{ $skema->nomor_skema }}</p>
+                </div>
+            @else
+                <x-identitas_skema_form.identitas_skema_form :sertifikasi="$sertifikasi" />
+            @endif
         </div>
 
-        @foreach($sertifikasi->jadwal->skema->kelompokPekerjaan as $kp)
+        @php
+            $currentSkema = isset($isMasterView) ? $skema : $sertifikasi->jadwal->skema;
+        @endphp
+        @foreach($currentSkema->kelompokPekerjaan as $kp)
             <div class="mb-10">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Kelompok Pekerjaan: {{ $kp->nama_kelompok_pekerjaan }}</h2>
                 
@@ -144,12 +154,12 @@
 
         {{-- TOMBOL --}}
         <div class="flex justify-end gap-4 pb-10 mt-8">
-            <a href="{{ route('asesor.daftar_asesi', $sertifikasi->id_jadwal) }}" 
+            <a href="{{ $backUrl }}" 
                 class="px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full shadow-sm transition">
                 Kembali
             </a>
             
-            @if($canEdit)
+            @if($canEdit && !isset($isMasterView))
                 <button type="submit" class="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2">
                     Simpan Form ✓
                 </button>

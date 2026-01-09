@@ -18,6 +18,9 @@
         </div> 
         <div class="border-l border-gray-900 p-4 text-center font-extrabold text-2xl sm:text-3xl bg-gray-200 hidden sm:block"> 
             FR.IA.09 
+            @if(isset($isMasterView))
+                <div class="text-xs text-blue-600 mt-1">[TEMPLATE MASTER]</div>
+            @endif
         </div> 
     </header>
     

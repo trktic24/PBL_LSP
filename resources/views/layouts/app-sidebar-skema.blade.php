@@ -28,7 +28,7 @@
 <body x-data x-cloak class="bg-gray-50 min-h-screen flex">
 
   {{-- Sidebar --}}
-  <x-sidebar.sidebar-skema :jadwal="$jadwal ?? null"/>
+  <x-sidebar.sidebar-skema :jadwal="$jadwal ?? null" :backUrl="$backUrl ?? 'javascript:history.back()'"/>
 
   {{-- Konten utama --}}
     <main
