@@ -58,8 +58,8 @@ class FrAk07Controller extends Controller
             $isReadOnly = true;
         }
 
-        // Optional: Admin tetap ReadOnly (atau logic lain sesuai kebutuhan)
-        if ($user && $user->role && $user->role->nama_role === 'admin') {
+        // Optional: Admin and Superadmin tetap ReadOnly
+        if ($user && $user->role && in_array($user->role->nama_role, ['admin', 'superadmin'])) {
             $isReadOnly = true;
         }
 
@@ -92,6 +92,32 @@ class FrAk07Controller extends Controller
 
     public function store(Request $request, $id_data_sertifikasi_asesi)
     {
+        // Security Check 1: Prevent re-submission if form already filled
+        $alreadyFilled = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->exists();
+        if ($alreadyFilled) {
+            return redirect()->back()->with('error', 'Form ini sudah pernah diisi dan tidak dapat diubah lagi.');
+        }
+
+        // Security Check 2: Authorization - only Asesor can submit, Admin cannot
+        $user = Auth::user();
+        if (!$user || !$user->role) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $roleName = $user->role->nama_role;
+        if (!in_array($roleName, ['asesor'])) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menyimpan form ini.');
+        }
+
+        // Security Check 3: Verify data exists and user has access
+        $dataSertifikasi = DataSertifikasiAsesi::with('jadwal.asesor')->findOrFail($id_data_sertifikasi_asesi);
+
+        // Verify asesor owns this data
+        $asesor = \App\Models\Asesor::where('id_user', $user->id)->first();
+        if (!$asesor || $dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
+            abort(403, 'Anda tidak berhak mengakses data ini.');
+        }
+
         // Validasi sesuai input di view
         $request->validate([
             'potensi_asesi' => 'nullable|array',

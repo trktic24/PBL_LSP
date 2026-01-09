@@ -669,8 +669,8 @@ class AsesorJadwalController extends Controller
 
         $isReadOnly = $alreadyFilled;
 
-        // Optional: Admin tetap ReadOnly (atau logic lain sesuai kebutuhan)
-        if (Auth::user()->role && Auth::user()->role->nama_role === 'admin') {
+        // Optional: Admin and Superadmin tetap ReadOnly
+        if (Auth::user()->role && in_array(Auth::user()->role->nama_role, ['admin', 'superadmin'])) {
             $isReadOnly = true;
         }
 
@@ -756,6 +756,12 @@ class AsesorJadwalController extends Controller
 
     public function storeAk07(Request $request, $id_sertifikasi_asesi)
     {
+        // Security Check: Prevent re-submission if form already filled
+        $alreadyFilled = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+        if ($alreadyFilled) {
+            return redirect()->back()->with('error', 'Form ini sudah pernah diisi dan tidak dapat diubah lagi.');
+        }
+
         \DB::beginTransaction();
         try {
             // 1. Simpan Respon Potensi
