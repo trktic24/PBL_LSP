@@ -43,7 +43,13 @@ class IA05Controller extends Controller
         $roleText = $this->getRoleText($user); // Ganti nama fungsi biar jelas
         // ----------------------------------------
 
-        $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_asesi);        
+
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $data_jawaban_asesi = collect();
@@ -210,7 +216,13 @@ class IA05Controller extends Controller
             return abort(403, 'Akses Ditolak. Asesi tidak boleh melihat Kunci Jawaban!');
         }
 
-        $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_asesi);
+
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
