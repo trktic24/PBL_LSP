@@ -107,7 +107,7 @@ class KartuPesertaPdfController extends Controller
         $pdf = Pdf::loadView('asesi.pdf.kartu_peserta', $data);
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->stream('Kartu_Peserta.pdf');
+        return $pdf->download('Kartu_Peserta.pdf');
     }
 
     // Helper kecil biar kodingan rapi

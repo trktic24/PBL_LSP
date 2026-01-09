@@ -109,8 +109,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="border border-gray-900 p-2 text-center text-red-500">
-                                        Soal belum digenerate untuk asesi ini (Tabel pertanyaan_ia10 kosong).
+                                    <td colspan="3" class="border border-gray-900 p-2 text-center text-black">
+                                        Skema ini menggunakan pertanyaan isian, silahkan jawab pertanyaan isian
                                     </td>
                                 </tr>
                             @endforelse
@@ -211,10 +211,26 @@
                     ]) 
                 </div>
                 
-                @include('components.kolom_ttd.asesiasesor', [
-                    'showAsesi'  => false,
-                    'showAsesor' => true,
-                ])
+                <div class="mt-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gray-50 border border-gray-200 rounded-md shadow-sm">
+                        {{-- BAGIAN ASESOR --}}
+                        <div class="space-y-3">
+                            <h3 class="font-semibold text-gray-700 mb-3">Semarang, {{ \Carbon\Carbon::parse($asesi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</h3>
+                            <h4 class="font-medium text-gray-800">Asesor</h4>
+                            <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-start">
+                                <!-- Baris Nama -->
+                                <span class="font-medium text-gray-700">Nama</span>
+                                <span class="font-medium">:</span>
+                                <span class="font-medium text-gray-700">{{ $asesi->asesor->nama_lengkap }}</span>
+                                <span class="font-medium text-gray-700">Tanda Tangan</span>
+                                <span class="font-medium">:</span>
+                                <img src="{{ route('secure.file', ['path' => $asesi->asesor->tanda_tangan]) }}" 
+                                    alt="Tanda Tangan Asesor" 
+                                    class="h-20 w-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="form-footer flex justify-between mt-10">
                     <button type="button" class="btn border border-blue-600 text-blue-600 px-5 py-2 rounded">Batal</button>

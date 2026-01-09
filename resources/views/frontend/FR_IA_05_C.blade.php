@@ -53,11 +53,11 @@
 
         {{-- HEADER IDENTITAS --}}
         <x-identitas_skema_form.identitas_skema_form
-            skema="{{ $asesi->jadwal->skema->judul_skema ?? 'Junior Web Developer' }}"
-            nomorSkema="{{ $asesi->jadwal->skema->kode_skema ?? 'SKK.TIK.001' }}"
-            tuk="Tempat Kerja" 
-            namaAsesor="{{ $asesi->asesor->nama_asesor ?? 'Budi Santoso (Asesor)' }}"
-            namaAsesi="{{ $asesi->asesi->nama_asesi ?? 'Siti Aminah (Asesi)' }}"
+            skema="{{ $asesi->jadwal->skema->nama_skema ?? 'Junior Web Developer' }}"
+            nomorSkema="{{ $asesi->jadwal->skema->nomor_skema ?? 'SKK.TIK.001' }}"
+            tuk="{{ $asesi->jadwal->jenisTuk->jenis_tuk ?? 'SKK.TIK.001' }}" 
+            namaAsesor="{{ $asesi->jadwal->asesor->nama_lengkap ?? 'Budi Santoso (Asesor)' }}"
+            namaAsesi="{{ $asesi->asesi->nama_lengkap ?? 'Siti Aminah (Asesi)' }}"
             tanggal="{{ now()->format('d F Y') }}"
         />
 
@@ -72,38 +72,84 @@
         </div>
         @endif
         
-        {{-- TABEL UNIT KOMPETENSI (STATIS/DISABLED) --}}
-        <div class="form-section my-8">
-             <div class="border border-gray-900 shadow-md">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-black text-white">
-                            <th class="border border-gray-900 p-2 font-semibold w-[25%]">Kelompok Pekerjaan ...</th>
-                            <th class="border border-gray-900 p-2 font-semibold w-[10%]">No.</th>
-                            <th class="border border-gray-900 p-2 font-semibold w-[30%]">Kode Unit</th>
-                            <th class="border border-gray-900 p-2 font-semibold w-[35%]">Judul Unit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td rowspan="3" class="border border-gray-900 p-2 align-top text-sm">..............................</td>
-                            <td class="border border-gray-900 p-2 text-sm text-center">1.</td>
-                            <td class="border border-gray-900 p-2 text-sm"><input type="text" class="form-input w-full border-gray-300" disabled></td>
-                            <td class="border border-gray-900 p-2 text-sm"><input type="text" class="form-input w-full border-gray-300" disabled></td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 p-2 text-sm text-center">2.</td>
-                            <td class="border border-gray-900 p-2 text-sm"><input type="text" class="form-input w-full border-gray-300" disabled></td>
-                            <td class="border border-gray-900 p-2 text-sm"><input type="text" class="form-input w-full border-gray-300" disabled></td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 p-2 text-sm text-center">3.</td>
-                            <td class="border border-gray-900 p-2 text-sm"><input type="text" class="form-input w-full border-gray-300" disabled></td>
-                            <td class="border border-gray-900 p-2 text-sm"><input type="text" class="form-input w-full border-gray-300" disabled></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        {{-- === BAGIAN BARU: SLIDER KELOMPOK PEKERJAAN (ALPINE JS) === --}}
+        <div class="mb-8 mt-8" x-data="{ 
+            activeSlide: 0, 
+            totalSlides: {{ $asesi->jadwal->skema->kelompokPekerjaan->count() }} 
+        }">
+
+            @foreach ($asesi->jadwal->skema->kelompokPekerjaan as $indexKelompok => $kelompok)
+                
+                {{-- Container Slide --}}
+                <div x-show="activeSlide === {{ $indexKelompok }}" 
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-95"
+                        x-transition:enter-end="opacity-100 transform scale-100"
+                        class="border border-gray-200 rounded-lg overflow-hidden shadow-md bg-white">
+
+                    {{-- HEADER SLIDER --}}
+                    <div class="bg-blue-50 p-4 border-b border-blue-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-blue-900 mb-1">
+                                {{ $kelompok->judul_unit ?? 'Kelompok Pekerjaan ' . ($indexKelompok + 1) }}
+                            </h2>
+                            <p class="text-blue-600 text-sm font-medium">
+                                Kelompok Pekerjaan {{ $loop->iteration }} dari {{ $loop->count }}
+                            </p>
+                        </div>
+
+                        {{-- Navigasi Tombol --}}
+                        <div class="flex items-center space-x-3 bg-white px-3 py-1.5 rounded-full shadow-sm border border-blue-100">
+                            <button @click="activeSlide = activeSlide > 0 ? activeSlide - 1 : 0" 
+                                    :class="{ 'opacity-50 cursor-not-allowed': activeSlide === 0, 'hover:bg-blue-100 text-blue-600': activeSlide > 0 }"
+                                    class="p-2 rounded-full transition focus:outline-none" 
+                                    :disabled="activeSlide === 0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+
+                            <span class="text-sm font-bold text-gray-600 min-w-[3rem] text-center">
+                                <span x-text="activeSlide + 1"></span> / <span x-text="totalSlides"></span>
+                            </span>
+
+                            <button @click="activeSlide = activeSlide < totalSlides - 1 ? activeSlide + 1 : totalSlides - 1" 
+                                    :class="{ 'opacity-50 cursor-not-allowed': activeSlide === totalSlides - 1, 'hover:bg-blue-100 text-blue-600': activeSlide < totalSlides - 1 }"
+                                    class="p-2 rounded-full transition focus:outline-none"
+                                    :disabled="activeSlide === totalSlides - 1">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- TABEL UNIT --}}
+                    <div class="p-6 bg-white min-h-[300px]">
+                        <h3 class="font-bold text-gray-800 text-lg mb-4">Daftar Unit Kompetensi</h3>
+                        <div class="overflow-hidden border border-gray-200 rounded-lg">
+                            <table class="w-full text-left text-sm text-gray-600">
+                                <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-xs">
+                                    <tr>
+                                        <th class="px-6 py-3 border-b border-gray-200 w-16 text-center">No</th>
+                                        <th class="px-6 py-3 border-b border-gray-200 w-48">Kode Unit</th>
+                                        <th class="px-6 py-3 border-b border-gray-200">Judul Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @forelse($kelompok->unitKompetensi as $indexUnit => $unit)
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="px-6 py-4 text-center font-medium">{{ $indexUnit + 1 }}</td>
+                                            <td class="px-6 py-4 font-mono text-gray-900 font-semibold">{{ $unit->kode_unit }}</td>
+                                            <td class="px-6 py-4 text-gray-800">{{ $unit->judul_unit }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="px-6 py-4 text-center text-gray-400 italic">Tidak ada unit kompetensi di kelompok ini.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
 
         <div class="form-section my-8">
@@ -150,7 +196,7 @@
                                 <td class="border border-gray-900 p-2 text-sm">
                                     <input type="text" 
                                            class="form-input w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-center font-bold text-blue-800"
-                                           value="{{ $jawaban_kiri->jawaban_asesi_ia05 ?? '-' }}"
+                                           value="{{ $jawaban_kiri->jawaban_asesi_ia05 ?? 'A' }}"
                                            readonly>
                                 </td>
                                 <td class="border border-gray-900 p-2 text-sm text-center">
@@ -184,7 +230,7 @@
                                 <td class="border border-gray-900 p-2 text-sm">
                                     <input type="text" 
                                            class="form-input w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-center font-bold text-blue-800"
-                                           value="{{ $jawaban_kanan->jawaban_asesi_ia05 ?? '-' }}"
+                                           value="{{ $jawaban_kanan->jawaban_asesi_ia05 ?? 'B' }}"
                                            readonly>
                                 </td>
                                 <td class="border border-gray-900 p-2 text-sm text-center">

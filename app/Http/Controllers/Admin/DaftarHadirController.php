@@ -85,6 +85,33 @@ class DaftarHadirController extends Controller
         ]);
     }
 
+    public function exportPdfdaftarhadir(Request $request, $id_jadwal)
+    {
+        $jadwal = Jadwal::with(['skema', 'asesor', 'masterTuk', 'jenisTuk', 'dataSertifikasiAsesi'])
+                    ->findOrFail($id_jadwal);
+
+        // Otorisasi sederhana (sesuaikan kebutuhan)
+        if (Auth::user()->role === 'asesor') {
+            $asesor = Asesor::where('id_user', Auth::id())->first();
+            if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
+        }
+
+        // Ambil data peserta (tanpa pagination, tapi urutkan sesuai default/kebutuhan)
+        $pendaftar = DataSertifikasiAsesi::query()
+                    ->with(['asesi.user', 'asesi.dataPekerjaan', 'presensi'])
+                    ->where('id_jadwal', $id_jadwal)
+                    ->get(); // Get ALL data
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('Admin.master.schedule.daftar_hadir_pdf', [
+            'jadwal' => $jadwal,
+            'pendaftar' => $pendaftar,
+        ]);
+
+        return $pdf->stream('daftar_hadir_' . $jadwal->kode_jadwal . '.pdf');
+    }
+
     public function destroy($id)
     {
         try {

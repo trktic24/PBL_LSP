@@ -81,6 +81,23 @@
         border-radius: 6px;
         background: white;
     }
+
+    .error-text {
+        color: #dc2626;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    .error-border {
+        border: 2px solid #dc2626 !important;
+        border-radius: 4px;
+    }
+
+    .error-checkbox {
+        outline: 2px solid #dc2626;
+        outline-offset: 2px;
+    }
+
 </style>
 
 <div class="p-6">
@@ -452,13 +469,16 @@
                         <p class="mb-4 text-gray-800">{{ now()->format('d-m-Y') }}</p>
 
                         <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mb-2">
-                            @if($asesi->ttd_path)
-                                <img src="{{ asset($asesi->ttd_path) }}" class="h-full object-contain">
+                            @if($asesi->tanda_tangan)
+                                <img
+                                    src="{{ route('secure.file', ['path' => $asesi->tanda_tangan]) }}"
+                                    alt="Tanda Tangan Asesi"
+                                    class="h-full object-contain"
+                                >
                             @else
-                                <svg width="150" height="80" viewBox="0 0 200 100">
-                                    <path d="M10,80 Q50,10 90,80 T180,80"
-                                        stroke="black" fill="transparent" stroke-width="2"/>
-                                </svg>
+                                <div class="border-b border-gray-300 h-16 w-32 flex items-end text-xs text-gray-400 pb-1">
+                                    Belum ada TTD
+                                </div>
                             @endif
                         </div>
 
@@ -468,26 +488,28 @@
                     {{-- ASESOR --}}
                     <div>
                         <p class="font-bold">Asesor</p>
-                        <p>{{ now()->format('d-m-Y') }}</p>
+                        <p class="mb-4 text-gray-800">{{ now()->format('d-m-Y') }}</p>
 
-                        <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mt-4">
-                            @if($asesor->ttd_path ?? false)
-                                <img src="{{ asset($asesor->ttd_path) }}" class="h-full object-contain">
+                        <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mb-2">
+                            @if($asesor->tanda_tangan)
+                                <img
+                                    src="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}"
+                                    alt="Tanda Tangan Asesor"
+                                    class="h-full object-contain"
+                                >
                             @else
-                                <svg width="150" height="80" viewBox="0 0 200 100">
-                                    <path d="M20,50 C50,20 80,80 110,50 S170,20 190,80"
-                                        stroke="black" fill="transparent" stroke-width="2"/>
-                                </svg>
+                                <div class="border-b border-gray-300 h-16 w-32 flex items-end text-xs text-gray-400 pb-1">
+                                    Belum ada TTD
+                                </div>
                             @endif
                         </div>
 
-                        <p class="font-medium mt-2 text-center">{{ $asesor->nama_lengkap }}</p>
+                        <p class="font-medium text-center">{{ $asesor->nama_lengkap }}</p>
                     </div>
 
                 </div>
-
-                <p class="text-red-500 text-sm mt-4">* Tanda tangan ini, hanya simulasi.</p>
             </div>
+
 
             {{-- BUTTON --}}
             @if(!$locked)
@@ -501,12 +523,20 @@
         </div>
     </form>
 </div>
-
 <script>
+/* =====================================================
+   GLOBAL LOCK FLAG (DARI BLADE)
+===================================================== */
+const IS_LOCKED = @json($locked);
+
 /* =====================================================
    REKOMENDASI — CHECKBOX SINGLE SELECT
 ===================================================== */
 function onlyOne(selected) {
+
+    // 🔒 Jika locked, hentikan interaksi
+    if (IS_LOCKED) return;
+
     const group = document.getElementsByName(selected.name);
 
     group.forEach(el => {
@@ -521,7 +551,20 @@ function onlyOne(selected) {
 ===================================================== */
 const lanjutFields = ['kp', 'unit', 'elemen', 'kuk'];
 
+/* 🔥 TAMBAHAN: clear field observasi */
+function clearLanjutFields() {
+    lanjutFields.forEach(id => {
+        const field = document.getElementById(id);
+        if (!field) return;
+        field.value = '';
+    });
+}
+
 function setLanjutDisabled(isDisabled) {
+
+    // 🔒 Jika locked, JANGAN ubah state field
+    if (IS_LOCKED) return;
+
     lanjutFields.forEach(id => {
         const field = document.getElementById(id);
         if (!field) return;
@@ -530,7 +573,6 @@ function setLanjutDisabled(isDisabled) {
 
         if (isDisabled) {
             field.classList.add('disabled-field');
-            field.value = '';
         } else {
             field.classList.remove('disabled-field');
         }
@@ -538,14 +580,21 @@ function setLanjutDisabled(isDisabled) {
 }
 
 function updateLanjutFields() {
+
+    // 🔒 Jika locked, hentikan logika JS
+    if (IS_LOCKED) return;
+
     const kompeten = document.getElementById('rek_kompeten')?.checked;
     const tidak    = document.getElementById('rek_tidak')?.checked;
 
+    // ✔ KOMPETEN → disable + KOSONGKAN
     if (kompeten || !tidak) {
+        clearLanjutFields();      // 🔥 inti perubahan
         setLanjutDisabled(true);
         return;
     }
 
+    // ✔ OBSERVASI LANJUT
     setLanjutDisabled(false);
 }
 
@@ -554,6 +603,13 @@ function updateLanjutFields() {
 ===================================================== */
 document.querySelectorAll('.cb-radio').forEach(cb => {
     cb.addEventListener('change', function () {
+
+        // 🔒 Jika locked, cegah perubahan
+        if (IS_LOCKED) {
+            this.checked = !this.checked;
+            return;
+        }
+
         if (!this.checked) return;
 
         const group = this.dataset.group;
@@ -565,13 +621,50 @@ document.querySelectorAll('.cb-radio').forEach(cb => {
     });
 });
 
+/* ===============================
+   HELPER VALIDATION FUNCTIONS
+=============================== */
+function clearErrors() {
+    document.querySelectorAll('.error-text').forEach(e => e.remove());
+    document.querySelectorAll('.error-border').forEach(e => e.classList.remove('error-border'));
+    document.querySelectorAll('.error-checkbox').forEach(e => e.classList.remove('error-checkbox'));
+}
+
+function showError(element, message) {
+    if (!element) return;
+
+    element.classList.add('error-border');
+
+    const msg = document.createElement('div');
+    msg.className = 'error-text';
+    msg.innerText = message;
+
+    element.parentNode.appendChild(msg);
+}
+
+function scrollToElement(el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 /* =====================================================
-   VALIDASI SUBMIT FORM
+   VALIDASI SUBMIT FORM (FINAL FIX)
 ===================================================== */
 document
     .getElementById('formIA08')
     ?.addEventListener('submit', function (e) {
 
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if (IS_LOCKED) return;
+
+        clearErrors();
+
+        let firstErrorElement = null;
+
+        /* ===============================
+           1️⃣ VALIDASI BUKTI PORTOFOLIO
+        =============================== */
         const groups = {};
 
         document.querySelectorAll('.cb-radio').forEach(cb => {
@@ -580,19 +673,67 @@ document
             groups[group].push(cb);
         });
 
-        let incomplete = false;
-
         Object.values(groups).forEach(group => {
-            const checked = group.some(cb => cb.checked);
-            if (!checked) incomplete = true;
+            if (!group.some(cb => cb.checked)) {
+                group.forEach(cb => cb.classList.add('error-checkbox'));
+
+                if (!firstErrorElement) {
+                    firstErrorElement = group[0];
+                }
+            }
         });
 
-        if (incomplete) {
-            e.preventDefault();
-            alert('Lengkapi semua kolom verifikasi sebelum menyimpan.');
-        }
-    });
+        /* ===============================
+           2️⃣ VALIDASI REKOMENDASI ASESOR
+        =============================== */
+        const rekKompeten = document.getElementById('rek_kompeten');
+        const rekTidak    = document.getElementById('rek_tidak');
 
+        const rekomendasiCard = rekKompeten.closest('.section-box');
+
+        // hapus pesan lama jika ada
+        rekomendasiCard
+           .querySelectorAll('.error-text')
+           .forEach(e => e.remove());
+           
+        if (!rekKompeten.checked && !rekTidak.checked) {
+
+            const msg = document.createElement('div');
+            msg.className = 'error-text mt-2';
+            msg.innerText = 'Pilih salah satu rekomendasi asesor.';
+
+            // ⬇️ tempel DI BAWAH CARD (seperti sebelum diperbaiki)
+            rekomendasiCard.appendChild(msg);
+            firstErrorElement ??= rekKompeten;
+            }
+
+        /* ===============================
+           3️⃣ VALIDASI OBSERVASI LANJUT
+        =============================== */
+        if (rekTidak.checked) {
+            lanjutFields.forEach(id => {
+                const field = document.getElementById(id);
+                if (!field || field.value.trim() === '') {
+                    showError(field, 'Kolom ini wajib diisi.');
+                    firstErrorElement ??= field;
+                }
+            });
+        }
+
+        /* ===============================
+           ❌ JIKA ADA ERROR
+        =============================== */
+        if (firstErrorElement) {
+            scrollToElement(firstErrorElement);
+            return;
+        }
+
+        /* ===============================
+           ✅ JIKA SEMUA VALID
+        =============================== */
+        this.submit();
+    });
+    
 /* =====================================================
    INIT
 ===================================================== */
@@ -602,12 +743,17 @@ updateLanjutFields();
 @if($locked)
 <script>
 /* =====================================================
-   READ-ONLY MODE (ADMIN / LOCKED)
+   HARD READ-ONLY MODE (FINAL)
 ===================================================== */
-document.querySelectorAll('input').forEach(el => {
-    el.onclick = e => e.preventDefault();
-});
+document
+    .querySelectorAll('input, textarea, select')
+    .forEach(el => {
+        el.setAttribute('disabled', 'disabled');
+        el.setAttribute('readonly', 'readonly');
+        el.style.pointerEvents = 'none';
+    });
 </script>
+
 @endif
 
 @endsection
