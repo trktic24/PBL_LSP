@@ -199,10 +199,10 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             // Dashboard
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-            Route::get('/notifications', fn() => view('admin.notifications.notifications_admin'))->name('notifications');
+            Route::get('/notifications', fn() => view('Admin.notifications.notifications_admin'))->name('notifications');
 
             // Profile Admin
-            Route::get('/profile_admin', fn() => view('admin.profile.profile_admin'))->name('profile_admin');
+            Route::get('/profile_admin', fn() => view('Admin.profile.profile_admin'))->name('profile_admin');
             Route::controller(AdminProfileController::class)->group(function () {
                 Route::get('/profile', 'edit')->name('profile.edit');
                 Route::patch('/profile', 'update')->name('profile.update');
