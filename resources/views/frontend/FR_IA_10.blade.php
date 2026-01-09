@@ -1,9 +1,13 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 @section('content')
     <main class="main-content">
         <div class="p-8">
         
             <x-header_form.header_form title="FR.IA.10. VPK - VERIFIKASI PIHAK KETIGA" />
+            
+            @if(isset($isMasterView))
+                <div class="text-center font-bold text-blue-600 mb-4">[TEMPLATE MASTER]</div>
+            @endif
 
             <x-identitas_skema_form.identitas_skema_form
                 skema="Junior Web Developer"
@@ -95,7 +99,7 @@
                                                value="1" 
                                                class="form-radio h-4 w-4 text-blue-600"
                                                {{ ($soal->jawaban_pilihan_iya_tidak == 1) ? 'checked' : '' }}
-                                               required>
+                                               {{ isset($isMasterView) ? 'disabled' : 'required' }}>
                                     </td>
 
                                     {{-- Opsi TIDAK (Value 0) --}}
@@ -104,7 +108,8 @@
                                                name="checklist[{{ $soal->id_pertanyaan_ia10 }}]" 
                                                value="0" 
                                                class="form-radio h-4 w-4 text-blue-600"
-                                               {{ ($soal->jawaban_pilihan_iya_tidak === 0) ? 'checked' : '' }}>
+                                               {{ ($soal->jawaban_pilihan_iya_tidak === 0) ? 'checked' : '' }}
+                                               {{ isset($isMasterView) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                             @empty
@@ -234,7 +239,12 @@
 
                 <div class="form-footer flex justify-between mt-10">
                     <button type="button" class="btn border border-blue-600 text-blue-600 px-5 py-2 rounded">Batal</button>
+                    
+                    @if(!isset($isMasterView))
                     <button type="submit" class="btn bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">Simpan Verifikasi</button>
+                    @else
+                    <a href="{{ url()->previous() }}" class="btn bg-gray-500 text-white px-5 py-2 rounded hover:bg-gray-600">Kembali</a>
+                    @endif
                 </div>
                 
             </form>

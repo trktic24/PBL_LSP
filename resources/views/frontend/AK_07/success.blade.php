@@ -37,7 +37,7 @@
         {{-- Secondary Action --}}
         <div class="mt-4">
             <a href="{{ route('fr-ak-07.create', $sertifikasi->id_data_sertifikasi_asesi) }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                Lihat/Edit Kembali Form AK.07
+                Lihat Kembali Form AK.07
             </a>
         </div>
     </div>

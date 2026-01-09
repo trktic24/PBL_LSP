@@ -1,4 +1,4 @@
-@extends('layouts.wizard')
+@extends($layout ?? 'layouts.wizard')
 
 @section('wizard-content')
     {{-- Style khusus untuk halaman ini --}}
@@ -9,10 +9,8 @@
         }
     </style>
 
-
-
     {{-- KONTEN UTAMA --}}
-    <div class="bg-white">
+    <div class="bg-white p-6">
         
         {{-- Judul & Kop --}}
         <div class="mb-8 text-center"> 
@@ -21,16 +19,34 @@
             <h1 class="text-2xl font-bold text-black uppercase tracking-wide border-b-2 border-gray-100 pb-4 mb-6 inline-block">
                 FR.IA.04A. DIT – DAFTAR INSTRUKSI TERSTRUKTUR
             </h1>
+            @if(isset($isMasterView))
+                <p class="text-blue-600 font-bold mt-2">[TEMPLATE MASTER]</p>
+            @endif
         </div>
 
         {{-- Informasi Data Peserta --}}
         <div class="grid grid-cols-[200px_auto] gap-y-3 text-sm mb-10 text-gray-700">
             <div class="font-bold text-black">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)</div>
             <div>
-                <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : Junior Web Programmer</div>
-                <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : -</div>
+                <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ $skema->nama_skema ?? 'Junior Web Programmer' }}</div>
+                <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ $skema->nomor_skema ?? '-' }}</div>
             </div>
 
+            @if(isset($isMasterView))
+                {{-- Tampilkan Daftar Unit untuk Master View --}}
+                <div class="font-bold text-black">Unit Kompetensi</div>
+                <div>
+                    <ul class="list-disc pl-5">
+                        @forelse($units ?? [] as $unit)
+                            <li>{{ $unit->kode_unit }} - {{ $unit->judul_unit }}</li>
+                        @empty
+                            <li>-</li>
+                        @endforelse
+                    </ul>
+                </div>
+            @endif
+
+            @if(!isset($isMasterView))
             <div class="font-bold text-black">TUK</div>
             <div>: Sewaktu / Tempat Kerja / <span class="font-bold">Mandiri</span></div>
 
@@ -42,6 +58,7 @@
 
             <div class="font-bold text-black">Tanggal</div>
             <div>: 18 November 2025</div>
+            @endif
         </div>
 
         {{-- Panduan Asesor --}}
@@ -124,10 +141,16 @@
         </div>
 
         {{-- Tombol Aksi --}}
+        @if(!isset($isMasterView))
         <div class="mt-10 flex justify-end gap-4">
             <button class="px-6 py-2 bg-gray-200 text-gray-700 font-bold rounded shadow hover:bg-gray-300 transition">Simpan Draft</button>
             <button class="px-6 py-2 bg-blue-600 text-white font-bold rounded shadow hover:bg-blue-700 transition">Submit Form</button>
         </div>
+        @else
+        <div class="mt-10 flex justify-end gap-4">
+             <a href="{{ url()->previous() }}" class="px-6 py-2 bg-gray-600 text-white font-bold rounded shadow hover:bg-gray-700 transition">Kembali</a>
+        </div>
+        @endif
 
     </div>
 @endsection

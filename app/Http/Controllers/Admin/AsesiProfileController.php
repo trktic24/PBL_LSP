@@ -35,15 +35,69 @@ class AsesiProfileController extends Controller
         return $asesi->dataSertifikasi->sortByDesc('created_at')->first();
     }
 
-    // --- MENU 1: SETTINGS ---
+    // --- MENU 1: SETTINGS (Now: Laporan Asesi) ---
     public function settings($id_asesi)
     {
         $asesi = $this->getAsesi($id_asesi);
 
         // [PERBAIKAN] Ambil sertifikasi acuan
         $sertifikasiAcuan = $this->getSertifikasiAcuan($asesi);
+        
+        // Logic to get Active Forms (Copied from form method)
+        $activeForms = [];
+        $namaSkema = 'Belum mendaftar skema';
 
-        return view('Admin.profile_asesi.asesi_profile_settings', compact('asesi', 'sertifikasiAcuan'));
+        if ($sertifikasiAcuan && $sertifikasiAcuan->jadwal && $sertifikasiAcuan->jadwal->skema) {
+
+            $skema = $sertifikasiAcuan->jadwal->skema;
+            $namaSkema = $skema->nama_skema;
+
+            // 3. Mapping Kode Form - Definition only
+            $map = [
+                'apl_01' => 'FR.APL.01',
+                'apl_02' => 'FR.APL.02',
+                'fr_mapa_01' => 'FR.MAPA.01',
+                'fr_mapa_02' => 'FR.MAPA.02',
+                'fr_ak_01' => 'FR.AK.01',
+                'fr_ak_04' => 'FR.AK.04',
+                'fr_ia_01' => 'FR.IA.01',
+                'fr_ia_02' => 'FR.IA.02',
+                'fr_ia_03' => 'FR.IA.03',
+                'fr_ia_04' => 'FR.IA.04',
+                'fr_ia_05' => 'FR.IA.05',
+                'fr_ia_06' => 'FR.IA.06',
+                'fr_ia_07' => 'FR.IA.07',
+                'fr_ia_08' => 'FR.IA.08',
+                'fr_ia_09' => 'FR.IA.09',
+                'fr_ia_10' => 'FR.IA.10',
+                'fr_ia_11' => 'FR.IA.11',
+                'fr_ak_02' => 'FR.AK.02',
+                'fr_ak_03' => 'FR.AK.03',
+                'fr_ak_05' => 'FR.AK.05',
+                'fr_ak_06' => 'FR.AK.06',
+            ];
+
+            // 4. Cek Konfigurasi di Database (list_form)
+            if ($skema->listForm) {
+                $config = $skema->listForm;
+                $formsFound = false;
+
+                foreach ($map as $dbColumn => $displayCode) {
+                    if ($config->$dbColumn == 1) {
+                        $activeForms[] = $displayCode;
+                        $formsFound = true;
+                    }
+                }
+
+                if (!$formsFound) {
+                    $activeForms = array_values($map);
+                }
+            } else {
+                $activeForms = array_values($map);
+            }
+        }
+
+        return view('Admin.profile_asesi.asesi_profile_settings', compact('asesi', 'sertifikasiAcuan', 'activeForms', 'namaSkema'));
     }
 
     // --- MENU 2: FORM ---
@@ -487,5 +541,18 @@ class AsesiProfileController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Helper to show tracker by Data Sertifikasi ID (used in Master View)
+     */
+    public function showTrackerBySertifikasi($id_data_sertifikasi_asesi)
+    {
+        $sertifikasi = \App\Models\DataSertifikasiAsesi::findOrFail($id_data_sertifikasi_asesi);
+        
+        // Inject sertifikasi_id into request so getSertifikasiAcuan picks it up
+        request()->merge(['sertifikasi_id' => $id_data_sertifikasi_asesi]);
+        
+        return $this->tracker(request(), $sertifikasi->id_asesi);
     }
 }

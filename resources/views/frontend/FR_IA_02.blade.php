@@ -20,8 +20,8 @@
 
         <!-- Box Info Atas (Dinamis) -->
         {{-- Menggunakan komponen identitas_skema_form dengan data dinamis --}}
-        @if($sertifikasi)
-            <form action="{{ route('ia02.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+        @if($sertifikasi || (isset($isMasterView) && $isMasterView))
+            <form action="{{ $sertifikasi ? route('ia02.store', $sertifikasi->id_data_sertifikasi_asesi) : '#' }}" method="POST">
                 @csrf
 
                 {{-- HEADER --}}
@@ -30,9 +30,10 @@
                 {{-- IDENTITAS SKEMA --}}
                 <div class="mb-8">
                         <x-identitas_skema_form.identitas_skema_form :skema="$skema->nama_skema ?? ''" :nomorSkema="$skema->kode_unit ?? ''"
-                        :tuk="$jadwal->masterTuk->nama_lokasi ?? 'Tempat Kerja'" {{-- Asumsi relasi TUK di Jadwal --}}
-                        :namaAsesor="$jadwal->asesor->nama_lengkap ?? ''" :namaAsesi="$asesi->nama_lengkap ?? ''"
-                        :tanggal="optional($jadwal->tanggal_pelaksanaan)->format('d F Y') ?? date('d F Y')" />
+                        :tuk="optional($jadwal)->masterTuk->nama_lokasi ?? 'Tempat Kerja'" 
+                        :namaAsesor="optional(optional($jadwal)->asesor)->nama_lengkap ?? ''" 
+                        :namaAsesi="optional($asesi)->nama_lengkap ?? 'Template Master'"
+                        :tanggal="optional(optional($jadwal)->tanggal_pelaksanaan)->format('d F Y') ?? date('d F Y')" />
                 </div>
 
                 {{-- PETUNJUK --}}
@@ -140,18 +141,20 @@
 
                 {{-- TANDA TANGAN --}}
                 <div class="mb-10">
-                    <x-kolom_ttd.asesiasesor :sertifikasi="$sertifikasi" :tanggal="\Carbon\Carbon::now()" />
+                    @if(!isset($isMasterView))
+                        <x-kolom_ttd.asesiasesor :sertifikasi="$sertifikasi" :tanggal="\Carbon\Carbon::now()" />
+                    @endif
                 </div>
 
                 {{-- TOMBOL --}}
                 <div class="flex justify-end gap-4 pb-10">
 
-                    <a href="{{ route('asesor.tracker', $sertifikasi->id_data_sertifikasi_asesi) }}"
+                    <a href="{{ isset($isMasterView) ? url()->previous() : route('asesor.tracker', $sertifikasi->id_data_sertifikasi_asesi) }}"
                         class="px-6 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-full shadow-sm transition">
                         Kembali
                     </a>
 
-                    @if($isAdmin)
+                    @if($isAdmin && !isset($isMasterView))
                         {{-- TOMBOL SAVE ADMIN --}}
                         <button type="submit"
                             class="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2">
