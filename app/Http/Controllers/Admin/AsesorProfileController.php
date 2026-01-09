@@ -25,6 +25,39 @@ class AsesorProfileController extends Controller
     }
 
     // ==========================================================
+    // UPDATE PROFILE ASESOR (ADMIN ACTION)
+    // ==========================================================
+    public function updateProfile(Request $request, $id_asesor)
+    {
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nik' => 'required|string|max:16',
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'kebangsaan' => 'required|string|max:100',
+            'pekerjaan' => 'required|string|max:255',
+            'kabupaten_kota' => 'required|string|max:255',
+            'provinsi' => 'required|string|max:255',
+            'kode_pos' => 'required|string|max:10',
+            'alamat_rumah' => 'required|string',
+            'nomor_regis' => 'required|string|max:50',
+            'nomor_hp' => 'required|string|max:14',
+        ]);
+
+        $asesor = Asesor::findOrFail($id_asesor);
+        
+        $asesor->update($request->only([
+            'nama_lengkap', 'nik', 'tempat_lahir', 'tanggal_lahir', 
+            'jenis_kelamin', 'kebangsaan', 'pekerjaan', 
+            'kabupaten_kota', 'provinsi', 'kode_pos', 'alamat_rumah', 
+            'nomor_regis', 'nomor_hp'
+        ]));
+
+        return redirect()->route('admin.asesor.profile', $id_asesor)->with('success', 'Profil asesor berhasil diperbarui.');
+    }
+
+    // ==========================================================
     // HALAMAN BUKTI KELENGKAPAN
     // ==========================================================
     public function showBukti($id_asesor)

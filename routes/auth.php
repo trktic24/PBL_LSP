@@ -365,6 +365,7 @@ Route::middleware('auth')->group(function () {
 
                 Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
                 Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
+                Route::post('/update-profile', 'updateProfile')->name('asesor.update.ajax'); // Correct Route for Admin to Update Asesor
             });
 
             // Master Jadwal
@@ -443,16 +444,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
             Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
 
-            // AK-02
-            Route::get('/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
-            Route::put('/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
+            // AK-02 (Moved to web.php for shared access)
 
             // APL-02 (Verifikasi)
             Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
 
-            // IA-06 Penilaian
-            Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
-            Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+            // IA-06 Penilaian - Moved to Shared Group (below)
 
             Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
                 ->name('ia09.edit');
@@ -467,6 +464,11 @@ Route::middleware('auth')->group(function () {
         ->prefix('asesor')
         ->name('asesor.')
         ->group(function () {
+            // IA-06 Penilaian (Shared Admin & Asesor)
+            // Fixes 403 Forbidden for Admin
+            Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
+            Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+
             Route::controller(AsesorJadwalController::class)->group(function () {
                 Route::get('/berita-acara/{id_jadwal}', 'beritaAcara')->name('berita_acara');
                 Route::get('/berita-acara/pdf/{id_jadwal}', 'exportPdfberitaAcara')->name('berita_acara.pdf');
