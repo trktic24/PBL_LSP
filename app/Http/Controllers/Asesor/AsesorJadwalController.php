@@ -85,10 +85,18 @@ class AsesorJadwalController extends Controller
             $search = strtolower(trim($request->search));
 
             $months = [
-                'january' => 1, 'february' => 2, 'march' => 3,
-                'april' => 4, 'may' => 5, 'june' => 6,
-                'july' => 7, 'august' => 8, 'september' => 9,
-                'october' => 10, 'november' => 11, 'december' => 12,
+                'january' => 1,
+                'february' => 2,
+                'march' => 3,
+                'april' => 4,
+                'may' => 5,
+                'june' => 6,
+                'july' => 7,
+                'august' => 8,
+                'september' => 9,
+                'october' => 10,
+                'november' => 11,
+                'december' => 12,
             ];
 
             $jadwal->where(function ($q) use ($search, $months) {
@@ -97,8 +105,8 @@ class AsesorJadwalController extends Controller
                 * TEXT SEARCH
                 * ====================== */
                 $q->where('Status_jadwal', 'like', "%{$search}%")
-                ->orWhere('sesi', 'like', "%{$search}%")
-                ->orWhere(DB::raw("TIME_FORMAT(waktu_mulai, '%H:%i')"), 'like', "%{$search}%");
+                    ->orWhere('sesi', 'like', "%{$search}%")
+                    ->orWhere(DB::raw("TIME_FORMAT(waktu_mulai, '%H:%i')"), 'like', "%{$search}%");
 
                 /* ======================
                 * FULL DATE (16 december 2025)
@@ -106,14 +114,15 @@ class AsesorJadwalController extends Controller
                 try {
                     $date = Carbon::parse($search);
                     $q->orWhereDate('tanggal_pelaksanaan', $date->format('Y-m-d'));
-                } catch (\Exception $e) {}
+                } catch (\Exception $e) {
+                }
 
                 /* ======================
                 * MONTH + YEAR (december 2025)
                 * ====================== */
                 if (preg_match('/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})/', $search, $m)) {
                     $q->orWhereMonth('tanggal_pelaksanaan', $months[$m[1]])
-                    ->orWhereYear('tanggal_pelaksanaan', $m[2]);
+                        ->orWhereYear('tanggal_pelaksanaan', $m[2]);
                 }
 
                 /* ======================
@@ -131,15 +140,21 @@ class AsesorJadwalController extends Controller
                 }
 
                 // RELASI
-                $q->orWhereHas('skema', fn ($q) =>
+                $q->orWhereHas(
+                    'skema',
+                    fn($q) =>
                     $q->where('nama_skema', 'like', "%{$search}%")
                 )
-                ->orWhereHas('masterTuk', fn ($q) =>
-                    $q->where('nama_lokasi', 'like', "%{$search}%")
-                )
-                ->orWhereHas('jenisTuk', fn ($q) =>
-                    $q->where('jenis_tuk', 'like', "%{$search}%")
-                );
+                    ->orWhereHas(
+                        'masterTuk',
+                        fn($q) =>
+                        $q->where('nama_lokasi', 'like', "%{$search}%")
+                    )
+                    ->orWhereHas(
+                        'jenisTuk',
+                        fn($q) =>
+                        $q->where('jenis_tuk', 'like', "%{$search}%")
+                    );
             });
         }
 
@@ -247,9 +262,9 @@ class AsesorJadwalController extends Controller
         $sudahVerifikasiValidator = !DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
             ->where(function ($q) {
                 $q->whereDoesntHave('komentarAk05')
-                ->orWhereHas('komentarAk05', function ($q2) {
-                    $q2->whereNull('verifikasi_validator');
-                });
+                    ->orWhereHas('komentarAk05', function ($q2) {
+                        $q2->whereNull('verifikasi_validator');
+                    });
             })
             ->exists();
 
@@ -510,17 +525,15 @@ class AsesorJadwalController extends Controller
 
             $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
                 ->orderBy('asesi.nama_lengkap', $sortDirection);
-
         } elseif (in_array($sortColumn, ['hasil_asesmen', 'rekomendasi'])) {
 
             $query->leftJoin(
-                    'komentar_ak05',
-                    'data_sertifikasi_asesi.id_data_sertifikasi_asesi',
-                    '=',
-                    'komentar_ak05.id_data_sertifikasi_asesi'
-                )
+                'komentar_ak05',
+                'data_sertifikasi_asesi.id_data_sertifikasi_asesi',
+                '=',
+                'komentar_ak05.id_data_sertifikasi_asesi'
+            )
                 ->orderBy('komentar_ak05.rekomendasi', $sortDirection);
-
         } else {
 
             $query->orderBy('data_sertifikasi_asesi.id_data_sertifikasi_asesi', $sortDirection);
@@ -540,9 +553,8 @@ class AsesorJadwalController extends Controller
                 // 🔹 Search dari tabel KOMENTAR AK05
                 $q->orWhereHas('komentarAk05', function ($qk) use ($searchTerm) {
                     $qk->where('rekomendasi', 'like', "%{$searchTerm}%")
-                    ->orWhere('keterangan', 'like', "%{$searchTerm}%");
+                        ->orWhere('keterangan', 'like', "%{$searchTerm}%");
                 });
-
             });
         }
 
@@ -651,7 +663,15 @@ class AsesorJadwalController extends Controller
 
         $masterPotensi = PoinPotensiAk07::all();
         $masterPersyaratan = PersyaratanModifikasiAk07::with('catatanKeterangan')->get();
-        $isReadOnly = false;
+        // Cek apakah form sudah pernah diisi
+        $alreadyFilled = HasilPenyesuaianAk07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
+
+        $isReadOnly = $alreadyFilled;
+
+        // Optional: Admin tetap ReadOnly (atau logic lain sesuai kebutuhan)
+        if (Auth::user()->role && Auth::user()->role->nama_role === 'Admin') {
+            $isReadOnly = true;
+        }
 
         return view('frontend.AK_07.FR_AK_07', compact('sertifikasi', 'masterPotensi', 'masterPersyaratan', 'isReadOnly'));
     }
@@ -713,7 +733,6 @@ class AsesorJadwalController extends Controller
 
             \DB::commit();
             return redirect()->back()->with('success', 'Laporan FR.AK.05 berhasil disimpan.');
-
         } catch (\Exception $e) {
             \DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
@@ -784,7 +803,6 @@ class AsesorJadwalController extends Controller
 
             \DB::commit();
             return redirect()->back()->with('success', 'Form FR.AK.07 berhasil disimpan.');
-
         } catch (\Exception $e) {
             \DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());

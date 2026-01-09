@@ -51,11 +51,16 @@ class FrAk07Controller extends Controller
 
         $user = Auth::user();
         $isReadOnly = false;
-        if ($user && $user->role) {
-            $roleName = $user->role->nama_role;
-            if (in_array($roleName, ['Asesor', 'Admin'])) {
-                $isReadOnly = true;
-            }
+        // Cek apakah form sudah pernah diisi
+        $alreadyFilled = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->exists();
+
+        if ($alreadyFilled) {
+            $isReadOnly = true;
+        }
+
+        // Optional: Admin tetap ReadOnly (atau logic lain sesuai kebutuhan)
+        if ($user && $user->role && $user->role->nama_role === 'Admin') {
+            $isReadOnly = true;
         }
 
         return view('frontend.AK_07.FR_AK_07', [
