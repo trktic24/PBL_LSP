@@ -1,10 +1,14 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('content')
     <div class="p-4 sm:p-6 md:p-8">
 
         {{-- 1. Menggunakan Komponen Header Form --}}
-        <x-header_form.header_form title="FR.AK.01. PERSETUJUAN ASESMEN DAN KERAHASIAAN" /><br>
+        <x-header_form.header_form title="FR.AK.01. PERSETUJUAN ASESMEN DAN KERAHASIAAN" />
+        @if(isset($isMasterView))
+            <div class="text-center font-bold text-blue-600 my-2">[TEMPLATE MASTER]</div>
+        @endif
+        <br>
 
         {{-- ALERT NOTIFIKASI --}}
         @if(session('success'))
@@ -58,7 +62,7 @@
                 {{-- Nama Asesi --}}
                 <dt class="col-span-1 font-medium text-gray-500">Nama Asesi</dt>
                 <dd class="col-span-3 text-gray-900 font-semibold block">: 
-                    <span id="nama_asesi">{{ $asesi->nama_lengkap ?? Auth::user()->name }}</span>
+                    <span id="nama_asesi">{{ $asesi->nama_lengkap ?? (isset($isMasterView) ? '(Template Master)' : Auth::user()->name) }}</span>
                 </dd>
 
                 {{-- Bukti yang dikumpulkan (Display Only - Statis Sesuai FR) --}}
@@ -121,13 +125,14 @@
         <div class="mt-6 sm:mt-8 md:mt-12 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 border-t border-gray-200 pt-4 sm:pt-6">
             
             {{-- Tombol Kembali --}}
-            <a href="{{ route('tracker') }}"
+            <a href="{{ isset($isMasterView) ? url()->previous() : route('tracker') }}"
                 class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-gray-200 text-gray-700 font-semibold text-sm rounded-lg hover:bg-gray-300 transition shadow-sm text-center flex items-center justify-center">
                 <i class="fas fa-arrow-left mr-2 text-xs sm:text-sm"></i>
                 <span>Kembali</span>
             </a>
 
             {{-- Form Submit --}}
+            @if(!isset($isMasterView))
             <form action="{{ route('ak01.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
                 @csrf
                 <button type="submit" id="btn-submit-ak01"
@@ -136,6 +141,7 @@
                     <i class="fas fa-arrow-right ml-2 text-xs sm:text-sm"></i>
                 </button>
             </form>
+            @endif
         </div>
 
     </div>

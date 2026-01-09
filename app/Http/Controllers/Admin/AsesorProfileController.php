@@ -25,6 +25,39 @@ class AsesorProfileController extends Controller
     }
 
     // ==========================================================
+    // UPDATE PROFILE ASESOR (ADMIN ACTION)
+    // ==========================================================
+    public function updateProfile(Request $request, $id_asesor)
+    {
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nik' => 'required|string|max:16',
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'kebangsaan' => 'required|string|max:100',
+            'pekerjaan' => 'required|string|max:255',
+            'kabupaten_kota' => 'required|string|max:255',
+            'provinsi' => 'required|string|max:255',
+            'kode_pos' => 'required|string|max:10',
+            'alamat_rumah' => 'required|string',
+            'nomor_regis' => 'required|string|max:50',
+            'nomor_hp' => 'required|string|max:14',
+        ]);
+
+        $asesor = Asesor::findOrFail($id_asesor);
+        
+        $asesor->update($request->only([
+            'nama_lengkap', 'nik', 'tempat_lahir', 'tanggal_lahir', 
+            'jenis_kelamin', 'kebangsaan', 'pekerjaan', 
+            'kabupaten_kota', 'provinsi', 'kode_pos', 'alamat_rumah', 
+            'nomor_regis', 'nomor_hp'
+        ]));
+
+        return redirect()->route('admin.asesor.profile', $id_asesor)->with('success', 'Profil asesor berhasil diperbarui.');
+    }
+
+    // ==========================================================
     // HALAMAN BUKTI KELENGKAPAN
     // ==========================================================
     public function showBukti($id_asesor)
@@ -48,15 +81,29 @@ class AsesorProfileController extends Controller
     // ==========================================================
     // HALAMAN TINJAUAN ASESMEN (RIWAYAT JADWAL)
     // ==========================================================
-    public function showTinjauan($id_asesor)
+    public function showTinjauan(Request $request, $id_asesor)
     {
         $asesor = Asesor::findOrFail($id_asesor);
-        
-        // [REAL DATA] Mengambil jadwal milik asesor
-        $tinjauan_data = Jadwal::with(['skema', 'masterTuk'])
-            ->where('id_asesor', $id_asesor)
-            ->orderBy('tanggal_pelaksanaan', 'desc')
-            ->get();
+        $search = $request->input('search');
+
+        // [REAL DATA] Mengambil jadwal milik asesor dengan fitur search
+        $query = Jadwal::with(['skema', 'masterTuk'])
+            ->where('id_asesor', $id_asesor);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                // Cari berdasarkan Nama Skema
+                $q->whereHas('skema', function ($qSkema) use ($search) {
+                    $qSkema->where('nama_skema', 'like', "%{$search}%");
+                })
+                // Atau cari berdasarkan Nama Peserta (Asesi) yang terdaftar di jadwal tersebut
+                ->orWhereHas('dataSertifikasiAsesi.asesi', function ($qAsesi) use ($search) {
+                    $qAsesi->where('nama_lengkap', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $tinjauan_data = $query->orderBy('tanggal_pelaksanaan', 'desc')->get();
 
         return view('Admin.profile_asesor.asesor_profile_tinjauan', compact('asesor', 'tinjauan_data'));
     }
@@ -101,10 +148,9 @@ class AsesorProfileController extends Controller
 
         // 5. Logika Pengurutan (Sorting)
         if ($sortColumn === 'nama_lengkap') {
-            // Join table asesi untuk sorting berdasarkan nama
-            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
-                ->orderBy('asesi.nama_lengkap', $sortDirection)
-                ->select('data_sertifikasi_asesi.*'); // Penting: Pilih kolom tabel utama agar ID tidak tertimpa
+            // Optimization: Use subquery ordering to avoid join and redundant select
+            $query->orderBy(\App\Models\Asesi::select('nama_lengkap')
+                ->whereColumn('asesi.id_asesi', 'data_sertifikasi_asesi.id_asesi'), $sortDirection);
         } else {
             // Default sort
             $query->orderBy('id_data_sertifikasi_asesi', 'asc');
@@ -129,7 +175,10 @@ class AsesorProfileController extends Controller
             'sortDirection',
             'perPage',
             'semuaSudahAdaKomentar'
-        ));
+        ), [
+            'targetRoute' => 'admin.asesor.tracker.view',
+            'buttonLabel' => 'Lacak Progres'
+        ]);
     }
 
     // ==========================================================
@@ -271,6 +320,17 @@ class AsesorProfileController extends Controller
             
         // Menggunakan asesor_profile_tracker untuk daftar skema (sesuai permintaan user)
         return view('Admin.profile_asesor.asesor_profile_tracker', compact('asesor', 'tracker_data'));
+    }
+
+    /**
+     * Helper to show tracker by Data Sertifikasi ID (used in Master View for Asesor Profile)
+     */
+    public function showTrackerBySertifikasi($id_data_sertifikasi_asesi)
+    {
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_data_sertifikasi_asesi);
+        $id_asesor = $sertifikasi->jadwal->id_asesor;
+        
+        return $this->showTracker($id_asesor, $id_data_sertifikasi_asesi);
     }
 
     // ==========================================================

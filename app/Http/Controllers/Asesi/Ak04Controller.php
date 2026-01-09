@@ -11,15 +11,35 @@ use Illuminate\Support\Facades\DB;
 
 class Ak04Controller extends Controller
 {
+    // ============================================================================
+    // 🛡️ HELPER: CEK ROLE
+    // ============================================================================
+    private function isAdmin()
+    {
+        $role = Auth::user()->role->nama_role ?? '';
+        return in_array($role, ['admin', 'superadmin']);
+    }
+
+    private function isAsesor()
+    {
+        return Auth::check() && Auth::user()->role->nama_role === 'asesor';
+    }
+
     // 1. MENAMPILKAN FORM AK-04
     public function create($id_sertifikasi)
     {
-        $asesi_id = Auth::user()->asesi->id_asesi;
+        $query = DataSertifikasiAsesi::with(['jadwal.skema', 'jadwal.asesor', 'asesi']);
 
-        // Ambil data sertifikasi
-        $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'jadwal.asesor', 'asesi'])
-            ->where('id_asesi', $asesi_id)
-            ->findOrFail($id_sertifikasi);
+        // Jika bukan admin/asesor, batasi hanya data milik asesi yang bersangkutan
+        if (!$this->isAdmin() && !$this->isAsesor()) {
+            $asesi = Auth::user()->asesi;
+            if (!$asesi) {
+                abort(403, 'Profil asesi tidak ditemukan.');
+            }
+            $query->where('id_asesi', $asesi->id_asesi);
+        }
+
+        $sertifikasi = $query->findOrFail($id_sertifikasi);
 
         // Ambil respon lama (jika ada) untuk ditampilkan kembali (edit mode)
         $respon = ResponAk04::where('id_data_sertifikasi_asesi', $id_sertifikasi)->first();
@@ -30,6 +50,19 @@ class Ak04Controller extends Controller
     // 2. MENYIMPAN DATA (STORE)
     public function store(Request $request, $id_sertifikasi)
     {
+        $query = DataSertifikasiAsesi::query();
+
+        // Jika bukan admin/asesor, batasi hanya data milik asesi yang bersangkutan
+        if (!$this->isAdmin() && !$this->isAsesor()) {
+            $asesi = Auth::user()->asesi;
+            if (!$asesi) {
+                abort(403, 'Profil asesi tidak ditemukan.');
+            }
+            $query->where('id_asesi', $asesi->id_asesi);
+        }
+
+        $sertifikasi = $query->findOrFail($id_sertifikasi);
+
         // Validasi
         $request->validate([
             'banding_1' => 'required|in:ya,tidak',
@@ -57,7 +90,6 @@ class Ak04Controller extends Controller
             );
 
             // Opsional: Update Status Sertifikasi jadi "banding_diajukan"
-            $sertifikasi = DataSertifikasiAsesi::find($id_sertifikasi);
             // $sertifikasi->status_sertifikasi = 'banding_diajukan'; // Uncomment jika perlu
             // $sertifikasi->save();
 
@@ -68,5 +100,64 @@ class Ak04Controller extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Menampilkan Template Form FR.AK.04 (Admin Master View)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ak04.create',
+            'buttonLabel' => 'FR.AK.04',
+        ]);
     }
 }

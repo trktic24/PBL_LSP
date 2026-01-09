@@ -1,18 +1,22 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-asesi')
 @section('content')
     <main class="main-content">
         <div class="p-8">
         
             <x-header_form.header_form title="FR.IA.10. VPK - VERIFIKASI PIHAK KETIGA" />
+            
+            @if(isset($isMasterView))
+                <div class="text-center font-bold text-blue-600 mb-4">[TEMPLATE MASTER]</div>
+            @endif
 
-            <x-identitas_skema_form.identitas_skema_form
-                skema="Junior Web Developer"
-                nomorSkema="SKK.XXXXX.XXXX"
-                tuk="Tempat Kerja" 
-                namaAsesor="{{ $asesor->name ?? 'Nama Asesor' }}" 
-                namaAsesi="{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}" 
-                tanggal="{{ now()->format('d F Y') }}" 
-            />
+             <x-identitas_skema_form.identitas_skema_form
+            skema="{{ $asesi->jadwal->skema->nama_skema ?? 'Junior Web Developer' }}"
+            nomorSkema="{{ $asesi->jadwal->skema->nomor_skema ?? 'SKK.TIK.001' }}"
+            tuk="{{ $asesi->jadwal->jenisTuk->jenis_tuk ?? 'SKK.TIK.001' }}" 
+            namaAsesor="{{ $asesi->jadwal->asesor->nama_lengkap ?? 'Budi Santoso (Asesor)' }}"
+            namaAsesi="{{ $asesi->asesi->nama_lengkap ?? 'Siti Aminah (Asesi)' }}"
+            tanggal="{{ now()->format('d F Y') }}"
+        />
 
             {{-- Notifikasi --}}
             @if (session('success'))
@@ -95,7 +99,7 @@
                                                value="1" 
                                                class="form-radio h-4 w-4 text-blue-600"
                                                {{ ($soal->jawaban_pilihan_iya_tidak == 1) ? 'checked' : '' }}
-                                               required>
+                                               {{ isset($isMasterView) ? 'disabled' : 'required' }}>
                                     </td>
 
                                     {{-- Opsi TIDAK (Value 0) --}}
@@ -104,13 +108,14 @@
                                                name="checklist[{{ $soal->id_pertanyaan_ia10 }}]" 
                                                value="0" 
                                                class="form-radio h-4 w-4 text-blue-600"
-                                               {{ ($soal->jawaban_pilihan_iya_tidak === 0) ? 'checked' : '' }}>
+                                               {{ ($soal->jawaban_pilihan_iya_tidak === 0) ? 'checked' : '' }}
+                                               {{ isset($isMasterView) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="border border-gray-900 p-2 text-center text-red-500">
-                                        Soal belum digenerate untuk asesi ini (Tabel pertanyaan_ia10 kosong).
+                                    <td colspan="3" class="border border-gray-900 p-2 text-center text-black">
+                                        Skema ini menggunakan pertanyaan isian, silahkan jawab pertanyaan isian
                                     </td>
                                 </tr>
                             @endforelse
@@ -211,14 +216,35 @@
                     ]) 
                 </div>
                 
-                @include('components.kolom_ttd.asesiasesor', [
-                    'showAsesi'  => false,
-                    'showAsesor' => true,
-                ])
+                <div class="mt-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gray-50 border border-gray-200 rounded-md shadow-sm">
+                        {{-- BAGIAN ASESOR --}}
+                        <div class="space-y-3">
+                            <h3 class="font-semibold text-gray-700 mb-3">Semarang, {{ \Carbon\Carbon::parse($asesi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</h3>
+                            <h4 class="font-medium text-gray-800">Asesor</h4>
+                            <div class="grid grid-cols-[150px,10px,1fr] gap-y-2 text-sm items-start">
+                                <!-- Baris Nama -->
+                                <span class="font-medium text-gray-700">Nama</span>
+                                <span class="font-medium">:</span>
+                                <span class="font-medium text-gray-700">{{ $asesi->asesor->nama_lengkap }}</span>
+                                <span class="font-medium text-gray-700">Tanda Tangan</span>
+                                <span class="font-medium">:</span>
+                                <img src="{{ route('secure.file', ['path' => $asesi->asesor->tanda_tangan]) }}" 
+                                    alt="Tanda Tangan Asesor" 
+                                    class="h-20 w-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="form-footer flex justify-between mt-10">
                     <button type="button" class="btn border border-blue-600 text-blue-600 px-5 py-2 rounded">Batal</button>
+                    
+                    @if(!isset($isMasterView))
                     <button type="submit" class="btn bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">Simpan Verifikasi</button>
+                    @else
+                    <a href="{{ url()->previous() }}" class="btn bg-gray-500 text-white px-5 py-2 rounded hover:bg-gray-600">Kembali</a>
+                    @endif
                 </div>
                 
             </form>

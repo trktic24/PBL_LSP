@@ -43,7 +43,7 @@ class AsesorTableController extends Controller
         // ================================
         // PAGINATION (20 per halaman)
         // ================================
-        $asesors = $query->paginate(20);
+        $asesors = $query->paginate(10);
 
         // ================================
         // DATA FILTER DROPDOWN

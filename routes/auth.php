@@ -177,7 +177,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fr-ia-06-c', fn() => view('frontend.fr_IA_06_c'))->name('fr_IA_06_c');
 
     // FR.IA.07
-    Route::get('/fr-ia-07', [IA07Controller::class, 'index'])->name('FR_IA_07');
+    Route::get('/fr-ia-07/{id_sertifikasi}', [IA07Controller::class, 'index'])->name('FR_IA_07');
 
     // FR.IA.10
     Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
@@ -199,10 +199,10 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             // Dashboard
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-            Route::get('/notifications', fn() => view('admin.notifications.notifications_admin'))->name('notifications');
+            Route::get('/notifications', fn() => view('Admin.notifications.notifications_admin'))->name('notifications');
 
             // Profile Admin
-            Route::get('/profile_admin', fn() => view('admin.profile.profile_admin'))->name('profile_admin');
+            Route::get('/profile_admin', fn() => view('Admin.profile.profile_admin'))->name('profile_admin');
             Route::controller(AdminProfileController::class)->group(function () {
                 Route::get('/profile', 'edit')->name('profile.edit');
                 Route::patch('/profile', 'update')->name('profile.update');
@@ -365,6 +365,7 @@ Route::middleware('auth')->group(function () {
 
                 Route::get('/assessment/{id_data_sertifikasi_asesi}', 'showAssessmentDetail')->name('asesor.assessment.detail');
                 Route::post('/update-status', 'updateStatus')->name('asesor.update_status');
+                Route::post('/update-profile', 'updateProfile')->name('asesor.update.ajax'); // Correct Route for Admin to Update Asesor
             });
 
             // Master Jadwal
@@ -435,32 +436,18 @@ Route::middleware('auth')->group(function () {
                 Route::post('/daftar-hadir/{id_jadwal}/simpan', 'storeKehadiran')->name('simpan_kehadiran');
                 Route::get('/daftar-hadir/pdf/{id_jadwal}', 'exportPdfdaftarhadir')->name('daftar_hadir.pdf');
 
-                // Asesmen Links
-                // [FIX] Moved to Ak05Controller to fix 'Undefined variable $asesor' error
-                // Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05');
-                // Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
+                // Asesmen Links (MOVED TO SHARED GROUP BELOW)
 
-                Route::get('/jadwal/{id_jadwal}/ak06', 'ak06')->name('ak06');
-                Route::post('/ak06/store/{id_jadwal}', 'storeAk06')->name('ak06.store');
-
-                Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', 'ak07')->name('ak07');
-                Route::post('/ak07/store/{id_sertifikasi_asesi}', 'storeAk07')->name('fr-ak-07.store');
             });
 
-            // [FIX] AK-05 Routes (Correct Controller)
-            Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
-            Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
 
-            // AK-02
-            Route::get('/ak02/{id_asesi}', [Ak02Controller::class, 'edit'])->name('ak02.edit');
-            Route::put('/ak02/{id_asesi}', [Ak02Controller::class, 'update'])->name('ak02.update');
+
+            // AK-02 (Moved to web.php for shared access)
 
             // APL-02 (Verifikasi)
             Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
 
-            // IA-06 Penilaian
-            Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
-            Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+            // IA-06 Penilaian - Moved to Shared Group (below)
 
             Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
                 ->name('ia09.edit');
@@ -475,9 +462,29 @@ Route::middleware('auth')->group(function () {
         ->prefix('asesor')
         ->name('asesor.')
         ->group(function () {
+            // IA-06 Penilaian (Shared Admin & Asesor)
+            // Fixes 403 Forbidden for Admin
+            Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
+            Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+
+            // [FIX] AK-05 Routes (Correct Controller) - Moved to Shared Group
+            Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
+            Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
+
             Route::controller(AsesorJadwalController::class)->group(function () {
                 Route::get('/berita-acara/{id_jadwal}', 'beritaAcara')->name('berita_acara');
                 Route::get('/berita-acara/pdf/{id_jadwal}', 'exportPdfberitaAcara')->name('berita_acara.pdf');
+
+                // Asesmen Links (Shared Admin & Asesor)
+                // [MOVED TO Ak05Controller] - Fix Undefined Variable $asesor
+                // Route::get('/jadwal/{id_jadwal}/ak05', 'ak05')->name('ak05'); 
+                // Route::post('/ak05/store/{id_jadwal}', 'storeAk05')->name('ak05.store');
+
+                Route::get('/jadwal/{id_jadwal}/ak06', 'ak06')->name('ak06');
+                Route::post('/ak06/store/{id_jadwal}', 'storeAk06')->name('ak06.store');
+
+                Route::get('/asesmen/{id_sertifikasi_asesi}/ak07', 'ak07')->name('ak07');
+                Route::post('/ak07/store/{id_sertifikasi_asesi}', 'storeAk07')->name('fr-ak-07.store');
             });
         });
 

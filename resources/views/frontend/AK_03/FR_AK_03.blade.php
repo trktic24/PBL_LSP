@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('content')
     {{-- Style Internal --}}
@@ -17,6 +17,9 @@
 
         {{-- HEADER --}}
         <x-header_form.header_form title="FR.AK.03. UMPAN BALIK DAN CATATAN ASESMEN" />
+        @if(isset($isMasterView))
+            <div class="text-center font-bold text-blue-600 my-2">[TEMPLATE MASTER]</div>
+        @endif
         <br>
 
         {{-- ALERT --}}
@@ -32,7 +35,7 @@
         @endif
 
         {{-- FORM WRAPPER --}}
-        <form action="{{ route('ak03.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+        <form action="{{ isset($isMasterView) ? '#' : route('ak03.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
             @csrf
 
             {{-- 1. IDENTITAS SKEMA --}}
@@ -170,12 +173,14 @@
 
             {{-- BUTTONS --}}
             <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mt-8 border-t-2 border-gray-200 pt-6 mb-8">
-                <a href="{{ route('tracker') }}" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
+                <a href="{{ isset($isMasterView) ? url()->previous() : route('tracker') }}" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
                     Kembali
                 </a>
+                @if(!isset($isMasterView))
                 <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
                     Simpan Form FR.AK.03
                 </button>
+                @endif
             </div>
 
         </form>

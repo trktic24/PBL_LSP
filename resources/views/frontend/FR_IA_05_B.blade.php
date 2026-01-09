@@ -69,14 +69,14 @@
         <div class="flex items-center">
             <span>:</span>
             {{-- Ambil Judul Skema dari Controller --}}
-            <p class="ml-2 font-medium text-gray-600">{{ $skema_info->judul_skema ?? 'Junior Web Developer' }}</p>
+            <p class="ml-2 font-medium text-gray-600">{{ $skema_info->nama_skema ?? 'Junior Web Developer' }}</p>
         </div>
 
         <label class="text-sm font-bold text-black">Nomor</label>
         <div class="flex items-center">
             <span>:</span>
             {{-- Ambil Kode Skema dari Controller --}}
-            <p class="ml-2 font-medium text-gray-600">{{ $skema_info->kode_skema ?? 'SKK.XXXXX.XXXX' }}</p>
+            <p class="ml-2 font-medium text-gray-600">{{ $skema_info->nomor_skema ?? 'SKK.XXXXX.XXXX' }}</p>
         </div>
 
         <label class="text-sm font-bold text-black">TUK</label>

@@ -16,6 +16,11 @@
         
         /* Style khusus untuk jawaban */
         .answer-box { font-family: "Courier New", Courier, monospace; color: #00008B; }
+        .signature-img {
+            width: 120px;        /* atur sesuai kebutuhan */
+            height: auto;        /* jaga rasio */
+            max-height: 80px;    /* opsional */
+        }        
     </style>
 </head>
 <body>
@@ -33,7 +38,7 @@
         <tr>
             <td><strong>Nomor Skema</strong></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->skema->kode_skema ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->skema->nomor_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>TUK</strong></td>
@@ -118,21 +123,58 @@
     </table>
 
     <br><br>
-    <table class="no-border">
-        <tr>
-            <td style="width: 50%; text-align: center;">
-                Asesi,
-                <br><br><br><br>
-                <strong>{{ $sertifikasi->asesi->nama_lengkap ?? '(.......................)' }}</strong>
-            </td>
-            <td style="width: 50%; text-align: center;">
-                Semarang, {{ date('d-m-Y') }}<br>
-                Asesor Kompetensi,
-                <br><br><br><br>
-                <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
-            </td>
-        </tr>
-    </table>
+    {{-- TANDA TANGAN --}}
+    <div class="mt-30" style="width: 100%;">
+        <table style="border: none;">
+            <tr>
+                {{-- ASESI --}}
+                <td style="width: 50%; border: none; vertical-align: top;">
+                    <div class="section-title">
+                        Semarang, {{ \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
+                    </div>
+
+                    <div class="section-title">Asesi</div>
+
+                    <table style="border: none;">
+                        <tr>
+                            <td style="width: 120px; border: none;">Nama</td>
+                            <td style="width: 10px; border: none;">:</td>
+                            <td style="border: none;">{{ $sertifikasi->asesi->nama_lengkap }}</td>
+                        </tr>
+
+                        <tr>
+                            <td style="border: none;">Tanda Tangan</td>
+                            <td style="border: none;">:</td>
+                            <td style="border: none;">
+                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->asesi->tanda_tangan) }}" class="signature-img">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                {{-- ASESOR --}}
+                <td style="width: 50%; border: none; vertical-align: top;">
+                    <div class="section-title" style="margin-top: 30px;">Asesor Kompetensi</div>
+
+                    <table style="border: none;">
+                        <tr>
+                            <td style="width: 120px; border: none;">Nama</td>
+                            <td style="width: 10px; border: none;">:</td>
+                            <td style="border: none;">{{ $sertifikasi->jadwal->asesor->nama_lengkap }}</td>
+                        </tr>
+
+                        <tr>
+                            <td style="border: none;">Tanda Tangan</td>
+                            <td style="border: none;">:</td>
+                            <td style="border: none;">
+                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->jadwal->asesor->tanda_tangan) }}" class="signature-img">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
 
 </body>
 </html>

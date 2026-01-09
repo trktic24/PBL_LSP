@@ -7,7 +7,7 @@ use App\Models\KelompokPekerjaan;
 use App\Models\UnitKompetensi;
 use App\Models\DataPortofolio;
 use App\Models\BuktiPortofolioIA08IA09;
-use App\Models\IA08;
+use App\Models\Ia08;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
@@ -56,7 +56,7 @@ class IA08Controller extends Controller
 
 
         // 🔑 Ambil data IA08 (untuk recall UI rekomendasi)
-        $ia08 = IA08::where(
+        $ia08 = Ia08::where(
             'id_data_sertifikasi_asesi',
             $id_sertifikasi_asesi
         )->first();
@@ -78,6 +78,7 @@ class IA08Controller extends Controller
                 'jenisTuk' => $data->jadwal->jenisTuk,
                 'asesor' => $data->jadwal->asesor,
                 'asesi' => $data->asesi,
+                'jadwal' => $data->jadwal, // <--- Added for Sidebar
                 'data_sesi' => [
                     'tanggal_asesmen' => $data->jadwal->tanggal_pelaksanaan
                         ? date('Y-m-d', strtotime($data->jadwal->tanggal_pelaksanaan))
@@ -139,6 +140,25 @@ class IA08Controller extends Controller
                                 'Semua bukti portofolio WAJIB diisi (Valid, Asli, Terkini, dan Memadai).',
                         ]);
                 }
+            }
+        }
+
+        // ===============================
+        // VALIDASI OBSERVASI LANJUT (WAJIB ISI 4 KOLOM)
+        // ===============================
+        if ($request->rekomendasi === 'perlu observasi lanjut') {
+            if (
+                empty($request->kelompok_pekerjaan) ||
+                empty($request->unit_kompetensi) ||
+                empty($request->elemen) ||
+                empty($request->kuk)
+            ) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'observasi_lanjut' =>
+                            'Kelompok Pekerjaan, Unit Kompetensi, Elemen, dan KUK wajib diisi jika memilih Observasi Lanjut.',
+                    ]);
             }
         }
 
@@ -256,9 +276,65 @@ class IA08Controller extends Controller
             'ia08Header' => $ia08Header
         ]);
 
-        $pdf->setPaper('A4', 'portrait'); // Bisa landscape jika tabel terlalu lebar
+        return $pdf->stream('FR_IA_08.pdf');
+    }
 
-        $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $data->asesi->nama_lengkap);
-        return $pdf->stream('FR_IA_08_' . $namaAsesi . '.pdf');
+    /**
+     * Menampilkan Template Form FR.IA.08 (Admin Master View)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ia08.show',
+            'buttonLabel' => 'FR.IA.08',
+        ]);
     }
 }

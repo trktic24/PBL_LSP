@@ -21,14 +21,9 @@ class IA05Controller extends Controller
         if (!$user)
             return 'guest';
 
-        if ($user->role_id == 1)
-            return 'admin';
-        elseif ($user->role_id == 2)
-            return 'asesi';
-        elseif ($user->role_id == 3)
-            return 'asesor';
-        else
-            return 'guest';
+        // Gunakan relasi role->nama_role (admin, asesi, asesor)
+        // Pastikan model User punya relasi 'role' yang meload tabel roles
+        return $user->role ? $user->role->nama_role : 'guest';
     }
 
     /**
@@ -43,7 +38,13 @@ class IA05Controller extends Controller
         $roleText = $this->getRoleText($user); // Ganti nama fungsi biar jelas
         // ----------------------------------------
 
-        $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_asesi);        
+
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $data_jawaban_asesi = collect();
@@ -210,7 +211,13 @@ class IA05Controller extends Controller
             return abort(403, 'Akses Ditolak. Asesi tidak boleh melihat Kunci Jawaban!');
         }
 
-        $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_asesi);
+
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
@@ -220,8 +227,13 @@ class IA05Controller extends Controller
             ->keyBy('id_soal_ia05');
 
         // Ambil Umpan Balik
-        $contoh_jawaban = $lembar_jawab->first();
-        $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
+        $data_feedback = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                            ->whereNotNull('umpan_balik') 
+                            ->first();
+
+        // Kalau ketemu, ambil isinya. Kalau tidak, string kosong.
+        // PENTING: Nama properti harus 'umpan_balik' (sesuai DB), JANGAN 'umpan_balik_ia05'
+        $umpan_balik = $data_feedback ? $data_feedback->umpan_balik : '';
 
         return view('frontend.FR_IA_05_C', [
             'user' => $user,
@@ -262,11 +274,11 @@ class IA05Controller extends Controller
             }
 
             // Simpan Umpan Balik (Jika ada kolomnya di DB)
-            // if ($request->has('umpan_balik')) {
-            //     // Pastikan kolom 'umpan_balik_ia05' ada di database kamu
-            //      LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-            //         ->update(['umpan_balik_ia05' => $request->umpan_balik]);
-            // }
+            if ($request->has('umpan_balik')) {
+                // Pastikan kolom 'umpan_balik_ia05' ada di database kamu
+                 LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                    ->update(['umpan_balik' => $request->umpan_balik]);
+            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Penilaian berhasil disimpan.');
@@ -286,6 +298,9 @@ class IA05Controller extends Controller
             'asesi',
             'jadwal.masterTuk',
             'jadwal.skema.asesor',
+            'jadwal.asesor',                                  // Data Asesor
+            'jadwal.jenisTuk',                                // Data TUK
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
 
         // 2. Ambil Soal (Urut ID)
@@ -297,8 +312,11 @@ class IA05Controller extends Controller
             ->keyBy('id_soal_ia05');
 
         // 4. Ambil Umpan Balik (Ambil dari salah satu record jawaban)
-        $contoh_jawaban = $lembar_jawab->first();
-        $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
+       $data_feedback = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                            ->whereNotNull('umpan_balik') 
+                            ->first();
+        
+        $umpan_balik = $data_feedback ? $data_feedback->umpan_balik : '-';
 
         // 5. Render PDF
         $pdf = Pdf::loadView('pdf.ia_05', [
@@ -311,5 +329,64 @@ class IA05Controller extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('FR_IA_05_' . $asesi->asesi->nama_lengkap . '.pdf');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.05 (Admin Master View)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ia05.asesor',
+            'buttonLabel' => 'FR.IA.05',
+        ]);
     }
 }

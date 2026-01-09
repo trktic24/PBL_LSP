@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+use Illuminate\Support\Facades\Auth;
+
 class Ak02Controller extends Controller
 {
     public function edit($id_asesi)
@@ -16,6 +18,7 @@ class Ak02Controller extends Controller
         // Ambil Data
         $asesi = DataSertifikasiAsesi::with([
             'jadwal.skema.kelompokPekerjaan.unitKompetensi',
+            'jadwal.asesor', // <--- Added
             'asesi.user',
             'lembarJawabIa05' => function ($q) {
                 $q->whereNotNull('pencapaian_ia05');
@@ -38,23 +41,29 @@ class Ak02Controller extends Controller
         $ia07Done = $asesi->ia07->count() > 0;
 
         // Relasi HasOne (Mengembalikan Object atau Null -> Cek tidak null)
-        // JANGAN PAKAI ->count() > 0 untuk HasOne!
         $ia10Done = !is_null($asesi->ia10);
         $ia02Done = !is_null($asesi->ia02);
 
         $isFinalized = ($asesi->level_status >= 100);
 
-        // Jika data belum lengkap, lempar kembali (kecuali sudah final)
-        if (!$isFinalized && !($ia05Done && $ia06Done && $ia07Done && $ia10Done && $ia02Done)) {
+        // Check if user is Admin/Superadmin
+        $user = Auth::user();
+        $isAdmin = $user && in_array($user->role_id, [1, 4]);
+
+        // Jika data belum lengkap, lempar kembali (kecuali sudah final atau user adalah Admin)
+        if (!$isAdmin && !$isFinalized && !($ia05Done && $ia06Done && $ia07Done && $ia10Done && $ia02Done)) {
             return redirect()->back()->with('error', 'Penilaian Asesmen (IA) belum lengkap. Mohon selesaikan penilaian IA terlebih dahulu.');
         }
 
-        // Ambil data penilaian yang sudah ada
-        $penilaianList = Ak02::where('id_data_sertifikasi_asesi', $id_asesi)
-            ->get()
-            ->keyBy('id_unit_kompetensi');
+        // Ambil Data Penilaian yang sudah ada (jika ada)
+        // Kita key-by ID Unit Kompetensi biar gampang akses di Blade
+        $penilaianList = $asesi->ak02()->get()->keyBy('id_unit_kompetensi');
 
-        return view('frontend.AK_02.FR_AK_02', compact('asesi', 'penilaianList'));
+        // Extract Skema and Jadwal for Sidebar
+        $skema = $asesi->jadwal->skema;
+        $jadwal = $asesi->jadwal;
+
+        return view('frontend.AK_02.FR_AK_02', compact('asesi', 'penilaianList', 'skema', 'jadwal'));
     }
 
     public function update(Request $request, $id_asesi)
@@ -88,6 +97,14 @@ class Ak02Controller extends Controller
                         'komentar' => $globalKomentar,
                     ]
                 );
+            }
+
+            $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+            
+            if ($globalKompeten) {
+                $asesi->update([
+                    'rekomendasi_hasil_asesmen_AK02' => $globalKompeten,
+                ]);
             }
 
             DB::commit();
@@ -205,5 +222,64 @@ class Ak02Controller extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('FR_AK_02_' . str_replace(' ', '_', $data['nama_asesi']) . '.pdf');
+    }
+
+    /**
+     * Menampilkan Template Form FR.AK.02 (Admin Master View)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ak02.edit',
+            'buttonLabel' => 'FR.AK.02',
+        ]);
     }
 }

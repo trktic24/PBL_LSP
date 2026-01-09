@@ -34,16 +34,27 @@
         $pertanyaanFiltered = $currentKelompok
             ? $pertanyaanIA03->where('kelompok_pekerjaan_id', $currentKelompok->id)->values()
             : collect();
+            
+        if(isset($isMasterView) && $pertanyaanIA03->isEmpty()){
+             // Mockup data for display if needed or just handle empty in view
+        }
     @endphp
 
     <div class="flex h-screen overflow-hidden">
-
+        
         <!-- SIDEBAR -->
-        <x-sidebar2 :idAsesi="$asesi->id_asesi ?? null" :sertifikasi="$sertifikasi ?? null" />
+        @if(isset($isMasterView))
+             {{-- Admin Sidebar or None --}}
+        @else
+             <x-sidebar2 :idAsesi="$asesi->id_asesi ?? null" :sertifikasi="$sertifikasi ?? null" />
+        @endif
 
         <!-- MAIN CONTENT -->
         <main class="flex-1 p-8 md:p-12 bg-white overflow-y-auto">
             <div class="max-w-6xl mx-auto">
+                @if(isset($isMasterView))
+                    <div class="text-center font-bold text-blue-600 mb-4">[TEMPLATE MASTER - FR.IA.03]</div>
+                @endif
 
                 <!-- JUDUL -->
                 <div class="mb-8">

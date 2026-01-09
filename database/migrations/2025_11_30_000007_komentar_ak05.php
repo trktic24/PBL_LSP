@@ -18,13 +18,14 @@ return new class extends Migration {
             // isi kolom tabel komentar_ak05
             $table->enum('rekomendasi', ['K', 'BK'])->comment('K=Kompeten, BK=Belum Kompeten');
             $table->text('keterangan')->nullable();
+            $table->text('catatan_ak05')->nullable();
             $table->boolean('verifikasi_validator')->default(false)->comment('jika 1(diverifikasi), jika 0(ditolak)');
             $table->timestamps();
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migrations.f
      */
     public function down(): void
     {
