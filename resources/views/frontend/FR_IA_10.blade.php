@@ -1,18 +1,18 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-asesi')
 @section('content')
     <main class="main-content">
         <div class="p-8">
         
             <x-header_form.header_form title="FR.IA.10. VPK - VERIFIKASI PIHAK KETIGA" />
 
-            <x-identitas_skema_form.identitas_skema_form
-                skema="Junior Web Developer"
-                nomorSkema="SKK.XXXXX.XXXX"
-                tuk="Tempat Kerja" 
-                namaAsesor="{{ $asesor->name ?? 'Nama Asesor' }}" 
-                namaAsesi="{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}" 
-                tanggal="{{ now()->format('d F Y') }}" 
-            />
+             <x-identitas_skema_form.identitas_skema_form
+            skema="{{ $asesi->jadwal->skema->nama_skema ?? 'Junior Web Developer' }}"
+            nomorSkema="{{ $asesi->jadwal->skema->nomor_skema ?? 'SKK.TIK.001' }}"
+            tuk="{{ $asesi->jadwal->jenisTuk->jenis_tuk ?? 'SKK.TIK.001' }}" 
+            namaAsesor="{{ $asesi->jadwal->asesor->nama_lengkap ?? 'Budi Santoso (Asesor)' }}"
+            namaAsesi="{{ $asesi->asesi->nama_lengkap ?? 'Siti Aminah (Asesi)' }}"
+            tanggal="{{ now()->format('d F Y') }}"
+        />
 
             {{-- Notifikasi --}}
             @if (session('success'))

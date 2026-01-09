@@ -18,6 +18,8 @@ class IA10Controller extends Controller
             'jadwal.asesor',
         ])->findOrFail($id_asesi);
 
+        $jadwal = $asesi->jadwal;
+
         // 1. Ambil Data Header (Jika sudah ada)
         $header_ia10 = Ia10::where('id_data_sertifikasi_asesi', $id_asesi)->first();
 
@@ -48,7 +50,8 @@ class IA10Controller extends Controller
             'daftar_soal' => $daftar_soal,
             'header' => $header_ia10,
             'essay_answers' => $essay_answers, // Data jawaban essay
-            'user' => $user
+            'user' => $user,
+            "jadwal" => $jadwal
         ]);
     }
 
