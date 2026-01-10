@@ -366,8 +366,8 @@ Route::middleware('auth')->group(function () {
                 Route::post('/ia09/store', [IA09Controller::class, 'storeTemplate'])->name('ia09.store');
                 Route::get('/ia10', [IA10Controller::class, 'editTemplate'])->name('ia10');
                 Route::post('/ia10/store', [IA10Controller::class, 'storeTemplate'])->name('ia10.store');
-                Route::get('/ia11', [IA11Controller::class, 'editTemplate'])->name('ia11');
-                Route::post('/ia11/store', [IA11Controller::class, 'storeTemplate'])->name('ia11.store');
+                Route::get('/ia11', [\App\Http\Controllers\IA11Controller::class, 'editTemplate'])->name('ia11');
+                Route::post('/ia11/store', [\App\Http\Controllers\IA11Controller::class, 'storeTemplate'])->name('ia11.store');
 
                 // AK forms
                 Route::get('/ak01', [Ak01Controller::class, 'editTemplate'])->name('ak01');
