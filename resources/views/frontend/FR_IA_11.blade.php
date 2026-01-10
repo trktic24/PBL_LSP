@@ -158,7 +158,7 @@
                         <td colspan="2" class="border border-gray-900 p-2 align-top">
                             {{-- Tanggal penggunaan (DB Column: tanggal_pengoperasian) --}}
                             <div class="font-bold mb-1">Tanggal penggunaan/penggunaan :</div>
-                            <input type="text" name="tanggal_pengoperasian" value="{{ $ia11->tanggal_pengoperasian }}" class="form-input w-full mb-2 border-b border-dashed border-gray-400 p-0 text-sm focus:ring-0" {{ $asesiEditableAttr }}>
+                            <input type="date" name="tanggal_pengoperasian" value="{{ $ia11->tanggal_pengoperasian }}" class="form-input w-full mb-2 border-b border-dashed border-gray-400 p-0 text-sm focus:ring-0" {{ $asesiEditableAttr }}>
                             
                             {{-- Gambar produk (DB Column: gambar_produk) --}}
                             <div class="font-bold mb-1">Gambar produk (jika ada) :</div>
