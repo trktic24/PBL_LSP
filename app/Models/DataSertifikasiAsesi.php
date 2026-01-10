@@ -29,7 +29,7 @@ use App\Models\ResponDiperlukanPenyesuaianAk07;
 use App\Models\HasilPenyesuaianAK07;
 use App\Models\DaftarHadirAsesi;
 use App\Models\KomentarAk05;
-use App\Models\ResponApl2Ia01;
+use App\Models\ResponApl02Ia01;
 use App\Models\Skema; // Tambahan
 use App\Models\PenyusunValidator;
 
@@ -161,7 +161,7 @@ class DataSertifikasiAsesi extends Model
 
     public function ia01(): HasOne
     {
-        return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasOne(ResponApl02Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     public function ia10(): HasOne
@@ -206,7 +206,7 @@ class DataSertifikasiAsesi extends Model
 
 
 
-    public function responbuktiAk01(): HasMany
+    public function responBuktiAk01(): HasMany
     {
         return $this->hasMany(ResponBuktiAk01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
@@ -221,9 +221,9 @@ class DataSertifikasiAsesi extends Model
         return $this->hasOne(KomentarAk05::class, 'id_data_sertifikasi_asesi');
     }
 
-    public function responApl2Ia01(): HasMany
+    public function responApl02Ia01(): HasMany
     {
-        return $this->hasMany(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi');
+        return $this->hasMany(ResponApl02Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     public function lembarJawabIa05(): HasMany
@@ -394,6 +394,6 @@ class DataSertifikasiAsesi extends Model
 
     public function asesmenMandiri()
     {
-        return $this->hasMany(\App\Models\ResponApl2Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasMany(\App\Models\ResponApl02Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 }

@@ -137,63 +137,34 @@ class IA01Controller extends Controller
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        // 1. Filter Asesi by Skema & Pagination
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        // Simple Search
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        // 2. Dummy Objects & Layout Data matching APL01
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0; 
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi.elemen.kriteria'])->findOrFail($id_skema);
+        $kelompok = $skema->kelompokPekerjaan->first();
         
-        // Mock Relations
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
         
-        $jadwal = new \App\Models\Jadwal([
-             'tanggal_pelaksanaan' => now(), 
-             'waktu_mulai' => '08:00',
-        ]);
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
-            'jadwal' => $jadwal,
+        $units = \App\Models\UnitKompetensi::with(['elemen.kriteria'])
+            ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan ?? 0)
+            ->orderBy('urutan')
+            ->get();
+
+        return view('frontend.IA_01.admin_show', [
+            'skema' => $skema,
+            'kelompok' => $kelompok,
+            'units' => $units,
+            'sertifikasi' => $sertifikasi,
+            'responses' => collect(),
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia01.view',
-            'buttonLabel' => 'FR.IA.01',
-            'formName' => 'Ceklis Observasi Aktivitas di Tempat Kerja',
         ]);
     }
     /**
@@ -358,8 +329,8 @@ class IA01Controller extends Controller
             ->get();
 
         // 3. Ambil Jawaban (Respon)
-        // Pastikan nama Model sesuai dengan file kamu: ResponApl2Ia01
-        $responses = \App\Models\ResponApl2Ia01::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
+        // Pastikan nama Model sesuai dengan file kamu: ResponApl02Ia01
+        $responses = \App\Models\ResponApl02Ia01::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
             ->get()
             ->keyBy('id_kriteria');
 

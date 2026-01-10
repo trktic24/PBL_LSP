@@ -93,57 +93,24 @@ class FrAk06Controller extends Controller
     public function adminShow($skema_id)
     {
         $skema = \App\Models\Skema::findOrFail($skema_id);
-
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($skema_id) {
-            $q->where('id_skema', $skema_id);
-        });
-
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
+        
         $jadwal = new \App\Models\Jadwal([
             'tanggal_pelaksanaan' => now(),
             'waktu_mulai' => '08:00',
         ]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        
+        $asesor = new \App\Models\Asesor([
+            'nama_lengkap' => auth()->user() ? auth()->user()->name : 'Administrator',
+            'no_reg' => '-'
+        ]);
+        $jadwal->setRelation('asesor', $asesor);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
+        return view('frontend.FR_AK_06', [
             'jadwal' => $jadwal,
+            'skema' => $skema,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'admin.ak06.view', 
-            'buttonLabel' => 'FR.AK.06',
-            'formName' => 'Meninjau Proses Asesmen',
+            'template' => null
         ]);
     }
 

@@ -121,9 +121,9 @@ class TenSchemesSeeder extends Seeder
                 }
 
                 // Ensure we have a valid JenisTuk
-                $jenisTuk = \App\Models\JenisTuk::first();
+                $jenisTuk = \App\Models\JenisTUK::first();
                 if (!$jenisTuk) {
-                    $jenisTuk = \App\Models\JenisTuk::create(['sewaktu' => '1', 'tempat_kerja' => '0', 'mandiri' => '0']);
+                    $jenisTuk = \App\Models\JenisTUK::create(['sewaktu' => '1', 'tempat_kerja' => '0', 'mandiri' => '0']);
                 }
 
                 // Ensure we have a valid MasterTuk

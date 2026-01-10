@@ -112,67 +112,27 @@ class APL01Controller extends Controller
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        // 1. Filter Asesi by Skema & Pagination
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01', 
-            'responBuktiAk01', 
-            'lembarJawabIa05', 
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        // Simple Search
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        // 2. Dummy Objects for View Compatibility
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0; // Force set non-fillable PK
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
         
-        // Mock Relations for Sidebar (Prevent crash in sidebar_profile_asesor)
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null); // or $skema if we want to show it as "Main Schema"
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
         
-        $jadwal = new \App\Models\Jadwal([
-             'tanggal_pelaksanaan' => now(), // Placeholder date
-             'waktu_mulai' => '08:00',
-        ]);
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        // 3. Logic for "Berita Acara" button (always false/disabled for master view usually, or check all)
-        $semuaSudahAdaKomentar = false; 
-
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
+        return view('frontend.APL_01.APL_01_1', [
+            'sertifikasi' => $sertifikasi,
+            'asesi' => $asesi,
+            'skema' => $skema,
             'jadwal' => $jadwal,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'semuaSudahAdaKomentar' => $semuaSudahAdaKomentar,
-            'targetRoute' => 'APL_01_1',
-            'buttonLabel' => 'FR.APL.01',
-            'formName' => 'Permohonan Sertifikasi Kompetensi',
         ]);
     }
 }

@@ -18,6 +18,11 @@ class Ak03Controller extends Controller
      */
     public function index($id)
     {
+        return $this->create($id);
+    }
+
+    public function create($id)
+    {
         $user = Auth::user();
         
         // Cek apakah admin/superadmin

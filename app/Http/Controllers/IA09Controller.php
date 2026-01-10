@@ -19,16 +19,29 @@ class IA09Controller extends Controller
      */
     protected function prepareIA09Data($id_data_sertifikasi_asesi)
     {
-        // 1. Ambil data utama DataSertifikasiAsesi
-        $dataSertifikasi = DataSertifikasiAsesi::with([
-            'jadwal.skema.kelompokPekerjaan.unitKompetensi',
-            'jadwal.asesor',
-            'jadwal.jenisTuk',
-            'asesi',
-            'penyusunValidator.penyusun',
-            'penyusunValidator.validator',
-            'portofolio.buktiPortofolioIA08IA09',
-        ])->findOrFail($id_data_sertifikasi_asesi);
+        if ($id_data_sertifikasi_asesi == 0) {
+            $dataSertifikasi = new DataSertifikasiAsesi();
+            $dataSertifikasi->id_data_sertifikasi_asesi = 0;
+            $dataSertifikasi->setRelation('asesi', new \App\Models\Asesi(['nama_lengkap' => 'Template Master']));
+            $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+            $jadwal->setRelation('skema', new Skema(['nama_skema' => 'Template Skema', 'kode_unit' => 'SKM001']));
+            $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+            $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+            $dataSertifikasi->setRelation('jadwal', $jadwal);
+            $dataSertifikasi->setRelation('portofolio', collect());
+            $dataSertifikasi->setRelation('penyusunValidator', null);
+        } else {
+            // 1. Ambil data utama DataSertifikasiAsesi
+            $dataSertifikasi = DataSertifikasiAsesi::with([
+                'jadwal.skema.kelompokPekerjaan.unitKompetensi',
+                'jadwal.asesor',
+                'jadwal.jenisTuk',
+                'asesi',
+                'penyusunValidator.penyusun',
+                'penyusunValidator.validator',
+                'portofolio.buktiPortofolioIA08IA09',
+            ])->findOrFail($id_data_sertifikasi_asesi);
+        }
 
         $portofolio = $dataSertifikasi->portofolio->first();
         $penyusunValidator = $dataSertifikasi->penyusunValidator;
@@ -97,16 +110,25 @@ class IA09Controller extends Controller
                                             ->where('form_code', 'FR.IA.09')
                                             ->first();
                 if ($template && !empty($template->content)) {
-                    $startIndex = count($pertanyaan);
-                    foreach ($template->content as $idx => $qText) {
-                        $pertanyaan[] = [
-                            'no' => $startIndex + $idx + 1,
-                            'pertanyaan' => $qText,
-                            'jawaban' => '',
-                            'pencapaian' => '',
-                            'id_jawaban' => null,
-                        ];
-                    }
+                // [STATIC FALLBACK]
+                $defaultQuestions = [
+                    'Ceritakan pengalaman Anda dalam menangani proyek serupa.',
+                    'Bagaimana Anda memastikan kualitas hasil kerja Anda?',
+                    'Apa tantangan terbesar yang pernah Anda hadapi dalam pekerjaan ini dan bagaimana solusinya?'
+                ];
+
+                $templateContent = ($template && !empty($template->content)) ? $template->content : $defaultQuestions;
+
+                $startIndex = count($pertanyaan);
+                foreach ($templateContent as $idx => $qText) {
+                    $pertanyaan[] = [
+                        'no' => $startIndex + $idx + 1,
+                        'pertanyaan' => $qText,
+                        'jawaban' => '',
+                        'pencapaian' => '',
+                        'id_jawaban' => null,
+                    ];
+                }
                 }
             } else {
                 // Jika sudah ada data, ambil dari database
@@ -351,58 +373,30 @@ class IA09Controller extends Controller
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function ($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function ($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
+        $dataIA09 = $this->prepareIA09Data(0); // Trigger defaults
+
+        return view('frontend.IA09', [
+            'dataIA09' => $dataIA09,
+            'mode' => 'view',
+            'asesi' => $asesi,
+            'skema' => $skema,
             'jadwal' => $jadwal,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia09.edit',
-            'buttonLabel' => 'FR.IA.09',
-            'formName' => 'Pertanyaan Wawancara',
         ]);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Asesi\Apl02;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
-use App\Models\ResponApl2Ia01;
+use App\Models\ResponApl02Ia01;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -78,7 +78,7 @@ class PraasesmenController extends Controller
 
             foreach ($request->respon as $idKriteria => $data) {
                 $filePath = null;
-                $existing = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->where('id_kriteria', $idKriteria)->first();
+                $existing = ResponApl02Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->where('id_kriteria', $idKriteria)->first();
 
                 // 1. Handle File Upload
                 if ($request->hasFile("respon.$idKriteria.bukti")) {
@@ -95,7 +95,7 @@ class PraasesmenController extends Controller
                 }
 
                 // 2. Simpan ke Database
-                ResponApl2Ia01::updateOrCreate(
+                ResponApl02Ia01::updateOrCreate(
                     [
                         'id_data_sertifikasi_asesi' => $idDataSertifikasi,
                         'id_kriteria' => $idKriteria,
@@ -148,7 +148,7 @@ class PraasesmenController extends Controller
         $asesorObj = $sertifikasi->jadwal->asesor;
 
         // 2. Ambil Respon yang SUDAH ADA
-        $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
+        $existingResponses = ResponApl02Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
 
         // 3. Load View PDF
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.APL_02', [
@@ -183,7 +183,7 @@ class PraasesmenController extends Controller
         $asesorObj = $sertifikasi->jadwal->asesor;
 
         // 2. Ambil Respon (History Jawaban)
-        $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
+        $existingResponses = ResponApl02Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
 
         // 3. Return View Frontend (Shared View) dengan Mode 'view'
         // Kita menggunakan view yang sama dengan asesi tapi dengan mode berbeda
@@ -244,11 +244,12 @@ class PraasesmenController extends Controller
             'jadwal.skema',
             'jadwal.masterTuk',
             'jadwal.asesor',
-            'responApl2Ia01',
+            'responApl02Ia01',
             'responBuktiAk01',
             'lembarJawabIa05',
             'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
+        ])->orderBy(request('sort', 'created_at'), request('direction', 'desc'))
+        ->whereHas('jadwal', function($q) use ($id_skema) {
             $q->where('id_skema', $id_skema);
         });
 
@@ -287,8 +288,8 @@ class PraasesmenController extends Controller
             'asesor' => $asesor,
             'jadwal' => $jadwal,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
+            'sortColumn' => request('sort', 'created_at'),
+            'sortDirection' => request('direction', 'desc'),
             'perPage' => request('per_page', 10),
             'targetRoute' => 'apl02.view',
             'buttonLabel' => 'FR.APL.02',

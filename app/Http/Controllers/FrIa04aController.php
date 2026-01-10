@@ -120,58 +120,45 @@ class FrIa04aController extends Controller
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
-            'jadwal' => $jadwal,
+        // Required logic from AssessmenFRIA04tController@showIA04A
+        $hal_yang_disiapkan_db = "1. Portofolio yang relevan dengan unit kompetensi.\n2. Dokumen pendukung keahlian.";
+        $hal_yang_didemonstrasikan_db = "1. Verifikasi keaslian bukti.\n2. Konfirmasi kemutakhiran data.";
+
+        return view('asesi.assesmen.FRIA04_Asesor', [
+            'asesi' => $asesi,
+            'asesor' => $jadwal->asesor,
+            'skema' => $skema,
+            'jenis_tuk_db' => 'tempat kerja',
+            'judul_kegiatan_db' => 'Proyek Pembuatan Sistem Informasi Pendaftaran Mahasiswa Baru',
+            'tanggal_pelaksanaan' => now()->format('d/m/Y'),
+            'sertifikasi' => $sertifikasi,
+            'poinIA04A' => null,
+            'hal_yang_disiapkan_db' => $hal_yang_disiapkan_db,
+            'hal_yang_didemonstrasikan_db' => $hal_yang_didemonstrasikan_db,
+            'umpan_balik_asesi_db' => null,
+            'tanda_tangan_asesor_path' => null,
+            'tanda_tangan_asesi_path' => null,
+            'ttdAsesorBase64' => null,
+            'ttdAsesiBase64' => null,
+            'rekomendasi_db' => null,
+            'mockUnits' => $skema->kelompokPekerjaan->flatMap->unitKompetensi->map(fn($u) => ['code' => $u->kode_unit, 'title' => $u->judul_unit])->toArray(),
+            'kelompok_pekerjaan' => $skema->kelompokPekerjaan->first()->nama_kelompok_pekerjaan ?? '-',
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'fria04a.show',
-            'buttonLabel' => 'FR.IA.04',
-            'formName' => 'Ceklis Verifikasi Portofolio',
         ]);
     }
 }

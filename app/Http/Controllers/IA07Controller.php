@@ -171,23 +171,30 @@ class IA07Controller extends Controller
         // Ambil Data IA07 milik asesi ini
         $ia07 = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
 
-        // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, ambil dari Master Template
+        // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
         if ($ia07->isEmpty()) {
             $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
                                         ->where('form_code', 'FR.IA.07')
                                         ->first();
-            if ($template && !empty($template->content)) {
-                foreach ($template->content as $qText) {
-                    Ia07::create([
-                        'id_data_sertifikasi_asesi' => $idSertifikasi,
-                        'pertanyaan' => $qText,
-                        'jawaban_asesi' => '',
-                        'keputusan' => null
-                    ]);
-                }
-                // Refresh collection
-                $ia07 = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
+            
+            $defaultQuestions = [
+                "Sebutkan komponen utama dari unit kompetensi yang sedang diuji.",
+                "Apa yang Anda lakukan jika terjadi kendala teknis saat pelaksanaan tugas?",
+                "Bagaimana cara memastikan keselamatan kerja selama proses berlangsung?"
+            ];
+
+            $questions = ($template && !empty($template->content)) ? $template->content : $defaultQuestions;
+
+            foreach ($questions as $qText) {
+                Ia07::create([
+                    'id_data_sertifikasi_asesi' => $idSertifikasi,
+                    'pertanyaan' => $qText,
+                    'jawaban_asesi' => '',
+                    'pencapaian' => null
+                ]);
             }
+            // Refresh collection
+            $ia07 = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
         }
 
         // 3. Ambil Unit Kompetensi (Fallback ke collection kosong jika null)
@@ -247,54 +254,39 @@ class IA07Controller extends Controller
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
+        $this->cetakPDF(0); // This will trigger default questions for ID 0 if we handle it
+
+        $units = $skema->unitKompetensi->map(function ($unit) {
+            return [
+                'code' => $unit->kode_unit,
+                'title' => $unit->judul_unit
+            ];
         });
 
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
-        $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
-
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
+        return view('frontend.FR_IA_07', [
+            'asesi' => $asesi,
+            'asesor' => $jadwal->asesor,
+            'skema' => $skema,
+            'units' => $units,
+            'jenisTukOptions' => \App\Models\JenisTUK::pluck('jenis_tuk', 'id_jenis_tuk'),
             'jadwal' => $jadwal,
+            'sertifikasi' => $sertifikasi,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia07.asesor', 
-            'buttonLabel' => 'FR.IA.07',
-            'formName' => 'Pertanyaan Lisan',
         ]);
     }
 }

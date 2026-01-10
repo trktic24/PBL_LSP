@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DataSertifikasiAsesi; // <-- Panggil model pivot-mu
 use App\Models\Asesor;
-use App\Models\ResponApl2Ia01;
+use App\Models\ResponApl02Ia01;
 use App\Models\LembarJawabIA05;
 
 use App\Http\Controllers\Controller;

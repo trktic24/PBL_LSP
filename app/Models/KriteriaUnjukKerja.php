@@ -36,7 +36,6 @@ class KriteriaUnjukKerja extends Model
 
     public function responApl02Ia01s(): HasMany
     {
-        // Pastiin lu punya Model 'ResponApl2Ia01'
-        return $this->hasMany(ResponApl2Ia01::class, 'id_kriteria', 'id_kriteria');
+        return $this->hasMany(ResponApl02Ia01::class, 'id_kriteria', 'id_kriteria');
     }
 }

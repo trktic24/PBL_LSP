@@ -11,7 +11,7 @@ use App\Models\Jadwal;
 use App\Models\Asesor;
 use App\Models\Skema;
 use App\Models\MasterTUK;
-use App\Models\JenisTuk;
+use App\Models\JenisTUK;
 use App\Models\Asesi;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\Ak05;
@@ -231,7 +231,7 @@ class AsesorJadwalController extends Controller
 
         $jenistukIdsInJadwal = Jadwal::where('id_asesor', $id_asesor)
             ->select('id_jenis_tuk')->distinct()->pluck('id_jenis_tuk');
-        $listjenisTuk = JenisTuk::whereIn('id_jenis_tuk', $jenistukIdsInJadwal)
+        $listjenisTuk = JenisTUK::whereIn('id_jenis_tuk', $jenistukIdsInJadwal)
             ->pluck('jenis_tuk')->filter()->sort()->values();
 
         // Kirim ke view frontend.jadwal (dashboard asesor)

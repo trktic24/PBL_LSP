@@ -13,7 +13,7 @@ use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\IA06Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\IA11Controller;
+use App\Http\Controllers\Asesi\IA11\IA11Controller;
 use App\Http\Controllers\APL01Controller;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\FrMapa01Controller;
@@ -279,6 +279,7 @@ Route::middleware('auth')->group(function () {
                 ->prefix('master/skema/detail')
                 ->group(function () {
                 Route::get('/{id_skema}', 'index')->name('skema.detail');
+                Route::get('/{id_skema}/form/{form_code}', 'showFormAsesiList')->name('skema.form.asesi_list');
                 Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
                 Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
                 Route::get('/kelompok/{id_kelompok}/edit', 'editKelompok')->name('skema.detail.edit_kelompok');
@@ -415,6 +416,10 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
                 ->name('ia09.admin.view');
+
+            // View specific asesi forms (Admin/Asesor)
+            Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
+            Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
         });
 
     // ======================================================

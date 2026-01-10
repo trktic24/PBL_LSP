@@ -277,8 +277,24 @@ class IA06Controller extends Controller
             // Ambil soal berdasarkan skema jadwal
             $soals = SoalIA06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
 
-            if ($soals->isEmpty())
-                return; // Tidak ada soal, skip
+            // [STATIC FALLBACK] Jika skema tidak punya soal, pakai soal statis
+            if ($soals->isEmpty()) {
+                $defaultSoals = [
+                    ['q' => 'Jelaskan langkah-langkah dalam perencanaan kerja sesuai dengan unit kompetensi yang Anda ambil.', 'k' => 'Langkah-langkah meliputi persiapan alat, materi, dan jadwal kerja.'],
+                    ['q' => 'Bagaimana Anda memastikan standar kualitas hasil kerja tetap terjaga?', 'k' => 'Dengan melakukan pengecekan mandiri dan mengikuti SOP.'],
+                    ['q' => 'Apa tindakan yang Anda ambil jika ditemukan ketidaksesuaian pada produk atau proses kerja?', 'k' => 'Melakukan koreksi segera dan melaporkan kepada atasan/supervisor.'],
+                ];
+
+                foreach ($defaultSoals as $ds) {
+                    SoalIA06::create([
+                        'id_skema' => $sertifikasi->jadwal->id_skema,
+                        'soal_ia06' => $ds['q'],
+                        'kunci_jawaban_ia06' => $ds['k'],
+                    ]);
+                }
+                // Re-fetch
+                $soals = SoalIA06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
+            }
 
             $dataInsert = [];
             foreach ($soals as $soal) {
@@ -358,58 +374,34 @@ class IA06Controller extends Controller
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
-            'jadwal' => $jadwal,
+        $this->generateLembarJawab($sertifikasi);
+
+        $daftar_soal = JawabanIa06::with('soal')
+            ->where('id_data_sertifikasi_asesi', 0)
+            ->get();
+
+        return view('frontend.IA_06.FR_IA_06', [
+            'sertifikasi' => $sertifikasi,
+            'daftar_soal' => $daftar_soal,
+            'umpanBalik' => null,
+            'role' => 1,
+            'formAction' => '#',
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'asesor.ia06.edit',
-            'buttonLabel' => 'FR.IA.06',
-            'formName' => 'Pertanyaan Tertulis Esai',
         ]);
     }
 }

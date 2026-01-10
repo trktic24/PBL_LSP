@@ -178,10 +178,10 @@
 
                              {{-- Status Pra Asesmen --}}
                             @php
-                                if (!$item->responApl2Ia01 && !$item->responBuktiAk01) {
+                                if ($item->responApl02Ia01->isEmpty() && $item->responBuktiAk01->isEmpty()) {
                                     $statusPra = 'Belum Direview';
                                     $classPra = 'bg-gray-100 text-gray-500';
-                                } elseif ($item->responApl2Ia01 && !$item->responBuktiAk01) {
+                                } elseif ($item->responApl02Ia01->isNotEmpty() && $item->responBuktiAk01->isEmpty()) {
                                     $statusPra = 'Dalam Proses';
                                     $classPra = 'bg-yellow-100 text-yellow-700 border border-yellow-200';
                                 } else {
