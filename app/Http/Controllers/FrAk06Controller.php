@@ -141,7 +141,7 @@ class FrAk06Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'admin.ak06.view_by_asesi', 
+            'targetRoute' => 'admin.ak06.view', 
             'buttonLabel' => 'FR.AK.06',
             'formName' => 'Meninjau Proses Asesmen',
         ]);

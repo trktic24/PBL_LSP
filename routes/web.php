@@ -308,6 +308,10 @@ Route::middleware('auth')->group(function () {
         // IA-02
         Route::get('/admin/skema/{id_skema}/ia02', [IA02Controller::class, 'adminShow'])->name('admin.ia02.show');
 
+
+        Route::get('/admin/ak05/view/{id_sertifikasi}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'showBySertifikasi'])->name('admin.ak05.view');
+        Route::get('/admin/ak06/view/{id_sertifikasi}', [\App\Http\Controllers\FrAk06Controller::class, 'showBySertifikasi'])->name('admin.ak06.view');
+
         Route::prefix('admin/skema/{id_skema}')->group(function () {
             // APL
             Route::get('/apl01', [APL01Controller::class, 'adminShow'])->name('admin.apl01.show'); 
@@ -335,9 +339,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/ak03', [Ak03Controller::class, 'adminShow'])->name('admin.ak03.show');
             Route::get('/ak04', [Ak04Controller::class, 'adminShow'])->name('admin.ak04.show');
             Route::get('/ak05', [Ak05Controller::class, 'adminShow'])->name('admin.ak05.show');
-            Route::get('/ak05/view-by-asesi/{id_sertifikasi}', [Ak05Controller::class, 'showBySertifikasi'])->name('admin.ak05.view_by_asesi');
             Route::get('/ak06', [\App\Http\Controllers\FrAk06Controller::class, 'adminShow'])->name('admin.ak06.show');
-            Route::get('/ak06/view-by-asesi/{id_sertifikasi}', [\App\Http\Controllers\FrAk06Controller::class, 'showBySertifikasi'])->name('admin.ak06.view_by_asesi');
 
             // [NEW] TEMPLATE MANAGEMENT (MASTER CRUD)
             Route::prefix('template')->name('admin.skema.template.')->group(function() {
@@ -393,7 +395,6 @@ Route::middleware('auth')->group(function () {
         });
 
         // Helper for individual view redirection from Master List (Outside skema prefix)
-        Route::get('/admin/ak05/view/{id_sertifikasi}', [Ak05Controller::class, 'showBySertifikasi'])->name('admin.ak05.view');
 
         // Helper for individual tracker view from Laporan Master List
         Route::get('/admin/laporan/view/{id_data_sertifikasi_asesi}', [AsesiProfileController::class, 'showTrackerBySertifikasi'])->name('admin.laporan.asesi.view');

@@ -247,7 +247,7 @@ class Ak05Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'admin.ak05.view_by_asesi', 
+            'targetRoute' => 'admin.ak05.view', 
             'buttonLabel' => 'FR.AK.05',
             'formName' => 'Laporan Asesmen',
         ]);

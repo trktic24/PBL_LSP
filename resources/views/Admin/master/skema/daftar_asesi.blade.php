@@ -204,6 +204,7 @@
                             </a>
                         </th>
                         
+                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Status</th>
                         <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
@@ -223,6 +224,26 @@
                                     @endif
                                 </a>
                             </td>
+                            {{-- Status --}}
+                            <td class="px-6 py-4 text-center align-middle">
+                                @php
+                                    if (is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)){
+                                        $statusText = 'Belum Direview';
+                                        $statusColor = 'bg-red-50 text-red-700 border-red-100';
+                                    } elseif (!is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)) {
+                                        $statusText = 'Dalam Proses';
+                                        $statusColor = 'bg-yellow-50 text-yellow-700 border-yellow-100';
+                                    } else {
+                                        $statusText = 'Sudah Direview';
+                                        $statusColor = 'bg-green-50 text-green-700 border-green-100';
+                                    }
+                                @endphp
+                                <a href="{{ route('admin.laporan.asesi.view', $item->id_data_sertifikasi_asesi) }}" 
+                                   class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $statusColor }} transition hover:opacity-80">
+                                    {{ $statusText }}
+                                </a>
+                            </td>
+
                             {{-- Aksi --}}
                             <td class="px-6 py-4 text-center align-middle">
                                 <a href="{{ route($targetRoute ?? 'admin.asesor.assessment.detail', $item->id_data_sertifikasi_asesi) }}" 
@@ -233,7 +254,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="4" class="px-6 py-12 text-center text-gray-400">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
                                     <p>Data asesi tidak ditemukan.</p>
