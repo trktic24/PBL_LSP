@@ -133,12 +133,22 @@ class JadwalController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $id_jadwal)
     {
-        // 1. Validasi
+        // 1. Bersihkan Format Tanggal DULU (Hapus 'T' HTML5)
+        $input = $request->all();
+        if ($request->filled('tanggal_mulai')) {
+            $input['tanggal_mulai'] = str_replace('T', ' ', $request->tanggal_mulai);
+        }
+        if ($request->filled('tanggal_selesai')) {
+            $input['tanggal_selesai'] = str_replace('T', ' ', $request->tanggal_selesai);
+        }
+        $request->replace($input);
+
+        // 2. Definisi Rules
         $rules = [
             'id_jenis_tuk' => 'required|exists:jenis_tuk,id_jenis_tuk',
-            'id_tuk' => 'required|exists:master_tuk,id_tuk', // Pastikan nama tabel benar (master_tuk vs masterTuk)
+            'id_tuk' => 'required|exists:master_tuk,id_tuk',
             'id_skema' => 'required|exists:skema,id_skema',
             'id_asesor' => 'required|exists:asesor,id_asesor',
             'kuota_maksimal' => 'required|integer|min:1',
@@ -146,52 +156,151 @@ class JadwalController extends Controller
             'sesi' => 'required|integer|min:1',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'tanggal_pelaksanaan' => 'required|date|after_or_equal:tanggal_selesai',
-            'waktu_mulai' => 'required', // Hapus date_format dulu agar lebih fleksibel
+            
+            // [LOGIC 1] Cek TANGGAL saja (Agar bisa hari yang sama)
+            'tanggal_pelaksanaan' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    // Ambil 10 karakter pertama (YYYY-MM-DD)
+                    $dateSelesai = substr($request->tanggal_selesai, 0, 10);
+                    $datePelaksanaan = substr($value, 0, 10);
+                    
+                    // Validasi: Tgl Pelaksanaan tidak boleh sebelum Tgl Selesai
+                    if ($datePelaksanaan < $dateSelesai) {
+                        $fail('Tgl Pelaksanaan harus sama atau setelah Tgl Selesai Pendaftaran.');
+                    }
+                },
+            ],
+
+            // [LOGIC 2] Cek WAKTU (Validasi detail Jam)
+            'waktu_mulai' => [
+                'required',
+                function ($attribute, $value, $fail) use ($request) {
+                    $selesaiRaw = $request->tanggal_selesai;       // Y-m-d H:i:s
+                    $tglPelaksanaan = $request->tanggal_pelaksanaan; // Y-m-d
+                    
+                    if ($selesaiRaw && $tglPelaksanaan) {
+                        // Gabungkan Tgl Pelaksanaan + Jam Mulai
+                        // Contoh: "2024-01-25 09:00"
+                        $startExecution = \Carbon\Carbon::parse($tglPelaksanaan . ' ' . $value);
+                        $endRegistration = \Carbon\Carbon::parse($selesaiRaw);
+
+                        // Validasi: Waktu Mulai tidak boleh kurang dari Selesai Pendaftaran
+                        if ($startExecution->lt($endRegistration)) {
+                            $fail('Waktu Mulai tidak boleh lebih awal dari Waktu Selesai Pendaftaran.');
+                        }
+                    }
+                },
+            ],
+
             'waktu_selesai' => 'required|after:waktu_mulai',
         ];
 
-        // Custom Error Messages
+        // 3. Pesan Error
         $messages = [
             'required' => 'Kolom :attribute wajib diisi.',
             'exists' => ':attribute yang dipilih tidak valid.',
             'integer' => 'Kolom :attribute harus berupa angka.',
             'min' => 'Kolom :attribute minimal :min.',
-            'date' => 'Kolom :attribute format tanggal salah.',
-            'after_or_equal' => 'Tanggal tidak logis (Harus setelah tanggal sebelumnya).',
+            'date' => 'Format tanggal salah.',
+            'after_or_equal' => 'Tanggal tidak logis.',
             'waktu_selesai.after' => 'Waktu Selesai harus lebih akhir dari Waktu Mulai.',
         ];
         
-        // Jalankan Validasi
         $validatedData = $request->validate($rules, $messages);
-
-        // 2. [PENTING] Membersihkan Format Tanggal (Hapus huruf 'T')
-        // Input HTML: "2024-12-10T09:00" -> MySQL: "2024-12-10 09:00"
-        if ($request->has('tanggal_mulai')) {
-            $validatedData['tanggal_mulai'] = str_replace('T', ' ', $request->tanggal_mulai);
-        }
-        if ($request->has('tanggal_selesai')) {
-            $validatedData['tanggal_selesai'] = str_replace('T', ' ', $request->tanggal_selesai);
-        }
-
-        // 3. Set Status Default
         $validatedData['Status_jadwal'] = 'Terjadwal';
 
-        // 4. Simpan ke Database dengan Try-Catch
         try {
             $jadwal = Jadwal::create($validatedData);
-            
-            // Ambil nama skema untuk pesan sukses (Optional)
             $skemaNama = \App\Models\Skema::find($jadwal->id_skema)->nama_skema ?? 'Skema';
 
             return redirect()->route('admin.master_schedule')
-                             ->with('success', "Jadwal untuk '{$skemaNama}' berhasil ditambahkan!");
+                             ->with('success', "Jadwal (ID: {$id_jadwal}) untuk '{$skemaNama}' berhasil ditambahkan!");
 
         } catch (\Exception $e) {
-            // Jika gagal, kembalikan ke form dengan pesan error asli
-            // Ini akan memberitahu kita KENAPA gagal (misal: kolom kurang, tipe data salah)
             return back()->withInput()->withErrors(['msg' => 'Gagal menyimpan: ' . $e->getMessage()]);
         }
+    }
+
+    public function update(Request $request, $id_jadwal)
+    {
+        // 1. Bersihkan Format Tanggal
+        $input = $request->all();
+        if ($request->filled('tanggal_mulai')) {
+            $input['tanggal_mulai'] = str_replace('T', ' ', $request->tanggal_mulai);
+        }
+        if ($request->filled('tanggal_selesai')) {
+            $input['tanggal_selesai'] = str_replace('T', ' ', $request->tanggal_selesai);
+        }
+        $request->replace($input);
+
+        // 2. Definisi Rules (Sama dengan Store)
+        $rules = [
+            'id_jenis_tuk' => 'required|exists:jenis_tuk,id_jenis_tuk',
+            'id_tuk' => 'required|exists:master_tuk,id_tuk',
+            'id_skema' => 'required|exists:skema,id_skema',
+            'id_asesor' => 'required|exists:asesor,id_asesor',
+            'kuota_maksimal' => 'required|integer|min:1',
+            'kuota_minimal' => 'nullable|integer|min:1',
+            'sesi' => 'required|integer|min:1',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            
+            'tanggal_pelaksanaan' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    $dateSelesai = substr($request->tanggal_selesai, 0, 10);
+                    $datePelaksanaan = substr($value, 0, 10);
+                    
+                    if ($datePelaksanaan < $dateSelesai) {
+                        $fail('Tgl Pelaksanaan harus sama atau setelah Tgl Selesai Pendaftaran.');
+                    }
+                },
+            ],
+
+            'waktu_mulai' => [
+                'required',
+                // 'date_format:H:i', // Opsional
+                function ($attribute, $value, $fail) use ($request) {
+                    $selesaiRaw = $request->tanggal_selesai;
+                    $tglPelaksanaan = $request->tanggal_pelaksanaan;
+                    
+                    if ($selesaiRaw && $tglPelaksanaan) {
+                        $startExecution = \Carbon\Carbon::parse($tglPelaksanaan . ' ' . $value);
+                        $endRegistration = \Carbon\Carbon::parse($selesaiRaw);
+
+                        if ($startExecution->lt($endRegistration)) {
+                            $fail('Waktu Mulai tidak boleh lebih awal dari Waktu Selesai Pendaftaran.');
+                        }
+                    }
+                },
+            ],
+
+            'waktu_selesai' => 'required|after:waktu_mulai',
+            'Status_jadwal' => 'required|in:Terjadwal,Selesai,Dibatalkan',
+        ];
+
+        $messages = [
+            'required' => 'Kolom :attribute wajib diisi.',
+            'exists' => ':attribute yang dipilih tidak valid.',
+            'integer' => 'Kolom :attribute harus berupa angka.',
+            'min' => 'Kolom :attribute minimal :min.',
+            'date' => 'Format tanggal salah.',
+            'in' => 'Status tidak valid.',
+            'tanggal_selesai.after_or_equal' => 'Tgl Selesai Pendaftaran harus setelah Tgl Mulai.',
+            'waktu_selesai.after' => 'Waktu Selesai harus lebih akhir dari Waktu Mulai.',
+        ];
+
+        $validatedData = $request->validate($rules, $messages);
+
+        $jadwal = Jadwal::findOrFail($id_jadwal);
+        $jadwal->update($validatedData);
+        $skemaNama = $jadwal->skema->nama_skema;
+
+        return redirect()->route('admin.master_schedule')
+                         ->with('success', "Jadwal (ID: {$id_jadwal}) untuk '{$skemaNama}' berhasil diperbarui!");
     }
 
     public function edit($id_jadwal)
@@ -212,48 +321,6 @@ class JadwalController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id_jadwal)
-    {
-        // [REVISI] Menambahkan validasi waktu_selesai
-        $rules = [
-            'id_jenis_tuk' => 'required|exists:jenis_tuk,id_jenis_tuk',
-            'id_tuk' => 'required|exists:master_tuk,id_tuk',
-            'id_skema' => 'required|exists:skema,id_skema',
-            'id_asesor' => 'required|exists:asesor,id_asesor',
-            'kuota_maksimal' => 'required|integer|min:1',
-            'kuota_minimal' => 'nullable|integer|min:1',
-            'sesi' => 'required|integer|min:1',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'tanggal_pelaksanaan' => 'required|date|after_or_equal:tanggal_selesai',
-            'waktu_mulai' => 'required|date_format:H:i',
-            'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai', // [BARU]
-            'Status_jadwal' => 'required|in:Terjadwal,Selesai,Dibatalkan',
-        ];
-
-        $messages = [
-            'required' => 'Kolom :attribute wajib diisi.',
-            'exists' => ':attribute yang dipilih tidak valid.',
-            'integer' => 'Kolom :attribute harus berupa angka.',
-            'min' => 'Kolom :attribute minimal :min.',
-            'date' => 'Kolom :attribute harus berupa format tanggal yang valid.',
-            'date_format' => 'Kolom :attribute harus berformat Jam:Menit (HH:mm).',
-            'in' => 'Status yang dipilih tidak valid.',
-
-            'tanggal_selesai.after_or_equal' => 'Tgl Selesai Pendaftaran harus sama atau setelah Tgl Mulai.',
-            'tanggal_pelaksanaan.after_or_equal' => 'Tgl Pelaksanaan harus sama atau setelah Tgl Selesai Pendaftaran.',
-            'waktu_selesai.after' => 'Waktu Selesai harus lebih akhir dari Waktu Mulai.', // [BARU]
-        ];
-
-        $validatedData = $request->validate($rules, $messages);
-
-        $jadwal = Jadwal::findOrFail($id_jadwal);
-        $jadwal->update($validatedData);
-        $skemaNama = $jadwal->skema->nama_skema;
-
-        return redirect()->route('admin.master_schedule')
-                         ->with('success', "Jadwal (ID: {$jadwal->id_jadwal}) untuk skema '{$skemaNama}' berhasil diperbarui!");
-    }
 
     public function destroy($id_jadwal)
     {
