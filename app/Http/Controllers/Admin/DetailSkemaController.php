@@ -158,10 +158,48 @@ class DetailSkemaController extends Controller
      */
     public function editKelompok($id_kelompok)
     {
-        $kelompok = KelompokPekerjaan::with('unitKompetensi')->findOrFail($id_kelompok);
-        $skema = $kelompok->skema; // Ambil parent skema untuk breadcrumb/info
-        
-        return view('Admin.master.skema.edit_kelompokpekerjaan', compact('kelompok', 'skema'));
+        // Eager load unitKompetensi and their elements with kriteria
+        $kelompok = KelompokPekerjaan::with(['unitKompetensi.elemen.kriteria'])->findOrFail($id_kelompok);
+        $skema = $kelompok->skema;
+
+        // Map APL02 data (Elemen 1 & its KUKs) into a plain array for Alpine.js
+        $mappedUnits = $kelompok->unitKompetensi->map(function($unit) {
+            $firstElemen = $unit->elemen->sortBy('id_elemen')->first();
+            
+            // Map 3 KUKs (sesuai permintaan "3 edit")
+            $kuks = $firstElemen ? $firstElemen->kriteria->sortBy('id_kriteria')->values() : collect();
+            
+            // Map 'aktivitas' to 'K' for UI, others to 'demonstrasi'
+            $mapTipe = fn($t) => $t === 'aktivitas' ? 'K' : 'demonstrasi';
+
+            return [
+                'id_unit_kompetensi' => $unit->id_unit_kompetensi,
+                'kode_unit' => $unit->kode_unit,
+                'judul_unit' => $unit->judul_unit,
+                'expanded' => true,
+                'elemen_1_name' => $firstElemen ? $firstElemen->elemen : '',
+                'kriteria_1' => $kuks->get(0) ? [
+                    'id' => $kuks[0]->id_kriteria, 
+                    'text' => $kuks[0]->kriteria, 
+                    'bukti' => $kuks[0]->standar_industri_kerja, 
+                    'is_kompeten' => $mapTipe($kuks[0]->tipe)
+                ] : ['id' => null, 'text' => '', 'bukti' => '', 'is_kompeten' => 'demonstrasi'],
+                'kriteria_2' => $kuks->get(1) ? [
+                    'id' => $kuks[1]->id_kriteria, 
+                    'text' => $kuks[1]->kriteria, 
+                    'bukti' => $kuks[1]->standar_industri_kerja, 
+                    'is_kompeten' => $mapTipe($kuks[1]->tipe)
+                ] : ['id' => null, 'text' => '', 'bukti' => '', 'is_kompeten' => 'demonstrasi'],
+                'kriteria_3' => $kuks->get(2) ? [
+                    'id' => $kuks[2]->id_kriteria, 
+                    'text' => $kuks[2]->kriteria, 
+                    'bukti' => $kuks[2]->standar_industri_kerja, 
+                    'is_kompeten' => $mapTipe($kuks[2]->tipe)
+                ] : ['id' => null, 'text' => '', 'bukti' => '', 'is_kompeten' => 'demonstrasi'],
+            ];
+        });
+
+        return view('Admin.master.skema.edit_kelompokpekerjaan', compact('kelompok', 'skema', 'mappedUnits'));
     }
 
     /**
@@ -174,6 +212,19 @@ class DetailSkemaController extends Controller
             'units' => 'required|array|min:1',
             'units.*.kode_unit' => 'required|string|max:50',
             'units.*.judul_unit' => 'required|string|max:255',
+            'units.*.elemen_1_name' => 'nullable|string',
+            'units.*.kriteria_1' => 'nullable|array',
+            'units.*.kriteria_1.text' => 'nullable|string',
+            'units.*.kriteria_1.bukti' => 'nullable|string',
+            'units.*.kriteria_1.is_kompeten' => 'nullable|string',
+            'units.*.kriteria_2' => 'nullable|array',
+            'units.*.kriteria_2.text' => 'nullable|string',
+            'units.*.kriteria_2.bukti' => 'nullable|string',
+            'units.*.kriteria_2.is_kompeten' => 'nullable|string',
+            'units.*.kriteria_3' => 'nullable|array',
+            'units.*.kriteria_3.text' => 'nullable|string',
+            'units.*.kriteria_3.bukti' => 'nullable|string',
+            'units.*.kriteria_3.is_kompeten' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -190,7 +241,7 @@ class DetailSkemaController extends Controller
             $submittedIds = [];
 
             foreach ($request->units as $unitData) {
-                if (isset($unitData['id'])) {
+                if (!empty($unitData['id'])) {
                     // Update Existing Unit
                     $unit = UnitKompetensi::find($unitData['id']);
                     if ($unit) {
@@ -199,15 +250,34 @@ class DetailSkemaController extends Controller
                             'judul_unit' => $unitData['judul_unit'],
                         ]);
                         $submittedIds[] = $unit->id_unit_kompetensi;
+
+                        // CRUD Elemen Pertama & KUK untuk APL-02
+                        $firstElemen = $unit->elemen()->orderBy('id_elemen')->first();
+                        if (!$firstElemen) {
+                            $firstElemen = $unit->elemen()->create(['elemen' => $unitData['elemen_1_name'] ?? '']);
+                        } else {
+                            $firstElemen->update(['elemen' => $unitData['elemen_1_name'] ?? '']);
+                        }
+
+                        // Sync 3 KUKs
+                        $this->syncKuk($firstElemen, $unitData['kriteria_1'] ?? null, '1.1');
+                        $this->syncKuk($firstElemen, $unitData['kriteria_2'] ?? null, '1.2');
+                        $this->syncKuk($firstElemen, $unitData['kriteria_3'] ?? null, '1.3');
                     }
                 } else {
                     // Create New Unit
                     $newUnit = $kelompok->unitKompetensi()->create([
                         'kode_unit' => $unitData['kode_unit'],
                         'judul_unit' => $unitData['judul_unit'],
-                        'urutan' => 1, // Atau logic urutan lain
+                        'urutan' => 1,
                     ]);
                     $submittedIds[] = $newUnit->id_unit_kompetensi;
+
+                    // Create Elemen Pertama & 3 KUK default
+                    $newElemen = $newUnit->elemen()->create(['elemen' => $unitData['elemen_1_name'] ?? '']);
+                    $this->syncKuk($newElemen, $unitData['kriteria_1'] ?? null, '1.1');
+                    $this->syncKuk($newElemen, $unitData['kriteria_2'] ?? null, '1.2');
+                    $this->syncKuk($newElemen, $unitData['kriteria_3'] ?? null, '1.3');
                 }
             }
 
@@ -223,6 +293,37 @@ class DetailSkemaController extends Controller
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
+    }
+
+    /**
+     * Helper to sync KUK data.
+     */
+    private function syncKuk($elemen, $data, $no_kriteria)
+    {
+        if (empty($data['text'])) return;
+
+        // Map UI 'K' back to 'aktivitas' (enum)
+        $tipe = ($data['is_kompeten'] ?? 'demonstrasi') === 'K' ? 'aktivitas' : 'demonstrasi';
+
+        if (!empty($data['id'])) {
+            $kuk = \App\Models\KriteriaUnjukKerja::find($data['id']);
+            if ($kuk) {
+                $kuk->update([
+                    'kriteria' => $data['text'],
+                    'no_kriteria' => $no_kriteria,
+                    'standar_industri_kerja' => $data['bukti'] ?? null,
+                    'tipe' => $tipe
+                ]);
+                return;
+            }
+        }
+
+        $elemen->kriteria()->create([
+            'no_kriteria' => $no_kriteria,
+            'kriteria' => $data['text'],
+            'tipe' => $tipe,
+            'standar_industri_kerja' => $data['bukti'] ?? null
+        ]);
     }
 
     /**
