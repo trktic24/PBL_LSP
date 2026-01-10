@@ -18,6 +18,24 @@
     if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) {
         $gambarSkema = asset('storage/' . $sertifikasi->jadwal->skema->gambar);
     }
+
+    // ---------------------------------------------------------
+    // 5. LOGIKA TOMBOL KEMBALI (ADMIN vs ASESI) - BARU DITAMBAHKAN
+    // ---------------------------------------------------------
+    $user = Auth::user();
+    
+    // A. Jika User adalah ASESI (Login sebagai peserta)
+    if ($user->asesi) {
+         $backUrl = url("/asesi/tracker/" . ($sertifikasi->id_jadwal ?? ''));
+    } 
+    
+    // B. Jika User adalah ADMIN (Login sebagai admin/asesor)
+    else {
+         // Rakit URL Manual agar tidak 404
+         $baseUrl = "/admin/asesi/" . $sertifikasi->id_asesi . "/tracker";
+         // Tambahkan query string sertifikasi_id
+         $backUrl = url($baseUrl) . "?sertifikasi_id=" . $sertifikasi->id_data_sertifikasi_asesi;
+    }
 @endphp
 {{-- =================================================== --}}
 
@@ -63,13 +81,20 @@
 </head>
 
 <body class="bg-gray-100">
-
+    
     {{-- WRAPPER UTAMA: Menggunakan flex-col untuk mobile, flex-row untuk desktop --}}
     <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden">
 
         {{-- 1. SIDEBAR (Hanya Tampil di Desktop) --}}
         <div class="hidden md:block md:w-80 flex-shrink-0 no-print">
-            <x-sidebar2 :idAsesi="$sertifikasi->asesi->id_asesi ?? null" :sertifikasi="$sertifikasi ?? null" />
+            <div class="hidden md:block md:w-80 flex-shrink-0 no-print">
+            {{-- TAMBAHKAN :backUrl DI SINI --}}
+            <x-sidebar2 
+                :idAsesi="$sertifikasi->asesi->id_asesi ?? null" 
+                :sertifikasi="$sertifikasi ?? null" 
+                :backUrl="$backUrl"
+            />
+        </div>
         </div>
 
         {{-- 2. HEADER MOBILE (Hanya Tampil di Mobile - Menggantikan Sidebar) --}}
@@ -79,7 +104,8 @@
             :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" 
             :name="$sertifikasi->asesi->nama_lengkap ?? '-'" 
             :image="$gambarSkema" 
-            :sertifikasi="$sertifikasi" 
+            :sertifikasi="$sertifikasi"
+            :backUrl="$backUrl" 
         />
 
         {{-- 3. MAIN CONTENT --}}

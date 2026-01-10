@@ -11,11 +11,25 @@
         </style>
     </head>
 
+    @php
+        $user = Auth::user();
+        
+        // Default URL (Untuk Asesi)
+        $backUrl = "/asesi/tracker/" . ($sertifikasi->id_jadwal ?? '');
+
+        // Jika User adalah Admin (tidak punya data asesi sendiri)
+        if (!$user->asesi) {
+            // Arahkan ke Tracker Admin Profile Asesi
+            // Sesuaikan route name Anda: 'admin.asesi.profile.tracker'
+            $backUrl = route('admin.asesi.profile.tracker', ['id_asesi' => $sertifikasi->id_asesi, 'sertifikasi_id' => $sertifikasi->id_data_sertifikasi_asesi]);
+        }
+    @endphp
+
     <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden font-poppins">
 
         {{-- 1. SIDEBAR (Desktop Only) --}}
             <div class="hidden md:block md:w-80 flex-shrink-0">
-                <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" backUrl="/" />
+                <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" :backUrl="$backUrl" />
             </div>
 
             {{-- 2. HEADER MOBILE (Data Dinamis) --}}
@@ -26,8 +40,13 @@
                         : asset('images/default_pic.jpeg');
             @endphp
 
-            <x-mobile_header :title="$sertifikasi->jadwal->skema->nama_skema ?? 'Skema Sertifikasi'" :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'" :image="$gambarSkema" />
-
+            <x-mobile_header 
+                :title="$sertifikasi->jadwal->skema->nama_skema ?? 'Skema Sertifikasi'" 
+                :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" 
+                :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'" 
+                :image="$gambarSkema"
+                :backUrl="$backUrl"  
+            />
         {{-- MAIN CONTENT --}}
         <main class="flex-1 p-8 bg-gray-100 overflow-y-auto">
             <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-lg p-8">
