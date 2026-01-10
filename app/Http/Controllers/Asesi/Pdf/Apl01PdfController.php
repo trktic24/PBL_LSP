@@ -77,7 +77,7 @@ class Apl01PdfController extends Controller
         return $isMatch;
     }
 
-    public function generateApl01($id_data_sertifikasi)
+    public function generateApl01(Request $request, $id_data_sertifikasi)
     {
         $dataSertifikasi = DataSertifikasiAsesi::with([
             'asesi',
@@ -114,12 +114,21 @@ class Apl01PdfController extends Controller
             $logoLspBase64 = base64_encode(file_get_contents($logoLspPath));
         }
 
-        // --- LOGIKA TANDA TANGAN ADMIN ---
+        // --- LOGIKA TANDA TANGAN ADMIN (DIPERBAIKI) ---
         $ttdAdminBase64 = null;
         if ($admin && $admin->tanda_tangan_admin) {
-            $pathTtdAdmin = storage_path('app/private_uploads/tanda_tangan/' . $admin->tanda_tangan_admin);
+            // Path yang benar sesuai dengan penyimpanan di ProfileController
+            // File disimpan di storage/app/public/tanda_tangan_admin/
+            $pathTtdAdmin = storage_path('app/public/' . $admin->tanda_tangan_admin);
+            
             if (file_exists($pathTtdAdmin)) {
                 $ttdAdminBase64 = base64_encode(file_get_contents($pathTtdAdmin));
+            } else {
+                // Log untuk debugging jika file tidak ditemukan
+                \Log::warning('File TTD Admin tidak ditemukan', [
+                    'expected_path' => $pathTtdAdmin,
+                    'db_value' => $admin->tanda_tangan_admin
+                ]);
             }
         }
 
@@ -215,6 +224,11 @@ class Apl01PdfController extends Controller
         $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
         $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
         $namaFile = 'FR.APL.01_' . $namaAsesiClean . '_' . date('YmdHis') . '.pdf';
+
+        if ($request->query('mode') == 'preview') {
+            // Tampilkan di browser (View/Stream)
+            return $pdf->stream($namaFile);
+        }
 
         return $pdf->download($namaFile);
     }

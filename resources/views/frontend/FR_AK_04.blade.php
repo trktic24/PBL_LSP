@@ -1,9 +1,13 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('content')
     <div class="p-3 sm:p-6 md:p-8">
 
-        <x-header_form.header_form title="FR.AK.04. FORMULIR BANDING ASESMEN" /><br>
+        <x-header_form.header_form title="FR.AK.04. FORMULIR BANDING ASESMEN" />
+        @if(isset($isMasterView))
+            <div class="text-center font-bold text-blue-600 my-2">[TEMPLATE MASTER]</div>
+        @endif
+        <br>
 
         {{-- ALERT --}}
         @if(session('success'))
@@ -18,7 +22,7 @@
         @endif
 
         {{-- FORM UTAMA --}}
-        <form action="{{ route('ak04.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+        <form action="{{ isset($isMasterView) ? '#' : route('ak04.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
         @csrf
 
         <div class="bg-white p-4 sm:p-6 rounded-md shadow-sm mb-4 sm:mb-6 border border-gray-200">
@@ -156,13 +160,16 @@
                     </div>
                 </div>
 
-                {{-- TOMBOL SUBMIT --}}
-                <div class="mt-8 flex justify-between border-t pt-4">
-                    <a href="{{ route('tracker') }}" class="px-6 py-2 bg-gray-200 rounded text-gray-700 text-sm font-bold">Kembali</a>
-                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded shadow text-sm font-bold hover:bg-blue-700">
-                        Kirim Pengajuan
-                    </button>
-                </div>
+                {{-- BUTTONS --}}
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mt-8 border-t-2 border-gray-200 pt-6 mb-8">
+                <a href="{{ isset($isMasterView) ? url()->previous() : route('tracker') }}" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
+                    Kembali
+                </a>
+                @if(!isset($isMasterView))
+                <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
+                    Ajukan Banding
+                </button>
+                @endif
             </div>
         </div>
         </form>

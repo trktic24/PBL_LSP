@@ -15,6 +15,6 @@ class PersyaratanModifikasiAK07 extends Model
 
     public function catatanKeterangan()
     {
-        return $this->hasMany(CatatanKeteranganAK07::class, 'id_persyaratan_modifikasi_AK07', 'id_persyaratan_modifikasi_AK07');
+        return $this->hasMany(CatatanKeteranganAk07::class, 'id_persyaratan_modifikasi_AK07', 'id_persyaratan_modifikasi_AK07');
     }
 }

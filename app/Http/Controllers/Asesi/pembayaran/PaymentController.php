@@ -210,7 +210,7 @@ class PaymentController extends Controller
         }
         return redirect('/asesi/tracker');
     }
-    public function downloadInvoice($id_sertifikasi) 
+    public function downloadInvoice(Request $request, $id_sertifikasi) 
     {
         $user = Auth::user();
 
@@ -247,6 +247,10 @@ class PaymentController extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         $fileName = 'Invoice_' . $payment->order_id . '.pdf';
+        if ($request->query('mode') == 'preview') {
+            // Tampilkan PDF di tab browser (Preview)
+            return $pdf->stream($fileName);
+        }
         return $pdf->download($fileName);
     }
 }

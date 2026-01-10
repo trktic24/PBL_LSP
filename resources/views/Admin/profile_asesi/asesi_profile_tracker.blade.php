@@ -145,10 +145,19 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
     <main class="flex min-h-[calc(100vh-80px)]">
 
         @php
-        $urlKembali = route('admin.master_asesi');
-        if (isset($sertifikasiAcuan) && $sertifikasiAcuan) {
-        $urlKembali = route('admin.schedule.attendance', $sertifikasiAcuan->id_jadwal);
-        }
+            // Default fallback (hanya jika data jadwal benar-benar hilang/corrupt)
+            $urlKembali = route('admin.master_schedule');
+
+            // [LOGIKA UTAMA]
+            // Cek variabel $sertifikasi (yang dipakai untuk menampilkan data di halaman ini)
+            if (isset($sertifikasi) && $sertifikasi->id_jadwal) {
+                // Paksa redirect ke Daftar Hadir (Attendance) berdasarkan ID Jadwal sertifikasi ini
+                $urlKembali = route('admin.schedule.attendance', $sertifikasi->id_jadwal);
+            } 
+            // Opsi tambahan: Cek jika ada id_jadwal di query string url (misal ?id_jadwal=50)
+            elseif (request()->has('id_jadwal')) {
+                $urlKembali = route('admin.schedule.attendance', request('id_jadwal'));
+            }
         @endphp
 
         <x-sidebar.sidebar_profile_asesi
@@ -235,7 +244,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                     </a>
 
                                     {{-- Tombol Lihat Data (HIJAU) --}}
-                                    <a href="{{ route('admin.asesi.profile.form', ['id_asesi' => $asesi->id_asesi, 'sertifikasi_id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnGreen }}">
+                                    <a href="{{ route('admin.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}" class="{{ $btnGreen }}">
                                         <i class="fas fa-eye mr-1"></i> Lihat Data
                                     </a>
                                 </div>
@@ -317,7 +326,11 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                     <a href="{{ route('admin.payment.invoice', $sertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="{{ $btnBlue }} inline-flex items-center justify-center text-center">
                                         <i class="fas fa-file-invoice mr-1"></i> Unduh Invoice
                                     </a>
-
+                                    <a href="{{ route('admin.payment.invoice', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}" 
+                                    target="_blank" 
+                                    class="{{ $btnGreen ?? 'bg-green-600 hover:bg-green-700 text-white' }} px-4 py-1.5 text-xs inline-flex items-center rounded-md transition shadow-sm">
+                                        <i class="fas fa-eye mr-1"></i> Lihat Invoice
+                                    </a>
                                     <form action="{{ route('admin.verifikasi.pembayaran', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" method="POST" onsubmit="return confirm('Batalkan verifikasi? Status akan kembali menunggu.');">
                                         @csrf @method('POST')
                                         <input type="hidden" name="status" value="menunggu">
@@ -333,10 +346,14 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 <p class="text-xs text-gray-500 mb-2">Bukti pembayaran tidak valid atau tidak sesuai.</p>
 
                                 <div class="flex flex-wrap items-center gap-2 mt-2">
-                                    <a href="{{ route('asesi.payment.invoice', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" target="_blank" class="{{ $btnBlue }} px-4 py-1.5 text-xs inline-flex items-center">
+                                    <a href="{{ route('admin.payment.invoice', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" target="_blank" class="{{ $btnBlue }} px-4 py-1.5 text-xs inline-flex items-center">
                                         <i class="fas fa-file-invoice mr-1"></i> Unduh Invoice
                                     </a>
-
+                                    <a href="{{ route('admin.payment.invoice', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}" 
+                                    target="_blank" 
+                                    class="{{ $btnGreen ?? 'bg-green-600 hover:bg-green-700 text-white' }} px-4 py-1.5 text-xs inline-flex items-center rounded-md transition shadow-sm">
+                                        <i class="fas fa-eye mr-1"></i> Lihat Invoice
+                                    </a>
                                     <form action="{{ route('admin.verifikasi.pembayaran', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" method="POST" onsubmit="return confirm('Kembalikan status ke menunggu verifikasi?');">
                                         @csrf
                                         <input type="hidden" name="status" value="menunggu">
@@ -356,6 +373,9 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 <div class="flex flex-wrap items-center gap-2 mt-2">
                                     <button disabled class="{{ $btnGray }} cursor-not-allowed opacity-75">
                                         <i class="fas fa-file-invoice mr-1"></i> Unduh Invoice
+                                    </button>
+                                    <button disabled class="{{ $btnGray }} cursor-not-allowed opacity-75">
+                                        <i class="fas fa-eye mr-1"></i> Lihat Invoice
                                     </button>
                                     <button disabled class="{{ $btnGray }} cursor-not-allowed opacity-75">
                                         <i class="fas fa-check-circle mr-1"></i> Verifikasi
@@ -500,11 +520,11 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                     <a href="{{ route('admin.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="{{ $btnBlue }}">
-                                        <i class="fas fa-download mr-1"></i> Unduh Document
+                                        <i class="fas fa-download mr-1"></i> Unduh Dokumen
                                     </a>
 
                                     {{-- Tombol Lihat Hasil (Sama dengan kondisi Lulus) --}}
-                                    <a href="{{ route('admin.verifikasi.apl02', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                    <a href="{{ route('admin.cetak.apl02', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}"
                                         class="{{ $btnGreen }}">
                                         <i class="fas fa-eye mr-1"></i> Lihat Hasil
                                     </a>
@@ -516,10 +536,10 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 <div class="flex gap-2 mt-2">
                                     {{-- Tombol Unduh AKTIF (Biru) --}}
                                     <a href="{{ route('admin.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}" class="{{ $btnBlue }}" target="_blank">
-                                        <i class="fas fa-download mr-1"></i> Unduh Document
+                                        <i class="fas fa-download mr-1"></i> Unduh Dokumen
                                     </a>
                                     {{-- Tombol Lihat Hasil --}}
-                                    <a href="{{ route('admin.verifikasi.apl02', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnGreen }}">
+                                    <a href="{{ route('admin.cetak.apl02', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}" class="{{ $btnGreen }}">
                                         <i class="fas fa-eye mr-1"></i> Lihat Hasil
                                     </a>
                                 </div>
@@ -534,7 +554,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                 {{-- Tombol Unduh (Mati) --}}
                                 <button disabled class="{{ $btnGray }} mt-2 cursor-not-allowed opacity-75">
-                                    <i class="fas fa-download mr-1"></i> Unduh Document
+                                    <i class="fas fa-download mr-1"></i> Unduh Dokumen
                                 </button>
 
                                 {{-- KONDISI 4: MENUNGGU ASESI MENGISI (KUNING) --}}
@@ -546,7 +566,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                 {{-- Tombol Unduh (Mati) --}}
                                 <button disabled class="{{ $btnGray }} mt-2 cursor-not-allowed opacity-75">
-                                    <i class="fas fa-download mr-1"></i> Unduh Document
+                                    <i class="fas fa-download mr-1"></i> Unduh Dokumen
                                 </button>
 
                                 @endif
@@ -670,10 +690,22 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 {{-- KONDISI 2: LOLOS PRA-ASESMEN (AKTIF) --}}
                                 @elseif ($isStep4Open)
                                 <p class="{{ $statusClassSelesai }}">Terverifikasi</p>
-                                <div class="mt-2">
-                                    <a href="{{ route('admin.pdf.kartu_peserta', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnBlue }} inline-flex items-center" target="_blank">
+                                <div class="mt-2 flex flex-wrap gap-2">
+    
+                                    {{-- [TOMBOL 1] UNDUH KARTU (TETAP SAMA) --}}
+                                    <a href="{{ route('admin.pdf.kartu_peserta', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                                    class="{{ $btnBlue }} inline-flex items-center" 
+                                    target="_blank">
                                         <i class="fas fa-id-card mr-1"></i> Unduh Kartu Peserta
                                     </a>
+
+                                    {{-- [TOMBOL 2] LIHAT KARTU (BARU) --}}
+                                    <a href="{{ route('admin.pdf.kartu_peserta', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}" 
+                                    class="{{ $btnGreen }} inline-flex items-center" 
+                                    target="_blank">
+                                        <i class="fas fa-eye mr-1"></i> Lihat Kartu
+                                    </a>
+
                                 </div>
 
                                 {{-- KONDISI 3: MENUNGGU --}}
@@ -761,10 +793,22 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 @elseif ($isStep5Finished)
                                 <p class="{{ $statusClassSelesai }}">Telah Disetujui Asesi</p>
 
-                                <div class="mt-2">
-                                    <a href="{{ route('admin.cetak.ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnBlue }} inline-flex items-center" target="_blank">
-                                        <i class="fas fa-download mr-1"></i> Unduh Document
+                                <div class="mt-2 flex flex-wrap gap-2">
+    
+                                    {{-- [TOMBOL 1] UNDUH DOKUMEN --}}
+                                    <a href="{{ route('admin.cetak.ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                                    class="{{ $btnBlue }} inline-flex items-center" 
+                                    target="_blank">
+                                        <i class="fas fa-download mr-1"></i> Unduh Dokumen
                                     </a>
+
+                                    {{-- [TOMBOL 2] LIHAT DOKUMEN (BARU) --}}
+                                    <a href="{{ route('admin.cetak.ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}" 
+                                    class="{{ $btnGreen }} inline-flex items-center" 
+                                    target="_blank">
+                                        <i class="fas fa-eye mr-1"></i> Lihat Dokumen
+                                    </a>
+
                                 </div>
 
                                 {{-- KONDISI 3: SIAP DIISI (STEP OPEN & VALID) --}}
@@ -774,7 +818,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                 <div class="mt-2">
                                     <button disabled class="{{ $btnGray }} cursor-not-allowed opacity-75 inline-flex items-center">
-                                        <i class="fas fa-downloadmr-1"></i> Unduh Document
+                                        <i class="fas fa-downloadmr-1"></i> Unduh Dokumen
                                     </button>
                                 </div>
 
@@ -976,7 +1020,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                         </div>
                                         <div class="w-full sm:w-auto flex-shrink-0">
                                             @if ($adminCanView)
-                                            <a href="{{ route('admin.verifikasi.ia02', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Detail</a>
+                                            <a href="{{ route('admin.ia02.index', $sertifikasi->id_data_sertifikasi_asesi) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Detail</a>
                                             @elseif ($isOngoing)
                                             <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg border border-blue-200 cursor-wait">
                                                 <i class="fas fa-spinner fa-spin mr-2"></i> Sedang Dikerjakan
@@ -1060,7 +1104,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                         </div>
                                         <div class="w-full sm:w-auto flex-shrink-0">
                                             @if ($adminCanView)
-                                            <a href="{{ route('admin.verifikasi.ia07', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Hasil</a>
+                                            <a href="{{ route('admin.ia07.index', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Hasil</a>
                                             @else
                                             {{-- SAAT ONGOING, LISAN TETAP TERKUNCI --}}
                                             <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
@@ -1085,7 +1129,8 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                         </div>
                                         <div class="w-full sm:w-auto flex-shrink-0">
                                             @if ($adminCanView)
-                                            <a href="{{ route('admin.verifikasi.ia09', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                                            <a href="{{ route('admin.asesmen.fr_ia_09.index', $sertifikasi->id_data_sertifikasi_asesi) }}" 
+                                                class="flex items-center justify-center w-full sm:w-48 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
                                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -1337,38 +1382,161 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 {{-- 1. SUKSES --}}
                                 <span class="{{ $statusClassSelesai }}">Kompeten - Direkomendasikan Menerima</span>
 
-                                <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+                                {{-- Tambahkan state 'isUploading' di x-data --}}
+                                <div class="flex flex-wrap gap-2 items-center" x-data="{ isUploading: false }">
 
-                                    {{-- [FORM UPLOAD TERSEMBUNYI] --}}
-                                    <form x-ref="uploadForm"
-                                        action="{{ route('admin.sertifikasi.upload_sertifikat_asesi', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                        method="POST"
-                                        enctype="multipart/form-data"
-                                        style="display: none;">
-                                        @csrf @method('PUT')
-                                        {{-- Input file hidden, ketika berubah (dipilih), form otomatis submit --}}
-                                        <input type="file" name="sertifikat" accept=".pdf" x-ref="fileInput" @change="$refs.uploadForm.submit()">
+                                    {{-- [TOMBOL 1] LIHAT SERTIFIKAT (KUNING) --}}
+                                    @if($hasFile)
+                                        <a href="{{ route('admin.sertifikasi.download', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}"
+                                        target="_blank"
+                                        class="{{ $btnYellow }} inline-flex items-center justify-center">
+                                            <i class="fas fa-certificate mr-2"></i> Sertifikat
+                                        </a>
+                                    @endif
+
+                                    {{-- [TOMBOL 2] FORM UPLOAD --}}
+                                    {{-- Tambahkan ID unik pada form: id="formUploadSertifikat" --}}
+                                    <form id="formUploadSertifikat"
+                                        action="{{ route('admin.sertifikasi.upload', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                                        method="POST" 
+                                        enctype="multipart/form-data">
+                                        @csrf
+                                        
+                                        {{-- INPUT FILE --}}
+                                        {{-- LOGIC UBAH: --}}
+                                        {{-- 1. Set isUploading = true --}}
+                                        {{-- 2. Paksa submit via document.getElementById --}}
+                                        <input type="file" 
+                                            name="sertifikat" 
+                                            x-ref="fileInput" 
+                                            style="display:none" 
+                                            accept="application/pdf"
+                                            @change="isUploading = true; document.getElementById('formUploadSertifikat').submit();">
+
+                                        {{-- TOMBOL TRIGGER --}}
+                                        <button type="button"
+                                                @click="$refs.fileInput.click()"
+                                                :disabled="isUploading" 
+                                                class="{{ $btnBlue }} inline-flex items-center justify-center transition disabled:opacity-70 disabled:cursor-wait">
+                                            
+                                            {{-- TAMPILAN NORMAL --}}
+                                            <span x-show="!isUploading" class="inline-flex items-center">
+                                                <i class="fas {{ $hasFile ? 'fa-sync-alt' : 'fa-upload' }} mr-2"></i>
+                                                {{ $hasFile ? 'Ganti Sertifikat' : 'Upload Sertifikat' }}
+                                            </span>
+
+                                            {{-- TAMPILAN LOADING --}}
+                                            <span x-show="isUploading" class="inline-flex items-center" style="display: none;">
+                                                <i class="fas fa-circle-notch fa-spin mr-2"></i>
+                                                Mengunggah...
+                                            </span>
+                                        </button>
                                     </form>
 
-                                    {{-- [TOMBOL UPLOAD / GANTI] --}}
-                                    <button type="button"
-                                        @click="$refs.fileInput.click()"
-                                        class="{{ $btnBlue }} inline-flex items-center justify-center">
-
-                                        {{-- LOGIKA ICON: Jika ada file pake 'fa-sync-alt', jika tidak pake 'fa-upload' --}}
-                                        <i class="fas {{ $hasFile ? 'fa-sync-alt' : 'fa-upload' }} mr-2"></i>
-
-                                        {{ $hasFile ? 'Ganti Sertifikat' : 'Upload Sertifikat' }}
-                                    </button>
-
-                                    {{-- [TOMBOL DOWNLOAD] --}}
+                                    {{-- [TOMBOL 3] UNDUH (HIJAU) --}}
                                     @if($hasFile)
-                                    <a href="{{ route('admin.sertifikasi.download', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        <a href="{{ route('admin.sertifikasi.download', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
                                         target="_blank"
                                         class="{{ $btnGreen }} inline-flex items-center justify-center">
-                                        <i class="fas fa-download mr-2"></i> Unduh Sertifikat
-                                    </a>
+                                            <i class="fas fa-download mr-2"></i> Unduh
+                                        </a>
                                     @endif
+
+                                </div>
+
+                                {{-- NOTIFIKASI TOAST (FLOATING) --}}
+                                {{-- Wadah Fixed di pojok kanan bawah --}}
+                                <div class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 w-full max-w-sm pointer-events-none">
+
+                                    {{-- 1. VALIDATION ERRORS (List) --}}
+                                    @if($errors->any())
+                                        <div x-data="{ show: true }" 
+                                            x-init="setTimeout(() => show = false, 5000)" 
+                                            x-show="show"
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 translate-y-2"
+                                            x-transition:enter-end="opacity-100 translate-y-0"
+                                            x-transition:leave="transition ease-in duration-300"
+                                            x-transition:leave-start="opacity-100 translate-y-0"
+                                            x-transition:leave-end="opacity-0 translate-y-2"
+                                            class="pointer-events-auto bg-white border-l-4 border-red-500 shadow-lg rounded-r-lg p-4 flex items-start gap-3">
+                                            
+                                            {{-- Icon --}}
+                                            <div class="text-red-500 mt-0.5">
+                                                <i class="fas fa-exclamation-circle text-xl"></i>
+                                            </div>
+                                            
+                                            {{-- Content --}}
+                                            <div class="flex-1">
+                                                <h3 class="font-bold text-red-600 text-sm">Terjadi Kesalahan</h3>
+                                                <ul class="mt-1 text-sm text-gray-600 list-disc list-inside">
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+
+                                            {{-- Close Button --}}
+                                            <button @click="show = false" class="text-gray-400 hover:text-gray-600">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    @endif
+
+                                    {{-- 2. SESSION ERROR (Single) --}}
+                                    @if(session('error'))
+                                        <div x-data="{ show: true }" 
+                                            x-init="setTimeout(() => show = false, 5000)" 
+                                            x-show="show"
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 translate-y-2"
+                                            x-transition:enter-end="opacity-100 translate-y-0"
+                                            x-transition:leave="transition ease-in duration-300"
+                                            x-transition:leave-start="opacity-100 translate-y-0"
+                                            x-transition:leave-end="opacity-0 translate-y-2"
+                                            class="pointer-events-auto bg-white border-l-4 border-red-500 shadow-lg rounded-r-lg p-4 flex items-center gap-3">
+                                            
+                                            <div class="text-red-500">
+                                                <i class="fas fa-times-circle text-xl"></i>
+                                            </div>
+                                            
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-gray-800">{{ session('error') }}</p>
+                                            </div>
+
+                                            <button @click="show = false" class="text-gray-400 hover:text-gray-600">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    @endif
+
+                                    {{-- 3. SESSION SUCCESS (Single) --}}
+                                    @if(session('success'))
+                                        <div x-data="{ show: true }" 
+                                            x-init="setTimeout(() => show = false, 5000)" 
+                                            x-show="show"
+                                            x-transition:enter="transition ease-out duration-300"
+                                            x-transition:enter-start="opacity-0 translate-y-2"
+                                            x-transition:enter-end="opacity-100 translate-y-0"
+                                            x-transition:leave="transition ease-in duration-300"
+                                            x-transition:leave-start="opacity-100 translate-y-0"
+                                            x-transition:leave-end="opacity-0 translate-y-2"
+                                            class="pointer-events-auto bg-white border-l-4 border-green-500 shadow-lg rounded-r-lg p-4 flex items-center gap-3">
+                                            
+                                            <div class="text-green-500">
+                                                <i class="fas fa-check-circle text-xl"></i>
+                                            </div>
+                                            
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-gray-800">{{ session('success') }}</p>
+                                            </div>
+
+                                            <button @click="show = false" class="text-gray-400 hover:text-gray-600">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    @endif
+
                                 </div>
 
                                 @elseif($isGagal)

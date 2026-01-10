@@ -1,8 +1,38 @@
 @props(['asesor'])
 
-<aside class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-[22%] 
+<aside 
+    x-data
+    x-cloak
+    class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-80 
               bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
-              shadow-inner border-r border-gray-200 flex flex-col items-center pt-8 z-40">
+              shadow-inner border-r border-gray-200 flex flex-col items-center pt-8 z-50
+              transform transition-transform duration-300 ease-in-out"
+    :class="{
+        'translate-x-0': $store.sidebar.open,
+        '-translate-x-full': !$store.sidebar.open
+    }">
+
+    {{-- HEADER SIDEBAR (Tombol Close) --}}
+    <div class="absolute top-4 right-4 z-50">
+        {{-- Tombol Close Desktop --}}
+        <button
+            class="hidden lg:block text-gray-400 hover:text-blue-600 transition"
+            @click="$store.sidebar.setOpen(false)"
+            title="Tutup Sidebar"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+        </button>
+
+        {{-- Tombol Close Mobile --}}
+        <button
+            class="lg:hidden text-gray-400 text-xl opacity-80 hover:opacity-100"
+            @click="$store.sidebar.setOpen(false)"
+        >
+            ✕
+        </button>
+    </div>
 
     <a href="javascript:history.back()" 
        class="absolute top-4 left-6 flex items-center text-gray-500 hover:text-blue-600 transition-all duration-200 cursor-pointer z-50 hover:-translate-x-1">
@@ -12,9 +42,19 @@
 
     <h2 class="text-xl font-bold text-gray-900 mb-3 mt-8">Biodata Asesor</h2>
 
-    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] mb-4 bg-blue-600 flex items-center justify-center relative z-10">
+    <div x-data="{ imgError: false }" class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-[0_0_15px_rgba(0,0,0,0.2)] mb-4 bg-blue-600 flex items-center justify-center relative z-10">
         @if($asesor->pas_foto)
-            <img src="{{ \Illuminate\Support\Facades\Storage::url(str_replace('public/', '', $asesor->pas_foto)) }}" alt="Foto Profil" class="w-full h-full object-cover">
+            {{-- Fallback Initials (shown if image error) --}}
+            <span x-show="imgError" class="text-4xl font-bold text-white select-none absolute">
+                {{ strtoupper(substr($asesor->nama_lengkap ?? 'Asesor', 0, 2)) }}
+            </span>
+
+            {{-- Image --}}
+            <img src="{{ \Illuminate\Support\Facades\Storage::url(str_replace('public/', '', $asesor->pas_foto)) }}" 
+                 alt="Foto Profil" 
+                 class="w-full h-full object-cover relative z-10"
+                 x-show="!imgError"
+                 x-on:error="imgError = true">
         @else
             <span class="text-4xl font-bold text-white select-none">
                 {{ strtoupper(substr($asesor->nama_lengkap ?? 'Asesor', 0, 2)) }}

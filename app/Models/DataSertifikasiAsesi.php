@@ -7,6 +7,7 @@ use App\Models\Jadwal;
 use App\Models\BuktiDasar;
 use App\Models\BuktiKelengkapan;
 use App\Models\Ia02;
+use App\Models\Ak02; // <--- Added
 
 // Pastikan semua model yang direlasikan di-import
 use Illuminate\Database\Eloquent\Model;
@@ -23,9 +24,9 @@ use App\Models\Ia07;
 use App\Models\JawabanIa06;
 use App\Models\LembarJawabIA05;
 use App\Models\ResponBuktiAk01;
-use App\Models\ResponPotensiAK07;
-use App\Models\ResponDiperlukanPenyesuaianAK07;
-use App\Models\HasilPenyesuaianAK07;
+use App\Models\ResponPotensiAk07;
+use App\Models\ResponDiperlukanPenyesuaianAk07;
+use App\Models\HasilPenyesuaianAk07;
 use App\Models\DaftarHadirAsesi;
 use App\Models\KomentarAk05;
 use App\Models\ResponApl2Ia01;
@@ -158,6 +159,11 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(Ia07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
+    public function ia01(): HasOne
+    {
+        return $this->hasOne(ResponApl2Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
     public function ia10(): HasOne
     {
         return $this->hasOne(Ia10::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
@@ -166,6 +172,25 @@ class DataSertifikasiAsesi extends Model
     public function ia02(): HasOne
     {
         return $this->hasOne(Ia02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function ia04(): HasOne
+    {
+        // Link to ResponIA04A as the indicator of completion
+        return $this->hasOne(ResponIA04A::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function ia09(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
+    {
+        // Relasi ke BuktiPortofolioIA08IA09 melalui DataPortofolio
+        return $this->hasOneThrough(
+            BuktiPortofolioIA08IA09::class,
+            DataPortofolio::class,
+            'id_data_sertifikasi_asesi', // FK di tabel DataPortofolio
+            'id_portofolio',             // FK di tabel BuktiPortofolioIA08IA09
+            'id_data_sertifikasi_asesi', // PK di tabel DataSertifikasiAsesi
+            'id_portofolio'              // PK di tabel DataPortofolio
+        );
     }
 
     public function ia06Answers(): HasMany
@@ -202,17 +227,18 @@ class DataSertifikasiAsesi extends Model
 
     public function responPotensiAk07(): HasMany
     {
-        return $this->hasMany(ResponPotensiAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasMany(ResponPotensiAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     public function responPenyesuaianAk07(): HasMany
     {
-        return $this->hasMany(ResponDiperlukanPenyesuaianAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasMany(ResponDiperlukanPenyesuaianAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+
 
     public function hasilPenyesuaianAk07(): HasOne
     {
-        return $this->hasOne(HasilPenyesuaianAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasOne(HasilPenyesuaianAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     /**
@@ -355,6 +381,11 @@ class DataSertifikasiAsesi extends Model
     {
         return $this->hasOne(PenyusunValidator::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
+    public function ak02(): HasMany
+    {
+        return $this->hasMany(Ak02::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
     public function asesmenMandiri()
     {
         return $this->hasMany(\App\Models\ResponApl2Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');

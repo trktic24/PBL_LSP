@@ -13,7 +13,7 @@ use Carbon\Carbon;
 
 class Apl02PdfController extends Controller
 {
-    public function generateApl02($id_sertifikasi)
+    public function generateApl02( Request $request,$id_sertifikasi)
     {
         $user = Auth::user();
 
@@ -100,6 +100,9 @@ class Apl02PdfController extends Controller
         $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
         $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
         $namaFile = 'FR.APL.02_' . $namaAsesiClean . '_' . date('YmdHis') . '.pdf';
+        if ($request->query('mode') == 'preview') {
+            return $pdf->stream($namaFile); // Tampilkan di browser
+        }
 
         return $pdf->download($namaFile);
     }

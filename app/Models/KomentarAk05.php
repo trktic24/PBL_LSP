@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class KomentarAk05 extends Model
 {
@@ -33,6 +34,7 @@ class KomentarAk05 extends Model
         'id_ak05',
         'rekomendasi',
         'keterangan',
+        'catatan_ak05',
     ]; 
 
     public function dataSertifikasiAsesi()

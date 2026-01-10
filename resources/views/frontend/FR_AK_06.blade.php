@@ -3,7 +3,7 @@
     Deskripsi: Form FR.AK.06 - Meninjau Proses Asesmen (Layout Wizard)
 --}}
 
-@extends('layouts.app-sidebar-skema')
+@extends($layout ?? 'layouts.app-sidebar-skema')
 
 @section('content')
 
@@ -26,7 +26,7 @@
     </div>
 
     {{-- FORM START --}}
-    <form action="{{ route('asesor.ak06.store', request()->route('id_jadwal')) }}" method="POST">
+    <form action="{{ isset($isMasterView) ? '#' : route('asesor.ak06.store', request()->route('id_jadwal')) }}" method="POST">
         @csrf
 
         <div class="bg-white">
@@ -38,14 +38,17 @@
                 <h1 class="text-2xl font-bold text-black uppercase tracking-wide border-b-2 border-gray-100 pb-4 mb-2 inline-block">
                     FR.AK.06. MENINJAU PROSES ASESMEN
                 </h1>
+                @if(isset($isMasterView))
+                    <div class="text-center font-bold text-blue-600 my-2">[TEMPLATE MASTER]</div>
+                @endif
             </div>
 
             {{-- INFORMASI SKEMA --}}
             <div class="grid grid-cols-[250px_auto] gap-y-3 text-sm mb-10 text-gray-700">
                 <div class="font-bold text-black">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)*</div>
                 <div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : Junior Web Programmer</div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : -</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ isset($skema) ? $skema->nama_skema : 'Junior Web Programmer' }}</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ isset($skema) ? $skema->nomor_skema : '-' }}</div>
                 </div>
 
                 <div class="font-bold text-black">TUK</div>
@@ -215,8 +218,12 @@
 
             {{-- TOMBOL AKSI --}}
             <div class="mt-12 flex justify-end gap-4 pb-8">
-                <button type="button" class="px-6 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg shadow hover:bg-gray-300 transition">Simpan Draft</button>
-                <button type="submit" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition">Simpan Permanen</button>
+                @if(isset($isMasterView))
+                    <a href="{{ url()->previous() }}" class="px-6 py-3 bg-gray-600 text-white font-bold rounded-lg shadow hover:bg-gray-700 transition">Kembali</a>
+                @else
+                    <button type="button" class="px-6 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg shadow hover:bg-gray-300 transition">Simpan Draft</button>
+                    <button type="submit" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition">Simpan Permanen</button>
+                @endif
             </div>
 
         </div>

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth; // <--- TAMBAHKAN INI
 
 class KartuPesertaPdfController extends Controller
 {
-    public function generateKartuPeserta($id_sertifikasi)
+    public function generateKartuPeserta(Request $request, $id_sertifikasi)
     {
         // 1. AMBIL DATA
         $sertifikasi = DataSertifikasiAsesi::with([
@@ -127,6 +127,11 @@ class KartuPesertaPdfController extends Controller
 
         // Ganti nama file biar rapi
         $namaFile = 'Kartu_Peserta_' . str_replace(' ', '_', $sertifikasi->asesi->nama_lengkap) . '.pdf';
+
+        if ($request->query('mode') == 'preview') {
+            // Tampilkan di browser (Preview)
+            return $pdf->stream($namaFile);
+        }
 
         // Ubah ke download() agar konsisten dengan controller lain
         return $pdf->download($namaFile);

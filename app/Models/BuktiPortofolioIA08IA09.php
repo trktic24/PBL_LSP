@@ -18,23 +18,26 @@ class BuktiPortofolioIA08IA09 extends Model
     protected $fillable = [
         'id_portofolio', 
         'id_ia08', 
+         'daftar_pertanyaan_wawancara',
+        'kesimpulan_jawaban_asesi', 
+        'pencapaian_ia09',
         'is_valid', 
         'is_asli', 
         'is_terkini', 
         'is_memadai',
-        'daftar_pertanyaan_wawancara',
-        'kesimpulan_jawaban_asesi', 
-        'pencapaian_ia09'
     ];
 
-    protected $guarded = [];
 
     /**
      * Relasi ke BuktiDasar, diasumsikan id_portofolio adalah foreign key ke BuktiDasar
      */
     public function buktiPortofolio()
     {
-        return $this->belongsTo(BuktiDasar::class, 'id_portofolio', 'id_bukti_dasar');
+        return $this->belongsTo(DataPortofolio::class, 'id_portofolio', 'id_portofolio');
     }
-    // Relasi ia08 DIBIARKAN HILANG sesuai permintaan Anda.
+
+    public function ia08()
+    {
+        return $this->belongsTo(Ia08::class, 'id_ia08', 'id_ia08');
+    }
 }
