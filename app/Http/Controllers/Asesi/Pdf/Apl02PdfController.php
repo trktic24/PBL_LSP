@@ -52,33 +52,10 @@ class Apl02PdfController extends Controller
         }
 
         // --- LOGIKA TANDA TANGAN ASESI ---
-        $ttdAsesiBase64 = null;
-        if ($sertifikasi->asesi && $sertifikasi->asesi->tanda_tangan) {
-            // Hati-hati path ini, sesuaikan dengan struktur folder lu
-            $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($sertifikasi->asesi->tanda_tangan));
-            if (file_exists($pathTtdAsesi)) {
-                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
-            }
-        }
+        $ttdAsesiBase64 = getTtdBase64($sertifikasi->asesi->tanda_tangan ?? null);
 
         // --- LOGIKA TANDA TANGAN ASESOR ---
-        $ttdAsesorBase64 = null;
-        if ($asesor && $asesor->tanda_tangan) {
-            // Path: storage/app/private_uploads/asesor_docs/{id_user}/filename.png
-            // Ambil id_user dari asesor
-            $idUser = $asesor->user_id ?? ($asesor->id_user ?? null);
-
-            if ($idUser) {
-                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . $idUser . '/' . basename($asesor->tanda_tangan));
-            } else {
-                // Fallback jika tidak ada id_user
-                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
-            }
-
-            if (file_exists($pathTtdAsesor)) {
-                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
-            }
-        }
+        $ttdAsesorBase64 = getTtdBase64($asesor->tanda_tangan ?? null);
 
         $data = [
             'sertifikasi' => $sertifikasi,
