@@ -1,3 +1,7 @@
+<?php
+
+namespace App\Http\Controllers\Asesi\IA03;
+
 use App\Models\IA03;
 use App\Models\MasterFormTemplate;
 use App\Models\Skema;
@@ -216,7 +220,7 @@ class IA03Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia03.index',
+            'targetRoute' => 'ia03.show',
             'buttonLabel' => 'FR.IA.03',
             'formName' => 'Pertanyaan Untuk Mendukung Observasi',
         ]);

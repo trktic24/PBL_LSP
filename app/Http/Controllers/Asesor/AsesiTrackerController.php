@@ -36,10 +36,15 @@ class AsesiTrackerController extends Controller
             ->findOrFail($id_sertifikasi_asesi);
 
         // --- Tambahan: Otorisasi (Sangat Penting) ---
-        // Pastikan Asesor yang login adalah asesor yang benar
-        $asesor = Asesor::where('id_user', Auth::id())->first();
-        if (!$asesor || $dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
-            abort(403, 'Anda tidak berhak mengakses data ini.');
+        // Pastikan Asesor yang login adalah asesor yang benar (Atau Admin/Superadmin)
+        $user = Auth::user();
+        if ($user->hasRole('admin') || $user->hasRole('superadmin')) {
+            // Admin can access all trackers
+        } else {
+            $asesor = Asesor::where('id_user', $user->id)->first();
+            if (!$asesor || $dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses data ini.');
+            }
         }
         // --- Selesai Otorisasi ---
 

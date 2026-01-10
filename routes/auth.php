@@ -503,7 +503,7 @@ Route::middleware('auth')->group(function () {
     // ======================================================
     // 5. AREA ASESI
     // ======================================================
-    Route::middleware(['role:asesi'])
+    Route::middleware(['role:asesi,admin,superadmin'])
         ->prefix('asesi')
         ->name('asesi.')
         ->group(function () {

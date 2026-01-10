@@ -211,7 +211,7 @@ class Ak04Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ak04.create',
+            'targetRoute' => 'asesi.banding.fr_ak04',
             'buttonLabel' => 'FR.AK.04',
         ]);
     }
