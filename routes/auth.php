@@ -308,7 +308,6 @@ Route::middleware('auth')->group(function () {
                     // --- FITUR TRACKER ---
                     Route::post('/sertifikasi/{id}/verifikasi-pembayaran', 'verifikasiPembayaran')->name('verifikasi.pembayaran');
                     Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
-                    Route::get('/verifikasi-ia02/{id}', 'verifikasiIA02')->name('verifikasi.ia02');
                     Route::get('/verifikasi-ia05/{id}', 'verifikasiIA05')->name('verifikasi.ia05');
                     Route::get('/verifikasi-ia06/{id}', 'verifikasiIA06')->name('verifikasi.ia06');
                     Route::post('/sertifikasi/{id}/upload-sertifikat', 'uploadSertifikatAsesi')->name('sertifikasi.upload');
