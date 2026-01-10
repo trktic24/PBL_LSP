@@ -97,6 +97,11 @@ class AssessmenFRIA04tController extends Controller
         $tanda_tangan_asesi_path = optional($asesi)->tanda_tangan ?? null;
         $rekomendasi_db = optional($sertifikasi)->rekomendasi_IA04B;
 
+        // Ambil data dari poinIA04A dan responIA04A (jika ada)
+        $hal_yang_disiapkan_db = optional($poinIA04A)->hal_yang_disiapkan ?? null;
+        $hal_yang_didemonstrasikan_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? null;
+        $umpan_balik_asesi_db = optional($responIA04A)->umpan_balik_untuk_asesi ?? null;
+
         // --- LOGIKA TANDA TANGAN BASE64 ---
         $ttdAsesorBase64 = null;
         if ($asesor && $asesor->tanda_tangan) {

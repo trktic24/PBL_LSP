@@ -146,7 +146,7 @@
                             <td style="border: none;">Tanda Tangan</td>
                             <td style="border: none;">:</td>
                             <td style="border: none;">
-                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->asesi->tanda_tangan) }}" class="signature-img">
+                                <img src="{{ getTtdBase64($sertifikasi->asesi->tanda_tangan) }}" class="signature-img">
                             </td>
                         </tr>
                     </table>
@@ -167,7 +167,7 @@
                             <td style="border: none;">Tanda Tangan</td>
                             <td style="border: none;">:</td>
                             <td style="border: none;">
-                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->jadwal->asesor->tanda_tangan) }}" class="signature-img">
+                                <img src="{{ getTtdBase64($sertifikasi->jadwal->asesor->tanda_tangan) }}" class="signature-img">
                             </td>
                         </tr>
                     </table>

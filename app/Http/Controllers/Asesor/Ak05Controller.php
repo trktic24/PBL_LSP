@@ -196,4 +196,31 @@ class Ak05Controller extends Controller
         $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
         return redirect()->route('ak05.index', $sertifikasi->id_jadwal);
     }
+
+    /**
+     * Generate PDF for FR.AK.05
+     */
+    public function cetakPDF($id_jadwal)
+    {
+        $jadwal = Jadwal::with(['skema', 'asesor', 'tuk'])->findOrFail($id_jadwal);
+        
+        // Authorization Check
+        $user = Auth::user();
+        if ($user->hasRole('asesor') && !$user->hasRole('admin')) {
+             if (!$user->asesor || $jadwal->id_asesor != $user->asesor->id_asesor) {
+                 abort(403, 'Anda tidak berhak mengakses dokumen ini.');
+             }
+        }
+
+        $listAsesi = DataSertifikasiAsesi::with(['asesi', 'komentarAk05.Ak05'])
+                    ->where('id_jadwal', $id_jadwal)
+                    ->get();
+
+        $asesor = $jadwal->asesor;
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.ak_05', compact('jadwal', 'listAsesi', 'asesor'))
+                    ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('FR.AK.05_' . ($jadwal->skema->kode_skema ?? 'Skema') . '.pdf');
+    }
 }

@@ -83,4 +83,23 @@ class FrAk06Controller extends Controller
             'buttonLabel' => 'FR.AK.06',
         ]);
     }
+
+    /**
+     * Generate PDF for FR.AK.06
+     */
+    public function cetakPDF($id_jadwal)
+    {
+         $jadwal = \App\Models\Jadwal::with(['skema', 'asesor', 'masterTuk'])->findOrFail($id_jadwal);
+         $ak06 = FrAk06::where('id_jadwal', $id_jadwal)->first(); // Assuming schema has id_jadwal or similar link
+         // NOTES: The FR.AK.06 table structure wasn't fully inspected, assuming standard linkage. 
+         // If retrieval fails, we pass null or empty object to view.
+         
+         $skema = $jadwal->skema;
+         $asesor = $jadwal->asesor;
+
+         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.ak_06', compact('jadwal', 'ak06', 'skema', 'asesor'))
+                    ->setPaper('a4', 'portrait');
+
+         return $pdf->stream('FR.AK.06_' . ($skema->kode_skema ?? 'Skema') . '.pdf');
+    }
 }

@@ -163,10 +163,22 @@
                 <td width="50%" class="text-center">
                     Asesi,<br><br><br><br>
                     <b>{{ $data->asesi->nama_lengkap }}</b>
+                    @if($data->asesi->tanda_tangan)
+                        <br>
+                        <img src="{{ getTtdBase64($data->asesi->tanda_tangan) }}" style="width: 100px; height: auto;">
+                    @else
+                        <br><br><br><br>
+                    @endif
                 </td>
                 <td width="50%" class="text-center">
                     Asesor,<br><br><br><br>
                     <b>{{ $data->jadwal->asesor->nama_asesor ?? '...................' }}</b>
+                    @if($data->jadwal->asesor->tanda_tangan)
+                        <br>
+                        <img src="{{ getTtdBase64($data->jadwal->asesor->tanda_tangan) }}" style="width: 100px; height: auto;">
+                    @else
+                        <br><br><br><br>
+                    @endif
                 </td>
             </tr>
         </table>
