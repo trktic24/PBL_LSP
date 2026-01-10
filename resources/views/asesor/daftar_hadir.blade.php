@@ -207,9 +207,16 @@
                                         class="h-32 w-32 rounded-md overflow-hidden border bg-white group-img
                                         {{ ($data->presensi && $data->presensi->hadir == 1) ? '' : 'hidden' }}">
                                         
-                                        <img src="{{ route('secure.file', ['path' => $data->asesi->tanda_tangan]) }}" 
+                                        @php
+                                            $ttdAsesiBase64 = getTtdBase64($data->asesi->tanda_tangan ?? null, null, 'asesi');
+                                        @endphp
+                                        @if($ttdAsesiBase64)
+                                        <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" 
                                              class="max-w-full max-h-full object-contain mx-auto"
                                              alt="Tanda Tangan Asesi">
+                                        @else
+                                        <div class="text-xs text-gray-400">Belum ada TTD</div>
+                                        @endif
                                     </div>
                                 </div>
                             </td>

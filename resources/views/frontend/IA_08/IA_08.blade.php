@@ -472,9 +472,12 @@
                         <p class="mb-4 text-gray-800">{{ now()->format('d-m-Y') }}</p>
 
                         <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mb-2">
-                            @if($asesi->tanda_tangan)
+                            @php
+                                $ttdAsesiBase64 = getTtdBase64($asesi->tanda_tangan ?? null, null, 'asesi');
+                            @endphp
+                            @if($ttdAsesiBase64)
                                 <img
-                                    src="{{ route('secure.file', ['path' => $asesi->tanda_tangan]) }}"
+                                    src="data:image/png;base64,{{ $ttdAsesiBase64 }}"
                                     alt="Tanda Tangan Asesi"
                                     class="h-full object-contain"
                                 >
@@ -494,9 +497,12 @@
                         <p class="mb-4 text-gray-800">{{ now()->format('d-m-Y') }}</p>
 
                         <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mb-2">
-                            @if($asesor->tanda_tangan)
+                            @php
+                                $ttdAsesorBase64 = getTtdBase64($asesor->tanda_tangan ?? null, $asesor->id_user ?? $asesor->user_id ?? null, 'asesor');
+                            @endphp
+                            @if($ttdAsesorBase64)
                                 <img
-                                    src="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}"
+                                    src="data:image/png;base64,{{ $ttdAsesorBase64 }}"
                                     alt="Tanda Tangan Asesor"
                                     class="h-full object-contain"
                                 >
