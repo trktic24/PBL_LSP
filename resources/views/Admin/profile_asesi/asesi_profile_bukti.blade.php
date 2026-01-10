@@ -241,8 +241,11 @@
             {{-- 1. AREA PREVIEW GAMBAR --}}
             <div class="w-full max-w-3xl h-64 border-2 border-dashed border-gray-300 rounded-xl bg-white flex items-center justify-center overflow-hidden relative group">
                 
+                @php
+                    $ttdAsesiBase64 = getTtdBase64($asesi->tanda_tangan ?? null, null, 'asesi');
+                @endphp
                 <img id="img-ttd-preview" 
-                     src="{{ $asesi->tanda_tangan ? route('secure.file', ['path' => $asesi->tanda_tangan]) : '' }}" 
+                     src="{{ $ttdAsesiBase64 ? 'data:image/png;base64,' . $ttdAsesiBase64 : '' }}" 
                      class="max-h-full max-w-full object-contain p-6" 
                      :class="hasTtd ? '' : 'hidden'">
                 
