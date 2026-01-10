@@ -129,11 +129,19 @@
                                     </td>
                                     @for($i = 1; $i <= 5; $i++)
                                         <td class="p-3 text-center border-r border-gray-200 last:border-r-0">
+                                            @php
+                                                $checked = false;
+                                                if (isset($mapa02Map[$kp->id_kelompok_pekerjaan][$instrument])) {
+                                                    $checked = $mapa02Map[$kp->id_kelompok_pekerjaan][$instrument] == $i;
+                                                } elseif (isset($template[$kp->id_kelompok_pekerjaan][$instrument])) {
+                                                    $checked = $template[$kp->id_kelompok_pekerjaan][$instrument] == $i;
+                                                }
+                                            @endphp
                                             <input type="radio" 
                                                 name="potensi[{{ $kp->id_kelompok_pekerjaan }}][{{ $instrument }}]" 
                                                 value="{{ $i }}" 
                                                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                                {{ isset($mapa02Map[$kp->id_kelompok_pekerjaan][$instrument]) && $mapa02Map[$kp->id_kelompok_pekerjaan][$instrument] == $i ? 'checked' : '' }}
+                                                {{ $checked ? 'checked' : '' }}
                                                 {{ !$canEdit ? 'disabled' : '' }}>
                                         </td>
                                     @endfor

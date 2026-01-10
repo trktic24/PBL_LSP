@@ -1,9 +1,7 @@
-<?php
-
-namespace App\Http\Controllers;
-
 use App\Models\Mapa02;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -38,12 +36,23 @@ class Mapa02Controller extends Controller
         }
 
         // Ambil SEMUA data Mapa02 untuk sertifikasi ini
-        // Map: [ id_kelompok_pekerjaan => [ 'Nama Instrumen' => 'Nilai Potensi' ] ]
         $mapa02Collection = Mapa02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
 
         $mapa02Map = [];
-        foreach ($mapa02Collection as $item) {
-            $mapa02Map[$item->id_kelompok_pekerjaan][$item->instrumen_asesmen] = $item->potensi_asesi;
+        $templateData = null;
+
+        if ($mapa02Collection->isEmpty()) {
+            // [AUTO-LOAD TEMPLATE]
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('form_code', 'FR.MAPA.02')
+                                        ->first();
+            if ($template && !empty($template->content)) {
+                $templateData = $template->content;
+            }
+        } else {
+            foreach ($mapa02Collection as $item) {
+                $mapa02Map[$item->id_kelompok_pekerjaan][$item->instrumen_asesmen] = $item->potensi_asesi;
+            }
         }
 
         // Yang boleh edit: Asesor (3) & Superadmin (4)
@@ -53,6 +62,7 @@ class Mapa02Controller extends Controller
         return view('frontend.FR_MAPA_02', [
             'sertifikasi' => $sertifikasi,
             'mapa02Map' => $mapa02Map,
+            'template' => $templateData,
             'canEdit' => $canEdit,
             'jadwal' => $sertifikasi->jadwal,
             'asesi' => $sertifikasi->asesi,
@@ -135,7 +145,42 @@ class Mapa02Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form MAPA-02 (Admin Master View)
+     * [MASTER] Menampilkan editor template (Peta Instrumen) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::with(['kelompokPekerjaan'])->findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.MAPA.02')
+                                    ->first();
+        
+        $content = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.mapa02', [
+            'skema' => $skema,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'content' => 'required|array'
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.MAPA.02'],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat MAPA-02 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form MAPA-02 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

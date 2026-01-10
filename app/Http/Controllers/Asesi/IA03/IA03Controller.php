@@ -1,8 +1,6 @@
-<?php
-
-namespace App\Http\Controllers\Asesi\IA03;
-
 use App\Models\IA03;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
@@ -23,6 +21,26 @@ class IA03Controller extends Controller
 
         // Ambil seluruh pertanyaan IA03 milik asesi ini
         $pertanyaanIA03 = IA03::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
+
+        // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, ambil dari Master Template
+        if ($pertanyaanIA03->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('form_code', 'FR.IA.03')
+                                        ->first();
+            if ($template && !empty($template->content)) {
+                foreach ($template->content as $qText) {
+                    IA03::create([
+                        'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
+                        'pertanyaan' => $qText,
+                        'jawaban' => '',
+                        'pencapaian' => null,
+                        'catatan_umpan_balik' => null
+                    ]);
+                }
+                // Refresh collection
+                $pertanyaanIA03 = IA03::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
+            }
+        }
         $catatanUmpanBalik = $pertanyaanIA03
             ->pluck('catatan_umpan_balik')
             ->filter()
@@ -108,7 +126,44 @@ class IA03Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.03 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Pertanyaan Lisan) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.IA.03')
+                                    ->first();
+        
+        // Default values if no template exists
+        $questions = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.ia03', [
+            'skema' => $skema,
+            'questions' => $questions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*' => 'required|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.03'],
+            ['content' => $request->questions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-03 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.03 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

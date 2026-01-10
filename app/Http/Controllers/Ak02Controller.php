@@ -1,10 +1,7 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Controllers\Controller;
 use App\Models\Ak02;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -63,7 +60,21 @@ class Ak02Controller extends Controller
         $skema = $asesi->jadwal->skema;
         $jadwal = $asesi->jadwal;
 
-        return view('frontend.AK_02.FR_AK_02', compact('asesi', 'penilaianList', 'skema', 'jadwal'));
+        // [AUTO-LOAD TEMPLATE]
+        $template = null;
+        if ($penilaianList->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('form_code', 'FR.AK.02')
+                                        ->first();
+        }
+
+        return view('frontend.AK_02.FR_AK_02', [
+            'asesi' => $asesi,
+            'penilaianList' => $penilaianList,
+            'skema' => $skema,
+            'jadwal' => $jadwal,
+            'template' => $template ? $template->content : null
+        ]);
     }
 
     public function update(Request $request, $id_asesi)
@@ -225,7 +236,47 @@ class Ak02Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.AK.02 (Admin Master View)
+     * [MASTER] Menampilkan editor template (Rekaman Asesmen) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.AK.02')
+                                    ->first();
+        
+        $content = $template ? $template->content : [
+            'tindak_lanjut' => '',
+            'komentar' => ''
+        ];
+
+        return view('Admin.master.skema.template.ak02', [
+            'skema' => $skema,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'content' => 'required|array',
+            'content.tindak_lanjut' => 'nullable|string',
+            'content.komentar' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.AK.02'],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat AK-02 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.AK.02 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

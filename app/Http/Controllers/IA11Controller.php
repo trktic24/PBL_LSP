@@ -1,9 +1,7 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use App\Models\Ia11;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -20,6 +18,18 @@ class IA11Controller extends Controller
 
         // Data penilaian Asesor sudah otomatis di-decode oleh Model berkat $casts = ['rancangan_produk' => 'array']
         $asesor_data = $ia11->rancangan_produk ?? [];
+
+        // [AUTO-LOAD TEMPLATE] Jika rekomendasi masih kosong, ambil dari Master Template
+        if (empty($asesor_data['rekomendasi_kelompok']) && empty($asesor_data['rekomendasi_unit'])) {
+            $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                        ->where('form_code', 'FR.IA.11')
+                                        ->first();
+            if ($template && !empty($template->content)) {
+                $asesor_data['rekomendasi_kelompok'] = $template->content['rekomendasi_kelompok'] ?? '';
+                $asesor_data['rekomendasi_unit'] = $template->content['rekomendasi_unit'] ?? '';
+                $asesor_data['catatan_asesor'] = $template->content['catatan_asesor'] ?? '';
+            }
+        }
 
         $data = [
             'ia11' => $ia11,
@@ -126,7 +136,49 @@ class IA11Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.11 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Tinjau Instrumen) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.IA.11')
+                                    ->first();
+        
+        // Default values if no template exists
+        $content = $template ? $template->content : [
+            'rekomendasi_kelompok' => '',
+            'rekomendasi_unit' => '',
+            'catatan_asesor' => ''
+        ];
+
+        return view('Admin.master.skema.template.ia11', [
+            'skema' => $skema,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'rekomendasi_kelompok' => 'nullable|string',
+            'rekomendasi_unit' => 'nullable|string',
+            'catatan_asesor' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.11'],
+            ['content' => $request->only(['rekomendasi_kelompok', 'rekomendasi_unit', 'catatan_asesor'])]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-11 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.11 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

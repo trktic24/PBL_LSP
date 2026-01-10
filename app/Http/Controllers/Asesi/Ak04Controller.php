@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\ResponAk04;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -44,7 +46,16 @@ class Ak04Controller extends Controller
         // Ambil respon lama (jika ada) untuk ditampilkan kembali (edit mode)
         $respon = ResponAk04::where('id_data_sertifikasi_asesi', $id_sertifikasi)->first();
 
-        return view('frontend.FR_AK_04', compact('sertifikasi', 'respon'));
+        // [AUTO-LOAD TEMPLATE]
+        $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                    ->where('form_code', 'FR.AK.04')
+                                    ->first();
+
+        return view('frontend.FR_AK_04', [
+            'sertifikasi' => $sertifikasi,
+            'respon' => $respon,
+            'template' => $template ? $template->content : null
+        ]);
     }
 
     // 2. MENYIMPAN DATA (STORE)
@@ -103,7 +114,51 @@ class Ak04Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.AK.04 (Admin Master View)
+     * [MASTER] Menampilkan editor template (Banding Asesmen) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.AK.04')
+                                    ->first();
+        
+        $content = $template ? $template->content : [
+            'q1' => 'Apakah Proses Banding telah dijelaskan kepada Anda?',
+            'q2' => 'Apakah Anda telah mendiskusikan Banding dengan Asesor?',
+            'q3' => 'Apakah Anda mau melibatkan "orang lain" membantu Anda dalam Proses Banding?',
+            'default_alasan' => ''
+        ];
+
+        return view('Admin.master.skema.template.ak04', [
+            'skema' => $skema,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'content' => 'required|array',
+            'content.q1' => 'required|string',
+            'content.q2' => 'required|string',
+            'content.q3' => 'required|string',
+            'content.default_alasan' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.AK.04'],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat AK-04 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.AK.04 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

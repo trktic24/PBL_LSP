@@ -1,8 +1,6 @@
-<?php
-
-namespace App\Http\Controllers;
-
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use App\Models\KelompokPekerjaan;
 use App\Models\UnitKompetensi;
 use App\Models\DataPortofolio;
@@ -10,7 +8,7 @@ use App\Models\BuktiPortofolioIA08IA09;
 use App\Models\Ia08;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IA08Controller extends Controller
 {
@@ -296,7 +294,43 @@ class IA08Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.08 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Verifikasi Pihak Ketiga) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.IA.08')
+                                    ->first();
+        
+        // Default values if no template exists
+        $instructions = $template ? $template->content : '';
+
+        return view('Admin.master.skema.template.ia08', [
+            'skema' => $skema,
+            'instructions' => $instructions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'instructions' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.08'],
+            ['content' => $request->instructions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-08 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.08 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

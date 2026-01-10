@@ -1,12 +1,10 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use App\Models\Ia10;
 use App\Models\PertanyaanIa10;
 use App\Models\DetailIa10;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -24,9 +22,25 @@ class IA10Controller extends Controller
         $header_ia10 = Ia10::where('id_data_sertifikasi_asesi', $id_asesi)->first();
 
         // 2. Ambil Pertanyaan Checklist 
-        // NOTE: Karena struktur DB 'pertanyaan_ia10' punya kolom 'id_data_sertifikasi_asesi',
-        // Saya asumsikan pertanyaan ini SUDAH DIGENERATE sebelumnya untuk asesi ini.
         $daftar_soal = PertanyaanIa10::where('id_data_sertifikasi_asesi', $id_asesi)->get();
+
+        // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, ambil dari Master Template
+        if ($daftar_soal->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $asesi->jadwal->id_skema)
+                                        ->where('form_code', 'FR.IA.10')
+                                        ->first();
+            if ($template && !empty($template->content)) {
+                foreach ($template->content as $qText) {
+                    PertanyaanIa10::create([
+                        'id_data_sertifikasi_asesi' => $id_asesi,
+                        'pertanyaan' => $qText,
+                        'jawaban_pilihan_iya_tidak' => 0 // Default 'Tidak'
+                    ]);
+                }
+                // Refresh collection
+                $daftar_soal = PertanyaanIa10::where('id_data_sertifikasi_asesi', $id_asesi)->get();
+            }
+        }
 
         // 3. Ambil Jawaban Essay (Jika ada) untuk ditampilkan kembali
         $essay_answers = [];
@@ -169,7 +183,44 @@ class IA10Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Master View untuk IA.10 (Admin)
+     * [MASTER] Menampilkan editor tamplate (Klarifikasi Pihak Ketiga) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.IA.10')
+                                    ->first();
+        
+        // Default values if no template exists
+        $questions = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.ia10', [
+            'skema' => $skema,
+            'questions' => $questions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*' => 'required|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.10'],
+            ['content' => $request->questions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-10 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Master View untuk IA.10 (Admin) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

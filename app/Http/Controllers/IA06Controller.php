@@ -281,7 +281,65 @@ class IA06Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.06 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Essay) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $semua_soal = SoalIa06::where('id_skema', $id_skema)->orderBy('id_soal_ia06')->get();
+
+        return view('Admin.master.skema.template.ia06', [
+            'skema' => $skema,
+            'semua_soal' => $semua_soal
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update soal template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'soal' => 'required|array',
+            'soal.*.pertanyaan' => 'required|string',
+            'soal.*.kunci' => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->soal as $index => $data) {
+                $id_soal = $data['id'] ?? null;
+                
+                SoalIa06::updateOrCreate(
+                    ['id_soal_ia06' => $id_soal, 'id_skema' => $id_skema],
+                    [
+                        'id_skema' => $id_skema,
+                        'soal_ia06' => $data['pertanyaan'],
+                        'kunci_jawaban_ia06' => $data['kunci'] ?? '',
+                    ]
+                );
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'Templat Soal IA-06 berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan templat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * [MASTER] Hapus soal template
+     */
+    public function destroyTemplate($id_skema, $id_soal)
+    {
+        $soal = SoalIa06::where('id_skema', $id_skema)->findOrFail($id_soal);
+        $soal->delete();
+
+        return redirect()->back()->with('success', 'Soal berhasil dihapus.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.06 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

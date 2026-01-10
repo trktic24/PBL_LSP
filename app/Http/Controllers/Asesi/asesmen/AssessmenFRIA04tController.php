@@ -9,6 +9,7 @@ use App\Models\Asesor;
 use App\Models\Skema;
 use App\Models\Jadwal;
 use App\Models\PoinIA04A;
+use App\Models\MasterFormTemplate;
 use App\Models\JenisTuk;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\AspekIA04B;
@@ -99,6 +100,18 @@ class AssessmenFRIA04tController extends Controller
 
         $hal_yang_disiapkan_db = optional($poinIA04A)->hal_yang_disiapkan ?? null;
         $hal_yang_didemonstrasikan_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? null;
+
+        // [AUTO-LOAD TEMPLATE]
+        if (!$hal_yang_disiapkan_db && !$hal_yang_didemonstrasikan_db && $skema) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('form_code', 'FR.IA.04')
+                                        ->first();
+            if ($template && !empty($template->content)) {
+                $hal_yang_disiapkan_db = $template->content[0]['nama'] ?? null;
+                $hal_yang_didemonstrasikan_db = $template->content[0]['kriteria'] ?? null;
+            }
+        }
+
         $umpan_balik_asesi_db = optional($responIA04A)->umpan_balik_untuk_asesi ?? null;
 
 
@@ -245,8 +258,24 @@ class AssessmenFRIA04tController extends Controller
         $aspekIA04BData = AspekIA04B::where('id_data_sertifikasi_asesi', $active_id_sertifikasi)->get();
 
         // 3. Mengisi variabel DB dengan data (menggunakan optional() untuk safety)
-        $skenario_umum_db = optional($poinIA04A)->hal_yang_disiapkan ?? "Instruksi dari Asesor belum tersedia.";
-        $hasil_umum_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? "Hasil demonstrasi/output belum ditetapkan oleh Asesor.";
+        $skenario_umum_db = optional($poinIA04A)->hal_yang_disiapkan ?? null;
+        $hasil_umum_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? null;
+
+        // [AUTO-LOAD TEMPLATE]
+        if (!$skenario_umum_db && !$hasil_umum_db && $skema) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('form_code', 'FR.IA.04')
+                                        ->first();
+            if ($template && !empty($template->content)) {
+                $skenario_umum_db = $template->content[0]['nama'] ?? null;
+                $hasil_umum_db = $template->content[0]['kriteria'] ?? null;
+            }
+        }
+
+        // Fallback placeholders
+        $skenario_umum_db = $skenario_umum_db ?? "Instruksi dari Asesor belum tersedia.";
+        $hasil_umum_db = $hasil_umum_db ?? "Hasil demonstrasi/output belum ditetapkan oleh Asesor.";
+
         $umpan_balik_asesi_db = optional($responIA04A)->umpan_balik_untuk_asesi ?? "Umpan balik dari Asesor belum tersedia.";
 
         // Data TUK & Tanggal

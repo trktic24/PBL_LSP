@@ -350,7 +350,82 @@ class IA05Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.05 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Bank Soal) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $semua_soal = SoalIA05::where('id_skema', $id_skema)->orderBy('id_soal_ia05')->get();
+
+        return view('Admin.master.skema.template.ia05', [
+            'skema' => $skema,
+            'semua_soal' => $semua_soal
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update soal template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'soal' => 'required|array',
+            'soal.*.pertanyaan' => 'required|string',
+            'soal.*.opsi_a' => 'required|string',
+            'soal.*.opsi_b' => 'required|string',
+            'soal.*.opsi_c' => 'required|string',
+            'soal.*.opsi_d' => 'nullable|string',
+            'soal.*.kunci' => 'required|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->soal as $index => $data) {
+                $id_soal = $data['id'] ?? null;
+                
+                $soal = SoalIA05::updateOrCreate(
+                    ['id_soal_ia05' => $id_soal, 'id_skema' => $id_skema],
+                    [
+                        'id_skema' => $id_skema,
+                        'soal_ia05' => $data['pertanyaan'],
+                        'opsi_a_ia05' => $data['opsi_a'],
+                        'opsi_b_ia05' => $data['opsi_b'],
+                        'opsi_c_ia05' => $data['opsi_c'],
+                        'opsi_d_ia05' => $data['opsi_d'] ?? '',
+                    ]
+                );
+
+                // Update Kunci
+                KunciJawabanIA05::updateOrCreate(
+                    ['id_soal_ia05' => $soal->id_soal_ia05],
+                    [
+                        'jawaban_benar_ia05' => $data['kunci'],
+                        'nomor_kunci_jawaban_ia05' => 1
+                    ]
+                );
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'Templat Soal IA-05 berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan templat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * [MASTER] Hapus soal template
+     */
+    public function destroyTemplate($id_skema, $id_soal)
+    {
+        $soal = SoalIA05::where('id_skema', $id_skema)->findOrFail($id_soal);
+        $soal->delete(); // Cascade delete kunci handled by DB or manually below
+        KunciJawabanIA05::where('id_soal_ia05', $id_soal)->delete();
+
+        return redirect()->back()->with('success', 'Soal berhasil dihapus.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.05 (Admin Master View) - DEPRECATED for management but kept for viewing candidates
      */
     public function adminShow($id_skema)
     {

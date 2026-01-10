@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Jadwal;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,8 +37,26 @@ class Ak05Controller extends Controller
         // Data Asesor untuk Header
         $asesor = $jadwal->asesor;
 
+        // [AUTO-LOAD TEMPLATE]
+        // Check if any asesi already has AK05 data
+        $anyAk05 = $listAsesi->contains(function($asesi) {
+            return $asesi->komentarAk05 && $asesi->komentarAk05->id_ak05;
+        });
+
+        $template = null;
+        if (!$anyAk05) {
+            $template = MasterFormTemplate::where('id_skema', $jadwal->id_skema)
+                                        ->where('form_code', 'FR.AK.05')
+                                        ->first();
+        }
+
         // Tampilkan View
-        return view('frontend.AK_05.FR_AK_05', compact('jadwal', 'listAsesi', 'asesor'));
+        return view('frontend.AK_05.FR_AK_05', [
+            'jadwal' => $jadwal,
+            'listAsesi' => $listAsesi,
+            'asesor' => $asesor,
+            'template' => $template ? $template->content : null
+        ]);
     }
 
     // 2. MENYIMPAN DATA (BATCH UPDATE)
@@ -130,7 +150,51 @@ class Ak05Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.AK.05 (Admin Master View)
+     * [MASTER] Menampilkan editor template (Laporan Asesmen) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.AK.05')
+                                    ->first();
+        
+        $content = $template ? $template->content : [
+            'aspek_asesmen' => '',
+            'catatan_penolakan' => '',
+            'saran_perbaikan' => '',
+            'catatan_akhir' => ''
+        ];
+
+        return view('Admin.master.skema.template.ak05', [
+            'skema' => $skema,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'content' => 'required|array',
+            'content.aspek_asesmen' => 'nullable|string',
+            'content.catatan_penolakan' => 'nullable|string',
+            'content.saran_perbaikan' => 'nullable|string',
+            'content.catatan_akhir' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.AK.05'],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat AK-05 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.AK.05 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

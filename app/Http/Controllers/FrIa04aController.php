@@ -1,11 +1,8 @@
-<?php
-
-namespace App\Http\Controllers;
-
 use App\Models\FrIa04a;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-// 1. TAMBAHKAN INI DI ATAS
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -77,7 +74,45 @@ class FrIa04aController extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.04 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Verifikasi Portofolio) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.IA.04')
+                                    ->first();
+        
+        // Default values if no template exists
+        $points = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.ia04', [
+            'skema' => $skema,
+            'points' => $points
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'points' => 'required|array',
+            'points.*.nama' => 'required|string',
+            'points.*.kriteria' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.04'],
+            ['content' => $request->points]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-04 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.04 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

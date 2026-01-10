@@ -101,7 +101,39 @@ class IA01Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Master View untuk IA.01 (Admin)
+     * [MASTER] Menampilkan editor template (Observasi Langsung) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::with(['kelompokPekerjaan.unitKompetensi.elemen.kriteria'])
+                      ->findOrFail($id_skema);
+
+        return view('Admin.master.skema.template.ia01', [
+            'skema' => $skema
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template (Standar Industri pada KUK)
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'standar_industri' => 'required|array',
+            'standar_industri.*' => 'nullable|string',
+        ]);
+
+        foreach ($request->standar_industri as $id_kriteria => $standar) {
+            KriteriaUnjukKerja::where('id_kriteria', $id_kriteria)->update([
+                'standar_industri_kerja' => $standar
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Templat IA-01 (Standar Industri) berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Master View untuk IA.01 (Admin) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

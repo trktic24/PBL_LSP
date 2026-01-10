@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\ResponHasilAk03;
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Support\Facades\Auth;
 
 class Ak03Controller extends Controller
@@ -49,12 +51,20 @@ class Ak03Controller extends Controller
         }
 
         // 3. Jika Belum Mengisi, Tampilkan Form
+        $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                    ->where('form_code', 'FR.AK.03')
+                                    ->first();
+
         $komponen = PoinAk03::all();
+        if ($template && isset($template->content['selected_points'])) {
+            $komponen = $komponen->whereIn('id_poin_ak03', $template->content['selected_points']);
+        }
 
         return view('asesi.umpan_balik.umpan_balik', [
             'komponen'    => $komponen,
             'sertifikasi' => $sertifikasi,
             'asesi'       => $asesi,
+            'template'    => $template ? $template->content : null
         ]);
     }
 
@@ -109,5 +119,47 @@ class Ak03Controller extends Controller
         // 4. Redirect
         return redirect()->route('asesi.tracker', ['id' => $idJadwalUntukRedirect]) 
             ->with('success', 'Umpan balik berhasil dikirim! Terima kasih.');
+    }
+
+    /**
+     * [MASTER] Menampilkan editor template (Umpan Balik) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.AK.03')
+                                    ->first();
+        
+        $allPoints = PoinAk03::all();
+        $content = $template ? $template->content : [
+            'selected_points' => $allPoints->pluck('id_poin_ak03')->toArray(),
+            'catatan_tambahan' => ''
+        ];
+
+        return view('Admin.master.skema.template.ak03', [
+            'skema' => $skema,
+            'allPoints' => $allPoints,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'content' => 'required|array',
+            'content.selected_points' => 'required|array',
+            'content.catatan_tambahan' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.AK.03'],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat AK-03 berhasil diperbarui.');
     }
 }

@@ -34,30 +34,29 @@ class DetailSkemaController extends Controller
         $formConfig = [
             // FASE 1
             ['code' => 'FR.APL.01', 'name' => 'Permohonan Sertifikasi Kompetensi', 'db_field' => 'apl_01', 'checked' => (bool)$configDB->apl_01, 'url' => route('admin.apl01.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.APL.02', 'name' => 'Asesmen Mandiri', 'db_field' => 'apl_02', 'checked' => (bool)$configDB->apl_02, 'url' => route('admin.apl02.show', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.APL.02', 'name' => 'Asesmen Mandiri', 'db_field' => 'apl_02', 'checked' => (bool)$configDB->apl_02, 'url' => route('admin.skema.detail.edit_kelompok', ['id_kelompok' => $skema->kelompokPekerjaan->first()->id_kelompok_pekerjaan ?? 0])], // Link to KUK editor
             // FASE 2
-            ['code' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 'db_field' => 'fr_mapa_01', 'checked' => (bool)$configDB->fr_mapa_01, 'url' => route('admin.mapa01.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.MAPA.02', 'name' => 'Peta Instrumen Asesmen', 'db_field' => 'fr_mapa_02', 'checked' => (bool)$configDB->fr_mapa_02, 'url' => route('admin.mapa02.show', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 'db_field' => 'fr_mapa_01', 'checked' => (bool)$configDB->fr_mapa_01, 'url' => route('admin.skema.template.mapa01', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.MAPA.02', 'name' => 'Peta Instrumen Asesmen', 'db_field' => 'fr_mapa_02', 'checked' => (bool)$configDB->fr_mapa_02, 'url' => route('admin.skema.template.mapa02', ['id_skema' => $skema->id_skema])],
             // FASE 3 (IA)
-            ['code' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'db_field' => 'fr_ia_01', 'checked' => (bool)$configDB->fr_ia_01, 'url' => route('admin.ia01.show', ['id_skema' => $skema->id_skema])], // Master View
-            ['code' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi', 'db_field' => 'fr_ia_02', 'checked' => (bool)$configDB->fr_ia_02, 'url' => route('admin.ia02.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi', 'db_field' => 'fr_ia_03', 'checked' => (bool)$configDB->fr_ia_03, 'url' => route('admin.ia03.show', ['id_skema' => $skema->id_skema])], 
-            ['code' => 'FR.IA.04', 'name' => 'Ceklis Verifikasi Portofolio', 'db_field' => 'fr_ia_04', 'checked' => (bool)$configDB->fr_ia_04, 'url' => route('admin.ia04.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.IA.05', 'name' => 'Pertanyaan Tertulis Pilihan Ganda', 'db_field' => 'fr_ia_05', 'checked' => (bool)$configDB->fr_ia_05, 'url' => route('admin.ia05.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.IA.06', 'name' => 'Pertanyaan Tertulis Esai', 'db_field' => 'fr_ia_06', 'checked' => (bool)$configDB->fr_ia_06, 'url' => route('admin.ia06.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.IA.07', 'name' => 'Pertanyaan Lisan', 'db_field' => 'fr_ia_07', 'checked' => (bool)$configDB->fr_ia_07, 'url' => route('admin.ia07.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.IA.08', 'name' => 'Ceklis Verifikasi Pihak Ketiga', 'db_field' => 'fr_ia_08', 'checked' => (bool)$configDB->fr_ia_08, 'url' => route('admin.ia08.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.IA.09', 'name' => 'Pertanyaan Wawancara', 'db_field' => 'fr_ia_09', 'checked' => (bool)$configDB->fr_ia_09, 'url' => route('admin.ia09.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.IA.10', 'name' => 'Klarifikasi Bukti Pihak Ketiga', 'db_field' => 'fr_ia_10', 'checked' => (bool)$configDB->fr_ia_10, 'url' => route('admin.ia10.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.IA.11', 'name' => 'Ceklis Meninjau Instrumen Asesmen', 'db_field' => 'fr_ia_11', 'checked' => (bool)$configDB->fr_ia_11, 'url' => route('admin.ia11.show', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 'db_field' => 'fr_ia_01', 'checked' => (bool)$configDB->fr_ia_01, 'url' => route('admin.skema.template.ia01', ['id_skema' => $skema->id_skema])], 
+            ['code' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi', 'db_field' => 'fr_ia_02', 'checked' => (bool)$configDB->fr_ia_02, 'url' => route('admin.skema.template.ia02', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi', 'db_field' => 'fr_ia_03', 'checked' => (bool)$configDB->fr_ia_03, 'url' => route('admin.skema.template.ia03', ['id_skema' => $skema->id_skema])], 
+            ['code' => 'FR.IA.04', 'name' => 'Ceklis Verifikasi Portofolio', 'db_field' => 'fr_ia_04', 'checked' => (bool)$configDB->fr_ia_04, 'url' => route('admin.skema.template.ia04', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.05', 'name' => 'Pertanyaan Tertulis Pilihan Ganda', 'db_field' => 'fr_ia_05', 'checked' => (bool)$configDB->fr_ia_05, 'url' => route('admin.skema.template.ia05', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.06', 'name' => 'Pertanyaan Tertulis Esai', 'db_field' => 'fr_ia_06', 'checked' => (bool)$configDB->fr_ia_06, 'url' => route('admin.skema.template.ia06', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.07', 'name' => 'Pertanyaan Lisan', 'db_field' => 'fr_ia_07', 'checked' => (bool)$configDB->fr_ia_07, 'url' => route('admin.skema.template.ia07', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.08', 'name' => 'Ceklis Verifikasi Pihak Ketiga', 'db_field' => 'fr_ia_08', 'checked' => (bool)$configDB->fr_ia_08, 'url' => route('admin.skema.template.ia08', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.09', 'name' => 'Pertanyaan Wawancara', 'db_field' => 'fr_ia_09', 'checked' => (bool)$configDB->fr_ia_09, 'url' => route('admin.skema.template.ia09', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.10', 'name' => 'Klarifikasi Bukti Pihak Ketiga', 'db_field' => 'fr_ia_10', 'checked' => (bool)$configDB->fr_ia_10, 'url' => route('admin.skema.template.ia10', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.IA.11', 'name' => 'Ceklis Meninjau Instrumen Asesmen', 'db_field' => 'fr_ia_11', 'checked' => (bool)$configDB->fr_ia_11, 'url' => route('admin.skema.template.ia11', ['id_skema' => $skema->id_skema])],
             // FASE 4 (Keputusan & Laporan)
-            ['code' => 'FR.AK.01', 'name' => 'Persetujuan Asesmen dan Kerahasiaan', 'db_field' => 'fr_ak_01', 'checked' => (bool)$configDB->fr_ak_01, 'url' => route('admin.ak01.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.AK.02', 'name' => 'Rekaman Asesmen Kompetensi', 'db_field' => 'fr_ak_02', 'checked' => (bool)$configDB->fr_ak_02, 'url' => route('admin.ak02.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.AK.03', 'name' => 'Umpan Balik dan Catatan Asesmen', 'db_field' => 'fr_ak_03', 'checked' => (bool)$configDB->fr_ak_03, 'url' => route('admin.ak03.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.AK.04', 'name' => 'Banding Asesmen', 'db_field' => 'fr_ak_04', 'checked' => (bool)$configDB->fr_ak_04, 'url' => route('admin.ak04.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.AK.05', 'name' => 'Laporan Asesmen', 'db_field' => 'fr_ak_05', 'checked' => (bool)$configDB->fr_ak_05, 'url' => route('admin.ak05.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen', 'db_field' => 'fr_ak_06', 'checked' => (bool)$configDB->fr_ak_06, 'url' => route('admin.ak06.show', ['id_skema' => $skema->id_skema])],
-            ['code' => 'Laporan', 'name' => 'Laporan Asesi', 'db_field' => null, 'checked' => true, 'url' => route('admin.laporan.show', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.AK.01', 'name' => 'Persetujuan Asesmen dan Kerahasiaan', 'db_field' => 'fr_ak_01', 'checked' => (bool)$configDB->fr_ak_01, 'url' => route('admin.skema.template.ak01', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.AK.02', 'name' => 'Rekaman Asesmen Kompetensi', 'db_field' => 'fr_ak_02', 'checked' => (bool)$configDB->fr_ak_02, 'url' => route('admin.skema.template.ak02', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.AK.03', 'name' => 'Umpan Balik dan Catatan Asesmen', 'db_field' => 'fr_ak_03', 'checked' => (bool)$configDB->fr_ak_03, 'url' => route('admin.skema.template.ak03', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.AK.04', 'name' => 'Banding Asesmen', 'db_field' => 'fr_ak_04', 'checked' => (bool)$configDB->fr_ak_04, 'url' => route('admin.skema.template.ak04', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.AK.05', 'name' => 'Laporan Asesmen', 'db_field' => 'fr_ak_05', 'checked' => (bool)$configDB->fr_ak_05, 'url' => route('admin.skema.template.ak05', ['id_skema' => $skema->id_skema])],
+            ['code' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen', 'db_field' => 'fr_ak_06', 'checked' => (bool)$configDB->fr_ak_06, 'url' => route('admin.skema.template.ak06', ['id_skema' => $skema->id_skema])],
         ];
 
         return view('Admin.master.skema.detail_skema', [

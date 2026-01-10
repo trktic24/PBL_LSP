@@ -1,14 +1,12 @@
-<?php
-
-namespace App\Http\Controllers;
-
+use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\DataSertifikasiAsesi;
 use App\Models\DataPortofolio;
 use App\Models\BuktiPortofolioIA08IA09;
 use Illuminate\Support\Facades\Log;
-use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IA09Controller extends Controller
 {
@@ -88,6 +86,23 @@ class IA09Controller extends Controller
                         'pencapaian' => '',
                         'id_jawaban' => null,
                     ];
+                }
+
+                // [AUTO-LOAD TEMPLATE] Tambahkan pertanyaan dari Master Template jika ada
+                $template = MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal?->id_skema)
+                                            ->where('form_code', 'FR.IA.09')
+                                            ->first();
+                if ($template && !empty($template->content)) {
+                    $startIndex = count($pertanyaan);
+                    foreach ($template->content as $idx => $qText) {
+                        $pertanyaan[] = [
+                            'no' => $startIndex + $idx + 1,
+                            'pertanyaan' => $qText,
+                            'jawaban' => '',
+                            'pencapaian' => '',
+                            'id_jawaban' => null,
+                        ];
+                    }
                 }
             } else {
                 // Jika sudah ada data, ambil dari database
@@ -291,7 +306,44 @@ class IA09Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Master View untuk IA.09 (Admin)
+     * [MASTER] Menampilkan editor tamplate (Pertanyaan Wawancara) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.IA.09')
+                                    ->first();
+        
+        // Default values if no template exists
+        $questions = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.ia09', [
+            'skema' => $skema,
+            'questions' => $questions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*' => 'required|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.09'],
+            ['content' => $request->questions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-09 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Master View untuk IA.09 (Admin) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

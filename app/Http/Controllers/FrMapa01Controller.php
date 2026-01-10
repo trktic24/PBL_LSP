@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\FrMapa01;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use App\Models\DataSertifikasiAsesi;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -16,16 +18,31 @@ class FrMapa01Controller extends Controller
 
     public function index($id)
     {
-        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])->findOrFail($id);
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi', 
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id);
         
-        // Return View Bagian 1
+        $skema = $sertifikasi->jadwal->skema;
+        $mapa01 = FrMapa01::where('id_data_sertifikasi_asesi', $id)->first();
+
+        // [AUTO-LOAD TEMPLATE]
+        $template = null;
+        if (!$mapa01) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('form_code', 'FR.MAPA.01')
+                                        ->first();
+        }
+
         return view('frontend.FR_MAPA_01', [
             'sertifikasi' => $sertifikasi,
             'asesi'       => $sertifikasi->asesi,
-            'skema'       => $sertifikasi->jadwal->skema,
-            'jadwal'      => $sertifikasi->jadwal,            
+            'skema'       => $skema,
+            'jadwal'      => $sertifikasi->jadwal,
+            'mapa01'      => $mapa01,
+            'template'    => $template ? $template->content : null
         ]);
-    }    
+    }
 
     public function store(Request $request)
     {
@@ -64,11 +81,53 @@ class FrMapa01Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form MAPA-01 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Perencanaan Asesmen) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.MAPA.01')
+                                    ->first();
+        
+        // Default values if no template exists
+        $content = $template ? $template->content : [
+            'pendekatan_asesmen' => [],
+            'konteks_lingkungan' => [],
+            'peluang_bukti' => [],
+            'pelaksana_asesmen' => [],
+            'konfirmasi_relevan' => []
+        ];
+
+        return view('Admin.master.skema.template.mapa01', [
+            'skema' => $skema,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'content' => 'required|array'
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.MAPA.01'],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat MAPA-01 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form MAPA-01 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
+        $skema = Skema::findOrFail($id_skema);
 
         // 1. Filter Asesi by Skema & Pagination
         $query = \App\Models\DataSertifikasiAsesi::with([

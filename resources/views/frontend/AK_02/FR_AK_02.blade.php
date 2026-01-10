@@ -205,7 +205,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">Tindak Lanjut yang Dibutuhkan</h3>
                     <textarea name="global_tindak_lanjut" rows="5"
                         class="block w-full text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm resize-none placeholder-gray-400 p-3"
-                        placeholder="Tuliskan tindak lanjut jika ada...">{{ optional($firstNilai)->tindak_lanjut }}</textarea>
+                        placeholder="Tuliskan tindak lanjut jika ada...">{{ old('global_tindak_lanjut', optional($firstNilai)->tindak_lanjut ?? $template['tindak_lanjut'] ?? '') }}</textarea>
                 </div>
             </div>
 
@@ -214,7 +214,7 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">Komentar / Observasi Asesor</h3>
                 <textarea name="global_komentar" rows="3"
                     class="block w-full text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm placeholder-gray-400 p-3"
-                    placeholder="Catatan tambahan dari asesor...">{{ optional($firstNilai)->komentar }}</textarea>
+                    placeholder="Catatan tambahan dari asesor...">{{ old('global_komentar', optional($firstNilai)->komentar ?? $template['komentar'] ?? '') }}</textarea>
             </div>
 
             {{-- 6. TANDA TANGAN (Hanya Tampilan) --}}

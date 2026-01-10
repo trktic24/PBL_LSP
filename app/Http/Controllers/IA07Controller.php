@@ -1,19 +1,10 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-// Import semua Models yang relevan
-use App\Models\Asesi;
-use App\Models\Asesor;
+use App\Models\Ia07;
+use App\Models\MasterFormTemplate;
 use App\Models\Skema;
-use App\Models\JenisTUK;
-use App\Models\Jadwal;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DataSertifikasiAsesi;
-use App\Models\Ia07;
-use Illuminate\Support\Facades\DB;
 
 class IA07Controller extends Controller
 {
@@ -172,7 +163,27 @@ class IA07Controller extends Controller
         ])->findOrFail($idSertifikasi);
 
         // 2. Ambil Daftar Pertanyaan & Jawaban (IA07)
-        $daftar_pertanyaan = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
+        // Ambil Data IA07 milik asesi ini
+        $ia07 = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
+
+        // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, ambil dari Master Template
+        if ($ia07->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('form_code', 'FR.IA.07')
+                                        ->first();
+            if ($template && !empty($template->content)) {
+                foreach ($template->content as $qText) {
+                    Ia07::create([
+                        'id_data_sertifikasi_asesi' => $idSertifikasi,
+                        'pertanyaan' => $qText,
+                        'jawaban_asesi' => '',
+                        'keputusan' => null
+                    ]);
+                }
+                // Refresh collection
+                $ia07 = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
+            }
+        }
 
         // 3. Ambil Unit Kompetensi (Fallback ke collection kosong jika null)
         $unitKompetensi = $sertifikasi->jadwal->skema->unitKompetensi ?? collect();
@@ -190,7 +201,44 @@ class IA07Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.07 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Pertanyaan Lisan) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.IA.07')
+                                    ->first();
+        
+        // Default values if no template exists
+        $questions = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.ia07', [
+            'skema' => $skema,
+            'questions' => $questions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*' => 'required|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.07'],
+            ['content' => $request->questions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-07 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.07 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

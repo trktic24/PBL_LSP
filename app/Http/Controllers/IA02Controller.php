@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Ia02; // Pastikan nama Modelnya konsisten (Ia02)
+use App\Models\Ia02; 
+use App\Models\MasterFormTemplate;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -37,6 +39,20 @@ class IA02Controller extends Controller
 
         // 2. Ambil data Ia02 untuk sertifikasi ini (jika sudah ada)
         $ia02 = Ia02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->first();
+
+        // 2.b Jika belum ada, ambil dari Master Template
+        if (!$ia02 && $sertifikasi->jadwal) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('form_code', 'FR.IA.02')
+                                        ->first();
+            if ($template && isset($template->content)) {
+                $ia02 = new Ia02([
+                    'skenario' => $template->content['skenario'] ?? '',
+                    'peralatan' => $template->content['peralatan'] ?? '',
+                    'waktu' => $template->content['waktu'] ?? '00:00:00',
+                ]);
+            }
+        }
 
         // 3. Cek Role (Hanya Admin & Superadmin yang bisa edit)
         // Jika user belum login/auth, default false
@@ -88,7 +104,55 @@ class IA02Controller extends Controller
     }
 
     /**
-     * Menampilkan halaman FR IA.02 (Admin Master Preview)
+     * [MASTER] Menampilkan editor tamplate (Skenario) per Skema
+     */
+    public function editTemplate($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('form_code', 'FR.IA.02')
+                                    ->first();
+        
+        // Default values if no template exists
+        $content = $template ? $template->content : [
+            'skenario' => '',
+            'peralatan' => '',
+            'waktu' => '00:00:00'
+        ];
+
+        return view('Admin.master.skema.template.ia02', [
+            'skema' => $skema,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema
+     */
+    public function storeTemplate(Request $request, $id_skema)
+    {
+        $request->validate([
+            'skenario' => 'required|string',
+            'peralatan' => 'required|string',
+            'waktu' => 'required|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.02'],
+            [
+                'content' => [
+                    'skenario' => $request->skenario,
+                    'peralatan' => $request->peralatan,
+                    'waktu' => $request->waktu,
+                ]
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-02 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan halaman FR IA.02 (Admin Master Preview) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {

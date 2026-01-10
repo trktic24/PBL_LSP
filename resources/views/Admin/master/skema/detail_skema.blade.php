@@ -159,12 +159,15 @@
                                     
                                     <td class="px-6 py-3 text-center">
                                         <template x-if="form.url">
-                                            <a :href="form.url" class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded text-xs font-semibold transition">
-                                                <i class="fas fa-external-link-alt mr-1"></i> Buka
+                                            <a :href="form.url" class="inline-flex items-center justify-center px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 rounded-lg text-xs font-bold transition-all shadow-sm">
+                                                <i class="fas fa-edit mr-2"></i> Kelola
                                             </a>
                                         </template>
                                         <template x-if="!form.url">
-                                            <span class="text-gray-400 text-xs">-</span>
+                                            <div class="flex flex-col items-center">
+                                                <span class="text-gray-400 text-[10px] uppercase font-bold tracking-wider">Belum Tersedia</span>
+                                                <div class="h-1 w-8 bg-gray-100 rounded-full mt-1"></div>
+                                            </div>
                                         </template>
                                     </td>
                                 </tr>
