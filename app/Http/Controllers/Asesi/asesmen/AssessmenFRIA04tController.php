@@ -97,10 +97,27 @@ class AssessmenFRIA04tController extends Controller
         $tanda_tangan_asesi_path = optional($asesi)->tanda_tangan ?? null;
         $rekomendasi_db = optional($sertifikasi)->rekomendasi_IA04B;
 
-        $hal_yang_disiapkan_db = optional($poinIA04A)->hal_yang_disiapkan ?? null;
-        $hal_yang_didemonstrasikan_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? null;
-        $umpan_balik_asesi_db = optional($responIA04A)->umpan_balik_untuk_asesi ?? null;
+        // --- LOGIKA TANDA TANGAN BASE64 ---
+        $ttdAsesorBase64 = null;
+        if ($asesor && $asesor->tanda_tangan) {
+            $idUser = $asesor->user_id ?? ($asesor->id_user ?? null);
+            if ($idUser) {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . $idUser . '/' . basename($asesor->tanda_tangan));
+            } else {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
+            }
+            if (file_exists($pathTtdAsesor)) {
+                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+            }
+        }
 
+        $ttdAsesiBase64 = null;
+        if ($asesi && $asesi->tanda_tangan) {
+            $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($asesi->tanda_tangan));
+            if (file_exists($pathTtdAsesi)) {
+                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+            }
+        }
 
         return view('asesi.assesmen.FRIA04_Asesor', array_merge($skemaData, [
             'asesi' => $asesi,
@@ -118,6 +135,8 @@ class AssessmenFRIA04tController extends Controller
 
             'tanda_tangan_asesor_path' => $tanda_tangan_asesor_path,
             'tanda_tangan_asesi_path' => $tanda_tangan_asesi_path,
+            'ttdAsesorBase64' => $ttdAsesorBase64,
+            'ttdAsesiBase64' => $ttdAsesiBase64,
             'rekomendasi_db' => $rekomendasi_db,
         ]));
     }
@@ -261,6 +280,28 @@ class AssessmenFRIA04tController extends Controller
         $tanda_tangan_asesi_path = optional($asesi)->tanda_tangan ?? null;
         $rekomendasi_db = optional($sertifikasi)->rekomendasi_IA04B;
 
+        // --- LOGIKA TANDA TANGAN BASE64 ---
+        $ttdAsesorBase64 = null;
+        if ($asesor && $asesor->tanda_tangan) {
+            $idUser = $asesor->user_id ?? ($asesor->id_user ?? null);
+            if ($idUser) {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . $idUser . '/' . basename($asesor->tanda_tangan));
+            } else {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
+            }
+            if (file_exists($pathTtdAsesor)) {
+                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+            }
+        }
+
+        $ttdAsesiBase64 = null;
+        if ($asesi && $asesi->tanda_tangan) {
+            $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($asesi->tanda_tangan));
+            if (file_exists($pathTtdAsesi)) {
+                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+            }
+        }
+
         $judul_kegiatan_db = 'Proyek Pembuatan Sistem Informasi Pendaftaran Mahasiswa Baru';
 
         return view('asesi.assesmen.FRIA04_Asesi', array_merge($skemaData, [
@@ -281,6 +322,8 @@ class AssessmenFRIA04tController extends Controller
             // Variabel Tanda Tangan & Rekomendasi
             'tanda_tangan_asesor_path' => $tanda_tangan_asesor_path,
             'tanda_tangan_asesi_path' => $tanda_tangan_asesi_path,
+            'ttdAsesorBase64' => $ttdAsesorBase64,
+            'ttdAsesiBase64' => $ttdAsesiBase64,
             'rekomendasi_db' => $rekomendasi_db,
             'unitsToDisplay' => $skemaData['mockUnits'],
         ]));

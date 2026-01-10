@@ -217,13 +217,13 @@
     <!-- HEADER dengan Logo -->
     <div class="header">
         <div class="header-left">
-            @if (file_exists(public_path('images/logo_BNSP.png')))
-                <img src="{{ public_path('images/logo_BNSP.png') }}" alt="BNSP" class="logo-bnsp">
+            @if ($logoBnspBase64)
+                <img src="data:image/png;base64,{{ $logoBnspBase64 }}" alt="BNSP" class="logo-bnsp">
             @endif
         </div>
         <div class="header-right">
-            @if (file_exists(public_path('images/logo_LSP_No_BG.png')))
-                <img src="{{ public_path('images/logo_LSP_No_BG.png') }}" alt="LSP" class="logo-lsp">
+            @if ($logoLspBase64)
+                <img src="data:image/png;base64,{{ $logoLspBase64 }}" alt="LSP" class="logo-lsp">
             @endif
         </div>
     </div>

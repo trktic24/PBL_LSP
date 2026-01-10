@@ -69,7 +69,9 @@
                         'id'    => 'phone',
                         'name'  => 'phone',
                         'label' => 'Telepon',
-                        'value' => old('phone', $header?->telepon)
+                        'value' => old('phone', $header?->telepon),
+                        'type'  => 'number', // <--- Tambahkan ini biar muncul numpad di HP
+                         'extra_attrs' => 'oninput="this.value = this.value.replace(/[^0-9]/g, \'\')"' // <--- Script anti huruf
                     ])
                 </div>
 
@@ -229,9 +231,16 @@
                                 <span class="font-medium text-gray-700">{{ $asesi->asesor->nama_lengkap }}</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ route('secure.file', ['path' => $asesi->asesor->tanda_tangan]) }}" 
+                                @php
+                                    $ttdAsesorBase64 = getTtdBase64($asesi->asesor->tanda_tangan ?? null, $asesi->asesor->id_user ?? $asesi->asesor->user_id ?? null, 'asesor');
+                                @endphp
+                                @if($ttdAsesorBase64)
+                                <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" 
                                     alt="Tanda Tangan Asesor" 
                                     class="h-20 w-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                                @else
+                                <span class="text-gray-400 text-xs">Belum ada TTD</span>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -250,4 +259,15 @@
             </form>
         </div>
     </main>
+    {{-- TAMBAHKAN DI SINI --}}
+<style>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
 @endsection

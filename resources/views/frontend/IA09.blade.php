@@ -302,8 +302,11 @@
                     <div class="mt-4 pt-2 border-t border-gray-300"> 
                         <label class="font-medium block mb-1 text-sm">Tanda Tangan Asesi:</label> 
                         <div class="signature-box h-24 border border-dashed border-gray-500 bg-white flex items-center justify-center text-xs text-gray-400 rounded-md overflow-hidden"> 
-                            @if (isset($dataIA09['ttd']['asesi']) && $dataIA09['ttd']['asesi']) 
-                            <img src="{{ asset('storage/' . $dataIA09['ttd']['asesi']) }}" alt="Tanda Tangan Asesi" class="max-h-full max-w-full object-contain p-1"> 
+                            @php
+                                $ttdAsesiBase64 = getTtdBase64($dataIA09['ttd']['asesi'] ?? null, null, 'asesi');
+                            @endphp
+                            @if ($ttdAsesiBase64) 
+                            <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi" class="max-h-full max-w-full object-contain p-1"> 
                             @else 
                             Area Tanda Tangan Asesi (Belum Ditandatangani) 
                             @endif 
@@ -336,8 +339,11 @@
                     <div class="mt-4 pt-2 border-t border-gray-300"> 
                         <label class="font-medium block mb-1 text-sm">Tanda Tangan Asesor:</label> 
                         <div class="signature-box h-24 border border-dashed border-gray-500 bg-white flex items-center justify-center text-xs text-gray-400 rounded-md overflow-hidden"> 
-                            @if (isset($dataIA09['ttd']['asesor']) && $dataIA09['ttd']['asesor']) 
-                            <img src="{{ asset('storage/' . $dataIA09['ttd']['asesor']) }}" alt="Tanda Tangan Asesor" class="max-h-full max-w-full object-contain p-1"> 
+                            @php
+                                $ttdAsesorBase64 = getTtdBase64($dataIA09['ttd']['asesor'] ?? null, null, 'asesor');
+                            @endphp
+                            @if ($ttdAsesorBase64) 
+                            <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor" class="max-h-full max-w-full object-contain p-1"> 
                             @else 
                             Area Tanda Tangan Asesor (Belum Ditandatangani) 
                             @endif 
@@ -369,8 +375,11 @@
                         <div class="mt-3"> 
                             <label class="font-medium block mb-1 text-sm">Tanda Tangan & Tanggal:</label> 
                             <div class="h-24 border border-dashed border-gray-500 bg-white flex items-center justify-center text-xs text-gray-400 rounded-md overflow-hidden"> 
-                                @if (isset($dataIA09['penyusun']['ttd']) && $dataIA09['penyusun']['ttd']) 
-                                    <img src="{{ asset('storage/' . $dataIA09['penyusun']['ttd']) }}" alt="TTD Penyusun" class="max-h-full max-w-full object-contain p-1"> 
+                                @php
+                                    $ttdPenyusunBase64 = getTtdBase64($dataIA09['penyusun']['ttd'] ?? null, null, 'other');
+                                @endphp
+                                @if ($ttdPenyusunBase64) 
+                                    <img src="data:image/png;base64,{{ $ttdPenyusunBase64 }}" alt="TTD Penyusun" class="max-h-full max-w-full object-contain p-1"> 
                                 @else 
                                     <span class="text-gray-500">
                                         @if(isset($dataIA09['penyusun']['tanggal']))
@@ -408,8 +417,11 @@
                         <div class="mt-3"> 
                             <label class="font-medium block mb-1 text-sm">Tanda Tangan & Tanggal:</label> 
                             <div class="h-24 border border-dashed border-gray-500 bg-white flex items-center justify-center text-xs text-gray-400 rounded-md overflow-hidden"> 
-                                @if (isset($dataIA09['validator']['ttd']) && $dataIA09['validator']['ttd']) 
-                                    <img src="{{ asset('storage/' . $dataIA09['validator']['ttd']) }}" alt="TTD Validator" class="max-h-full max-w-full object-contain p-1"> 
+                                @php
+                                    $ttdValidatorBase64 = getTtdBase64($dataIA09['validator']['ttd'] ?? null, null, 'other');
+                                @endphp
+                                @if ($ttdValidatorBase64) 
+                                    <img src="data:image/png;base64,{{ $ttdValidatorBase64 }}" alt="TTD Validator" class="max-h-full max-w-full object-contain p-1"> 
                                 @else 
                                     <span class="text-gray-500">
                                         @if(isset($dataIA09['validator']['tanggal_validasi']))

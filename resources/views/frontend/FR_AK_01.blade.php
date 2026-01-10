@@ -102,9 +102,12 @@
             <div class="w-full h-56 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center overflow-hidden relative group hover:border-gray-400 transition-colors"
                 id="ttd_container">
                 
-                @if($asesi->tanda_tangan)
+                @php
+                    $ttdAsesiBase64 = getTtdBase64($asesi->tanda_tangan ?? null, null, 'asesi');
+                @endphp
+                @if($ttdAsesiBase64)
                     {{-- Jika ada TTD di database, tampilkan --}}
-                    <img src="{{ asset('storage/'.$asesi->tanda_tangan) }}" 
+                    <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" 
                          alt="Tanda Tangan Asesi" 
                          class="h-40 object-contain">
                 @else

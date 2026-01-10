@@ -114,8 +114,11 @@
                     <div class="border-2 border-dashed border-gray-300 rounded-lg bg-white relative overflow-hidden h-64">
                         {{-- Preview Gambar --}}
                         <div id="signature-image-container" class="w-full h-full flex items-center justify-center {{ $asesi->tanda_tangan ? '' : 'hidden' }}">
+                            @php
+                                $ttdAsesiBase64 = getTtdBase64($asesi->tanda_tangan ?? null, null, 'asesi');
+                            @endphp
                             <img id="signature-image-prev" 
-                                 src="{{ $asesi->tanda_tangan ? route('secure.file', ['path' => $asesi->tanda_tangan]) : '' }}" 
+                                 src="{{ $ttdAsesiBase64 ? 'data:image/png;base64,' . $ttdAsesiBase64 : '' }}" 
                                  class="max-h-full max-w-full object-contain" />
                         </div>
 

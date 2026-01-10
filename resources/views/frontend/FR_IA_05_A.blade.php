@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-asesi')
 @section('content')
 <main class="main-content">
 <x-header_form.header_form title="FR.IA.05A. DPT - PERTANYAAN TERTULIS PILIHAN GANDA" />
@@ -193,9 +193,16 @@
                                 <span class="font-medium text-gray-700">{{ $asesi->asesor->nama_lengkap }}</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ route('secure.file', ['path' => $asesi->asesor->tanda_tangan]) }}" 
+                                @php
+                                    $ttdAsesorBase64 = getTtdBase64($asesi->asesor->tanda_tangan ?? null, $asesi->asesor->id_user ?? $asesi->asesor->user_id ?? null, 'asesor');
+                                @endphp
+                                @if($ttdAsesorBase64)
+                                <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" 
                                      alt="Tanda Tangan Asesor" 
                                      class="h-20 w-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                                @else
+                                <span class="text-gray-400 text-xs">Belum ada TTD</span>
+                                @endif
                             </div>
                         </div>
 
@@ -209,17 +216,19 @@
                                 <span class="font-medium text-gray-700">Ajeng Febria H.</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ route('secure.file', ['path' => $asesi->asesor->tanda_tangan]) }}" 
+                                @if($ttdAsesorBase64)
+                                <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" 
                                     class="w-20 h-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                                @else
+                                <span class="text-gray-400 text-xs">Belum ada TTD</span>
+                                @endif
                             </div>
                         </div>
                     
                 </div>
             </div>      
         
-        <div class="form-footer flex justify-between mt-10">
-            <button type="button" class="btn py-2 px-5 border border-blue-600 text-blue-600 rounded-md font-semibold hover:bg-blue-50">Sebelumnya</button>
-            
+        <div class="form-footer flex justify-end mt-10">
             @if($user->role == 'admin')
                 <button type="submit" class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Simpan Soal</button>
             @elseif($user->role == 'asesi')
