@@ -205,7 +205,7 @@ class IA02Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia02.index',
+            'targetRoute' => 'ia02.show',
             'buttonLabel' => 'FR.IA.02',
             'formName' => 'Tugas Praktik Demonstrasi',
         ]);

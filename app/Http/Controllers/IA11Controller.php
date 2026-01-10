@@ -1,3 +1,7 @@
+<?php
+
+namespace App\Http\Controllers;
+
 use App\Models\Ia11;
 use App\Models\MasterFormTemplate;
 use App\Models\Skema;
@@ -231,7 +235,7 @@ class IA11Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia11.index',
+            'targetRoute' => 'ia11.show',
             'buttonLabel' => 'FR.IA.11',
             'formName' => 'Ceklis Meninjau Instrumen Asesmen',
         ]);

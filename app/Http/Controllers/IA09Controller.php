@@ -1,3 +1,7 @@
+<?php
+
+namespace App\Http\Controllers;
+
 use App\Models\DataSertifikasiAsesi;
 use App\Models\MasterFormTemplate;
 use App\Models\Skema;
@@ -396,7 +400,7 @@ class IA09Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia09.index',
+            'targetRoute' => 'ia09.edit',
             'buttonLabel' => 'FR.IA.09',
             'formName' => 'Pertanyaan Wawancara',
         ]);

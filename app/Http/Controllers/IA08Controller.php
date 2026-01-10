@@ -1,3 +1,7 @@
+<?php
+
+namespace App\Http\Controllers;
+
 use App\Models\DataSertifikasiAsesi;
 use App\Models\MasterFormTemplate;
 use App\Models\Skema;
@@ -383,7 +387,7 @@ class IA08Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia08.index',
+            'targetRoute' => 'ia08.show',
             'buttonLabel' => 'FR.IA.08',
             'formName' => 'Ceklis Verifikasi Pihak Ketiga',
         ]);

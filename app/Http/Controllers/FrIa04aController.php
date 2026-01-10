@@ -1,3 +1,7 @@
+<?php
+
+namespace App\Http\Controllers;
+
 use App\Models\FrIa04a;
 use App\Models\MasterFormTemplate;
 use App\Models\Skema;
@@ -165,7 +169,7 @@ class FrIa04aController extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'fria04a.show',
+            'targetRoute' => 'fria04a.asesi.show',
             'buttonLabel' => 'FR.IA.04',
             'formName' => 'Ceklis Verifikasi Portofolio',
         ]);

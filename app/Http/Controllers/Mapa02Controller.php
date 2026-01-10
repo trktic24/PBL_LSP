@@ -1,3 +1,7 @@
+<?php
+
+namespace App\Http\Controllers;
+
 use App\Models\Mapa02;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\MasterFormTemplate;

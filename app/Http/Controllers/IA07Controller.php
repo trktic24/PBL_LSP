@@ -1,3 +1,7 @@
+<?php
+
+namespace App\Http\Controllers;
+
 use App\Models\Ia07;
 use App\Models\MasterFormTemplate;
 use App\Models\Skema;
@@ -5,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\JenisTUK;
 
 class IA07Controller extends Controller
 {
