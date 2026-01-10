@@ -595,9 +595,19 @@ class DetailSkemaController extends Controller
     {
         $skema = Skema::findOrFail($id_skema);
         
-        // Ambil SEMUA jadwal yang memiliki kaitan dengan skema ini
+        // Ambil jadwal yang:
+        // 1. Memiliki skema $id_skema
+        // 2. Memiliki setidaknya 1 asesi (dataSertifikasiAsesi)
+        // 3. Memiliki asesor yang terikat dengan skema ini (via id_skema atau pivot skemas)
         $jadwalList = \App\Models\Jadwal::with(['asesor', 'masterTuk'])
             ->where('id_skema', $id_skema)
+            ->whereHas('dataSertifikasiAsesi')
+            ->whereHas('asesor', function($q) use ($id_skema) {
+                $q->where('id_skema', $id_skema)
+                  ->orWhereHas('skemas', function($sq) use ($id_skema) {
+                      $sq->where('skema.id_skema', $id_skema);
+                  });
+            })
             ->orderBy('tanggal_mulai', 'desc')
             ->get();
 

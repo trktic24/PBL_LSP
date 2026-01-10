@@ -94,23 +94,25 @@ class FrAk06Controller extends Controller
     {
         $skema = \App\Models\Skema::findOrFail($skema_id);
         
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
-        $jadwal->setRelation('skema', $skema);
-        
-        $asesor = new \App\Models\Asesor([
-            'nama_lengkap' => auth()->user() ? auth()->user()->name : 'Administrator',
-            'no_reg' => '-'
-        ]);
-        $jadwal->setRelation('asesor', $asesor);
+        // Ambil jadwal yang:
+        // 1. Memiliki skema $skema_id
+        // 2. Memiliki setidaknya 1 asesi (dataSertifikasiAsesi)
+        // 3. Memiliki asesor yang terikat dengan skema ini (via id_skema atau pivot skemas)
+        $jadwalList = \App\Models\Jadwal::with(['asesor', 'masterTuk'])
+            ->where('id_skema', $skema_id)
+            ->whereHas('dataSertifikasiAsesi')
+            ->whereHas('asesor', function($q) use ($skema_id) {
+                $q->where('id_skema', $skema_id)
+                  ->orWhereHas('skemas', function($sq) use ($skema_id) {
+                      $sq->where('skema.id_skema', $skema_id);
+                  });
+            })
+            ->orderBy('tanggal_mulai', 'desc')
+            ->get();
 
-        return view('frontend.FR_AK_06', [
-            'jadwal' => $jadwal,
+        return view('Admin.master.skema.ak06_jadwal_list', [
             'skema' => $skema,
-            'isMasterView' => true,
-            'template' => null
+            'jadwalList' => $jadwalList,
         ]);
     }
 
