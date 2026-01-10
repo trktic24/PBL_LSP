@@ -197,8 +197,11 @@
 
             <div class="flex flex-col items-center justify-center" x-data="{ hasTtd: {{ $asesor->tanda_tangan ? 'true' : 'false' }} }">
                  <div class="w-full max-w-3xl h-64 border-2 border-dashed border-gray-300 rounded-xl bg-white flex items-center justify-center overflow-hidden relative group">
+                    @php
+                        $ttdAsesorBase64 = getTtdBase64($asesor->tanda_tangan ?? null, $asesor->id_user ?? $asesor->user_id ?? null, 'asesor');
+                    @endphp
                     <img id="img-ttd-preview" 
-                         src="{{ $asesor->tanda_tangan ? route('secure.file', ['path' => $asesor->tanda_tangan]) : '' }}" 
+                         src="{{ $ttdAsesorBase64 ? 'data:image/png;base64,' . $ttdAsesorBase64 : '' }}" 
                          class="max-h-full max-w-full object-contain p-6" 
                          :class="hasTtd ? '' : 'hidden'">
                     

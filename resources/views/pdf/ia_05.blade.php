@@ -178,7 +178,7 @@
                             <td style="border: none;">Tanda Tangan</td>
                             <td style="border: none;">:</td>
                             <td style="border: none;">
-                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($asesi->asesi->tanda_tangan) }}" class="signature-img">
+                                <img src="{{ getTtdBase64($asesi->asesi->tanda_tangan) }}" class="signature-img">
                             </td>
                         </tr>
                     </table>
@@ -199,7 +199,7 @@
                             <td style="border: none;">Tanda Tangan</td>
                             <td style="border: none;">:</td>
                             <td style="border: none;">
-                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($asesi->jadwal->asesor->tanda_tangan) }}" class="signature-img">
+                                <img src="{{ getTtdBase64($asesi->jadwal->asesor->tanda_tangan) }}" class="signature-img">
                             </td>
                         </tr>
                     </table>

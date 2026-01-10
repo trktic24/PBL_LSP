@@ -162,6 +162,10 @@ class IA06Controller extends Controller
 
         $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'asesi'])->findOrFail($idSertifikasi);
 
+        // --- TAMBAHAN BARU: Generate data jika belum ada (agar Asesor bisa lihat soal meski Asesi belum login) ---
+        $this->generateLembarJawab($sertifikasi);
+        // ---------------------------------------------------------------------------------------------------------
+
         $daftar_soal = JawabanIa06::with('soal')
             ->where('id_data_sertifikasi_asesi', $idSertifikasi)
             ->get();

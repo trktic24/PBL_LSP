@@ -409,6 +409,25 @@ Route::middleware('auth')->group(function () {
 
     // Quick Verification Route
     Route::post('/asesor/{id}/document/verify', [AsesorProfileController::class, 'verifyDocument'])->name('asesor.document.verify');
+
+    // ========================
+    // 5. ASESOR PDF & REPORTS
+    // ========================
+    // AK.05
+    Route::get('/asesor/ak05/pdf/{id}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'cetakPDF'])->name('asesor.ak05.pdf');
+    
+    // AK.06
+    Route::get('/asesor/ak06/{id}', [\App\Http\Controllers\FrAk06Controller::class, 'index'])->name('asesor.ak06');
+    Route::get('/asesor/ak06/pdf/{id}', [\App\Http\Controllers\FrAk06Controller::class, 'cetakPDF'])->name('asesor.ak06.pdf');
+
+    // Daftar Hadir
+    Route::get('/asesor/daftar-hadir/pdf/{id}', [\App\Http\Controllers\Admin\DaftarHadirController::class, 'exportPdfdaftarhadir'])->name('asesor.daftar_hadir.pdf');
+    Route::get('/asesor/daftar-hadir/{id}', [\App\Http\Controllers\Admin\DaftarHadirController::class, 'daftarHadir'])->name('asesor.daftar_hadir');
+
+    // Berita Acara
+    Route::get('/asesor/berita-acara/{id}', [\App\Http\Controllers\Asesor\BeritaAcaraController::class, 'index'])->name('asesor.berita_acara');
+    Route::get('/asesor/berita-acara/pdf/{id}', [\App\Http\Controllers\Asesor\BeritaAcaraController::class, 'cetakPDF'])->name('asesor.berita_acara.pdf');
+
 });
 
 // ==========================================================

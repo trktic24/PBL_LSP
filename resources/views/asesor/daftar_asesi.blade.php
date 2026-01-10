@@ -180,14 +180,53 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('asesor.ak05', $jadwal->id_jadwal) }}"
-                        class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow text-center flex items-center justify-center">
-                        Laporan Asesmen
-                    </a>
-                    <a href="{{ route('asesor.ak06', $jadwal->id_jadwal) }}"
-                        class="bg-yellow-600 text-white px-5 py-5 rounded-md text-xs font-medium hover:bg-yellow-700 flex-grow text-center flex items-center justify-center">
-                        Tinjauan Asesmen
-                    </a>
+                    <!-- Laporan Asesmen (AK.05) -->
+                    <div class="relative flex-1">
+                        <button type="button" onclick="toggleDropdown('ak05-dropdown')"
+                            class="w-full bg-yellow-600 text-white px-5 py-5 rounded-md shadow hover:bg-yellow-700 flex items-center justify-center relative">
+                            <span class="absolute left-1/2 transform -translate-x-1/2">Laporan Asesmen</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="ak05-dropdown"
+                            class="hidden absolute right-0 top-full mt-2 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
+                            <a href="{{ route('ak05.index', $jadwal->id_jadwal) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                Isi Form
+                            </a>
+                            <a href="{{ route('asesor.ak05.pdf', $jadwal->id_jadwal) }}" target="_blank"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                Unduh PDF
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tinjauan Asesmen (AK.06) -->
+                    <div class="relative flex-1">
+                        <button type="button" onclick="toggleDropdown('ak06-dropdown')"
+                            class="w-full bg-yellow-600 text-white px-5 py-5 rounded-md shadow hover:bg-yellow-700 flex items-center justify-center relative">
+                            <span class="absolute left-1/2 transform -translate-x-1/2">Tinjauan Asesmen</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="ak06-dropdown"
+                            class="hidden absolute right-0 top-full mt-2 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 overflow-hidden">
+                            <a href="{{ route('asesor.ak06', $jadwal->id_jadwal) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                Isi Form
+                            </a>
+                            <a href="{{ route('asesor.ak06.pdf', $jadwal->id_jadwal) }}" target="_blank"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                Unduh PDF
+                            </a>
+                        </div>
+                    </div>
 
                     <!-- Berita Acara -->
                     <div class="relative flex-1">

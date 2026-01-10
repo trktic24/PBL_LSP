@@ -45,7 +45,12 @@ class IA05Controller extends Controller
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);        
         $jadwal = $asesi->jadwal;
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $id_skema_asesi = $jadwal->id_skema; // Ambil ID Skema dari jadwal asesi
+
+        // FILTER: Cuma ambil soal yang id_skema-nya cocok
+        $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+            ->orderBy('id_soal_ia05')
+            ->get();
 
         $data_jawaban_asesi = collect();
 
@@ -79,6 +84,7 @@ class IA05Controller extends Controller
                     SoalIA05::updateOrCreate(
                         ['id_soal_ia05' => $id_soal],
                         [
+                            'id_skema' => $request->id_skema,
                             'soal_ia05' => $data['pertanyaan'],
                             'opsi_jawaban_a' => $data['opsi_a'],
                             'opsi_jawaban_b' => $data['opsi_b'],
@@ -169,7 +175,12 @@ class IA05Controller extends Controller
             return abort(403, 'Akses Ditolak. Asesi tidak boleh melihat Kunci Jawaban!');
         }
 
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $id_skema_asesi = $jadwal->id_skema;
+
+        // FILTER JUGA DISINI
+        $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+            ->orderBy('id_soal_ia05')
+            ->get();
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
         $skema_info = Skema::first();
 
@@ -234,7 +245,11 @@ class IA05Controller extends Controller
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
         $jadwal = $asesi->jadwal;
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+
+        $id_skema_asesi = $asesi->jadwal->id_skema;
+        $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+        ->orderBy('id_soal_ia05')
+        ->get();
 
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
 
