@@ -45,7 +45,7 @@ class IA05Controller extends Controller
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);        
         $jadwal = $asesi->jadwal;
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $semua_soal = SoalIA05::where('id_skema', $jadwal->id_skema)->orderBy('id_soal_ia05')->get();
 
         $data_jawaban_asesi = collect();
 
@@ -169,7 +169,7 @@ class IA05Controller extends Controller
             return abort(403, 'Akses Ditolak. Asesi tidak boleh melihat Kunci Jawaban!');
         }
 
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $semua_soal = SoalIA05::where('id_skema', $jadwal->id_skema)->orderBy('id_soal_ia05')->get();
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
         $skema_info = Skema::first();
 
@@ -234,7 +234,7 @@ class IA05Controller extends Controller
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
         $jadwal = $asesi->jadwal;
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $semua_soal = SoalIA05::where('id_skema', $jadwal->id_skema)->orderBy('id_soal_ia05')->get();
 
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
 
@@ -320,8 +320,10 @@ class IA05Controller extends Controller
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
         $jadwal = $asesi->jadwal;
-        // 2. Ambil Soal (Urut ID)
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        // 2. Ambil Soal (Urut ID), filter by Skema
+        $semua_soal = SoalIA05::where('id_skema', $jadwal->id_skema)
+            ->orderBy('id_soal_ia05')
+            ->get();
 
         // 3. Ambil Jawaban & Penilaian
         $lembar_jawab = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
