@@ -159,18 +159,20 @@ class IA06Controller extends Controller
 
         $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'asesi'])->findOrFail($idSertifikasi);
 
+        // --- TAMBAHAN BARU: Generate data jika belum ada (agar Asesor bisa lihat soal meski Asesi belum login) ---
+        $this->generateLembarJawab($sertifikasi);
+        // ---------------------------------------------------------------------------------------------------------
+
         $daftar_soal = JawabanIa06::with('soal')
             ->where('id_data_sertifikasi_asesi', $idSertifikasi)
             ->get();
 
         $umpanBalik = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
 
-        $role = 3; // Kita set manual angka 3 karena ini function khusus Asesor
+        $role = 3;
 
-        // Tentukan URL tujuan submit form (Ke Route Update Asesor)
         $formAction = route('asesor.ia06.update', $idSertifikasi);
 
-        // Panggil View UNIFIED yang SAMA dengan Asesi
         return view('frontend.IA_06.FR_IA_06', compact('sertifikasi', 'daftar_soal', 'umpanBalik', 'role', 'formAction'));
     }
 
