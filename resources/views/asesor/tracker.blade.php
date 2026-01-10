@@ -158,7 +158,7 @@
         $ia08Pass = $ia08Done || ($show['ia08'] != 1);
 
         // IA.09
-        $ia09Done = optional($dataSertifikasi->ia09)->exists() ?? false;
+        $ia09Done = !empty(optional($dataSertifikasi->ia09)->pencapaian_ia09);
         $stIa09 = $ia09Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia09Pass = $ia09Done || ($show['ia09'] != 1);
 

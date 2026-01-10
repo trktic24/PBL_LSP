@@ -236,11 +236,7 @@ class IA09Controller extends Controller
                     'kesimpulan_jawaban_asesi' => $item['jawaban'],
                     'pencapaian_ia09' => $pencapaian_value, // ✅ String: 'Ya' atau 'Tidak'
                     'id_ia08' => $id_ia08_value, // ✅ Nullable
-                    // ✅ PERBAIKAN: Kolom is_* diisi NULL (bukan boolean)
-                    'is_valid' => null,
-                    'is_asli' => null,
-                    'is_terkini' => null,
-                    'is_memadai' => null,
+
                     'updated_at' => now(),
                 ];
 
@@ -310,13 +306,13 @@ class IA09Controller extends Controller
             'responBuktiAk01',
             'lembarJawabIa05',
             'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
+        ])->whereHas('jadwal', function ($q) use ($id_skema) {
             $q->where('id_skema', $id_skema);
         });
 
         if (request('search')) {
             $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
+            $query->whereHas('asesi', function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%");
             });
         }

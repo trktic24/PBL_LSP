@@ -1048,7 +1048,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                         </div>
                                         <div class="w-full sm:w-auto flex-shrink-0">
                                             @if ($adminCanView)
-                                            <a href="{{ route('admin.verifikasi.ia05', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
+                                            <a href="{{ route('ia05.asesor', ['id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
                                             @elseif ($isOngoing)
                                             <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-lg border border-indigo-200 cursor-wait">
                                                 <i class="fas fa-spinner fa-spin mr-2"></i> Sedang Dikerjakan
@@ -1076,7 +1076,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                         </div>
                                         <div class="w-full sm:w-auto flex-shrink-0">
                                             @if ($adminCanView)
-                                            <a href="{{ route('admin.verifikasi.ia06', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
+                                            <a href="{{ route('asesor.ia06.edit', ['id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
                                             @elseif ($isOngoing)
                                             <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-purple-50 text-purple-600 text-xs font-bold rounded-lg border border-purple-200 cursor-wait">
                                                 <i class="fas fa-spinner fa-spin mr-2"></i> Sedang Dikerjakan
