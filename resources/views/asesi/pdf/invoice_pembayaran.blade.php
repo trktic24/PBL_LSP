@@ -1,300 +1,369 @@
 <!DOCTYPE html>
-
 <html lang="id">
+
 <head>
-<meta charset="UTF-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Invoice Pembayaran</title>
-<style>
-    /* ===== PAGE / PDF ===== */
-    @page {
-        margin: 20px 30px; /* margin aman untuk PDF */
-        size: A4 portrait;
-    }
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Invoice Pembayaran</title>
+    <style>
+        @page {
+            size: A4;
+        }
 
-/* global box-sizing penting untuk perhitungan width/padding */
-*, *:before, *:after { box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 10pt;
+            margin: 30px;
+            color: #000;
+        }
 
-body {
-    margin: 0;
-    padding: 0;
-    font-family: "DejaVu Sans", sans-serif;
-    font-size: 13px;
-    color: #1f2937;
-    line-height: 1.45;
-    background: #fff;
-}
+        .header {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+        }
 
-/* WRAPPER UTAMA - kontrol layout seluruh dokumen */
-.page-wrap {
-    width: 100%;
-    max-width: 900px;   /* batas lebar konten */
-    margin: 0 auto;     /* center di halaman */
-    padding: 16px 18px; /* padding aman */
-}
+        .header-left {
+            display: table-cell;
+            width: 50%;
+            vertical-align: middle;
+        }
 
-/* container internal: jangan duplicate padding besar */
-.container {
-    width: 100%;
-    padding: 0; /* biar gak double padding */
-}
+        .header-right {
+            display: table-cell;
+            width: 50%;
+            text-align: right;
+            vertical-align: middle;
+        }
 
-/* HEADER */
-.header-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    margin-bottom: 18px;
-}
-.header-table td { vertical-align: middle; padding: 0; }
+        .header-right img {
+            max-height: 90px;
+        }
 
-.title-divider {
-    width: 100%;
-    border-bottom: 2px solid #6b7280; /* warna abu gelap seperti gambar */
-    margin: 6px 0 18px; /* jarak atas dan bawah */
-}
+        .logo-bnsp {
+            max-height: 100px;
+        }
 
-.logo-img {
-    max-width: 120px; /* sesuaikan kalau butuh lebih kecil */
-    width: auto;
-    height: auto;
-    display: block;
-}
+        .title-section {
+            text-align: center;
+            margin: 30px 0 20px 0;
+            border-bottom: 3px solid #000;
+            padding-bottom: 15px;
+        }
 
-.page-title {
-    text-align: center;
-    font-size: 18px;
-    font-weight: 700;
-    margin: 6px 0 18px;
-    text-transform: uppercase;
-}
+        .title-section h1 {
+            margin: 0;
+            font-size: 18pt;
+            font-weight: bold;
+        }
 
-/* BIODATA */
-.info-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    margin-bottom: 14px;
-}
-.info-table td { padding: 4px 6px; vertical-align: top; }
-.col-label { width: 30%; font-weight: 700; color: #374151; }
-.col-sep { width: 4%; text-align: center; }
-.col-val { width: 66%; }
+        .section-title {
+            font-weight: bold;
+            font-size: 11pt;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
 
-/* ALERT BOX */
-.alert-box {
-    padding: 14px;
-    border-radius: 6px;
-    margin-bottom: 18px;
-    font-size: 13px;
-}
-.bg-green { background: #d1fae5; border: 1px solid #10b981; color: #064e3b; }
-.bg-yellow { background: #fef9c3; border: 1px solid #facc15; color: #854d0e; }
+        .info-table {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
 
-/* TABEL TAGIHAN */
-.bill-title { text-align: center; font-weight: 700; margin: 12px 0; }
-.bill-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    margin-bottom: 18px;
-}
-.bill-table th {
-    background: #000;
-    color: #fff;
-    padding: 10px 8px;
-    font-size: 12px;
-    text-transform: uppercase;
-}
-.bill-table td {
-    background: #e5e7eb;
-    padding: 12px 8px;
-    text-align: center;
-    font-weight: 700;
-    border: 1px solid #fff;
-    word-wrap: break-word;
-}
-/* kolom fixed supaya gak geser */
-.bill-col-1 { width: 33%; }
-.bill-col-2 { width: 33%; }
-.bill-col-3 { width: 34%; }
+        .info-table td {
+            padding: 3px 5px;
+            vertical-align: top;
+        }
 
-/* VA BOX */
-.va-label { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
-.va-box {
-    background: #fff7d1;
-    border: 1px solid #ffd658;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 22px;
-    font-style: italic;
-}
+        .info-table td:first-child {
+            width: 30%;
+        }
 
-/* FOOTER */
-.footer-note {
-    font-size: 11px;
-    color: #6b7280;
-    border-top: 1px solid #e5e7eb;
-    padding-top: 10px;
-    margin-top: 6px;
-}
+        .info-table td:nth-child(2) {
+            width: 2%;
+        }
 
-/* responsive safety: jika PDF engine merubah DPI */
-@media print {
-    .logo-img { max-width: 110px; }
-}
+        .alert-box {
+            margin-left: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            font-size: 10pt;
+            line-height: 1.5;
+        }
 
-</style>
+        .bg-green {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #064e3b;
+        }
+
+        .bg-yellow {
+            background: #fef9c3;
+            border: 1px solid #facc15;
+            color: #854d0e;
+        }
+
+        .bg-red {
+            background: #fee2e2;
+            border: 1px solid #f87171;
+            color: #7f1d1d;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .checkmark {
+            font-family: "DejaVu Sans", sans-serif;
+            font-size: 14pt;
+            font-weight: bold;
+            line-height: 1;
+            color: #064e3b;
+        }
+
+        .warning-icon {
+            font-family: "DejaVu Sans", sans-serif;
+            font-size: 14pt;
+            font-weight: bold;
+            line-height: 1;
+            color: #854d0e;
+        }
+
+        .bordered-table {
+            border: 1px solid #000;
+            margin-top: 10px;
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bordered-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: middle;
+        }
+
+        .bordered-table thead td {
+            font-weight: bold;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 10pt;
+        }
+
+        .bordered-table tbody td {
+            background-color: #e5e7eb;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .va-section {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .va-label {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .va-box {
+            background: #fff7d1;
+            border: 1px solid #ffd658;
+            padding: 12px;
+            border-radius: 6px;
+            font-style: italic;
+            margin-top: 6px;
+        }
+
+        .footer-note {
+            font-size: 9pt;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 10px;
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+
+        .status-lunas {
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: #ca8a04;
+            font-weight: bold;
+        }
+
+        .status-jatuh-tempo {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="page-wrap">
-    <div class="container">
-
-    <!-- HEADER -->
-    <table class="header-table">
-        <tr>
-            <td style="width:50%; text-align:left;">
-                <img src="{{ public_path('images/Logo_BNSP.png') }}" alt="BNSP" class="logo-img">
-            </td>
-            <td style="width:50%; text-align:right;">
-                <img src="{{ public_path('images/Logo_LSP_No_BG.png') }}" alt="LSP" class="logo-img">
-            </td>
-        </tr>
-    </table>
+    <!-- HEADER dengan Logo -->
+    <div class="header">
+        <div class="header-left">
+            <img src="{{ public_path('images/Logo_BNSP.png') }}" alt="BNSP" class="logo-bnsp">
+        </div>
+        <div class="header-right">
+            <img src="{{ public_path('images/Logo_LSP_No_BG.png') }}" alt="LSP" class="logo-lsp">
+        </div>
+    </div>
 
     <!-- TITLE -->
-    <div class="page-title">PEMBAYARAN UJI KOMPETENSI</div>
-    <div class="title-divider"></div>
+    <div class="title-section">
+        <h1>PEMBAYARAN UJI KOMPETENSI</h1>
+    </div>
 
-    <!-- INFO -->
-    <table class="info-table" role="presentation">
+    <!-- INFORMASI PEMBAYARAN -->
+    <div class="section-title">Informasi Pembayaran</div>
+
+    <table class="info-table">
         <tr>
-            <td class="col-label">No. Tagihan</td>
-            <td class="col-sep">:</td>
-            <td class="col-val" style="font-family: monospace;">{{ $payment->order_id }}</td>
+            <td>No. Tagihan</td>
+            <td>:</td>
+            <td style="font-family: 'Courier New', monospace;">{{ $payment->order_id }}</td>
         </tr>
         <tr>
-            <td class="col-label">Nama</td>
-            <td class="col-sep">:</td>
-            <td class="col-val">{{ $asesi->nama_lengkap }}</td>
+            <td>Nama</td>
+            <td>:</td>
+            <td>{{ $asesi->nama_lengkap }}</td>
         </tr>
         <tr>
-            <td class="col-label">NIK</td>
-            <td class="col-sep">:</td>
-            <td class="col-val">{{ $asesi->nik ?? '-' }}</td>
+            <td>NIK</td>
+            <td>:</td>
+            <td>{{ $asesi->nik ?? '-' }}</td>
         </tr>
         <tr>
-            <td class="col-label">Pekerjaan</td>
-            <td class="col-sep">:</td>
-            <td class="col-val">{{ $asesi->pekerjaan ?? 'Mahasiswa' }}</td>
+            <td>Pekerjaan</td>
+            <td>:</td>
+            <td>{{ $asesi->pekerjaan ?? 'Mahasiswa' }}</td>
         </tr>
         <tr>
-            <td class="col-label">Tanggal Terbuat</td>
-            <td class="col-sep">:</td>
-            <td class="col-val">{{ \Carbon\Carbon::parse($payment->created_at)->translatedFormat('d F Y') }}</td>
+            <td>Tanggal Terbuat</td>
+            <td>:</td>
+            <td>{{ \Carbon\Carbon::parse($payment->created_at)->translatedFormat('d F Y') }}</td>
         </tr>
         <tr>
-            <td class="col-label">Jatuh Tempo</td>
-            <td class="col-sep">:</td>
-            <td class="col-val" style="color:#dc2626;">{{ \Carbon\Carbon::parse($payment->created_at)->addDay()->translatedFormat('d F Y') }}</td>
+            <td>Jatuh Tempo</td>
+            <td>:</td>
+            <td class="status-jatuh-tempo">
+                {{ \Carbon\Carbon::parse($payment->created_at)->addDay()->translatedFormat('d F Y') }}</td>
         </tr>
         <tr>
-            <td class="col-label">Status Pembayaran</td>
-            <td class="col-sep">:</td>
-            <td class="col-val">
-                @if(in_array($payment->status_transaksi, ['settlement','capture']))
-                    <span style="color:#166534; font-weight:700;">LUNAS</span>
+            <td>Status Pembayaran</td>
+            <td>:</td>
+            <td>
+                @if (in_array($payment->status_transaksi, ['settlement', 'capture']))
+                    <span class="status-lunas">LUNAS</span>
                 @else
-                    <span style="color:#ca8a04; font-weight:700;">{{ strtoupper($payment->status_transaksi) }}</span>
+                    <span class="status-pending">{{ strtoupper($payment->status_transaksi) }}</span>
                 @endif
             </td>
         </tr>
         <tr>
-            <td class="col-label">Dibayar Melalui</td>
-            <td class="col-sep">:</td>
-            <td class="col-val">{{ strtoupper($payment->jenis_pembayaran ?? '-') }}</td>
+            <td>Dibayar Melalui</td>
+            <td>:</td>
+            <td>{{ strtoupper($payment->jenis_pembayaran ?? '-') }}</td>
         </tr>
     </table>
 
     <!-- DETAIL PEMBAYARAN -->
-    <div style="font-weight:700; margin-bottom:8px;">Detail Pembayaran:</div>
+    <div class="section-title">Detail Pembayaran</div>
 
-    @if(in_array($payment->status_transaksi,['settlement','capture']))
+    @if (in_array($payment->status_transaksi, ['settlement', 'capture']))
         <div class="alert-box bg-green">
-            <div style="font-weight:700; margin-bottom:8px;">✔ TAGIHAN SUDAH DIBAYAR</div>
-            <table width="100%" role="presentation" style="font-size:13px;">
+            <div class="alert-title">
+                <span class="checkmark">✓</span> TAGIHAN SUDAH DIBAYAR
+            </div>
+            <table style="font-size: 10pt; margin-left: 0;">
                 <tr>
-                    <td style="width:28%; font-weight:700;">Waktu Pembayaran</td>
-                    <td style="width:4%;">:</td>
-                    <td>{{ \Carbon\Carbon::parse($payment->updated_at)->translatedFormat('d F Y, H:i') }} WIB</td>
+                    <td style="width: 28%; font-weight: bold; padding: 2px 0;">Waktu Pembayaran</td>
+                    <td style="width: 2%; padding: 2px 0;">:</td>
+                    <td style="padding: 2px 0;">
+                        {{ \Carbon\Carbon::parse($payment->updated_at)->translatedFormat('d F Y, H:i') }} WIB</td>
                 </tr>
                 <tr>
-                    <td style="font-weight:700;">Melalui Bank</td>
-                    <td>:</td>
-                    <td>{{ strtoupper($payment->bank ?? 'QRIS/E-Wallet') }}</td>
+                    <td style="font-weight: bold; padding: 2px 0;">Melalui Bank</td>
+                    <td style="padding: 2px 0;">:</td>
+                    <td style="padding: 2px 0;">{{ strtoupper($payment->bank ?? 'QRIS/E-Wallet') }}</td>
                 </tr>
             </table>
         </div>
     @else
-        <div class="alert-box bg-yellow" style="background:#fee2e2; border-color:#f87171;">
-            <div style="font-weight:700; margin-bottom:6px;">⚠ MENUNGGU PEMBAYARAN</div>
+        <div class="alert-box bg-red">
+            <div class="alert-title">
+                <span class="warning-icon">⚠</span> MENUNGGU PEMBAYARAN
+            </div>
             Harap segera lakukan pembayaran sebelum jatuh tempo.
         </div>
     @endif
 
-    <!-- TAGIHAN -->
-    <div class="bill-title">TAGIHAN</div>
+    <!-- TABEL TAGIHAN -->
+    <div class="section-title">Rincian Tagihan</div>
 
-    <table class="bill-table" role="presentation">
+    <table class="bordered-table">
         <thead>
             <tr>
-                <th class="bill-col-1">TOTAL TAGIHAN</th>
-                <th class="bill-col-2">SUDAH DIBAYAR</th>
-                <th class="bill-col-3">BELUM DIBAYAR</th>
+                <td style="width: 33%;">Total Tagihan</td>
+                <td style="width: 33%;">Sudah Dibayar</td>
+                <td style="width: 34%;">Belum Dibayar</td>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Rp {{ number_format($payment->amount,0,',','.') }}</td>
+                <td>Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
                 <td>
-                    @if(in_array($payment->status_transaksi,['settlement','capture']))
-                        Rp {{ number_format($payment->amount,0,',','.') }}
+                    @if (in_array($payment->status_transaksi, ['settlement', 'capture']))
+                        Rp {{ number_format($payment->amount, 0, ',', '.') }}
                     @else
                         Rp 0
                     @endif
                 </td>
                 <td>
-                    @if(in_array($payment->status_transaksi,['settlement','capture']))
+                    @if (in_array($payment->status_transaksi, ['settlement', 'capture']))
                         Rp 0
                     @else
-                        Rp {{ number_format($payment->amount,0,',','.') }}
+                        Rp {{ number_format($payment->amount, 0, ',', '.') }}
                     @endif
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <!-- VA -->
-    <div class="va-label">Nomor Virtual Account (VA) :</div>
-    <div class="va-box">
-        @if(isset($payment->va_number))
-            <div style="font-size:18px; font-weight:700; letter-spacing:1px;">{{ $payment->va_number }}</div>
-            <div style="font-size:12px; margin-top:6px;">Bank: {{ strtoupper($payment->bank ?? '') }}</div>
-        @else
-            <div style="font-style:italic;">Nomor VA akan muncul setelah metode pembayaran dipilih.</div>
-        @endif
+    <!-- NOMOR VIRTUAL ACCOUNT -->
+    <div class="va-section">
+        <div class="va-label">Nomor Virtual Account (VA):</div>
+        <div class="va-box">
+            @if (isset($payment->va_number))
+                <div style="font-size: 16pt; font-weight: bold; letter-spacing: 1px; margin-bottom: 6px;">
+                    {{ $payment->va_number }}
+                </div>
+                <div style="font-size: 9pt;">
+                    Bank: {{ strtoupper($payment->bank ?? '') }}
+                </div>
+            @else
+                <div>Nomor VA akan muncul setelah metode pembayaran dipilih.</div>
+            @endif
+        </div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- FOOTER NOTE -->
     <div class="footer-note">
-        <strong style="color:#000;">Catatan:</strong><br>
+        <strong style="color: #000;">Catatan:</strong><br>
         Simpan dokumen ini sebagai bukti pembayaran yang sah.
     </div>
 
-</div>
-
-</div>
-
 </body>
+
 </html>

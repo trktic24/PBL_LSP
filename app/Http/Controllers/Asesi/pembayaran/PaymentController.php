@@ -210,46 +210,47 @@ class PaymentController extends Controller
         }
         return redirect('/asesi/tracker');
     }
-    public function downloadInvoice($id_sertifikasi) 
+    public function downloadInvoice(Request $request, $id_sertifikasi) 
     {
         $user = Auth::user();
 
-        // 1. Cari Data Pembayaran berdasarkan ID Sertifikasi
-        // ... (kode query tetap sama)
+        // 1. Cari Data Pembayaran
         $payment = Pembayaran::with([
             'sertifikasi.asesi.user', 
             'sertifikasi.jadwal.skema' 
         ])
         ->where('id_data_sertifikasi_asesi', $id_sertifikasi)
-        ->whereIn('status_transaksi', ['settlement', 'capture'])
+        ->whereIn('status_transaksi', ['settlement', 'capture']) // Pastikan lunas
         ->latest()
         ->firstOrFail();
 
-        // 2. Validasi Keamanan (Double Check)
-        // ... (kode validasi tetap sama)
-        if (!$payment->sertifikasi || $payment->sertifikasi->id_asesi !== $user->asesi->id_asesi) {
-             abort(403, 'Unauthorized action.');
+        // 2. VALIDASI KEAMANAN (Authorization Check)
+        // Cek: Apakah user ini Asesi?
+        if ($user->asesi) {
+            // Jika Asesi, dia WAJIB pemilik sertifikasi ini
+            if (!$payment->sertifikasi || $payment->sertifikasi->id_asesi !== $user->asesi->id_asesi) {
+                 abort(403, 'Unauthorized action. Invoice ini bukan milik Anda.');
+            }
         }
+        // Jika User adalah Admin (user->asesi == null), otomatis lolos.
 
-        // 3. Siapkan data untuk View PDF
+        // 3. Siapkan data View
         $data = [
             'payment' => $payment,
-            // Shortcut biar di view gak kepanjangan ngetiknya
             'asesi' => $payment->sertifikasi->asesi,
             'skema' => $payment->sertifikasi->jadwal->skema,
-            
-            // <--- INI YANG DITAMBAHKAN (SOLUSI ERRORNYA)
             'id_jadwal' => $payment->sertifikasi->id_jadwal,
         ];
 
-        // 4. Load View dan render jadi PDF
-        // ... (kode render tetap sama)
+        // 4. Render PDF
         $pdf = Pdf::loadView('asesi.pdf.invoice_pembayaran', $data);
         $pdf->setPaper('A4', 'portrait');
 
-        // 5. Download file PDF
-        // ... (kode download tetap sama)
         $fileName = 'Invoice_' . $payment->order_id . '.pdf';
+        if ($request->query('mode') == 'preview') {
+            // Tampilkan PDF di tab browser (Preview)
+            return $pdf->stream($fileName);
+        }
         return $pdf->download($fileName);
     }
 }

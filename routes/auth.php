@@ -217,6 +217,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/profile', 'edit')->name('profile.edit');
                 Route::patch('/profile', 'update')->name('profile.update');
                 Route::put('/profile/password', 'updatePassword')->name('profile.password.update');
+                Route::get('/profile/signature', 'showSignature')->name('profile.signature');
             });
 
             // ----------------- Master Data -----------------
@@ -317,12 +318,23 @@ Route::middleware('auth')->group(function () {
                     // --- FITUR TRACKER ---
                     Route::post('/sertifikasi/{id}/verifikasi-pembayaran', 'verifikasiPembayaran')->name('verifikasi.pembayaran');
                     Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
-                    Route::get('/verifikasi-ia02/{id}', 'verifikasiIA02')->name('verifikasi.ia02');
                     Route::get('/verifikasi-ia05/{id}', 'verifikasiIA05')->name('verifikasi.ia05');
                     Route::get('/verifikasi-ia06/{id}', 'verifikasiIA06')->name('verifikasi.ia06');
-                    Route::get('/verifikasi-ia07/{id}', 'verifikasiIA07')->name('verifikasi.ia07');
-                    Route::get('/verifikasi-ia09/{id}', 'verifikasiIA09')->name('verifikasi.ia09');
+                    Route::post('/sertifikasi/{id}/upload-sertifikat', 'uploadSertifikatAsesi')->name('sertifikasi.upload');
+                    Route::get('/sertifikasi/{id}/download-sertifikat', 'downloadSertifikat')->name('sertifikasi.download');
                 });
+
+            // Asesmen
+            Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');
+            Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
+            Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
+            Route::get('/asesmen/fr-ia-09/{id}', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.fr_ia_09.index');
+            // Cetak
+            Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01');
+            Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
+            Route::get('/cetak/ak01/{id_sertifikasi}', [Ak01PdfController::class, 'generateAk01'])->name('cetak.ak01');
+            Route::get('/kartu-peserta/{id_sertifikasi}', [KartuPesertaPdfController::class, 'generateKartuPeserta'])->name('pdf.kartu_peserta');
+            Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'downloadInvoice'])->name('payment.invoice');
 
             // Master Asesor
             Route::controller(AsesorController::class)->group(function () {

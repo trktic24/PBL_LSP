@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DataSertifikasiAsesi;
+// Pastikan import model Admin jika Anda menggunakan logika cek admin manual
+// use App\Models\Admin; 
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class Apl02PdfController extends Controller
 {
-    public function generateApl02($id_sertifikasi)
+    public function generateApl02( Request $request,$id_sertifikasi)
     {
         $user = Auth::user();
 
@@ -39,12 +41,12 @@ class Apl02PdfController extends Controller
         $logoBnspBase64 = null;
         $logoLspBase64 = null;
 
-        $logoBnspPath = public_path('images/logo_BNSP.png');
+        $logoBnspPath = public_path('images/Logo_BNSP.png');
         if (file_exists($logoBnspPath)) {
             $logoBnspBase64 = base64_encode(file_get_contents($logoBnspPath));
         }
 
-        $logoLspPath = public_path('images/logo_LSP_No_BG.png');
+        $logoLspPath = public_path('images/Logo_LSP_No_BG.png');
         if (file_exists($logoLspPath)) {
             $logoLspBase64 = base64_encode(file_get_contents($logoLspPath));
         }
@@ -98,6 +100,9 @@ class Apl02PdfController extends Controller
         $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
         $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
         $namaFile = 'FR.APL.02_' . $namaAsesiClean . '_' . date('YmdHis') . '.pdf';
+        if ($request->query('mode') == 'preview') {
+            return $pdf->stream($namaFile); // Tampilkan di browser
+        }
 
         return $pdf->download($namaFile);
     }
