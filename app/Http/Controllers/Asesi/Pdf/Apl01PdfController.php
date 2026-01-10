@@ -104,12 +104,12 @@ class Apl01PdfController extends Controller
         $logoBnspBase64 = null;
         $logoLspBase64 = null;
 
-        $logoBnspPath = public_path('images/logo_BNSP.png');
+        $logoBnspPath = public_path('images/Logo_BNSP.png');
         if (file_exists($logoBnspPath)) {
             $logoBnspBase64 = base64_encode(file_get_contents($logoBnspPath));
         }
 
-        $logoLspPath = public_path('images/logo_LSP_No_BG.png');
+        $logoLspPath = public_path('images/Logo_LSP_No_BG.png');
         if (file_exists($logoLspPath)) {
             $logoLspBase64 = base64_encode(file_get_contents($logoLspPath));
         }
