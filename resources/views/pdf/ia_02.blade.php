@@ -131,12 +131,19 @@
                 Penyusun / Validator,
                 <br><br><br><br>
                 <strong>(.......................)</strong>
+                {{-- Validator/Penyusun usually different, keeping placeholder or adding logic if needed. Leaving as text for now as per original. --}}
             </td>
             <td style="width: 50%; text-align: center;">
                 Semarang, {{ date('d-m-Y') }}<br>
                 Asesor Kompetensi,
                 <br><br><br><br>
                 <strong>{{ $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '(.......................)' }}</strong>
+                @if($sertifikasi->jadwal->skema->asesor->first() && $sertifikasi->jadwal->skema->asesor->first()->tanda_tangan)
+                     <br>
+                     <img src="{{ getTtdBase64($sertifikasi->jadwal->skema->asesor->first()->tanda_tangan) }}" style="width: 100px; height: auto;">
+                @else
+                    <br><br><br><br>
+                @endif
             </td>
         </tr>
     </table>

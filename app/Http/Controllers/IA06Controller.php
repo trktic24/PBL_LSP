@@ -152,12 +152,19 @@ class IA06Controller extends Controller
      */
     public function asesorShow($idSertifikasi)
     {
-        // Allow Asesor (3) AND Admin (1/4)
-        if (!in_array(Auth::user()->role_id, [1, 3, 4])) {
-             abort(403, 'Unauthorized Action.');
+        // 1. Cek Permission (Admin & Asesor boleh masuk)
+        // Asumsi: 1 = Admin, 3 = Asesor, 4 = Admin Master (sesuaikan dengan DB Anda)
+        $userRoleId = Auth::user()->role_id;
+
+        if (!in_array($userRoleId, [1, 3, 4])) {
+            abort(403, 'Unauthorized Action.');
         }
 
         $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'asesi'])->findOrFail($idSertifikasi);
+
+        // --- TAMBAHAN BARU: Generate data jika belum ada (agar Asesor bisa lihat soal meski Asesi belum login) ---
+        $this->generateLembarJawab($sertifikasi);
+        // ---------------------------------------------------------------------------------------------------------
 
         $daftar_soal = JawabanIa06::with('soal')
             ->where('id_data_sertifikasi_asesi', $idSertifikasi)
@@ -165,12 +172,20 @@ class IA06Controller extends Controller
 
         $umpanBalik = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
 
-        $role = 3; // Kita set manual angka 3 karena ini function khusus Asesor
+        // ============================================================
+        // [PERBAIKAN] TENTUKAN ROLE SECARA DINAMIS
+        // ============================================================
+        if ($userRoleId == 3) {
+            $role = 3; // Mode ASESOR (Bisa Input Nilai)
+        } else {
+            $role = 1; // Mode ADMIN (Monitor/Read Only)
+        }
+        // ============================================================
 
-        // Tentukan URL tujuan submit form (Ke Route Update Asesor)
+        // Tentukan URL tujuan submit form (Hanya berguna jika Role 3)
         $formAction = route('asesor.ia06.update', $idSertifikasi);
 
-        // Panggil View UNIFIED yang SAMA dengan Asesi
+        // Panggil View
         return view('frontend.IA_06.FR_IA_06', compact('sertifikasi', 'daftar_soal', 'umpanBalik', 'role', 'formAction'));
     }
 

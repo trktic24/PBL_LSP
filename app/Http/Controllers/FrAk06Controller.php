@@ -83,4 +83,25 @@ class FrAk06Controller extends Controller
             'buttonLabel' => 'FR.AK.06',
         ]);
     }
+
+    /**
+     * Generate PDF for FR.AK.06
+     */
+    public function cetakPDF($id_jadwal)
+    {
+         $jadwal = \App\Models\Jadwal::with(['skema', 'asesor', 'masterTuk'])->findOrFail($id_jadwal);
+         
+         // [FIX] Table fr_ak06s does not have id_jadwal column (migration missing FK).
+         // Temporary fix: Do not query by id_jadwal to avoid SQL error.
+         // Pass null so PDF renders as blank form (template) with header info.
+         $ak06 = null; 
+         
+         $skema = $jadwal->skema;
+         $asesor = $jadwal->asesor;
+
+         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.ak_06', compact('jadwal', 'ak06', 'skema', 'asesor'))
+                    ->setPaper('a4', 'portrait');
+
+         return $pdf->stream('FR.AK.06_' . ($skema->kode_skema ?? 'Skema') . '.pdf');
+    }
 }
