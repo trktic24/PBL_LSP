@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\IA11;
+namespace App\Http\Controllers\Asesor\IA11;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,9 +13,6 @@ use App\Models\DataSertifikasiAsesi;
 
 class IA11Controller extends Controller
 {
-    /**
-     * Asesi DILARANG mengakses IA11
-     */
     public function __construct()
     {
         $this->middleware(['auth', 'role:admin,asesor']);
@@ -127,15 +124,15 @@ class IA11Controller extends Controller
             $ia11->setRelation('pencapaianPerforma',collect());
         }
 
-        return view('asesi.IA11.IA11', compact('ia11'));
+        return view('asesor.IA11.index', compact('ia11'));
     }
 
     // =====================================================
-    // UPDATE (FINAL STABLE)
+    // UPDATE (FINAL)
     // =====================================================
-    public function update(Request $request, $id_data_sertifikasi_asesi)
+    public function update(Request $request, $id_ia11)
     {
-        $ia11 = IA11::where('id_data_sertifikasi_asesi',$id_data_sertifikasi_asesi)->firstOrFail();
+        $ia11 = IA11::findOrFail($id_ia11);
 
         DB::beginTransaction();
         try {
@@ -165,26 +162,18 @@ class IA11Controller extends Controller
                 );
             }
 
-            if ($request->filled('pencapaian_spesifikasi')) {
-                foreach ($request->pencapaian_spesifikasi as $item) {
-                    $ia11->pencapaianSpesifikasi()
-                        ->where('id_spesifikasi_ia11',$item['id_spesifikasi_ia11'])
-                        ->update([
-                            'hasil_reviu'=>$item['hasil_reviu'] ?? null,
-                            'catatan_temuan'=>$item['catatan_temuan'] ?? null,
-                        ]);
-                }
+            foreach ($request->pencapaian_spesifikasi ?? [] as $item) {
+                $ia11->pencapaianSpesifikasi()->updateOrCreate(
+                    ['id_spesifikasi_ia11'=>$item['id_spesifikasi_ia11']],
+                    ['hasil_reviu'=>$item['hasil_reviu'] ?? null,'catatan_temuan'=>$item['catatan_temuan'] ?? null]
+                );
             }
 
-            if ($request->filled('pencapaian_performa')) {
-                foreach ($request->pencapaian_performa as $item) {
-                    $ia11->pencapaianPerforma()
-                        ->where('id_performa_ia11',$item['id_performa_ia11'])
-                        ->update([
-                            'hasil_reviu'=>$item['hasil_reviu'] ?? null,
-                            'catatan_temuan'=>$item['catatan_temuan'] ?? null,
-                        ]);
-                }
+            foreach ($request->pencapaian_performa ?? [] as $item) {
+                $ia11->pencapaianPerforma()->updateOrCreate(
+                    ['id_performa_ia11'=>$item['id_performa_ia11']],
+                    ['hasil_reviu'=>$item['hasil_reviu'] ?? null,'catatan_temuan'=>$item['catatan_temuan'] ?? null]
+                );
             }
 
             DB::commit();
@@ -200,9 +189,9 @@ class IA11Controller extends Controller
     // =====================================================
     // DELETE
     // =====================================================
-    public function destroy($id_data_sertifikasi_asesi)
+    public function destroy($id_ia11)
     {
-        IA11::where('id_data_sertifikasi_asesi',$id_data_sertifikasi_asesi)->firstOrFail()->delete();
+        IA11::findOrFail($id_ia11)->delete();
         return response()->json(['message'=>'IA.11 berhasil dihapus']);
     }
 

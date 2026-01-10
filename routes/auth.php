@@ -13,7 +13,6 @@ use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\IA06Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\IA11Controller;
 use App\Http\Controllers\APL01Controller;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\FrMapa01Controller;
@@ -45,6 +44,8 @@ use App\Http\Controllers\Admin\AsesiProfileController;
 use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
 use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
 use App\Http\Controllers\Admin\AsesorProfileController;
+use App\Http\Controllers\Asesor\IA11\IA11Controller;
+
 
 // ======================================================
 // 4. CONTROLLERS ASESI

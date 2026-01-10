@@ -12,24 +12,17 @@ class SpesifikasiTeknisIA11 extends Model
 
     protected $table = 'spesifikasi_teknis_ia11';
     protected $primaryKey = 'id_spesifikasi_teknis_ia11';
-    
-    protected $guarded = []; 
+    public $timestamps = true;
 
-    /**
-     * Atribut yang dapat diisi (Fillable).
-     */
     protected $fillable = [
         'id_ia11',
         'data_teknis',
     ];
 
-    /**
-     * Relasi ke IA11 (Parent)
-     * Relasi: Many-to-One
-     * Setiap baris data teknis dimiliki oleh satu produk IA11.
-     */
+    // ================= RELATION =================
+
     public function ia11(): BelongsTo
     {
-        return $this->belongsTo(IA11::class, 'id_ia11', 'id_ia11');
+        return $this->belongsTo(IA11::class, 'id_ia11');
     }
 }
