@@ -85,10 +85,10 @@ class IA05Controller extends Controller
                         [
                             'id_skema' => $request->id_skema,
                             'soal_ia05' => $data['pertanyaan'],
-                            'opsi_jawaban_a' => $data['opsi_a'],
-                            'opsi_jawaban_b' => $data['opsi_b'],
-                            'opsi_jawaban_c' => $data['opsi_c'],
-                            'opsi_jawaban_d' => $data['opsi_d'] ?? null,
+                            'opsi_a_ia05' => $data['opsi_a'],
+                            'opsi_b_ia05' => $data['opsi_b'],
+                            'opsi_c_ia05' => $data['opsi_c'],
+                            'opsi_d_ia05' => $data['opsi_d'] ?? null,
                         ]
                     );
                 }
@@ -100,10 +100,10 @@ class IA05Controller extends Controller
                     SoalIA05::create([
                         // ID biasanya Auto Increment, jadi tidak perlu diisi
                         'soal_ia05' => $data['pertanyaan'],
-                        'opsi_jawaban_a' => $data['opsi_a'],
-                        'opsi_jawaban_b' => $data['opsi_b'],
-                        'opsi_jawaban_c' => $data['opsi_c'],
-                        'opsi_jawaban_d' => $data['opsi_d'] ?? null,
+                        'opsi_a_ia05' => $data['opsi_a'],
+                        'opsi_b_ia05' => $data['opsi_b'],
+                        'opsi_c_ia05' => $data['opsi_c'],
+                        'opsi_d_ia05' => $data['opsi_d'] ?? null,
                     ]);
                 }
             }
@@ -207,8 +207,7 @@ class IA05Controller extends Controller
                 KunciJawabanIA05::updateOrCreate(
                     ['id_soal_ia05' => $id_soal],
                     [
-                        'teks_kunci_jawaban_ia05' => $teks_kunci,
-                        'nomor_kunci_jawaban_ia05' => 1,
+                        'jawaban_benar_ia05' => strtolower($teks_kunci),
                     ]
                 );
             }
@@ -413,8 +412,7 @@ class IA05Controller extends Controller
                 KunciJawabanIA05::updateOrCreate(
                     ['id_soal_ia05' => $soal->id_soal_ia05],
                     [
-                        'jawaban_benar_ia05' => $data['kunci'],
-                        'nomor_kunci_jawaban_ia05' => 1
+                        'jawaban_benar_ia05' => strtolower($data['kunci']),
                     ]
                 );
             }

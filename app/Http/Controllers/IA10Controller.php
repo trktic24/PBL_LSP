@@ -22,8 +22,16 @@ class IA10Controller extends Controller
 
         $jadwal = $asesi->jadwal;
 
-        // 1. Ambil Data Header (Jika sudah ada)
-        $header_ia10 = Ia10::where('id_data_sertifikasi_asesi', $id_asesi)->first();
+        // 1. Ambil Data Header (Jika belum ada, buat record kosong agar FK id_ia10 tersedia)
+        $header_ia10 = Ia10::firstOrCreate(
+            ['id_data_sertifikasi_asesi' => $id_asesi],
+            [
+                'nama_pengawas' => '-',
+                'tempat_kerja' => '-',
+                'alamat' => '-',
+                'telepon' => '-',
+            ]
+        );
 
         // 2. Ambil Pertanyaan Checklist 
         $daftar_soal = PertanyaanIa10::where('id_data_sertifikasi_asesi', $id_asesi)->get();
@@ -37,6 +45,7 @@ class IA10Controller extends Controller
                 foreach ($template->content as $qText) {
                     PertanyaanIa10::create([
                         'id_data_sertifikasi_asesi' => $id_asesi,
+                        'id_ia10' => $header_ia10->id_ia10,
                         'pertanyaan' => $qText,
                         'jawaban_pilihan_iya_tidak' => 0 // Default 'Tidak'
                     ]);
