@@ -4,7 +4,7 @@
 {{-- BAGIAN LOGIC PHP --}}
 {{-- =================================================== --}}
 @php
-    // 1. Ambil data terakhir dari Collection $daftarIa02 yang dikirim Controller
+    // 1. Ambil data terakhir dari Collection $daftarIa02
     $ia02SingleRecord = isset($daftarIa02) ? $daftarIa02->last() : null;
 
     // 2. Cek Admin/Asesor
@@ -12,6 +12,12 @@
 
     // 3. Unit Kompetensi
     $daftarUnitKompetensi = $daftarUnitKompetensi ?? ($sertifikasi->jadwal->skema->unitKompetensi ?? collect());
+
+    // 4. Logika Gambar Skema (Untuk Mobile Header)
+    $gambarSkema = null;
+    if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) {
+        $gambarSkema = asset('storage/' . $sertifikasi->jadwal->skema->gambar);
+    }
 @endphp
 {{-- =================================================== --}}
 
@@ -47,23 +53,41 @@
             .max-w-6xl {
                 max-width: 100% !important;
             }
+            
+            /* Reset padding saat print */
+            main {
+                padding-top: 0 !important;
+            }
         }
     </style>
 </head>
 
 <body class="bg-gray-100">
 
-    <div class="flex h-screen overflow-hidden">
-        {{-- SIDEBAR --}}
-        <div class="h-full overflow-hidden no-print">
+    {{-- WRAPPER UTAMA: Menggunakan flex-col untuk mobile, flex-row untuk desktop --}}
+    <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden">
+
+        {{-- 1. SIDEBAR (Hanya Tampil di Desktop) --}}
+        <div class="hidden md:block md:w-80 flex-shrink-0 no-print">
             <x-sidebar2 :idAsesi="$sertifikasi->asesi->id_asesi ?? null" :sertifikasi="$sertifikasi ?? null" />
         </div>
 
-        {{-- CONTENT --}}
-        <main class="flex-1 p-8 md:p-12 bg-white overflow-y-auto">
+        {{-- 2. HEADER MOBILE (Hanya Tampil di Mobile - Menggantikan Sidebar) --}}
+        {{-- Pastikan component x-mobile_header tersedia --}}
+        <x-mobile_header 
+            :title="'FR.IA.02 - TUGAS PRAKTIK DEMONSTRASI'" 
+            :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" 
+            :name="$sertifikasi->asesi->nama_lengkap ?? '-'" 
+            :image="$gambarSkema" 
+            :sertifikasi="$sertifikasi" 
+        />
+
+        {{-- 3. MAIN CONTENT --}}
+        {{-- pt-20 (Padding Top 80px) ditambahkan agar konten tidak tertutup Header Mobile yang Fixed --}}
+        <main class="flex-1 px-6 pt-20 pb-12 md:p-12 bg-white overflow-y-auto">
             <div class="max-w-6xl mx-auto">
 
-                {{-- JUDUL --}}
+                {{-- JUDUL HALAMAN (Desktop Style) --}}
                 <div class="mb-8">
                     <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 text-center mb-4 tracking-wide">
                         FR.IA.02 - TUGAS PRAKTIK DEMONSTRASI
@@ -71,10 +95,9 @@
                     <div class="w-full border-b-2 border-gray-300 mb-6"></div>
                 </div>
 
-                {{-- Notifikasi --}}
+                {{-- NOTIFIKASI --}}
                 @if (session('success'))
-                    <div
-                        class="bg-green-100 border-l-4 border-green-600 text-green-800 p-4 mb-6 rounded shadow-sm no-print">
+                    <div class="bg-green-100 border-l-4 border-green-600 text-green-800 p-4 mb-6 rounded shadow-sm no-print">
                         <strong class="font-bold">Berhasil!</strong>
                         <span class="ml-2">{{ session('success') }}</span>
                     </div>
@@ -87,7 +110,7 @@
                 @endif
 
 
-                {{-- Informasi Asesmen (IDENTITAS) --}}
+                {{-- I. IDENTITAS SKEMA & ASESI --}}
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-6">
                     <h3 class="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">
                         I. Identitas Skema & Asesi
@@ -167,8 +190,7 @@
                             <div class="overflow-x-auto rounded-xl border border-gray-300 shadow-sm">
                                 <table class="min-w-full bg-white">
                                     <thead>
-                                        <tr
-                                            class="bg-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
+                                        <tr class="bg-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">
                                             <th class="p-3 border-b border-gray-300 w-16 text-center">No</th>
                                             <th class="p-3 border-b border-gray-300 w-1/4">Kode Unit</th>
                                             <th class="p-3 border-b border-gray-300">Judul Unit</th>
@@ -185,9 +207,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="3" class="p-6 text-center text-gray-500 italic">Tidak
-                                                    ada unit
-                                                    kompetensi</td>
+                                                <td colspan="3" class="p-6 text-center text-gray-500 italic">Tidak ada unit kompetensi</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -197,8 +217,7 @@
 
                         {{-- DATA SKENARIO IA02 (Diambil via JS) --}}
                         <div id="ia02DataArea" class="space-y-6">
-                            <p class="text-gray-500 italic p-4 text-center border rounded-xl bg-gray-50">Memuat data
-                                Skenario, Peralatan, dan Waktu...</p>
+                            <p class="text-gray-500 italic p-4 text-center border rounded-xl bg-gray-50">Memuat data Skenario, Peralatan, dan Waktu...</p>
                         </div>
 
                         {{-- Form untuk Admin/Asesor --}}
@@ -243,8 +262,6 @@
 
                     </div>
                 </div>
-
-                {{-- TOMBOL NAVIGASI SUDAH DIHAPUS SESUAI REQUEST --}}
 
             </div>
         </main>
