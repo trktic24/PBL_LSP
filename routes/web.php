@@ -234,8 +234,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/FR_IA_11', [IA11Controller::class, 'create'])->name('ia11.create');
     Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
 
-    // MAPA-02
+    // MAPA-01
+        // 1. Route untuk buka/tampil form (GET)
+    Route::get('/mapa01/form/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');
 
+    // 2. Route untuk simpan data (POST)
+    Route::post('/mapa01/store', [FrMapa01Controller::class, 'store'])->name('mapa01.store');
+
+    // 3. Route untuk cetak (Biarkan yang sudah ada)
+    Route::get('/mapa01/cetak/{id}', [FrMapa01Controller::class, 'cetakPDF'])->name('mapa01.cetak_pdf');
 
     // Portofolio
     Route::get('/PORTOFOLIO', [PortofolioController::class, 'index'])->name('PORTOFOLIO');
