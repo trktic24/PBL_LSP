@@ -180,6 +180,12 @@ class DataSertifikasiAsesi extends Model
         return $this->hasOne(ResponIA04A::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
+    public function ia08(): HasOne
+    {
+        // Pastikan model Ia08 sudah di-import di paling atas: use App\Models\Ia08;
+        return $this->hasOne(\App\Models\Ia08::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
     public function ia09(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
     {
         // Relasi ke BuktiPortofolioIA08IA09 melalui DataPortofolio

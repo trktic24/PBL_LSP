@@ -68,7 +68,10 @@ class JadwalController extends Controller
         }
 
         // Order & paginate (20 per halaman)
-        $jadwal = $query->orderBy('tanggal_pelaksanaan', 'asc')
+        // Order: Jadwal yang akan datang (Future) di atas, yang sudah lewat (Past) di bawah.
+        // Keduanya diurutkan ASC (yang paling mendekati hari ini duluan)
+        $jadwal = $query->orderByRaw("CASE WHEN tanggal_pelaksanaan < NOW() THEN 1 ELSE 0 END ASC")
+                       ->orderBy('tanggal_pelaksanaan', 'asc')
                        ->paginate(20)
                        ->appends($request->except('page'));
 

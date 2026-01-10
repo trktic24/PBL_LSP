@@ -69,7 +69,9 @@
                         'id'    => 'phone',
                         'name'  => 'phone',
                         'label' => 'Telepon',
-                        'value' => old('phone', $header?->telepon)
+                        'value' => old('phone', $header?->telepon),
+                        'type'  => 'number', // <--- Tambahkan ini biar muncul numpad di HP
+                         'extra_attrs' => 'oninput="this.value = this.value.replace(/[^0-9]/g, \'\')"' // <--- Script anti huruf
                     ])
                 </div>
 
@@ -250,4 +252,15 @@
             </form>
         </div>
     </main>
+    {{-- TAMBAHKAN DI SINI --}}
+<style>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
 @endsection

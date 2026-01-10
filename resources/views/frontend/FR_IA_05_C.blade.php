@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-asesi')
 @section('content')
 <main class="main-content">
 
@@ -287,8 +287,7 @@
             @include('components.kolom_ttd.asesiasesor', ['sertifikasi' => $asesi])
         </div>
             
-        <div class="form-footer flex justify-between mt-10">
-            <button type="button" class="btn py-2 px-5 border border-blue-600 text-blue-600 rounded-md font-semibold hover:bg-blue-50">Sebelumnya</button>
+        <div class="form-footer flex justify-end mt-10">
             @if($is_asesor)
                 <button type="submit" class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Simpan Penilaian</button>
             @endif

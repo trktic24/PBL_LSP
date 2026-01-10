@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-asesi')
 
 @section('content')
 <main class="main-content">    
@@ -63,39 +63,87 @@
     {{-- === AKHIR DROPDOWN === --}}
 
     {{-- BAGIAN IDENTITAS SKEMA (SUDAH DIISI) --}}
-    <div class="form-row grid grid-cols-1 md:grid-cols-[250px_1fr] md:gap-x-6 gap-y-1.5 items-start md:items-center">
-        
-        <label class="text-sm font-bold text-black">Skema Sertifikasi (KKNI/Okupasi/Klaster)</label>
-        <div class="flex items-center">
-            <span>:</span>
-            {{-- Ambil Judul Skema dari Controller --}}
-            <p class="ml-2 font-medium text-gray-600">{{ $skema_info->nama_skema ?? 'Junior Web Developer' }}</p>
-        </div>
+   {{-- GANTI KOMPONEN DENGAN HTML MANUAL KHUSUS HALAMAN INI --}}
+<div class="mb-6 border-b border-gray-200 pb-4">
+    <table class="w-full text-sm text-gray-700">
+        <tbody>
+            {{-- 1. Judul Skema --}}
+            {{-- Menggunakan 'align-top' agar titik dua sejajar dengan baris pertama --}}
+            <tr>
+                <td class="font-bold w-[250px] align-top py-2 text-black leading-snug">
+                    Skema Sertifikasi<br>
+                    (KKNI/Okupasi/Klaster)
+                </td>
+                <td class="w-4 align-top py-2 font-bold text-black">:</td>
+                {{-- Warna biru tua sesuai gambar --}}
+                <td class="align-top py-2 text-base text-blue-900 font-medium">
+                    {{ $asesi->jadwal->skema->nama_skema ?? 'Data Analyst' }}
+                </td>
+            </tr>
+            
+            {{-- 2. Nomor Skema --}}
+            <tr>
+                <td class="font-bold py-2 text-black">Nomor</td>
+                <td class="font-bold text-black">:</td>
+                <td class="text-base text-blue-900 font-medium">
+                    {{ $asesi->jadwal->skema->nomor_skema ?? 'J.620100.784.53' }}
+                </td>
+            </tr>
 
-        <label class="text-sm font-bold text-black">Nomor</label>
-        <div class="flex items-center">
-            <span>:</span>
-            {{-- Ambil Kode Skema dari Controller --}}
-            <p class="ml-2 font-medium text-gray-600">{{ $skema_info->nomor_skema ?? 'SKK.XXXXX.XXXX' }}</p>
-        </div>
+            {{-- 3. TUK (Radio Button Style - Persis Gambar) --}}
+            <tr>
+                <td class="font-bold py-2 text-black">TUK</td>
+                <td class="font-bold text-black">:</td>
+                <td class="py-2">
+                    @php
+                        // Normalisasi data biar aman
+                        $jenisTuk = strtolower($asesi->jadwal->jenisTuk->jenis_tuk ?? '');
+                        
+                        // Helper sederhana untuk cek status
+                        $isSewaktu = str_contains($jenisTuk, 'sewaktu');
+                        $isMandiri = str_contains($jenisTuk, 'mandiri');
+                        // Default ke Tempat Kerja jika tidak ada yang cocok
+                        $isTempatKerja = (!$isSewaktu && !$isMandiri) || str_contains($jenisTuk, 'tempat');
+                    @endphp
 
-        <label class="text-sm font-bold text-black">TUK</label>
-        <div class="radio-group flex flex-col items-start space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4">
-            <span>:</span>
-            <div class="flex items-center space-x-2 ml-0 md:ml-2">
-                <input type="radio" id="tuk_sewaktu" name="tuk_type" class="form-radio h-4 w-4 text-gray-400" disabled>
-                <label for="tuk_sewaktu" class="text-sm text-gray-700">Sewaktu</label>
-            </div>
-            <div class="flex items-center space-x-2">
-                <input type="radio" id="tuk_tempatkerja" name="tuk_type" class="form-radio h-4 w-4 text-gray-400" checked disabled>
-                <label for="tuk_tempatkerja" class="text-sm text-gray-700">Tempat Kerja</label>
-            </div>
-            <div class="flex items-center space-x-2">
-                <input type="radio" id="tuk_mandiri" name="tuk_type" class="form-radio h-4 w-4 text-gray-400" disabled>
-                <label for="tuk_mandiri" class="text-sm text-gray-700">Mandiri</label>
-            </div>
-        </div>
-    </div>
+                    <div class="flex items-center space-x-6">
+                        
+                        {{-- Opsi Sewaktu --}}
+                        <label class="flex items-center space-x-2 cursor-not-allowed">
+                            <input type="radio" disabled
+                                class="form-radio h-4 w-4 border-gray-400 text-gray-500 focus:ring-0" 
+                                {{ $isSewaktu ? 'checked' : '' }}>
+                            <span class="{{ $isSewaktu ? 'text-blue-900 font-medium' : 'text-gray-500' }}">
+                                Sewaktu
+                            </span>
+                        </label>
+
+                        {{-- Opsi Tempat Kerja --}}
+                        <label class="flex items-center space-x-2 cursor-not-allowed">
+                            <input type="radio" disabled
+                                class="form-radio h-4 w-4 border-gray-400 text-gray-500 focus:ring-0"
+                                {{ $isTempatKerja ? 'checked' : '' }}>
+                            <span class="{{ $isTempatKerja ? 'text-blue-900 font-medium' : 'text-gray-500' }}">
+                                Tempat Kerja
+                            </span>
+                        </label>
+
+                        {{-- Opsi Mandiri --}}
+                        <label class="flex items-center space-x-2 cursor-not-allowed">
+                            <input type="radio" disabled
+                                class="form-radio h-4 w-4 border-gray-400 text-gray-500 focus:ring-0"
+                                {{ $isMandiri ? 'checked' : '' }}>
+                            <span class="{{ $isMandiri ? 'text-blue-900 font-medium' : 'text-gray-500' }}">
+                                Mandiri
+                            </span>
+                        </label>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
     @if (session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
@@ -112,60 +160,84 @@
     <form class="form-body mt-10" method="POST" action="{{ $is_admin ? route('ia-05.store.kunci') : '#' }}">
         @csrf 
         
-        {{-- TABEL UNIT KOMPETENSI (Statis / Disabled sesuai request) --}}
-        <div class="form-section my-8">
-            <div class="border border-gray-900 shadow-md">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-black text-white">
-                            <th class="border border-gray-900 p-2 font-semibold w-[25%]">Kelompok Pekerjaan ...</th>
-                            <th class="border border-gray-900 p-2 font-semibold w-[10%]">No.</th>
-                            <th class="border border-gray-900 p-2 font-semibold w-[30%]">Kode Unit</th>
-                            <th class="border border-gray-900 p-2 font-semibold w-[35%]">Judul Unit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td rowspan="3" class="border border-gray-900 p-2 align-top text-sm">..............................</td>
-                            <td class="border border-gray-900 p-2 text-sm text-center">1.</td>
-                            <td class="border border-gray-900 p-2 text-sm">
-                                <input type="text" name="kode_unit_1" class="form-input w-full border-gray-300 rounded-md shadow-sm" disabled>
-                            </td>
-                            <td class="border border-gray-900 p-2 text-sm">
-                                <input type="text" name="judul_unit_1" class="form-input w-full border-gray-300 rounded-md shadow-sm" disabled>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 p-2 text-sm text-center">2.</td>
-                            <td class="border border-gray-900 p-2 text-sm">
-                                <input type="text" name="kode_unit_2" class="form-input w-full border-gray-300 rounded-md shadow-sm" disabled>
-                            </td>
-                            <td class="border border-gray-900 p-2 text-sm">
-                                <input type="text" name="judul_unit_2" class="form-input w-full border-gray-300 rounded-md shadow-sm" disabled>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 p-2 text-sm text-center">3.</td>
-                            <td class="border border-gray-900 p-2 text-sm">
-                                <input type="text" name="kode_unit_3" class="form-input w-full border-gray-300 rounded-md shadow-sm" disabled>
-                            </td>
-                            <td class="border border-gray-900 p-2 text-sm">
-                                <input type="text" name="judul_unit_3" class="form-input w-full border-gray-300 rounded-md shadow-sm" disabled>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 p-2"></td>
-                            <td class="border border-gray-900 p-2 text-sm text-center">Dst.</td>
-                            <td class="border border-gray-900 p-2 text-sm">
-                                <input type="text" name="kode_unit_dst" class="form-input w-full border-gray-300 rounded-md shadow-sm" disabled>
-                            </td>
-                            <td class="border border-gray-900 p-2 text-sm">
-                                <input type="text" name="judul_unit_dst" class="form-input w-full border-gray-300 rounded-md shadow-sm" disabled>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        {{-- === BAGIAN BARU: SLIDER KELOMPOK PEKERJAAN (ALPINE JS) === --}}
+        <div class="mb-8 mt-8" x-data="{ 
+            activeSlide: 0, 
+            totalSlides: {{ $asesi->jadwal->skema->kelompokPekerjaan->count() }} 
+        }">
+
+            @foreach ($asesi->jadwal->skema->kelompokPekerjaan as $indexKelompok => $kelompok)
+                
+                {{-- Container Slide --}}
+                <div x-show="activeSlide === {{ $indexKelompok }}" 
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-95"
+                        x-transition:enter-end="opacity-100 transform scale-100"
+                        class="border border-gray-200 rounded-lg overflow-hidden shadow-md bg-white">
+
+                    {{-- HEADER SLIDER --}}
+                    <div class="bg-blue-50 p-4 border-b border-blue-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-blue-900 mb-1">
+                                {{ $kelompok->judul_unit ?? 'Kelompok Pekerjaan ' . ($indexKelompok + 1) }}
+                            </h2>
+                            <p class="text-blue-600 text-sm font-medium">
+                                Kelompok Pekerjaan {{ $loop->iteration }} dari {{ $loop->count }}
+                            </p>
+                        </div>
+
+                        {{-- Navigasi Tombol --}}
+                        <div class="flex items-center space-x-3 bg-white px-3 py-1.5 rounded-full shadow-sm border border-blue-100">
+                            <button @click="activeSlide = activeSlide > 0 ? activeSlide - 1 : 0" 
+                                    :class="{ 'opacity-50 cursor-not-allowed': activeSlide === 0, 'hover:bg-blue-100 text-blue-600': activeSlide > 0 }"
+                                    class="p-2 rounded-full transition focus:outline-none" 
+                                    :disabled="activeSlide === 0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+
+                            <span class="text-sm font-bold text-gray-600 min-w-[3rem] text-center">
+                                <span x-text="activeSlide + 1"></span> / <span x-text="totalSlides"></span>
+                            </span>
+
+                            <button @click="activeSlide = activeSlide < totalSlides - 1 ? activeSlide + 1 : totalSlides - 1" 
+                                    :class="{ 'opacity-50 cursor-not-allowed': activeSlide === totalSlides - 1, 'hover:bg-blue-100 text-blue-600': activeSlide < totalSlides - 1 }"
+                                    class="p-2 rounded-full transition focus:outline-none"
+                                    :disabled="activeSlide === totalSlides - 1">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- TABEL UNIT --}}
+                    <div class="p-6 bg-white min-h-[300px]">
+                        <h3 class="font-bold text-gray-800 text-lg mb-4">Daftar Unit Kompetensi</h3>
+                        <div class="overflow-hidden border border-gray-200 rounded-lg">
+                            <table class="w-full text-left text-sm text-gray-600">
+                                <thead class="bg-gray-50 text-gray-700 uppercase font-bold text-xs">
+                                    <tr>
+                                        <th class="px-6 py-3 border-b border-gray-200 w-16 text-center">No</th>
+                                        <th class="px-6 py-3 border-b border-gray-200 w-48">Kode Unit</th>
+                                        <th class="px-6 py-3 border-b border-gray-200">Judul Unit</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @forelse($kelompok->unitKompetensi as $indexUnit => $unit)
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="px-6 py-4 text-center font-medium">{{ $indexUnit + 1 }}</td>
+                                            <td class="px-6 py-4 font-mono text-gray-900 font-semibold">{{ $unit->kode_unit }}</td>
+                                            <td class="px-6 py-4 text-gray-800">{{ $unit->judul_unit }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="px-6 py-4 text-center text-gray-400 italic">Tidak ada unit kompetensi di kelompok ini.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
 
         <div class="form-section my-8">
@@ -239,8 +311,7 @@
             @include('components.kolom_ttd.penyusunvalidator')
         </div>
         
-        <div class="form-footer flex justify-between mt-10">
-            <button type="button" class="btn py-2 px-5 border border-blue-600 text-blue-600 rounded-md font-semibold hover:bg-blue-50">Sebelumnya</button>
+        <div class="form-footer flex justify-end mt-10">
             @if($is_admin)
                 <button type="submit" class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Simpan Kunci Jawaban</button>
             @endif

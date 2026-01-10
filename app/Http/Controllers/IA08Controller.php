@@ -44,7 +44,10 @@ class IA08Controller extends Controller
             ->get()
             ->map(function ($item) {
 
-                $ia08 = $item->buktiPortofolioIA08IA09->first();
+                $ia08 = $item->buktiPortofolioIA08IA09
+                    ->whereNotNull('id_ia08')
+                    ->sortByDesc('created_at')
+                    ->first();
 
                 $item->array_valid = $ia08 ? explode(', ', $ia08->is_valid) : [];
                 $item->array_asli = $ia08 ? explode(', ', $ia08->is_asli) : [];
@@ -61,8 +64,8 @@ class IA08Controller extends Controller
             $id_sertifikasi_asesi
         )->first();
 
-        // 🔒 Lock form jika data sudah tersimpan atau readonly (admin)
-        $isLocked = $ia08 || request()->get('is_readonly', false);
+        // 🔒 Lock form HANYA jika readonly (admin)
+        $isLocked = request()->get('is_readonly', false);
 
         return view(
             'frontend.IA_08.IA_08',
@@ -107,18 +110,18 @@ class IA08Controller extends Controller
         ]);
 
         // ===============================
-        // 🔒 CEGAH SUBMIT ULANG
+        // 🔒 CEGAH SUBMIT ULANG - REMOVED FOR EDITING
         // ===============================
-        $existingIA08 = IA08::where(
-            'id_data_sertifikasi_asesi',
-            $request->id_data_sertifikasi_asesi
-        )->first();
+        // $existingIA08 = IA08::where(
+        //     'id_data_sertifikasi_asesi',
+        //     $request->id_data_sertifikasi_asesi
+        // )->first();
 
-        if ($existingIA08) {
-            return back()->withErrors([
-                'locked' => 'Data IA-08 sudah disimpan dan tidak dapat diubah kembali.',
-            ]);
-        }
+        // if ($existingIA08) {
+        //     return back()->withErrors([
+        //         'locked' => 'Data IA-08 sudah disimpan dan tidak dapat diubah kembali.',
+        //     ]);
+        // }
 
         // ===============================
         // VALIDASI CHECKBOX BUKTI PORTOFOLIO
@@ -167,49 +170,62 @@ class IA08Controller extends Controller
         // ===============================
         DB::transaction(function () use ($request) {
 
-            $ia08 = IA08::create([
-                'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
-                'rekomendasi' => $request->rekomendasi,
+            $ia08 = IA08::updateOrCreate(
+                ['id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi],
+                [
+                    'rekomendasi' => $request->rekomendasi,
 
-                'kelompok_pekerjaan' =>
-                    $request->rekomendasi === 'perlu observasi lanjut'
-                    ? $request->kelompok_pekerjaan
-                    : null,
+                    'kelompok_pekerjaan' =>
+                        $request->rekomendasi === 'perlu observasi lanjut'
+                        ? $request->kelompok_pekerjaan
+                        : null,
 
-                'unit_kompetensi' =>
-                    $request->rekomendasi === 'perlu observasi lanjut'
-                    ? $request->unit_kompetensi
-                    : null,
+                    'unit_kompetensi' =>
+                        $request->rekomendasi === 'perlu observasi lanjut'
+                        ? $request->unit_kompetensi
+                        : null,
 
-                'elemen' =>
-                    $request->rekomendasi === 'perlu observasi lanjut'
-                    ? $request->elemen
-                    : null,
+                    'elemen' =>
+                        $request->rekomendasi === 'perlu observasi lanjut'
+                        ? $request->elemen
+                        : null,
 
-                'kuk' =>
-                    $request->rekomendasi === 'perlu observasi lanjut'
-                    ? $request->kuk
-                    : null,
-            ]);
+                    'kuk' =>
+                        $request->rekomendasi === 'perlu observasi lanjut'
+                        ? $request->kuk
+                        : null,
+                ]
+            );
 
             foreach ($request->id_portofolio as $id_portofolio) {
-                BuktiPortofolioIA08IA09::create([
-                    'id_portofolio' => $id_portofolio,
-                    'id_ia08' => $ia08->id_ia08,
+                // Update or Create Bukti
+                BuktiPortofolioIA08IA09::updateOrCreate(
+                    [
+                        'id_portofolio' => $id_portofolio,
+                        'id_ia08' => $ia08->id_ia08
+                    ],
+                    [
+                        'is_valid' => collect($request->valid[$id_portofolio])->implode(', '),
+                        'is_asli' => collect($request->asli[$id_portofolio])->implode(', '),
+                        'is_terkini' => collect($request->terkini[$id_portofolio])->implode(', '),
+                        'is_memadai' => collect($request->memadai[$id_portofolio])->implode(', '),
 
-                    'is_valid' => collect($request->valid[$id_portofolio])->implode(', '),
-                    'is_asli' => collect($request->asli[$id_portofolio])->implode(', '),
-                    'is_terkini' => collect($request->terkini[$id_portofolio])->implode(', '),
-                    'is_memadai' => collect($request->memadai[$id_portofolio])->implode(', '),
+                        'daftar_pertanyaan_wawancara' =>
+                            $request->pertanyaan[$id_portofolio] ?? null,
 
-                    'daftar_pertanyaan_wawancara' =>
-                        $request->pertanyaan[$id_portofolio] ?? null,
-
-                    'kesimpulan_jawaban_asesi' =>
-                        $request->kesimpulan[$id_portofolio] ?? null,
-                ]);
+                        'kesimpulan_jawaban_asesi' =>
+                            $request->kesimpulan[$id_portofolio] ?? null,
+                    ]
+                );
             }
         });
+
+        // Redirect Asesor ke Tracker
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user && $user->hasRole('asesor')) {
+            return redirect()->route('asesor.tracker', $request->id_data_sertifikasi_asesi)
+                ->with('success', 'Verifikasi portofolio & rekomendasi asesor berhasil disimpan.');
+        }
 
         return back()->with(
             'success',
@@ -295,13 +311,13 @@ class IA08Controller extends Controller
             'responBuktiAk01',
             'lembarJawabIa05',
             'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
+        ])->whereHas('jadwal', function ($q) use ($id_skema) {
             $q->where('id_skema', $id_skema);
         });
 
         if (request('search')) {
             $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
+            $query->whereHas('asesi', function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%");
             });
         }
