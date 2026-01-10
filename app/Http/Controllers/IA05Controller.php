@@ -44,7 +44,7 @@ class IA05Controller extends Controller
             'jadwal.jenisTuk',
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);        
-
+        $jadwal = $asesi->jadwal;
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $data_jawaban_asesi = collect();
@@ -61,6 +61,7 @@ class IA05Controller extends Controller
             'asesi' => $asesi,
             'semua_soal' => $semua_soal,
             'data_jawaban_asesi' => $data_jawaban_asesi,
+            "jadwal" => $jadwal
         ]);
     }
 
@@ -146,6 +147,19 @@ class IA05Controller extends Controller
     public function showKunciForm(Request $request)
     {
         // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
+        $id_asesi = $request->query('ref'); 
+
+        // Validasi kalau ID-nya kosong/diisengin user
+        if (!$id_asesi) {
+            abort(404, 'ID Asesi tidak ditemukan. Pastikan URL memiliki ?ref=ID');
+        }
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_asesi);        
+        $jadwal = $asesi->jadwal;
         $user = Auth::user();
         $roleText = $this->getRoleText($user);
         // ----------------------------------------
@@ -160,11 +174,13 @@ class IA05Controller extends Controller
         $skema_info = Skema::first();
 
         return view('frontend.FR_IA_05_B', [
+            'asesi' => $asesi,
             'user' => $user,
             'role' => $roleText,
             'semua_soal' => $semua_soal,
             'kunci_jawaban' => $kunci_jawaban,
             'skema_info' => $skema_info,
+             "jadwal" => $jadwal
         ]);
     }
 
@@ -217,7 +233,7 @@ class IA05Controller extends Controller
             'jadwal.jenisTuk',
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
-
+        $jadwal = $asesi->jadwal;
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
@@ -243,6 +259,7 @@ class IA05Controller extends Controller
             'kunci_jawaban' => $kunci_jawaban,
             'lembar_jawab' => $lembar_jawab,
             'umpan_balik' => $umpan_balik,
+            "jadwal" => $jadwal
         ]);
     }
 
@@ -302,7 +319,7 @@ class IA05Controller extends Controller
             'jadwal.jenisTuk',                                // Data TUK
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
-
+        $jadwal = $asesi->jadwal;
         // 2. Ambil Soal (Urut ID)
         $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
 
@@ -323,7 +340,8 @@ class IA05Controller extends Controller
             'asesi' => $asesi,
             'semua_soal' => $semua_soal,
             'lembar_jawab' => $lembar_jawab,
-            'umpan_balik' => $umpan_balik
+            'umpan_balik' => $umpan_balik,
+            "jadwal" => $jadwal
         ]);
 
         $pdf->setPaper('A4', 'portrait');
