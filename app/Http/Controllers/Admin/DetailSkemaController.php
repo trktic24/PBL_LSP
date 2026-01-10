@@ -598,22 +598,37 @@ class DetailSkemaController extends Controller
         // Ambil jadwal yang:
         // 1. Memiliki skema $id_skema
         // 2. Memiliki setidaknya 1 asesi (dataSertifikasiAsesi)
-        // 3. Memiliki asesor yang terikat dengan skema ini (via id_skema atau pivot skemas)
         $jadwalList = \App\Models\Jadwal::with(['asesor', 'masterTuk'])
             ->where('id_skema', $id_skema)
             ->whereHas('dataSertifikasiAsesi')
-            ->whereHas('asesor', function($q) use ($id_skema) {
-                $q->where('id_skema', $id_skema)
-                  ->orWhereHas('skemas', function($sq) use ($id_skema) {
-                      $sq->where('skema.id_skema', $id_skema);
-                  });
-            })
             ->orderBy('tanggal_mulai', 'desc')
             ->get();
 
         return view('Admin.master.skema.ak05_jadwal_list', [
             'skema' => $skema,
             'jadwalList' => $jadwalList,
+        ]);
+    }
+
+    /**
+     * Tampilkan daftar Jadwal untuk AK.06 (Meninjau Proses Asesmen)
+     */
+    public function showAk06JadwalList($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        
+        // Ambil jadwal yang:
+        // 1. Memiliki skema $id_skema
+        // 2. Memiliki setidaknya 1 asesi (dataSertifikasiAsesi)
+        $jadwalList = \App\Models\Jadwal::with(["asesor", "masterTuk"])
+            ->where("id_skema", $id_skema)
+            ->whereHas("dataSertifikasiAsesi")
+            ->orderBy("tanggal_mulai", "desc")
+            ->get();
+
+        return view("Admin.master.skema.ak06_jadwal_list", [
+            "skema" => $skema,
+            "jadwalList" => $jadwalList,
         ]);
     }
 }
