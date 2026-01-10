@@ -29,7 +29,7 @@ return new class extends Migration
 
             // 'ya' = Benar, 'tidak' = Salah. Nullable di awal.
             $table->enum('pencapaian_ia05', ['ya', 'tidak'])->nullable();
-            
+            $table->text('umpan_balik')->nullable()->comment('Catatan dari asesor untuk asesi');
             $table->timestamps();
         });
     }
