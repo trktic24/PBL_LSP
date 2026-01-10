@@ -10,7 +10,9 @@
     <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Daftar Jadwal & Asesor</h1>
-            <p class="text-blue-600 font-semibold uppercase tracking-wider text-sm mt-1">FR.AK.05 - Laporan Asesmen</p>
+            <p class="text-blue-600 font-semibold uppercase tracking-wider text-sm mt-1">
+                {{ $skema->nomor_skema }} - FR.AK.05 (Laporan Asesmen)
+            </p>
         </div>
         <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" class="inline-flex items-center px-4 py-2 bg-gray-50 text-gray-700 hover:bg-gray-100 rounded-xl transition text-sm font-medium border border-gray-200 shadow-sm">
             <i class="fas fa-arrow-left mr-2 text-xs"></i> Kembali ke Detail Skema
