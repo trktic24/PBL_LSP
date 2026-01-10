@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama');     // Hanya Nama
             $table->string('jabatan');  // Hanya Jabatan
+            $table->integer('urutan')->default(0); 
             $table->string('gambar')->nullable(); // Foto
             $table->timestamps();
         });
