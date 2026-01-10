@@ -42,32 +42,27 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <div class="flex space-x-3">
-                        {{-- Placeholder buttons if needed --}}
                     </div>
-
-                    <button class="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition duration-150 cursor-not-allowed opacity-50" title="Fitur ini belum tersedia">
-                        Tandai Semua Dibaca
-                    </button>
                 </div>
 
                 <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 mt-2">
                     @forelse ($notifications as $notification)
-                    <a href="{{ $notification['link'] }}" class="block">
-                        <div class="p-5 bg-white rounded-xl shadow-md border border-gray-200 transition duration-300 hover:shadow-lg cursor-pointer hover:-translate-y-0.5 ease-in-out {{ !$notification['is_read'] ? 'bg-blue-50 border-blue-200' : '' }}">
+                    <a href="{{ $notification->data['link'] ?? '#' }}" class="block">
+                        <div class="p-5 bg-white rounded-xl shadow-md border border-gray-200 transition duration-300 hover:shadow-lg cursor-pointer hover:-translate-y-0.5 ease-in-out {{ $notification->read_at === null ? 'bg-blue-50 border-blue-200' : '' }}">
                             <div class="flex items-center justify-between">
                                 <div class="flex space-x-4 w-full">
-                                    <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-lg shadow-inner text-blue-500 text-xl {{ !$notification['is_read'] ? 'bg-blue-100' : '' }}">
+                                    <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-lg shadow-inner text-blue-500 text-xl {{ $notification->read_at === null ? 'bg-blue-100' : '' }}">
                                         <i class="far fa-bell"></i>
                                     </div>
                                     <div class="flex-1">
-                                        <p class="text-lg font-semibold text-gray-900">{{ $notification['title'] }}</p>
-                                        <p class="text-sm text-gray-600 mt-1">{{ $notification['message'] }}</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ $notification->data['title'] ?? 'Notifikasi' }}</p>
+                                        <p class="text-sm text-gray-600 mt-1">{{ $notification->data['body'] ?? ($notification->data['message'] ?? 'Pesan tidak tersedia') }}</p>
                                     </div>
                                 </div>
 
                                 <div class="relative flex flex-col items-end justify-center min-w-[100px]">
-                                    <p class="text-sm text-gray-500 text-center whitespace-nowrap">{{ $notification['time'] }}</p>
-                                    @if (!$notification['is_read'])
+                                    <p class="text-sm text-gray-500 text-center whitespace-nowrap">{{ $notification->created_at->diffForHumans() }}</p>
+                                    @if ($notification->read_at === null)
                                     <span class="absolute -top-6 -right-2 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
                                     @endif
                                 </div>

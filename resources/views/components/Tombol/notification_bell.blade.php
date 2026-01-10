@@ -6,6 +6,11 @@
 
     {{-- Unread Count Badge --}}
     @if(Auth::user()->unreadNotifications->count() > 0)
-    <span class="absolute top-1 right-1 block w-3 h-3 bg-red-600 rounded-full ring-2 ring-white"></span>
+    <span class="absolute top-1 right-1">
+        <span class="relative flex w-3 h-3">
+            <span class="absolute inline-flex w-full h-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex w-3 h-3 rounded-full bg-red-600 border-2 border-white"></span>
+        </span>
+    </span>
     @endif
 </a>

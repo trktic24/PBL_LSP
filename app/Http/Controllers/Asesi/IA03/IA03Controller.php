@@ -124,6 +124,8 @@ class IA03Controller extends Controller
             'sertifikasi' => $sertifikasi,
             'pertanyaanIA03' => $pertanyaanIA03,
             'units' => $units,
+            'umpanBalik' => $umpanBalik,
+            'rekomendasi' => $rekomendasi
         ]);
         
         return $pdf->stream('FR.IA.03_Pertanyaan_Untuk_Mendukung_Observasi.pdf');
@@ -220,7 +222,7 @@ class IA03Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia03.show',
+            'targetRoute' => 'asesi.ia03.index',
             'buttonLabel' => 'FR.IA.03',
             'formName' => 'Pertanyaan Untuk Mendukung Observasi',
         ]);

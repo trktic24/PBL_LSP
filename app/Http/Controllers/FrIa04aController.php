@@ -169,7 +169,7 @@ class FrIa04aController extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'fria04a.asesi.show',
+            'targetRoute' => 'fria04a.show',
             'buttonLabel' => 'FR.IA.04',
             'formName' => 'Ceklis Verifikasi Portofolio',
         ]);

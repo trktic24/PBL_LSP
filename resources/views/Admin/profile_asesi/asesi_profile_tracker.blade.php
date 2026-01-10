@@ -834,70 +834,82 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                         {{-- ============================================= --}}
                         <li class="relative flex items-start mt-1 md:mt-0 md:items-start md:pb-10">
                             @php
-                            // 1. Cek Penolakan Sebelumnya
-                            $isRejectedPrev = $paymentRejected || ($statusStep3 == 'ditolak');
+                                // 1. Cek Penolakan Sebelumnya
+                                $isRejectedPrev = $paymentRejected || ($statusStep3 == 'ditolak');
 
-                            // 2. Ambil Status & Hasil dari Database
-                            $currentStatus = $sertifikasi->status_sertifikasi;
-                            $hasilDB = $hasilAK02;
+                                // 2. Ambil Status & Hasil dari Database
+                                $currentStatus = $sertifikasi->status_sertifikasi;
+                                $hasilDB = $hasilAK02;
 
-                            // 3. Definisi "SUDAH ADA HASIL"
-                            // Gunakan !empty agar string kosong "" tidak dianggap sebagai hasil
-                            $hasResult = !empty($hasilDB);
-                            $isStatusSelesai = ($currentStatus == 'asesmen_praktek_selesai');
+                                // --- [BARU] CEK REKOMENDASI APL 01 & 02 ---
+                                // Pastikan variabel $sertifikasi sudah memuat relasi apl01 dan apl02 (eager loading di controller)
+                                // Atau jika kolomnya ada di tabel sertifikasi, sesuaikan nama kolomnya.
+                                // Contoh asumsi: kolom 'rekomendasi_apl01' dan 'rekomendasi_apl02' di tabel sertifikasi
+                                // Sesuaikan dengan struktur database Anda.
+                                $rekomendasiAPL01 = $sertifikasi->rekomendasi_apl01 ?? null; 
+                                $rekomendasiAPL02 = $sertifikasi->rekomendasi_apl02 ?? null;
 
-                            // 4. LOGIKA WAKTU
-                            $jadwal = $sertifikasi->jadwal;
-                            $now = \Carbon\Carbon::now();
+                                // Logika: Kedua rekomendasi TIDAK BOLEH NULL
+                                $isRekomendasiComplete = !is_null($rekomendasiAPL01) && !is_null($rekomendasiAPL02);
+                                // ------------------------------------------
 
-                            $dateOnly = \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
-                            $timeStartOnly = \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i:s');
-                            $timeEndOnly = \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i:s');
+                                // 3. Definisi "SUDAH ADA HASIL"
+                                $hasResult = !empty($hasilDB);
+                                $isStatusSelesai = ($currentStatus == 'asesmen_praktek_selesai');
 
-                            $startDateTime = \Carbon\Carbon::parse($dateOnly . ' ' . $timeStartOnly);
-                            $endDateTime = \Carbon\Carbon::parse($dateOnly . ' ' . $timeEndOnly);
+                                // 4. LOGIKA WAKTU
+                                $jadwal = $sertifikasi->jadwal;
+                                $now = \Carbon\Carbon::now();
 
-                            $hasStarted = $now->greaterThanOrEqualTo($startDateTime);
-                            // Variable kunci untuk permintaan Anda:
-                            $hasEnded = $now->greaterThan($endDateTime);
+                                $dateOnly = \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
+                                $timeStartOnly = \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i:s');
+                                $timeEndOnly = \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i:s');
 
-                            // 5. Validasi Chain
-                            $chainValid = ($level >= $LVL_SETUJU) && !$isRejectedPrev;
+                                $startDateTime = \Carbon\Carbon::parse($dateOnly . ' ' . $timeStartOnly);
+                                $endDateTime = \Carbon\Carbon::parse($dateOnly . ' ' . $timeEndOnly);
 
-                            // 6. Status Menunggu Jadwal
-                            $isWaitingSchedule = $chainValid && !$hasStarted && !$isStatusSelesai && !$hasResult;
+                                $hasStarted = $now->greaterThanOrEqualTo($startDateTime);
+                                
+                                // --- [UPDATE] LOGIKA WAKTU SELESAI ---
+                                // Waktu habis HANYA dianggap valid jika rekomendasi sebelumnya juga sudah lengkap
+                                $hasEndedRaw = $now->greaterThan($endDateTime); // Waktu jam dinding sudah lewat
+                                $hasEnded = $hasEndedRaw && $isRekomendasiComplete; // Status Akhir (Hijau)
 
-                            // 7. Auto Fail (Waktu habis tapi belum selesai)
-                            $isAutoFail = $chainValid && $hasEnded && !$isStatusSelesai && !$hasResult;
+                                // 5. Validasi Chain
+                                $chainValid = ($level >= $LVL_SETUJU) && !$isRejectedPrev;
 
-                            // 8. Tentukan Status Kompetensi
-                            $isKompeten = ($hasilDB == 'kompeten');
-                            $isBelumKompeten = ($hasilDB == 'belum kompeten' || $hasilDB == 'tidak_kompeten') || $isAutoFail;
+                                // 6. Status Menunggu Jadwal
+                                $isWaitingSchedule = $chainValid && !$hasStarted && !$isStatusSelesai && !$hasResult;
 
-                            // 9. LOGIKA ONGOING (Sedang Dikerjakan)
-                            $isOngoing = $chainValid && $hasStarted && !$isStatusSelesai && !$hasResult && !$isAutoFail;
+                                // 7. Auto Fail (Waktu habis tapi belum selesai)
+                                $isAutoFail = $chainValid && $hasEndedRaw && !$isStatusSelesai && !$hasResult;
 
-                            // 10. KUNCI UTAMA ADMIN (Variable Penentu Tombol Terbuka)
-                            if ($isWaitingSchedule) {
-                            $adminCanView = false;
-                            } else {
-                            // Jika tidak menunggu jadwal, cek apakah selesai/ada hasil/auto fail
-                            $adminCanView = $isStatusSelesai || $hasResult || $isAutoFail;
-                            }
+                                // 8. Tentukan Status Kompetensi
+                                $isKompeten = ($hasilDB == 'kompeten');
+                                $isBelumKompeten = ($hasilDB == 'belum kompeten' || $hasilDB == 'tidak_kompeten') || $isAutoFail;
 
-                            // 11. Variable Show Modules (Modul tampil di UI secara umum)
-                            $showModules = $chainValid && ($hasStarted || $isStatusSelesai || $hasResult);
+                                // 9. LOGIKA ONGOING (Sedang Dikerjakan)
+                                $isOngoing = $chainValid && $hasStarted && !$isStatusSelesai && !$hasResult && !$isAutoFail;
 
-                            // --- PERBAIKAN LOGIKA WARNA TALI ---
-                            if ($isRejectedPrev) {
-                            $lineColor = 'bg-red-500'; // Merah jika ditolak
-                            } elseif ($hasEnded) {
-                            // HANYA JIKA WAKTU JADWAL SUDAH SELESAI -> HIJAU
-                            $lineColor = 'bg-green-500';
-                            } else {
-                            // Sisanya (Menunggu, Ongoing) -> Abu-abu (Biru dihapus)
-                            $lineColor = 'bg-gray-200';
-                            }
+                                // 10. KUNCI UTAMA ADMIN (Variable Penentu Tombol Terbuka)
+                                if ($isWaitingSchedule) {
+                                    $adminCanView = false;
+                                } else {
+                                    $adminCanView = $isStatusSelesai || $hasResult || $isAutoFail;
+                                }
+
+                                // 11. Variable Show Modules
+                                $showModules = $chainValid && ($hasStarted || $isStatusSelesai || $hasResult);
+
+                                // --- LOGIKA WARNA TALI ---
+                                if ($isRejectedPrev) {
+                                    $lineColor = 'bg-red-500'; 
+                                } elseif ($hasEnded) { 
+                                    // Hijau HANYA jika waktu habis DAN rekomendasi lengkap (karena variabel $hasEnded sudah di-update di atas)
+                                    $lineColor = 'bg-green-500';
+                                } else {
+                                    $lineColor = 'bg-gray-200';
+                                }
                             @endphp
 
                             {{-- Garis Timeline --}}
@@ -1048,7 +1060,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                         </div>
                                         <div class="w-full sm:w-auto flex-shrink-0">
                                             @if ($adminCanView)
-                                            <a href="{{ route('admin.verifikasi.ia05', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
+                                            <a href="{{ route('admin.ia05.asesor', ['id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
                                             @elseif ($isOngoing)
                                             <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-lg border border-indigo-200 cursor-wait">
                                                 <i class="fas fa-spinner fa-spin mr-2"></i> Sedang Dikerjakan
@@ -1076,7 +1088,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                         </div>
                                         <div class="w-full sm:w-auto flex-shrink-0">
                                             @if ($adminCanView)
-                                            <a href="{{ route('admin.verifikasi.ia06', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
+                                            <a href="{{ route('admin.ia06.edit', ['id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
                                             @elseif ($isOngoing)
                                             <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-purple-50 text-purple-600 text-xs font-bold rounded-lg border border-purple-200 cursor-wait">
                                                 <i class="fas fa-spinner fa-spin mr-2"></i> Sedang Dikerjakan

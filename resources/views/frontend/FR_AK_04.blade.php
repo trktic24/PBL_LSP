@@ -151,8 +151,11 @@
                 <div class="mt-6 bg-white p-4 rounded-md border border-gray-200 text-center">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Tanda Tangan Peserta</label>
                     <div class="w-full h-40 bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                        @if($sertifikasi->asesi->tanda_tangan)
-                            <img src="{{ asset('storage/'.$sertifikasi->asesi->tanda_tangan) }}" class="h-32 object-contain">
+                        @php
+                            $ttdAsesiBase64 = getTtdBase64($sertifikasi->asesi->tanda_tangan ?? null, null, 'asesi');
+                        @endphp
+                        @if($ttdAsesiBase64)
+                            <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" class="h-32 object-contain">
                         @else
                             <p class="text-gray-400 text-sm">Tanda tangan belum tersedia di profil</p>
                         @endif

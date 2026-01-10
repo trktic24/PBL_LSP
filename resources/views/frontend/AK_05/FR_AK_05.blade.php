@@ -257,8 +257,11 @@
                     <div class="bg-white rounded-xl p-5 shadow-md border border-gray-200">
                         <label class="block text-sm font-bold text-gray-700 mb-3">Tanda Tangan Asesor</label>
                         <div class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-400 rounded-xl flex items-center justify-center relative group">
-                            @if($asesor && $asesor->tanda_tangan)
-                                <img src="{{ asset('storage/'.$asesor->tanda_tangan) }}" class="h-32 object-contain">
+                            @php
+                                $ttdAsesorBase64 = getTtdBase64($asesor->tanda_tangan ?? null, $asesor->id_user ?? $asesor->user_id ?? null, 'asesor');
+                            @endphp
+                            @if($ttdAsesorBase64)
+                                <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" class="h-32 object-contain">
                             @else
                                 <div class="text-center text-gray-400">
                                     <svg class="w-10 h-10 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>

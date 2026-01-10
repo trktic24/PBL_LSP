@@ -310,8 +310,11 @@
                     <label class="block text-sm font-bold text-gray-700 mb-3">Tanda Tangan Asesi</label>
                     <div class="w-full h-40 sm:h-48 bg-gray-50 border-2 border-dashed border-gray-400 rounded-xl flex items-center justify-center overflow-hidden">
                         <div class="text-center">
-                            @if($sertifikasi->asesi->tanda_tangan)
-                                <img src="{{ asset('storage/'.$sertifikasi->asesi->tanda_tangan) }}" 
+                            @php
+                                $ttdAsesiBase64 = getTtdBase64($sertifikasi->asesi->tanda_tangan ?? null, null, 'asesi');
+                            @endphp
+                            @if($ttdAsesiBase64)
+                                <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" 
                                      alt="Tanda Tangan Asesi" 
                                      class="h-32 object-contain mx-auto">
                             @else

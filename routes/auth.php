@@ -308,8 +308,6 @@ Route::middleware('auth')->group(function () {
                     // --- FITUR TRACKER ---
                     Route::post('/sertifikasi/{id}/verifikasi-pembayaran', 'verifikasiPembayaran')->name('verifikasi.pembayaran');
                     Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
-                    Route::get('/verifikasi-ia05/{id}', 'verifikasiIA05')->name('verifikasi.ia05');
-                    Route::get('/verifikasi-ia06/{id}', 'verifikasiIA06')->name('verifikasi.ia06');
                     Route::post('/sertifikasi/{id}/upload-sertifikat', 'uploadSertifikatAsesi')->name('sertifikasi.upload');
                     Route::get('/sertifikasi/{id}/download-sertifikat', 'downloadSertifikat')->name('sertifikasi.download');
                 });
@@ -317,6 +315,8 @@ Route::middleware('auth')->group(function () {
             // Asesmen
             Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');
             Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
+            Route::get('/ia05/form-c/{id}', [IA05Controller::class, 'showJawabanForm'])->name('ia05.asesor');
+            Route::get('/ia06/asesor/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
             Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
             Route::get('/asesmen/fr-ia-09/{id}', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.fr_ia_09.index');
             // Cetak
