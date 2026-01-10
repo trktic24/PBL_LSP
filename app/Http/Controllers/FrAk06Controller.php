@@ -141,9 +141,18 @@ class FrAk06Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'admin.ak06.show', // Placeholder
+            'targetRoute' => 'admin.ak06.view_by_asesi', 
             'buttonLabel' => 'FR.AK.06',
             'formName' => 'Meninjau Proses Asesmen',
         ]);
+    }
+
+    /**
+     * Helper to show AK.06 from Sertifikasi ID (for Admin redirection)
+     */
+    public function showBySertifikasi($id_sertifikasi)
+    {
+        $sertifikasi = \App\Models\DataSertifikasiAsesi::findOrFail($id_sertifikasi);
+        return redirect()->route('asesor.ak06', $sertifikasi->id_jadwal);
     }
 }

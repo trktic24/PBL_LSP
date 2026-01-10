@@ -247,7 +247,7 @@ class Ak05Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'admin.ak05.view', 
+            'targetRoute' => 'admin.ak05.view_by_asesi', 
             'buttonLabel' => 'FR.AK.05',
             'formName' => 'Laporan Asesmen',
         ]);
@@ -259,6 +259,6 @@ class Ak05Controller extends Controller
     public function showBySertifikasi($id_sertifikasi)
     {
         $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
-        return redirect()->route('ak05.index', $sertifikasi->id_jadwal);
+        return redirect()->route('asesor.ak05', $sertifikasi->id_jadwal);
     }
 }
