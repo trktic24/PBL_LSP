@@ -252,10 +252,15 @@ class AsesorJadwalController extends Controller
         $jadwal = Jadwal::with(['skema', 'masterTuk'])
             ->findOrFail($id_jadwal);
 
-        // 2. Autorisasi asesor
-        $asesor = Asesor::where('id_user', Auth::id())->first();
-        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
-            abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+        // 2. Autorisasi asesor (Juga izinkan Admin/Superadmin)
+        $user = Auth::user();
+        if ($user->hasRole('admin') || $user->hasRole('superadmin')) {
+            // Admin can access all schedules
+        } else {
+            $asesor = Asesor::where('id_user', $user->id)->first();
+            if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
         }
 
         // 3. Status Berita Acara

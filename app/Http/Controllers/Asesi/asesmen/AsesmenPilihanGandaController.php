@@ -23,12 +23,16 @@ class AsesmenPilihanGandaController extends Controller
     public function indexPilihanGanda($idSertifikasi)
     {
         $user = Auth::user();
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('superadmin');
+        
         $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])->findOrFail($idSertifikasi);
 
-        if ($sertifikasi->id_asesi !== $user->asesi->id_asesi) {
+        if (!$isAdmin && $sertifikasi->id_asesi !== $user->asesi->id_asesi) {
             abort(403, 'Unauthorized action.');
         }
 
+        $asesi = $isAdmin ? $sertifikasi->asesi : $user->asesi;
+        
         $jadwal = $sertifikasi->jadwal;
         
         // --- PERBAIKAN FORMAT WAKTU (OPSI 1 YANG KITA BAHAS SEBELUMNYA) ---

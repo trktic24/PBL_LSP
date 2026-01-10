@@ -22,6 +22,7 @@ class AsesmenEsaiController extends Controller
     public function indexEsai($idSertifikasi)
     {
         $user = Auth::user();
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('superadmin');
 
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',
@@ -29,9 +30,11 @@ class AsesmenEsaiController extends Controller
         ])->findOrFail($idSertifikasi);
 
         // Validasi akses user
-        if ($sertifikasi->id_asesi !== $user->asesi->id_asesi) {
+        if (!$isAdmin && $sertifikasi->id_asesi !== $user->asesi->id_asesi) {
             abort(403, 'Unauthorized action.');
         }
+
+        $asesi = $isAdmin ? $sertifikasi->asesi : $user->asesi;
 
         // --- LOGIC HITUNG MUNDUR WAKTU (SUDAH BENAR) ---
         $jadwal = $sertifikasi->jadwal;
