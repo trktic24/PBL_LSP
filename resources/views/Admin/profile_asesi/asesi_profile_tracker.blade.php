@@ -230,7 +230,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 <div class="flex flex-wrap gap-2 mt-2">
 
                                     {{-- Tombol Unduh Dokumen (BIRU) --}}
-                                    <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" target="_blank" class="{{ $btnBlue }}">
+                                    <a href="{{ route('admin.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" target="_blank" class="{{ $btnBlue }}">
                                         <i class="fas fa-download mr-1"></i> Unduh Dokumen
                                     </a>
 
@@ -314,7 +314,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 @if ($isVerified)
                                 <p class="{{ $statusClassSelesai }}">Lunas & Terverifikasi</p>
                                 <div class="flex gap-2 mt-2">
-                                    <a href="{{ route('asesi.payment.invoice', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" target="_blank" class="{{ $btnBlue }} inline-flex items-center justify-center text-center">
+                                    <a href="{{ route('admin.payment.invoice', $sertifikasi->id_data_sertifikasi_asesi) }}" target="_blank" class="{{ $btnBlue }} inline-flex items-center justify-center text-center">
                                         <i class="fas fa-file-invoice mr-1"></i> Unduh Invoice
                                     </a>
 
@@ -497,7 +497,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                 <div class="flex gap-2 mt-2">
                                     {{-- Tombol Unduh (Sekarang Aktif/Biru) --}}
-                                    <a href="{{ route('asesi.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}"
+                                    <a href="{{ route('admin.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="{{ $btnBlue }}">
                                         <i class="fas fa-download mr-1"></i> Unduh Document
@@ -515,7 +515,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 <p class="{{ $statusClassSelesai }}">Lulus</p>
                                 <div class="flex gap-2 mt-2">
                                     {{-- Tombol Unduh AKTIF (Biru) --}}
-                                    <a href="{{ route('asesi.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}" class="{{ $btnBlue }}" target="_blank">
+                                    <a href="{{ route('admin.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}" class="{{ $btnBlue }}" target="_blank">
                                         <i class="fas fa-download mr-1"></i> Unduh Document
                                     </a>
                                     {{-- Tombol Lihat Hasil --}}
@@ -574,12 +574,18 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                             $lineColor = 'bg-gray-200';
                             }
 
-                            // Logic Warna Icon
-                            // Icon statis abu-abu, hanya indikator (centang/silang) yang berubah
-                            $iconBg = 'bg-gray-100';
-
                             // Logic Judul
                             $titleClass = $isStep4Open ? $titleClassEnabled : $titleClassDisabled;
+
+                            // Logic Warna Icon Detail (Kecil-kecil)
+                            // Jika terbuka (verified) -> Warna-warni
+                            // Jika terkunci/ditolak -> Abu-abu semua
+                            $iconClassDate = $isStep4Open ? 'text-blue-500' : 'text-gray-400';
+                            $iconClassTime = $isStep4Open ? 'text-yellow-500' : 'text-gray-400';
+                            $iconClassLoc = $isStep4Open ? 'text-red-500' : 'text-gray-400';
+
+                            // Text detail juga jadi abu jika belum verified
+                            $textDetailClass = $isStep4Open ? 'text-gray-600' : 'text-gray-400';
 
                             $jadwalData = $sertifikasi->jadwal;
                             @endphp
@@ -596,7 +602,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                     {{-- INDIKATOR STATUS --}}
                                     @if ($isRejectedPrev)
-                                    {{-- SILANG MERAH (Pojok Kiri Atas) --}}
+                                    {{-- SILANG MERAH --}}
                                     <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
                                         <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
@@ -605,7 +611,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                         </div>
                                     </div>
                                     @elseif ($isStep4Open)
-                                    {{-- CENTANG HIJAU (Pojok Kanan Atas) --}}
+                                    {{-- CENTANG HIJAU --}}
                                     <div class="hidden md:block">{!! renderCheckmark() !!}</div>
                                     @endif
                                 </div>
@@ -618,43 +624,43 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                             <div class="{{ $responsiveCardClass }}">
                                 <h3 class="{{ $titleClass }}">Jadwal dan TUK</h3>
+
                                 @if ($jadwalData)
-                                    <div class="text-xs text-gray-600 mt-1 mb-2 flex flex-wrap items-center">
-                                        
-                                        {{-- Tanggal --}}
-                                        <div class="flex items-center">
-                                            <i class="fas fa-calendar-day w-4 text-center mr-1 text-blue-500"></i>
-                                            <span class="font-medium">
-                                                {{ \Carbon\Carbon::parse($jadwalData->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
-                                            </span>
-                                        </div>
+                                <div class="text-xs {{ $textDetailClass }} mt-1 mb-2 flex flex-wrap items-center">
 
-                                        {{-- Pembatas --}}
-                                        <span class="mx-2 text-gray-300">|</span>
-
-                                        {{-- Jam --}}
-                                        <div class="flex items-center">
-                                            <i class="fas fa-clock w-4 text-center mr-1 text-yellow-500"></i>
-                                            <span>
-                                                {{ \Carbon\Carbon::parse($jadwalData->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwalData->waktu_selesai)->format('H:i') }} WIB
-                                            </span>
-                                        </div>
-
-                                        {{-- Pembatas --}}
-                                        <span class="mx-2 text-gray-300">|</span>
-
-                                        {{-- Lokasi --}}
-                                        <div class="flex items-center">
-                                            <i class="fas fa-map-marker-alt w-4 text-center mr-1 text-red-500"></i>
-                                            <span>
-                                                {{ $jadwalData->masterTuk->nama_lokasi ?? 'Lokasi TUK belum diset' }}
-                                            </span>
-                                        </div>
-
+                                    {{-- Tanggal --}}
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-day w-4 text-center mr-1 {{ $iconClassDate }}"></i>
+                                        <span class="font-medium">
+                                            {{ \Carbon\Carbon::parse($jadwalData->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
+                                        </span>
                                     </div>
+
+                                    {{-- Pembatas --}}
+                                    <span class="mx-2 text-gray-300">|</span>
+
+                                    {{-- Jam --}}
+                                    <div class="flex items-center">
+                                        <i class="fas fa-clock w-4 text-center mr-1 {{ $iconClassTime }}"></i>
+                                        <span>
+                                            {{ \Carbon\Carbon::parse($jadwalData->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwalData->waktu_selesai)->format('H:i') }} WIB
+                                        </span>
+                                    </div>
+
+                                    {{-- Pembatas --}}
+                                    <span class="mx-2 text-gray-300">|</span>
+
+                                    {{-- Lokasi --}}
+                                    <div class="flex items-center">
+                                        <i class="fas fa-map-marker-alt w-4 text-center mr-1 {{ $iconClassLoc }}"></i>
+                                        <span>
+                                            {{ $jadwalData->masterTuk->nama_lokasi ?? 'Lokasi TUK belum diset' }}
+                                        </span>
+                                    </div>
+
+                                </div>
                                 @else
-                                    {{-- Fallback jika data jadwal belum di-assign --}}
-                                    <p class="text-sm text-gray-500 mb-2">Belum dijadwalkan.</p>
+                                <p class="text-sm text-gray-400 mb-2">Belum dijadwalkan.</p>
                                 @endif
 
                                 {{-- KONDISI 1: DITOLAK SEBELUMNYA --}}
@@ -665,7 +671,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                 @elseif ($isStep4Open)
                                 <p class="{{ $statusClassSelesai }}">Terverifikasi</p>
                                 <div class="mt-2">
-                                    <a href="{{ route('asesi.pdf.kartu_peserta', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnBlue }} inline-flex items-center" target="_blank">
+                                    <a href="{{ route('admin.pdf.kartu_peserta', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnBlue }} inline-flex items-center" target="_blank">
                                         <i class="fas fa-id-card mr-1"></i> Unduh Kartu Peserta
                                     </a>
                                 </div>
@@ -682,34 +688,34 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                         {{-- ============================================= --}}
                         <li class="relative flex items-center md:items-start md:pb-10">
                             @php
-                                // 1. Cek Penolakan (Merah)
-                                $isRejectedPrev = $paymentRejected || ($statusStep3 == 'ditolak');
+                            // 1. Cek Penolakan (Merah)
+                            $isRejectedPrev = $paymentRejected || ($statusStep3 == 'ditolak');
 
-                                // 2. Cek Syarat Rantai (Chain)
-                                // Step 5 hanya boleh AKTIF jika: Pembayaran Lunas DAN APL-02 Selesai
-                                // Jika admin membatalkan pembayaran, $paymentVerified jadi false, maka $chainValid jadi false
-                                $chainValid = $paymentVerified && ($statusStep3 == 'selesai');
+                            // 2. Cek Syarat Rantai (Chain)
+                            // Step 5 hanya boleh AKTIF jika: Pembayaran Lunas DAN APL-02 Selesai
+                            // Jika admin membatalkan pembayaran, $paymentVerified jadi false, maka $chainValid jadi false
+                            $chainValid = $paymentVerified && ($statusStep3 == 'selesai');
 
-                                // 3. Cek Status Tahap Ini
-                                // Terbuka jika rantai valid
-                                $isStep5Open = $chainValid;
-                                
-                                // Selesai HANYA JIKA level cukup DAN rantai masih valid
-                                // Jadi kalau level tinggi tapi pembayaran dibatalin, ini jadi false
-                                $isStep5Finished = ($level >= $LVL_SETUJU) && $chainValid;
+                            // 3. Cek Status Tahap Ini
+                            // Terbuka jika rantai valid
+                            $isStep5Open = $chainValid;
 
-                                // 4. Logic Warna Tali
-                                if ($isRejectedPrev) {
-                                    $lineColor = 'bg-red-500';   // Prioritas 1: Merah jika ada yang ditolak
-                                } elseif ($isStep5Finished) {
-                                    $lineColor = 'bg-green-500'; // Prioritas 2: Hijau jika benar-benar selesai & valid
-                                } else {
-                                    $lineColor = 'bg-gray-200';  // Prioritas 3: Abu-abu (Terkunci/Reset)
-                                }
+                            // Selesai HANYA JIKA level cukup DAN rantai masih valid
+                            // Jadi kalau level tinggi tapi pembayaran dibatalin, ini jadi false
+                            $isStep5Finished = ($level >= $LVL_SETUJU) && $chainValid;
 
-                                // 5. Logic Judul
-                                // Judul aktif hanya jika step terbuka dan tidak ada penolakan
-                                $titleClass = ($isStep5Open && !$isRejectedPrev) ? $titleClassEnabled : $titleClassDisabled;
+                            // 4. Logic Warna Tali
+                            if ($isRejectedPrev) {
+                            $lineColor = 'bg-red-500'; // Prioritas 1: Merah jika ada yang ditolak
+                            } elseif ($isStep5Finished) {
+                            $lineColor = 'bg-green-500'; // Prioritas 2: Hijau jika benar-benar selesai & valid
+                            } else {
+                            $lineColor = 'bg-gray-200'; // Prioritas 3: Abu-abu (Terkunci/Reset)
+                            }
+
+                            // 5. Logic Judul
+                            // Judul aktif hanya jika step terbuka dan tidak ada penolakan
+                            $titleClass = ($isStep5Open && !$isRejectedPrev) ? $titleClassEnabled : $titleClassDisabled;
                             @endphp
 
                             {{-- Garis Timeline --}}
@@ -721,20 +727,20 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                     <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                                     </svg>
-                                    
+
                                     {{-- INDIKATOR STATUS --}}
                                     @if ($isRejectedPrev)
-                                        {{-- SILANG MERAH --}}
-                                        <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
-                                            <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </div>
+                                    {{-- SILANG MERAH --}}
+                                    <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
+                                        <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
                                         </div>
+                                    </div>
                                     @elseif ($isStep5Finished)
-                                        {{-- CENTANG HIJAU --}}
-                                        <div class="hidden md:block">{!! renderCheckmark() !!}</div>
+                                    {{-- CENTANG HIJAU --}}
+                                    <div class="hidden md:block">{!! renderCheckmark() !!}</div>
                                     @endif
                                 </div>
 
@@ -746,35 +752,35 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                             <div class="{{ $responsiveCardClass }}">
                                 <h3 class="{{ $titleClass }}">Persetujuan Asesmen dan Kerahasiaan</h3>
-                                
+
                                 {{-- KONDISI 1: DITOLAK SEBELUMNYA --}}
                                 @if ($isRejectedPrev)
-                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
 
                                 {{-- KONDISI 2: SELESAI / DISETUJUI & VALID --}}
                                 @elseif ($isStep5Finished)
-                                    <p class="{{ $statusClassSelesai }}">Telah Disetujui Asesi</p>
-                                    
-                                    <div class="mt-2">
-                                        <a href="{{ route('asesi.cetak.ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnBlue }} inline-flex items-center" target="_blank">
-                                            <i class="fas fa-download mr-1"></i> Unduh Document
-                                        </a>
-                                    </div>
+                                <p class="{{ $statusClassSelesai }}">Telah Disetujui Asesi</p>
+
+                                <div class="mt-2">
+                                    <a href="{{ route('admin.cetak.ak01', ['id_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="{{ $btnBlue }} inline-flex items-center" target="_blank">
+                                        <i class="fas fa-download mr-1"></i> Unduh Document
+                                    </a>
+                                </div>
 
                                 {{-- KONDISI 3: SIAP DIISI (STEP OPEN & VALID) --}}
                                 @elseif ($isStep5Open)
-                                    <p class="{{ $statusClassProses }}">Siap Diisi Asesi</p>
-                                    <p class="text-xs text-gray-500 mb-2">Menunggu Asesi menyetujui FR.AK.01</p>
+                                <p class="{{ $statusClassProses }}">Siap Diisi Asesi</p>
+                                <p class="text-xs text-gray-500 mb-2">Menunggu Asesi menyetujui FR.AK.01</p>
 
-                                    <div class="mt-2">
-                                        <button disabled class="{{ $btnGray }} cursor-not-allowed opacity-75 inline-flex items-center">
-                                            <i class="fas fa-downloadmr-1"></i> Unduh Document
-                                        </button>
-                                    </div>
+                                <div class="mt-2">
+                                    <button disabled class="{{ $btnGray }} cursor-not-allowed opacity-75 inline-flex items-center">
+                                        <i class="fas fa-downloadmr-1"></i> Unduh Document
+                                    </button>
+                                </div>
 
                                 {{-- KONDISI 4: TERKUNCI (Jika Pembayaran Batal atau Belum Sampai) --}}
                                 @else
-                                    <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
                                 @endif
                             </div>
                         </li>
@@ -784,57 +790,70 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                         {{-- ============================================= --}}
                         <li class="relative flex items-start mt-1 md:mt-0 md:items-start md:pb-10">
                             @php
-                                // 1. Cek Penolakan Sebelumnya
-                                $isRejectedPrev = $paymentRejected || ($statusStep3 == 'ditolak'); 
-                                
-                                // 2. Hasil AK.02 Database
-                                $hasilDB = $hasilAK02; // 'kompeten', 'belum_kompeten', atau null
-                                $isFinished = !is_null($hasilDB);
+                            // 1. Cek Penolakan Sebelumnya
+                            $isRejectedPrev = $paymentRejected || ($statusStep3 == 'ditolak');
 
-                                // 3. LOGIKA WAKTU (Time Constraints)
-                                $jadwal = $sertifikasi->jadwal;
-                                $now = \Carbon\Carbon::now(); // Gunakan namespace penuh
-                                
-                                // Parse Waktu
-                                $dateOnly = \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
-                                $timeStartOnly = \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i:s');
-                                $timeEndOnly   = \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i:s');
+                            // 2. Ambil Status & Hasil dari Database
+                            $currentStatus = $sertifikasi->status_sertifikasi;
+                            $hasilDB = $hasilAK02;
 
-                                $startDateTime = \Carbon\Carbon::parse($dateOnly . ' ' . $timeStartOnly);
-                                $endDateTime   = \Carbon\Carbon::parse($dateOnly . ' ' . $timeEndOnly);
+                            // 3. Definisi "SUDAH ADA HASIL"
+                            // Gunakan !empty agar string kosong "" tidak dianggap sebagai hasil
+                            $hasResult = !empty($hasilDB);
+                            $isStatusSelesai = ($currentStatus == 'asesmen_praktek_selesai');
 
-                                $hasStarted = $now->greaterThanOrEqualTo($startDateTime);
-                                $hasEnded   = $now->greaterThan($endDateTime);
+                            // 4. LOGIKA WAKTU
+                            $jadwal = $sertifikasi->jadwal;
+                            $now = \Carbon\Carbon::now();
 
-                                // 4. Rantai Valid (Chain)
-                                $chainValid = ($level >= $LVL_SETUJU) && !$isRejectedPrev;
+                            $dateOnly = \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
+                            $timeStartOnly = \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i:s');
+                            $timeEndOnly = \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i:s');
 
-                                // 5. LOGIKA STATUS FINAL (Auto BK jika waktu habis)
-                                // Jika waktu habis tapi belum ada nilai di DB, dianggap Auto BK
-                                $isAutoFail = $chainValid && $hasEnded && !$isFinished;
+                            $startDateTime = \Carbon\Carbon::parse($dateOnly . ' ' . $timeStartOnly);
+                            $endDateTime = \Carbon\Carbon::parse($dateOnly . ' ' . $timeEndOnly);
 
-                                $isKompeten = ($hasilDB == 'kompeten');
-                                // Belum Kompeten jika: DB bilang BK ATAU Waktu Habis (Auto BK)
-                                $isBelumKompeten = ($hasilDB == 'belum_kompeten' || $hasilDB == 'tidak_kompeten') || $isAutoFail;
+                            $hasStarted = $now->greaterThanOrEqualTo($startDateTime);
+                            // Variable kunci untuk permintaan Anda:
+                            $hasEnded = $now->greaterThan($endDateTime);
 
-                                // 6. Status Lainnya
-                                $isWaitingSchedule = $chainValid && !$hasStarted && !$isFinished;
-                                // Ongoing jika: Valid, Sudah Mulai, Belum Habis, Belum Ada Hasil
-                                $isOngoing = $chainValid && $hasStarted && !$hasEnded && !$isFinished;
+                            // 5. Validasi Chain
+                            $chainValid = ($level >= $LVL_SETUJU) && !$isRejectedPrev;
 
-                                // 7. Variable Show Modules
-                                // Modul tampil jika: Valid DAN (Sudah Mulai atau Sudah Selesai/BK)
-                                $showModules = $chainValid && ($hasStarted || $isFinished || $isAutoFail);
+                            // 6. Status Menunggu Jadwal
+                            $isWaitingSchedule = $chainValid && !$hasStarted && !$isStatusSelesai && !$hasResult;
 
-                                // 8. Warna Tali
-                                // Request: Garis biru HILANG saat ongoing (jadi gray).
-                                if ($isRejectedPrev || $isBelumKompeten) {
-                                    $lineColor = 'bg-red-500';    // Merah (Gagal/Auto BK)
-                                } elseif ($isKompeten) {
-                                    $lineColor = 'bg-green-500';  // Hijau (Sukses)
-                                } else {
-                                    $lineColor = 'bg-gray-200';   // Abu (Ongoing / Menunggu / Terkunci)
-                                }
+                            // 7. Auto Fail (Waktu habis tapi belum selesai)
+                            $isAutoFail = $chainValid && $hasEnded && !$isStatusSelesai && !$hasResult;
+
+                            // 8. Tentukan Status Kompetensi
+                            $isKompeten = ($hasilDB == 'kompeten');
+                            $isBelumKompeten = ($hasilDB == 'belum kompeten' || $hasilDB == 'tidak_kompeten') || $isAutoFail;
+
+                            // 9. LOGIKA ONGOING (Sedang Dikerjakan)
+                            $isOngoing = $chainValid && $hasStarted && !$isStatusSelesai && !$hasResult && !$isAutoFail;
+
+                            // 10. KUNCI UTAMA ADMIN (Variable Penentu Tombol Terbuka)
+                            if ($isWaitingSchedule) {
+                            $adminCanView = false;
+                            } else {
+                            // Jika tidak menunggu jadwal, cek apakah selesai/ada hasil/auto fail
+                            $adminCanView = $isStatusSelesai || $hasResult || $isAutoFail;
+                            }
+
+                            // 11. Variable Show Modules (Modul tampil di UI secara umum)
+                            $showModules = $chainValid && ($hasStarted || $isStatusSelesai || $hasResult);
+
+                            // --- PERBAIKAN LOGIKA WARNA TALI ---
+                            if ($isRejectedPrev) {
+                            $lineColor = 'bg-red-500'; // Merah jika ditolak
+                            } elseif ($hasEnded) {
+                            // HANYA JIKA WAKTU JADWAL SUDAH SELESAI -> HIJAU
+                            $lineColor = 'bg-green-500';
+                            } else {
+                            // Sisanya (Menunggu, Ongoing) -> Abu-abu (Biru dihapus)
+                            $lineColor = 'bg-gray-200';
+                            }
                             @endphp
 
                             {{-- Garis Timeline --}}
@@ -849,24 +868,25 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                     </svg>
 
                                     {{-- INDICATOR BADGE --}}
-                                    @if ($isRejectedPrev || $isBelumKompeten)
-                                        {{-- SILANG MERAH --}}
-                                        <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
-                                            <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </div>
+                                    @if ($isRejectedPrev)
+                                    <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
+                                        <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
                                         </div>
-                                    @elseif ($isKompeten)
-                                        {{-- CENTANG HIJAU --}}
-                                        <div class="hidden md:block absolute -top-2 -right-2">{!! renderCheckmark() !!}</div>
+                                    </div>
+                                    @elseif ($hasEnded && !$isRejectedPrev)
+                                    {{-- --- PERBAIKAN LOGIKA IKON --- --}}
+                                    {{-- HANYA JIKA WAKTU JADWAL SUDAH SELESAI -> Centang Hijau --}}
+                                    <div class="hidden md:block">{!! renderCheckmark() !!}</div>
                                     @endif
                                 </div>
 
                                 {{-- Bulat Status (Mobile) --}}
                                 <div class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    <div class="w-4 h-4 rounded-full {{ $isKompeten ? 'bg-green-500' : ( ($isRejectedPrev || $isBelumKompeten) ? 'bg-red-500' : ($isOngoing ? 'bg-blue-500' : 'bg-gray-300') ) }}"></div>
+                                    {{-- Mobile logic: Hijau jika waktu habis, Merah jika ditolak, sisanya Abu --}}
+                                    <div class="w-4 h-4 rounded-full {{ ($hasEnded && !$isRejectedPrev) ? 'bg-green-500' : ( $isRejectedPrev ? 'bg-red-500' : 'bg-gray-300' ) }}"></div>
                                 </div>
                             </div>
 
@@ -875,181 +895,209 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                 {{-- JUDUL SECTION --}}
                                 <div class="flex justify-between items-center mb-6">
-                                    <h3 class="text-lg font-bold {{ $isOngoing || $isFinished || $isAutoFail ? 'text-gray-900' : 'text-gray-400' }}">
+                                    <h3 class="text-lg font-bold {{ $isOngoing || $adminCanView ? 'text-gray-900' : 'text-gray-400' }}">
                                         Asesmen
                                     </h3>
 
                                     @if ($isRejectedPrev)
-                                        <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold uppercase tracking-wide">Terhenti</span>
+                                    <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold uppercase tracking-wide">Terhenti</span>
                                     @elseif ($isBelumKompeten)
-                                        <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold uppercase tracking-wide">Belum Kompeten</span>
+                                    <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold uppercase tracking-wide">Belum Kompeten</span>
                                     @elseif ($isKompeten)
-                                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Kompeten</span>
+                                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Kompeten</span>
+                                    @elseif ($isStatusSelesai)
+                                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Selesai (Menunggu Hasil)</span>
                                     @elseif ($isOngoing)
-                                        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide">Sedang Berlangsung</span>
+                                    <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide">Sedang Berlangsung</span>
                                     @elseif ($isWaitingSchedule)
-                                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold uppercase tracking-wide">Menunggu Jadwal Dimulai</span>
+                                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold uppercase tracking-wide">Menunggu Jadwal</span>
                                     @else
-                                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-bold uppercase tracking-wide">Terkunci</span>
+                                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-bold uppercase tracking-wide">Terkunci</span>
                                     @endif
                                 </div>
 
                                 {{-- ALERT BOXES --}}
                                 @if ($isRejectedPrev)
-                                    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg text-sm flex items-start gap-3">
-                                        <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <div><span class="font-bold">Proses Terhenti.</span> Terdapat penolakan pada tahap sebelumnya.</div>
-                                    </div>
-
+                                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg text-sm flex items-start gap-3">
+                                    <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div><span class="font-bold">Proses Terhenti.</span> Terdapat penolakan pada tahap sebelumnya.</div>
+                                </div>
                                 @elseif ($isWaitingSchedule)
-                                    {{-- ALERT KUNING: JADWAL BELUM MULAI --}}
-                                    <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-lg text-sm flex items-start gap-3">
-                                        <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <div>
-                                            <span class="font-bold">Jadwal Belum Dimulai.</span><br>
-                                            Asesmen akan dimulai pada: <span class="font-mono font-bold">{{ $startDateTime->format('d M Y, H:i') }} WIB</span>
-                                        </div>
+                                <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-lg text-sm flex items-start gap-3">
+                                    <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div>
+                                        <span class="font-bold">Jadwal Belum Dimulai.</span><br>
+                                        Asesmen akan dimulai pada: <span class="font-mono font-bold">{{ $startDateTime->format('d M Y, H:i') }} WIB</span>
                                     </div>
-
+                                </div>
                                 @elseif ($isAutoFail)
-                                    {{-- ALERT MERAH: WAKTU HABIS = AUTO BK --}}
-                                    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg text-sm flex items-start gap-3">
-                                        <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <div>
-                                            <span class="font-bold">Waktu Habis / Tidak Kompeten.</span><br>
-                                            Waktu pengerjaan telah berakhir. Karena belum terselesaikan, sistem mencatat hasil: <b>Belum Kompeten</b>.
-                                        </div>
-                                    </div>
-
+                                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg text-sm flex items-start gap-3">
+                                    <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div><span class="font-bold">Waktu Habis.</span> Waktu pengerjaan telah berakhir.</div>
+                                </div>
                                 @elseif ($isBelumKompeten)
-                                    {{-- ALERT MERAH: BK DARI DB --}}
-                                    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg text-sm flex items-start gap-3">
-                                        <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <div><span class="font-bold">Hasil Akhir: Belum Kompeten (BK).</span> Asesi dinyatakan belum kompeten.</div>
-                                    </div>
-
+                                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg text-sm flex items-start gap-3">
+                                    <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div><span class="font-bold">Hasil Akhir: Belum Kompeten (BK).</span> Asesi dinyatakan belum kompeten.</div>
+                                </div>
                                 @elseif ($isKompeten)
-                                    {{-- ALERT HIJAU: KOMPETEN --}}
-                                    <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-800 rounded-r-lg text-sm flex items-start gap-3">
-                                        <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <div><span class="font-bold">Selamat! Kompeten (K).</span> Asesi telah menyelesaikan seluruh rangkaian.</div>
-                                    </div>
+                                <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-800 rounded-r-lg text-sm flex items-start gap-3">
+                                    <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div><span class="font-bold">Selamat! Kompeten (K).</span> Asesi telah menyelesaikan seluruh rangkaian.</div>
+                                </div>
                                 @endif
 
                                 {{-- LIST TOMBOL UJIAN --}}
                                 <div class="space-y-4">
-                                    
+
                                     {{-- 1. IA.02 (Praktik) --}}
                                     @if ($showIA02)
-                                        <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-                                            <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
-                                                <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-blue-50 text-blue-600' : 'bg-gray-200 text-gray-400' }}">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                                </div>
-                                                <div>
-                                                    <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.02 Demonstrasi</h4>
-                                                    <p class="text-xs text-gray-500">Tugas Praktik & Observasi</p>
-                                                </div>
+                                    <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
+                                        <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
+                                            <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-blue-50 text-blue-600' : 'bg-gray-200 text-gray-400' }}">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
                                             </div>
-                                            <div class="w-full sm:w-auto flex-shrink-0">
-                                                @if ($showModules)
-                                                    <a href="{{ route('admin.verifikasi.ia02', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-36 h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Detail</a>
-                                                @else
-                                                    <div class="flex items-center justify-center w-full sm:w-36 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
-                                                @endif
+                                            <div>
+                                                <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.02 Demonstrasi</h4>
+                                                <p class="text-xs text-gray-500">Tugas Praktik & Observasi</p>
                                             </div>
                                         </div>
+                                        <div class="w-full sm:w-auto flex-shrink-0">
+                                            @if ($adminCanView)
+                                            <a href="{{ route('admin.verifikasi.ia02', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Detail</a>
+                                            @elseif ($isOngoing)
+                                            <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg border border-blue-200 cursor-wait">
+                                                <i class="fas fa-spinner fa-spin mr-2"></i> Sedang Dikerjakan
+                                            </div>
+                                            @else
+                                            <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
+                                            @endif
+                                        </div>
+                                    </div>
                                     @endif
 
                                     {{-- 2. IA.05 (Pilihan Ganda) --}}
                                     @if ($showIA05)
-                                        <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-indigo-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-                                            <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
-                                                <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-indigo-50 text-indigo-600' : 'bg-gray-200 text-gray-400' }}">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                </div>
-                                                <div>
-                                                    <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.05 Pilihan Ganda</h4>
-                                                    <p class="text-xs text-gray-500">Tes Tertulis</p>
-                                                </div>
+                                    <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-indigo-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
+                                        <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
+                                            <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-indigo-50 text-indigo-600' : 'bg-gray-200 text-gray-400' }}">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
                                             </div>
-                                            <div class="w-full sm:w-auto flex-shrink-0">
-                                                @if ($showModules)
-                                                    <a href="{{ route('admin.verifikasi.ia05', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-36 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
-                                                @else
-                                                    <div class="flex items-center justify-center w-full sm:w-36 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
-                                                @endif
+                                            <div>
+                                                <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.05 Pilihan Ganda</h4>
+                                                <p class="text-xs text-gray-500">Tes Tertulis</p>
                                             </div>
                                         </div>
+                                        <div class="w-full sm:w-auto flex-shrink-0">
+                                            @if ($adminCanView)
+                                            <a href="{{ route('admin.verifikasi.ia05', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
+                                            @elseif ($isOngoing)
+                                            <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-lg border border-indigo-200 cursor-wait">
+                                                <i class="fas fa-spinner fa-spin mr-2"></i> Sedang Dikerjakan
+                                            </div>
+                                            @else
+                                            <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
+                                            @endif
+                                        </div>
+                                    </div>
                                     @endif
 
                                     {{-- 3. IA.06 (Esai) --}}
                                     @if ($showIA06)
-                                        <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-purple-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-                                            <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
-                                                <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-purple-50 text-purple-600' : 'bg-gray-200 text-gray-400' }}">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                                </div>
-                                                <div>
-                                                    <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.06 Esai</h4>
-                                                    <p class="text-xs text-gray-500">Tes Tertulis Uraian</p>
-                                                </div>
+                                    <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-purple-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
+                                        <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
+                                            <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-purple-50 text-purple-600' : 'bg-gray-200 text-gray-400' }}">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
                                             </div>
-                                            <div class="w-full sm:w-auto flex-shrink-0">
-                                                @if ($showModules)
-                                                    <a href="{{ route('admin.verifikasi.ia06', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-36 h-10 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
-                                                @else
-                                                    <div class="flex items-center justify-center w-full sm:w-36 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
-                                                @endif
+                                            <div>
+                                                <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.06 Esai</h4>
+                                                <p class="text-xs text-gray-500">Tes Tertulis Uraian</p>
                                             </div>
                                         </div>
+                                        <div class="w-full sm:w-auto flex-shrink-0">
+                                            @if ($adminCanView)
+                                            <a href="{{ route('admin.verifikasi.ia06', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Jawaban</a>
+                                            @elseif ($isOngoing)
+                                            <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-purple-50 text-purple-600 text-xs font-bold rounded-lg border border-purple-200 cursor-wait">
+                                                <i class="fas fa-spinner fa-spin mr-2"></i> Sedang Dikerjakan
+                                            </div>
+                                            @else
+                                            <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
+                                            @endif
+                                        </div>
+                                    </div>
                                     @endif
 
                                     {{-- 4. IA.07 (Lisan) --}}
                                     @if ($showIA07)
-                                        <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-                                            <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
-                                                <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-orange-50 text-orange-600' : 'bg-gray-200 text-gray-400' }}">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
-                                                </div>
-                                                <div>
-                                                    <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.07 Pertanyaan Lisan</h4>
-                                                    <p class="text-xs text-gray-500">Interview Asesor</p>
-                                                </div>
+                                    <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
+                                        <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
+                                            <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-orange-50 text-orange-600' : 'bg-gray-200 text-gray-400' }}">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                                                </svg>
                                             </div>
-                                            <div class="w-full sm:w-auto flex-shrink-0">
-                                                @if ($showModules)
-                                                    <a href="{{ route('admin.verifikasi.ia07', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-36 h-10 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Hasil</a>
-                                                @else
-                                                    <div class="flex items-center justify-center w-full sm:w-36 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
-                                                @endif
+                                            <div>
+                                                <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.07 Pertanyaan Lisan</h4>
+                                                <p class="text-xs text-gray-500">Interview Asesor</p>
                                             </div>
                                         </div>
+                                        <div class="w-full sm:w-auto flex-shrink-0">
+                                            @if ($adminCanView)
+                                            <a href="{{ route('admin.verifikasi.ia07', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg shadow-md transition-all">Lihat Hasil</a>
+                                            @else
+                                            {{-- SAAT ONGOING, LISAN TETAP TERKUNCI --}}
+                                            <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
+                                            @endif
+                                        </div>
+                                    </div>
                                     @endif
 
                                     {{-- 5. IA.09 (Wawancara) --}}
                                     @if ($showIA09)
-                                        <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-red-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
-                                            <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
-                                                <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-red-50 text-red-600' : 'bg-gray-200 text-gray-400' }}">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                                                </div>
-                                                <div>
-                                                    <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.09 Wawancara</h4>
-                                                    <p class="text-xs text-gray-500">Verifikasi Portofolio</p>
-                                                </div>
+                                    <div class="group flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl border transition-all duration-200 {{ $showModules ? 'bg-white border-gray-200 hover:border-red-300 hover:shadow-sm' : 'bg-gray-50 border-gray-100 opacity-70' }}">
+                                        <div class="flex items-center gap-4 mb-3 sm:mb-0 w-full sm:w-auto flex-1">
+                                            <div class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center {{ $showModules ? 'bg-red-50 text-red-600' : 'bg-gray-200 text-gray-400' }}">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                                </svg>
                                             </div>
-                                            <div class="w-full sm:w-auto flex-shrink-0">
-                                                @if ($showModules)
-                                                    <a href="{{ route('admin.verifikasi.ia09', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-36 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
-                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> 
-                                                        Lihat Hasil
-                                                    </a>
-                                                @else
-                                                    <div class="flex items-center justify-center w-full sm:w-36 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
-                                                @endif
+                                            <div>
+                                                <h4 class="font-bold text-gray-800 {{ !$showModules ? 'text-gray-500' : '' }}">FR.IA.09 Wawancara</h4>
+                                                <p class="text-xs text-gray-500">Verifikasi Portofolio</p>
                                             </div>
                                         </div>
+                                        <div class="w-full sm:w-auto flex-shrink-0">
+                                            @if ($adminCanView)
+                                            <a href="{{ route('admin.verifikasi.ia09', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" class="flex items-center justify-center w-full sm:w-48 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                                Lihat Hasil
+                                            </a>
+                                            @else
+                                            {{-- SAAT ONGOING, WAWANCARA TETAP TERKUNCI --}}
+                                            <div class="flex items-center justify-center w-full sm:w-48 h-10 bg-gray-100 text-gray-400 text-xs font-semibold rounded-lg border border-gray-200 cursor-not-allowed">Terkunci</div>
+                                            @endif
+                                        </div>
+                                    </div>
                                     @endif
 
                                 </div>
@@ -1061,30 +1109,86 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                         {{-- ITEM 7: Umpan Balik Asesor --}}
                         {{-- ============================================= --}}
                         <li class="relative flex items-center md:items-start md:pb-10">
+                            @php
+                            // 1. Cek Penolakan
+                            $isRejectedPrev = $paymentRejected || ($statusStep3 == 'ditolak');
+
+                            // 2. Chain Valid
+                            $chainValid = $paymentVerified && ($statusStep3 == 'selesai');
+
+                            // 3. Status DB
+                            $statusDB = $sertifikasi->status_sertifikasi;
+
+                            // 4. Logika Waktu (Sama seperti Item 6)
+                            $jadwal = $sertifikasi->jadwal;
+                            $now = \Carbon\Carbon::now();
+                            $dateOnly = \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
+                            $timeEndOnly = \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i:s');
+                            $endDateTime = \Carbon\Carbon::parse($dateOnly . ' ' . $timeEndOnly);
+                            $hasEnded = $now->greaterThan($endDateTime);
+
+                            // --- PERBAIKAN DI SINI ---
+                            // Selesai jika: Status DB spesifik 'umpan_balik_selesai' ATAU sudah masuk tahap rekomendasi/terbit sertifikat
+                            $isFinished = ($statusDB == 'umpan_balik_selesai' || $level >= $LVL_REKOMENDASI) && $chainValid;
+
+                            // Menunggu: Status 'asesmen_praktek_selesai' DAN Waktu Habis
+                            $isWaitingAsesi = ($statusDB == 'asesmen_praktek_selesai') && !$isRejectedPrev && $chainValid && $hasEnded;
+
+                            // Terbuka
+                            $isOpen = $isWaitingAsesi || $isFinished;
+
+                            // Warna Tali
+                            if ($isRejectedPrev) {
+                            $lineColor = 'bg-red-500';
+                            } elseif ($isFinished) {
+                            $lineColor = 'bg-green-500';
+                            } else {
+                            $lineColor = 'bg-gray-200';
+                            }
+
+                            // Visual
+                            $iconColorClass = 'text-gray-500';
+                            $titleClass = $isOpen ? $titleClassEnabled : $titleClassDisabled;
+                            @endphp
+
                             {{-- Garis Timeline --}}
-                            <div class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 {{ $level >= $LVL_UMPAN_BALIK ? 'bg-green-500' : 'bg-gray-200' }}"></div>
+                            <div class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 {{ $lineColor }}"></div>
 
                             <div class="relative flex-shrink-0 ml-1 mr-4 md:mr-6 z-10">
-                                {{-- ICON SVG: Chat (Umpan Balik) --}}
-                                <div class="hidden md:flex w-12 h-12 rounded-lg items-center justify-center {{ $level >= $LVL_UMPAN_BALIK ? 'bg-purple-100' : 'bg-gray-100' }}">
-                                    <svg class="w-6 h-6 {{ $level >= $LVL_UMPAN_BALIK ? 'text-purple-600' : 'text-gray-500' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                {{-- Icon Wrapper --}}
+                                <div class="hidden md:flex w-12 h-12 rounded-lg items-center justify-center relative bg-gray-100">
+                                    <svg class="w-6 h-6 {{ $iconColorClass }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                     </svg>
+
+                                    @if ($isRejectedPrev)
+                                    <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
+                                        <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    @elseif ($isFinished)
+                                    <div class="hidden md:block">{!! renderCheckmark() !!}</div>
+                                    @endif
                                 </div>
+
                                 {{-- Bulatan Mobile --}}
                                 <div class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    <div class="w-4 h-4 rounded-full {{ $level >= $LVL_UMPAN_BALIK ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : 'bg-gray-300' }}"></div>
+                                    <div class="w-4 h-4 rounded-full {{ $isFinished ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : ($isRejectedPrev ? 'bg-red-500' : ($isWaitingAsesi ? 'bg-blue-500' : 'bg-gray-300')) }}"></div>
                                 </div>
-                                @if ($level >= $LVL_UMPAN_BALIK) <div class="hidden md:block">{!! renderCheckmark() !!}</div> @endif
                             </div>
 
                             <div class="{{ $responsiveCardClass }}">
-                                <h3 class="{{ ($level >= $LVL_UMPAN_BALIK || $unlockAK03) ? $titleClassEnabled : $titleClassDisabled }}">Umpan Balik Asesor</h3>
+                                <h3 class="{{ $titleClass }}">Umpan Balik Asesor</h3>
 
-                                @if ($level >= $LVL_UMPAN_BALIK)
-                                <p class="{{ $statusClassSelesai }}">Selesai</p>
-                                @elseif ($unlockAK03)
-                                <p class="{{ $statusClassProses }}">Menunggu Umpan Balik dari Asesi</p>
+                                @if ($isRejectedPrev)
+                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+                                @elseif ($isFinished)
+                                <p class="{{ $statusClassSelesai }}">Selesai diisi Asesi</p>
+                                @elseif ($isWaitingAsesi)
+                                <p class="{{ $statusClassTunggu }}">Menunggu Asesi Mengisi</p>
                                 @else
                                 <p class="{{ $statusClassTerkunci }}">Terkunci</p>
                                 @endif
@@ -1095,30 +1199,83 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                         {{-- ITEM 8: Pengajuan Banding Asesmen --}}
                         {{-- ============================================= --}}
                         <li class="relative flex items-center md:items-start md:pb-10">
+                            @php
+                            // 1. Cek Penolakan
+                            $isRejectedPrev = $paymentRejected || ($statusStep3 == 'ditolak');
+
+                            // 2. Chain Validation
+                            $chainValid = $paymentVerified && ($statusStep3 == 'selesai');
+
+                            // 3. Ambil Status DB
+                            $statusDB = $sertifikasi->status_sertifikasi;
+
+                            // --- PERBAIKAN DI SINI ---
+                            // Selesai jika: Status 'banding_selesai' ATAU sudah masuk tahap rekomendasi (level >= 6)
+                            $isFinished = ($statusDB == 'banding_selesai' || $level >= $LVL_REKOMENDASI) && $chainValid;
+
+                            // Opsional terbuka saat umpan balik selesai, tapi belum finish/reject
+                            // Note: Jika level sudah rekomendasi, $isFinished true, jadi $isOptional tidak akan tereksekusi (aman)
+                            $isOptional = ($statusDB == 'umpan_balik_selesai') && !$isFinished && !$isRejectedPrev && $chainValid;
+
+                            // Terbuka
+                            $isOpen = $isOptional || $isFinished;
+
+                            // Warna Tali
+                            if ($isRejectedPrev) {
+                            $lineColor = 'bg-red-500';
+                            } elseif ($isOpen) {
+                            // Jika terbuka (baik selesai atau sedang masa banding), tali hijau
+                            // Atau Anda bisa ubah logika ini jika ingin tali abu-abu saat opsional
+                            $lineColor = 'bg-green-500';
+                            } else {
+                            $lineColor = 'bg-gray-200';
+                            }
+
+                            // Visual
+                            $titleClass = $isOpen ? $titleClassEnabled : $titleClassDisabled;
+                            @endphp
+
                             {{-- Garis Timeline --}}
-                            <div class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 {{ $level >= $LVL_BANDING ? 'bg-green-500' : 'bg-gray-200' }}"></div>
+                            <div class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 {{ $lineColor }}"></div>
 
                             <div class="relative flex-shrink-0 ml-1 mr-4 md:mr-6 z-10">
-                                {{-- ICON SVG: Timbangan (Banding) --}}
-                                <div class="hidden md:flex w-12 h-12 rounded-lg items-center justify-center {{ $level >= $LVL_BANDING ? 'bg-green-100' : 'bg-gray-100' }}">
-                                    <svg class="w-6 h-6 {{ $level >= $LVL_BANDING ? 'text-green-600' : 'text-gray-500' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                {{-- KOTAK ICON --}}
+                                <div class="hidden md:flex w-12 h-12 rounded-lg items-center justify-center relative bg-gray-100">
+                                    <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
                                     </svg>
+
+                                    @if ($isRejectedPrev)
+                                    <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
+                                        <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    @elseif ($isFinished)
+                                    <div class="hidden md:block">{!! renderCheckmark() !!}</div>
+                                    @endif
                                 </div>
+
                                 {{-- Bulatan Mobile --}}
                                 <div class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    <div class="w-4 h-4 rounded-full {{ $level >= $LVL_BANDING ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : 'bg-gray-300' }}"></div>
+                                    <div class="w-4 h-4 rounded-full {{ $isFinished ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : ($isRejectedPrev ? 'bg-red-500' : ($isOptional ? 'bg-blue-500' : 'bg-gray-300')) }}"></div>
                                 </div>
-                                @if ($level >= $LVL_BANDING) <div class="hidden md:block">{!! renderCheckmark() !!}</div> @endif
                             </div>
 
                             <div class="{{ $responsiveCardClass }}">
-                                <h3 class="{{ ($level >= $LVL_BANDING || $unlockAK04) ? $titleClassEnabled : $titleClassDisabled }}">Pengajuan Banding Asesmen</h3>
+                                <h3 class="{{ $titleClass }}">Pengajuan Banding Asesmen</h3>
 
-                                @if ($level >= $LVL_BANDING)
+                                @if ($isRejectedPrev)
+                                <p class="{{ $statusClassTerkunci }}">Terkunci</p>
+
+                                @elseif ($isFinished)
                                 <p class="{{ $statusClassSelesai }}">Banding Selesai</p>
-                                @elseif ($unlockAK04)
-                                <p class="{{ $statusClassProses }}">Opsional</p>
+
+                                @elseif ($isOptional)
+                                <p class="{{ $statusClassProses }}">Opsional Diisi Asesi</p>
+
                                 @else
                                 <p class="{{ $statusClassTerkunci }}">Terkunci</p>
                                 @endif
@@ -1128,30 +1285,100 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                         {{-- ============================================= --}}
                         {{-- ITEM 9: Keputusan Komite --}}
                         {{-- ============================================= --}}
-                        <li class="relative flex items-center md:items-start">
+                        <li class="relative flex items-center md:items-start" x-data>
+                            @php
+                            // 1. Ambil Status & File
+                            $statusFinal = $sertifikasi->status_sertifikasi;
+                            $fileSertifikat = $sertifikasi->sertifikat;
+
+                            // 2. Boolean Logic
+                            $isLolos = ($statusFinal == 'direkomendasikan');
+                            $isGagal = ($statusFinal == 'tidak_direkomendasikan');
+                            $hasFile = !empty($fileSertifikat);
+
+                            // 3. Menunggu Keputusan
+                            $isWaiting = !$isLolos && !$isGagal;
+                            @endphp
+
+                            {{-- BAGIAN KIRI: ICON & TIMELINE --}}
                             <div class="relative flex-shrink-0 ml-1 mr-4 md:mr-6 z-10">
-                                {{-- ICON SVG: Piala/Sertifikat --}}
-                                <div class="hidden md:flex w-12 h-12 rounded-lg items-center justify-center {{ $level >= $LVL_REKOMENDASI ? 'bg-green-100' : 'bg-gray-100' }}">
-                                    <svg class="w-6 h-6 {{ $level >= $LVL_REKOMENDASI ? 'text-green-600' : 'text-gray-500' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+
+                                {{-- ICON SVG (Statis Abu-abu) --}}
+                                <div class="hidden md:flex w-12 h-12 rounded-lg items-center justify-center bg-gray-100">
+                                    <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.462 48.462 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c.317.053.626.111.928.174m-15.356 0c.317.053.626.111.928.174m13.5 0L12 12m0 0L6.25 4.97M12 12v8.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M12 12h8.25m-8.25 0H3.75" />
                                     </svg>
                                 </div>
-                                {{-- Bulatan Mobile --}}
+
+                                {{-- BULATAN MOBILE --}}
                                 <div class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    <div class="w-4 h-4 rounded-full {{ $level >= $LVL_REKOMENDASI ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : 'bg-gray-300' }}"></div>
+                                    <div class="w-4 h-4 rounded-full {{ $isLolos ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : ($isGagal ? 'bg-red-500' : 'bg-gray-300') }}"></div>
                                 </div>
-                                @if ($level >= $LVL_REKOMENDASI) <div class="hidden md:block">{!! renderCheckmark() !!}</div> @endif
+
+                                {{-- BADGE INDICATOR (Desktop) --}}
+                                @if ($isGagal)
+                                <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
+                                    <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                @elseif ($isLolos)
+                                <div class="hidden md:block">{!! renderCheckmark() !!}</div>
+                                @endif
                             </div>
 
+                            {{-- BAGIAN KANAN: KONTEN KARTU --}}
                             <div class="{{ $responsiveCardClass }}">
-                                <h3 class="{{ ($level >= $LVL_REKOMENDASI || $unlockSertifikat) ? $titleClassEnabled : $titleClassDisabled }}">Keputusan Komite</h3>
+                                <h3 class="{{ ($isLolos || $isGagal) ? $titleClassEnabled : $titleClassDisabled }}">Keputusan Komite</h3>
 
-                                @if ($level >= $LVL_REKOMENDASI && $statusLolos)
-                                <p class="{{ $statusClassSelesai }}">Belum Kompeten - Tidak Direkomendasikan</p>
-                                <button class="{{ $btnGreen }}"><i class="fas fa-download mr-1"></i> Unduh Sertifikat</button>
-                                @elseif($statusGagal)
-                                <p class="text-xs text-red-600 font-bold">Tidak Kompeten</p>
+                                @if ($isLolos)
+                                {{-- 1. SUKSES --}}
+                                <span class="{{ $statusClassSelesai }}">Kompeten - Direkomendasikan Menerima</span>
+
+                                <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+
+                                    {{-- [FORM UPLOAD TERSEMBUNYI] --}}
+                                    <form x-ref="uploadForm"
+                                        action="{{ route('admin.sertifikasi.upload_sertifikat_asesi', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        method="POST"
+                                        enctype="multipart/form-data"
+                                        style="display: none;">
+                                        @csrf @method('PUT')
+                                        {{-- Input file hidden, ketika berubah (dipilih), form otomatis submit --}}
+                                        <input type="file" name="sertifikat" accept=".pdf" x-ref="fileInput" @change="$refs.uploadForm.submit()">
+                                    </form>
+
+                                    {{-- [TOMBOL UPLOAD / GANTI] --}}
+                                    <button type="button"
+                                        @click="$refs.fileInput.click()"
+                                        class="{{ $btnBlue }} inline-flex items-center justify-center">
+
+                                        {{-- LOGIKA ICON: Jika ada file pake 'fa-sync-alt', jika tidak pake 'fa-upload' --}}
+                                        <i class="fas {{ $hasFile ? 'fa-sync-alt' : 'fa-upload' }} mr-2"></i>
+
+                                        {{ $hasFile ? 'Ganti Sertifikat' : 'Upload Sertifikat' }}
+                                    </button>
+
+                                    {{-- [TOMBOL DOWNLOAD] --}}
+                                    @if($hasFile)
+                                    <a href="{{ route('admin.sertifikasi.download', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        target="_blank"
+                                        class="{{ $btnGreen }} inline-flex items-center justify-center">
+                                        <i class="fas fa-download mr-2"></i> Unduh Sertifikat
+                                    </a>
+                                    @endif
+                                </div>
+
+                                @elseif($isGagal)
+                                {{-- 2. GAGAL --}}
+                                <div class="mt-2">
+                                    <p class="text-xs text-red-600 font-semibold">Belum Kompeten - Tidak Direkomendasikan</p>
+                                </div>
+
                                 @else
+                                {{-- 3. MENUNGGU --}}
                                 <p class="{{ $statusClassTunggu }}">Menunggu Keputusan</p>
                                 @endif
                             </div>

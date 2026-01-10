@@ -29,7 +29,7 @@
             showSuccess: {{ session('status') === 'profile-updated' ? 'true' : 'false' }},
             showPasswordSuccess: {{ session('status') === 'password-updated' ? 'true' : 'false' }},
             // Logic Preview Gambar: Jika ada di DB pakai itu, jika tidak kosongkan
-            previewUrl: '{{ (Auth::user()->admin && Auth::user()->admin->tanda_tangan_admin) ? asset('storage/'.Auth::user()->admin->tanda_tangan_admin) : '' }}'
+            previewUrl: '{{ (Auth::user()->admin && Auth::user()->admin->tanda_tangan_admin) ? route('admin.profile.signature') : '' }}'
         }" 
         x-init="
             if (showSuccess) { setTimeout(() => showSuccess = false, 3000) }

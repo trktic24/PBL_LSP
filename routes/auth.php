@@ -212,6 +212,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/profile', 'edit')->name('profile.edit');
                 Route::patch('/profile', 'update')->name('profile.update');
                 Route::put('/profile/password', 'updatePassword')->name('profile.password.update');
+                Route::get('/profile/signature', 'showSignature')->name('profile.signature');
             });
 
             // ----------------- Master Data -----------------
@@ -317,7 +318,16 @@ Route::middleware('auth')->group(function () {
                     Route::get('/verifikasi-ia06/{id}', 'verifikasiIA06')->name('verifikasi.ia06');
                     Route::get('/verifikasi-ia07/{id}', 'verifikasiIA07')->name('verifikasi.ia07');
                     Route::get('/verifikasi-ia09/{id}', 'verifikasiIA09')->name('verifikasi.ia09');
+                    Route::put('/sertifikasi/{id}/upload-sertifikat', 'uploadSertifikatAsesi')->name('sertifikasi.upload_sertifikat_asesi');
+                    Route::get('/sertifikasi/{id}/download-sertifikat', 'downloadSertifikat')->name('sertifikasi.download');
                 });
+            
+            // Cetak
+            Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01');
+            Route::get('/cetak/apl02/{id_sertifikasi}', [Apl02PdfController::class, 'generateApl02'])->name('cetak.apl02');
+            Route::get('/cetak/ak01/{id_sertifikasi}', [Ak01PdfController::class, 'generateAk01'])->name('cetak.ak01');
+            Route::get('/kartu-peserta/{id_sertifikasi}', [KartuPesertaPdfController::class, 'generateKartuPeserta'])->name('pdf.kartu_peserta');
+            Route::get('/payment/{id_sertifikasi}/invoice', [PaymentController::class, 'downloadInvoice'])->name('payment.invoice');
 
             // Master Asesor
             Route::controller(AsesorController::class)->group(function () {

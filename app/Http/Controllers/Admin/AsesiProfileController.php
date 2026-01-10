@@ -200,7 +200,7 @@ class AsesiProfileController extends Controller
         // ==========================================================
         // LOGIC STEP 6: ASESMEN & WAKTU (FIX ERROR DISINI)
         // ==========================================================
-        
+
         // 1. Hasil Akhir
         $hasilAK02 = $sertifikasi->rekomendasi_hasil_asesmen_AK02;
         $isFinished = !is_null($hasilAK02); // Sudah ada nilai
@@ -208,7 +208,7 @@ class AsesiProfileController extends Controller
         // 2. Logic Waktu (Time Constraints)
         $jadwal = $sertifikasi->jadwal;
         $now = Carbon::now();
-        
+
         // [FIX] Ambil tanggalnya saja dan jamnya saja secara eksplisit
         $tgl = Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
         $jamMulai = Carbon::parse($jadwal->waktu_mulai)->format('H:i:s');
@@ -254,8 +254,64 @@ class AsesiProfileController extends Controller
             'hasStarted',
             'hasEnded',
             'startDateFormatted', // Kirim format tanggal ke view
-            'showIA02', 'showIA05', 'showIA06', 'showIA07', 'showIA09'
+            'showIA02',
+            'showIA05',
+            'showIA06',
+            'showIA07',
+            'showIA09'
         ));
+    }
+
+    /**
+     * 1. Upload Sertifikat (PRIVATE PATH)
+     */
+    public function uploadSertifikatAsesi(Request $request, $id_asesi, $id)
+    {
+        $request->validate([
+            'sertifikat' => 'required|mimes:pdf|max:2048',
+        ]);
+
+        $sertifikasi = DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', $id)
+            ->where('id_asesi', $id_asesi)
+            ->firstOrFail();
+
+        if ($request->hasFile('sertifikat')) {
+            // Hapus file lama (Gunakan disk default/local)
+            if ($sertifikasi->sertifikat && Storage::exists($sertifikasi->sertifikat)) {
+                Storage::delete($sertifikasi->sertifikat);
+            }
+
+            // Simpan ke: storage/app/private_uploads/sertifikat
+            // Kita tidak memakai parameter 'public' di sini
+            $path = $request->file('sertifikat')->store('private_uploads/sertifikat');
+
+            $sertifikasi->sertifikat = $path;
+            $sertifikasi->save();
+
+            return redirect()->back()->with('success', 'Sertifikat berhasil diunggah.');
+        }
+
+        return redirect()->back()->with('error', 'Gagal mengunggah file.');
+    }
+
+    /**
+     * 2. Download Sertifikat (SERVING PRIVATE FILE)
+     */
+    public function downloadSertifikat($id_asesi, $id)
+    {
+        $sertifikasi = DataSertifikasiAsesi::where('id_data_sertifikasi_asesi', $id)
+            ->where('id_asesi', $id_asesi)
+            ->firstOrFail();
+
+        // Cek file di storage local (private)
+        if (empty($sertifikasi->sertifikat) || !Storage::exists($sertifikasi->sertifikat)) {
+            return redirect()->back()->with('error', 'File sertifikat tidak ditemukan di server.');
+        }
+
+        $namaFile = 'Sertifikat_Kompetensi_' . str_replace(' ', '_', $sertifikasi->asesi->nama_lengkap ?? 'Asesi') . '.pdf';
+
+        // Download dari storage local (private)
+        return Storage::download($sertifikasi->sertifikat, $namaFile);
     }
 
     // --- VERIFIKASI PEMBAYARAN (STEP 2) ---
