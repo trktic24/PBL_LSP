@@ -173,6 +173,7 @@ class Ak01Controller extends Controller
             'perPage' => request('per_page', 10),
             'targetRoute' => 'ak01.create',
             'buttonLabel' => 'FR.AK.01',
+            'formName' => 'Persetujuan Asesmen dan Kerahasiaan',
         ]);
     }
 }

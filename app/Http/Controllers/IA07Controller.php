@@ -289,6 +289,7 @@ class IA07Controller extends Controller
             'perPage' => request('per_page', 10),
             'targetRoute' => 'ia07.asesor', 
             'buttonLabel' => 'FR.IA.07',
+            'formName' => 'Pertanyaan Lisan',
         ]);
     }
 }

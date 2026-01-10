@@ -217,7 +217,8 @@ class IA03Controller extends Controller
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
             'targetRoute' => 'ia03.index',
-            'buttonLabel' => 'FR.IA.03'
+            'buttonLabel' => 'FR.IA.03',
+            'formName' => 'Pertanyaan Untuk Mendukung Observasi',
         ]);
     }
 }

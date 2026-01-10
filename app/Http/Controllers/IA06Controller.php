@@ -392,8 +392,9 @@ class IA06Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'asesor.ia06.edit',
+            'targetRoute' => 'ia06.index',
             'buttonLabel' => 'FR.IA.06',
+            'formName' => 'Pertanyaan Tertulis Esai',
         ]);
     }
 }

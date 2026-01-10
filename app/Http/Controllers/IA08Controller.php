@@ -383,8 +383,9 @@ class IA08Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia08.show',
+            'targetRoute' => 'ia08.index',
             'buttonLabel' => 'FR.IA.08',
+            'formName' => 'Ceklis Verifikasi Pihak Ketiga',
         ]);
     }
 }

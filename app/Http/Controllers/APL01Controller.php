@@ -170,8 +170,9 @@ class APL01Controller extends Controller
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
             'semuaSudahAdaKomentar' => $semuaSudahAdaKomentar,
-            'targetRoute' => 'APL_01_1',
-            'buttonLabel' => 'APL-01'
+            'targetRoute' => 'admin.apl01.detail',
+            'buttonLabel' => 'FR.APL.01',
+            'formName' => 'Permohonan Sertifikasi Kompetensi',
         ]);
     }
 }

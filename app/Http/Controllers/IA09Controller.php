@@ -396,8 +396,9 @@ class IA09Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia09.edit',
+            'targetRoute' => 'ia09.index',
             'buttonLabel' => 'FR.IA.09',
+            'formName' => 'Pertanyaan Wawancara',
         ]);
     }
 }

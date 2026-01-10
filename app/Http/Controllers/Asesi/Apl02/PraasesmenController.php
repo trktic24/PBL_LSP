@@ -291,7 +291,8 @@ class PraasesmenController extends Controller
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
             'targetRoute' => 'apl02.view',
-            'buttonLabel' => 'FR.APL.02'
+            'buttonLabel' => 'FR.APL.02',
+            'formName' => 'Asesmen Mandiri',
         ]);
     }
 

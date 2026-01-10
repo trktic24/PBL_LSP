@@ -329,6 +329,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/ia10', [IA10Controller::class, 'adminShow'])->name('admin.ia10.show');
             Route::get('/ia11', [\App\Http\Controllers\IA11Controller::class, 'adminShow'])->name('admin.ia11.show');
             
+            // AK
+            Route::get('/ak01', [Ak01Controller::class, 'adminShow'])->name('admin.ak01.show'); 
+            Route::get('/ak02', [Ak02Controller::class, 'adminShow'])->name('admin.ak02.show');
+            Route::get('/ak03', [Ak03Controller::class, 'adminShow'])->name('admin.ak03.show');
+            Route::get('/ak04', [Ak04Controller::class, 'adminShow'])->name('admin.ak04.show');
+            Route::get('/ak05', [Ak05Controller::class, 'adminShow'])->name('admin.ak05.show');
+            Route::get('/ak06', [\App\Http\Controllers\FrAk06Controller::class, 'adminShow'])->name('admin.ak06.show');
+
             // [NEW] TEMPLATE MANAGEMENT (MASTER CRUD)
             Route::prefix('template')->name('admin.skema.template.')->group(function() {
                 // IA-01 to IA-11
@@ -379,12 +387,6 @@ Route::middleware('auth')->group(function () {
             });
 
             // AK (Reports)
-            Route::get('/ak01', [Ak01Controller::class, 'adminShow'])->name('admin.ak01.show'); 
-            Route::get('/ak02', [Ak02Controller::class, 'adminShow'])->name('admin.ak02.show');
-            Route::get('/ak03', [Ak03Controller::class, 'adminShow'])->name('admin.ak03.show');
-            Route::get('/ak04', [Ak04Controller::class, 'adminShow'])->name('admin.ak04.show');
-            Route::get('/ak05', [Ak05Controller::class, 'adminShow'])->name('admin.ak05.show');
-            Route::get('/ak06', [\App\Http\Controllers\FrAk06Controller::class, 'adminShow'])->name('admin.ak06.show');
             Route::get('/laporan', [AsesiController::class, 'adminShow'])->name('admin.laporan.show');
         });
 

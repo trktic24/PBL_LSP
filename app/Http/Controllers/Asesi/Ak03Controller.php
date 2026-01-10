@@ -179,8 +179,9 @@ class Ak03Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ak03.create',
+            'targetRoute' => 'ak03.edit',
             'buttonLabel' => 'FR.AK.03',
+            'formName' => 'Umpan Balik dan Catatan Asesmen',
         ]);
     }
 }

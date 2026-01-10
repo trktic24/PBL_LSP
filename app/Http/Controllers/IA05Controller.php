@@ -478,8 +478,9 @@ class IA05Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia05.asesor',
+            'targetRoute' => 'ia05.index',
             'buttonLabel' => 'FR.IA.05',
+            'formName' => 'Pertanyaan Tertulis Pilihan Ganda',
         ]);
     }
 }

@@ -143,6 +143,7 @@ class FrAk06Controller extends Controller
             'perPage' => request('per_page', 10),
             'targetRoute' => 'admin.ak06.show', // Placeholder
             'buttonLabel' => 'FR.AK.06',
+            'formName' => 'Meninjau Proses Asesmen',
         ]);
     }
 }

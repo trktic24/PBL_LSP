@@ -275,6 +275,7 @@ class IA10Controller extends Controller
             'perPage' => request('per_page', 10),
             'targetRoute' => 'fr-ia-10.create',
             'buttonLabel' => 'FR.IA.10',
+            'formName' => 'Klarifikasi Bukti Pihak Ketiga',
         ]);
     }
 }

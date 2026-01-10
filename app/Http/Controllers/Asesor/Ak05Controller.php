@@ -249,6 +249,7 @@ class Ak05Controller extends Controller
             'perPage' => request('per_page', 10),
             'targetRoute' => 'admin.ak05.view', 
             'buttonLabel' => 'FR.AK.05',
+            'formName' => 'Laporan Asesmen',
         ]);
     }
     

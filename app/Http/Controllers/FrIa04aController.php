@@ -167,7 +167,7 @@ class FrIa04aController extends Controller
             'perPage' => request('per_page', 10),
             'targetRoute' => 'fria04a.show',
             'buttonLabel' => 'FR.IA.04',
+            'formName' => 'Ceklis Verifikasi Portofolio',
         ]);
     }
 }
-   

@@ -93,6 +93,18 @@
             <div class="text-center">
                 <h1 class="text-2xl font-bold text-gray-800">{{ $headerTitle }}</h1>
                 <p class="text-sm text-gray-500 mt-1">{{ $headerSubTitle }}</p>
+                @if($isMasterView && isset($buttonLabel))
+                    <div class="mt-3 flex flex-col items-center gap-2">
+                        @if(isset($formName))
+                            <span class="text-lg font-semibold text-blue-700 uppercase tracking-wide">
+                                {{ $formName }}
+                            </span>
+                        @endif
+                        <span class="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-full shadow-sm">
+                            KODE: {{ $buttonLabel }}
+                        </span>
+                    </div>
+                @endif
             </div>
         </div>
 

@@ -231,8 +231,9 @@ class IA11Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia11.show',
+            'targetRoute' => 'ia11.index',
             'buttonLabel' => 'FR.IA.11',
+            'formName' => 'Ceklis Meninjau Instrumen Asesmen',
         ]);
     }
 }

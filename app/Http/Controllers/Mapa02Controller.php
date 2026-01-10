@@ -235,6 +235,7 @@ class Mapa02Controller extends Controller
             'perPage' => request('per_page', 10),
             'targetRoute' => 'mapa02.show',
             'buttonLabel' => 'FR.MAPA.02',
+            'formName' => 'Peta Instrumen Asesmen',
         ]);
     }
 }

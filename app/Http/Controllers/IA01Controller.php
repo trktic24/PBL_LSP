@@ -192,7 +192,8 @@ class IA01Controller extends Controller
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
             'targetRoute' => 'ia01.view',
-            'buttonLabel' => 'FR.IA.01'
+            'buttonLabel' => 'FR.IA.01',
+            'formName' => 'Ceklis Observasi Aktivitas di Tempat Kerja',
         ]);
     }
     /**

@@ -182,7 +182,8 @@ class FrMapa01Controller extends Controller
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
             'targetRoute' => 'mapa01.index',
-            'buttonLabel' => 'FR.MAPA.01'
+            'buttonLabel' => 'FR.MAPA.01',
+            'formName' => 'Merencanakan Aktivitas dan Proses Asesmen',
         ]);
     }
 }
