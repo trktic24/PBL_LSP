@@ -182,7 +182,7 @@
                 {{-- TANDA TANGAN ASESI --}}
                 @if(!empty($sertifikasi->asesi->tanda_tangan))
                     <img
-                        src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->asesi->tanda_tangan) }}"
+                        src="{{ getTtdBase64($sertifikasi->asesi->tanda_tangan) }}"
                         style="width: 100px; height: auto; display: block; margin: 0 auto;"
                     >
                 @else
@@ -202,7 +202,7 @@
                 Nama: {{ $admin->nama_admin ?? '.......................' }} <br>
                 <br>
                     <img
-                        src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->asesi->tanda_tangan) }}"
+                        src="{{ getTtdBase64($sertifikasi->asesi->tanda_tangan) }}"
                         style="width: 100px; height: auto; display: block; margin: 0 auto;"
                     >
                 <br><br><br><br>
