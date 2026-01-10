@@ -102,6 +102,8 @@ class IA03Controller extends Controller
             'sertifikasi' => $sertifikasi,
             'pertanyaanIA03' => $pertanyaanIA03,
             'units' => $units,
+            'umpanBalik' => $umpanBalik,
+            'rekomendasi' => $rekomendasi
         ]);
         
         return $pdf->stream('FR.IA.03_Pertanyaan_Untuk_Mendukung_Observasi.pdf');
