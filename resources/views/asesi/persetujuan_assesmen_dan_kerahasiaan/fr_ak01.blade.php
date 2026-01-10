@@ -42,7 +42,8 @@
         }
     @endphp
 
-    <x-mobile_header :title="'Persetujuan Asesmen dan Kerahasiaan'" :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" :name="$asesi->nama_lengkap ?? Auth::user()->name" :image="$gambarSkema" :sertifikasi="$sertifikasi" />
+    <x-mobile_header :title="'Persetujuan Asesmen dan Kerahasiaan'" :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" :name="$asesi->nama_lengkap ?? Auth::user()->name"
+        :image="$gambarSkema" :sertifikasi="$sertifikasi" />
     {{-- Main Content --}}
 
     <main class="flex-1 p-12 bg-white overflow-y-auto" data-sertifikasi-id="{{ $id_sertifikasi }}">
@@ -127,12 +128,13 @@
 
 {{-- JAVASCRIPT --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
         // --- 1. SETUP VARIABLE ---
         const mainEl = document.querySelector('main[data-sertifikasi-id]');
         const idSertifikasi = mainEl ? mainEl.dataset.sertifikasiId : null;
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        const userRole = "{{ Auth::user()->role->nama_role ?? '' }}"; // Inject Role
 
         const ttdContainer = document.getElementById('ttd_container');
         const btnSelanjutnya = document.getElementById('tombol-selanjutnya');
@@ -227,7 +229,7 @@
 
 
         // --- 3. EVENT KLIK TOMBOL SETUJU (DENGAN POPUP) ---
-        btnSelanjutnya.addEventListener('click', async function() {
+        btnSelanjutnya.addEventListener('click', async function () {
 
             // TAMPILKAN POPUP KONFIRMASI
             const result = await Swal.fire({
@@ -251,14 +253,14 @@
 
             // Kirim Data
             fetch(`/api/v1/kerahasiaan/${idSertifikasi}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -271,7 +273,13 @@
                             showConfirmButton: false
                         }).then(() => {
                             // Redirect setelah popup sukses tertutup
-                            window.location.href = `/asesi/tracker/${data.id_jadwal}`;
+                            if (userRole === 'asesor') {
+                                // Redirect Asesor ke Tracker Asesor
+                                window.location.href = `/asesor/tracker/${idSertifikasi}`;
+                            } else {
+                                // Redirect Default (Asesi)
+                                window.location.href = `/asesi/tracker/${data.id_jadwal}`;
+                            }
                         });
                     } else {
                         throw new Error(data.message || 'Gagal menyimpan');

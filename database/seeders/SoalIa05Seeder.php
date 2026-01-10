@@ -3,13 +3,13 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\SoalIa05;
+use App\Models\SoalIA05;
 
 class SoalIa05Seeder extends Seeder
 {
     public function run()
     {
         // Membuat 10 data dummy soal
-        SoalIa05::factory()->count(10)->create();
+        SoalIA05::factory()->count(10)->create();
     }
 }

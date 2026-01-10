@@ -200,7 +200,7 @@
                 class="px-6 sm:px-8 py-2.5 sm:py-3 bg-white border border-gray-300 text-gray-700 font-semibold text-sm rounded-lg hover:bg-gray-50 transition shadow-sm text-center flex items-center justify-center">
                 Kembali
             </a>
-        <form action="{{ route('apl01_2.store') }}" method="POST" class="flex-1 w-full">
+        <form action="{{ route('apl01.step2.store') }}" method="POST" class="flex-1 w-full">
             @csrf
             <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $sertifikasi->id_data_sertifikasi_asesi }}">
             <button type="submit"

@@ -234,14 +234,10 @@ class AsesorController extends Controller
                 'status_verifikasi' => 'pending',
             ];
 
-            $uploadPath = 'asesor_files/' . $user->id_user; // Removed public/ prefix
+            $uploadPath = 'asesor_docs/' . $user->id_user; // Standardized to assessor_docs
             foreach ($validatedFiles as $key => $file) {
-                $subfolder = 'dokumen';
-                if ($key == 'pas_foto') $subfolder = 'foto';
-                if ($key == 'tanda_tangan') $subfolder = 'tanda_tangan';
-                
-                // Use private_docs disk
-                $path = $file->store($uploadPath . '/' . $subfolder, 'private_docs');
+                 // Use private_docs disk, flat structure (no subfolders)
+                $path = $file->store($uploadPath, 'private_docs');
                 $finalAsesorData[$key] = $path; 
             }
 
@@ -367,7 +363,7 @@ class AsesorController extends Controller
             'tanda_tangan' => 'nullable|file|mimes:png|max:5120', 
         ]);
 
-        $uploadPath = 'asesor_files/' . $asesor->id_user;
+        $uploadPath = 'asesor_docs/' . $asesor->id_user;
         
         $fileFields = [
             'ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 
@@ -394,12 +390,10 @@ class AsesorController extends Controller
                     }
                 }
                 
-                $subfolder = 'dokumen';
-                if ($key == 'pas_foto') $subfolder = 'foto';
-                if ($key == 'tanda_tangan') $subfolder = 'tanda_tangan';
+                $uploadPath = 'asesor_docs/' . $asesor->id_user; // Standardized
 
-                // Upload file baru ke private_docs
-                $path = $request->file($key)->store($uploadPath . '/' . $subfolder, 'private_docs');
+                // Upload file baru ke private_docs (flat structure)
+                $path = $request->file($key)->store($uploadPath, 'private_docs');
                 $asesor->$key = $path; 
             }
         }
@@ -426,7 +420,7 @@ class AsesorController extends Controller
             $asesor->delete(); 
             if ($user) $user->delete(); 
 
-            $uploadPath = 'asesor_files/' . $userId;
+            $uploadPath = 'asesor_docs/' . $userId;
             Storage::disk('private_docs')->deleteDirectory($uploadPath);
 
             DB::commit();

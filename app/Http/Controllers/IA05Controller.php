@@ -54,7 +54,7 @@ class IA05Controller extends Controller
                 ->pluck('jawaban_asesi_ia05', 'id_soal_ia05');
         }
 
-        return view('frontend.fr_IA_05_A', [
+        return view('frontend.FR_IA_05_A', [
             'user' => $user,
             'role' => $roleText, // Kirim sebagai variabel terpisah
             'asesi' => $asesi,
@@ -158,7 +158,7 @@ class IA05Controller extends Controller
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
         $skema_info = Skema::first();
 
-        return view('frontend.fr_IA_05_B', [
+        return view('frontend.FR_IA_05_B', [
             'user' => $user,
             'role' => $roleText,
             'semua_soal' => $semua_soal,
@@ -223,7 +223,7 @@ class IA05Controller extends Controller
         $contoh_jawaban = $lembar_jawab->first();
         $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
 
-        return view('frontend.fr_IA_05_C', [
+        return view('frontend.FR_IA_05_C', [
             'user' => $user,
             'role' => $roleText, // Pass role variable
             'asesi' => $asesi,

@@ -11,20 +11,21 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('bukti_portofolio_ia08_ia09', function (Blueprint $table) {
-            $table->id('id_bukti_portofolio');
-            $table->foreignId('id_portofolio')->constrained('portofolio', 'id_portofolio')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_ia08')->constrained('ia08', 'id_ia08')->onUpdate('cascade')->onDelete('cascade');
+        $table->id('id_bukti_portofolio');
+        $table->foreignId('id_portofolio')->constrained('portofolio', 'id_portofolio')->onUpdate('cascade')->onDelete('cascade');
+        $table->foreignId('id_ia08')->constrained('ia08', 'id_ia08')->onUpdate('cascade')->onDelete('cascade');
 
-            // isi dari database bukti_portofolio_ia08_ia09
-            $table->boolean('is_valid')->default(null)->comment('ya/tidak');      // ya/tidak
-            $table->boolean('is_asli')->default(null)->comment('ya/tidak');       // ya/tidak
-            $table->boolean('is_terkini')->default(null)->comment('ya/tidak');    // ya/tidak
-            $table->boolean('is_memadai')->default(null)->comment('ya/tidak');    // ya/tidak
-            $table->text('daftar_pertanyaan_wawancara')->nullable();
-            $table->text('kesimpulan_jawaban_asesi')->nullable();
-            $table->boolean('pencapaian_ia09')->default(null)->comment('Apakah asesi mencapai IA09 berdasarkan bukti portofolio yang diajukan');
-            $table->timestamps();
-        });
+        // Menggunakan text agar bisa menampung banyak nama dokumen yang dipisahkan koma
+        $table->text('is_valid')->comment('Daftar dokumen yang valid'); 
+        $table->text('is_asli')->comment('Daftar dokumen yang asli'); 
+        $table->text('is_terkini')->comment('Daftar dokumen yang terkini'); 
+        $table->text('is_memadai')->comment('Daftar dokumen yang memadai'); 
+
+        $table->text('daftar_pertanyaan_wawancara')->nullable();
+        $table->text('kesimpulan_jawaban_asesi')->nullable();
+        $table->boolean('pencapaian_ia09')->nullable()->comment('Apakah asesi mencapai IA09 berdasarkan bukti portofolio yang diajukan');
+        $table->timestamps();
+    });
     }
 
     /**

@@ -19,7 +19,7 @@
         }
 
         // Cek apakah Asesmen sudah Final (Sudah ada keputusan AK.02)
-        $isFinalized = ($level >= 100);
+        $isFinalized = ($level >= 100 && $has_ak02_data);
 
         // =========================================================================
         // 2. HELPER FUNCTION
@@ -278,10 +278,12 @@
                                 <div class="flex gap-2 ml-4">
                                     {{-- Tombol Verifikasi --}}
                                     {{-- Hapus logika if-else disable, ganti jadi style biru permanen --}}
-                                    <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                    {{-- <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                        class="text-xs font-bold py-1 px-3 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200">
                                        Verifikasi
-                                    </a>
+                                    </a> --}}
+                                    <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                        class="text-xs font-bold py-1 px-3 rounded-md {{ btnState($level, 20, $isFinalized) }}">Verifikasi</a>
 
                                     <a href="{{ route('ak01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                        target="_blank"

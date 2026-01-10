@@ -86,393 +86,528 @@
 <div class="p-6">
 
     {{-- WRAPPER --}}
-    <div class="text-uniform">
+    {{-- Membungkus seluruh konten dengan FORM --}}
+    <form id="formIA08"
+      action="{{ route('ia08.store', ['id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi]) }}"
+      method="POST">
 
-        {{-- HEADER --}}
-        <div class="relative mb-8">
-            <div class="mb-4">
-                <img src="{{ asset('images/Logo_BNSP.png') }}"
-                    alt="BNSP"
-                    class="h-12 object-contain max-w-full">
+        @csrf
+        @php
+           $locked = $isLocked ?? false;
+        @endphp
+
+        {{-- Pastikan ID IA08 atau Data Sertifikasi dikirim --}}
+        <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $id_data_sertifikasi_asesi }}">
+        <div class="text-uniform">
+
+            {{-- HEADER --}}
+            <div class="relative mb-8">
+                <div class="mb-4">
+                    <img src="{{ asset('images/Logo_BNSP.png') }}"
+                        alt="BNSP"
+                        class="h-12 object-contain max-w-full">
+                </div>
+
+                
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                    FR.IA.08 – Ceklis Verifikasi Portofolio
+                </h1>
             </div>
 
-            
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-                FR.IA.08 – Ceklis Verifikasi Portofolio
-            </h1>
-        </div>
+            {{-- SKEMA --}}
+            <div class="section-box">
+                <h2 class="section-title">Skema Sertifikasi</h2>
 
-        {{-- SKEMA --}}
-        <div class="section-box">
-            <h2 class="section-title">Skema Sertifikasi</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="form-label">Judul</label>
+                        <input type="text" class="form-input"
+                            value="{{ $skema->nama_skema ?? '' }}" disabled>
+                    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="form-label">Judul</label>
-                    <input type="text" class="form-input"
-                        value="{{ $skema->nama_skema ?? '' }}" disabled>
+                    <div>
+                        <label class="form-label">Nomor</label>
+                        <input type="text" class="form-input"
+                            value="{{ $skema->nomor_skema ?? '' }}" disabled>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="form-label">Nomor</label>
-                    <input type="text" class="form-input"
-                        value="{{ $skema->nomor_skema ?? '' }}" disabled>
+                <div class="mt-4">
+                    <label class="form-label">TUK</label>
+                    <div class="flex items-center gap-6">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" disabled class="single-check"
+                                {{ strtolower($jenisTuk->jenis_tuk ?? '') == 'sewaktu' ? 'checked' : '' }}>
+                            Sewaktu
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" disabled class="single-check"
+                                {{ strtolower($jenisTuk->jenis_tuk ?? '') == 'tempat kerja' ? 'checked' : '' }}>
+                            Tempat Kerja
+                        </label>
+                    </div>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    <div>
+                        <label class="form-label">Nama Asesor</label>
+                        <input type="text" class="form-input" value="{{ $asesor->nama_lengkap ?? '' }}" disabled>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Nama Asesi</label>
+                        <input type="text" class="form-input" value="{{ $asesi->nama_lengkap ?? '' }}" disabled>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Tanggal</label>
+                        <input type="text" class="form-input"
+                            value="{{ old('tanggal_asesmen', $data_sesi['tanggal_asesmen']) }}" disabled>
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-500 mt-2">*Coret yang tidak perlu</p>
             </div>
 
-            <div class="mt-4">
-                <label class="form-label">TUK</label>
-                <div class="flex items-center gap-6">
-                    <label class="flex items-center gap-2">
-                        <input type="checkbox" disabled class="single-check"
-                            {{ strtolower($jenisTuk->jenis_tuk ?? '') == 'sewaktu' ? 'checked' : '' }}>
-                        Sewaktu
-                    </label>
+            {{-- PANDUAN --}}
+            <div class="section-box border border-gray-300 bg-gray-50">
 
-                    <label class="flex items-center gap-2">
-                        <input type="checkbox" disabled class="single-check"
-                            {{ strtolower($jenisTuk->jenis_tuk ?? '') == 'tempat kerja' ? 'checked' : '' }}>
-                        Tempat Kerja
-                    </label>
-                </div>
+                <h3 class="mb-2">PANDUAN BAGI ASESOR</h3>
+
+                <ul class="text-gray-700 space-y-1 list-disc pl-5">
+                    <li>Verifikasi portofolio dapat dilakukan untuk keseluruhan unit kompetensi atau masing-masing kelompok pekerjaan.</li>
+                    <li>Isilah bukti portofolio sesuai ketentuan bukti berkualitas dan relevan…</li>
+                    <li>Lakukan verifikasi berdasarkan aturan bukti.</li>
+                    <li>Beri tanda centang (√) sesuai hasil verifikasi.</li>
+                    <li>Jika belum memenuhi aturan bukti, lanjutkan dengan wawancara atau verifikasi pihak ketiga.</li>
+                </ul>
+
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                <div>
-                    <label class="form-label">Nama Asesor</label>
-                    <input type="text" class="form-input" value="{{ $asesor->nama_lengkap ?? '' }}" disabled>
+            {{-- KELOMPOK --}}
+            <div class="section-box">
+                <h3 class="section-title">Kelompok Pekerjaan</h3>
+
+                <div class="mb-4">
+                    <div class="form-input bg-white">
+                        {{ $kelompokPekerjaan[0]->nama_kelompok_pekerjaan ?? '' }}
+                    </div>
                 </div>
 
-                <div>
-                    <label class="form-label">Nama Asesi</label>
-                    <input type="text" class="form-input" value="{{ $asesi->nama_lengkap ?? '' }}" disabled>
-                </div>
+                {{-- TABEL UNIT --}}
+                <table class="min-w-full border border-gray-300">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="border border-gray-300 px-3 py-2 w-12">No.</th>
+                            <th class="border border-gray-300 px-3 py-2">Kode Unit</th>
+                            <th class="border border-gray-300 px-3 py-2">Judul Unit</th>
+                        </tr>
+                    </thead>
 
-                <div>
-                    <label class="form-label">Tanggal</label>
-                    <input type="text" class="form-input"
-                        value="{{ old('tanggal_asesmen', $data_sesi['tanggal_asesmen']) }}" disabled>
-                </div>
+                    <tbody>
+                        @foreach ($unitKompetensi as $index => $unit)
+                        <tr>
+                            <td class="border border-gray-300 px-3 py-2">{{ $index + 1 }}</td>
+                            <td class="border border-gray-300 px-3 py-2">{{ $unit->kode_unit }}</td>
+                            <td class="border border-gray-300 px-3 py-2">{{ $unit->judul_unit }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
 
-            <p class="text-xs text-gray-500 mt-2">*Coret yang tidak perlu</p>
-        </div>
+            {{-- TABEL BUKTI PORTOFOLIO --}}            
+            <div class="section-box overflow-x-auto">
+                <table class="w-full border border-gray-300 text-center text-sm">
+                    <thead>
+                        <tr class="bg-gray-100 font-semibold">
+                            <th rowspan="2" class="border border-gray-300 px-3 py-2 text-left w-1/3">Bukti Portofolio</th>
+                            <th colspan="2" class="border">Valid</th>
+                            <th colspan="2" class="border">Asli</th>
+                            <th colspan="2" class="border">Terkini</th>
+                            <th colspan="2" class="border">Memadai</th>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <th class="border px-2 py-1">Ya</th>
+                            <th class="border px-2 py-1">Tidak</th>
+                            <th class="border px-2 py-1">Ya</th>
+                            <th class="border px-2 py-1">Tidak</th>
+                            <th class="border px-2 py-1">Ya</th>
+                            <th class="border px-2 py-1">Tidak</th>
+                            <th class="border px-2 py-1">Ya</th>
+                            <th class="border px-2 py-1">Tidak</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @php $nomorTotal = 1; @endphp
 
-        {{-- PANDUAN --}}
-        <div class="section-box border border-gray-300 bg-gray-50">
-
-            <h3 class="mb-2">PANDUAN BAGI ASESOR</h3>
-
-            <ul class="text-gray-700 space-y-1 list-disc pl-5">
-                <li>Verifikasi portofolio dapat dilakukan untuk keseluruhan unit kompetensi atau masing-masing kelompok pekerjaan.</li>
-                <li>Isilah bukti portofolio sesuai ketentuan bukti berkualitas dan relevan…</li>
-                <li>Lakukan verifikasi berdasarkan aturan bukti.</li>
-                <li>Beri tanda centang (√) sesuai hasil verifikasi.</li>
-                <li>Jika belum memenuhi aturan bukti, lanjutkan dengan wawancara atau verifikasi pihak ketiga.</li>
-            </ul>
-
-        </div>
-
-        {{-- KELOMPOK --}}
-        <div class="section-box">
-            <h3 class="section-title">Kelompok Pekerjaan</h3>
-
-            <div class="mb-4">
-                <div class="form-input bg-white">
-                    {{ $kelompokPekerjaan[0]->nama_kelompok_pekerjaan ?? '' }}
-                </div>
-            </div>
-
-            {{-- TABEL UNIT --}}
-            <table class="min-w-full border border-gray-300">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="border border-gray-300 px-3 py-2 w-12">No.</th>
-                        <th class="border border-gray-300 px-3 py-2">Kode Unit</th>
-                        <th class="border border-gray-300 px-3 py-2">Judul Unit</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach ($unitKompetensi as $index => $unit)
-                    <tr>
-                        <td class="border border-gray-300 px-3 py-2">{{ $index + 1 }}</td>
-                        <td class="border border-gray-300 px-3 py-2">{{ $unit->kode_unit }}</td>
-                        <td class="border border-gray-300 px-3 py-2">{{ $unit->judul_unit }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        {{-- TABEL BUKTI PORTOFOLIO --}}
-        <div class="section-box">
-            <table class="w-full border border-gray-300 text-center text-sm">
-                <thead>
-                    <tr class="bg-gray-100 font-semibold">
-                        <th rowspan="2" class="border border-gray-300 px-3 py-2 text-left w-1/3">
-                            Bukti Portofolio
-                        </th>
-                        <th colspan="2" class="border px-3 py-2 w-20">Valid</th>
-                        <th colspan="2" class="border px-3 py-2 w-20">Asli</th>
-                        <th colspan="2" class="border px-3 py-2 w-20">Terkini</th>
-                        <th colspan="2" class="border px-3 py-2 w-20">Memadai</th>
-                    </tr>
-                    <tr class="bg-gray-50">
-                        <th class="border px-2 py-1">Ya</th>
-                        <th class="border px-2 py-1">Tidak</th>
-                        <th class="border px-2 py-1">Ya</th>
-                        <th class="border px-2 py-1">Tidak</th>
-                        <th class="border px-2 py-1">Ya</th>
-                        <th class="border px-2 py-1">Tidak</th>
-                        <th class="border px-2 py-1">Ya</th>
-                        <th class="border px-2 py-1">Tidak</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    @php $nomor = 1; @endphp
-
-                    @foreach ($buktiPortofolio as $rowIndex => $bukti)
+                    @foreach ($buktiPortofolio as $bukti)
+                        <input type="hidden" name="id_portofolio[]" value="{{ $bukti->id_portofolio }}">
 
                         @php
                             $items = [];
                             foreach (['persyaratan_dasar', 'persyaratan_administratif'] as $kolom) {
                                 if (!empty($bukti->$kolom)) {
-                                    if (is_string($bukti->$kolom) && str_starts_with(trim($bukti->$kolom), '[')) {
-                                        $decoded = json_decode($bukti->$kolom, true);
-                                        if (is_array($decoded)) {
-                                            $items = array_merge($items, $decoded);
-                                        }
-                                    } else {
-                                        $parts = preg_split('/[\n;,]+/', $bukti->$kolom);
-                                        $items = array_merge($items, array_filter(array_map('trim', $parts)));
+                                    $parts = preg_split('/[\n;,]+/', $bukti->$kolom);
+                                    foreach ($parts as $p) {
+                                        if (trim($p) !== '') $items[] = trim($p);
                                     }
                                 }
                             }
-                            if (count($items) === 0) {
-                                $items = ['Tidak ada data'];
-                            }
                         @endphp
 
-                        @foreach ($items as $itemIndex => $item)
+                        @foreach ($items as $index => $item)
                             @php
-                                $rowID = "row{$rowIndex}_{$itemIndex}";
+                                $cleanItem = preg_replace('/^\d+\.\s*/', '', $item);
+                                $uid = $bukti->id_portofolio . '-' . $index;
                             @endphp
 
                             <tr class="hover:bg-gray-50">
                                 <td class="border px-3 py-2 text-left">
-                                    <span class="font-semibold">{{ $nomor++ }}.</span>
-                                    {{ preg_replace('/^\d+\.\s*/', '', $item) }}
+                                    <span class="font-semibold">{{ $nomorTotal++ }}.</span> {{ $cleanItem }}
                                 </td>
 
                                 {{-- VALID --}}
-                                <td class="border py-2">
-                                    <input type="checkbox" class="radio-like" data-group="{{ $rowID }}_valid" value="ya">
+                                @foreach (['Ya', 'Tidak'] as $val)
+                                <td class="border py-2 text-center">
+                                    <input type="checkbox"
+                                        name="valid[{{ $bukti->id_portofolio }}][{{ $index }}]"
+                                        value="{{ $val }}"
+                                        class="cb-radio"
+                                        data-group="valid-{{ $uid }}"
+                                        {{ ($bukti->array_valid[$index] ?? '') === $val ? 'checked' : '' }}
+                                        {{ $locked ? 'disabled' : '' }}
+                                    >                                        
                                 </td>
-                                <td class="border py-2">
-                                    <input type="checkbox" class="radio-like" data-group="{{ $rowID }}_valid" value="tidak">
-                                </td>
+                                @endforeach
 
                                 {{-- ASLI --}}
-                                <td class="border py-2">
-                                    <input type="checkbox" class="radio-like" data-group="{{ $rowID }}_asli" value="ya">
+                                @foreach (['Ya', 'Tidak'] as $val)
+                                <td class="border py-2 text-center">
+                                    <input type="checkbox"
+                                        name="asli[{{ $bukti->id_portofolio }}][{{ $index }}]"
+                                        value="{{ $val }}"
+                                        class="cb-radio"
+                                        data-group="asli-{{ $uid }}"
+                                        {{ ($bukti->array_asli[$index] ?? '') === $val ? 'checked' : '' }}
+                                        {{ $locked ? 'disabled' : '' }}
+                                    >
                                 </td>
-                                <td class="border py-2">
-                                    <input type="checkbox" class="radio-like" data-group="{{ $rowID }}_asli" value="tidak">
-                                </td>
+                                @endforeach
 
                                 {{-- TERKINI --}}
-                                <td class="border py-2">
-                                    <input type="checkbox" class="radio-like" data-group="{{ $rowID }}_terkini" value="ya">
+                                @foreach (['Ya', 'Tidak'] as $val)
+                                <td class="border py-2 text-center">
+                                    <input type="checkbox"
+                                        name="terkini[{{ $bukti->id_portofolio }}][{{ $index }}]"
+                                        value="{{ $val }}"
+                                        class="cb-radio"
+                                        data-group="terkini-{{ $uid }}"
+                                        {{ ($bukti->array_terkini[$index] ?? '') === $val ? 'checked' : '' }}
+                                        {{ $locked ? 'disabled' : '' }}
+                                    >
                                 </td>
-                                <td class="border py-2">
-                                    <input type="checkbox" class="radio-like" data-group="{{ $rowID }}_terkini" value="tidak">
-                                </td>
+                                @endforeach
 
                                 {{-- MEMADAI --}}
-                                <td class="border py-2">
-                                    <input type="checkbox" class="radio-like" data-group="{{ $rowID }}_memadai" value="ya">
+                                @foreach (['Ya', 'Tidak'] as $val)
+                                <td class="border py-2 text-center">
+                                    <input type="checkbox"
+                                        name="memadai[{{ $bukti->id_portofolio }}][{{ $index }}]"
+                                        value="{{ $val }}"
+                                        class="cb-radio"
+                                        data-group="memadai-{{ $uid }}"
+                                        {{ ($bukti->array_memadai[$index] ?? '') === $val ? 'checked' : '' }}
+                                        {{ $locked ? 'disabled' : '' }}
+                                    >
                                 </td>
-                                <td class="border py-2">
-                                    <input type="checkbox" class="radio-like" data-group="{{ $rowID }}_memadai" value="tidak">
-                                </td>
+                                @endforeach
                             </tr>
                         @endforeach
-
                     @endforeach
+                    </tbody>
 
-                </tbody>
-            </table>
-        </div>
+                </table>
+            </div>
 
-        {{-- JS UNTUK MEMBUAT CHECKBOX BERSIFAT RADIO --}}
         <script>
-        document.querySelectorAll('.radio-like').forEach(cb => {
-            cb.addEventListener('change', function () {
-                const group = this.dataset.group;
-
-                // Uncheck all in this group
-                document.querySelectorAll(`.radio-like[data-group="${group}"]`).forEach(x => {
-                    if (x !== this) x.checked = false;
+            function syncRadio(groupClass, selected) {
+                document.querySelectorAll('.' + groupClass).forEach(cb => {
+                    if (cb !== selected) cb.checked = false;
                 });
-            });
-        });
+            }
         </script>
 
+            {{-- JS UNTUK MEMBUAT CHECKBOX BERSIFAT RADIO --}}
+            <script>
+            document.querySelectorAll('.radio-like').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    const group = this.dataset.group;
 
-        {{-- REKOMENDASI --}}
-        <div class="section-box">
+                    // Uncheck all in this group
+                    document.querySelectorAll(`.radio-like[data-group="${group}"]`).forEach(x => {
+                        if (x !== this) x.checked = false;
+                    });
+                });
+            });
+            </script>
 
-            <h3 class="font-semibold mb-4">Rekomendasi Asesor</h3>
 
-            <label class="flex items-center gap-2">
-                <input type="checkbox" class="single-check" name="rekom" value="kompeten" id="rek_kompeten" onclick="onlyOne(this)">
-                Asesi telah memenuhi pencapaian seluruh KUK — direkomendasikan <b>KOMPETEN</b>
-            </label>
+            {{-- REKOMENDASI --}}
+            <div class="section-box">
 
-            <label class="flex items-center gap-2 mt-2">
-                <input type="checkbox" class="single-check" name="rekom" value="belum" id="rek_tidak" onclick="onlyOne(this)">
-                Asesi belum memenuhi seluruh KUK — direkomendasikan <b>OBSERVASI LANJUT</b> pada:
-            </label>
+                <h3 class="font-semibold mb-4">Rekomendasi Asesor</h3>
 
-            <div id="blok_lanjut" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                    <label>Kelompok Pekerjaan</label>
-                    <input type="text" id="kp" class="border border-gray-300 px-3 py-2 rounded-md w-full">
-                </div>
+                <label class="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        class="single-check"
+                        name="rekomendasi"
+                        value="kompeten"
+                        id="rek_kompeten"
+                        onclick="onlyOne(this)"
+                        {{ ($ia08->rekomendasi ?? '') === 'kompeten' ? 'checked' : '' }}
+                        {{ $locked ? 'disabled' : '' }}
+                    >
+                    Asesi telah memenuhi pencapaian seluruh KUK — direkomendasikan <b>KOMPETEN</b>
+                </label>
 
-                <div>
-                    <label>Unit Kompetensi</label>
-                    <input type="text" id="unit" class="border border-gray-300 px-3 py-2 rounded-md w-full">
-                </div>
+                <label class="flex items-center gap-2 mt-2">
+                    <input
+                        type="checkbox"
+                        class="single-check"
+                        name="rekomendasi"
+                        value="perlu observasi lanjut"
+                        id="rek_tidak"
+                        onclick="onlyOne(this)"
+                        {{ ($ia08->rekomendasi ?? '') === 'perlu observasi lanjut' ? 'checked' : '' }}
+                        {{ $locked ? 'disabled' : '' }}
+                    >
+                    Asesi belum memenuhi seluruh KUK — direkomendasikan <b>OBSERVASI LANJUT</b> pada:
+                </label>
 
-                <div>
-                    <label>Elemen</label>
-                    <input type="text" id="elemen" class="border border-gray-300 px-3 py-2 rounded-md w-full">
-                </div>
+                <div id="blok_lanjut" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label>Kelompok Pekerjaan</label>
+                        <input
+                            type="text"
+                            id="kp"
+                            name="kelompok_pekerjaan"
+                            class="border border-gray-300 px-3 py-2 rounded-md w-full"
+                            value="{{ $ia08->kelompok_pekerjaan ?? '' }}"
+                            {{ $locked ? 'disabled' : '' }}
+                        >
+                    </div>
 
-                <div>
-                    <label>KUK</label>
-                    <input type="text" id="kuk" class="border border-gray-300 px-3 py-2 rounded-md w-full">
+                    <div>
+                        <label>Unit Kompetensi</label>
+                        <input
+                            type="text"
+                            id="unit"
+                            name="unit_kompetensi"
+                            class="border border-gray-300 px-3 py-2 rounded-md w-full"
+                            value="{{ $ia08->unit_kompetensi ?? '' }}"
+                            {{ $locked ? 'disabled' : '' }}
+                        >
+                    </div>
+
+                    <div>
+                        <label>Elemen</label>
+                        <input
+                            type="text"
+                            id="elemen"
+                            name="elemen"
+                            class="border border-gray-300 px-3 py-2 rounded-md w-full"
+                            value="{{ $ia08->elemen ?? '' }}"
+                            {{ $locked ? 'disabled' : '' }}
+                        >
+                    </div>
+
+                    <div>
+                        <label>KUK</label>
+                        <input
+                            type="text"
+                            id="kuk"
+                            name="kuk"
+                            class="border border-gray-300 px-3 py-2 rounded-md w-full"
+                            value="{{ $ia08->kuk ?? '' }}"
+                            {{ $locked ? 'disabled' : '' }}
+                        >
+                    </div>
                 </div>
             </div>
 
-        </div>
 
-        {{-- TANDA TANGAN --}}
-        <div class="section-box">
-            <h2 class="section-title">Tanda Tangan</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {{-- TANDA TANGAN --}}
+            <div class="section-box">
+                <h2 class="section-title">Tanda Tangan</h2>
 
-                {{-- ASESI --}}
-                <div>
-                    <p class="font-bold">Asesi</p>
-                    <p class="mb-4 text-gray-800">{{ now()->format('d-m-Y') }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
 
-                    <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mb-2">
-                        @if($asesi->ttd_path)
-                            <img src="{{ asset($asesi->ttd_path) }}" class="h-full object-contain">
-                        @else
-                            <svg width="150" height="80" viewBox="0 0 200 100">
-                                <path d="M10,80 Q50,10 90,80 T180,80"
-                                      stroke="black" fill="transparent" stroke-width="2"/>
-                            </svg>
-                        @endif
+                    {{-- ASESI --}}
+                    <div>
+                        <p class="font-bold">Asesi</p>
+                        <p class="mb-4 text-gray-800">{{ now()->format('d-m-Y') }}</p>
+
+                        <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mb-2">
+                            @if($asesi->ttd_path)
+                                <img src="{{ asset($asesi->ttd_path) }}" class="h-full object-contain">
+                            @else
+                                <svg width="150" height="80" viewBox="0 0 200 100">
+                                    <path d="M10,80 Q50,10 90,80 T180,80"
+                                        stroke="black" fill="transparent" stroke-width="2"/>
+                                </svg>
+                            @endif
+                        </div>
+
+                        <p class="font-medium text-center">{{ $asesi->nama_lengkap }}</p>
                     </div>
 
-                    <p class="font-medium text-center">{{ $asesi->nama_lengkap }}</p>
-                </div>
+                    {{-- ASESOR --}}
+                    <div>
+                        <p class="font-bold">Asesor</p>
+                        <p>{{ now()->format('d-m-Y') }}</p>
 
-                {{-- ASESOR --}}
-                <div>
-                    <p class="font-bold">Asesor</p>
-                    <p>{{ now()->format('d-m-Y') }}</p>
+                        <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mt-4">
+                            @if($asesor->ttd_path ?? false)
+                                <img src="{{ asset($asesor->ttd_path) }}" class="h-full object-contain">
+                            @else
+                                <svg width="150" height="80" viewBox="0 0 200 100">
+                                    <path d="M20,50 C50,20 80,80 110,50 S170,20 190,80"
+                                        stroke="black" fill="transparent" stroke-width="2"/>
+                                </svg>
+                            @endif
+                        </div>
 
-                    <div class="border border-gray-300 rounded-lg p-4 h-40 flex items-center justify-center mt-4">
-                        @if($asesor->ttd_path ?? false)
-                            <img src="{{ asset($asesor->ttd_path) }}" class="h-full object-contain">
-                        @else
-                            <svg width="150" height="80" viewBox="0 0 200 100">
-                                <path d="M20,50 C50,20 80,80 110,50 S170,20 190,80"
-                                      stroke="black" fill="transparent" stroke-width="2"/>
-                            </svg>
-                        @endif
+                        <p class="font-medium mt-2 text-center">{{ $asesor->nama_lengkap }}</p>
                     </div>
 
-                    <p class="font-medium mt-2 text-center">{{ $asesor->nama_lengkap }}</p>
                 </div>
 
+                <p class="text-red-500 text-sm mt-4">* Tanda tangan ini, hanya simulasi.</p>
             </div>
 
-            <p class="text-red-500 text-sm mt-4">* Tanda tangan ini, hanya simulasi.</p>
+            {{-- BUTTON --}}
+            @if(!$locked)
+            <div class="flex justify-end mb-16">
+                <button type="submit"
+                    class="px-6 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 font-semibold">
+                    Simpan
+                </button>
+            </div>
+            @endif
         </div>
-
-        {{-- BUTTON --}}
-        <div class="flex justify-end mb-16">
-            <button class="px-6 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 font-semibold">
-                Simpan
-            </button>
-        </div>
-
-    </div>
+    </form>
 </div>
 
 <script>
+/* =====================================================
+   REKOMENDASI — CHECKBOX SINGLE SELECT
+===================================================== */
 function onlyOne(selected) {
-    let group = document.getElementsByName(selected.name);
+    const group = document.getElementsByName(selected.name);
 
-    group.forEach(x => { 
-        if (x !== selected) x.checked = false; 
+    group.forEach(el => {
+        if (el !== selected) el.checked = false;
     });
 
-    // Update disable/enable setelah memilih
     updateLanjutFields();
 }
 
-// Field yang ingin di-disable/enable
-const lanjutFields = ["kp", "unit", "elemen", "kuk"];
+/* =====================================================
+   OBSERVASI LANJUT — ENABLE / DISABLE FIELD
+===================================================== */
+const lanjutFields = ['kp', 'unit', 'elemen', 'kuk'];
 
-// Update status field berdasarkan checkbox
-function updateLanjutFields() {
-    const kompeten = document.getElementById("rek_kompeten").checked;
-    const tidak = document.getElementById("rek_tidak").checked;
-
-    // Jika "kompeten" → semua field disable
-    if (kompeten) {
-        setLanjutDisabled(true);
-        return;
-    }
-
-    // Jika "observasi lanjut" → field aktif
-    if (tidak) {
-        setLanjutDisabled(false);
-        return;
-    }
-
-    // Jika keduanya tidak dicentang → tetap disable
-    setLanjutDisabled(true);
-}
-
-// Function untuk set disable / enable
 function setLanjutDisabled(isDisabled) {
     lanjutFields.forEach(id => {
         const field = document.getElementById(id);
+        if (!field) return;
+
         field.disabled = isDisabled;
 
         if (isDisabled) {
-            field.classList.add("disabled-field");
-            field.value = ""; // opsional, supaya kosong saat disable
+            field.classList.add('disabled-field');
+            field.value = '';
         } else {
-            field.classList.remove("disabled-field");
+            field.classList.remove('disabled-field');
         }
     });
 }
 
-// Set awal (disable semua)
+function updateLanjutFields() {
+    const kompeten = document.getElementById('rek_kompeten')?.checked;
+    const tidak    = document.getElementById('rek_tidak')?.checked;
+
+    if (kompeten || !tidak) {
+        setLanjutDisabled(true);
+        return;
+    }
+
+    setLanjutDisabled(false);
+}
+
+/* =====================================================
+   CHECKBOX BERSIFAT RADIO (BUKTI PORTOFOLIO)
+===================================================== */
+document.querySelectorAll('.cb-radio').forEach(cb => {
+    cb.addEventListener('change', function () {
+        if (!this.checked) return;
+
+        const group = this.dataset.group;
+        document
+            .querySelectorAll(`.cb-radio[data-group="${group}"]`)
+            .forEach(el => {
+                if (el !== this) el.checked = false;
+            });
+    });
+});
+
+/* =====================================================
+   VALIDASI SUBMIT FORM
+===================================================== */
+document
+    .getElementById('formIA08')
+    ?.addEventListener('submit', function (e) {
+
+        const groups = {};
+
+        document.querySelectorAll('.cb-radio').forEach(cb => {
+            const group = cb.dataset.group;
+            if (!groups[group]) groups[group] = [];
+            groups[group].push(cb);
+        });
+
+        let incomplete = false;
+
+        Object.values(groups).forEach(group => {
+            const checked = group.some(cb => cb.checked);
+            if (!checked) incomplete = true;
+        });
+
+        if (incomplete) {
+            e.preventDefault();
+            alert('Lengkapi semua kolom verifikasi sebelum menyimpan.');
+        }
+    });
+
+/* =====================================================
+   INIT
+===================================================== */
 updateLanjutFields();
 </script>
- 
+
+@if($locked)
+<script>
+/* =====================================================
+   READ-ONLY MODE (ADMIN / LOCKED)
+===================================================== */
+document.querySelectorAll('input').forEach(el => {
+    el.onclick = e => e.preventDefault();
+});
+</script>
+@endif
+
 @endsection
