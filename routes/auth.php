@@ -280,6 +280,7 @@ Route::middleware('auth')->group(function () {
                 ->group(function () {
                 Route::get('/{id_skema}', 'index')->name('skema.detail');
                 Route::get('/{id_skema}/form/{form_code}', 'showFormAsesiList')->name('skema.form.asesi_list');
+            Route::get('/{id_skema}/ak05-list', [DetailSkemaController::class, 'showAk05JadwalList'])->name('skema.form.ak05_list');
                 Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
                 Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
                 Route::get('/kelompok/{id_kelompok}/edit', 'editKelompok')->name('skema.detail.edit_kelompok');

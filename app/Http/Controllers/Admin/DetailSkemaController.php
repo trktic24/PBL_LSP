@@ -198,7 +198,7 @@ class DetailSkemaController extends Controller
                 'db_field' => 'fr_ak_05', 
                 'checked' => (bool)$configDB->fr_ak_05, 
                 'url' => null,
-                'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.05'])
+                'admin_url' => route('admin.skema.form.ak05_list', ['id_skema' => $skema->id_skema])
             ],
             [
                 'code' => 'FR.AK.06', 
@@ -585,6 +585,25 @@ class DetailSkemaController extends Controller
             'targetRoute' => $config['route'],
             'buttonLabel' => $config['label'],
             'formName' => $config['name'],
+        ]);
+    }
+
+    /**
+     * Tampilkan daftar Jadwal untuk AK.05 (Laporan Keseluruhan per Jadwal)
+     */
+    public function showAk05JadwalList($id_skema)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        
+        // Ambil SEMUA jadwal yang memiliki kaitan dengan skema ini
+        $jadwalList = \App\Models\Jadwal::with(['asesor', 'masterTuk'])
+            ->where('id_skema', $id_skema)
+            ->orderBy('tanggal_mulai', 'desc')
+            ->get();
+
+        return view('Admin.master.skema.ak05_jadwal_list', [
+            'skema' => $skema,
+            'jadwalList' => $jadwalList,
         ]);
     }
 }
