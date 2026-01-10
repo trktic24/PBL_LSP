@@ -609,26 +609,4 @@ class DetailSkemaController extends Controller
             'jadwalList' => $jadwalList,
         ]);
     }
-
-    /**
-     * Tampilkan daftar Jadwal untuk AK.06 (Meninjau Proses Asesmen)
-     */
-    public function showAk06JadwalList($id_skema)
-    {
-        $skema = Skema::findOrFail($id_skema);
-        
-        // Ambil jadwal yang:
-        // 1. Memiliki skema $id_skema
-        // 2. Memiliki setidaknya 1 asesi (dataSertifikasiAsesi)
-        $jadwalList = \App\Models\Jadwal::with(["asesor", "masterTuk"])
-            ->where("id_skema", $id_skema)
-            ->whereHas("dataSertifikasiAsesi")
-            ->orderBy("tanggal_mulai", "desc")
-            ->get();
-
-        return view("Admin.master.skema.ak06_jadwal_list", [
-            "skema" => $skema,
-            "jadwalList" => $jadwalList,
-        ]);
-    }
 }
