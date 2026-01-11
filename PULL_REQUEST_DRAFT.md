@@ -40,7 +40,7 @@ PR ini mencakup stabilisasi sistem di Linux, fitur isolasi templat, dan **HOTFIX
 ### 1. Migrasi & Database
 | File | Aksi | Alasan |
 | :--- | :--- | :--- |
-| `2026_01_11_..._create_master_form_templates_table.php` | **New** | Membuat tabel yang hilang di prod. Menggunakan `Schema::hasTable` safety check. |
+| `2026_01_11_..._create_master_form_templates_table.php` | **New** | Membuat tabel yang hilang di prod. Menggunakan `Schema::hasTable` safety check. **Updated:** Menggunakan *explicit index name* untuk kompatibilitas dropUnique. |
 | `2026_01_11_..._add_id_jadwal_...` | **New** | Menambah kolom isolasi. |
 | `master_skema.php` | **Revert** | Menghapus definisi tabel ganda untuk kebersihan kode. |
 
