@@ -274,7 +274,7 @@ class AsesorProfileController extends Controller
                 'status_text' => $isApl02Accepted ? 'Diterima' : ($hasApl02 ? 'Menunggu Verifikasi' : 'Belum Mengisi'),
                 'is_completed' => $isApl02Accepted,
                 'icon' => 'fas fa-paperclip',
-                'action_url' => route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_url' => route('apl02.view', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'action_label' => 'Verifikasi'
             ];
 
@@ -322,7 +322,7 @@ class AsesorProfileController extends Controller
                 'status_text' => $isFinalized ? 'Selesai' : 'Menunggu',
                 'is_completed' => $isFinalized,
                 'icon' => 'fas fa-gavel',
-                'action_url' => route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_url' => route('ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'action_label' => 'Isi Keputusan'
             ];
 

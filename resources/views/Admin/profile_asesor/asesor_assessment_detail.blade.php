@@ -142,7 +142,7 @@
                 'desc' => 'Asesmen mandiri oleh asesi.',
                 'status' => $isApl02Done ? 'DONE' : 'LOCKED',
                 'status_label' => $dataSertifikasi->rekomendasi_apl02 == 'diterima' ? 'Diterima' : 'Terkunci',
-                'verify_url' => route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'verify_url' => route('apl02.view', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('apl02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'can_verify' => false,
                 'can_pdf' => $level >= 20
