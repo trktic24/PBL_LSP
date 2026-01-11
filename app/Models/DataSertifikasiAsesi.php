@@ -24,8 +24,8 @@ use App\Models\Ia07;
 use App\Models\JawabanIa06;
 use App\Models\LembarJawabIA05;
 use App\Models\ResponBuktiAk01;
-use App\Models\ResponPotensiAk07;
-use App\Models\ResponDiperlukanPenyesuaianAk07;
+use App\Models\ResponPotensiAK07;
+use App\Models\ResponDiperlukanPenyesuaianAK07;
 use App\Models\HasilPenyesuaianAK07;
 use App\Models\DaftarHadirAsesi;
 use App\Models\KomentarAk05;
@@ -233,12 +233,12 @@ class DataSertifikasiAsesi extends Model
 
     public function responPotensiAk07(): HasMany
     {
-        return $this->hasMany(ResponPotensiAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasMany(ResponPotensiAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     public function responPenyesuaianAk07(): HasMany
     {
-        return $this->hasMany(ResponDiperlukanPenyesuaianAk07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasMany(ResponDiperlukanPenyesuaianAK07::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
 

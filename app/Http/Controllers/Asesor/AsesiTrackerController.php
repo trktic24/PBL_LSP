@@ -41,7 +41,7 @@ class AsesiTrackerController extends Controller
         if ($user->hasRole('admin') || $user->hasRole('superadmin')) {
             // Admin can access all trackers
         } else {
-            $asesor = Asesor::where('id_user', $user->id)->first();
+            $asesor = Asesor::where('id_user', $user->id_user)->first();
             if (!$asesor || $dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
                 abort(403, 'Anda tidak berhak mengakses data ini.');
             }
