@@ -36,7 +36,7 @@ class DataSertifikasiAsesiSeeder extends Seeder
             }
 
             // Tentukan jumlah asesi untuk jadwal ini (5 atau 6)
-            $jumlahAsesi = rand(1, 2);
+            $jumlahAsesi = rand(20, 21);
 
             for ($i = 0; $i < $jumlahAsesi; $i++) {
                 // Jika stok asesi habis, recycle (ulang dari awal)

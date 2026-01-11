@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Mapa02;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -38,12 +40,34 @@ class Mapa02Controller extends Controller
         }
 
         // Ambil SEMUA data Mapa02 untuk sertifikasi ini
-        // Map: [ id_kelompok_pekerjaan => [ 'Nama Instrumen' => 'Nilai Potensi' ] ]
         $mapa02Collection = Mapa02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
 
         $mapa02Map = [];
-        foreach ($mapa02Collection as $item) {
-            $mapa02Map[$item->id_kelompok_pekerjaan][$item->instrumen_asesmen] = $item->potensi_asesi;
+        $templateData = null;
+
+        if ($mapa02Collection->isEmpty()) {
+            // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                        ->where('form_code', 'FR.MAPA.02')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.MAPA.02')
+                                            ->first();
+            }
+            if ($template && !empty($template->content)) {
+                $templateData = $template->content;
+            } else {
+                // Static Fallback Instruments
+                $templateData = ["Observasi Langsung", "Tugas Praktik", "Pertanyaan Lisan", "Pertanyaan Tertulis", "Verifikasi Portofolio"];
+            }
+        } else {
+            foreach ($mapa02Collection as $item) {
+                $mapa02Map[$item->id_kelompok_pekerjaan][$item->instrumen_asesmen] = $item->potensi_asesi;
+            }
         }
 
         // Yang boleh edit: Asesor (3) & Superadmin (4)
@@ -53,6 +77,7 @@ class Mapa02Controller extends Controller
         return view('frontend.FR_MAPA_02', [
             'sertifikasi' => $sertifikasi,
             'mapa02Map' => $mapa02Map,
+            'template' => $templateData,
             'canEdit' => $canEdit,
             'jadwal' => $sertifikasi->jadwal,
             'asesi' => $sertifikasi->asesi,
@@ -105,7 +130,7 @@ class Mapa02Controller extends Controller
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',                                          // Data Asesi
             'jadwal.masterTuk',                               // Data TUK
-            'jadwal.skema.asesor',                            // Data Asesor
+            'jadwal.asesor',                            // Data Asesor
             'jadwal.skema.kelompokPekerjaan.unitKompetensi',  // Data Unit Kompetensi
         ])->find($id_data_sertifikasi_asesi);
 
@@ -123,7 +148,7 @@ class Mapa02Controller extends Controller
         }
 
         // 3. Render PDF
-        $pdf = Pdf::loadView('pdf.mapa_02', [
+        $pdf = Pdf::loadView('pdf.MAPA_02', [
             'sertifikasi' => $sertifikasi,
             'mapa02Map' => $mapa02Map
         ]);
@@ -132,5 +157,77 @@ class Mapa02Controller extends Controller
 
         // 4. Stream (Preview di browser)
         return $pdf->stream('FR_MAPA_02_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    }
+
+    /**
+     * [MASTER] Menampilkan editor template (Peta Instrumen) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::with(['kelompokPekerjaan'])->findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.MAPA.02')
+                                    ->first();
+        
+        $content = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.mapa02', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'content' => 'required|array'
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.MAPA.02'
+            ],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat MAPA-02 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form MAPA-02 (Admin Master View) - DEPRECATED for management
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
+
+        return view('frontend.FR_MAPA_02', [
+            'sertifikasi' => $sertifikasi,
+            'mapa02Map' => [],
+            'template' => null,
+            'canEdit' => false,
+            'jadwal' => $jadwal,
+            'asesi' => $asesi,
+            'isMasterView' => true,
+        ]);
     }
 }

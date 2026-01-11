@@ -20,6 +20,7 @@ class SoalIa06 extends Model
     // Kolom yang boleh diisi
     protected $fillable = [
         'id_skema',
+        'id_jadwal',
         'soal_ia06',
         'kunci_jawaban_ia06',
     ];

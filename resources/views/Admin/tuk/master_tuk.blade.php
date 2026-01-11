@@ -204,10 +204,10 @@
                                 
                                 <td class="px-6 py-4">
                                     @if ($tuk->link_gmap)
-                                        <a href="{{ $tuk->link_gmap }}" target="_blank"
-                                            class="text-blue-600 hover:underline">
+                                        <button onclick="openMapModal('{{ $tuk->link_gmap }}', '{{ addslashes($tuk->nama_lokasi) }}')"
+                                            class="text-blue-600 hover:underline bg-transparent border-none cursor-pointer">
                                             Buka Peta
-                                        </a>
+                                        </button>
                                     @else
                                         <span class="text-gray-400">N/A</span>
                                     @endif
@@ -257,6 +257,51 @@
             </div>
         </main>
     </div>
+    {{-- MODAL MAPS --}}
+    <div id="mapModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-1/2 overflow-hidden relative">
+            {{-- Header Modal --}}
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-lg font-semibold text-gray-800" id="mapModalTitle">Lokasi: TUK</h3>
+                <button onclick="closeMapModal()" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Body Modal --}}
+            <div class="p-0 h-[400px]">
+                <iframe id="mapFrame" src="" 
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openMapModal(url, name) {
+            if (!url) {
+                alert('Link Google Maps tidak tersedia.');
+                return;
+            }
+            document.getElementById('mapFrame').src = url;
+            document.getElementById('mapModalTitle').innerText = 'Lokasi: ' + name;
+            document.getElementById('mapModal').classList.remove('hidden');
+        }
+
+        function closeMapModal() {
+            document.getElementById('mapModal').classList.add('hidden');
+            document.getElementById('mapFrame').src = ''; // Stop video/iframe loading
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('mapModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeMapModal();
+            }
+        });
+    </script>
 </body>
 
 </html>

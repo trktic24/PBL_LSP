@@ -22,6 +22,7 @@ class IA03 extends Model
         'id_data_sertifikasi_asesi',
         'id_kelompok_pekerjaan',
         'pertanyaan',
+        'jawaban',
         'tanggapan',
         'pencapaian',
         'catatan_umpan_balik',

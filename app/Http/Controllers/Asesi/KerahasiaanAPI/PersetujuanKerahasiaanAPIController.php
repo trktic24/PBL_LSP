@@ -17,11 +17,14 @@ class PersetujuanKerahasiaanAPIController extends Controller
     {
         $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
 
-        if (
-            $sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' ||
-            $sertifikasi->progres_level >= 70
-        ) { 
+        $user = Auth::user();
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('superadmin');
 
+        if (
+            ($sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' ||
+                $sertifikasi->progres_level >= 70) &&
+            !$isAdmin && !$user->hasRole('asesor')
+        ) {
             return redirect()->route('asesi.persetujuan.selesai', ['id_sertifikasi' => $id_sertifikasi]);
         }
         try {
@@ -60,15 +63,27 @@ class PersetujuanKerahasiaanAPIController extends Controller
 
             $jenisTuk = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu';
 
+            $asesiData = $sertifikasi->asesi;
+            
+            // Convert TTD ke base64 menggunakan helper
+            $ttdBase64 = null;
+            if (!empty($asesiData->tanda_tangan)) {
+                $ttdBase64 = getTtdBase64($asesiData->tanda_tangan, null, 'asesi');
+            }
+        
             return response()->json([
                 'success' => true,
-                'asesi' => $sertifikasi->asesi,
+                'asesi' => [
+                    'id_asesi' => $asesiData->id_asesi,
+                    'nama_lengkap' => $asesiData->nama_lengkap,
+                    'tanda_tangan_base64' => $ttdBase64, // Kirim base64 langsung
+                ],
                 'asesor' => $sertifikasi->jadwal->asesor ?? (object) ['nama_lengkap' => '-'],
                 'tuk' => $jenisTuk,
                 'master_bukti' => $masterBukti,
-                'respon_bukti' => $responBukti, 
+                'respon_bukti' => $responBukti,
                 'status_sekarang' => $sertifikasi->status_sertifikasi,
-                'tanda_tangan_valid' => !empty($sertifikasi->asesi->tanda_tangan)
+                'tanda_tangan_valid' => !empty($ttdBase64)
             ], 200);
 
         } catch (\Exception $e) {
@@ -110,11 +125,17 @@ class PersetujuanKerahasiaanAPIController extends Controller
     public function persetujuanSelesai($id_sertifikasi)
     {
         $user = Auth::user();
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('superadmin');
 
         // Ambil sertifikasi spesifik
-        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
-            ->where('id_asesi', $user->asesi->id_asesi)
-            ->findOrFail($id_sertifikasi);
+        $query = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
+            ->where('id_data_sertifikasi_asesi', $id_sertifikasi);
+
+        if (!$isAdmin) {
+            $query->where('id_asesi', $user->asesi->id_asesi);
+        }
+
+        $sertifikasi = $query->firstOrFail();
 
         // Pakai view universal yang tadi kita buat
         return view('asesi.tunggu_or_berhasil.berhasil', [
@@ -122,4 +143,4 @@ class PersetujuanKerahasiaanAPIController extends Controller
             'asesi' => $sertifikasi->asesi
         ]);
     }
-}   
+}

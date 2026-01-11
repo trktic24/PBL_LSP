@@ -27,41 +27,27 @@
             editMode: false, 
             passwordModal: {{ $errors->updatePassword->any() ? 'true' : 'false' }}, 
             showSuccess: {{ session('status') === 'profile-updated' ? 'true' : 'false' }},
-            showPasswordSuccess: {{ session('status') === 'password-updated' ? 'true' : 'false' }}
+            showPasswordSuccess: {{ session('status') === 'password-updated' ? 'true' : 'false' }},
+            // Logic Preview Gambar: Jika ada di DB pakai itu, jika tidak kosongkan
+            previewUrl: '{{ (Auth::user()->admin && Auth::user()->admin->tanda_tangan_admin) ? route('admin.profile.signature') : '' }}'
         }" 
         x-init="
             if (showSuccess) { setTimeout(() => showSuccess = false, 3000) }
             if (showPasswordSuccess) { setTimeout(() => showPasswordSuccess = false, 3000) }
         ">
         
-        <!-- Notifikasi Sukses -->
-        <div x-show="showSuccess"
-             x-transition:enter="transition ease-out duration-300 transform"
-             x-transition:enter-start="opacity-0 translate-y-10"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-300 transform"
-             x-transition:leave-start="opacity-100 translate-y-0"
-             x-transition:leave-end="opacity-0 translate-y-10"
-             class="fixed bottom-10 right-10 z-50 bg-green-500 text-white py-3 px-5 rounded-lg shadow-lg flex items-center"
-             role="alert">
+        <div x-show="showSuccess" class="fixed bottom-10 right-10 z-50 bg-green-500 text-white py-3 px-5 rounded-lg shadow-lg flex items-center" style="display: none;"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-10" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-10">
             <i class="fas fa-check-circle mr-3 text-lg"></i>
             <p class="text-sm">Profile Admin berhasil diperbarui!</p>
-            <button @click="showSuccess = false" class="ml-4 -mr-1 text-green-100 hover:text-white">
-                <i class="fas fa-times"></i>
-            </button>
+            <button @click="showSuccess = false" class="ml-4 hover:text-green-200"><i class="fas fa-times"></i></button>
         </div>
 
-        <!-- Notifikasi Sukses Password -->
-        <div x-show="showPasswordSuccess"
-             x-transition:enter="transition ease-out duration-300 transform"
-             x-transition:enter-start="opacity-0 translate-y-10"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-300 transform"
-             class="fixed bottom-10 right-10 z-50 bg-blue-600 text-white py-3 px-5 rounded-lg shadow-lg flex items-center"
-             role="alert" style="display: none;">
+        <div x-show="showPasswordSuccess" class="fixed bottom-10 right-10 z-50 bg-blue-600 text-white py-3 px-5 rounded-lg shadow-lg flex items-center" style="display: none;"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-10" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-10">
             <i class="fas fa-key mr-3 text-lg"></i>
             <p class="text-sm">Password berhasil diubah!</p>
-            <button @click="showPasswordSuccess = false" class="ml-4 -mr-1 text-blue-200 hover:text-white"><i class="fas fa-times"></i></button>
+            <button @click="showPasswordSuccess = false" class="ml-4 hover:text-blue-200"><i class="fas fa-times"></i></button>
         </div>
 
         <div class="bg-white rounded-3xl shadow-xl border border-gray-200 p-10 max-w-3xl mx-auto">
@@ -74,67 +60,58 @@
                 <div class="w-[80px]"></div>
             </div>
 
-            <!-- [PERUBAHAN] Bagian Foto Profil -->
-            <div class="relative flex justify-center mb-20">
-                <!-- Lingkaran Avatar (Menggunakan Inisial, Konsisten dengan Navbar) -->
+            <div class="relative flex justify-center mb-10">
                 <div class="h-48 w-48 rounded-full bg-blue-600 text-white flex items-center justify-center text-7xl font-bold shadow-md border-4 border-white select-none">
                     @php
-                        $emailPrefix = 'AD'; // Default jika Auth::user() null
-                        
+                        $displayInitials = 'AD';
                         if (Auth::check()) {
-                            $email = Auth::user()->email;
-                            // Ambil bagian email sebelum '@'
-                            $prefix = explode('@', $email)[0];
+                            // Prioritaskan Nama Admin dari tabel admin, kalau null pake user->name/email
+                            $displayName = Auth::user()->admin->nama_admin ?? Auth::user()->name ?? Auth::user()->email;
                             
-                            // Ganti titik atau underscore dengan spasi, lalu pisahkan kata
-                            $words = explode(' ', str_replace(['.', '_'], ' ', $prefix));
-                            
-                            // Ambil inisial: Ambil huruf pertama dari 2 kata pertama
+                            $words = explode(' ', str_replace(['.', '_'], ' ', $displayName));
                             if (count($words) >= 2) {
-                                $initials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+                                $displayInitials = strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
                             } else {
-                                // Jika hanya satu kata (atau tidak ada separator), ambil 2 huruf pertama
-                                $initials = strtoupper(substr($prefix, 0, 2));
+                                $displayInitials = strtoupper(substr($displayName, 0, 2));
                             }
-
-                            $emailPrefix = $initials;
                         }
                     @endphp
-                    {{ $emailPrefix }}
+                    {{ $displayInitials }}
                 </div>
-
-                <!-- [PERBAIKAN] Tombol Kamera dan Delete DIHAPUS di sini -->
             </div>
 
-            <form action="{{ route('admin.profile.update') }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @method('PATCH')
                 
                 <div class="flex items-center">
-                    <label for="name" class="w-1/3 text-sm font-medium text-gray-700">Nama Lengkap</label>
-                    <!-- Mengambil nama dari logic PHP di atas agar dinamis -->
-                     
+                    <label for="name" class="w-1/3 text-sm font-medium text-gray-700">Nama Admin</label>
+                    
+                    {{-- Mengambil data dari relasi user -> admin -> nama_admin --}}
                     <input id="name" name="name" type="text" 
-                        value="{{ Auth::user()->name ?? Auth::user()->username ?? 'Admin LSP' }}"
-                           readonly
-                           class="flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed">
+                        value="{{ Auth::user()->admin->nama_admin ?? '' }}"
+                        placeholder="Nama belum diisi"
+                        :readonly="!editMode"
+                        :class="editMode 
+                            ? 'flex-1 border border-blue-400 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none' 
+                            : 'flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed'">
                 </div>
 
                 <div class="flex items-center">
                     <label for="email" class="w-1/3 text-sm font-medium text-gray-700">Email</label>
                     <input id="email" name="email" type="email" value="{{ Auth::user()->email }}" 
-                           :readonly="!editMode"
-                           :class="editMode 
-                                ? 'flex-1 border border-blue-400 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none' 
-                                : 'flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed'">
+                        :readonly="!editMode"
+                        :class="editMode 
+                            ? 'flex-1 border border-blue-400 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none' 
+                            : 'flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed'">
                 </div>
 
                 <div class="flex items-center">
                     <label for="role" class="w-1/3 text-sm font-medium text-gray-700">Role</label>
                     <input id="role" name="role" type="text" 
-                           value="{{ Auth::user()->role->nama_role ?? 'N/A' }}" 
-                           readonly
-                           class="flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed">
+                        value="{{ Auth::user()->role->nama_role ?? 'N/A' }}" 
+                        readonly
+                        class="flex-1 border border-gray-200 bg-gray-50 rounded-md px-3 py-2 text-gray-600 cursor-not-allowed">
                 </div>
 
                 <div class="flex items-center">
@@ -145,87 +122,99 @@
                     </button>
                 </div>
 
-                <div class="flex justify-end pt-6">
+                <div class="flex items-start pt-2">
+                    <label class="w-1/3 text-sm font-medium text-gray-700 pt-2">Tanda Tangan</label>
+                    
+                    <div class="flex-1">
+                        <div class="w-60 h-34 border-2 border-dashed border-gray-300 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden mb-3 relative group">
+                            
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" alt="Tanda Tangan" class="w-full h-full object-contain">
+                            </template>
+
+                            <template x-if="!previewUrl">
+                                <span class="text-gray-400 text-xs text-center px-2">Belum ada<br>tanda tangan</span>
+                            </template>
+                        </div>
+
+                        <div x-show="editMode" x-transition>
+                            <input type="file" name="tanda_tangan_admin" 
+                                accept="image/png, image/jpeg, image/jpg"
+                                class="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100 cursor-pointer"
+                                @change="
+                                    const file = $event.target.files[0];
+                                    if(file){
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => previewUrl = e.target.result;
+                                        reader.readAsDataURL(file);
+                                    }
+                                "
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Format: PNG (Transparan), JPG. Max: 2MB.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-6 border-t border-gray-100 mt-6">
+                    <div x-show="editMode" class="flex gap-2">
+                        <button type="button" 
+                            @click="editMode = false; window.location.reload()" 
+                            class="px-4 py-2 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300 font-medium transition">
+                            Batal
+                        </button>
+                    </div>
+                    
                     <button 
                         :type="editMode ? 'submit' : 'button'"
                         @click="if (!editMode) { editMode = true; $event.preventDefault(); }"
-                        x-text="editMode ? 'Save Changes' : 'Edit Profile'"
+                        x-text="editMode ? 'Simpan Perubahan' : 'Edit Profile'"
                         :class="editMode 
-                            ? 'bg-blue-500 text-white px-6 py-2 rounded-md font-medium shadow-md hover:bg-blue-600 transition' 
+                            ? 'ml-2 bg-blue-600 text-white px-6 py-2 rounded-md font-medium shadow-md hover:bg-blue-700 transition' 
                             : 'border border-gray-300 text-gray-700 px-6 py-2 rounded-md font-medium hover:bg-blue-500 hover:text-white hover:border-blue-500 transition duration-200 shadow-sm'">
                     </button>
                 </div>
             </form>
         </div>
-        <!-- MODAL CHANGE PASSWORD -->
-        <div x-show="passwordModal" 
-             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             style="display: none;">
-            
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 transform transition-all"
-                 @click.away="passwordModal = false">
-                
+
+        <div x-show="passwordModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm" style="display: none;">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8" @click.away="passwordModal = false">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-gray-800">Ganti Password</h3>
-                    <button @click="passwordModal = false" class="text-gray-400 hover:text-gray-600 transition">
-                        <i class="fas fa-times text-lg"></i>
-                    </button>
+                    <button @click="passwordModal = false"><i class="fas fa-times text-lg text-gray-400 hover:text-gray-600"></i></button>
                 </div>
-
                 <form action="{{ route('admin.profile.password.update') }}" method="POST" class="space-y-4">
-                    @csrf
-                    @method('PUT')
-
-                    <!-- Password Lama -->
+                    @csrf @method('PUT')
                     <div>
-                        <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Password Saat Ini</label>
-                        <input type="password" id="current_password" name="current_password" required
-                               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password Saat Ini</label>
+                        <input type="password" name="current_password" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
                         @if($errors->updatePassword->has('current_password'))
                             <p class="text-red-500 text-xs mt-1">{{ $errors->updatePassword->first('current_password') }}</p>
                         @endif
                     </div>
-
-                    <!-- Password Baru -->
                     <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
-                        <input type="password" id="password" name="password" required
-                               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
+                        <input type="password" name="password" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
                         @if($errors->updatePassword->has('password'))
                             <p class="text-red-500 text-xs mt-1">{{ $errors->updatePassword->first('password') }}</p>
                         @endif
                     </div>
-
-                    <!-- Konfirmasi Password -->
                     <div>
-                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password Baru</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" required
-                               class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        @if($errors->updatePassword->has('password_confirmation'))
-                            <p class="text-red-500 text-xs mt-1">{{ $errors->updatePassword->first('password_confirmation') }}</p>
-                        @endif
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password Baru</label>
+                        <input type="password" name="password_confirmation" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
-
                     <div class="flex justify-end space-x-3 pt-4">
-                        <button type="button" @click="passwordModal = false" 
-                                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition">
-                            Batal
-                        </button>
-                        <button type="submit" 
-                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md transition">
-                            Simpan Password
-                        </button>
+                        <button type="button" @click="passwordModal = false" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Simpan Password</button>
                     </div>
                 </form>
             </div>
         </div>
-        <!-- END MODAL -->
+
     </main>
 </div>
 

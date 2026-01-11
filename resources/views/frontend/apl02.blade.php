@@ -1,8 +1,8 @@
-@extends('layouts.app-sidebar-asesi')
+@extends($layout ?? 'layouts.app-sidebar-asesi')
 @php
-    $jadwal = $sertifikasi->jadwal;
-    $asesi = $sertifikasi->asesi;
-    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);  
+    $jadwal = $sertifikasi->jadwal ?? null;
+    $asesi = $sertifikasi->asesi ?? null;
+    $backUrl = isset($backUrl) ? $backUrl : (isset($isMasterView) ? '#' : ($sertifikasi ? route('asesor.tracker', $sertifikasi->id_data_sertifikasi_asesi) : '#'));  
 @endphp
 
 <style>
@@ -79,15 +79,19 @@
                 <p class="text-gray-600 max-w-lg mb-8 leading-relaxed">
                     Mohon maaf, saat ini data Unit Kompetensi untuk skema ini belum ditambahkan.
                 </p>
-                <a href="{{ $backUrl ?? ($sertifikasi ? '/tracker/' . $sertifikasi->id_jadwal : '/dashboard') }}" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition transform hover:-translate-y-0.5">
-                    Kembali ke Tracker
+                <a href="{{ $backUrl }}" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition transform hover:-translate-y-0.5">
+                    Kembali
                 </a>
             </div>
         @else
             {{-- TAMPILAN FORMULIR APL-02 (Style dimiripkan dengan temanmu) --}}
             
             {{-- INFO BOX --}}
-            @if ($mode == 'edit')
+            @if(isset($isMasterView) && $isMasterView)
+                <div class="text-blue-800 mb-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-600">
+                     <strong>Master View (Template)</strong><br>Ini adalah pratinjau form APL-02 untuk Skema ini.
+                </div>
+            @elseif ($mode == 'edit')
                 <div class="text-gray-600 mb-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
                     Anda diminta untuk melakukan asesmen mandiri. Tandai <strong>(K)</strong> jika Anda Kompeten dan <strong>wajib</strong> mengunggah bukti pendukung. Tandai <strong>(BK)</strong> jika Belum Kompeten.
                 </div>
@@ -104,7 +108,7 @@
             @endif    
 
             {{-- FORM AJAX KITA --}}
-            <form id="apl02-form" method="POST" action="{{ route('api.v1.apl02.store', ['id_sertifikasi' => $idDataSertifikasi]) }}" enctype="multipart/form-data">
+            <form id="apl02-form" method="POST" action="{{ isset($isMasterView) ? '#' : route('api.v1.apl02.store', ['id_sertifikasi' => $idDataSertifikasi]) }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $idDataSertifikasi }}">
 
@@ -268,8 +272,10 @@
                         </a>
                     @endif
 
-                    {{-- 2. TOMBOL SIMPAN (Lebar Tetap w-48, Teks "Simpan") --}}
-                    @if ($mode == 'edit')
+                    {{-- 2. TOMBOL SIMPAN / VERIFIKASI --}}
+                    @if(isset($isMasterView))
+                         <!-- No Action Buttons for Master View -->
+                    @elseif ($mode == 'edit')
                         <button type="submit" id="btn-submit" 
                                 class="w-48 py-3 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed text-center">
                             Simpan

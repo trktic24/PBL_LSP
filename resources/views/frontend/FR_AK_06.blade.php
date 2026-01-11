@@ -3,7 +3,7 @@
     Deskripsi: Form FR.AK.06 - Meninjau Proses Asesmen (Layout Wizard)
 --}}
 
-@extends('layouts.app-sidebar-skema')
+@extends($layout ?? 'layouts.app-sidebar-skema')
 
 @section('content')
 
@@ -26,7 +26,7 @@
     </div>
 
     {{-- FORM START --}}
-    <form action="{{ route('asesor.ak06.store', request()->route('id_jadwal')) }}" method="POST">
+    <form action="{{ isset($isMasterView) ? '#' : route('asesor.ak06.store', request()->route('id_jadwal')) }}" method="POST">
         @csrf
 
         <div class="bg-white">
@@ -38,14 +38,17 @@
                 <h1 class="text-2xl font-bold text-black uppercase tracking-wide border-b-2 border-gray-100 pb-4 mb-2 inline-block">
                     FR.AK.06. MENINJAU PROSES ASESMEN
                 </h1>
+                @if(isset($isMasterView))
+                    <div class="text-center font-bold text-blue-600 my-2">[TEMPLATE MASTER]</div>
+                @endif
             </div>
 
             {{-- INFORMASI SKEMA --}}
             <div class="grid grid-cols-[250px_auto] gap-y-3 text-sm mb-10 text-gray-700">
                 <div class="font-bold text-black">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)*</div>
                 <div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : Junior Web Programmer</div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : -</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ isset($skema) ? $skema->nama_skema : 'Junior Web Programmer' }}</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ isset($skema) ? $skema->nomor_skema : '-' }}</div>
                 </div>
 
                 <div class="font-bold text-black">TUK</div>
@@ -137,7 +140,7 @@
                         <tr>
                             <td class="p-2 font-bold align-top" colspan="1">Rekomendasi untuk peningkatan :</td>
                             <td class="p-2" colspan="4">
-                                <textarea name="rekomendasi_aspek" class="w-full h-20 border-none outline-none resize-none text-sm" placeholder="Tulis rekomendasi di sini..."></textarea>
+                                <textarea name="rekomendasi_aspek" class="w-full h-20 border-none outline-none resize-none text-sm" placeholder="Tulis rekomendasi di sini...">{{ old('rekomendasi_aspek', $data->rekomendasi_aspek ?? $template['rekomendasi_aspek'] ?? '') }}</textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -179,7 +182,7 @@
                         <tr>
                             <td class="p-2 font-bold align-top" colspan="1">Rekomendasi untuk peningkatan :</td>
                             <td class="p-2" colspan="5">
-                                <textarea name="rekomendasi_dimensi" class="w-full h-20 border-none outline-none resize-none text-sm" placeholder="Tulis rekomendasi di sini..."></textarea>
+                                <textarea name="rekomendasi_dimensi" class="w-full h-20 border-none outline-none resize-none text-sm" placeholder="Tulis rekomendasi di sini...">{{ old('rekomendasi_dimensi', $data->rekomendasi_dimensi ?? $template['rekomendasi_dimensi'] ?? '') }}</textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -199,14 +202,14 @@
                     <tbody>
                         <tr>
                             <td class="p-2 align-top h-32">
-                                <input type="text" name="peninjau[nama]" class="w-full border-b border-gray-300 outline-none mb-2 bg-transparent" placeholder="Nama...">
+                                <input type="text" name="peninjau[nama]" value="{{ old('peninjau.nama', $data->peninjau['nama'] ?? '') }}" class="w-full border-b border-gray-300 outline-none mb-2 bg-transparent" placeholder="Nama...">
                             </td>
                             <td class="p-2 align-top h-32 text-center flex flex-col justify-between">
-                                <input type="text" name="peninjau[tanggal]" class="w-full border-b border-gray-300 outline-none mb-8 text-center bg-transparent" placeholder="Tanggal...">
+                                <input type="text" name="peninjau[tanggal]" value="{{ old('peninjau.tanggal', $data->peninjau['tanggal'] ?? '') }}" class="w-full border-b border-gray-300 outline-none mb-8 text-center bg-transparent" placeholder="Tanggal...">
                                 <div class="text-gray-400 text-xs italic mt-auto">(Tanda Tangan)</div>
                             </td>
                             <td class="p-2 align-top h-32">
-                                <textarea name="peninjau[komentar]" class="w-full h-full border-none outline-none resize-none bg-transparent" placeholder="Tulis komentar..."></textarea>
+                                <textarea name="peninjau[komentar]" class="w-full h-full border-none outline-none resize-none bg-transparent" placeholder="Tulis komentar...">{{ old('peninjau.komentar', $data->peninjau['komentar'] ?? $template['peninjau_komentar'] ?? '') }}</textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -215,8 +218,12 @@
 
             {{-- TOMBOL AKSI --}}
             <div class="mt-12 flex justify-end gap-4 pb-8">
-                <button type="button" class="px-6 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg shadow hover:bg-gray-300 transition">Simpan Draft</button>
-                <button type="submit" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition">Simpan Permanen</button>
+                @if(isset($isMasterView))
+                    <a href="{{ url()->previous() }}" class="px-6 py-3 bg-gray-600 text-white font-bold rounded-lg shadow hover:bg-gray-700 transition">Kembali</a>
+                @else
+                    <button type="button" class="px-6 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg shadow hover:bg-gray-300 transition">Simpan Draft</button>
+                    <button type="submit" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition">Simpan Permanen</button>
+                @endif
             </div>
 
         </div>

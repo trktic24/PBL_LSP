@@ -11,10 +11,43 @@
         </style>
     </head>
 
-    <div class="flex h-screen overflow-hidden font-poppins">
+    @php
+        $user = Auth::user();
+        
+        // Default URL (Untuk Asesi)
+        $backUrl = "/asesi/tracker/" . ($sertifikasi->id_jadwal ?? '');
 
-        {{-- SIDEBAR --}}
-        <x-sidebar2 :idAsesi="$sertifikasi->asesi->id_asesi ?? null" :sertifikasi="$sertifikasi" />
+        // Jika User adalah Admin (tidak punya data asesi sendiri)
+        if (!$user->asesi) {
+            // Arahkan ke Tracker Admin Profile Asesi
+            // Sesuaikan route name Anda: 'admin.asesi.profile.tracker'
+            $backUrl = route('admin.asesi.profile.tracker', ['id_asesi' => $sertifikasi->id_asesi, 'sertifikasi_id' => $sertifikasi->id_data_sertifikasi_asesi]);
+        }
+    @endphp
+
+    <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden font-poppins">
+
+        {{-- 1. SIDEBAR (Desktop Only) --}}
+            <div class="hidden md:block md:w-80 flex-shrink-0">
+                <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" :backUrl="url('/asesi/tracker/' . $sertifikasi->id_jadwal)" />
+            </div>
+
+            {{-- 2. HEADER MOBILE (Data Dinamis) --}}
+            @php
+                $gambarSkema =
+                    $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
+                        ? asset('storage/' . $sertifikasi->jadwal->skema->gambar)
+                        : asset('images/default_pic.jpeg');
+            @endphp
+
+            <x-mobile_header 
+                :title="$sertifikasi->jadwal->skema->nama_skema" 
+                :code="$sertifikasi->jadwal->skema->kode_unit ?? $sertifikasi->jadwal->skema->nomor_skema" 
+                :name="$asesi->nama_lengkap" 
+                :image="$gambarSkema"
+                {{-- Samakan di sini juga supaya pas di HP nggak nyasar ke dashboard --}}
+                :backUrl="url('/asesi/tracker/' . $sertifikasi->id_jadwal)"
+            />
 
         {{-- MAIN CONTENT --}}
         <main class="flex-1 p-8 bg-gray-100 overflow-y-auto">
@@ -186,4 +219,5 @@
             </div>
         </main>
     </div>
+    
 </x-app-layout>

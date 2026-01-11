@@ -16,66 +16,77 @@ class StrukturOrganisasiSeeder extends Seeder
                 'jabatan' => 'Ketua Dewan Pengarah',
                 'nama' => 'Karnowahadi, S.E., M.M.',
                 'gambar' => null, 
+                'urutan' => 1,
             ],
             // 2. Ketua LSP
             [
                 'jabatan' => 'Ketua LSP',
                 'nama' => 'Edi Wijayanto, S.E., M.Si',
                 'gambar' => null,
+                'urutan' => 2,
             ],
             // 3. Ketua Bidang Administrasi
             [
                 'jabatan' => 'Ketua Bidang Administrasi',
                 'nama' => 'Nurseto Adhi, S.E, M.Si',
                 'gambar' => null,
+                'urutan' => 3,
             ],
             // 4. Anggota Bidang Administrasi
             [
                 'jabatan' => 'Anggota Bidang Administrasi',
                 'nama' => 'Khomsatul Artati, S.E. Akt., M.Si.',
                 'gambar' => null,
+                'urutan' => 4,
             ],
             // 5. Ketua Bidang Sertifikasi
             [
                 'jabatan' => 'Ketua Bidang Sertifikasi',
                 'nama' => 'Dra. Sugiarti, M.Si',
                 'gambar' => null,
+                'urutan' => 5,
             ],
             // 6. Anggota Bidang Sertifikasi
             [
                 'jabatan' => 'Anggota Bidang Sertifikasi',
                 'nama' => 'Ali Sai\'in, S.Pd., M.T.', // Pakai backslash sebelum petik satu
                 'gambar' => null,
+                'urutan' => 6,
             ],
             // 7. Ketua Komite Skema
             [
                 'jabatan' => 'Ketua Komite Skema',
                 'nama' => 'Jamal Mahbub, S.T., M.T',
                 'gambar' => null,
+                'urutan' => 7,
             ],
             // 8. Anggota Komite Skema
             [
                 'jabatan' => 'Anggota Komite Skema',
                 'nama' => 'Kuwat Santoso, S.Kom., M.Kom.',
                 'gambar' => null,
+                'urutan' => 8,
             ],
             // 9. Ketua Bidang Kerjasama
             [
                 'jabatan' => 'Ketua Bidang Kerjasama',
                 'nama' => 'Bagus Yunianto Wibowo, S.E., S.Kom., M.M.',
                 'gambar' => null,
+                'urutan' => 9,
             ],
             // 10. Ketua Bidang Manajemen Mutu
             [
                 'jabatan' => 'Ketua Bidang Manajemen Mutu',
                 'nama' => 'Drs. M. Asrori, M.Si',
                 'gambar' => null,
+                'urutan' => 10,
             ],
             // 11. Anggota Bidang Manajemen Mutu
             [
                 'jabatan' => 'Anggota Bidang Manajemen Mutu',
                 'nama' => 'Tri Raharjo Yudantoro, S.Kom., M.Kom.',
                 'gambar' => null,
+                'urutan' => 11,
             ],
         ];
 

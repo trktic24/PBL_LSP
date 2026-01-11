@@ -4,6 +4,7 @@
     'name' => null,
     'image' =>null,
     'sertifikasi' => null,
+    'backUrl' => null,
 ])
 
 {{-- PERUBAHAN 1: Padding atas (pt) dikurangi drastis dari pt-20 ke pt-6. Padding bawah (pb) dikurangi dikit ke pb-20 --}}

@@ -17,6 +17,7 @@ return new class extends Migration {
 
             // Isi kolom yang dibutuhkan untuk data sertifikasi asesi
             $table->enum('rekomendasi_apl01', ['diterima', 'tidak diterima'])->comment('Apakah asesi mendapatkan rekomendasi dari APL-01 untuk lanjut asesmen pada APL-02')->nullable();
+            $table->enum('rekomendasi_ak01', ['diterima', 'tidak diterima'])->nullable();
             $table->enum('tujuan_asesmen', ['sertifikasi', 'PKT', 'rekognisi pembelajaran sebelumnya', 'lainnya'])->comment('Tujuan asesmen asesi')->nullable();
             $table->enum('rekomendasi_apl02', ['diterima', 'tidak diterima'])->comment('Apakah asesi mendapatkan rekomendasi dari APL-02 untuk sertifikasi')->nullable();
             $table->date('tanggal_daftar')->nullable();
