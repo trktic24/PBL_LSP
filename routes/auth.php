@@ -14,7 +14,6 @@ use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\IA06Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\IA11Controller;
 use App\Http\Controllers\APL01Controller;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\FrMapa01Controller;
@@ -143,7 +142,7 @@ Route::middleware('auth')->group(function () {
     // FR.AK.01
     Route::middleware(['role:asesi,asesor'])->group(function () {
         Route::get('/fr-ak-01/{id}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('ak01.index');
-        Route::post('/fr-ak-01/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])->name('ak01.store');
+        Route::post('/fr-ak-01/{id}', [PersetujuanKerahasiaanAPIController::class, 'simpanPersetujuan'])->name('api.ak01.store');
     });
 
     // FR.IA.02
@@ -153,7 +152,7 @@ Route::middleware('auth')->group(function () {
     // FR.IA.05 (Kompleks Multi-Role)
     Route::middleware(['role:admin,asesor,asesi'])
         ->get('/fr-ia-05-a/{id_asesi}', [IA05Controller::class, 'showSoalForm'])
-        ->name('FR_IA_05_A');
+        ->name('auth.FR_IA_05_A');
     Route::middleware(['role:admin'])
         ->post('/fr-ia-05-a/store-soal', [IA05Controller::class, 'storeSoal'])
         ->name('ia-05.store.soal');
