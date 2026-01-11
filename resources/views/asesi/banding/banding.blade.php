@@ -335,7 +335,11 @@
                 // Tanda Tangan (Secure Access)
                 if (data.asesi.tanda_tangan) {
                     const img = document.createElement("img");
-                    img.src = `/secure-doc/${data.asesi.tanda_tangan}`;
+                    
+                    // --- PERBAIKAN DI SINI ---
+                    // Karena backend udah ngirim Base64, langsung masukin ke src
+                    img.src = data.asesi.tanda_tangan; 
+                    
                     img.className = "max-h-full max-w-full object-contain";
                     ttdContainer.innerHTML = "";
                     ttdContainer.appendChild(img);
