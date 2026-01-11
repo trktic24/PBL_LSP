@@ -120,10 +120,22 @@
                 <td width="50%" class="text-center">
                     Asesi,<br><br><br><br>
                     <b>{{ $data['info_umum']['nama_asesi'] }}</b>
+                    @if(isset($data['ttd']['asesi']) && $data['ttd']['asesi'])
+                        <br>
+                        <img src="{{ getTtdBase64($data['ttd']['asesi']) }}" style="width: 100px; height: auto;">
+                    @else
+                        <br><br><br><br>
+                    @endif
                 </td>
                 <td width="50%" class="text-center">
                     Asesor,<br><br><br><br>
                     <b>{{ $data['info_umum']['nama_asesor'] }}</b>
+                    @if(isset($data['ttd']['asesor']) && $data['ttd']['asesor'])
+                        <br>
+                        <img src="{{ getTtdBase64($data['ttd']['asesor']) }}" style="width: 100px; height: auto;">
+                    @else
+                        <br><br><br><br>
+                    @endif
                 </td>
             </tr>
         </table>

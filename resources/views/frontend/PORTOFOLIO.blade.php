@@ -76,8 +76,13 @@
                             <p class="text-sm font-medium text-gray-900">Foto Background Merah</p>
                         </div>
                         @if($foto)
+                            @php $fotoBase64 = getDocBase64($foto['fullPath']); @endphp
                             <p class="text-xs text-blue-600 mb-2">{{ $foto['fileName'] }}</p>
-                            <img src="{{ route('secure.file', ['path' => $foto['fullPath']]) }}" class="h-40 w-auto rounded border shadow-sm" alt="Foto Asesi">
+                            @if($fotoBase64)
+                                <img src="data:{{ getDocMimeType($foto['fullPath']) }};base64,{{ $fotoBase64 }}" class="h-40 w-auto rounded border shadow-sm" alt="Foto Asesi">
+                            @else
+                                <p class="text-xs text-red-400 italic">Gambar tidak dapat dimuat</p>
+                            @endif
                         @else
                             <p class="text-xs text-gray-400 italic">Dokumen belum tersedia</p>
                         @endif
@@ -93,8 +98,13 @@
                             <p class="text-sm font-medium text-gray-900">Kartu Tanda Penduduk (KTP)</p>
                         </div>
                         @if($ktp)
+                            @php $ktpBase64 = getDocBase64($ktp['fullPath']); @endphp
                             <p class="text-xs text-blue-600 mb-2">{{ $ktp['fileName'] }}</p>
-                            <img src="{{ route('secure.file', ['path' => $ktp['fullPath']]) }}" class="h-40 w-auto rounded border shadow-sm" alt="KTP">
+                            @if($ktpBase64)
+                                <img src="data:{{ getDocMimeType($ktp['fullPath']) }};base64,{{ $ktpBase64 }}" class="h-40 w-auto rounded border shadow-sm" alt="KTP">
+                            @else
+                                <p class="text-xs text-red-400 italic">Gambar tidak dapat dimuat</p>
+                            @endif
                         @else
                             <p class="text-xs text-gray-400 italic">Dokumen belum tersedia</p>
                         @endif
@@ -119,8 +129,13 @@
                             <p class="text-sm font-medium text-gray-900">Sertifikasi Pelatihan</p>
                         </div>
                         @if($sertif)
+                            @php $sertifBase64 = getDocBase64($sertif['fullPath']); @endphp
                             <p class="text-xs text-blue-600 mb-2">{{ $sertif['fileName'] }}</p>
-                            <img src="{{ route('secure.file', ['path' => $sertif['fullPath']]) }}" class="h-60 w-auto rounded border shadow-sm" alt="Sertifikasi Pelatihan">
+                            @if($sertifBase64)
+                                <img src="data:{{ getDocMimeType($sertif['fullPath']) }};base64,{{ $sertifBase64 }}" class="h-60 w-auto rounded border shadow-sm" alt="Sertifikasi Pelatihan">
+                            @else
+                                <p class="text-xs text-red-400 italic">Gambar tidak dapat dimuat</p>
+                            @endif
                         @else
                             <p class="text-xs text-gray-400 italic">Dokumen belum tersedia</p>
                         @endif
@@ -136,8 +151,13 @@
                             <p class="text-sm font-medium text-gray-900">Ijazah Terakhir</p>
                         </div>
                         @if($ijazah)
+                            @php $ijazahBase64 = getDocBase64($ijazah['fullPath']); @endphp
                             <p class="text-xs text-blue-600 mb-2">{{ $ijazah['fileName'] }}</p>
-                            <img src="{{ route('secure.file', ['path' => $ijazah['fullPath']]) }}" class="h-60 w-auto rounded border shadow-sm" alt="Ijazah">
+                            @if($ijazahBase64)
+                                <img src="data:{{ getDocMimeType($ijazah['fullPath']) }};base64,{{ $ijazahBase64 }}" class="h-60 w-auto rounded border shadow-sm" alt="Ijazah">
+                            @else
+                                <p class="text-xs text-red-400 italic">Gambar tidak dapat dimuat</p>
+                            @endif
                         @else
                             <p class="text-xs text-gray-400 italic">Dokumen belum tersedia</p>
                         @endif
@@ -153,8 +173,13 @@
                             <p class="text-sm font-medium text-gray-900">Surat Keterangan Kerja</p>
                         </div>
                         @if($skk)
+                            @php $skkBase64 = getDocBase64($skk['fullPath']); @endphp
                             <p class="text-xs text-blue-600 mb-2">{{ $skk['fileName'] }}</p>
-                            <img src="{{ route('secure.file', ['path' => $skk['fullPath']]) }}" class="h-60 w-auto rounded border shadow-sm" alt="Surat Keterangan Kerja">
+                            @if($skkBase64)
+                                <img src="data:{{ getDocMimeType($skk['fullPath']) }};base64,{{ $skkBase64 }}" class="h-60 w-auto rounded border shadow-sm" alt="Surat Keterangan Kerja">
+                            @else
+                                <p class="text-xs text-red-400 italic">Gambar tidak dapat dimuat</p>
+                            @endif
                         @else
                             <p class="text-xs text-gray-400 italic">Dokumen belum tersedia</p>
                         @endif
@@ -171,8 +196,13 @@
                             <p class="text-sm font-medium text-gray-900">Pengalaman Kerja / CV</p>
                         </div>
                         @if($kerja_cv)
+                            @php $kerjaCvBase64 = getDocBase64($kerja_cv['fullPath']); @endphp
                             <p class="text-xs text-blue-600 mb-2">{{ $kerja_cv['fileName'] }}</p>
-                            <img src="{{ route('secure.file', ['path' => $kerja_cv['fullPath']]) }}" class="h-60 w-auto rounded border shadow-sm" alt="Pengalaman Kerja / CV">
+                            @if($kerjaCvBase64)
+                                <img src="data:{{ getDocMimeType($kerja_cv['fullPath']) }};base64,{{ $kerjaCvBase64 }}" class="h-60 w-auto rounded border shadow-sm" alt="Pengalaman Kerja / CV">
+                            @else
+                                <p class="text-xs text-red-400 italic">Gambar tidak dapat dimuat</p>
+                            @endif
                         @else
                             <p class="text-xs text-gray-400 italic">Dokumen belum tersedia</p>
                         @endif

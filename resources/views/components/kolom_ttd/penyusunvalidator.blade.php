@@ -20,6 +20,36 @@
     $tanggal = $penyusunValidator && $penyusunValidator->tanggal_validasi 
         ? \Carbon\Carbon::parse($penyusunValidator->tanggal_validasi)->format('d-m-Y') 
         : '-';
+
+    // --- LOGIKA TANDA TANGAN BASE64 ---
+    $ttdPenyusunBase64 = null;
+    if ($ttdPenyusun) {
+        // Coba path langsung dulu, lalu fallback
+        $pathsToTry = [
+            storage_path('app/private_uploads/' . $ttdPenyusun),
+            storage_path('app/public/' . $ttdPenyusun),
+        ];
+        foreach ($pathsToTry as $path) {
+            if (file_exists($path)) {
+                $ttdPenyusunBase64 = base64_encode(file_get_contents($path));
+                break;
+            }
+        }
+    }
+
+    $ttdValidatorBase64 = null;
+    if ($ttdValidator) {
+        $pathsToTry = [
+            storage_path('app/private_uploads/' . $ttdValidator),
+            storage_path('app/public/' . $ttdValidator),
+        ];
+        foreach ($pathsToTry as $path) {
+            if (file_exists($path)) {
+                $ttdValidatorBase64 = base64_encode(file_get_contents($path));
+                break;
+            }
+        }
+    }
 @endphp
 
 <div class="border border-gray-200 shadow-md p-4 rounded-lg bg-white mt-8">
@@ -46,8 +76,8 @@
                 <div>Tanda Tangan</div>
                 <div>:</div>
                 <div class="h-16">
-                    @if($ttdPenyusun)
-                        <img src="{{ route('secure.file', ['path' => $ttdPenyusun]) }}" alt="Tanda Tangan Penyusun" class="h-full object-contain">
+                    @if($ttdPenyusunBase64)
+                        <img src="data:image/png;base64,{{ $ttdPenyusunBase64 }}" alt="Tanda Tangan Penyusun" class="h-full object-contain">
                     @else
                         <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                     @endif
@@ -76,8 +106,8 @@
                 <div>Tanda Tangan</div>
                 <div>:</div>
                 <div class="h-16">
-                    @if($ttdValidator)
-                        <img src="{{ route('secure.file', ['path' => $ttdValidator]) }}" alt="Tanda Tangan Validator" class="h-full object-contain">
+                    @if($ttdValidatorBase64)
+                        <img src="data:image/png;base64,{{ $ttdValidatorBase64 }}" alt="Tanda Tangan Validator" class="h-full object-contain">
                     @else
                         <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                     @endif
