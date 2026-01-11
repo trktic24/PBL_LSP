@@ -130,7 +130,13 @@
                 {{-- DAFTAR UNIT (ACCORDION DENGAN DATA DINAMIS) --}}
                 <div class="space-y-4 mb-10">
 
-                    @foreach($units as $index => $unit)
+                    {{-- Loop Real Data dari Controller --}}
+                    @foreach($dataIA07 as $index => $group)
+                        @php 
+                            $unit = $group['unit']; 
+                            $questions = $group['questions'];
+                        @endphp
+                        
                         <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
 
                             {{-- Header Accordion --}}
@@ -138,15 +144,12 @@
                                 class="accordion-btn w-full bg-blue-50 p-5 flex justify-between items-center text-left hover:bg-blue-100 transition-colors"
                                 aria-expanded="{{ $index === 0 ? 'true' : 'false' }}">
                                 <div>
-                                    <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Unit
-                                        {{ $index + 1 }}</span>
-                                    <h3 class="text-lg font-bold text-gray-900">{{ $unit['code'] }}</h3>
-                                    <p class="text-sm text-gray-600">{{ $unit['title'] }}</p>
+                                    <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Unit Kompetensi</span>
+                                    <h3 class="text-lg font-bold text-gray-900">{{ $unit->kode_unit }}</h3>
+                                    <p class="text-sm text-gray-600">{{ $unit->judul_unit }}</p>
                                 </div>
-                                <svg class="accordion-icon w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                                    </path>
+                                <svg class="accordion-icon w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
 
@@ -158,59 +161,57 @@
                                             <thead class="bg-gray-800 text-white">
                                                 <tr>
                                                     <th class="px-4 py-3 text-left text-xs font-bold uppercase w-10">No</th>
-                                                    <th class="px-4 py-3 text-left text-xs font-bold uppercase">Pertanyaan &
-                                                        Jawaban Asesi</th>
-                                                    <th class="px-4 py-3 text-center text-xs font-bold uppercase w-32">Keputusan
-                                                        (K/BK)</th>
+                                                    <th class="px-4 py-3 text-left text-xs font-bold uppercase">Pertanyaan & Jawaban Asesi</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-bold uppercase w-32">Keputusan (K/BK)</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-gray-200">
-                                                {{-- Simulasi 3 Pertanyaan per Unit --}}
-                                                @for($q = 1; $q <= 3; $q++)
+                                                @forelse($questions as $key => $q)
                                                     <tr class="hover:bg-gray-50">
-                                                        <td
-                                                            class="px-4 py-4 text-sm font-medium text-gray-900 align-top border-r border-gray-200">
-                                                            {{ $q }}.</td>
-                                                        <td
-                                                            class="px-4 py-4 text-sm text-gray-700 align-top border-r border-gray-200">
-                                                            <p class="mb-2 font-bold text-base text-gray-800">P{{ $q }}: Apa yang
-                                                                dimaksud dengan {{ strtolower(substr($unit['title'], 0, 20)) }}...?
-                                                            </p>
+                                                        <td class="px-4 py-4 text-sm font-medium text-gray-900 align-top border-r border-gray-200">
+                                                            {{ $loop->iteration }}.
+                                                        </td>
+                                                        <td class="px-4 py-4 text-sm text-gray-700 align-top border-r border-gray-200">
+                                                            <p class="mb-2 font-bold text-base text-gray-800">{{ $q->pertanyaan }}</p>
 
                                                             <div class="mt-4 bg-gray-100 p-3 rounded-md border border-gray-200">
-                                                                <p class="text-xs font-semibold text-gray-600 mb-1">Kunci Jawaban:
-                                                                </p>
-                                                                <p class="text-xs text-blue-700 italic">Peserta mampu menjelaskan
-                                                                    fungsi dan kapan menggunakan {{ $unit['code'] }}.</p>
+                                                                <p class="text-xs font-semibold text-gray-600 mb-1">Kunci Jawaban:</p>
+                                                                <p class="text-xs text-blue-700 italic">{{ $q->jawaban_diharapkan ?? 'Lihat Kunci Jawaban' }}</p>
                                                             </div>
 
-                                                            <label
-                                                                class="block text-xs font-semibold text-gray-600 mt-3 mb-1">Ringkasan
-                                                                Jawaban Asesi:</label>
-                                                            <textarea name="jawaban_{{$unit['code']}}_q{{$q}}"
+                                                            <label class="block text-xs font-semibold text-gray-600 mt-3 mb-1">Ringkasan Jawaban Asesi:</label>
+                                                            <textarea name="jawaban[{{ $q->id_ia07 }}]"
                                                                 class="w-full border-gray-300 rounded-md text-xs shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                                                 rows="3" placeholder="Tulis ringkasan jawaban Asesi di sini..."
-                                                                required></textarea>
+                                                                required>{{ $q->jawaban_asesi }}</textarea>
                                                         </td>
                                                         <td class="px-4 py-4 align-top border-gray-200">
                                                             <div class="flex flex-col space-y-4 items-center mt-6">
                                                                 <label class="inline-flex items-center">
-                                                                    <input type="radio" name="keputusan_{{$unit['code']}}_q{{$q}}"
+                                                                    <input type="radio" name="keputusan[{{ $q->id_ia07 }}]"
                                                                         value="K"
                                                                         class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer"
+                                                                        {{ $q->pencapaian === true || $q->pencapaian === 1 ? 'checked' : '' }}
                                                                         required>
                                                                     <span class="ml-2 text-sm font-bold text-green-700">K</span>
                                                                 </label>
                                                                 <label class="inline-flex items-center">
-                                                                    <input type="radio" name="keputusan_{{$unit['code']}}_q{{$q}}"
+                                                                    <input type="radio" name="keputusan[{{ $q->id_ia07 }}]"
                                                                         value="BK"
-                                                                        class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer">
+                                                                        class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer"
+                                                                        {{ $q->pencapaian === false || ($q->pencapaian !== null && $q->pencapaian == 0) ? 'checked' : '' }}>
                                                                     <span class="ml-2 text-sm font-bold text-red-700">BK</span>
                                                                 </label>
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                @endfor
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="3" class="px-4 py-6 text-center text-gray-500 italic">
+                                                            Belum ada pertanyaan lisan untuk unit ini.
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
                                             </tbody>
                                         </table>
                                     </div>
@@ -218,7 +219,6 @@
                             </div>
                         </div>
                     @endforeach
-
                 </div>
 
                 {{-- Tanda Tangan --}}

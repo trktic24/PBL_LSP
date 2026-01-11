@@ -219,8 +219,16 @@
             const iconChevronDown = '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />';
 
             const uploadSections = document.querySelectorAll('.upload-section');
+            const existingBukti = @json($bukti ?? []);
+            const idSertifikasi = "{{ $sertifikasi->id_data_sertifikasi_asesi }}";
+            const csrfToken = document.querySelector('input[name="_token"]').value;
 
-            uploadSections.forEach(section => {
+            // Map section index/heading to type
+            // Note: Order in DOM is: 0->Pas Foto, 1->KTP, 2->Ijazah, 3->CV
+            const types = ['foto', 'ktp', 'ijazah', 'cv'];
+
+            uploadSections.forEach((section, index) => {
+                const type = types[index];
                 const toggleButton = section.querySelector('.toggle-button');
                 const toggleContent = section.querySelector('.toggle-content');
                 const toggleIcon = section.querySelector('.toggle-icon');
@@ -238,16 +246,12 @@
                     previewBox.innerHTML = '<span class="text-xs text-gray-500 break-all">Belum ada file</span>';
                 }
 
-                function showImagePreview(file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewBox.innerHTML = '';
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.className = 'w-full h-full object-cover rounded-lg';
-                        previewBox.appendChild(img);
-                    }
-                    reader.readAsDataURL(file);
+                function showImagePreview(src) {
+                    previewBox.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'w-full h-full object-cover rounded-lg';
+                    previewBox.appendChild(img);
                 }
 
                 function showFilePreview(fileName) {
@@ -261,7 +265,27 @@
                     `;
                 }
 
-                resetPreview();
+                // Initial Load
+                if (existingBukti[type]) {
+                    const path = existingBukti[type];
+                    const fullPath = `{{ asset('storage') }}/${path}`;
+                    
+                    fileCount.textContent = '1 berkas';
+                    toggleButton.classList.remove('bg-blue-50', 'text-blue-600');
+                    toggleButton.classList.add('bg-green-100', 'text-green-700');
+                    initialButtons.classList.add('hidden');
+                    successButtons.classList.remove('hidden');
+
+                    if (type === 'foto' || path.match(/\.(jpeg|jpg|png)$/i)) {
+                        showImagePreview(fullPath);
+                    } else {
+                        // Extract filename from path
+                        const fileName = path.split('/').pop();
+                        showFilePreview(fileName);
+                    }
+                } else {
+                    resetPreview();
+                }
 
                 if (toggleButton && toggleContent && toggleIcon) {
                     toggleButton.addEventListener('click', (e) => {
@@ -282,19 +306,23 @@
                     fileInput.addEventListener('change', () => {
                         if (fileInput.files.length > 0) {
                             const file = fileInput.files[0];
-
-                            fileCount.textContent = '1 berkas';
-                            toggleButton.classList.remove('bg-blue-50', 'text-blue-600');
-                            toggleButton.classList.add('bg-green-100', 'text-green-700');
-
-                            initialButtons.classList.add('hidden');
-                            successButtons.classList.remove('hidden');
-
+                            // Show preview immediately for UX
                             if (file.type.startsWith('image/')) {
-                                showImagePreview(file);
+                                const reader = new FileReader();
+                                reader.onload = (e) => showImagePreview(e.target.result);
+                                reader.readAsDataURL(file);
                             } else {
                                 showFilePreview(file.name);
                             }
+                            
+                            // Reset buttons to 'Simpan' state
+                            saveButton.disabled = false;
+                            saveButton.textContent = 'Simpan';
+                            saveButton.classList.remove('bg-gray-500');
+                            saveButton.classList.add('bg-green-600', 'hover:bg-green-700');
+                            
+                            initialButtons.classList.add('hidden');
+                            successButtons.classList.remove('hidden');
                         }
                     });
                 }
@@ -304,19 +332,46 @@
                 }
 
                 if (saveButton) {
-                    saveButton.addEventListener('click', () => {
-                         saveButton.textContent = 'Tersimpan!';
-                         saveButton.classList.remove('bg-green-600', 'hover:bg-green-700');
-                         saveButton.classList.add('bg-gray-500');
-                         saveButton.disabled = true;
+                    saveButton.addEventListener('click', async () => {
+                        if (fileInput.files.length === 0) return;
 
-                         setTimeout(() => {
-                             alert('Data berhasil disimpan!');
-                             saveButton.textContent = 'Simpan';
-                             saveButton.classList.remove('bg-gray-500');
-                             saveButton.classList.add('bg-green-600', 'hover:bg-green-700');
-                             saveButton.disabled = false;
-                         }, 500);
+                        const formData = new FormData();
+                        formData.append('id_data_sertifikasi_asesi', idSertifikasi);
+                        formData.append('type', type);
+                        formData.append('file', fileInput.files[0]);
+                        formData.append('_token', csrfToken);
+
+                        saveButton.disabled = true;
+                        saveButton.textContent = 'Menyimpan...';
+
+                        try {
+                            const response = await fetch("{{ route('apl01.upload_bukti') }}", {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            const result = await response.json();
+
+                            if (result.success) {
+                                saveButton.textContent = 'Tersimpan!';
+                                saveButton.classList.remove('bg-green-600', 'hover:bg-green-700');
+                                saveButton.classList.add('bg-gray-500');
+                                
+                                // Update 'file count' UI
+                                fileCount.textContent = '1 berkas';
+                                toggleButton.classList.remove('bg-blue-50', 'text-blue-600');
+                                toggleButton.classList.add('bg-green-100', 'text-green-700');
+
+                            } else {
+                                throw new Error(result.message);
+                            }
+                        } catch (error) {
+                            alert('Gagal menyimpan: ' + error.message);
+                            saveButton.textContent = 'Simpan';
+                            saveButton.disabled = false;
+                            saveButton.classList.remove('bg-gray-500');
+                            saveButton.classList.add('bg-green-600', 'hover:bg-green-700');
+                        }
                     });
                 }
 

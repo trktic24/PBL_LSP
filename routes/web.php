@@ -38,6 +38,7 @@ use App\Http\Controllers\Asesi\Apl02\PraasesmenController; // APL-02
 /* use App\Http\Controllers\Asesi\Apl02\Apl02Controller; */
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController; // AK-01
 use App\Http\Controllers\Asesi\Ak01Controller;
+use App\Http\Controllers\FrAk01Controller;
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Asesi\Pdf\Ak01PdfController;
 use App\Http\Controllers\PortofolioController;
@@ -63,7 +64,7 @@ use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA08Controller;
 use App\Http\Controllers\IA09Controller;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\Asesi\IA11\IA11Controller;
+use App\Http\Controllers\Asesor\IA11\IA11Controller;
 use App\Http\Controllers\IA03Controller;
 use App\Http\Controllers\FrIa04aController;
 
@@ -159,6 +160,16 @@ Route::middleware('auth')->group(function () {
 
     // Halaman 3: Bukti Kelengkapan
     Route::get('/apl01/step-3/{id}', [APL01Controller::class, 'step3'])->name('APL_01_3');
+    
+    // APL-01 AJAX Uploads
+    Route::post('/apl01/upload-bukti', [APL01Controller::class, 'uploadBukti'])->name('apl01.upload_bukti');
+    Route::post('/apl01/delete-bukti', [APL01Controller::class, 'deleteBukti'])->name('apl01.delete_bukti');
+    
+    // APL-01 Signature
+    Route::post('/apl01/upload-signature', [APL01Controller::class, 'uploadSignature'])->name('apl01.upload_signature');
+    Route::post('/apl01/delete-signature', [APL01Controller::class, 'deleteSignature'])->name('apl01.delete_signature');
+
+    Route::get('/apl01/file/{path}', [APL01Controller::class, 'getFile'])->where('path', '.*')->name('apl01.file'); // Secure file access if needed
 
 
 
@@ -187,6 +198,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/ak04/form/{id}', [Ak04Controller::class, 'create'])->name('ak04.create');
     Route::post('/ak04/store/{id}', [Ak04Controller::class, 'store'])->name('ak04.store');
     Route::get('/FR_AK_05', fn() => view('frontend/AK_05/FR_AK_05'))->name('FR_AK_05');
+
+    //FR-AK-01
+    Route::group(['prefix' => 'asesor', 'as' => 'asesor.'], function () {
+    Route::get('/fr-ak-01/{id}', [FrAk01Controller::class, 'index'])->name('ak01.index');
+    Route::post('/fr-ak-01/{id}/store', [FrAk01Controller::class, 'store'])->name('ak01.store');
+
+});
 
     // FR-AK-03
     Route::get('/ak03/form/{id}', [Ak03Controller::class, 'create'])->name('ak03.create');
@@ -256,8 +274,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
 
         // IA-03
+        // IA-03
         Route::get('/ia03/{id}', [IA03Controller::class, 'asesorIndex'])->name('ia03.index');
-        Route::get('/ia03/{id}/show', [IA03Controller::class, 'show'])->name('ia03.show');
+        Route::get('/ia03/{id}/show', [IA03Controller::class, 'asesorIndex'])->name('ia03.show');
 
         // IA-04 (Asesor) is handled below in FRIA04_Asesor block
 
@@ -285,14 +304,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/FR_IA_10/{id}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
         Route::post('/FR_IA_10/store', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
-        // IA-11
-        Route::get('/FR_IA_11/{id}', [IA11Controller::class, 'show'])->name('ia11.show');
-        Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
-        Route::put('/FR_IA_11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
-
         // FRIA04_Asesor
         Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
         Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
+
+        // IA-11
+        Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.show');
+        Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+        Route::put('/ia11/update/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
+        Route::delete('/ia11/delete/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
+        Route::get('/ia11/pdf/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'cetakPDF'])->name('ia11.cetak_pdf');
 
         // MAPA-02
         
@@ -323,7 +344,7 @@ Route::middleware('auth')->group(function () {
             
             // IA
             Route::get('/ia01', [IA01Controller::class, 'adminShow'])->name('admin.ia01.show');
-            Route::get('/ia03', [IA03Controller::class, 'adminShow'])->name('admin.ia03.show');
+            // Route::get('/ia03', [IA03Controller::class, 'adminShow'])->name('admin.ia03.show'); // Method missing
             Route::get('/ia04', [FrIa04aController::class, 'adminShow'])->name('admin.ia04.show');
             Route::get('/ia05', [IA05Controller::class, 'adminShow'])->name('admin.ia05.show');
             Route::get('/ia06', [IA06Controller::class, 'adminShow'])->name('admin.ia06.show');
@@ -331,7 +352,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/ia08', [IA08Controller::class, 'adminShow'])->name('admin.ia08.show');
             Route::get('/ia09', [IA09Controller::class, 'adminShow'])->name('admin.ia09.show');
             Route::get('/ia10', [IA10Controller::class, 'adminShow'])->name('admin.ia10.show');
-            Route::get('/ia11', [\App\Http\Controllers\IA11Controller::class, 'adminShow'])->name('admin.ia11.show');
+            Route::get('/ia10', [IA10Controller::class, 'adminShow'])->name('admin.ia10.show');
+            Route::get('/ia11', [IA11Controller::class, 'adminShow'])->name('admin.ia11.show');
             
             // AK
             Route::get('/ak01', [Ak01Controller::class, 'adminShow'])->name('admin.ak01.show'); 
@@ -366,8 +388,8 @@ Route::middleware('auth')->group(function () {
                 Route::post('/ia09/store/{id_jadwal}', [IA09Controller::class, 'storeTemplate'])->name('ia09.store');
                 Route::get('/ia10/{id_jadwal}', [IA10Controller::class, 'editTemplate'])->name('ia10');
                 Route::post('/ia10/store/{id_jadwal}', [IA10Controller::class, 'storeTemplate'])->name('ia10.store');
-                Route::get('/ia11/{id_jadwal}', [\App\Http\Controllers\IA11Controller::class, 'editTemplate'])->name('ia11');
-                Route::post('/ia11/store/{id_jadwal}', [\App\Http\Controllers\IA11Controller::class, 'storeTemplate'])->name('ia11.store');
+                Route::get('/ia11/{id_jadwal}', [IA11Controller::class, 'editTemplate'])->name('ia11');
+                Route::post('/ia11/store/{id_jadwal}', [IA11Controller::class, 'storeTemplate'])->name('ia11.store');
 
                 // AK forms
                 Route::get('/ak01/{id_jadwal}', [Ak01Controller::class, 'editTemplate'])->name('ak01');
@@ -452,7 +474,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/ia-04/cetak-pdf/{id_sertifikasi}', [FrIa04aController::class, 'cetakPDF'])->name('ia04.cetak_pdf');
         Route::get('/ia-08/cetak-pdf/{id_sertifikasi}', [IA08Controller::class, 'cetakPDF'])->name('ia08.cetak_pdf');
         Route::get('/ia-09/cetak-pdf/{id_sertifikasi}', [IA09Controller::class, 'cetakPDF'])->name('ia09.cetak_pdf');
-        Route::get('/ia-11/cetak-pdf/{id_sertifikasi}', [IA11Controller::class, 'cetakPDF'])->name('ia11.cetak_pdf');
     });
     // Legacy mapping (just in case)
     Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF']);

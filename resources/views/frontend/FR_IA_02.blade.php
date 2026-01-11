@@ -29,8 +29,8 @@
 
                 {{-- IDENTITAS SKEMA --}}
                 <div class="mb-8">
-                        <x-identitas_skema_form.identitas_skema_form :skema="$skema->nama_skema ?? ''" :nomorSkema="$skema->kode_unit ?? ''"
-                        :tuk="optional($jadwal)->masterTuk->nama_lokasi ?? 'Tempat Kerja'" 
+                        <x-identitas_skema_form.identitas_skema_form :skema="$skema->nama_skema ?? ''" :nomorSkema="$skema->nomor_skema ?? ''"
+                        :tuk="optional($jadwal)->jenisTuk->jenis_tuk ?? 'Tempat Kerja'" 
                         :namaAsesor="optional(optional($jadwal)->asesor)->nama_lengkap ?? ''" 
                         :namaAsesi="optional($asesi)->nama_lengkap ?? 'Template Master'"
                         :tanggal="optional(optional($jadwal)->tanggal_pelaksanaan)->format('d F Y') ?? date('d F Y')" />

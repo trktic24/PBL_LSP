@@ -68,15 +68,15 @@ class Ak02Controller extends Controller
         $template = null;
         if ($penilaianList->isEmpty()) {
             $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                        ->where('id_jadwal', $asesi->id_jadwal)
-                                        ->where('form_code', 'FR.AK.02')
-                                        ->first();
-            
+                ->where('id_jadwal', $asesi->id_jadwal)
+                ->where('form_code', 'FR.AK.02')
+                ->first();
+
             if (!$template) {
                 $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                            ->whereNull('id_jadwal')
-                                            ->where('form_code', 'FR.AK.02')
-                                            ->first();
+                    ->whereNull('id_jadwal')
+                    ->where('form_code', 'FR.AK.02')
+                    ->first();
             }
         }
 
@@ -127,6 +127,7 @@ class Ak02Controller extends Controller
             if ($globalKompeten) {
                 $asesi->update([
                     'rekomendasi_hasil_asesmen_AK02' => $globalKompeten,
+                    'status_validasi' => 'pending', // ENUM: ['pending', 'valid']
                 ]);
             }
 
@@ -274,10 +275,10 @@ class Ak02Controller extends Controller
     {
         $skema = Skema::findOrFail($id_skema);
         $template = MasterFormTemplate::where('id_skema', $id_skema)
-                                    ->where('id_jadwal', $id_jadwal)
-                                    ->where('form_code', 'FR.AK.02')
-                                    ->first();
-        
+            ->where('id_jadwal', $id_jadwal)
+            ->where('form_code', 'FR.AK.02')
+            ->first();
+
         $content = $template ? $template->content : [
             'tindak_lanjut' => '',
             'komentar' => ''
@@ -303,11 +304,11 @@ class Ak02Controller extends Controller
 
         MasterFormTemplate::updateOrCreate(
             [
-                'id_skema' => $id_skema, 
+                'id_skema' => $id_skema,
                 'id_jadwal' => $id_jadwal,
                 'form_code' => 'FR.AK.02'
             ],
-            ['content' => $request->content]
+            ['content' => $request->input('content')]
         );
 
         return redirect()->back()->with('success', 'Templat AK-02 berhasil diperbarui.');
@@ -319,14 +320,14 @@ class Ak02Controller extends Controller
     public function adminShow($id_skema)
     {
         $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
-        
+
         // Mock data sertifikasi
         $sertifikasi = new \App\Models\DataSertifikasiAsesi();
         $sertifikasi->id_data_sertifikasi_asesi = 0;
-        
+
         $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
         $sertifikasi->setRelation('asesi', $asesi);
-        
+
         $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
         $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));

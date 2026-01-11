@@ -34,7 +34,7 @@
         <tr>
             <td><b>Nama Asesor</b></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->asesor->nama_asesor ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
             <td><b>Nama Asesi</b></td>
@@ -158,7 +158,7 @@
                     @else
                         <br><br><br><br>
                     @endif
-                    <b>{{ $sertifikasi->jadwal->asesor->nama_asesor ?? '...................' }}</b>
+                    <b>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '...................' }}</b>
                 </td>
             </tr>
         </table>

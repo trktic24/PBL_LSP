@@ -25,6 +25,7 @@ class IA02Controller extends Controller
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi.user',
             'jadwal.masterTuk',
+            'jadwal.jenisTuk',
             'jadwal.skema.asesor',
             'jadwal.asesor', // Needed for asesiasesor signature component
             // Kita coba panggil unitKompetensi via skema (sesuai perbaikan model sebelumnya)
