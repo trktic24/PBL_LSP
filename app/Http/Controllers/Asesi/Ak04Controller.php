@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\ResponAk04;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -44,7 +46,24 @@ class Ak04Controller extends Controller
         // Ambil respon lama (jika ada) untuk ditampilkan kembali (edit mode)
         $respon = ResponAk04::where('id_data_sertifikasi_asesi', $id_sertifikasi)->first();
 
-        return view('frontend.FR_AK_04', compact('sertifikasi', 'respon'));
+        // [AUTO-LOAD TEMPLATE]
+        $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                    ->where('form_code', 'FR.AK.04')
+                                    ->first();
+        
+        if (!$template) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->whereNull('id_jadwal')
+                                        ->where('form_code', 'FR.AK.04')
+                                        ->first();
+        }
+
+        return view('frontend.FR_AK_04', [
+            'sertifikasi' => $sertifikasi,
+            'respon' => $respon,
+            'template' => $template ? $template->content : null
+        ]);
     }
 
     // 2. MENYIMPAN DATA (STORE)
@@ -103,61 +122,80 @@ class Ak04Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.AK.04 (Admin Master View)
+     * [MASTER] Menampilkan editor template (Banding Asesmen) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.AK.04')
+                                    ->first();
+        
+        $content = $template ? $template->content : [
+            'q1' => 'Apakah Proses Banding telah dijelaskan kepada Anda?',
+            'q2' => 'Apakah Anda telah mendiskusikan Banding dengan Asesor?',
+            'q3' => 'Apakah Anda mau melibatkan "orang lain" membantu Anda dalam Proses Banding?',
+            'default_alasan' => ''
+        ];
+
+        return view('Admin.master.skema.template.ak04', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'content' => 'required|array',
+            'content.q1' => 'required|string',
+            'content.q2' => 'required|string',
+            'content.q3' => 'required|string',
+            'content.default_alasan' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.AK.04'
+            ],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat AK-04 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.AK.04 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
-            'jadwal' => $jadwal,
+        return view('frontend.FR_AK_04', [
+            'sertifikasi' => $sertifikasi,
+            'respon' => null,
+            'template' => null,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'ak04.create',
-            'buttonLabel' => 'FR.AK.04',
         ]);
     }
 }

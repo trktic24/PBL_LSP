@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use App\Models\KelompokPekerjaan;
 use App\Models\UnitKompetensi;
 use App\Models\DataPortofolio;
@@ -10,7 +12,7 @@ use App\Models\BuktiPortofolioIA08IA09;
 use App\Models\Ia08;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf; // <--- TAMBAHKAN INI
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IA08Controller extends Controller
 {
@@ -296,61 +298,96 @@ class IA08Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.08 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Verifikasi Pihak Ketiga) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.IA.08')
+                                    ->first();
+        
+        // Default values if no template exists
+        $instructions = $template ? $template->content : '';
+
+        return view('Admin.master.skema.template.ia08', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'instructions' => $instructions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'instructions' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.08'
+            ],
+            ['content' => $request->instructions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-08 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.08 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function ($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
+        // Mock portofolio
+        $mockPortofolio = collect([
+            new \App\Models\DataPortofolio(['nama_dokumen' => 'Sertifikat Pelatihan', 'keterangan' => 'Pelatihan Web Development']),
+            new \App\Models\DataPortofolio(['nama_dokumen' => 'Ijazah Pendidikan', 'keterangan' => 'Pendidikan Terakhir']),
+        ])->map(function($item) {
+            $item->array_valid = [];
+            $item->array_asli = [];
+            $item->array_terkini = [];
+            $item->array_memadai = [];
+            return $item;
         });
 
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function ($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
+        $kelompokPekerjaan = $skema->kelompokPekerjaan;
+        $unitKompetensi = $kelompokPekerjaan->flatMap->unitKompetensi;
 
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
-        $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
-
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
+        return view('frontend.IA_08.IA_08', [
+            'buktiPortofolio' => $mockPortofolio,
+            'kelompokPekerjaan' => $kelompokPekerjaan,
+            'unitKompetensi' => $unitKompetensi,
+            'ia08' => null,
+            'isLocked' => true,
+            'id_data_sertifikasi_asesi' => 0,
+            'skema' => $skema,
+            'jenisTuk' => $jadwal->jenisTuk,
+            'asesor' => $jadwal->asesor,
+            'asesi' => $asesi,
             'jadwal' => $jadwal,
+            'data_sesi' => ['tanggal_asesmen' => now()->format('Y-m-d')],
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia08.show',
-            'buttonLabel' => 'FR.IA.08',
         ]);
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Ak02;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -63,7 +64,29 @@ class Ak02Controller extends Controller
         $skema = $asesi->jadwal->skema;
         $jadwal = $asesi->jadwal;
 
-        return view('frontend.AK_02.FR_AK_02', compact('asesi', 'penilaianList', 'skema', 'jadwal'));
+        // [AUTO-LOAD TEMPLATE]
+        $template = null;
+        if ($penilaianList->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $asesi->id_jadwal)
+                                        ->where('form_code', 'FR.AK.02')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.AK.02')
+                                            ->first();
+            }
+        }
+
+        return view('frontend.AK_02.FR_AK_02', [
+            'asesi' => $asesi,
+            'penilaianList' => $penilaianList,
+            'skema' => $skema,
+            'jadwal' => $jadwal,
+            'template' => $template ? $template->content : null
+        ]);
     }
 
     public function update(Request $request, $id_asesi)
@@ -100,7 +123,7 @@ class Ak02Controller extends Controller
             }
 
             $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
-            
+
             if ($globalKompeten) {
                 $asesi->update([
                     'rekomendasi_hasil_asesmen_AK02' => $globalKompeten,
@@ -123,6 +146,24 @@ class Ak02Controller extends Controller
                 ];
 
                 event(new \App\Events\AssessmentReviewed($notificationData));
+
+                // --- NEW: Notify Admins (Validators) ---
+                $validators = \App\Models\User::whereHas('role', function ($q) {
+                    $q->where('nama_role', 'admin');
+                })->get();
+
+                // Safely access relationships
+                $namaAsesi = $asesiData->asesi->nama_lengkap ?? 'Asesi';
+                $namaAsesor = $asesiData->jadwal->asesor->nama_asesor ?? ($request->user()->name ?? 'Asesor');
+                $namaSkema = $asesiData->jadwal->skema->judul_skema ?? 'Skema';
+                $idJadwal = $asesiData->id_jadwal;
+
+                foreach ($validators as $validator) {
+                    $validator->notify(new \App\Notifications\AssessmentCompletionNotice([
+                        'message' => "Asesmen dari {$namaAsesi} telah selesai dinilai oleh asesor {$namaAsesor}, dari skema {$namaSkema}.",
+                        'link' => route('admin.schedule.attendance', ['id_jadwal' => $idJadwal]),
+                    ]));
+                }
             } catch (\Exception $evt) {
                 // Ignore event failure to not block saving
                 // Log::error($evt);
@@ -225,61 +266,84 @@ class Ak02Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.AK.02 (Admin Master View)
+     * [MASTER] Menampilkan editor template (Rekaman Asesmen) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.AK.02')
+                                    ->first();
+        
+        $content = $template ? $template->content : [
+            'tindak_lanjut' => '',
+            'komentar' => ''
+        ];
+
+        return view('Admin.master.skema.template.ak02', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'content' => 'required|array',
+            'content.tindak_lanjut' => 'nullable|string',
+            'content.komentar' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.AK.02'
+            ],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat AK-02 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.AK.02 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
+        $sertifikasi->setRelation('lembarJawabIa05', collect());
+        $sertifikasi->setRelation('ia06Answers', collect());
+        $sertifikasi->setRelation('ia07', collect());
+        $sertifikasi->setRelation('ia10', null);
+        $sertifikasi->setRelation('ia02', null);
+
+        return view('frontend.AK_02.FR_AK_02', [
+            'asesi' => $sertifikasi,
+            'penilaianList' => collect(),
+            'skema' => $skema,
             'jadwal' => $jadwal,
+            'template' => null,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'ak02.edit',
-            'buttonLabel' => 'FR.AK.02',
         ]);
     }
 }

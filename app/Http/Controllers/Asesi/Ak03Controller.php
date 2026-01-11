@@ -137,7 +137,7 @@ class Ak03Controller extends Controller
             'jadwal.skema',
             'jadwal.masterTuk',
             'jadwal.asesor',
-            'responApl2Ia01',
+            'responApl02Ia01',
             'responBuktiAk01',
             'lembarJawabIa05',
             'komentarAk05'
@@ -179,8 +179,9 @@ class Ak03Controller extends Controller
             'sortColumn' => request('sort', 'nama_lengkap'),
             'sortDirection' => request('direction', 'asc'),
             'perPage' => request('per_page', 10),
-            'targetRoute' => 'ak03.create',
+            'targetRoute' => 'ak03.index',
             'buttonLabel' => 'FR.AK.03',
+            'formName' => 'Umpan Balik dan Catatan Asesmen',
         ]);
     }
 }

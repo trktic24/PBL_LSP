@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Ia11;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -20,6 +22,60 @@ class IA11Controller extends Controller
 
         // Data penilaian Asesor sudah otomatis di-decode oleh Model berkat $casts = ['rancangan_produk' => 'array']
         $asesor_data = $ia11->rancangan_produk ?? [];
+
+        // [AUTO-LOAD TEMPLATE] Jika rekomendasi masih kosong, ambil dari Master Template
+        if (empty($asesor_data['rekomendasi_kelompok']) && empty($asesor_data['rekomendasi_unit'])) {
+            $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                        ->where('id_jadwal', $ia11->dataSertifikasiAsesi?->id_jadwal)
+                                        ->where('form_code', 'FR.IA.11')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.11')
+                                            ->first();
+            }
+            if ($template && !empty($template->content)) {
+                $asesor_data['rekomendasi_kelompok'] = $template->content['rekomendasi_kelompok'] ?? '';
+                $asesor_data['rekomendasi_unit'] = $template->content['rekomendasi_unit'] ?? '';
+                $asesor_data['catatan_asesor'] = $template->content['catatan_asesor'] ?? '';
+            }
+        }
+        // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, pakai Master Template atau Statis
+        if ($ia11->pertanyaan->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                        ->where('id_jadwal', $ia11->dataSertifikasiAsesi?->id_jadwal)
+                                        ->where('form_code', 'FR.IA.11_QUESTIONS') // Assuming a separate template for questions
+                                        ->first();
+                                        
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.11_QUESTIONS')
+                                            ->first();
+            }
+            
+            $defaultQuestions = [
+                "Apakah produk hasil kerja memenuhi spesifikasi yang ditetapkan?",
+                "Apakah kriteria keberterimaan produk dipenuhi secara keseluruhan?",
+                "Apakah proses pembuatan produk mengikuti standar keselamatan kerja (K3)?",
+                "Apakah produk menunjukkan tingkat kemahiran yang dipersyaratkan?"
+            ];
+
+            // If template exists and has content, use it; otherwise, use default questions
+            $questions = ($template && !empty($template->content) && is_array($template->content)) ? $template->content : $defaultQuestions;
+
+            foreach ($questions as $qText) {
+                \App\Models\PertanyaanIa11::create([
+                    'id_ia11' => $ia11->id, // Use $ia11->id for the foreign key
+                    'pertanyaan' => $qText,
+                    'penilaian' => null 
+                ]);
+            }
+            // Refresh relation
+            $ia11->load('pertanyaan');
+        }
 
         $data = [
             'ia11' => $ia11,
@@ -126,61 +182,117 @@ class IA11Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.11 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Tinjau Instrumen) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.IA.11')
+                                    ->first();
+        
+        // Default values if no template exists
+        $content = $template ? $template->content : [
+            'rekomendasi_kelompok' => '',
+            'rekomendasi_unit' => '',
+            'catatan_asesor' => ''
+        ];
+
+        return view('Admin.master.skema.template.ia11', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'rekomendasi_kelompok' => 'nullable|string',
+            'rekomendasi_unit' => 'nullable|string',
+            'catatan_asesor' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.11'
+            ],
+            [
+                'content' => [
+                    'rekomendasi_kelompok' => $request->rekomendasi_kelompok,
+                    'rekomendasi_unit' => $request->rekomendasi_unit,
+                    'catatan_asesor' => $request->catatan_asesor,
+                ]
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-11 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.11 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
-            'jadwal' => $jadwal,
+        $defaultPoints = [
+            "Prosedur Asesmen",
+            "Instruksi Perangkat Asesmen",
+            "Sesuai dengan Unit Kompetensi",
+            "Memberikan Panduan bagi Asesor"
+        ];
+
+        $ia11 = new \App\Models\Ia11([
+            'rancangan_produk' => [
+                'rekomendasi_kelompok' => 'Lanjut',
+                'rekomendasi_unit' => 'Lanjut',
+                'catatan_asesor' => '-'
+            ]
+        ]);
+        $ia11->setRelation('dataSertifikasiAsesi', $sertifikasi);
+
+        $pertanyaan = collect();
+        foreach ($defaultPoints as $pText) {
+            $pertanyaan->push(new \App\Models\PertanyaanIa11([
+                'pertanyaan' => $pText,
+                'penilaian' => 'ya'
+            ]));
+        }
+        $ia11->setRelation('pertanyaan', $pertanyaan);
+
+        $user = new \stdClass();
+        $user->role = 'admin';
+
+        return view('frontend.FR_IA_11', [
+            'ia11' => $ia11,
+            'user' => $user,
+            'asesor_data' => $ia11->rancangan_produk,
+            'judul_skema' => $skema->nama_skema,
+            'nomor_skema' => $skema->kode_unit,
+            'nama_asesor' => $jadwal->asesor->nama_lengkap,
+            'nama_asesi' => $asesi->nama_lengkap,
+            'tanggal_sekarang' => now()->toDateString(),
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia11.show',
-            'buttonLabel' => 'FR.IA.11',
         ]);
     }
 }

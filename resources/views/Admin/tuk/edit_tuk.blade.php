@@ -36,6 +36,17 @@
           <div class="w-[80px]"></div>
         </div>
 
+        @if ($errors->any())
+          <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-200 rounded-lg">
+            <strong>Terdapat kesalahan:</strong>
+            <ul class="list-disc pl-5 mt-2 text-sm">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
+
         <form action="{{ route('admin.update_tuk', $tuk->id_tuk) }}" method="POST" class="space-y-6" enctype="multipart/form-data">
           @csrf
           @method('PATCH')
@@ -82,19 +93,29 @@
               </label>
 
               <p class="text-xs text-gray-500 mt-1">
-                File saat ini: <a href="{{ Storage::url($tuk->foto_tuk) }}" target="_blank" class="text-blue-500 hover:underline">Lihat Gambar</a>
+                File saat ini: <a href="{{ asset('storage/' . $tuk->foto_tuk) }}" target="_blank" class="text-blue-500 hover:underline">Lihat Gambar</a>
               </p>
             </div>
           </div>
 
           <div>
-            <label for="link_gmap" class="block text-sm font-medium text-gray-700 mb-2">
-              Link Google Maps <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="link_gmap" name="link_gmap" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Masukkan URL Google Maps"
-              value="{{ old('link_gmap', $tuk->link_gmap) }}" />
+<div x-data="{ linkGmap: '{{ old('link_gmap', $tuk->link_gmap) }}' }">
+  <label for="link_gmap" class="block text-sm font-medium text-gray-700 mb-2">
+    Link Google Maps <span class="text-red-500">*</span>
+  </label>
+  <input type="text" id="link_gmap" name="link_gmap" required
+    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+    placeholder="Masukkan URL Google Maps"
+    x-model="linkGmap"
+    value="{{ old('link_gmap', $tuk->link_gmap) }}" />
+  <div class="mt-4" x-show="linkGmap">
+    <iframe :src="linkGmap" width="100%" height="300" style="border:0;" allowfullscreen loading="lazy"></iframe>
+  </div>
+  <p class="text-sm text-gray-600 mt-2">
+    <strong>Contoh link embed:</strong> https://www.google.com/maps/embed?pb=!1m18!...<br>
+    Dapatkan melalui Google Maps → "Bagikan" → "Sematkan peta" → Salin URL di dalam atribut <code>src</code>.
+  </p>
+</div>
           </div>
 
           <div class="pt-4">
