@@ -65,7 +65,7 @@ class JadwalTukAPIController extends Controller
                     // [PERBAIKAN] Ambil langsung dari kolom 'foto_tuk' di database
                     // Asumsi di database isinya: "gedung1.jpg"
                     // Outputnya jadi: "images/gedung1.jpg"
-                    'foto_gedung' => ($jadwal->masterTuk->foto_tuk ?? 'default.jpg'), 
+                    'foto_gedung' => ($jadwal->masterTuk->foto_tuk), 
 
                     'link_gmap'   => $jadwal->masterTuk->link_gmap ?? null,
 

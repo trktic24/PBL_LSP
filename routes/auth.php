@@ -546,6 +546,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/pra-asesmen-selesai/{id_sertifikasi}', 'praAsesmenSelesai')->name('pra_asesmen.selesai');
                 Route::get('/persetujuan-selesai/{id_sertifikasi}', 'persetujuanSelesai')->name('persetujuan.selesai');
                 Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
+                Route::get('/sertifikat/{id}/download',  'downloadSertifikat')->name('sertifikat.download');
             });
 
             // Pembayaran

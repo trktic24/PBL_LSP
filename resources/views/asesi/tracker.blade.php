@@ -236,7 +236,7 @@
                                         Unduh Invoice
                                     </a>
                                 @elseif ($level == $LVL_TUNGGU_BAYAR)
-                                    <p class="{{ $statusClassTunggu }}">Menunggu Verifikasi</p>
+                                    <p class="{{ $statusClassTunggu }}">Silahkan Selesaikan Pembayaran Anda</p>
                                 @elseif ($level == $LVL_DAFTAR_SELESAI)
                                     <p class="{{ $statusClassTunggu }}">Silahkan Lakukan Pembayaran</p>
                                 @else
@@ -514,7 +514,7 @@
                             {{-- Garis Timeline --}}
                             <div
                                 class="absolute left-5 top-0 -bottom-8 w-1 md:left-6 md:top-6 md:-bottom-10 md:w-0.5 
-        {{ ($isSelesaiTahapIni || $statusGagal || $unlockAsesmen || $unlockAK03) ? 'bg-green-500' : 'bg-gray-200' }}">
+        {{ $isSelesaiTahapIni || $statusGagal || $unlockAsesmen || $unlockAK03 ? 'bg-green-500' : 'bg-gray-200' }}">
                             </div>
 
                             {{-- Icon Timeline Wrapper --}}
@@ -549,7 +549,7 @@
                                 {{-- Bulat Status (Mobile) --}}
                                 <div
                                     class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    @if ($statusGagal && $unlockAK03) 
+                                    @if ($statusGagal && $unlockAK03)
                                         {{-- MERAH --}}
                                         <div
                                             class="w-4 h-4 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.6)]">
@@ -864,9 +864,15 @@
                                                 @if ($unlockHasil)
                                                     <a href="{{ route('asesi.asesmen.fr_ia_09.index', $sertifikasi->id_data_sertifikasi_asesi) }}"
                                                         class="flex items-center justify-center w-full sm:w-36 h-10 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
-                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                        <svg class="w-4 h-4 mr-2" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                                            </path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                            </path>
                                                         </svg> Lihat Hasil
                                                     </a>
                                                 @else
@@ -956,7 +962,7 @@
                                 </div>
                                 <div
                                     class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    @if ($isTidakKompeten || ($level >= $LVL_UMPAN_BALIK))
+                                    @if ($isTidakKompeten || $level >= $LVL_UMPAN_BALIK)
                                         <div
                                             class="w-4 h-4 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.6)]">
                                         </div>
@@ -1022,15 +1028,16 @@
                                 @if ($unlockSertifikat && $level >= $LVL_UMPAN_BALIK)
                                     <span class="{{ $linkClassEnabled }}">Keputusan Komite</span>
                                 @else
-                                <h3 class="{{ $linkClassDisabled }}">Keputusan Komite</h3>
+                                    <h3 class="{{ $linkClassDisabled }}">Keputusan Komite</h3>
                                 @endif
 
                                 @if ($unlockSertifikat && $level >= $LVL_UMPAN_BALIK)
                                     <p class="{{ $statusClassSelesai }}">Kompeten - Direkomendasikan Menerima
                                         Sertifikat</p>
-                                    <button
-                                        class="{{ $btnBlue }} bg-green-500 hover:bg-green-600 border-none shadow-green-100">Unduh
-                                        Sertifikat</button>
+                                    <a href="{{ route('asesi.sertifikat.download', $sertifikasi->id_data_sertifikasi_asesi) }}"
+                                        class="{{ $btnBlue }} bg-green-500 hover:bg-green-600 border-none shadow-green-100 inline-block text-center decoration-0">
+                                        Unduh Sertifikat
+                                    </a>
                                 @elseif ($isTidakKompeten)
                                     <p class="text-xs text-red-600 font-medium">Belum Kompeten - Tidak Direkomendasikan
                                     </p>

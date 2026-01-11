@@ -130,7 +130,7 @@ class Mapa02Controller extends Controller
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi',                                          // Data Asesi
             'jadwal.masterTuk',                               // Data TUK
-            'jadwal.skema.asesor',                            // Data Asesor
+            'jadwal.asesor',                            // Data Asesor
             'jadwal.skema.kelompokPekerjaan.unitKompetensi',  // Data Unit Kompetensi
         ])->find($id_data_sertifikasi_asesi);
 

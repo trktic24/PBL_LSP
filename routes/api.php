@@ -127,6 +127,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/list/{id_data_sertifikasi_asesi}', [BuktiKelengkapanController::class, 'getDataBuktiKelengkapanApi'])->name('api.v1.bukti_kelengkapan.get');
         Route::post('/store', [BuktiKelengkapanController::class, 'storeAjax'])->name('api.v1.bukti_kelengkapan.store');
         Route::delete('/{id}', [BuktiKelengkapanController::class, 'deleteAjax']);
+        
     });
 
     // 3. Pra Asesmen (APL-02)
