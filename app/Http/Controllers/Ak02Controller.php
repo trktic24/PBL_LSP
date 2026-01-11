@@ -100,7 +100,7 @@ class Ak02Controller extends Controller
             }
 
             $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
-            
+
             if ($globalKompeten) {
                 $asesi->update([
                     'rekomendasi_hasil_asesmen_AK02' => $globalKompeten,
@@ -123,6 +123,24 @@ class Ak02Controller extends Controller
                 ];
 
                 event(new \App\Events\AssessmentReviewed($notificationData));
+
+                // --- NEW: Notify Admins (Validators) ---
+                $validators = \App\Models\User::whereHas('role', function ($q) {
+                    $q->where('nama_role', 'admin');
+                })->get();
+
+                // Safely access relationships
+                $namaAsesi = $asesiData->asesi->nama_lengkap ?? 'Asesi';
+                $namaAsesor = $asesiData->jadwal->asesor->nama_asesor ?? ($request->user()->name ?? 'Asesor');
+                $namaSkema = $asesiData->jadwal->skema->judul_skema ?? 'Skema';
+                $idJadwal = $asesiData->id_jadwal;
+
+                foreach ($validators as $validator) {
+                    $validator->notify(new \App\Notifications\AssessmentCompletionNotice([
+                        'message' => "Asesmen dari {$namaAsesi} telah selesai dinilai oleh asesor {$namaAsesor}, dari skema {$namaSkema}.",
+                        'link' => route('admin.schedule.attendance', ['id_jadwal' => $idJadwal]),
+                    ]));
+                }
             } catch (\Exception $evt) {
                 // Ignore event failure to not block saving
                 // Log::error($evt);
@@ -240,13 +258,13 @@ class Ak02Controller extends Controller
             'responBuktiAk01',
             'lembarJawabIa05',
             'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
+        ])->whereHas('jadwal', function ($q) use ($id_skema) {
             $q->where('id_skema', $id_skema);
         });
 
         if (request('search')) {
             $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
+            $query->whereHas('asesi', function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%");
             });
         }

@@ -90,9 +90,11 @@ class FrAk06Controller extends Controller
     public function cetakPDF($id_jadwal)
     {
          $jadwal = \App\Models\Jadwal::with(['skema', 'asesor', 'masterTuk'])->findOrFail($id_jadwal);
-         $ak06 = FrAk06::where('id_jadwal', $id_jadwal)->first(); // Assuming schema has id_jadwal or similar link
-         // NOTES: The FR.AK.06 table structure wasn't fully inspected, assuming standard linkage. 
-         // If retrieval fails, we pass null or empty object to view.
+         
+         // [FIX] Table fr_ak06s does not have id_jadwal column (migration missing FK).
+         // Temporary fix: Do not query by id_jadwal to avoid SQL error.
+         // Pass null so PDF renders as blank form (template) with header info.
+         $ak06 = null; 
          
          $skema = $jadwal->skema;
          $asesor = $jadwal->asesor;
