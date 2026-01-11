@@ -81,7 +81,7 @@ class TukAdminController extends Controller
             'alamat_tuk'  => 'required|string',
             'kontak_tuk'  => 'required|string|max:100',
             'foto_tuk'    => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'link_gmap'   => 'required|url',
+            'link_gmap'   => ['required','regex:/^https:\/\/www\.google\.com\/maps\/embed\?.*$/'],
         ]);
 
         // Simpan file ke storage (public/tuk)
@@ -117,7 +117,7 @@ class TukAdminController extends Controller
             'alamat_tuk'  => 'required|string',
             'kontak_tuk'  => 'required|string|max:100',
             'foto_tuk'    => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
-            'link_gmap'   => 'required|url',
+            'link_gmap'   => ['required','regex:/^https:\/\/www\.google\.com\/maps\/embed\?.*$/'],
         ]);
 
         if ($request->hasFile('foto_tuk')) {
