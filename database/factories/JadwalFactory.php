@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Jadwal;
-use App\Models\JenisTuk;
+use App\Models\JenisTUK;
 use App\Models\MasterTUK;
 use App\Models\Skema;
 use App\Models\Asesor;
@@ -32,7 +32,7 @@ class JadwalFactory extends Factory
         $id_tuk = MasterTUK::inRandomOrder()->first()->id_tuk;
         $id_skema = Skema::inRandomOrder()->first()->id_skema;
         $id_asesor = Asesor::inRandomOrder()->first()->id_asesor;
-        $id_jenis_tuk = JenisTuk::inRandomOrder()->first()->id_jenis_tuk;
+        $id_jenis_tuk = JenisTUK::inRandomOrder()->first()->id_jenis_tuk;
 
         return [
             'id_asesor' => $id_asesor,

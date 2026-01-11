@@ -93,6 +93,18 @@
             <div class="text-center">
                 <h1 class="text-2xl font-bold text-gray-800">{{ $headerTitle }}</h1>
                 <p class="text-sm text-gray-500 mt-1">{{ $headerSubTitle }}</p>
+                @if($isMasterView && isset($buttonLabel))
+                    <div class="mt-3 flex flex-col items-center gap-2">
+                        @if(isset($formName))
+                            <span class="text-lg font-semibold text-blue-700 uppercase tracking-wide">
+                                {{ $formName }}
+                            </span>
+                        @endif
+                        <span class="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-full shadow-sm">
+                            KODE: {{ $buttonLabel }}
+                        </span>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -191,7 +203,30 @@
                                 </div>
                             </a>
                         </th>
+
+                        {{-- Kolom Asesor dengan Sorting --}}
+                        <th class="px-6 py-3 font-semibold whitespace-nowrap">
+                            @php $isCurrent = $sortColumn == 'asesor'; @endphp
+                            <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['sort' => 'asesor', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group cursor-pointer hover:text-blue-600 transition">
+                                <span>Asesor</span>
+                                <div class="flex flex-col ml-2 -space-y-1 text-[10px]">
+                                    <i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-blue-600' : 'text-gray-300 group-hover:text-blue-400' }}"></i>
+                                    <i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-blue-600' : 'text-gray-300 group-hover:text-blue-400' }}"></i>
+                                </div>
+                            </a>
+                        </th>
                         
+                        {{-- Kolom Status dengan Sorting --}}
+                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">
+                            @php $isCurrent = $sortColumn == 'status'; @endphp
+                            <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['sort' => 'status', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center justify-center group cursor-pointer hover:text-blue-600 transition">
+                                <span>Status</span>
+                                <div class="flex flex-col ml-2 -space-y-1 text-[10px]">
+                                    <i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-blue-600' : 'text-gray-300 group-hover:text-blue-400' }}"></i>
+                                    <i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-blue-600' : 'text-gray-300 group-hover:text-blue-400' }}"></i>
+                                </div>
+                            </a>
+                        </th>
                         <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
@@ -211,6 +246,41 @@
                                     @endif
                                 </a>
                             </td>
+
+                            {{-- Asesor --}}
+                            <td class="px-6 py-4 text-left align-middle font-medium text-gray-600">
+                                @if($item->jadwal && $item->jadwal->asesor)
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-bold border border-blue-100">
+                                            {{ substr($item->jadwal->asesor->nama_lengkap, 0, 1) }}
+                                        </div>
+                                        <span class="line-clamp-1 truncate max-w-[150px]">{{ $item->jadwal->asesor->nama_lengkap }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-gray-400 italic">Belum Diplot</span>
+                                @endif
+                            </td>
+
+                            {{-- Status --}}
+                            <td class="px-6 py-4 text-center align-middle">
+                                @php
+                                    if (is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)){
+                                        $statusText = 'Belum Direview';
+                                        $statusColor = 'bg-red-50 text-red-700 border-red-100';
+                                    } elseif (!is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)) {
+                                        $statusText = 'Dalam Proses';
+                                        $statusColor = 'bg-yellow-50 text-yellow-700 border-yellow-100';
+                                    } else {
+                                        $statusText = 'Sudah Direview';
+                                        $statusColor = 'bg-green-50 text-green-700 border-green-100';
+                                    }
+                                @endphp
+                                <a href="{{ route('admin.laporan.asesi.view', $item->id_data_sertifikasi_asesi) }}" 
+                                   class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $statusColor }} transition hover:opacity-80">
+                                    {{ $statusText }}
+                                </a>
+                            </td>
+
                             {{-- Aksi --}}
                             <td class="px-6 py-4 text-center align-middle">
                                 <a href="{{ route($targetRoute ?? 'admin.asesor.assessment.detail', $item->id_data_sertifikasi_asesi) }}" 
@@ -221,7 +291,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-400">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
                                     <p>Data asesi tidak ditemukan.</p>

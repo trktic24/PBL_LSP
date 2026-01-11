@@ -21,6 +21,7 @@ class IA03 extends Model
     protected $fillable = [
         'id_data_sertifikasi_asesi',
         'pertanyaan',
+        'jawaban',
         'tanggapan',
         'pencapaian',
         'catatan_umpan_balik',

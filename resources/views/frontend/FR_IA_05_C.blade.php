@@ -4,11 +4,17 @@
 
     @php 
         // Tentukan Role untuk Logic Disabled
-        $is_asesor = ($user->role_id == 3 || $user->role_id == 1); 
+        // Role 3 = Asesor, Role 1 = Admin, Role 4 = Admin Master
+        $is_asesor = ($user->role_id == 3); 
+        $is_admin = ($user->role_id == 1 || $user->role_id == 4);
     @endphp
 
+    @if(!$is_admin)
     <form class="form-body" method="POST" action="{{ route('ia-05.store.penilaian', ['id_asesi' => $asesi->id_data_sertifikasi_asesi]) }}">
         @csrf 
+    @else
+    <div class="form-body">
+    @endif
         <x-header_form.header_form title="FR.IA.05.C. LEMBAR JAWABAN PILIHAN GANDA" />
         
 {{-- === DROPDOWN NAVIGASI (Form C) === --}}
@@ -328,6 +334,10 @@
                 <button type="submit" class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Simpan Penilaian</button>
             @endif
         </div>
+    @if(!$is_admin)
     </form>
+    @else
+    </div>
+    @endif
 </main>
 @endsection
