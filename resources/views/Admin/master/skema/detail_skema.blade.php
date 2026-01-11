@@ -191,25 +191,10 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-semibold text-gray-900">Kelompok Pekerjaan & Unit Kompetensi</h3>
                 
-                @if($skema->kelompokPekerjaan->isNotEmpty())
-                    @php $kelompokId = $skema->kelompokPekerjaan->first()->id_kelompok_pekerjaan; @endphp
-                    
-                    <div class="flex space-x-2">
-                        <a href="{{ route('admin.skema.detail.edit_kelompok', $kelompokId) }}" 
-                           class="flex items-center space-x-1 px-3 py-1.5 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition shadow-sm">
-                            <i class="fas fa-pen text-xs"></i> <span>Edit</span>
-                        </a>
-
-                        <form action="{{ route('admin.skema.detail.destroy_kelompok', $kelompokId) }}" method="POST" 
-                              onsubmit="return confirm('Yakin ingin menghapus Kelompok Pekerjaan ini beserta seluruh Unit Kompetensinya?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="flex items-center space-x-1 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition shadow-sm">
-                                <i class="fas fa-trash text-xs"></i> <span>Delete</span>
-                            </button>
-                        </form>
-                    </div>
-                @endif
+                <a href="{{ route('admin.skema.detail.add_kelompok', $skema->id_skema) }}" 
+                   class="flex items-center space-x-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition shadow-sm">
+                    <i class="fas fa-plus-circle mr-1.5"></i> <span>Tambah Kelompok</span>
+                </a>
             </div>
             <table class="min-w-full text-sm text-left border border-gray-200 border-collapse">
                 <thead class="bg-gray-50 text-gray-600 uppercase text-sm">
@@ -240,9 +225,27 @@
                                 <tr class="hover:bg-gray-50 transition">
                                     
                                     @if($index === 0)
-                                        <td class="px-4 py-4 font-bold align-top border border-gray-200 text-gray-900" 
+                                        <td class="px-4 py-4 align-top border border-gray-200 text-gray-900 bg-gray-50/30" 
                                             rowspan="{{ $jumlahUnit }}">
-                                            {{ $kelompok->nama_kelompok_pekerjaan }}
+                                            <div class="flex flex-col h-full justify-between">
+                                                <span class="font-bold text-gray-800 text-base mb-2 block leading-tight">{{ $kelompok->nama_kelompok_pekerjaan }}</span>
+                                                
+                                                <div class="flex space-x-2 mt-3 pt-3 border-t border-gray-100">
+                                                    <a href="{{ route('admin.skema.detail.edit_kelompok', $kelompok->id_kelompok_pekerjaan) }}" 
+                                                       class="flex items-center justify-center px-3 py-1.5 bg-yellow-400 hover:bg-yellow-500 text-white text-[10px] uppercase font-bold tracking-wider rounded transition shadow-sm" title="Edit Kelompok">
+                                                        <i class="fas fa-pen mr-1"></i> Edit
+                                                    </a>
+
+                                                    <form action="{{ route('admin.skema.detail.destroy_kelompok', $kelompok->id_kelompok_pekerjaan) }}" method="POST" 
+                                                          onsubmit="return confirm('Yakin ingin menghapus Kelompok ini? Semua Unit Kompetensi di dalamnya akan ikut terhapus.');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="flex items-center justify-center px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-[10px] uppercase font-bold tracking-wider rounded transition shadow-sm" title="Hapus Kelompok">
+                                                            <i class="fas fa-trash mr-1"></i> Hapus
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </td>
                                     @endif
                                     

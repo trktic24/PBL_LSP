@@ -312,40 +312,57 @@ class DetailSkemaController extends Controller
         $kelompok = KelompokPekerjaan::with(['unitKompetensi.elemen.kriteria'])->findOrFail($id_kelompok);
         $skema = $kelompok->skema;
 
-        // Map APL02 data (Elemen 1 & its KUKs) into a plain array for Alpine.js
-        $mappedUnits = $kelompok->unitKompetensi->map(function($unit) {
-            $firstElemen = $unit->elemen->sortBy('id_elemen')->first();
+        // Map data recursively for Alpine.js
+        $mappedUnits = $kelompok->unitKompetensi->sortBy('urutan')->values()->map(function($unit) {
             
-            // Map 3 KUKs (sesuai permintaan "3 edit")
-            $kuks = $firstElemen ? $firstElemen->kriteria->sortBy('id_kriteria')->values() : collect();
-            
-            // Map 'aktivitas' to 'K' for UI, others to 'demonstrasi'
-            $mapTipe = fn($t) => $t === 'aktivitas' ? 'K' : 'demonstrasi';
+            // Map Elements
+            $elements = $unit->elemen->sortBy('id_elemen')->values()->map(function($elemen) {
+                
+                // Map Kriteria
+                $kriteria = $elemen->kriteria->sortBy('id_kriteria')->values()->map(function($kuk) {
+                    $mapTipe = fn($t) => $t === 'aktivitas' ? 'K' : 'demonstrasi';
+                    return [
+                        'id' => $kuk->id_kriteria, 
+                        'text' => $kuk->kriteria, 
+                        'bukti' => $kuk->standar_industri_kerja, 
+                        'is_kompeten' => $mapTipe($kuk->tipe),
+                        'no_kriteria' => $kuk->no_kriteria
+                    ];
+                });
+
+                // If no kriteria, provide one empty default
+                if ($kriteria->isEmpty()) {
+                    $kriteria = collect([
+                        ['id' => null, 'text' => '', 'bukti' => '', 'is_kompeten' => 'demonstrasi', 'no_kriteria' => '1.1']
+                    ]);
+                }
+
+                return [
+                    'id' => $elemen->id_elemen,
+                    'name' => $elemen->elemen,
+                    'kriteria' => $kriteria
+                ];
+            });
+
+            // If no elements, provide one empty default
+            if ($elements->isEmpty()) {
+                $elements = collect([
+                    [
+                        'id' => null, 
+                        'name' => '', 
+                        'kriteria' => collect([
+                            ['id' => null, 'text' => '', 'bukti' => '', 'is_kompeten' => 'demonstrasi', 'no_kriteria' => '1.1']
+                        ])
+                    ]
+                ]);
+            }
 
             return [
                 'id_unit_kompetensi' => $unit->id_unit_kompetensi,
                 'kode_unit' => $unit->kode_unit,
                 'judul_unit' => $unit->judul_unit,
                 'expanded' => true,
-                'elemen_1_name' => $firstElemen ? $firstElemen->elemen : '',
-                'kriteria_1' => $kuks->get(0) ? [
-                    'id' => $kuks[0]->id_kriteria, 
-                    'text' => $kuks[0]->kriteria, 
-                    'bukti' => $kuks[0]->standar_industri_kerja, 
-                    'is_kompeten' => $mapTipe($kuks[0]->tipe)
-                ] : ['id' => null, 'text' => '', 'bukti' => '', 'is_kompeten' => 'demonstrasi'],
-                'kriteria_2' => $kuks->get(1) ? [
-                    'id' => $kuks[1]->id_kriteria, 
-                    'text' => $kuks[1]->kriteria, 
-                    'bukti' => $kuks[1]->standar_industri_kerja, 
-                    'is_kompeten' => $mapTipe($kuks[1]->tipe)
-                ] : ['id' => null, 'text' => '', 'bukti' => '', 'is_kompeten' => 'demonstrasi'],
-                'kriteria_3' => $kuks->get(2) ? [
-                    'id' => $kuks[2]->id_kriteria, 
-                    'text' => $kuks[2]->kriteria, 
-                    'bukti' => $kuks[2]->standar_industri_kerja, 
-                    'is_kompeten' => $mapTipe($kuks[2]->tipe)
-                ] : ['id' => null, 'text' => '', 'bukti' => '', 'is_kompeten' => 'demonstrasi'],
+                'elements' => $elements
             ];
         });
 
@@ -362,19 +379,10 @@ class DetailSkemaController extends Controller
             'units' => 'required|array|min:1',
             'units.*.kode_unit' => 'required|string|max:50',
             'units.*.judul_unit' => 'required|string|max:255',
-            'units.*.elemen_1_name' => 'nullable|string',
-            'units.*.kriteria_1' => 'nullable|array',
-            'units.*.kriteria_1.text' => 'nullable|string',
-            'units.*.kriteria_1.bukti' => 'nullable|string',
-            'units.*.kriteria_1.is_kompeten' => 'nullable|string',
-            'units.*.kriteria_2' => 'nullable|array',
-            'units.*.kriteria_2.text' => 'nullable|string',
-            'units.*.kriteria_2.bukti' => 'nullable|string',
-            'units.*.kriteria_2.is_kompeten' => 'nullable|string',
-            'units.*.kriteria_3' => 'nullable|array',
-            'units.*.kriteria_3.text' => 'nullable|string',
-            'units.*.kriteria_3.bukti' => 'nullable|string',
-            'units.*.kriteria_3.is_kompeten' => 'nullable|string',
+            'units.*.elements' => 'nullable|array',
+            'units.*.elements.*.name' => 'nullable|string',
+            'units.*.elements.*.kriteria' => 'nullable|array',
+            'units.*.elements.*.kriteria.*.text' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -387,93 +395,118 @@ class DetailSkemaController extends Controller
             ]);
 
             // 2. Proses Unit Kompetensi (Sync)
-            $existingIds = $kelompok->unitKompetensi->pluck('id_unit_kompetensi')->toArray();
-            $submittedIds = [];
+            $existingUnitIds = $kelompok->unitKompetensi->pluck('id_unit_kompetensi')->toArray();
+            $submittedUnitIds = [];
 
             foreach ($request->units as $unitData) {
+                $unit = null;
+                
                 if (!empty($unitData['id'])) {
-                    // Update Existing Unit
                     $unit = UnitKompetensi::find($unitData['id']);
-                    if ($unit) {
-                        $unit->update([
-                            'kode_unit' => $unitData['kode_unit'],
-                            'judul_unit' => $unitData['judul_unit'],
-                        ]);
-                        $submittedIds[] = $unit->id_unit_kompetensi;
+                }
 
-                        // CRUD Elemen Pertama & KUK untuk APL-02
-                        $firstElemen = $unit->elemen()->orderBy('id_elemen')->first();
-                        if (!$firstElemen) {
-                            $firstElemen = $unit->elemen()->create(['elemen' => $unitData['elemen_1_name'] ?? '']);
-                        } else {
-                            $firstElemen->update(['elemen' => $unitData['elemen_1_name'] ?? '']);
-                        }
-
-                        // Sync 3 KUKs
-                        $this->syncKuk($firstElemen, $unitData['kriteria_1'] ?? null, '1.1');
-                        $this->syncKuk($firstElemen, $unitData['kriteria_2'] ?? null, '1.2');
-                        $this->syncKuk($firstElemen, $unitData['kriteria_3'] ?? null, '1.3');
-                    }
-                } else {
-                    // Create New Unit
-                    $newUnit = $kelompok->unitKompetensi()->create([
+                if ($unit) {
+                    $unit->update([
                         'kode_unit' => $unitData['kode_unit'],
                         'judul_unit' => $unitData['judul_unit'],
-                        'urutan' => 1,
                     ]);
-                    $submittedIds[] = $newUnit->id_unit_kompetensi;
+                } else {
+                    $unit = $kelompok->unitKompetensi()->create([
+                        'kode_unit' => $unitData['kode_unit'],
+                        'judul_unit' => $unitData['judul_unit'],
+                        'urutan' => 1, // Logic urutan bisa diperbaiki jika perlu
+                    ]);
+                }
+                $submittedUnitIds[] = $unit->id_unit_kompetensi;
 
-                    // Create Elemen Pertama & 3 KUK default
-                    $newElemen = $newUnit->elemen()->create(['elemen' => $unitData['elemen_1_name'] ?? '']);
-                    $this->syncKuk($newElemen, $unitData['kriteria_1'] ?? null, '1.1');
-                    $this->syncKuk($newElemen, $unitData['kriteria_2'] ?? null, '1.2');
-                    $this->syncKuk($newElemen, $unitData['kriteria_3'] ?? null, '1.3');
+                // --- Proses Elemen ---
+                $existingElementIds = $unit->elemen->pluck('id_elemen')->toArray();
+                $submittedElementIds = [];
+
+                if (!empty($unitData['elements']) && is_array($unitData['elements'])) {
+                    foreach ($unitData['elements'] as $elemIndex => $elemData) {
+                        // Skip jika nama elemen kosong
+                        if (empty($elemData['name'])) continue;
+
+                        $elemen = null;
+                        if (!empty($elemData['id'])) {
+                            $elemen = \App\Models\Elemen::find($elemData['id']);
+                        }
+
+                        if ($elemen) {
+                            $elemen->update(['elemen' => $elemData['name']]);
+                        } else {
+                            $elemen = $unit->elemen()->create(['elemen' => $elemData['name']]);
+                        }
+                        $submittedElementIds[] = $elemen->id_elemen;
+
+                        // --- Proses Kriteria ---
+                        $existingKriteriaIds = $elemen->kriteria->pluck('id_kriteria')->toArray();
+                        $submittedKriteriaIds = [];
+
+                        if (!empty($elemData['kriteria']) && is_array($elemData['kriteria'])) {
+                            foreach ($elemData['kriteria'] as $kukIndex => $kukData) {
+                                // Skip jika teks kriteria kosong
+                                if (empty($kukData['text'])) continue;
+
+                                // Tipe logic
+                                $tipe = ($kukData['is_kompeten'] ?? 'demonstrasi') === 'K' ? 'aktivitas' : 'demonstrasi';
+                                // No Kriteria logic: Use input or default to index
+                                $noKriteria = $kukData['no_kriteria'] ?? ($elemIndex + 1) . '.' . ($kukIndex + 1);
+
+                                $kuk = null;
+                                if (!empty($kukData['id'])) {
+                                    $kuk = \App\Models\KriteriaUnjukKerja::find($kukData['id']);
+                                }
+
+                                if ($kuk) {
+                                    $kuk->update([
+                                        'kriteria' => $kukData['text'],
+                                        'no_kriteria' => $noKriteria,
+                                        'standar_industri_kerja' => $kukData['bukti'] ?? null,
+                                        'tipe' => $tipe
+                                    ]);
+                                } else {
+                                    $kuk = $elemen->kriteria()->create([
+                                        'kriteria' => $kukData['text'],
+                                        'no_kriteria' => $noKriteria,
+                                        'standar_industri_kerja' => $kukData['bukti'] ?? null,
+                                        'tipe' => $tipe
+                                    ]);
+                                }
+                                $submittedKriteriaIds[] = $kuk->id_kriteria;
+                            }
+                        }
+
+                        // Delete orphaned Kriteria
+                        $kriteriaToDelete = array_diff($existingKriteriaIds, $submittedKriteriaIds);
+                        if (!empty($kriteriaToDelete)) {
+                            \App\Models\KriteriaUnjukKerja::destroy($kriteriaToDelete);
+                        }
+                    }
+                }
+
+                // Delete orphaned Elements
+                $elementsToDelete = array_diff($existingElementIds, $submittedElementIds);
+                if (!empty($elementsToDelete)) {
+                    \App\Models\Elemen::destroy($elementsToDelete);
                 }
             }
 
-            // 3. Hapus unit yang tidak ada di form submit (berarti dihapus user)
-            $idsToDelete = array_diff($existingIds, $submittedIds);
-            UnitKompetensi::destroy($idsToDelete);
+            // 3. Hapus unit yang tidak ada di form submit (orphaned Units)
+            $unitsToDelete = array_diff($existingUnitIds, $submittedUnitIds);
+            if (!empty($unitsToDelete)) {
+                UnitKompetensi::destroy($unitsToDelete);
+            }
 
             DB::commit();
             return redirect()->route('admin.skema.detail', $kelompok->id_skema)
-                             ->with('success', "Kelompok Pekerjaan dan Unit Kompetensi Skema'{$kelompok->skema->nama_skema}' (ID: {$kelompok->id_skema}) berhasil diperbarui.");
+                             ->with('success', "Kelompok Pekerjaan dan Unit Kompetensi Skema '{$kelompok->skema->nama_skema}' (ID: {$kelompok->id_skema}) berhasil diperbarui.");
 
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
-    }
-
-    /**
-     * Helper to sync KUK data.
-     */
-    private function syncKuk($elemen, $data, $no_kriteria)
-    {
-        if (empty($data['text'])) return;
-
-        // Map UI 'K' back to 'aktivitas' (enum)
-        $tipe = ($data['is_kompeten'] ?? 'demonstrasi') === 'K' ? 'aktivitas' : 'demonstrasi';
-
-        if (!empty($data['id'])) {
-            $kuk = \App\Models\KriteriaUnjukKerja::find($data['id']);
-            if ($kuk) {
-                $kuk->update([
-                    'kriteria' => $data['text'],
-                    'no_kriteria' => $no_kriteria,
-                    'standar_industri_kerja' => $data['bukti'] ?? null,
-                    'tipe' => $tipe
-                ]);
-                return;
-            }
-        }
-
-        $elemen->kriteria()->create([
-            'no_kriteria' => $no_kriteria,
-            'kriteria' => $data['text'],
-            'tipe' => $tipe,
-            'standar_industri_kerja' => $data['bukti'] ?? null
-        ]);
     }
 
     /**
