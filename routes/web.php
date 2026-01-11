@@ -371,8 +371,8 @@ Route::middleware('auth')->group(function () {
                 Route::post('/ia01/store/{id_jadwal}', [IA01Controller::class, 'storeTemplate'])->name('ia01.store');
                 Route::get('/ia02/{id_jadwal}', [IA02Controller::class, 'editTemplate'])->name('ia02');
                 Route::post('/ia02/store/{id_jadwal}', [IA02Controller::class, 'storeTemplate'])->name('ia02.store');
-                Route::get('/ia03/{id_jadwal}', [\App\Http\Controllers\IA03Controller::class, 'editTemplate'])->name('ia03');
-                Route::post('/ia03/store/{id_jadwal}', [\App\Http\Controllers\IA03Controller::class, 'storeTemplate'])->name('ia03.store');
+                Route::get('/ia03/{id_jadwal}', [IA03Controller::class, 'editTemplate'])->name('ia03');
+                Route::post('/ia03/store/{id_jadwal}', [IA03Controller::class, 'storeTemplate'])->name('ia03.store');
                 Route::get('/ia04/{id_jadwal}', [FrIa04aController::class, 'editTemplate'])->name('ia04');
                 Route::post('/ia04/store/{id_jadwal}', [FrIa04aController::class, 'storeTemplate'])->name('ia04.store');
                 Route::get('/ia05/{id_jadwal}', [IA05Controller::class, 'editTemplate'])->name('ia05');
