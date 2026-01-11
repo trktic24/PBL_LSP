@@ -15,143 +15,147 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class IA10Controller extends Controller
 {
     public function create($id_asesi)
-{
-    $asesi = DataSertifikasiAsesi::with([
-        'jadwal.asesor',
-        'jadwal.skema',
-    ])->findOrFail($id_asesi);
+    {
+        $asesi = DataSertifikasiAsesi::with([
+            'jadwal.asesor',
+            'jadwal.skema',
+        ])->findOrFail($id_asesi);
 
-    $jadwal = $asesi->jadwal;
-
-    // =====================================================
-    // 1. HEADER IA10 (boleh auto-create, karena 1:1)
-    // =====================================================
-    $header = Ia10::firstOrCreate(
-        ['id_data_sertifikasi_asesi' => $id_asesi],
-        [
-            'nama_pengawas' => null,
-            'tempat_kerja' => null,
-            'alamat' => null,
-            'telepon' => null,
-        ]
-    );
-
-    // =====================================================
-    // 2. AMBIL TEMPLATE (SUMBER PERTANYAAN)
-    // =====================================================
-    $template = MasterFormTemplate::where('form_code', 'FR.IA.10')
-        ->where(function ($q) use ($asesi) {
-            $q->where('id_jadwal', $asesi->id_jadwal)
-              ->orWhereNull('id_jadwal');
-        })
-        ->where('id_skema', $asesi->jadwal->id_skema)
-        ->first();
-
-    $pertanyaanTemplate = $template?->content ?? [];
-
-    // =====================================================
-    // 3. AMBIL JAWABAN YANG SUDAH ADA
-    // =====================================================
-    $jawabanChecklist = PertanyaanIa10::where(
-        'id_data_sertifikasi_asesi',
-        $id_asesi
-    )->get()->keyBy('pertanyaan');
-
-    // =====================================================
-    // 4. AMBIL ESSAY
-    // =====================================================
-    $essayAnswers = DetailIa10::where('id_ia10', $header->id_ia10)
-        ->get()
-        ->keyBy('isi_detail');
-
-    return view('frontend.FR_IA_10', [
-        'asesi' => $asesi,
-        'jadwal' => $jadwal,
-        'header' => $header,
-
-        // PENTING
-        'pertanyaanTemplate' => $pertanyaanTemplate,
-        'jawabanChecklist' => $jawabanChecklist,
-        'essay_answers' => $essayAnswers,
-
-        'user' => auth()->user(),
-    ]);
-}
-
-    public function store(Request $request)
-{
-    $request->validate([
-        'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
-        'nama_pengawas' => 'required|string',
-        'tempat_kerja' => 'required|string',
-    ]);
-
-    DB::transaction(function () use ($request) {
+        $jadwal = $asesi->jadwal;
 
         // =====================================================
-        // 1. HEADER
+        // 1. HEADER IA10 (boleh auto-create, karena 1:1)
         // =====================================================
-        $ia10 = Ia10::updateOrCreate(
-            ['id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi],
+        $header = Ia10::firstOrCreate(
+            ['id_data_sertifikasi_asesi' => $id_asesi],
             [
-                'nama_pengawas' => $request->nama_pengawas,
-                'tempat_kerja' => $request->tempat_kerja,
-                'alamat' => $request->alamat,
-                'telepon' => $request->telepon,
+                'nama_pengawas' => null,
+                'tempat_kerja' => null,
+                'alamat' => null,
+                'telepon' => null,
             ]
         );
 
         // =====================================================
-        // 2. CHECKLIST
+        // 2. AMBIL TEMPLATE (SUMBER PERTANYAAN)
         // =====================================================
-        if ($request->has('checklist')) {
-            foreach ($request->checklist as $pertanyaan => $nilai) {
+        $template = MasterFormTemplate::where('form_code', 'FR.IA.10')
+            ->where(function ($q) use ($asesi) {
+                $q->where('id_jadwal', $asesi->id_jadwal)
+                    ->orWhereNull('id_jadwal');
+            })
+            ->where('id_skema', $asesi->jadwal->id_skema)
+            ->first();
 
-                // nilai HARUS 1 atau 0, NULL kalau kosong
-                if (!in_array($nilai, ['1', '0'], true)) {
-                    $nilai = null;
+        $pertanyaanTemplate = $template?->content ?? [];
+
+        // =====================================================
+        // 3. AMBIL JAWABAN YANG SUDAH ADA
+        // =====================================================
+        $jawabanChecklist = PertanyaanIa10::where(
+            'id_data_sertifikasi_asesi',
+            $id_asesi
+        )->get()->keyBy('pertanyaan');
+
+        // =====================================================
+        // 4. AMBIL ESSAY
+        // =====================================================
+        $essayAnswers = DetailIa10::where('id_ia10', $header->id_ia10)
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->isi_detail => $item->jawaban];
+            })
+            ->toArray();
+
+        return view('frontend.FR_IA_10', [
+            'asesi' => $asesi,
+            'jadwal' => $jadwal,
+            'header' => $header,
+
+            // PENTING
+            'pertanyaanTemplate' => $pertanyaanTemplate,
+            'jawabanChecklist' => $jawabanChecklist,
+            'essay_answers' => $essayAnswers,
+
+            'user' => auth()->user(),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
+            'supervisor_name' => 'required|string',
+            'workplace' => 'required|string',
+        ]);
+
+        DB::transaction(function () use ($request) {
+
+            // =====================================================
+            // 1. HEADER
+            // =====================================================
+            $ia10 = Ia10::updateOrCreate(
+                ['id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi],
+                [
+                    'nama_pengawas' => $request->supervisor_name,
+                    'tempat_kerja' => $request->workplace,
+                    'alamat' => $request->address,
+                    'telepon' => $request->phone,
+                ]
+            );
+
+            // =====================================================
+            // 2. CHECKLIST
+            // =====================================================
+            if ($request->has('checklist')) {
+                foreach ($request->checklist as $pertanyaan => $nilai) {
+
+                    // nilai HARUS 1 atau 0, NULL kalau kosong
+                    if (!in_array($nilai, ['1', '0'], true)) {
+                        $nilai = null;
+                    }
+
+                    PertanyaanIa10::updateOrCreate(
+                        [
+                            'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
+                            'id_ia10' => $ia10->id_ia10,
+                            'pertanyaan' => $pertanyaan,
+                        ],
+                        [
+                            'jawaban_pilihan_iya_tidak' => $nilai,
+                        ]
+                    );
                 }
+            }
 
-                PertanyaanIa10::updateOrCreate(
+            // =====================================================
+            // 3. ESSAY
+            // =====================================================
+            $essayMap = [
+                'relation' => 'Apa hubungan Anda dengan asesi?',
+                'duration' => 'Berapa lama Anda bekerja dengan asesi?',
+                'proximity' => 'Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?',
+                'experience' => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai?',
+                'consistency' => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar?',
+                'training_needs' => 'Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:',
+                'other_comments' => 'Ada komentar lain:',
+            ];
+
+            foreach ($essayMap as $key => $label) {
+                DetailIa10::updateOrCreate(
                     [
-                        'id_data_sertifikasi_asesi' => $request->id_data_sertifikasi_asesi,
-                        'pertanyaan' => $pertanyaan,
+                        'id_ia10' => $ia10->id_ia10,
+                        'isi_detail' => $label,
                     ],
                     [
-                        'jawaban_pilihan_iya_tidak' => $nilai,
+                        'jawaban' => $request->essay[$key] ?? null,
                     ]
                 );
             }
-        }
+        });
 
-        // =====================================================
-        // 3. ESSAY
-        // =====================================================
-        $essayMap = [
-            'relation' => 'Apa hubungan Anda dengan asesi?',
-            'duration' => 'Berapa lama Anda bekerja dengan asesi?',
-            'proximity' => 'Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?',
-            'experience' => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai?',
-            'consistency' => 'Apakah asesi bekerja secara konsisten sesuai standar?',
-            'training_needs' => 'Identifikasi kebutuhan pelatihan lebih lanjut:',
-            'other_comments' => 'Komentar lain:',
-        ];
-
-        foreach ($essayMap as $key => $label) {
-            DetailIa10::updateOrCreate(
-                [
-                    'id_ia10' => $ia10->id_ia10,
-                    'isi_detail' => $label,
-                ],
-                [
-                    'jawaban' => $request->essay[$key] ?? null,
-                ]
-            );
-        }
-    });
-
-    return redirect()->back()->with('success', 'FR.IA.10 berhasil disimpan.');
-}
+        return redirect()->back()->with('success', 'FR.IA.10 berhasil disimpan.');
+    }
 
     public function cetakPDF($id_asesi)
     {
@@ -198,10 +202,10 @@ class IA10Controller extends Controller
     {
         $skema = Skema::findOrFail($id_skema);
         $template = MasterFormTemplate::where('id_skema', $id_skema)
-                                    ->where('id_jadwal', $id_jadwal)
-                                    ->where('form_code', 'FR.IA.10')
-                                    ->first();
-        
+            ->where('id_jadwal', $id_jadwal)
+            ->where('form_code', 'FR.IA.10')
+            ->first();
+
         // Default values if no template exists
         $questions = $template ? $template->content : [];
 
@@ -224,7 +228,7 @@ class IA10Controller extends Controller
 
         MasterFormTemplate::updateOrCreate(
             [
-                'id_skema' => $id_skema, 
+                'id_skema' => $id_skema,
                 'id_jadwal' => $id_jadwal,
                 'form_code' => 'FR.IA.10'
             ],
@@ -240,14 +244,14 @@ class IA10Controller extends Controller
     public function adminShow($id_skema)
     {
         $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
-        
+
         // Mock data sertifikasi
         $sertifikasi = new \App\Models\DataSertifikasiAsesi();
         $sertifikasi->id_data_sertifikasi_asesi = 0;
-        
+
         $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
         $sertifikasi->setRelation('asesi', $asesi);
-        
+
         $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
         $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
