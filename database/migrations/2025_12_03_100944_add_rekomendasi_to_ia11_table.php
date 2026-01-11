@@ -4,18 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('spesifikasi_ia11', function (Blueprint $table) {
-            $table->id('id_spesifikasi_ia11');
-            $table->string('deskripsi_spesifikasi', 500);
-
-            $table->timestamps();
+        Schema::table('ia11', function (Blueprint $table) {
+            $table->string('rekomendasi')->nullable()->after('gambar_produk');
         });
     }
 
@@ -24,6 +20,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spesifikas_ia11');
+        Schema::table('ia11', function (Blueprint $table) {
+            $table->dropColumn('rekomendasi');
+        });
     }
 };

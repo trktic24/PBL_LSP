@@ -80,25 +80,7 @@
                             $ttdAsesor = 'data:image/png;base64,' . base64_encode(file_get_contents($pathAsesor));
                         }
                     }
-                    
-                    // === CHECK USER ROLE ===
-                    $userRole = $user->role->nama_role ?? 'guest';
-                    $isEditable = in_array($userRole, ['admin', 'asesor']);
                 @endphp
-
-                @if(!$isEditable)
-                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <p class="text-red-700 font-semibold text-center">⚠️ Anda tidak memiliki akses untuk mengedit form ini. Hanya Admin dan Asesor yang dapat mengakses.</p>
-                    </div>
-                @endif
-
-                <form action="{{ $ia11->id_ia11 ? route('ia11.update', $ia11->id_ia11) : route('ia11.store') }}" method="POST" class="space-y-8">
-                    @csrf
-                    @if($ia11->id_ia11)
-                        @method('PUT')
-                    @endif
-                    
-                    <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $ia11->id_data_sertifikasi_asesi }}"
 
                 {{-- INFORMASI ASESMENT - VERSI CANTIK (SAMA KAYAK IA03) --}}
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 mb-8">
@@ -233,52 +215,60 @@
                         {{-- Baris 1 --}}
                         <div>
                             <label class="text-sm font-medium text-gray-500">Nama produk yang dihasilkan</label>
-                            <input type="text" name="nama_produk" value="{{ $ia11->nama_produk ?? '' }}" {{ !$isEditable ? 'disabled' : '' }}
-                                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}" placeholder="Nama produk">
+                            <p class="text-gray-900 font-semibold mt-1">{{ $ia11->nama_produk ?? '-' }}</p>
                         </div>
                         <div>
-                            <label class="text-sm font-medium text-gray-500">Standar Industri atau tempat kerja</label>
-                            <input type="text" name="standar_industri" value="{{ $ia11->standar_industri ?? '' }}" {{ !$isEditable ? 'disabled' : '' }}
-                                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}" placeholder="Standar industri">
+                            <label class="text-sm font-medium text-gray-500">Standar Industri atau tempat
+                                kerja</label>
+                            <p class="text-gray-900 font-semibold mt-1">{{ $ia11->standar_industri ?? '-' }}</p>
                         </div>
 
                         {{-- Baris 2 --}}
                         <div class="md:col-span-2">
-                            <label class="text-sm font-medium text-gray-500">Rancangan Produk atau Data Teknis Produk</label>
-                            <textarea name="rancangan_produk" {{ !$isEditable ? 'disabled' : '' }}
-                                class="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}" placeholder="Rancangan produk atau data teknis produk" rows="4">{{ $ia11->rancangan_produk ?? '' }}</textarea>
+                            <label class="text-sm font-medium text-gray-500">Rancangan Produk atau Data Teknis
+                                Produk</label>
+                            <div class="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200 min-h-[50px]">
+                                <p class="text-gray-800">
+                                    {{ $ia11->rancangan_produk ?? 'Tidak ada deskripsi rancangan produk.' }}</p>
+                            </div>
                         </div>
 
                         {{-- Baris 3 --}}
                         <div>
-                            <label class="text-sm font-medium text-gray-500">Tanggal pengoperasian/penggunaan</label>
-                            <input type="date" name="tanggal_pengoperasian" value="{{ $ia11->tanggal_pengoperasian ?? '' }}" {{ !$isEditable ? 'disabled' : '' }}
-                                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}">
+                            <label class="text-sm font-medium text-gray-500">Tanggal
+                                pengoperasian/penggunaan</label>
+                            <p class="text-gray-900 font-semibold mt-1">
+                                {{ $ia11->tanggal_pengoperasian ? \Carbon\Carbon::parse($ia11->tanggal_pengoperasian)->format('d F Y') : '-' }}
+                            </p>
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-500">Gambar produk (jika ada)</label>
-                            <input type="text" name="gambar_produk" value="{{ $ia11->gambar_produk ?? '' }}" {{ !$isEditable ? 'disabled' : '' }}
-                                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}" placeholder="Path gambar produk">
+                            {{-- Logika sederhana untuk menampilkan Gambar Produk --}}
+                            @if ($ia11->gambar_produk ?? false)
+                                <img src="{{ asset($ia11->gambar_produk) }}" alt="Gambar Produk" class="w-40 h-auto">
+                            @else
+                                <p class="text-gray-500 italic mt-1">- Tidak ada gambar produk -</p>
+                            @endif
                         </div>
                     </div>
 
                     {{-- Detail Spesifikasi Umum & Teknis --}}
                     <div class="p-6 pt-0 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {{-- Spesifikasi Umum - EDITABLE FIELDS --}}
+                        {{-- Spesifikasi Umum --}}
                         <div class="md:col-span-1 bg-gray-50 rounded-xl border border-gray-200 p-4">
                             <h4 class="text-base font-bold text-gray-800 mb-3 border-b border-gray-300 pb-2">
-                                Spesifikasi Produk Umum
-                            </h4>
-                            <div class="space-y-3">
+                                Spesifikasi
+                                Produk Umum</h4>
+                            <div class="space-y-2">
                                 <div>
                                     <label class="text-xs font-medium text-gray-500">Dimensi produk:</label>
-                                    <input type="text" name="dimensi_produk" value="{{ $ia11->spesifikasiProduk?->dimensi_produk ?? '' }}" {{ !$isEditable ? 'disabled' : '' }}
-                                        class="w-full mt-1 px-2 py-1 text-sm border border-gray-300 rounded {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}" placeholder="Dimensi produk">
+                                    <p class="text-sm font-semibold text-gray-900">
+                                        {{ $spesifikasiUmum->dimensi_produk ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-gray-500">Berat produk:</label>
-                                    <input type="text" name="berat_produk" value="{{ $ia11->spesifikasiProduk?->berat_produk ?? '' }}" {{ !$isEditable ? 'disabled' : '' }}
-                                        class="w-full mt-1 px-2 py-1 text-sm border border-gray-300 rounded {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}" placeholder="Berat produk">
+                                    <p class="text-sm font-semibold text-gray-900">
+                                        {{ $spesifikasiUmum->berat_produk ?? '-' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -369,20 +359,17 @@
                                                         ($item->spesifikasi?->deskripsi_spesifikasi ?? 'Item tidak ditemukan') }}
                                                 </td>
                                                 <td class="px-4 py-3 text-center">
-                                                    <input type="radio" name="pencapaian_spesifikasi[{{ $item->id_pencapaian_spesifikasi_ia11 }}][hasil_reviu]" value="1" {{ !$isEditable ? 'disabled' : '' }}
+                                                    <input type="radio" disabled
                                                         {{ $item->hasil_reviu == 1 ? 'checked' : '' }}
-                                                        class="w-4 h-4 text-green-600 border-gray-300 focus:ring-0 {{ $isEditable ? '' : 'cursor-default' }}">
+                                                        class="w-4 h-4 text-green-600 border-gray-300 focus:ring-0 cursor-default">
                                                 </td>
                                                 <td class="px-4 py-3 text-center">
-                                                    <input type="radio" name="pencapaian_spesifikasi[{{ $item->id_pencapaian_spesifikasi_ia11 }}][hasil_reviu]" value="0" {{ !$isEditable ? 'disabled' : '' }}
+                                                    <input type="radio" disabled
                                                         {{ $item->hasil_reviu == 0 ? 'checked' : '' }}
-                                                        class="w-4 h-4 text-red-600 border-gray-300 focus:ring-0 {{ $isEditable ? '' : 'cursor-default' }}">
+                                                        class="w-4 h-4 text-red-600 border-gray-300 focus:ring-0 cursor-default">
                                                 </td>
                                                 <td class="px-4 py-3 text-gray-600">
-                                                    <input type="text" name="pencapaian_spesifikasi[{{ $item->id_pencapaian_spesifikasi_ia11 }}][catatan_temuan]" 
-                                                        value="{{ $item->catatan_temuan ?? '' }}" {{ !$isEditable ? 'disabled' : '' }}
-                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-sm {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}" 
-                                                        placeholder="Catatan temuan...">
+                                                    {{ $item->catatan_temuan ?? '-' }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -410,20 +397,17 @@
                                                     {{ $item->performaItem?->deskripsi_performa ?? ($item->performa?->deskripsi_performa ?? 'Item tidak ditemukan') }}
                                                 </td>
                                                 <td class="px-4 py-3 text-center">
-                                                    <input type="radio" name="pencapaian_performa[{{ $item->id_pencapaian_performa_ia11 }}][hasil_reviu]" value="1" {{ !$isEditable ? 'disabled' : '' }}
+                                                    <input type="radio" disabled
                                                         {{ $item->hasil_reviu == 1 ? 'checked' : '' }}
-                                                        class="w-4 h-4 text-green-600 border-gray-300 focus:ring-0 {{ $isEditable ? '' : 'cursor-default' }}">
+                                                        class="w-4 h-4 text-green-600 border-gray-300 focus:ring-0 cursor-default">
                                                 </td>
                                                 <td class="px-4 py-3 text-center">
-                                                    <input type="radio" name="pencapaian_performa[{{ $item->id_pencapaian_performa_ia11 }}][hasil_reviu]" value="0" {{ !$isEditable ? 'disabled' : '' }}
+                                                    <input type="radio" disabled
                                                         {{ $item->hasil_reviu == 0 ? 'checked' : '' }}
-                                                        class="w-4 h-4 text-red-600 border-gray-300 focus:ring-0 {{ $isEditable ? '' : 'cursor-default' }}">
+                                                        class="w-4 h-4 text-red-600 border-gray-300 focus:ring-0 cursor-default">
                                                 </td>
                                                 <td class="px-4 py-3 text-gray-600">
-                                                    <input type="text" name="pencapaian_performa[{{ $item->id_pencapaian_performa_ia11 }}][catatan_temuan]" 
-                                                        value="{{ $item->catatan_temuan ?? '' }}" {{ !$isEditable ? 'disabled' : '' }}
-                                                        class="w-full px-2 py-1 border border-gray-300 rounded text-sm {{ $isEditable ? 'bg-white' : 'bg-gray-100' }}" 
-                                                        placeholder="Catatan temuan...">
+                                                    {{ $item->catatan_temuan ?? '-' }}
                                                 </td>
                                             </tr>
                                         @empty
@@ -449,15 +433,15 @@
                         <div class="p-6">
                             <div class="flex items-center space-x-6 mb-6">
                                 <label class="flex items-center text-lg font-bold text-gray-900">
-                                    <input type="radio" name="rekomendasi" value="kompeten" {{ !$isEditable ? 'disabled' : '' }}
+                                    <input type="radio" name="rekomendasi" value="kompeten" disabled
                                         {{ ($ia11->rekomendasi ?? 'kompeten') === 'kompeten' ? 'checked' : '' }}
-                                        class="w-5 h-5 text-green-600 mr-3 {{ $isEditable ? '' : 'opacity-50 cursor-default' }}">
+                                        class="w-5 h-5 text-green-600 mr-3 opacity-100 cursor-default">
                                     <span>Direkomendasikan KOMPETEN</span>
                                 </label>
                                 <label class="flex items-center text-lg font-bold text-gray-900">
-                                    <input type="radio" name="rekomendasi" value="observasi" {{ !$isEditable ? 'disabled' : '' }}
+                                    <input type="radio" name="rekomendasi" value="observasi" disabled
                                         {{ ($ia11->rekomendasi ?? 'kompeten') === 'observasi' ? 'checked' : '' }}
-                                        class="w-5 h-5 text-red-600 mr-3 {{ $isEditable ? '' : 'opacity-50 cursor-default' }}">
+                                        class="w-5 h-5 text-red-600 mr-3 opacity-100 cursor-default">
                                     <span>Direkomendasikan OBSERVASI LANGSUNG</span>
                                 </label>
                             </div>
@@ -496,18 +480,12 @@
                             </div>
 
 
-                            <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end gap-4 pb-8">
-                                @if($isEditable)
-                                    <button type="submit" class="w-48 py-3 bg-green-600 text-white font-bold rounded-full shadow-lg hover:bg-green-700 transition duration-200 focus:outline-none transform hover:-translate-y-0.5">
-                                        💾 Simpan Perubahan
-                                    </button>
-                                @endif
+                            <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end pb-8">
                                 <a href="{{ $trackerUrl }}"
                                     class="w-48 py-3 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-200 focus:outline-none transform hover:-translate-y-0.5 text-center inline-block">
                                     Kembali
                                 </a>
                             </div>
-                </form>
         </main>
 
     </div> {{-- End flex h-screen wrapper --}}

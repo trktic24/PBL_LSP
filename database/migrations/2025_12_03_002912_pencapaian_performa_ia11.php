@@ -5,41 +5,36 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('pencapaian_performa_ia11', function (Blueprint $table) {
-
-            $table->bigIncrements('id_pencapaian_performa_ia11');
-
+            //pk
+            $table->id('id_pencapaian_performa_ia11');
+            //fk
             $table->unsignedBigInteger('id_ia11');
             $table->unsignedBigInteger('id_performa_ia11');
-
-            // Harus diisi asesor (tidak boleh null)
-            $table->boolean('hasil_reviu');
-
+            //field
+            $table->boolean('hasil_reviu')->nullable();
             $table->text('catatan_temuan')->nullable();
 
             $table->timestamps();
 
-            // Header asesmen → boleh cascade (hapus asesmen = hapus detail)
-            $table->foreign('id_ia11')
-                  ->references('id_ia11')->on('ia11')
-                  ->onDelete('cascade');
+            //fk ke ia11
+            $table->foreign('id_ia11')->references('id_ia11')->on('ia11')->onDelete('cascade');
 
-            // MASTER TIDAK BOLEH DIHAPUS kalau sudah dipakai
-            $table->foreign('id_performa_ia11')
-                  ->references('id_performa_ia11')->on('performa_ia11')
-                  ->onDelete('restrict');
+            //fk ke performa
+            $table->foreign('id_performa_ia11')->references('id_performa_ia11')->on('performa_ia11')->onDelete('cascade');
 
-            // Tidak boleh ada duplikasi hasil reviu
             $table->unique(['id_ia11', 'id_performa_ia11'], 'ia11_performa_unique');
-
-            // Index PDF join
-            $table->index('id_ia11');
-            $table->index('id_performa_ia11');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('pencapaian_performa_ia11');

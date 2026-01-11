@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Asesor\IA11;
+namespace App\Http\Controllers\Asesi\IA11;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
