@@ -105,6 +105,11 @@ class AssessmenFRIA09Controller extends Controller
         $jenis_tuk_db = optional(optional($jadwal)->jenisTuk)->jenis_tuk ?? 'Sewaktu';
         $tanggal_pelaksanaan = optional(optional($jadwal)->tanggal_pelaksanaan)->format('d F Y') ?? date('d F Y'); 
         $skemaData = $this->getSkemaRelatedData(optional($skema)->id_skema);
+
+        // --- TAMBAHKAN LOGIC GAMBAR INI ---
+        $gambarSkema = $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
+            ? asset('storage/' . $sertifikasi->jadwal->skema->gambar)
+            : asset('images/default_pic.jpeg');
         
         return view('asesi.assesmen.FRIA09_Wawancara', array_merge($skemaData, [
             'sertifikasi' => $sertifikasi,
@@ -117,6 +122,7 @@ class AssessmenFRIA09Controller extends Controller
             'tanda_tangan_asesor_path' => optional($asesor)->tanda_tangan,
             'tanda_tangan_asesi_path' => optional($asesi)->tanda_tangan,
             'merged_data' => $merged_data, 
+            'gambarSkema' => $gambarSkema,
         ]));
     }
 }
