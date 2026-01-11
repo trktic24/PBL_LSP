@@ -63,15 +63,27 @@ class PersetujuanKerahasiaanAPIController extends Controller
 
             $jenisTuk = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu';
 
+            $asesiData = $sertifikasi->asesi;
+            
+            // Convert TTD ke base64 menggunakan helper
+            $ttdBase64 = null;
+            if (!empty($asesiData->tanda_tangan)) {
+                $ttdBase64 = getTtdBase64($asesiData->tanda_tangan, null, 'asesi');
+            }
+        
             return response()->json([
                 'success' => true,
-                'asesi' => $sertifikasi->asesi,
+                'asesi' => [
+                    'id_asesi' => $asesiData->id_asesi,
+                    'nama_lengkap' => $asesiData->nama_lengkap,
+                    'tanda_tangan_base64' => $ttdBase64, // Kirim base64 langsung
+                ],
                 'asesor' => $sertifikasi->jadwal->asesor ?? (object) ['nama_lengkap' => '-'],
                 'tuk' => $jenisTuk,
                 'master_bukti' => $masterBukti,
                 'respon_bukti' => $responBukti,
                 'status_sekarang' => $sertifikasi->status_sertifikasi,
-                'tanda_tangan_valid' => !empty($sertifikasi->asesi->tanda_tangan)
+                'tanda_tangan_valid' => !empty($ttdBase64)
             ], 200);
 
         } catch (\Exception $e) {
