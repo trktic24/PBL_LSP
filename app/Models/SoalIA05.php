@@ -15,6 +15,8 @@ class SoalIA05 extends Model
     protected $guarded = [];
     // Sesuaikan dengan nama kolom di screenshot
     protected $fillable = [
+        'id_skema',
+        'id_jadwal',
         'id_data_sertifikasi_asesi',
         'soal_ia05',
         'opsi_a_ia05',

@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
         // Note: SkemaFactory might create related models. Ideally use Seeders if available.
         // If SkemaSeeder is small, we might want factories:
         if (Skema::count() == 0) {
-            Skema::factory(10)->create(); 
+            Skema::factory(10)->create();
         }
 
         $this->call([
@@ -53,12 +53,12 @@ class DatabaseSeeder extends Seeder
             ElemenSeeder::class,            // Elemen
             KriteriaUnjukKerjaSeeder::class // KUK
         ]);
-        
+
         // 4. USERS (ASESOR & ASESI)
         $this->call([
             AsesorSeeder::class,    // Seeder for Asesor
             AsesiSeeder::class,     // Seeder for Asesi
-            ValidatorSeeder::class, 
+            ValidatorSeeder::class,
             PenyusunSeeder::class,
             PenyusunValidatorSeeder::class,
         ]);
@@ -101,14 +101,14 @@ class DatabaseSeeder extends Seeder
             Ia01DummySeeder::class,
             // Ia02 covered by SkenarioIa02Seeder? available in list
             // DummyIA05Seeder::class,
-            
-            // KunciIa06TransaksiSeeder::class,
+            SoalIa06MasterSeeder::class,
+            KunciIa06TransaksiSeeder::class,
 
             Ia07Seeder::class, // Pertanyaan Lisan?
             // PertanyaanLisanSeeder::class,
 
             // Ia10Seeder::class,
-            
+
             // IA 11
             \Database\Seeders\IA11\PerformaIA11Seeder::class,
             \Database\Seeders\IA11\SpesifikasiIA11Seeder::class,
@@ -124,7 +124,7 @@ class DatabaseSeeder extends Seeder
             // SoalDanKunciia05Seeder::class,
             SoalIa05Seeder::class,
             LembarJawabIa05Seeder::class,
-            SoalIa06MasterSeeder::class,
+
         ]);
 
         // ... di dalam method run() ...
@@ -134,5 +134,7 @@ class DatabaseSeeder extends Seeder
 
         // 2. Baru Isi Jawabannya (Tambahin baris ini)
         $this->call(LembarJawabIa05Seeder::class);
+
+        $this->call(DataportofolioSeeder::class);
     }
 }

@@ -11,6 +11,20 @@
         </style>
     </head>
 
+    @php
+        $user = Auth::user();
+        
+        // Default URL (Untuk Asesi)
+        $backUrl = "/asesi/tracker/" . ($sertifikasi->id_jadwal ?? '');
+
+        // Jika User adalah Admin (tidak punya data asesi sendiri)
+        if (!$user->asesi) {
+            // Arahkan ke Tracker Admin Profile Asesi
+            // Sesuaikan route name Anda: 'admin.asesi.profile.tracker'
+            $backUrl = route('admin.asesi.profile.tracker', ['id_asesi' => $sertifikasi->id_asesi, 'sertifikasi_id' => $sertifikasi->id_data_sertifikasi_asesi]);
+        }
+    @endphp
+
     <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden font-poppins">
 
         {{-- 1. SIDEBAR (Desktop Only) --}}

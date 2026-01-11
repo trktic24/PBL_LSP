@@ -15,8 +15,15 @@ return new class extends Migration {
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
             // isi dari database ia08
-            $table->text('bukti_tambahan')->comment('Deskripsi bukti tambahan yang diajukan oleh asesi');
-            $table->enum('rekomendasi', ['kompeten', 'perlu observasi langsung']);
+            $table->text('bukti_tambahan')->nullable()->comment('Deskripsi bukti tambahan yang diajukan oleh asesi');
+            $table->enum('rekomendasi', ['kompeten', 'perlu observasi lanjut']);
+
+            // Penambahan kolom untuk observasi lanjut (nullable)
+            $table->string('kelompok_pekerjaan')->nullable()->comment('Diisi jika rekomendasi perlu observasi langsung');
+            $table->string('unit_kompetensi')->nullable()->comment('Diisi jika rekomendasi perlu observasi langsung');
+            $table->string('elemen')->nullable()->comment('Diisi jika rekomendasi perlu observasi langsung');
+            $table->string('kuk')->nullable()->comment('Diisi jika rekomendasi perlu observasi langsung');
+            
             $table->timestamps();
         });
     }

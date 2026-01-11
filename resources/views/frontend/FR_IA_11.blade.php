@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('content')
 
@@ -33,10 +33,16 @@
 
         <header class="form-header flex justify-between items-center border border-gray-900 shadow-md">
             {{-- ... Header tetap sama ... --}}
+            <div class="p-4 w-full text-center">
+                 <h1 class="font-bold text-xl">FR.IA.11. CEKLIS MENINJAU INSTRUMEN ASESMEN</h1>
+                 @if(isset($isMasterView))
+                    <div class="text-sm text-blue-600 mt-1">[TEMPLATE MASTER]</div>
+                 @endif
+            </div>
         </header>
 
         {{-- FORM AKSI: Mengirim data ke fungsi update di Controller --}}
-        <form class="form-body mt-6" method="POST" action="{{ route('ia11.update', $ia11->id_ia11) }}">
+        <form class="form-body mt-6" method="POST" action="{{ isset($isMasterView) ? '#' : route('ia11.update', $ia11->id_ia11) }}">
             @csrf
             @method('PUT') 
 

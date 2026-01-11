@@ -1,9 +1,13 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('content')
     <div class="p-3 sm:p-6 md:p-8">
 
-        <x-header_form.header_form title="FR.AK.04. FORMULIR BANDING ASESMEN" /><br>
+        <x-header_form.header_form title="FR.AK.04. FORMULIR BANDING ASESMEN" />
+        @if(isset($isMasterView))
+            <div class="text-center font-bold text-blue-600 my-2">[TEMPLATE MASTER]</div>
+        @endif
+        <br>
 
         {{-- ALERT --}}
         @if(session('success'))
@@ -18,7 +22,7 @@
         @endif
 
         {{-- FORM UTAMA --}}
-        <form action="{{ route('ak04.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
+        <form action="{{ isset($isMasterView) ? '#' : route('ak04.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
         @csrf
 
         <div class="bg-white p-4 sm:p-6 rounded-md shadow-sm mb-4 sm:mb-6 border border-gray-200">
@@ -71,9 +75,9 @@
                     <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                         @php
                             $pertanyaan = [
-                                'penjelasan_banding' => 'Apakah Proses Banding telah dijelaskan kepada Anda?',
-                                'diskusi_dengan_asesor' => 'Apakah Anda telah mendiskusikan Banding dengan Asesor?',
-                                'melibatkan_orang_lain' => 'Apakah Anda mau melibatkan "orang lain" membantu Anda dalam Proses Banding?'
+                                'penjelasan_banding' => $template['q1'] ?? 'Apakah Proses Banding telah dijelaskan kepada Anda?',
+                                'diskusi_dengan_asesor' => $template['q2'] ?? 'Apakah Anda telah mendiskusikan Banding dengan Asesor?',
+                                'melibatkan_orang_lain' => $template['q3'] ?? 'Apakah Anda mau melibatkan "orang lain" membantu Anda dalam Proses Banding?'
                             ];
                             $keys = array_keys($pertanyaan);
                         @endphp
@@ -101,9 +105,8 @@
                 </table>
             </div>
 
-            {{-- MOBILE VIEW (Sama logicnya) --}}
+            {{-- MOBILE VIEW --}}
             <div class="md:hidden p-3 sm:p-4 space-y-3">
-               {{-- (Code mobile view disederhanakan, logic sama dengan desktop) --}}
                @for ($i = 1; $i <= 3; $i++)
                     @php 
                         $key = $keys[$i-1];
@@ -138,7 +141,7 @@
 
                 {{-- ALASAN BANDING --}}
                 <label for="alasan_banding" class="block text-sm font-bold text-gray-900 mb-2">Banding ini diajukan atas alasan sebagai berikut:</label>
-                <textarea name="alasan_banding" id="alasan_banding" rows="5" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 p-3 text-sm" placeholder="Jelaskan alasan banding...">{{ $respon->alasan_banding ?? '' }}</textarea>
+                <textarea name="alasan_banding" id="alasan_banding" rows="5" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 p-3 text-sm" placeholder="Jelaskan alasan banding...">{{ old('alasan_banding', $respon->alasan_banding ?? $template['default_alasan'] ?? '') }}</textarea>
 
                 <div class="mt-4 bg-red-50 border-l-4 border-red-500 p-3">
                     <p class="text-xs text-red-700"><strong>Catatan:</strong> Anda berhak mengajukan banding jika menilai proses asesmen tidak sesuai SOP.</p>
@@ -148,21 +151,27 @@
                 <div class="mt-6 bg-white p-4 rounded-md border border-gray-200 text-center">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Tanda Tangan Peserta</label>
                     <div class="w-full h-40 bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                        @if($sertifikasi->asesi->tanda_tangan)
-                            <img src="{{ asset('storage/'.$sertifikasi->asesi->tanda_tangan) }}" class="h-32 object-contain">
+                        @php
+                            $ttdAsesiBase64 = getTtdBase64($sertifikasi->asesi->tanda_tangan ?? null, null, 'asesi');
+                        @endphp
+                        @if($ttdAsesiBase64)
+                            <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" class="h-32 object-contain">
                         @else
                             <p class="text-gray-400 text-sm">Tanda tangan belum tersedia di profil</p>
                         @endif
                     </div>
                 </div>
 
-                {{-- TOMBOL SUBMIT --}}
-                <div class="mt-8 flex justify-between border-t pt-4">
-                    <a href="{{ route('tracker') }}" class="px-6 py-2 bg-gray-200 rounded text-gray-700 text-sm font-bold">Kembali</a>
-                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded shadow text-sm font-bold hover:bg-blue-700">
-                        Kirim Pengajuan
-                    </button>
-                </div>
+                {{-- BUTTONS --}}
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mt-8 border-t-2 border-gray-200 pt-6 mb-8">
+                <a href="{{ isset($isMasterView) ? url()->previous() : route('tracker') }}" class="px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold text-sm rounded-lg hover:bg-gray-50 transition text-center shadow-sm">
+                    Kembali
+                </a>
+                @if(!isset($isMasterView))
+                <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 shadow-lg transition transform hover:-translate-y-0.5 text-center">
+                    Ajukan Banding
+                </button>
+                @endif
             </div>
         </div>
         </form>

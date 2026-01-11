@@ -16,6 +16,8 @@ class DataPortofolio extends Model
         'id_data_sertifikasi_asesi',
         'persyaratan_dasar',
         'persyaratan_administratif',
+        'rekomendasi_asesor',
+        'catatan_asesor',
     ];
 
     /**
@@ -24,5 +26,10 @@ class DataPortofolio extends Model
     public function dataSertifikasiAsesi()
     {
         return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function buktiPortofolioIA08IA09()
+    {
+        return $this->hasMany(BuktiPortofolioIA08IA09::class, 'id_portofolio', 'id_portofolio');
     }
 }

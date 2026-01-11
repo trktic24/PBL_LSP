@@ -121,9 +121,9 @@ class TenSchemesSeeder extends Seeder
                 }
 
                 // Ensure we have a valid JenisTuk
-                $jenisTuk = \App\Models\JenisTuk::first();
+                $jenisTuk = \App\Models\JenisTUK::first();
                 if (!$jenisTuk) {
-                    $jenisTuk = \App\Models\JenisTuk::create(['sewaktu' => '1', 'tempat_kerja' => '0', 'mandiri' => '0']);
+                    $jenisTuk = \App\Models\JenisTUK::create(['sewaktu' => '1', 'tempat_kerja' => '0', 'mandiri' => '0']);
                 }
 
                 // Ensure we have a valid MasterTuk
@@ -143,8 +143,8 @@ class TenSchemesSeeder extends Seeder
                     'id_tuk' => $tuk->id_tuk,
                     'id_jenis_tuk' => $jenisTuk->id_jenis_tuk,
                     'tanggal_mulai' => now(),
-                    'tanggal_selesai' => now()->addDays(7),
-                    'tanggal_pelaksanaan' => now()->addDays(2),
+                    'tanggal_selesai' => now()->addDays(5), 
+                    'tanggal_pelaksanaan' => now()->addDays(5), 
                     'waktu_mulai' => '09:00:00',
                     'waktu_selesai' => '12:00:00',
                     'sesi' => 1,

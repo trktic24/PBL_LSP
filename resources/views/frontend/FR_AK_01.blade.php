@@ -1,10 +1,14 @@
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 
 @section('content')
     <div class="p-4 sm:p-6 md:p-8">
 
         {{-- 1. Menggunakan Komponen Header Form --}}
-        <x-header_form.header_form title="FR.AK.01. PERSETUJUAN ASESMEN DAN KERAHASIAAN" /><br>
+        <x-header_form.header_form title="FR.AK.01. PERSETUJUAN ASESMEN DAN KERAHASIAAN" />
+        @if(isset($isMasterView))
+            <div class="text-center font-bold text-blue-600 my-2">[TEMPLATE MASTER]</div>
+        @endif
+        <br>
 
         {{-- ALERT NOTIFIKASI --}}
         @if(session('success'))
@@ -58,7 +62,7 @@
                 {{-- Nama Asesi --}}
                 <dt class="col-span-1 font-medium text-gray-500">Nama Asesi</dt>
                 <dd class="col-span-3 text-gray-900 font-semibold block">: 
-                    <span id="nama_asesi">{{ $asesi->nama_lengkap ?? Auth::user()->name }}</span>
+                    <span id="nama_asesi">{{ $asesi->nama_lengkap ?? (isset($isMasterView) ? '(Template Master)' : Auth::user()->name) }}</span>
                 </dd>
 
                 {{-- Bukti yang dikumpulkan (Display Only - Statis Sesuai FR) --}}
@@ -84,11 +88,10 @@
         <div class="p-4 bg-blue-50 border border-blue-100 rounded-lg mb-6 shadow-sm">
             <h4 class="font-semibold text-blue-800 mb-2">Persetujuan dan Kerahasiaan</h4>
             <p class="text-gray-800 text-sm leading-relaxed mb-2">
-                Bahwa saya sudah mendapatkan penjelasan Hak dan Prosedur Banding oleh Asesor.
+                {{ $template['pernyataan_1'] ?? 'Bahwa saya sudah mendapatkan penjelasan Hak dan Prosedur Banding oleh Asesor.' }}
             </p>
             <p class="text-gray-700 text-sm leading-relaxed">
-                Saya setuju mengikuti asesmen dengan pemahaman bahwa informasi yang dikumpulkan hanya digunakan untuk
-                pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.
+                {{ $template['pernyataan_2'] ?? 'Saya setuju mengikuti asesmen dengan pemahaman bahwa informasi yang dikumpulkan hanya digunakan untuk pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.' }}
             </p>
         </div>
 
@@ -98,9 +101,12 @@
             <div class="w-full h-56 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center overflow-hidden relative group hover:border-gray-400 transition-colors"
                 id="ttd_container">
                 
-                @if($asesi->tanda_tangan)
+                @php
+                    $ttdAsesiBase64 = getTtdBase64($asesi->tanda_tangan ?? null, null, 'asesi');
+                @endphp
+                @if($ttdAsesiBase64)
                     {{-- Jika ada TTD di database, tampilkan --}}
-                    <img src="{{ asset('storage/'.$asesi->tanda_tangan) }}" 
+                    <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" 
                          alt="Tanda Tangan Asesi" 
                          class="h-40 object-contain">
                 @else
@@ -121,13 +127,14 @@
         <div class="mt-6 sm:mt-8 md:mt-12 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 border-t border-gray-200 pt-4 sm:pt-6">
             
             {{-- Tombol Kembali --}}
-            <a href="{{ route('tracker') }}"
+            <a href="{{ isset($isMasterView) ? url()->previous() : route('tracker') }}"
                 class="px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 bg-gray-200 text-gray-700 font-semibold text-sm rounded-lg hover:bg-gray-300 transition shadow-sm text-center flex items-center justify-center">
                 <i class="fas fa-arrow-left mr-2 text-xs sm:text-sm"></i>
                 <span>Kembali</span>
             </a>
 
             {{-- Form Submit --}}
+            @if(!isset($isMasterView))
             <form action="{{ route('ak01.store', $sertifikasi->id_data_sertifikasi_asesi) }}" method="POST">
                 @csrf
                 <button type="submit" id="btn-submit-ak01"
@@ -136,6 +143,7 @@
                     <i class="fas fa-arrow-right ml-2 text-xs sm:text-sm"></i>
                 </button>
             </form>
+            @endif
         </div>
 
     </div>

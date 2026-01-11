@@ -3,11 +3,11 @@ Nama File: resources/views/asesmen/fr-mapa-01.blade.php
 Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
 --}}
 
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 @php
-    $jadwal = $sertifikasi->jadwal;
-    $asesi = $sertifikasi->asesi;
-    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);
+    $jadwal = $sertifikasi->jadwal ?? null;
+    $asesi = $sertifikasi->asesi ?? null;
+    $backUrl = isset($backUrl) ? $backUrl : (isset($isMasterView) ? '#' : ($sertifikasi ? route('asesor.tracker', $sertifikasi->id_data_sertifikasi_asesi) : '#'));
 @endphp
 
 @section('content')
@@ -39,7 +39,9 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
     {{-- FORM START --}}
     <form action="{{ route('mapa01.store') }}" method="POST">
         @csrf
+        @if($sertifikasi)
         <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $sertifikasi->id_data_sertifikasi_asesi }}">
+        @endif
 
         <div class="bg-white">
 
@@ -49,8 +51,8 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
             <div class="grid grid-cols-[250px_auto] gap-y-3 text-sm mb-10 text-gray-700">
                 <div class="font-bold text-black">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)</div>
                 <div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : Junior Web Programmer</div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : -</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ $skema->nama_skema ?? '-' }}</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ $skema->nomor_skema ?? '-' }}</div>
                 </div>
             </div>
 
@@ -59,14 +61,15 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                 <h3 class="font-bold text-lg mb-4">1. Menentukan Pendekatan Asesmen</h3>
                 <table class="w-full text-sm form-table mb-6">
                     <tbody>
-                        {{-- 1.1 Asesi --}}
+                        {{-- 1. Asesi --}}
                         <tr>
                             <td rowspan="5" class="p-2 font-bold align-top w-10 text-center">1.1</td>
                             <td rowspan="5" class="p-2 font-bold align-top w-32">Asesi</td>
                             <td class="p-2">
                                 <label class="flex items-start gap-2">
                                     <input type="checkbox" class="mt-1" name="pendekatan_asesmen[]"
-                                        value="Hasil pelatihan dan atau pendidikan, Kurikulum & fasilitas telusur"> Hasil
+                                        value="Hasil pelatihan dan atau pendidikan, Kurikulum & fasilitas telusur"
+                                        {{ (in_array('Hasil pelatihan dan atau pendidikan, Kurikulum & fasilitas telusur', old('pendekatan_asesmen', $mapa01->pendekatan_asesmen ?? $template['pendekatan_asesmen'] ?? []))) ? 'checked' : '' }}> Hasil
                                     pelatihan dan / atau pendidikan, dimana Kurikulum dan fasilitas praktek mampu telusur
                                     terhadap standar kompetensi
                                 </label>
@@ -76,7 +79,8 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             <td class="p-2">
                                 <label class="flex items-start gap-2">
                                     <input type="checkbox" class="mt-1" name="pendekatan_asesmen[]"
-                                        value="Hasil pelatihan - belum berbasis kompetensi"> Hasil pelatihan dan / atau
+                                        value="Hasil pelatihan - belum berbasis kompetensi"
+                                        {{ (in_array('Hasil pelatihan - belum berbasis kompetensi', old('pendekatan_asesmen', $mapa01->pendekatan_asesmen ?? $template['pendekatan_asesmen'] ?? []))) ? 'checked' : '' }}> Hasil pelatihan dan / atau
                                     pendidikan, dimana kurikulum belum berbasis kompetensi.
                                 </label>
                             </td>
@@ -85,7 +89,8 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             <td class="p-2">
                                 <label class="flex items-start gap-2">
                                     <input type="checkbox" class="mt-1" name="pendekatan_asesmen[]"
-                                        value="Pekerja berpengalaman - telusur"> Pekerja berpengalaman, dimana berasal dari
+                                        value="Pekerja berpengalaman - telusur"
+                                        {{ (in_array('Pekerja berpengalaman - telusur', old('pendekatan_asesmen', $mapa01->pendekatan_asesmen ?? $template['pendekatan_asesmen'] ?? []))) ? 'checked' : '' }}> Pekerja berpengalaman, dimana berasal dari
                                     industri/tempat kerja yang dalam operasionalnya mampu telusur dengan standar kompetensi
                                 </label>
                             </td>
@@ -94,7 +99,8 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             <td class="p-2">
                                 <label class="flex items-start gap-2">
                                     <input type="checkbox" class="mt-1" name="pendekatan_asesmen[]"
-                                        value="Pekerja berpengalaman - belum berbasis kompetensi"> Pekerja berpengalaman,
+                                        value="Pekerja berpengalaman - belum berbasis kompetensi"
+                                        {{ (in_array('Pekerja berpengalaman - belum berbasis kompetensi', old('pendekatan_asesmen', $mapa01->pendekatan_asesmen ?? $template['pendekatan_asesmen'] ?? []))) ? 'checked' : '' }}> Pekerja berpengalaman,
                                     dimana berasal dari industri/tempat kerja yang dalam operasionalnya belum berbasis
                                     kompetensi.
                                 </label>
@@ -104,7 +110,8 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             <td class="p-2">
                                 <label class="flex items-start gap-2">
                                     <input type="checkbox" class="mt-1" name="pendekatan_asesmen[]"
-                                        value="Pelatihan / belajar mandiri"> Pelatihan / belajar mandiri atau otodidak.
+                                        value="Pelatihan / belajar mandiri"
+                                        {{ (in_array('Pelatihan / belajar mandiri', old('pendekatan_asesmen', $mapa01->pendekatan_asesmen ?? $template['pendekatan_asesmen'] ?? []))) ? 'checked' : '' }}> Pelatihan / belajar mandiri atau otodidak.
                                 </label>
                             </td>
                         </tr>
@@ -113,12 +120,15 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             <td class="p-2"></td>
                             <td class="p-2 font-bold">Tujuan Sertifikasi</td>
                             <td class="p-2">
+                                @php
+                                    $tujuan = old('tujuan_sertifikasi', $mapa01->tujuan_sertifikasi ?? $template['tujuan_sertifikasi'] ?? 'Sertifikasi');
+                                @endphp
                                 <div class="flex gap-6">
-                                    <label><input type="radio" name="tujuan_sertifikasi" value="Sertifikasi" checked>
+                                    <label><input type="radio" name="tujuan_sertifikasi" value="Sertifikasi" {{ $tujuan == 'Sertifikasi' ? 'checked' : '' }}>
                                         Sertifikasi</label>
-                                    <label><input type="radio" name="tujuan_sertifikasi" value="PKT"> PKT</label>
-                                    <label><input type="radio" name="tujuan_sertifikasi" value="RPL"> RPL</label>
-                                    <label><input type="radio" name="tujuan_sertifikasi" value="Lainnya"> Lainnya</label>
+                                    <label><input type="radio" name="tujuan_sertifikasi" value="PKT" {{ $tujuan == 'PKT' ? 'checked' : '' }}> PKT</label>
+                                    <label><input type="radio" name="tujuan_sertifikasi" value="RPL" {{ $tujuan == 'RPL' ? 'checked' : '' }}> RPL</label>
+                                    <label><input type="radio" name="tujuan_sertifikasi" value="Lainnya" {{ $tujuan == 'Lainnya' ? 'checked' : '' }}> Lainnya</label>
                                 </div>
                             </td>
                         </tr>
@@ -129,43 +139,55 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             <td rowspan="3" class="p-2 font-bold align-top">Konteks Asesmen</td>
                             <td class="p-2">
                                 <span class="font-bold">Lingkungan:</span>
+                                @php
+                                    $lingkungan = old('konteks_lingkungan', $mapa01->konteks_lingkungan ?? $template['konteks_lingkungan'] ?? []);
+                                @endphp
                                 <label class="ml-2"><input type="checkbox" name="konteks_lingkungan[]"
-                                        value="Tempat kerja nyata"> Tempat kerja nyata</label>
+                                        value="Tempat kerja nyata" {{ in_array('Tempat kerja nyata', $lingkungan) ? 'checked' : '' }}> Tempat kerja nyata</label>
                                 <label class="ml-4"><input type="checkbox" name="konteks_lingkungan[]"
-                                        value="Tempat kerja simulasi"> Tempat kerja simulasi</label>
+                                        value="Tempat kerja simulasi" {{ in_array('Tempat kerja simulasi', $lingkungan) ? 'checked' : '' }}> Tempat kerja simulasi</label>
                             </td>
                         </tr>
                         <tr>
                             <td class="p-2">
+                                @php
+                                    $peluang = old('peluang_bukti', $mapa01->peluang_bukti ?? $template['peluang_bukti'] ?? []);
+                                @endphp
                                 <span class="font-bold">Peluang mengumpulkan bukti:</span>
-                                <label class="ml-2"><input type="checkbox" name="peluang_bukti[]" value="Tersedia">
+                                <label class="ml-2"><input type="checkbox" name="peluang_bukti[]" value="Tersedia" {{ in_array('Tersedia', $peluang) ? 'checked' : '' }}>
                                     Tersedia</label>
-                                <label class="ml-4"><input type="checkbox" name="peluang_bukti[]" value="Terbatas">
+                                <label class="ml-4"><input type="checkbox" name="peluang_bukti[]" value="Terbatas" {{ in_array('Terbatas', $peluang) ? 'checked' : '' }}>
                                     Terbatas</label>
                             </td>
                         </tr>
                         <tr>
                             <td class="p-2">
+                                @php
+                                    $pelaksana = old('pelaksana_asesmen', $mapa01->pelaksana_asesmen ?? $template['pelaksana_asesmen'] ?? []);
+                                @endphp
                                 <span class="font-bold">Siapa yang melakukan asesmen:</span>
                                 <div class="mt-1">
                                     <label class="block"><input type="checkbox" name="pelaksana_asesmen[]"
-                                            value="Lembaga Sertifikasi"> Lembaga Sertifikasi</label>
+                                            value="Lembaga Sertifikasi" {{ in_array('Lembaga Sertifikasi', $pelaksana) ? 'checked' : '' }}> Lembaga Sertifikasi</label>
                                     <label class="block"><input type="checkbox" name="pelaksana_asesmen[]"
-                                            value="Organisasi Pelatihan"> Organisasi Pelatihan</label>
+                                            value="Organisasi Pelatihan" {{ in_array('Organisasi Pelatihan', $pelaksana) ? 'checked' : '' }}> Organisasi Pelatihan</label>
                                     <label class="block"><input type="checkbox" name="pelaksana_asesmen[]"
-                                            value="Asesor Perusahaan"> Asesor Perusahaan</label>
+                                            value="Asesor Perusahaan" {{ in_array('Asesor Perusahaan', $pelaksana) ? 'checked' : '' }}> Asesor Perusahaan</label>
                                 </div>
                             </td>
                         </tr>
 
                         {{-- Konfirmasi Orang Relevan --}}
+                        @php
+                            $konfirmasi = old('konfirmasi_relevan', $mapa01->konfirmasi_relevan ?? $template['konfirmasi_relevan'] ?? []);
+                        @endphp
                         <tr>
                             <td rowspan="4" class="p-2"></td>
                             <td rowspan="4" class="p-2 font-bold align-top">Konfirmasi dengan orang yang relevan</td>
                             <td class="p-2">
                                 <label class="flex items-center gap-2">
                                     <input type="checkbox" class="w-4 h-4 border-gray-300 rounded"
-                                        name="konfirmasi_relevan[]" value="Manajer sertifikasi LSP">
+                                        name="konfirmasi_relevan[]" value="Manajer sertifikasi LSP" {{ in_array('Manajer sertifikasi LSP', $konfirmasi) ? 'checked' : '' }}>
                                     <span>Manajer sertifikasi LSP</span>
                                 </label>
                             </td>
@@ -175,7 +197,7 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                                 <label class="flex items-center gap-2">
                                     <input type="checkbox" class="w-4 h-4 border-gray-300 rounded"
                                         name="konfirmasi_relevan[]"
-                                        value="Master Asesor / Master Trainer / Lead Asesor Kompetensi">
+                                        value="Master Asesor / Master Trainer / Lead Asesor Kompetensi" {{ in_array('Master Asesor / Master Trainer / Lead Asesor Kompetensi', $konfirmasi) ? 'checked' : '' }}>
                                     <span>Master Asesor / Master Trainer / Lead Asesor Kompetensi</span>
                                 </label>
                             </td>
@@ -185,7 +207,7 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                                 <label class="flex items-center gap-2">
                                     <input type="checkbox" class="w-4 h-4 border-gray-300 rounded"
                                         name="konfirmasi_relevan[]"
-                                        value="Manajer Pelatihan Lembaga Training terakreditasi / Lembaga Training terdaftar">
+                                        value="Manajer Pelatihan Lembaga Training terakreditasi / Lembaga Training terdaftar" {{ in_array('Manajer Pelatihan Lembaga Training terakreditasi / Lembaga Training terdaftar', $konfirmasi) ? 'checked' : '' }}>
                                     <span>Manajer Pelatihan Lembaga Training terakreditasi / Lembaga Training
                                         terdaftar</span>
                                 </label>
@@ -195,7 +217,7 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             <td class="p-2">
                                 <label class="flex items-center gap-2">
                                     <input type="checkbox" class="w-4 h-4 border-gray-300 rounded"
-                                        name="konfirmasi_relevan[]" value="Manajer atau Supervisor ditempat kerja">
+                                        name="konfirmasi_relevan[]" value="Manajer atau Supervisor ditempat kerja" {{ in_array('Manajer atau Supervisor ditempat kerja', $konfirmasi) ? 'checked' : '' }}>
                                     <span>Manajer atau Supervisor ditempat kerja</span>
                                 </label>
                             </td>
@@ -208,15 +230,15 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             <td class="p-2">
                                 <div class="mb-2"><span class="font-bold">Standar Kompetensi:</span> <input type="text"
                                         name="standar_kompetensi"
-                                        class="inline-block ml-2 border-b border-gray-300 focus:outline-none"
-                                        value="SKKNI Junior Web Programmer"></div>
+                                        class="inline-block ml-2 border-b border-gray-300 focus:outline-none w-1/2"
+                                        value="{{ old('standar_kompetensi', $mapa01->standar_kompetensi ?? $template['standar_kompetensi'] ?? ($skema->nama_skema ?? '')) }}"></div>
                                 <div class="mb-2"><span class="font-bold">Spesifikasi Produk:</span> <input type="text"
                                         name="spesifikasi_produk"
-                                        class="inline-block ml-2 border-b border-gray-300 focus:outline-none"
-                                        value="Aplikasi Web Sederhana"></div>
+                                        class="inline-block ml-2 border-b border-gray-300 focus:outline-none w-1/2"
+                                        value="{{ old('spesifikasi_produk', $mapa01->spesifikasi_produk ?? $template['spesifikasi_produk'] ?? '') }}"></div>
                                 <div><span class="font-bold">Pedoman Khusus:</span> <input type="text" name="pedoman_khusus"
-                                        class="inline-block ml-2 border-b border-gray-300 focus:outline-none"
-                                        value="SOP Pengembangan Perangkat Lunak"></div>
+                                        class="inline-block ml-2 border-b border-gray-300 focus:outline-none w-1/2"
+                                        value="{{ old('pedoman_khusus', $mapa01->pedoman_khusus ?? $template['pedoman_khusus'] ?? '') }}"></div>
                             </td>
                         </tr>
                     </tbody>
@@ -227,8 +249,8 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
             <div class="mb-8">
                 <h3 class="font-bold text-lg mb-4">2. Perencanaan Asesmen</h3>
                 <div class="mb-4">
-                    <p class="font-bold text-sm mb-2">Kelompok Pekerjaan 1</p>
-                    <table class="w-full text-sm form-table bg-gray-50">
+                    <p class="font-bold text-sm mb-2">Kelompok Pekerjaan</p>
+                    <table class="w-full text-sm form-table bg-gray-50 text-center">
                         <thead>
                             <tr>
                                 <th class="p-2 w-12">No.</th>
@@ -237,21 +259,15 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="p-2 text-center">1.</td>
-                                <td class="p-2 text-center"><input type="text" name="kelompok1[0][kode_unit]"
-                                        class="w-full text-center border-none bg-transparent" value="J.620100.004.02"></td>
-                                <td class="p-2"><input type="text" name="kelompok1[0][judul_unit]"
-                                        class="w-full border-none bg-transparent"
-                                        value="Mengimplementasikan User Interface"></td>
-                            </tr>
-                            <tr>
-                                <td class="p-2 text-center">2.</td>
-                                <td class="p-2 text-center"><input type="text" name="kelompok1[1][kode_unit]"
-                                        class="w-full text-center border-none bg-transparent" value="J.620100.011.01"></td>
-                                <td class="p-2"><input type="text" name="kelompok1[1][judul_unit]"
-                                        class="w-full border-none bg-transparent" value="Melakukan Debugging"></td>
-                            </tr>
+                            @foreach ($skema->kelompokPekerjaan as $kp)
+                                @foreach ($kp->unitKompetensi as $unit)
+                                <tr>
+                                    <td class="p-2 border-black">{{ $loop->iteration }}</td>
+                                    <td class="p-2 border-black font-mono">{{ $unit->kode_unit }}</td>
+                                    <td class="p-2 border-black text-left">{{ $unit->judul_unit }}</td>
+                                </tr>
+                                @endforeach
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -274,9 +290,9 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                                 </th>
                             </tr>
                             <tr class="text-xs">
-                                <th class="p-2 border border-black w-10 align-middle font-bold text-sm">L</th>
-                                <th class="p-2 border border-black w-10 align-middle font-bold text-sm">TL</th>
-                                <th class="p-2 border border-black w-10 align-middle font-bold text-sm">T</th>
+                                <th class="p-2 border border-black w-10 align-middle font-bold text-sm text-center">L</th>
+                                <th class="p-2 border border-black w-10 align-middle font-bold text-sm text-center">TL</th>
+                                <th class="p-2 border border-black w-10 align-middle font-bold text-sm text-center">T</th>
 
                                 <th class="p-2 border border-black w-32 align-top font-normal text-left"><span
                                         class="font-bold block text-center mb-1 text-sm">Observasi langsung</span></th>
@@ -293,78 +309,55 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- Unit 1 --}}
-                            <tr>
-                                <td class="p-2 border border-black align-top font-semibold">1. Mengimplementasikan User
-                                    Interface</td>
-                                <td class="p-2 border border-black align-top">
-                                    <textarea name="unit_kompetensi[0][bukti]"
-                                        class="w-full h-24 border-none resize-none text-sm focus:outline-none placeholder-gray-400"
-                                        placeholder="Tulis bukti di sini..."></textarea>
-                                </td>
+                            @php
+                                $unitIdx = 0;
+                            @endphp
+                            @foreach ($skema->kelompokPekerjaan as $kp)
+                                @foreach ($kp->unitKompetensi as $unit)
+                                    @php
+                                        $savedUnit = isset($mapa01->unit_kompetensi[$unitIdx]) ? $mapa01->unit_kompetensi[$unitIdx] : (isset($template['unit_kompetensi'][$unitIdx]) ? $template['unit_kompetensi'][$unitIdx] : []);
+                                    @endphp
+                                    <tr>
+                                        <td class="p-2 border border-black align-top font-semibold">{{ $loop->iteration }}. {{ $unit->judul_unit }}</td>
+                                        <td class="p-2 border border-black align-top">
+                                            <textarea name="unit_kompetensi[{{ $unitIdx }}][bukti]"
+                                                class="w-full h-24 border-none resize-none text-sm focus:outline-none placeholder-gray-400"
+                                                placeholder="Tulis bukti di sini...">{{ old("unit_kompetensi.$unitIdx.bukti", $savedUnit['bukti'] ?? '') }}</textarea>
+                                        </td>
 
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][L]" class="w-5 h-5 cursor-pointer" value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][TL]" class="w-5 h-5 cursor-pointer" value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][T]" class="w-5 h-5 cursor-pointer" value="1"></td>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][L]" class="w-5 h-5 cursor-pointer" value="1" {{ ($savedUnit['L'] ?? '') == '1' ? 'checked' : '' }}></td>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][TL]" class="w-5 h-5 cursor-pointer" value="1" {{ ($savedUnit['TL'] ?? '') == '1' ? 'checked' : '' }}></td>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][T]" class="w-5 h-5 cursor-pointer" value="1" {{ ($savedUnit['T'] ?? '') == '1' ? 'checked' : '' }}></td>
 
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][observasi]" class="w-5 h-5 cursor-pointer" checked
-                                        value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][kegiatan_terstruktur]" class="w-5 h-5 cursor-pointer"
-                                        value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][tanya_jawab]" class="w-5 h-5 cursor-pointer" value="1">
-                                </td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][verifikasi_portofolio]" class="w-5 h-5 cursor-pointer"
-                                        value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][reviu_produk]" class="w-5 h-5 cursor-pointer" checked
-                                        value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[0][verifikasi_pihak_ketiga]" class="w-5 h-5 cursor-pointer"
-                                        value="1"></td>
-                            </tr>
-
-                            {{-- Unit 2 --}}
-                            <tr>
-                                <td class="p-2 border border-black align-top font-semibold">2. Melakukan Debugging</td>
-                                <td class="p-2 border border-black align-top">
-                                    <textarea name="unit_kompetensi[1][bukti]"
-                                        class="w-full h-24 border-none resize-none text-sm focus:outline-none placeholder-gray-400"
-                                        placeholder="Tulis bukti di sini..."></textarea>
-                                </td>
-
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][L]" class="w-5 h-5 cursor-pointer" value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][TL]" class="w-5 h-5 cursor-pointer" value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][T]" class="w-5 h-5 cursor-pointer" value="1"></td>
-
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][observasi]" class="w-5 h-5 cursor-pointer" checked
-                                        value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][kegiatan_terstruktur]" class="w-5 h-5 cursor-pointer"
-                                        value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][tanya_jawab]" class="w-5 h-5 cursor-pointer" checked
-                                        value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][verifikasi_portofolio]" class="w-5 h-5 cursor-pointer"
-                                        value="1"></td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][reviu_produk]" class="w-5 h-5 cursor-pointer" value="1">
-                                </td>
-                                <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
-                                        name="unit_kompetensi[1][verifikasi_pihak_ketiga]" class="w-5 h-5 cursor-pointer"
-                                        value="1"></td>
-                            </tr>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][observasi]" class="w-5 h-5 cursor-pointer" 
+                                                value="1" {{ ($savedUnit['observasi'] ?? '') == '1' ? 'checked' : '' }}></td>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][kegiatan_terstruktur]" class="w-5 h-5 cursor-pointer"
+                                                value="1" {{ ($savedUnit['kegiatan_terstruktur'] ?? '') == '1' ? 'checked' : '' }}></td>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][tanya_jawab]" class="w-5 h-5 cursor-pointer"
+                                                value="1" {{ ($savedUnit['tanya_jawab'] ?? '') == '1' ? 'checked' : '' }}></td>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][verifikasi_portofolio]" class="w-5 h-5 cursor-pointer"
+                                                value="1" {{ ($savedUnit['verifikasi_portofolio'] ?? '') == '1' ? 'checked' : '' }}></td>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][reviu_produk]" class="w-5 h-5 cursor-pointer"
+                                                value="1" {{ ($savedUnit['reviu_produk'] ?? '') == '1' ? 'checked' : '' }}></td>
+                                        <td class="p-1 border border-black text-center align-middle"><input type="checkbox"
+                                                name="unit_kompetensi[{{ $unitIdx }}][verifikasi_pihak_ketiga]" class="w-5 h-5 cursor-pointer"
+                                                value="1" {{ ($savedUnit['verifikasi_pihak_ketiga'] ?? '') == '1' ? 'checked' : '' }}></td>
+                                    </tr>
+                                    @php $unitIdx++; @endphp
+                                @endforeach
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
                         </tbody>
                     </table>
                 </div>
@@ -582,6 +575,12 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
             </div>
 
             {{-- TOMBOL AKSI --}}
+            @if(isset($isMasterView) && $isMasterView)
+                <div class="mt-12 flex justify-end gap-4 pb-8">
+                     <p class="text-gray-500 italic">Mode Pratinjau (Read Only)</p>
+                     <a href="{{ $backUrl }}" class="px-6 py-3 bg-gray-600 text-white font-bold rounded-lg shadow hover:bg-gray-700 transition">Kembali</a>
+                </div>
+            @else
             <div class="mt-12 flex justify-end gap-4 pb-8">
                 <button type="button"
                     class="px-6 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg shadow hover:bg-gray-300 transition">Simpan
@@ -590,6 +589,7 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                     class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition">Simpan
                     Permanen</button>
             </div>
+            @endif
 
         </div>
     </form>

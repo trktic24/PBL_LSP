@@ -1,3 +1,17 @@
+@use('Carbon\Carbon')
+
+{{-- =================================================== --}}
+{{-- BAGIAN LOGIC PHP --}}
+{{-- =================================================== --}}
+@php
+    // 1. Logika Gambar Skema (Untuk Mobile Header)
+    $gambarSkema = null;
+    if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar) {
+        $gambarSkema = asset('storage/' . $sertifikasi->jadwal->skema->gambar);
+    }
+@endphp
+{{-- =================================================== --}}
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -12,32 +26,33 @@
 
         body { font-family: 'Poppins', sans-serif; }
 
-        /* Style navigasi (Bawaan Kamu) */
-        .nav-btn-active { background-color: #3B82F6 !important; color: white !important; border-color: #3B82F6 !important; }
+        /* Style navigasi */
+        .nav-btn-active { background-color: #3B82F6 !important; color: white !important; border-color: #3B82F6 !important; transform: scale(1.05); }
         .nav-btn-answered { background-color: #10B981; color: white; border-color: #10B981; }
 
         /* Timer Warning Animation */
         @keyframes pulse-red {
-            0%, 100% { background-color: white; color: #DC2626; }
-            50% { background-color: #FEE2E2; color: #991B1B; }
+            0%, 100% { background-color: white; color: #DC2626; border-color: #EF4444; }
+            50% { background-color: #FEF2F2; color: #991B1B; border-color: #B91C1C; }
         }
-        .timer-warning { animation: pulse-red 1s infinite; border-color: #EF4444 !important; }
+        .timer-warning { animation: pulse-red 1s infinite; }
 
-        /* Animasi Modal Baru */
+        /* Animasi Modal */
         .modal-enter { opacity: 0; transform: scale(0.95); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.2s ease-out; }
-        .modal-exit { opacity: 0; transform: scale(0.95); transition: all 0.2s ease-in; }
+
+        @media print { .no-print { display: none; } }
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen font-sans antialiased">
+<body class="bg-gray-100 min-h-screen font-sans antialiased text-slate-800">
 
     {{-- =============================================================== --}}
-    {{--                BAGIAN BARU: MODAL POP-UP KEREN                  --}}
+    {{--                KOMPONEN POP-UP (MODAL) KEREN                    --}}
     {{-- =============================================================== --}}
 
-    {{-- 1. MODAL KONFIRMASI (Pengganti 'confirm' browser) --}}
-    <div id="modal-confirm" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    {{-- 1. MODAL KONFIRMASI --}}
+    <div id="modal-confirm" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="confirm-backdrop"></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -58,10 +73,10 @@
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
-                        <button type="button" id="btn-confirm-yes" class="inline-flex w-full justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:w-auto transition-all">
+                        <button type="button" id="btn-confirm-yes" class="inline-flex w-full justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:w-auto transition-all duration-200">
                             Ya, Lanjutkan
                         </button>
-                        <button type="button" id="btn-confirm-no" class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all">
+                        <button type="button" id="btn-confirm-no" class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all duration-200">
                             Batal
                         </button>
                     </div>
@@ -70,8 +85,8 @@
         </div>
     </div>
 
-    {{-- 2. MODAL ALERT (Pengganti 'alert' browser) --}}
-    <div id="modal-alert" class="fixed inset-0 z-[70] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    {{-- 2. MODAL ALERT --}}
+    <div id="modal-alert" class="fixed inset-0 z-[110] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="alert-backdrop"></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -104,12 +119,12 @@
         </div>
     </div>
 
-    {{-- 3. MODAL WAKTU HABIS (Auto Submit) --}}
-    <div id="timeout-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    {{-- 3. MODAL WAKTU HABIS --}}
+    <div id="timeout-modal" class="fixed inset-0 z-[120] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm"></div>
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-80 transition-opacity backdrop-blur-sm"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border-t-8 border-red-500 animate-bounce-in">
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border-t-8 border-red-500">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -118,7 +133,7 @@
                             </svg>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-xl leading-6 font-bold text-gray-900" id="modal-title">Waktu Asesmen Habis!</h3>
+                            <h3 class="text-xl leading-6 font-bold text-gray-900">Waktu Asesmen Habis!</h3>
                             <div class="mt-2">
                                 <p class="text-sm text-gray-500">
                                     Maaf, waktu pengerjaan asesmen Anda telah berakhir. Sistem sedang <strong>mengirimkan jawaban Anda secara otomatis</strong>.
@@ -140,120 +155,132 @@
     {{-- =============================================================== --}}
 
 
-    {{-- LAYOUT ASLI KAMU (GAK DIUBAH SAMA SEKALI) --}}
-    <div class="flex h-screen overflow-hidden">
-        {{-- SIDEBAR --}}
-        <x-sidebar2 :idAsesi="$asesi->id_asesi ?? null" :sertifikasi="$sertifikasi ?? null" />
+    {{-- WRAPPER UTAMA: Menggunakan layout responsif --}}
+    <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden">
 
-        {{-- KONTEN UTAMA --}}
-        <main class="flex-1 overflow-y-auto bg-gray-50 focus:outline-none relative">
-            <div class="py-6">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        {{-- 1. SIDEBAR (Hanya Desktop) --}}
+        <div class="hidden md:block md:w-80 flex-shrink-0 no-print">
+            <x-sidebar2 :idAsesi="$asesi->id_asesi ?? null" :sertifikasi="$sertifikasi ?? null" />
+        </div>
 
-                    {{-- HEADER --}}
-                    <div class="mb-8">
-                        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-5 tracking-wide">
-                            Pertanyaan Esai
-                        </h1>
-                        <div class="w-full border-b-2 border-gray-300 mb-6"></div>
+        {{-- 2. MOBILE HEADER (Hanya Mobile) --}}
+        <x-mobile_header 
+            :title="'Asesmen Esai (IA-06)'" 
+            :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" 
+            :name="$asesi->nama_lengkap ?? '-'" 
+            :image="$gambarSkema" 
+            :sertifikasi="$sertifikasi" 
+        />
 
-                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                            <div class="flex items-center gap-3 w-full md:w-auto">
-                                <span class="font-bold text-gray-800 text-lg">Skema :</span>
-                                <div class="px-0 py-1.5 text-sm font-medium text-gray-700 flex-1 md:flex-none">
-                                    {{ $sertifikasi->jadwal->skema->nama_skema ?? 'Skema Tidak Tersedia' }}
-                                </div>
-                            </div>
+        {{-- 3. KONTEN UTAMA --}}
+        {{-- pt-24 agar konten tidak tertutup header mobile fixed --}}
+        <main class="flex-1 px-4 pt-24 pb-12 md:p-8 bg-gray-50 overflow-y-auto focus:outline-none relative">
+            
+            <div class="max-w-7xl mx-auto">
 
-                            {{-- TIMER --}}
-                            <div id="timer-box" class="bg-white border-2 border-gray-200 text-gray-800 px-5 py-2 rounded-lg font-mono font-bold flex items-center shadow-sm transition-colors duration-300">
-                                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span id="timer">Memuat...</span>
+                {{-- Header Page --}}
+                <div class="mb-8">
+                    <h1 class="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-5 tracking-wide">
+                        Pertanyaan Esai
+                    </h1>
+                    <div class="w-full border-b-2 border-gray-300 mb-6"></div>
+
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <span class="font-bold text-gray-800 text-lg">Skema :</span>
+                            <div class="px-0 py-1.5 text-sm font-medium text-gray-700 flex-1 md:flex-none">
+                                {{ $sertifikasi->jadwal->skema->nama_skema ?? 'Skema Tidak Tersedia' }}
                             </div>
                         </div>
-                    </div>
 
-                    {{-- AREA SOAL --}}
-                    <div class="flex flex-col lg:flex-row gap-6">
+                        {{-- TIMER --}}
+                        <div id="timer-box" class="bg-white border-2 border-gray-200 text-gray-800 px-5 py-2 rounded-lg font-mono font-bold flex items-center shadow-sm transition-colors duration-300">
+                            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span id="timer">Memuat...</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- AREA SOAL --}}
+                <div class="flex flex-col lg:flex-row gap-6">
+                    
+                    {{-- KOLOM KIRI: SOAL --}}
+                    <div class="flex-1 w-full lg:w-3/4">
                         
-                        {{-- KOLOM KIRI: SOAL --}}
-                        <div class="flex-1 w-full lg:w-3/4">
-                            
-                            {{-- Skeleton Loading --}}
-                            <div id="loading-skeleton" class="bg-white rounded-xl shadow-sm p-8 animate-pulse space-y-4 border border-gray-200">
-                                <div class="h-4 bg-gray-200 rounded w-1/4"></div>
-                                <div class="h-6 bg-gray-300 rounded w-full"></div>
-                                <div class="h-32 bg-gray-100 rounded w-full mt-6"></div>
+                        {{-- Skeleton Loading --}}
+                        <div id="loading-skeleton" class="bg-white rounded-xl shadow-sm p-8 animate-pulse space-y-4 border border-gray-200">
+                            <div class="h-4 bg-gray-200 rounded w-1/4"></div>
+                            <div class="h-6 bg-gray-300 rounded w-full"></div>
+                            <div class="h-32 bg-gray-100 rounded w-full mt-6"></div>
+                        </div>
+
+                        {{-- Error Message --}}
+                        <div id="error-message" class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                            <p class="text-red-700" id="error-text"></p>
+                        </div>
+
+                        {{-- Container Soal --}}
+                        <div id="question-container" class="hidden bg-white rounded-xl shadow-sm p-8 border border-gray-200 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 -mt-6 -mr-6 text-blue-50 opacity-40 pointer-events-none">
+                                <svg class="w-40 h-40" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0 1 1 0 002 0zm-1 4a1 1 0 00-1 1v3a1 1 0 002 0v-3a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
                             </div>
 
-                            {{-- Error Message --}}
-                            <div id="error-message" class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-                                <p class="text-red-700" id="error-text"></p>
-                            </div>
-
-                            {{-- Container Soal --}}
-                            <div id="question-container" class="hidden bg-white rounded-xl shadow-sm p-8 border border-gray-200 relative overflow-hidden">
-                                <div class="absolute top-0 right-0 -mt-6 -mr-6 text-blue-50 opacity-40 pointer-events-none">
-                                    <svg class="w-40 h-40" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0 1 1 0 002 0zm-1 4a1 1 0 00-1 1v3a1 1 0 002 0v-3a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                    </svg>
+                            <div class="relative z-10">
+                                <div class="mb-6">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                        Soal No. <span id="current-question-num" class="ml-1">1</span>
+                                    </span>
                                 </div>
-
-                                <div class="relative z-10">
-                                    <div class="mb-6">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                            Soal No. <span id="current-question-num" class="ml-1">1</span>
-                                        </span>
-                                    </div>
-                                    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-6 leading-relaxed" id="question-text"></h2>
-                                    <div class="mb-2">
-                                        <label for="essay-answer" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Jawaban Anda:</label>
-                                        <textarea 
-                                            id="essay-answer" 
-                                            rows="10" 
-                                            class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-y bg-white text-gray-800 shadow-inner leading-relaxed"
-                                            placeholder="Ketik jawaban Anda di sini secara detail dan jelas..."
-                                        ></textarea>
-                                    </div>
+                                <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-6 leading-relaxed" id="question-text"></h2>
+                                <div class="mb-2">
+                                    <label for="essay-answer" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Jawaban Anda:</label>
+                                    <textarea 
+                                        id="essay-answer" 
+                                        rows="10" 
+                                        class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-y bg-white text-gray-800 shadow-inner leading-relaxed"
+                                        placeholder="Ketik jawaban Anda di sini secara detail dan jelas..."
+                                    ></textarea>
                                 </div>
-                            </div>
-
-                            {{-- Tombol Navigasi --}}
-                            <div class="flex justify-between items-center mt-6 font-medium">
-                                <button id="btn-prev" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 flex items-center shadow-sm">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> 
-                                    Sebelumnya
-                                </button>
-                                
-                                <button id="btn-next" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center shadow-sm">
-                                    Selanjutnya 
-                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </button>
-                                
-                                <button id="btn-finish" class="hidden px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center shadow-sm">
-                                    <span id="btn-finish-text">Kumpulkan Jawaban</span>
-                                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                </button>
                             </div>
                         </div>
 
-                        {{-- KOLOM KANAN: NAVIGASI --}}
-                        <aside class="lg:w-1/4">
-                            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 sticky top-6">
-                                <h3 class="text-base font-bold mb-4 text-gray-900 border-b border-gray-100 pb-2">Navigasi Soal</h3>
-                                <div class="grid grid-cols-5 gap-2" id="question-nav-grid"></div>
-                                
-                                <div class="mt-6 text-xs font-medium text-gray-500 space-y-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                    <div class="flex items-center"><div class="w-3 h-3 bg-blue-600 rounded-sm mr-2"></div> Sedang dibuka</div>
-                                    <div class="flex items-center"><div class="w-3 h-3 bg-green-500 rounded-sm mr-2"></div> Sudah diisi</div>
-                                    <div class="flex items-center"><div class="w-3 h-3 border border-gray-300 bg-white rounded-sm mr-2"></div> Belum diisi</div>
-                                </div>
-                            </div>
-                        </aside>
-
+                        {{-- Tombol Navigasi --}}
+                        <div class="flex justify-between items-center mt-6 font-medium">
+                            <button id="btn-prev" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 flex items-center shadow-sm">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> 
+                                Sebelumnya
+                            </button>
+                            
+                            <button id="btn-next" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center shadow-sm">
+                                Selanjutnya 
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                            
+                            <button id="btn-finish" class="hidden px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center shadow-sm">
+                                <span id="btn-finish-text">Kumpulkan Jawaban</span>
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        </div>
                     </div>
+
+                    {{-- KOLOM KANAN: NAVIGASI --}}
+                    <aside class="lg:w-1/4">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 sticky top-6">
+                            <h3 class="text-base font-bold mb-4 text-gray-900 border-b border-gray-100 pb-2">Navigasi Soal</h3>
+                            <div class="grid grid-cols-5 gap-2" id="question-nav-grid"></div>
+                            
+                            <div class="mt-6 text-xs font-medium text-gray-500 space-y-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <div class="flex items-center"><div class="w-3 h-3 bg-blue-600 rounded-sm mr-2"></div> Sedang dibuka</div>
+                                <div class="flex items-center"><div class="w-3 h-3 bg-green-500 rounded-sm mr-2"></div> Sudah diisi</div>
+                                <div class="flex items-center"><div class="w-3 h-3 border border-gray-300 bg-white rounded-sm mr-2"></div> Belum diisi</div>
+                            </div>
+                        </div>
+                    </aside>
+
                 </div>
             </div>
         </main>

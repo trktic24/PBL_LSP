@@ -1,3 +1,20 @@
+@php
+    $user = Auth::user();
+    
+    // 1. Jika User adalah ASESI (Login sebagai peserta)
+    if ($user->asesi) {
+         $backUrl = url("/asesi/tracker/" . ($sertifikasi->id_jadwal ?? ''));
+    } 
+    
+    // 2. Jika User adalah ADMIN (Login sebagai admin/asesor)
+    else {
+         // Rakit URL Manual agar tidak 404
+         $baseUrl = "/admin/asesi/" . $sertifikasi->id_asesi . "/tracker";
+         // Tambahkan query string sertifikasi_id
+         $backUrl = url($baseUrl) . "?sertifikasi_id=" . $sertifikasi->id_data_sertifikasi_asesi;
+    }
+@endphp
+
 <x-app-layout>
     {{-- Container Utama --}}
     <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden bg-gray-100"> 

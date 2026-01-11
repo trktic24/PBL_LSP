@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\Admin;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class APL01Controller extends Controller
@@ -85,6 +86,8 @@ class APL01Controller extends Controller
             'jadwal.skema.unitKompetensi' // Ambil unit kompetensi dari skema
         ])->findOrFail($id);
 
+        $admin = Admin::first();
+
         $asesi = $sertifikasi->asesi;
         $skema = $sertifikasi->jadwal->skema;
         $unitKompetensi = $skema->unitKompetensi ?? collect();
@@ -94,11 +97,42 @@ class APL01Controller extends Controller
             'sertifikasi'    => $sertifikasi,
             'asesi'          => $asesi,
             'skema'          => $skema,
-            'unitKompetensi' => $unitKompetensi
+            'unitKompetensi' => $unitKompetensi,
+            'admin'          => $admin,
         ]);
 
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('FR_APL_01_' . $asesi->nama_lengkap . '.pdf');
+    }
+
+    /**
+     * Master View APL-01 (Using Daftar Asesi Template)
+     * Menampilkan semua pendaftar pada Skema tertentu dengan tampilan "Daftar Asesi".
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
+
+        return view('frontend.APL_01.APL_01_1', [
+            'sertifikasi' => $sertifikasi,
+            'asesi' => $asesi,
+            'skema' => $skema,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+        ]);
     }
 }

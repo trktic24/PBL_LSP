@@ -69,7 +69,7 @@
         <tr>
             <td class="text-center">{{ $i + 1 }}</td>
             <td>{{ $data->asesi->nama_lengkap }}</td>
-            <td>{{ $data->asesi->pekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
+            <td>{{ $data->asesi->dataPekerjaan->nama_institusi_pekerjaan ?? '-' }}</td>
             <td>{{ $data->asesi->alamat_rumah }}</td>
             <td>{{ $data->asesi->pekerjaan }}</td>
             <td>{{ $data->asesi->nomor_hp }}</td>
@@ -85,7 +85,7 @@
             <td class="text-center">
                 @if ($data->presensi && $data->presensi->hadir == 1)
                     <div class="ttd-box">
-                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($data->asesi->tanda_tangan) }}" style="width: 100%; height: 100%; object-fit: contain;" />
+                        <img src="{{ getTtdBase64($data->asesi->tanda_tangan) }}" style="width: 100%; height: 100%; object-fit: contain;" />
                     </div>
                 @else
                     -
@@ -105,7 +105,7 @@
 <br>
 <div class="ttd-box" style="margin: 0 auto;">
     @if($jadwal->asesor && $jadwal->asesor->tanda_tangan)
-        <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($jadwal->asesor->tanda_tangan) }}" style="width: 100%; height: 100%; object-fit: contain;" />
+        <img src="{{ getTtdBase64($jadwal->asesor->tanda_tangan) }}" style="width: 100%; height: 100%; object-fit: contain;" />
     @endif
 </div>
 <br>

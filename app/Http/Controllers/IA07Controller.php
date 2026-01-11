@@ -2,65 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-// Import semua Models yang relevan
-use App\Models\Asesi;
-use App\Models\Asesor;
+use App\Models\Ia07;
+use App\Models\MasterFormTemplate;
 use App\Models\Skema;
-use App\Models\JenisTuk;
-use App\Models\Jadwal;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DataSertifikasiAsesi;
-use App\Models\Ia07;
-use Illuminate\Support\Facades\DB;
+use App\Models\JenisTUK;
 
 class IA07Controller extends Controller
 {
     /**
      * Menampilkan halaman Form FR.IA.07 (khusus Asesor, menggunakan view tunggal FR_IA_07.blade.php).
      */
-    public function index()
+    public function index($idSertifikasi)
     {
         // ----------------------------------------------------
         // 1. PENGAMBILAN DATA (MENGGUNAKAN MODEL NYATA)
         // ----------------------------------------------------
 
-        // Ambil data pertama sebagai contoh (Anda mungkin perlu mengubah ini 
-        // untuk mengambil data berdasarkan ID Asesi/Asesor yang sebenarnya)
-        $asesi = Asesi::first();
-        $asesor = Asesor::first();
+        // Ambil data berdasarkan ID Sertifikasi Asesi
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.skema.unitKompetensi',
+            'jadwal.jenisTuk'
+        ])->findOrFail($idSertifikasi);
 
-        $skema = null;
-        if ($asesor && $asesor->skema()->exists()) {
-            $skema = $asesor->skema()->first();
-        } else {
-            $skema = Skema::first();
-        }
+        $asesi = $sertifikasi->asesi;
+        $asesor = $sertifikasi->jadwal->asesor;
+        $skema = $sertifikasi->jadwal->skema;
+        $jadwal = $sertifikasi->jadwal;
 
-        // Ambil Data Jadwal (Dummy/First) untuk mencegah error di view
-        $jadwal = Jadwal::with(['skema', 'asesor', 'jenisTuk'])->first();
 
-        // Fallback jika tidak ada jadwal di DB
-        if (!$jadwal) {
-            $jadwal = new Jadwal();
-            // Set dummy relations if needed, or rely on view's null coalescing operator if improved
-            if ($skema)
-                $jadwal->setRelation('skema', $skema);
-            if ($asesor)
-                $jadwal->setRelation('asesor', $asesor);
-        }
 
         // Ambil data Jenis TUK untuk radio button
-        $jenisTukOptions = JenisTuk::pluck('jenis_tuk', 'id_jenis_tuk');
+        $jenisTukOptions = JenisTUK::pluck('jenis_tuk', 'id_jenis_tuk');
 
-        // Data Dummy Unit Kompetensi (Harap ganti dengan data dinamis dari DB Anda)
-        $units = [
-            ['code' => 'J.620100.004.02', 'title' => 'Menggunakan Struktur Data'],
-            ['code' => 'J.620100.005.02', 'title' => 'Mengimplementasikan User Interface'],
-            ['code' => 'J.620100.009.01', 'title' => 'Melakukan Instalasi Software Tools'],
-            ['code' => 'J.620100.017.02', 'title' => 'Mengimplementasikan Pemrograman Terstruktur'],
-        ];
+        // Ambil Unit Kompetensi dari Skema
+        $units = $skema->unitKompetensi->map(function ($unit) {
+            return [
+                'code' => $unit->kode_unit,
+                'title' => $unit->judul_unit
+            ];
+        });
 
         // --- Handle Data Kosong (Fallbacks) ---
         if (!$asesi) {
@@ -78,7 +64,8 @@ class IA07Controller extends Controller
         // ----------------------------------------------------
 
         // Mengembalikan view ke file frontend/FR_IA_07.blade.php
-        return view('frontend.FR_IA_07', compact('asesi', 'asesor', 'skema', 'units', 'jenisTukOptions', 'jadwal'));
+        // Mengembalikan view ke file frontend/FR_IA_07.blade.php
+        return view('frontend.FR_IA_07', compact('asesi', 'asesor', 'skema', 'units', 'jenisTukOptions', 'jadwal', 'sertifikasi'));
     }
 
     /**
@@ -95,11 +82,12 @@ class IA07Controller extends Controller
             'id_jenis_tuk' => 'required',
             'tanggal_pelaksanaan' => 'required|date',
             'umpan_balik_asesi' => 'nullable|string',
+            'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
         ]);
 
-        // 2. Tentukan DataSertifikasiAsesi (Sementara ambil first() sesuai pola index)
-        //    Idealnya ini dikirim via hidden input atau parameter route
-        $sertifikasi = DataSertifikasiAsesi::first();
+        // 2. Tentukan DataSertifikasiAsesi
+        $idSertifikasi = $request->input('id_data_sertifikasi_asesi');
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($idSertifikasi);
         if (!$sertifikasi) {
             return redirect()->back()->with('error', 'Data Sertifikasi tidak ditemukan (DB Kosong).');
         }
@@ -180,7 +168,42 @@ class IA07Controller extends Controller
         ])->findOrFail($idSertifikasi);
 
         // 2. Ambil Daftar Pertanyaan & Jawaban (IA07)
-        $daftar_pertanyaan = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
+        // Ambil Data IA07 milik asesi ini
+        $ia07 = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
+
+        // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
+        if ($ia07->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                        ->where('form_code', 'FR.IA.07')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.07')
+                                            ->first();
+            }
+            
+            $defaultQuestions = [
+                "Sebutkan komponen utama dari unit kompetensi yang sedang diuji.",
+                "Apa yang Anda lakukan jika terjadi kendala teknis saat pelaksanaan tugas?",
+                "Bagaimana cara memastikan keselamatan kerja selama proses berlangsung?"
+            ];
+
+            $questions = ($template && !empty($template->content)) ? $template->content : $defaultQuestions;
+
+            foreach ($questions as $qText) {
+                Ia07::create([
+                    'id_data_sertifikasi_asesi' => $idSertifikasi,
+                    'pertanyaan' => $qText,
+                    'jawaban_asesi' => '',
+                    'pencapaian' => null
+                ]);
+            }
+            // Refresh collection
+            $ia07 = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)->get();
+        }
 
         // 3. Ambil Unit Kompetensi (Fallback ke collection kosong jika null)
         $unitKompetensi = $sertifikasi->jadwal->skema->unitKompetensi ?? collect();
@@ -195,5 +218,89 @@ class IA07Controller extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('FR_IA_07_' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    }
+
+    /**
+     * [MASTER] Menampilkan editor tamplate (Pertanyaan Lisan) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.IA.07')
+                                    ->first();
+        
+        // Default values if no template exists
+        $questions = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.ia07', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'questions' => $questions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*' => 'required|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.07'
+            ],
+            ['content' => $request->questions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-07 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.07 (Admin Master View) - DEPRECATED for management
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
+
+        $this->cetakPDF(0); // This will trigger default questions for ID 0 if we handle it
+
+        $units = $skema->unitKompetensi->map(function ($unit) {
+            return [
+                'code' => $unit->kode_unit,
+                'title' => $unit->judul_unit
+            ];
+        });
+
+        return view('frontend.FR_IA_07', [
+            'asesi' => $asesi,
+            'asesor' => $jadwal->asesor,
+            'skema' => $skema,
+            'units' => $units,
+            'jenisTukOptions' => \App\Models\JenisTUK::pluck('jenis_tuk', 'id_jenis_tuk'),
+            'jadwal' => $jadwal,
+            'sertifikasi' => $sertifikasi,
+            'isMasterView' => true,
+        ]);
     }
 }

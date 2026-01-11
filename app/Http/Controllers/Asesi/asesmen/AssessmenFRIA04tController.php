@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Asesi\asesmen;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Asesi; 
-use App\Models\Asesor; 
-use App\Models\Skema; 
-use App\Models\Jadwal; 
-use App\Models\PoinIA04A; 
-use App\Models\JenisTuk; 
-use App\Models\DataSertifikasiAsesi; 
-use App\Models\AspekIA04B; 
+use App\Models\Asesi;
+use App\Models\Asesor;
+use App\Models\Skema;
+use App\Models\Jadwal;
+use App\Models\PoinIA04A;
+use App\Models\MasterFormTemplate;
+use App\Models\JenisTUK;
+use App\Models\DataSertifikasiAsesi;
+use App\Models\AspekIA04B;
 use App\Models\ResponIA04A;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -25,9 +26,9 @@ class AssessmenFRIA04tController extends Controller
     protected function getSkemaRelatedData($id_skema)
     {
         if (!$id_skema) {
-             return [
-                'mockUnits' => [], 
-                'kelompok_pekerjaan' => 'Skema tidak terhubung', 
+            return [
+                'mockUnits' => [],
+                'kelompok_pekerjaan' => 'Skema tidak terhubung',
             ];
         }
 
@@ -44,10 +45,10 @@ class AssessmenFRIA04tController extends Controller
             $id_kelompok_pekerjaan = $kelompokPekerjaanDB->id_kelompok_pekerjaan;
 
             // FIX: Ganti nama tabel dari 'master_unit_kompetensi' menjadi 'unit_kompetensi'
-            $unitKompetensiList = DB::table('unit_kompetensi') 
+            $unitKompetensiList = DB::table('unit_kompetensi')
                 ->where('id_kelompok_pekerjaan', $id_kelompok_pekerjaan)
                 ->get();
-            
+
             $units_for_table = $unitKompetensiList->map(function ($unit) {
                 return [
                     'code' => $unit->kode_unit,
@@ -57,8 +58,8 @@ class AssessmenFRIA04tController extends Controller
         }
 
         return [
-            'mockUnits' => $units_for_table, 
-            'kelompok_pekerjaan' => $nama_kelompok_pekerjaan, 
+            'mockUnits' => $units_for_table,
+            'kelompok_pekerjaan' => $nama_kelompok_pekerjaan,
         ];
     }
 
@@ -69,13 +70,10 @@ class AssessmenFRIA04tController extends Controller
     /**
      * Menampilkan form FR.IA.04A untuk ASESOR.
      */
-    public function showIA04A()
+    public function showIA04A($id_sertifikasi)
     {
-        // Ganti ID ini dengan logic autentikasi
-        $id_sertifikasi = 1; 
-
         $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk'])
-            ->find($id_sertifikasi) ?? DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk'])->first();
+            ->find($id_sertifikasi);
 
         if (!$sertifikasi) {
             return redirect()->back()->with('error', 'Tidak ada Data Sertifikasi ditemukan di database.');
@@ -83,27 +81,74 @@ class AssessmenFRIA04tController extends Controller
 
         $active_id_sertifikasi = $sertifikasi->id_data_sertifikasi_asesi;
         $asesi = $sertifikasi->asesi;
-        $asesor = optional($sertifikasi->jadwal)->asesor ?? null; 
-        $skema = optional($sertifikasi->jadwal)->skema ?? null; 
+        $asesor = optional($sertifikasi->jadwal)->asesor ?? null;
+        $skema = optional($sertifikasi->jadwal)->skema ?? null;
         $jadwal = $sertifikasi->jadwal;
 
         $poinIA04A = PoinIA04A::where('id_data_sertifikasi_asesi', $active_id_sertifikasi)->first();
         $responIA04A = ResponIA04A::where('id_data_sertifikasi_asesi', $active_id_sertifikasi)->first();
-        
+
         $jenis_tuk_db = strtolower(optional($jadwal->jenisTuk)->jenis_tuk ?? 'Sewaktu');
-        $tanggal_pelaksanaan = optional($jadwal->tanggal_pelaksanaan)->format('d/m/Y') ?? date('d/m/Y'); 
+        $tanggal_pelaksanaan = optional($jadwal->tanggal_pelaksanaan)->format('d/m/Y') ?? date('d/m/Y');
         $skemaData = $this->getSkemaRelatedData(optional($skema)->id_skema);
-        
-        $judul_kegiatan_db = 'Proyek Pembuatan Sistem Informasi Pendaftaran Mahasiswa Baru'; 
-        
+
+        $judul_kegiatan_db = 'Proyek Pembuatan Sistem Informasi Pendaftaran Mahasiswa Baru';
+
         $tanda_tangan_asesor_path = optional($asesor)->tanda_tangan ?? null;
         $tanda_tangan_asesi_path = optional($asesi)->tanda_tangan ?? null;
-        $rekomendasi_db = optional($sertifikasi)->rekomendasi_IA04B; 
-        
+        $rekomendasi_db = optional($sertifikasi)->rekomendasi_IA04B;
+
+        // Ambil data dari poinIA04A dan responIA04A (jika ada)
         $hal_yang_disiapkan_db = optional($poinIA04A)->hal_yang_disiapkan ?? null;
         $hal_yang_didemonstrasikan_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? null;
+
+        // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
+        if (!$hal_yang_disiapkan_db && !$hal_yang_didemonstrasikan_db && $skema) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                        ->where('form_code', 'FR.IA.04')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.04')
+                                            ->first();
+            }
+            
+            if ($template && !empty($template->content)) {
+                $hal_yang_disiapkan_db = $template->content[0]['nama'] ?? null;
+                $hal_yang_didemonstrasikan_db = $template->content[0]['kriteria'] ?? null;
+            } else {
+                // Static Fallback
+                $hal_yang_disiapkan_db = "1. Portofolio yang relevan dengan unit kompetensi.\n2. Dokumen pendukung keahlian.";
+                $hal_yang_didemonstrasikan_db = "1. Verifikasi keaslian bukti.\n2. Konfirmasi kemutakhiran data.";
+            }
+        }
+
         $umpan_balik_asesi_db = optional($responIA04A)->umpan_balik_untuk_asesi ?? null;
 
+        // --- LOGIKA TANDA TANGAN BASE64 ---
+        $ttdAsesorBase64 = null;
+        if ($asesor && $asesor->tanda_tangan) {
+            $idUser = $asesor->user_id ?? ($asesor->id_user ?? null);
+            if ($idUser) {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . $idUser . '/' . basename($asesor->tanda_tangan));
+            } else {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
+            }
+            if (file_exists($pathTtdAsesor)) {
+                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+            }
+        }
+
+        $ttdAsesiBase64 = null;
+        if ($asesi && $asesi->tanda_tangan) {
+            $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($asesi->tanda_tangan));
+            if (file_exists($pathTtdAsesi)) {
+                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+            }
+        }
 
         return view('asesi.assesmen.FRIA04_Asesor', array_merge($skemaData, [
             'asesi' => $asesi,
@@ -112,8 +157,8 @@ class AssessmenFRIA04tController extends Controller
             'jenis_tuk_db' => $jenis_tuk_db,
             'judul_kegiatan_db' => $judul_kegiatan_db,
             'tanggal_pelaksanaan' => $tanggal_pelaksanaan,
-            'sertifikasi' => $sertifikasi, 
-            
+            'sertifikasi' => $sertifikasi,
+
             'poinIA04A' => $poinIA04A,
             'hal_yang_disiapkan_db' => $hal_yang_disiapkan_db,
             'hal_yang_didemonstrasikan_db' => $hal_yang_didemonstrasikan_db,
@@ -121,6 +166,8 @@ class AssessmenFRIA04tController extends Controller
 
             'tanda_tangan_asesor_path' => $tanda_tangan_asesor_path,
             'tanda_tangan_asesi_path' => $tanda_tangan_asesi_path,
+            'ttdAsesorBase64' => $ttdAsesorBase64,
+            'ttdAsesiBase64' => $ttdAsesiBase64,
             'rekomendasi_db' => $rekomendasi_db,
         ]));
     }
@@ -130,7 +177,74 @@ class AssessmenFRIA04tController extends Controller
      */
     public function storeIA04A(Request $request)
     {
-        return redirect()->back()->with('success', 'Formulir FR.IA.04A Asesor berhasil disimpan.');
+        $id_sertifikasi = $request->input('id_sertifikasi');
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
+
+        // 1. Simpan Poin IA04A (Skenario & Hasil)
+        $poin = PoinIA04A::updateOrCreate(
+            ['id_data_sertifikasi_asesi' => $id_sertifikasi],
+            [
+                'hal_yang_disiapkan' => $request->input('skenario_umum'),
+                'hal_yang_didemonstrasikan' => $request->input('hasil_umum'),
+            ]
+        );
+
+        // 2. Simpan Respon IA04A (Umpan Balik)
+        ResponIA04A::updateOrCreate(
+            ['id_data_sertifikasi_asesi' => $id_sertifikasi],
+            [
+                'id_poin_ia04A' => $poin->id_poin_ia04A,
+                'umpan_balik_untuk_asesi' => $request->input('umpan_balik_asesi'),
+                // 'ttd_supervisor' => ... (jika ada)
+            ]
+        );
+
+        // 3. Simpan Aspek IA04B (Looping)
+        // Ada 2 pertanyaan hardcoded di view: q1 dan q2
+        for ($q = 1; $q <= 2; $q++) {
+            // Tentukan status pencapaian (karena checkbox 'pencapaian_q1_ya' atau 'pencapaian_q1_tdk')
+            $status = 'Tidak Kompeten'; // Default
+            if ($request->has("pencapaian_q{$q}_ya")) {
+                $status = 'Kompeten';
+            } elseif ($request->has("pencapaian_q{$q}_tdk")) {
+                $status = 'Tidak Kompeten';
+            }
+
+            // Note: Kita butuh cara unik untuk identifikasi row, misal pakai urutan atau asumsi hapus-buat baru
+            // Tapi karena updateOrCreate butuh kondisi unik, dan disini tidak ada ID unik per pertanyaan selain kontennya.
+            // Strategi aman: Hapus dulu yang lama untuk sertifikasi ini, atau gunakan firstOrNew dengan counter?
+            // Karena ini loop sederhana 1-2, kita bisa asumsikan urutan penyimpanan.
+            // Namun, karena tabel aspek_ia04B tidak punya kolom 'nomor_soal', ini agak tricky.
+            // OPSI: Kita hapus dulu data lama lalu create baru (reset), atau kita asumsikan urutan dari `get()`.
+            // Untuk Sederhana & Cepat: Kita HAPUS dulu create ulang (Safe untuk 2 item kecil).
+        }
+
+        // Hapus data lama (agar tidak duplikat saat save berulang)
+        AspekIA04B::where('id_data_sertifikasi_asesi', $id_sertifikasi)->delete();
+
+        for ($q = 1; $q <= 2; $q++) {
+            $status = 'Tidak';
+            if ($request->has("pencapaian_q{$q}_ya")) {
+                $status = 'Ya';
+            }
+
+            AspekIA04B::create([
+                'id_data_sertifikasi_asesi' => $id_sertifikasi,
+                'respon_lingkup_penyajian_proyek' => $request->input("lingkup_q{$q}"),
+                'respon_daftar_pertanyaan' => $request->input("pertanyaan_q{$q}"),
+                'respon_daftar_tanggapan' => $request->input("tanggapan_q{$q}"),
+                'respon_kesesuaian_standar_kompetensi' => $request->input("kesesuaian_q{$q}"),
+                'respon_pencapaian' => $status,
+            ]);
+        }
+
+        // 4. Update Rekomendasi di DataSertifikasiAsesi
+        $sertifikasi->update([
+            'rekomendasi_IA04B' => $request->input('rekomendasi_ia04b'),
+        ]);
+
+        return redirect()->route('asesor.tracker', ['id_sertifikasi_asesi' => $id_sertifikasi])
+            ->with('success', 'Formulir FR.IA.04 berhasil disimpan.');
     }
 
     // ----------------------------------------------------------------------------------
@@ -144,30 +258,30 @@ class AssessmenFRIA04tController extends Controller
     {
         // 1. Ambil data Sertifikasi Aktif
         $sertifikasi = null;
-        
+
         if (Auth::check()) {
             $asesi = optional(Auth::user())->asesi;
             if ($asesi) {
                 $sertifikasi = $asesi->dataSertifikasi()->latest()->first();
             }
-        } 
-        
+        }
+
         // Fallback untuk mode public/jika tidak login
         if (!$sertifikasi) {
             $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.asesor', 'jadwal.skema', 'jadwal.jenisTuk'])
-                                ->orderBy('id_data_sertifikasi_asesi', 'asc')
-                                ->first();
+                ->orderBy('id_data_sertifikasi_asesi', 'asc')
+                ->first();
         }
 
         if (!$sertifikasi) {
-             return redirect()->back()->with('error', 'Tidak ada Data Sertifikasi aktif ditemukan.');
+            return redirect()->back()->with('error', 'Tidak ada Data Sertifikasi aktif ditemukan.');
         }
-        
+
         $active_id_sertifikasi = $sertifikasi->id_data_sertifikasi_asesi;
 
         // 2. AMBIL DATA DARI DB 
         $asesi = $sertifikasi->asesi;
-        $asesor = optional(optional($sertifikasi->jadwal)->asesor); 
+        $asesor = optional(optional($sertifikasi->jadwal)->asesor);
         $skema = optional(optional($sertifikasi->jadwal)->skema);
         $jadwal = $sertifikasi->jadwal;
 
@@ -179,25 +293,76 @@ class AssessmenFRIA04tController extends Controller
 
         // Data Tabel Penilaian (Aspek IA.04B)
         $aspekIA04BData = AspekIA04B::where('id_data_sertifikasi_asesi', $active_id_sertifikasi)->get();
-        
+
         // 3. Mengisi variabel DB dengan data (menggunakan optional() untuk safety)
-        $skenario_umum_db = optional($poinIA04A)->hal_yang_disiapkan ?? "Instruksi dari Asesor belum tersedia.";
-        $hasil_umum_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? "Hasil demonstrasi/output belum ditetapkan oleh Asesor.";
+        $skenario_umum_db = optional($poinIA04A)->hal_yang_disiapkan ?? null;
+        $hasil_umum_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? null;
+
+        // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
+        if (!$skenario_umum_db && !$hasil_umum_db && $skema) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                        ->where('form_code', 'FR.IA.04')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.04')
+                                            ->first();
+            }
+            
+            if ($template && !empty($template->content)) {
+                $skenario_umum_db = $template->content[0]['nama'] ?? null;
+                $hasil_umum_db = $template->content[0]['kriteria'] ?? null;
+            } else {
+                // Static Fallback
+                $skenario_umum_db = "1. Portofolio yang relevan dengan unit kompetensi.\n2. Dokumen pendukung keahlian.";
+                $hasil_umum_db = "1. Verifikasi keaslian bukti.\n2. Konfirmasi kemutakhiran data.";
+            }
+        }
+
+        // Fallback placeholders
+        $skenario_umum_db = $skenario_umum_db ?? "Instruksi dari Asesor belum tersedia.";
+        $hasil_umum_db = $hasil_umum_db ?? "Hasil demonstrasi/output belum ditetapkan oleh Asesor.";
+
         $umpan_balik_asesi_db = optional($responIA04A)->umpan_balik_untuk_asesi ?? "Umpan balik dari Asesor belum tersedia.";
 
         // Data TUK & Tanggal
         $jenis_tuk_db = strtolower(optional(optional($jadwal)->jenisTuk)->jenis_tuk ?? 'Sewaktu');
-        $tanggal_pelaksanaan = optional(optional($jadwal)->tanggal_pelaksanaan)->format('d/m/Y') ?? date('d/m/Y'); 
+        $tanggal_pelaksanaan = optional(optional($jadwal)->tanggal_pelaksanaan)->format('d/m/Y') ?? date('d/m/Y');
 
         // 4. MENGAMBIL UNIT KOMPETENSI SECARA DINAMIS
         $skemaData = $this->getSkemaRelatedData(optional($skema)->id_skema ?? null);
-        
+
         // 5. Data Tanda Tangan dan Rekomendasi
         $tanda_tangan_asesor_path = optional($asesor)->tanda_tangan ?? null;
         $tanda_tangan_asesi_path = optional($asesi)->tanda_tangan ?? null;
-        $rekomendasi_db = optional($sertifikasi)->rekomendasi_IA04B; 
-        
-        $judul_kegiatan_db = 'Proyek Pembuatan Sistem Informasi Pendaftaran Mahasiswa Baru'; 
+        $rekomendasi_db = optional($sertifikasi)->rekomendasi_IA04B;
+
+        // --- LOGIKA TANDA TANGAN BASE64 ---
+        $ttdAsesorBase64 = null;
+        if ($asesor && $asesor->tanda_tangan) {
+            $idUser = $asesor->user_id ?? ($asesor->id_user ?? null);
+            if ($idUser) {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . $idUser . '/' . basename($asesor->tanda_tangan));
+            } else {
+                $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
+            }
+            if (file_exists($pathTtdAsesor)) {
+                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+            }
+        }
+
+        $ttdAsesiBase64 = null;
+        if ($asesi && $asesi->tanda_tangan) {
+            $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($asesi->tanda_tangan));
+            if (file_exists($pathTtdAsesi)) {
+                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+            }
+        }
+
+        $judul_kegiatan_db = 'Proyek Pembuatan Sistem Informasi Pendaftaran Mahasiswa Baru';
 
         return view('asesi.assesmen.FRIA04_Asesi', array_merge($skemaData, [
             'asesi' => $asesi,
@@ -206,19 +371,21 @@ class AssessmenFRIA04tController extends Controller
             'jenis_tuk_db' => $jenis_tuk_db,
             'judul_kegiatan_db' => $judul_kegiatan_db,
             'tanggal_pelaksanaan' => $tanggal_pelaksanaan,
-            'sertifikasi' => $sertifikasi, 
-            
+            'sertifikasi' => $sertifikasi,
+
             // Variabel Data DB
             'skenario_umum_db' => $skenario_umum_db,
             'hasil_umum_db' => $hasil_umum_db,
             'umpan_balik_asesi_db' => $umpan_balik_asesi_db,
-            'aspekIA04BData' => $aspekIA04BData, 
-            
+            'aspekIA04BData' => $aspekIA04BData,
+
             // Variabel Tanda Tangan & Rekomendasi
             'tanda_tangan_asesor_path' => $tanda_tangan_asesor_path,
             'tanda_tangan_asesi_path' => $tanda_tangan_asesi_path,
+            'ttdAsesorBase64' => $ttdAsesorBase64,
+            'ttdAsesiBase64' => $ttdAsesiBase64,
             'rekomendasi_db' => $rekomendasi_db,
-            'unitsToDisplay' => $skemaData['mockUnits'], 
+            'unitsToDisplay' => $skemaData['mockUnits'],
         ]));
     }
 

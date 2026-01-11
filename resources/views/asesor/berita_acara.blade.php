@@ -37,28 +37,56 @@
 
             <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 overflow-x-auto">
 
+                <div x-data="{ perPage: '{{ $perPage }}', changePerPage() { let url = new URL(window.location.href); url.searchParams.set('per_page', this.perPage); url.searchParams.set('page', 1); window.location.href = url.href; } }" class="flex items-center space-x-2 mb-6">
+                    <label for="per_page" class="text-sm text-gray-600">Show:</label>
+                    <select id="per_page" x-model="perPage" @change="changePerPage()" class="bg-white text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span class="text-sm text-gray-600">entries</span>
+                </div>
+
                 <table class="min-w-full text-xs text-left border border-gray-200">
                     <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
                         <tr class="divide-x divide-gray-200 border-b border-gray-200">
+                            @php
+                                $baseParams = ['search' => request('search'), 'per_page' => request('per_page')];
+                            @endphp
+
                             <th class="px-4 py-3 font-semibold w-16 text-center">
-                                <span>ID</span>
+                                @php $isCurrent = $sortColumn == 'id_data_sertifikasi_asesi'; @endphp
+                                <a href="{{ route('asesor.berita_acara', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'id_data_sertifikasi_asesi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-center gap-1">
+                                    <span>ID</span>
+                                    <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
+                                </a>
                             </th>
                             
                             <th class="px-6 py-3 font-semibold">
-                                <span>Nama Peserta</span>
+                                @php $isCurrent = $sortColumn == 'nama_lengkap'; @endphp
+                                <a href="{{ route('asesor.berita_acara', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'nama_lengkap', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                    <span>Nama Peserta</span>
+                                    <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
+                                </a>
                             </th>
                             
                             <th class="px-6 py-3 font-semibold">
-                                <span>Hasil Asesmen</span>
+                                @php $isCurrent = $sortColumn == 'hasil_asesmen'; @endphp
+                                <a href="{{ route('asesor.berita_acara', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'institusi', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                    <span>Hasil Asesmen</span>
+                                    <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
+                                </a>
                             </th>
 
                             <th class="px-6 py-3 font-semibold">
-                                <span>Rekomendasi/ Tindak Lanjut</span>
+                                @php $isCurrent = $sortColumn == 'rekomendasi'; @endphp
+                                <a href="{{ route('asesor.berita_acara', array_merge(['id_jadwal' => $jadwal->id_jadwal], $baseParams, ['sort' => 'alamat_rumah', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex w-full items-center justify-between">
+                                    <span>Rekomendasi/Tindak Lanjut</span>
+                                    <div class="flex flex-col -space-y-1 text-[10px]"><i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-gray-900' : 'text-gray-300' }}"></i><i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-gray-900' : 'text-gray-300' }}"></i></div>
+                                </a>
                             </th>
 
-                            <th class="px-6 py-3 font-semibold">
-                                <span>Keterangan</span>
-                            </th>
+                            <th class="px-6 py-3 font-semibold">Keterangan</th>
                         </tr>
                     </thead>
                     
@@ -111,6 +139,20 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                <div class="text-sm text-gray-500 font-bold">
+                    @if ($pendaftar->total() > 0)
+                        Showing {{ $pendaftar->firstItem() }} - {{ $pendaftar->lastItem() }} of {{ $pendaftar->total() }} results
+                    @else
+                        Showing 0 results
+                    @endif
+                </div>
+                <div>
+                    {{ $pendaftar->links('components.pagination') }}
+                </div>
+            </div>
+
             <div class="w-full xl:w-auto flex-1 flex mx-auto mt-10">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm w-full">
                     <div class="flex flex-col gap-3">
@@ -133,9 +175,16 @@
                                 <span class="font-medium text-gray-700">{{ $asesor->nama_lengkap }}</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}" 
+                                @php
+                                    $ttdAsesorBase64 = getTtdBase64($asesor->tanda_tangan ?? null, $asesor->id_user ?? $asesor->user_id ?? null, 'asesor');
+                                @endphp
+                                @if($ttdAsesorBase64)
+                                <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" 
                                      alt="Tanda Tangan Asesor" 
                                      class="h-20 w-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                                @else
+                                <span class="text-gray-400 text-xs">Belum ada TTD</span>
+                                @endif
                             </div>
                         </div>
 
@@ -149,8 +198,12 @@
                                 <span class="font-medium text-gray-700">Ajeng Febria H.</span>
                                 <span class="font-medium text-gray-700">Tanda Tangan</span>
                                 <span class="font-medium">:</span>
-                                <img src="{{ route('secure.file', ['path' => $asesor->tanda_tangan]) }}" 
+                                @if($ttdAsesorBase64)
+                                <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" 
                                     class="w-20 h-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
+                                @else
+                                <span class="text-gray-400 text-xs">Belum ada TTD</span>
+                                @endif
                             </div>
                         </div>
                     

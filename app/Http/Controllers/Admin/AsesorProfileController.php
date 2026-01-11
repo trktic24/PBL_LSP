@@ -25,6 +25,39 @@ class AsesorProfileController extends Controller
     }
 
     // ==========================================================
+    // UPDATE PROFILE ASESOR (ADMIN ACTION)
+    // ==========================================================
+    public function updateProfile(Request $request, $id_asesor)
+    {
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nik' => 'required|string|max:16',
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'kebangsaan' => 'required|string|max:100',
+            'pekerjaan' => 'required|string|max:255',
+            'kabupaten_kota' => 'required|string|max:255',
+            'provinsi' => 'required|string|max:255',
+            'kode_pos' => 'required|string|max:10',
+            'alamat_rumah' => 'required|string',
+            'nomor_regis' => 'required|string|max:50',
+            'nomor_hp' => 'required|string|max:14',
+        ]);
+
+        $asesor = Asesor::findOrFail($id_asesor);
+        
+        $asesor->update($request->only([
+            'nama_lengkap', 'nik', 'tempat_lahir', 'tanggal_lahir', 
+            'jenis_kelamin', 'kebangsaan', 'pekerjaan', 
+            'kabupaten_kota', 'provinsi', 'kode_pos', 'alamat_rumah', 
+            'nomor_regis', 'nomor_hp'
+        ]));
+
+        return redirect()->route('admin.asesor.profile', $id_asesor)->with('success', 'Profil asesor berhasil diperbarui.');
+    }
+
+    // ==========================================================
     // HALAMAN BUKTI KELENGKAPAN
     // ==========================================================
     public function showBukti($id_asesor)
@@ -48,15 +81,29 @@ class AsesorProfileController extends Controller
     // ==========================================================
     // HALAMAN TINJAUAN ASESMEN (RIWAYAT JADWAL)
     // ==========================================================
-    public function showTinjauan($id_asesor)
+    public function showTinjauan(Request $request, $id_asesor)
     {
         $asesor = Asesor::findOrFail($id_asesor);
-        
-        // [REAL DATA] Mengambil jadwal milik asesor
-        $tinjauan_data = Jadwal::with(['skema', 'masterTuk'])
-            ->where('id_asesor', $id_asesor)
-            ->orderBy('tanggal_pelaksanaan', 'desc')
-            ->get();
+        $search = $request->input('search');
+
+        // [REAL DATA] Mengambil jadwal milik asesor dengan fitur search
+        $query = Jadwal::with(['skema', 'masterTuk'])
+            ->where('id_asesor', $id_asesor);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                // Cari berdasarkan Nama Skema
+                $q->whereHas('skema', function ($qSkema) use ($search) {
+                    $qSkema->where('nama_skema', 'like', "%{$search}%");
+                })
+                // Atau cari berdasarkan Nama Peserta (Asesi) yang terdaftar di jadwal tersebut
+                ->orWhereHas('dataSertifikasiAsesi.asesi', function ($qAsesi) use ($search) {
+                    $qAsesi->where('nama_lengkap', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $tinjauan_data = $query->orderBy('tanggal_pelaksanaan', 'desc')->get();
 
         return view('Admin.profile_asesor.asesor_profile_tinjauan', compact('asesor', 'tinjauan_data'));
     }
@@ -85,7 +132,7 @@ class AsesorProfileController extends Controller
         $query = DataSertifikasiAsesi::query()
             ->with([
                 'asesi.dataPekerjaan', 
-                'responApl2Ia01', 
+                'responApl02Ia01', 
                 'responBuktiAk01', 
                 'lembarJawabIa05', 
                 'komentarAk05'
@@ -101,10 +148,9 @@ class AsesorProfileController extends Controller
 
         // 5. Logika Pengurutan (Sorting)
         if ($sortColumn === 'nama_lengkap') {
-            // Join table asesi untuk sorting berdasarkan nama
-            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
-                ->orderBy('asesi.nama_lengkap', $sortDirection)
-                ->select('data_sertifikasi_asesi.*'); // Penting: Pilih kolom tabel utama agar ID tidak tertimpa
+            // Optimization: Use subquery ordering to avoid join and redundant select
+            $query->orderBy(\App\Models\Asesi::select('nama_lengkap')
+                ->whereColumn('asesi.id_asesi', 'data_sertifikasi_asesi.id_asesi'), $sortDirection);
         } else {
             // Default sort
             $query->orderBy('id_data_sertifikasi_asesi', 'asc');
@@ -129,7 +175,10 @@ class AsesorProfileController extends Controller
             'sortDirection',
             'perPage',
             'semuaSudahAdaKomentar'
-        ));
+        ), [
+            'targetRoute' => 'admin.asesor.tracker.view',
+            'buttonLabel' => 'Lacak Progres'
+        ]);
     }
 
     // ==========================================================
@@ -145,8 +194,8 @@ class AsesorProfileController extends Controller
                 'asesi.user',
                 'jadwal.skema',
                 'jadwal.masterTuk', 
-                'responApl2Ia01',
-                'responbuktiAk01',
+                'responApl02Ia01',
+                'responBuktiAk01',
                 'komentarAk05',
             ])->findOrFail($id_data_sertifikasi_asesi);
 
@@ -156,24 +205,72 @@ class AsesorProfileController extends Controller
 
             $timelineData = [];
 
-            // 1. Pendaftaran
+            $timelineData = [];
+
+            // 1. Pendaftaran (APL-01)
             $timelineData[] = [
-                'title' => 'Formulir Pendaftaran Sertifikasi',
+                'title' => 'Formulir Pendaftaran (APL.01)',
                 'date' => $dataSertifikasi->created_at->format('l, d F Y'),
-                'status_text' => 'Diterima',
+                'status_text' => $dataSertifikasi->rekomendasi_apl01 == 'diterima' ? 'Diterima' : 'Menunggu',
+                'is_completed' => $dataSertifikasi->rekomendasi_apl01 == 'diterima',
                 'icon' => 'far fa-user',
+                'action_url' => route('APL_01_1', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_label' => 'Verifikasi'
             ];
 
-            // 2. Pra-Asesmen
-            $hasApl02 = $dataSertifikasi->responApl2Ia01()->exists();
+            // 2. Merencanakan Aktivitas (MAPA-01)
+            // Logic: Level >= 20 means MAPA-01/02 considered active/done logic in general flow
+            $level = $dataSertifikasi->level_status;
+            $isMapa01Done = $level >= 20; 
             $timelineData[] = [
-                'title' => 'Pra-Asesmen (APL.02)',
-                'date' => $hasApl02 ? $dataSertifikasi->responApl2Ia01->updated_at->format('l, d F Y') : '-',
-                'status_text' => $hasApl02 ? 'Diterima' : 'Menunggu',
-                'icon' => 'fas fa-paperclip',
+                'title' => 'Merencanakan Aktivitas (MAPA.01)',
+                'date' => $isMapa01Done ? 'Selesai' : '-',
+                'status_text' => $isMapa01Done ? 'Diterima' : 'Menunggu',
+                'is_completed' => $isMapa01Done,
+                'icon' => 'fas fa-map',
+                'action_url' => route('mapa01.index', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_label' => 'Verifikasi'
             ];
 
-            // 3. Asesmen
+            // 3. Peta Instrumen (MAPA-02)
+            $isMapa02Done = $level >= 20; 
+            $timelineData[] = [
+                'title' => 'Peta Instrumen (MAPA.02)',
+                'date' => $isMapa02Done ? 'Selesai' : '-',
+                'status_text' => $isMapa02Done ? 'Diterima' : 'Menunggu',
+                'is_completed' => $isMapa02Done,
+                'icon' => 'fas fa-list-check',
+                'action_url' => route('mapa02.show', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_label' => 'Verifikasi'
+            ];
+
+            // 4. Asesmen Mandiri (APL-02)
+            $hasApl02 = $dataSertifikasi->responApl02Ia01()->exists();
+            $isApl02Accepted = $dataSertifikasi->rekomendasi_apl02 == 'diterima';
+            
+            $timelineData[] = [
+                'title' => 'Asesmen Mandiri (APL.02)',
+                'date' => $hasApl02 ? $dataSertifikasi->responApl02Ia01->first()->updated_at->format('l, d F Y') : '-',
+                'status_text' => $isApl02Accepted ? 'Diterima' : ($hasApl02 ? 'Menunggu Verifikasi' : 'Belum Mengisi'),
+                'is_completed' => $isApl02Accepted,
+                'icon' => 'fas fa-paperclip',
+                'action_url' => route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_label' => 'Verifikasi'
+            ];
+
+            // 5. Persetujuan Asesmen (AK-01)
+            $isAk01Done = ($level >= 40 || $dataSertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui');
+            $timelineData[] = [
+                'title' => 'Persetujuan Asesmen (AK.01)',
+                'date' => $isAk01Done ? 'Disetujui' : '-',
+                'status_text' => $isAk01Done ? 'Disetujui' : 'Menunggu',
+                'is_completed' => $isAk01Done,
+                'icon' => 'fas fa-handshake',
+                'action_url' => route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_label' => 'Verifikasi'
+            ];
+
+            // 6. Asesmen (AK-05) - Simplified for timeline
             $hasAk05 = $dataSertifikasi->komentarAk05()->exists();
             $rekomendasi = $hasAk05 ? ($dataSertifikasi->komentarAk05->rekomendasi ?? '-') : '-';
             
@@ -190,9 +287,23 @@ class AsesorProfileController extends Controller
                 'title' => 'Pelaksanaan Asesmen',
                 'date' => $dataSertifikasi->jadwal->tanggal_pelaksanaan,
                 'status_text' => $hasAk05 ? 'Selesai' : 'Terjadwal',
+                'is_completed' => $hasAk05,
                 'icon' => 'far fa-edit',
                 'sub_items' => $subItems,
-                'action_url' => route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $dataSertifikasi->id_data_sertifikasi_asesi])
+                'action_url' => route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $dataSertifikasi->id_data_sertifikasi_asesi]),
+                'action_label' => 'Lihat Detail Asesmen'
+            ];
+
+            // 7. Keputusan Asesmen (AK-02)
+            $isFinalized = ($level >= 100);
+            $timelineData[] = [
+                'title' => 'Keputusan Asesmen (AK.02)',
+                'date' => $isFinalized ? 'Final' : '-',
+                'status_text' => $isFinalized ? 'Selesai' : 'Menunggu',
+                'is_completed' => $isFinalized,
+                'icon' => 'fas fa-gavel',
+                'action_url' => route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_label' => 'Isi Keputusan'
             ];
 
             // Menggunakan asesor_profile_tracker_skema untuk detail timeline (sesuai permintaan user)
@@ -209,6 +320,17 @@ class AsesorProfileController extends Controller
             
         // Menggunakan asesor_profile_tracker untuk daftar skema (sesuai permintaan user)
         return view('Admin.profile_asesor.asesor_profile_tracker', compact('asesor', 'tracker_data'));
+    }
+
+    /**
+     * Helper to show tracker by Data Sertifikasi ID (used in Master View for Asesor Profile)
+     */
+    public function showTrackerBySertifikasi($id_data_sertifikasi_asesi)
+    {
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($id_data_sertifikasi_asesi);
+        $id_asesor = $sertifikasi->jadwal->id_asesor;
+        
+        return $this->showTracker($id_asesor, $id_data_sertifikasi_asesi);
     }
 
     // ==========================================================
@@ -290,7 +412,7 @@ class AsesorProfileController extends Controller
             'asesi.user',
             'jadwal.skema',
             'jadwal.masterTuk', // Konsisten gunakan masterTuk
-            'responbuktiAk01',
+            'responBuktiAk01',
             'ia10', 
             'ia02',
             'ia07',
@@ -321,5 +443,162 @@ class AsesorProfileController extends Controller
         $asesor->save();
 
         return redirect()->back()->with('success', 'Status verifikasi asesor berhasil diperbarui.');
+    }
+
+    // ==========================================================
+    // AJAX FILE HANDLING (BUKTI & TTD)
+    // ==========================================================
+    public function storeBukti(Request $request, $id_asesor)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'jenis_dokumen' => 'required|string',
+            'keterangan' => 'nullable|string' 
+        ]);
+
+        $asesor = Asesor::findOrFail($id_asesor);
+        $key = $request->jenis_dokumen; // e.g., 'ktp', 'cv'
+
+        // Check valid keys
+        $validKeys = ['ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 'CV', 'ijazah', 'sertifikat_asesor', 'sertifikasi_kompetensi'];
+        if (!in_array($key, $validKeys)) {
+            return response()->json(['success' => false, 'message' => 'Jenis dokumen tidak valid.']);
+        }
+
+        // Handle File Delete (Old)
+        if ($asesor->$key && Storage::disk('private_docs')->exists($asesor->$key)) {
+            Storage::disk('private_docs')->delete($asesor->$key);
+        }
+
+        // Handle File Upload (New)
+        $uploadPath = 'asesor_docs/' . $asesor->id_user;
+        $path = $request->file('file')->store($uploadPath, 'private_docs');
+
+        // Update DB
+        $asesor->$key = $path;
+        $asesor->save();
+
+        return response()->json(['success' => true, 'message' => 'Berhasil diunggah!']);
+    }
+
+    public function deleteBukti($id_asesor, $jenis_dokumen)
+    {
+        $asesor = Asesor::findOrFail($id_asesor);
+        $key = $jenis_dokumen;
+
+        // Check valid keys
+        $validKeys = ['ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 'CV', 'ijazah', 'sertifikat_asesor', 'sertifikasi_kompetensi'];
+        if (!in_array($key, $validKeys)) {
+            return response()->json(['success' => false, 'message' => 'Jenis dokumen tidak valid.']);
+        }
+
+        if ($asesor->$key) {
+            if (Storage::disk('private_docs')->exists($asesor->$key)) {
+                Storage::disk('private_docs')->delete($asesor->$key);
+            }
+            $asesor->$key = null;
+            $asesor->save();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Dokumen berhasil dihapus.']);
+    }
+
+    public function storeTtd(Request $request, $id_asesor)
+    {
+        $request->validate([
+            'file_ttd' => 'required|file|mimes:png,jpg,jpeg|max:5120',
+        ]);
+
+        $asesor = Asesor::findOrFail($id_asesor);
+
+        // Delete Old TTD
+        if ($asesor->tanda_tangan && Storage::disk('private_docs')->exists($asesor->tanda_tangan)) {
+            Storage::disk('private_docs')->delete($asesor->tanda_tangan);
+        }
+
+        // Upload New TTD
+        $uploadPath = 'asesor_docs/' . $asesor->id_user;
+        $path = $request->file('file_ttd')->store($uploadPath, 'private_docs');
+
+        $asesor->tanda_tangan = $path;
+        $asesor->save();
+
+        return response()->json(['success' => true, 'message' => 'Tanda tangan berhasil disimpan.']);
+    }
+
+    public function deleteTtd($id_asesor)
+    {
+        $asesor = Asesor::findOrFail($id_asesor);
+
+        if ($asesor->tanda_tangan) {
+            if (Storage::disk('private_docs')->exists($asesor->tanda_tangan)) {
+                Storage::disk('private_docs')->delete($asesor->tanda_tangan);
+            }
+            $asesor->tanda_tangan = null;
+            $asesor->save();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Tanda tangan berhasil dihapus.']);
+    }
+
+    // ==========================================================
+    // QUICK VERIFICATION (AJAX)
+    // ==========================================================
+    public function verifyDocument(Request $request, $id_asesor)
+    {
+        $request->validate([
+            'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
+            'document_id' => 'required|string',
+            'action' => 'required|in:verify,reject'
+        ]);
+
+        $dataSertifikasi = DataSertifikasiAsesi::findOrFail($request->id_data_sertifikasi_asesi);
+        // Fix: Use correct ENUM values from migration (tidak diterima vs ditolak)
+        $status = $request->action === 'verify' ? 'diterima' : 'tidak diterima';
+
+        // Logic based on Document ID
+        switch ($request->document_id) {
+            case 'APL01':
+                $dataSertifikasi->rekomendasi_apl01 = $status;
+                break;
+            case 'MAPA01':
+                $dataSertifikasi->rekomendasi_mapa01 = $status;
+                break;
+            case 'MAPA02':
+                $dataSertifikasi->rekomendasi_mapa02 = $status;
+                break;
+            case 'AK01':
+                $dataSertifikasi->rekomendasi_ak01 = $status;
+                break;
+            case 'IA02':
+                $dataSertifikasi->rekomendasi_ia02 = $status;
+                break;
+            case 'IA05':
+                $dataSertifikasi->rekomendasi_ia05 = $status;
+                break;
+            case 'IA06':
+                $dataSertifikasi->rekomendasi_ia06 = $status;
+                break;
+            case 'IA07':
+                $dataSertifikasi->rekomendasi_ia07 = $status;
+                break;
+            case 'IA10':
+                $dataSertifikasi->rekomendasi_ia10 = $status;
+                break;
+            case 'APL02':
+                $dataSertifikasi->rekomendasi_apl02 = $status;
+                break;
+            default:
+                return response()->json(['success' => false, 'message' => 'Dokumen tidak dapat diverifikasi secara instan atau ID salah.'], 400);
+        }
+
+        $dataSertifikasi->save();
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Status dokumen berhasil diperbarui.',
+            'new_status' => $status,
+            'new_label' => $status === 'diterima' ? 'Diterima' : 'Ditolak' // Frontend might expect 'Ditolak' label even if DB is 'tidak diterima'
+        ]);
     }
 }

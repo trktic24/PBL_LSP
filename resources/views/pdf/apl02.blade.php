@@ -131,7 +131,7 @@
             <td style="width: 50%; text-align: center;">
                 Asesi,
                 @if($asesi->tanda_tangan)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($asesi->tanda_tangan) }}" style="height: 100px; width: auto;">
+                    <img src="{{ getTtdBase64($asesi->tanda_tangan) }}" style="height: 100px; width: auto;">
                 @else
                     <br><br><br><br>
                 @endif
@@ -143,7 +143,7 @@
                 Asesor,
                 <br><br><br><br>
                 @if($sertifikasi->jadwal->asesor && $sertifikasi->jadwal->asesor->tanda_tangan)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('private_docs')->path($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="height: 100px; width: auto;">
+                    <img src="{{ getTtdBase64($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="height: 100px; width: auto;">
                 @else
                     <br><br><br><br>
                 @endif

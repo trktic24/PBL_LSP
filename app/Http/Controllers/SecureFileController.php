@@ -34,6 +34,16 @@ class SecureFileController extends Controller
              abort(400, 'Invalid path');
         }
         
+        // Decode the path in case it was URL-encoded
+        $path = urldecode($path);
+        
+        // Log for debugging (remove in production)
+        \Log::info('SecureFile requested', [
+            'path' => $path,
+            'exists' => Storage::disk('private_docs')->exists($path),
+            'user_id' => $user->id_user ?? $user->id,
+        ]);
+        
         if (!Storage::disk('private_docs')->exists($path)) {
             abort(404);
         }

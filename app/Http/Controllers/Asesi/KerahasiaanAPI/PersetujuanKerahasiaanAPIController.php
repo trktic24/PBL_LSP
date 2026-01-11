@@ -17,11 +17,14 @@ class PersetujuanKerahasiaanAPIController extends Controller
     {
         $sertifikasi = DataSertifikasiAsesi::findOrFail($id_sertifikasi);
 
-        if (
-            $sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' ||
-            $sertifikasi->progres_level >= 70
-        ) { 
+        $user = Auth::user();
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('superadmin');
 
+        if (
+            ($sertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' ||
+                $sertifikasi->progres_level >= 70) &&
+            !$isAdmin && !$user->hasRole('asesor')
+        ) {
             return redirect()->route('asesi.persetujuan.selesai', ['id_sertifikasi' => $id_sertifikasi]);
         }
         try {
@@ -66,7 +69,7 @@ class PersetujuanKerahasiaanAPIController extends Controller
                 'asesor' => $sertifikasi->jadwal->asesor ?? (object) ['nama_lengkap' => '-'],
                 'tuk' => $jenisTuk,
                 'master_bukti' => $masterBukti,
-                'respon_bukti' => $responBukti, 
+                'respon_bukti' => $responBukti,
                 'status_sekarang' => $sertifikasi->status_sertifikasi,
                 'tanda_tangan_valid' => !empty($sertifikasi->asesi->tanda_tangan)
             ], 200);
@@ -110,11 +113,17 @@ class PersetujuanKerahasiaanAPIController extends Controller
     public function persetujuanSelesai($id_sertifikasi)
     {
         $user = Auth::user();
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('superadmin');
 
         // Ambil sertifikasi spesifik
-        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
-            ->where('id_asesi', $user->asesi->id_asesi)
-            ->findOrFail($id_sertifikasi);
+        $query = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])
+            ->where('id_data_sertifikasi_asesi', $id_sertifikasi);
+
+        if (!$isAdmin) {
+            $query->where('id_asesi', $user->asesi->id_asesi);
+        }
+
+        $sertifikasi = $query->firstOrFail();
 
         // Pakai view universal yang tadi kita buat
         return view('asesi.tunggu_or_berhasil.berhasil', [
@@ -122,4 +131,4 @@ class PersetujuanKerahasiaanAPIController extends Controller
             'asesi' => $sertifikasi->asesi
         ]);
     }
-}   
+}

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\DataSertifikasiAsesi;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use App\Models\Ia10;
 use App\Models\PertanyaanIa10;
 use App\Models\DetailIa10;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -14,15 +16,61 @@ class IA10Controller extends Controller
 {
     public function create($id_asesi)
     {
-        $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
+        $asesi = DataSertifikasiAsesi::with([
+            'jadwal.asesor',
+        ])->findOrFail($id_asesi);
 
-        // 1. Ambil Data Header (Jika sudah ada)
-        $header_ia10 = Ia10::where('id_data_sertifikasi_asesi', $id_asesi)->first();
+        $jadwal = $asesi->jadwal;
+
+        // 1. Ambil Data Header (Jika belum ada, buat record kosong agar FK id_ia10 tersedia)
+        $header_ia10 = Ia10::firstOrCreate(
+            ['id_data_sertifikasi_asesi' => $id_asesi],
+            [
+                'nama_pengawas' => '-',
+                'tempat_kerja' => '-',
+                'alamat' => '-',
+                'telepon' => '-',
+            ]
+        );
 
         // 2. Ambil Pertanyaan Checklist 
-        // NOTE: Karena struktur DB 'pertanyaan_ia10' punya kolom 'id_data_sertifikasi_asesi',
-        // Saya asumsikan pertanyaan ini SUDAH DIGENERATE sebelumnya untuk asesi ini.
         $daftar_soal = PertanyaanIa10::where('id_data_sertifikasi_asesi', $id_asesi)->get();
+
+        // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, ambil dari Master Template
+        // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, pakai Master Template atau Statis
+        if ($daftar_soal->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $asesi->jadwal->id_skema)
+                                        ->where('id_jadwal', $asesi->id_jadwal)
+                                        ->where('form_code', 'FR.IA.10')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $asesi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.10')
+                                            ->first();
+            }
+            
+            $defaultQuestions = [
+                "Apakah Anda memiliki hubungan langsung dengan asesi dan mengobservasi kinerjanya?",
+                "Apakah Anda dapat mengonfirmasi bahwa asesi telah melakukan seluruh tugas secara konsisten dan memenuhi standar?",
+                "Apakah asesi bekerja sesuai dengan prosedur keselamatan kerja (K3)?",
+                "Apakah Anda bersedia dihubungi untuk klarifikasi lebih lanjut mengenai verifikasi ini?"
+            ];
+
+            $questions = ($template && !empty($template->content)) ? $template->content : $defaultQuestions;
+
+            foreach ($questions as $qText) {
+                PertanyaanIa10::create([
+                    'id_data_sertifikasi_asesi' => $id_asesi,
+                    'id_ia10' => $header_ia10->id_ia10,
+                    'pertanyaan' => $qText,
+                    'jawaban_pilihan_iya_tidak' => 0 // Default 'Tidak'
+                ]);
+            }
+            // Refresh collection
+            $daftar_soal = PertanyaanIa10::where('id_data_sertifikasi_asesi', $id_asesi)->get();
+        }
 
         // 3. Ambil Jawaban Essay (Jika ada) untuk ditampilkan kembali
         $essay_answers = [];
@@ -46,7 +94,8 @@ class IA10Controller extends Controller
             'daftar_soal' => $daftar_soal,
             'header' => $header_ia10,
             'essay_answers' => $essay_answers, // Data jawaban essay
-            'user' => $user
+            'user' => $user,
+            "jadwal" => $jadwal
         ]);
     }
 
@@ -163,4 +212,102 @@ class IA10Controller extends Controller
         return $pdf->stream('FR_IA_10_' . $asesi->asesi->nama_lengkap . '.pdf');
     }
 
+    /**
+     * [MASTER] Menampilkan editor tamplate (Klarifikasi Pihak Ketiga) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.IA.10')
+                                    ->first();
+        
+        // Default values if no template exists
+        $questions = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.ia10', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'questions' => $questions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*' => 'required|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.10'
+            ],
+            ['content' => $request->questions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-10 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Master View untuk IA.10 (Admin) - DEPRECATED for management
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
+
+        $defaultQuestions = [
+            "Apakah asesi melakukan pekerjaan sesuai dengan standar industri?",
+            "Bagaimana sikap asesi dalam bekerja sama dengan tim?",
+            "Apakah asesi selalu menggunakan alat pelindung diri (APD) dengan benar?"
+        ];
+
+        $daftar_soal = collect();
+        foreach ($defaultQuestions as $idx => $qText) {
+            $daftar_soal->push(new \App\Models\PertanyaanIA10([
+                'id_pertanyaan_ia10' => $idx + 1,
+                'pertanyaan' => $qText,
+                'jawaban_pilihan_iya_tidak' => 1
+            ]));
+        }
+
+        $header = new \App\Models\Ia10([
+            'nama_pengawas' => 'Nama Pengawas',
+            'tempat_kerja' => 'Tempat Kerja',
+            'alamat' => 'Alamat Lengkap',
+            'telepon' => '08123456789'
+        ]);
+
+        $user = new \stdClass();
+        $user->role = 'admin';
+
+        return view('frontend.FR_IA_10', [
+            'asesi' => $sertifikasi,
+            'daftar_soal' => $daftar_soal,
+            'header' => $header,
+            'essay_answers' => [],
+            'user' => $user,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+        ]);
+    }
 }

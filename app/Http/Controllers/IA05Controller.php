@@ -15,20 +15,14 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class IA05Controller extends Controller
 {
     // FUNGSI BANTUAN: Mapping Role ID ke Teks (Supaya View tidak error)
-    // FUNGSI BANTUAN: Mapping Role ID ke Teks (Supaya View tidak error)
     private function getRoleText($user)
     {
         if (!$user)
             return 'guest';
 
-        if ($user->role_id == 1)
-            return 'admin';
-        elseif ($user->role_id == 2)
-            return 'asesi';
-        elseif ($user->role_id == 3)
-            return 'asesor';
-        else
-            return 'guest';
+        // Gunakan relasi role->nama_role (admin, asesi, asesor)
+        // Pastikan model User punya relasi 'role' yang meload tabel roles
+        return $user->role ? $user->role->nama_role : 'guest';
     }
 
     /**
@@ -43,10 +37,56 @@ class IA05Controller extends Controller
         $roleText = $this->getRoleText($user); // Ganti nama fungsi biar jelas
         // ----------------------------------------
 
-        $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_asesi);        
+        $jadwal = $asesi->jadwal;
+        $id_skema_asesi = $jadwal->id_skema; // Ambil ID Skema dari jadwal asesi
 
-        $data_jawaban_asesi = collect();
+        // FILTER: Ambil soal berdasarkan id_jadwal, jika kosong ambil yang id_jadwal-nya NULL (Master)
+        $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+            ->where('id_jadwal', $jadwal->id_jadwal)
+            ->orderBy('id_soal_ia05')
+            ->get();
+            
+        if ($semua_soal->isEmpty()) {
+            $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+                ->whereNull('id_jadwal')
+                ->orderBy('id_soal_ia05')
+                ->get();
+        }
+
+        // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
+        if ($semua_soal->isEmpty()) {
+            // Optional: load from another skema or static defaults
+            $defaultSoals = [
+                ['q' => 'Apa yang harus dilakukan asesi sebelum memulai ujian?', 'a' => 'Berdoa', 'b' => 'Langsung kerja', 'c' => 'Makan', 'd' => 'Tidur', 'k' => 'a'],
+                ['q' => 'Alat utama dalam pengembangan perangkat lunak adalah?', 'a' => 'Palu', 'b' => 'Komputer', 'c' => 'Gergaji', 'd' => 'Obeng', 'k' => 'b'],
+            ];
+
+            foreach ($defaultSoals as $ds) {
+                $soal = SoalIA05::create([
+                    'id_skema' => $id_skema_asesi,
+                    'id_jadwal' => $jadwal->id_jadwal,
+                    'soal_ia05' => $ds['q'],
+                    'opsi_a_ia05' => $ds['a'],
+                    'opsi_b_ia05' => $ds['b'],
+                    'opsi_c_ia05' => $ds['c'],
+                    'opsi_d_ia05' => $ds['d'],
+                ]);
+                KunciJawabanIA05::create([
+                    'id_soal_ia05' => $soal->id_soal_ia05,
+                    'jawaban_benar_ia05' => $ds['k'],
+                ]);
+            }
+            // Re-fetch
+            $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)->get();
+        }
+
+        $data_jawaban_asesi = [];
 
         // Logika ambil jawaban jika role asesi/asesor
         if ($user->role_id == 2 || $user->role_id == 3) {
@@ -54,12 +94,13 @@ class IA05Controller extends Controller
                 ->pluck('jawaban_asesi_ia05', 'id_soal_ia05');
         }
 
-        return view('frontend.fr_IA_05_A', [
+        return view('frontend.FR_IA_05_A', [
             'user' => $user,
             'role' => $roleText, // Kirim sebagai variabel terpisah
             'asesi' => $asesi,
             'semua_soal' => $semua_soal,
             'data_jawaban_asesi' => $data_jawaban_asesi,
+            "jadwal" => $jadwal
         ]);
     }
 
@@ -77,11 +118,12 @@ class IA05Controller extends Controller
                     SoalIA05::updateOrCreate(
                         ['id_soal_ia05' => $id_soal],
                         [
+                            'id_skema' => $request->id_skema,
                             'soal_ia05' => $data['pertanyaan'],
-                            'opsi_jawaban_a' => $data['opsi_a'],
-                            'opsi_jawaban_b' => $data['opsi_b'],
-                            'opsi_jawaban_c' => $data['opsi_c'],
-                            'opsi_jawaban_d' => $data['opsi_d'] ?? null,
+                            'opsi_a_ia05' => $data['opsi_a'],
+                            'opsi_b_ia05' => $data['opsi_b'],
+                            'opsi_c_ia05' => $data['opsi_c'],
+                            'opsi_d_ia05' => $data['opsi_d'] ?? null,
                         ]
                     );
                 }
@@ -93,10 +135,10 @@ class IA05Controller extends Controller
                     SoalIA05::create([
                         // ID biasanya Auto Increment, jadi tidak perlu diisi
                         'soal_ia05' => $data['pertanyaan'],
-                        'opsi_jawaban_a' => $data['opsi_a'],
-                        'opsi_jawaban_b' => $data['opsi_b'],
-                        'opsi_jawaban_c' => $data['opsi_c'],
-                        'opsi_jawaban_d' => $data['opsi_d'] ?? null,
+                        'opsi_a_ia05' => $data['opsi_a'],
+                        'opsi_b_ia05' => $data['opsi_b'],
+                        'opsi_c_ia05' => $data['opsi_c'],
+                        'opsi_d_ia05' => $data['opsi_d'] ?? null,
                     ]);
                 }
             }
@@ -145,6 +187,19 @@ class IA05Controller extends Controller
     public function showKunciForm(Request $request)
     {
         // --- [HIDUPKAN] DATA ASLI (REAL AUTH) ---
+        $id_asesi = $request->query('ref'); 
+
+        // Validasi kalau ID-nya kosong/diisengin user
+        if (!$id_asesi) {
+            abort(404, 'ID Asesi tidak ditemukan. Pastikan URL memiliki ?ref=ID');
+        }
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_asesi);        
+        $jadwal = $asesi->jadwal;
         $user = Auth::user();
         $roleText = $this->getRoleText($user);
         // ----------------------------------------
@@ -154,16 +209,23 @@ class IA05Controller extends Controller
             return abort(403, 'Akses Ditolak. Asesi tidak boleh melihat Kunci Jawaban!');
         }
 
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $id_skema_asesi = $jadwal->id_skema;
+
+        // FILTER JUGA DISINI
+        $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+            ->orderBy('id_soal_ia05')
+            ->get();
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
         $skema_info = Skema::first();
 
-        return view('frontend.fr_IA_05_B', [
+        return view('frontend.FR_IA_05_B', [
+            'asesi' => $asesi,
             'user' => $user,
             'role' => $roleText,
             'semua_soal' => $semua_soal,
             'kunci_jawaban' => $kunci_jawaban,
             'skema_info' => $skema_info,
+             "jadwal" => $jadwal
         ]);
     }
 
@@ -180,8 +242,7 @@ class IA05Controller extends Controller
                 KunciJawabanIA05::updateOrCreate(
                     ['id_soal_ia05' => $id_soal],
                     [
-                        'teks_kunci_jawaban_ia05' => $teks_kunci,
-                        'nomor_kunci_jawaban_ia05' => 1,
+                        'jawaban_benar_ia05' => strtolower($teks_kunci),
                     ]
                 );
             }
@@ -210,8 +271,26 @@ class IA05Controller extends Controller
             return abort(403, 'Akses Ditolak. Asesi tidak boleh melihat Kunci Jawaban!');
         }
 
-        $asesi = DataSertifikasiAsesi::findOrFail($id_asesi);
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $asesi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal.asesor',
+            'jadwal.jenisTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_asesi);
+        $jadwal = $asesi->jadwal;
+
+        $id_skema_asesi = $asesi->jadwal->id_skema;
+        $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+            ->where('id_jadwal', $jadwal->id_jadwal)
+            ->orderBy('id_soal_ia05')
+            ->get();
+            
+        if ($semua_soal->isEmpty()) {
+            $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+                ->whereNull('id_jadwal')
+                ->orderBy('id_soal_ia05')
+                ->get();
+        }
 
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
 
@@ -220,10 +299,15 @@ class IA05Controller extends Controller
             ->keyBy('id_soal_ia05');
 
         // Ambil Umpan Balik
-        $contoh_jawaban = $lembar_jawab->first();
-        $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
+        $data_feedback = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                            ->whereNotNull('umpan_balik') 
+                            ->first();
 
-        return view('frontend.fr_IA_05_C', [
+        // Kalau ketemu, ambil isinya. Kalau tidak, string kosong.
+        // PENTING: Nama properti harus 'umpan_balik' (sesuai DB), JANGAN 'umpan_balik_ia05'
+        $umpan_balik = $data_feedback ? $data_feedback->umpan_balik : '';
+
+        return view('frontend.FR_IA_05_C', [
             'user' => $user,
             'role' => $roleText, // Pass role variable
             'asesi' => $asesi,
@@ -231,6 +315,7 @@ class IA05Controller extends Controller
             'kunci_jawaban' => $kunci_jawaban,
             'lembar_jawab' => $lembar_jawab,
             'umpan_balik' => $umpan_balik,
+            "jadwal" => $jadwal
         ]);
     }
 
@@ -256,17 +341,17 @@ class IA05Controller extends Controller
                     ],
                     [
                         // Masukin langsung string 'ya' atau 'tidak' ke kolom ENUM
-                        'pencapaian_ia05' => $hasil_penilaian, 
+                        'pencapaian_ia05' => $hasil_penilaian,
                     ]
                 );
             }
 
             // Simpan Umpan Balik (Jika ada kolomnya di DB)
-            // if ($request->has('umpan_balik')) {
-            //     // Pastikan kolom 'umpan_balik_ia05' ada di database kamu
-            //      LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
-            //         ->update(['umpan_balik_ia05' => $request->umpan_balik]);
-            // }
+            if ($request->has('umpan_balik')) {
+                // Pastikan kolom 'umpan_balik_ia05' ada di database kamu
+                 LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                    ->update(['umpan_balik' => $request->umpan_balik]);
+            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Penilaian berhasil disimpan.');
@@ -286,10 +371,24 @@ class IA05Controller extends Controller
             'asesi',
             'jadwal.masterTuk',
             'jadwal.skema.asesor',
+            'jadwal.asesor',                                  // Data Asesor
+            'jadwal.jenisTuk',                                // Data TUK
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
-
-        // 2. Ambil Soal (Urut ID)
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        $jadwal = $asesi->jadwal;
+        // 2. Ambil Soal (Urut ID & Filter Jadwal)
+        $id_skema_asesi = $asesi->jadwal->id_skema;
+        $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+            ->where('id_jadwal', $jadwal->id_jadwal)
+            ->orderBy('id_soal_ia05')
+            ->get();
+            
+        if ($semua_soal->isEmpty()) {
+            $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+                ->whereNull('id_jadwal')
+                ->orderBy('id_soal_ia05')
+                ->get();
+        }
 
         // 3. Ambil Jawaban & Penilaian
         $lembar_jawab = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
@@ -297,19 +396,140 @@ class IA05Controller extends Controller
             ->keyBy('id_soal_ia05');
 
         // 4. Ambil Umpan Balik (Ambil dari salah satu record jawaban)
-        $contoh_jawaban = $lembar_jawab->first();
-        $umpan_balik = $contoh_jawaban ? $contoh_jawaban->umpan_balik_ia05 : '';
+       $data_feedback = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)
+                            ->whereNotNull('umpan_balik') 
+                            ->first();
+        
+        $umpan_balik = $data_feedback ? $data_feedback->umpan_balik : '-';
 
         // 5. Render PDF
         $pdf = Pdf::loadView('pdf.ia_05', [
             'asesi' => $asesi,
             'semua_soal' => $semua_soal,
             'lembar_jawab' => $lembar_jawab,
-            'umpan_balik' => $umpan_balik
+            'umpan_balik' => $umpan_balik,
+            "jadwal" => $jadwal
         ]);
 
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('FR_IA_05_' . $asesi->asesi->nama_lengkap . '.pdf');
+    }
+
+    /**
+     * [MASTER] Menampilkan editor tamplate (Bank Soal) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $semua_soal = SoalIA05::where('id_skema', $id_skema)
+                                ->where('id_jadwal', $id_jadwal)
+                                ->orderBy('id_soal_ia05')
+                                ->get();
+
+        return view('Admin.master.skema.template.ia05', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'semua_soal' => $semua_soal
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update soal template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'soal' => 'required|array',
+            'soal.*.pertanyaan' => 'required|string',
+            'soal.*.opsi_a' => 'required|string',
+            'soal.*.opsi_b' => 'required|string',
+            'soal.*.opsi_c' => 'required|string',
+            'soal.*.opsi_d' => 'nullable|string',
+            'soal.*.kunci' => 'required|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->soal as $index => $data) {
+                $id_soal = $data['id'] ?? null;
+                
+                $soal = SoalIA05::updateOrCreate(
+                    [
+                        'id_soal_ia05' => $id_soal, 
+                        'id_skema' => $id_skema,
+                        'id_jadwal' => $id_jadwal
+                    ],
+                    [
+                        'id_skema' => $id_skema,
+                        'id_jadwal' => $id_jadwal,
+                        'soal_ia05' => $data['pertanyaan'],
+                        'opsi_a_ia05' => $data['opsi_a'],
+                        'opsi_b_ia05' => $data['opsi_b'],
+                        'opsi_c_ia05' => $data['opsi_c'],
+                        'opsi_d_ia05' => $data['opsi_d'] ?? '',
+                    ]
+                );
+
+                // Update Kunci
+                KunciJawabanIA05::updateOrCreate(
+                    ['id_soal_ia05' => $soal->id_soal_ia05],
+                    [
+                        'jawaban_benar_ia05' => strtolower($data['kunci']),
+                    ]
+                );
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'Templat Soal IA-05 berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan templat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * [MASTER] Hapus soal template
+     */
+    public function destroyTemplate($id_skema, $id_soal)
+    {
+        $soal = SoalIA05::where('id_skema', $id_skema)->findOrFail($id_soal);
+        $soal->delete(); // Cascade delete kunci handled by DB or manually below
+        KunciJawabanIA05::where('id_soal_ia05', $id_soal)->delete();
+
+        return redirect()->back()->with('success', 'Soal berhasil dihapus.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.05 (Admin Master View) - DEPRECATED for management but kept for viewing candidates
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
+
+        $user = auth()->user();
+        $semua_soal = SoalIA05::where('id_skema', $id_skema)->get();
+
+        return view('frontend.FR_IA_05_A', [
+            'user' => $user,
+            'role' => $user->role->nama_role ?? 'admin',
+            'asesi' => $sertifikasi,
+            'semua_soal' => $semua_soal,
+            'data_jawaban_asesi' => collect(),
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+        ]);
     }
 }
