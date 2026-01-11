@@ -31,6 +31,7 @@ class Ia07 extends Model
      */
     protected $fillable = [
         'id_data_sertifikasi_asesi',
+        'id_unit_kompetensi',
         'pertanyaan',
         'jawaban_asesi',
         'jawaban_diharapkan',
@@ -54,5 +55,10 @@ class Ia07 extends Model
         // Kita perlu menentukan foreign key dan owner key secara eksplisit
         // karena keduanya tidak mengikuti konvensi standar Laravel.
         return $this->belongsTo(DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    public function unitKompetensi(): BelongsTo
+    {
+        return $this->belongsTo(UnitKompetensi::class, 'id_unit_kompetensi', 'id_unit_kompetensi');
     }
 }
