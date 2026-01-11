@@ -36,6 +36,17 @@
           <div class="w-[80px]"></div>
         </div>
 
+        @if ($errors->any())
+          <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-200 rounded-lg">
+            <strong>Terdapat kesalahan:</strong>
+            <ul class="list-disc pl-5 mt-2 text-sm">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
+
         <form action="{{ route('admin.update_tuk', $tuk->id_tuk) }}" method="POST" class="space-y-6" enctype="multipart/form-data">
           @csrf
           @method('PATCH')
@@ -82,7 +93,7 @@
               </label>
 
               <p class="text-xs text-gray-500 mt-1">
-                File saat ini: <a href="{{ Storage::url($tuk->foto_tuk) }}" target="_blank" class="text-blue-500 hover:underline">Lihat Gambar</a>
+                File saat ini: <a href="{{ asset('storage/' . $tuk->foto_tuk) }}" target="_blank" class="text-blue-500 hover:underline">Lihat Gambar</a>
               </p>
             </div>
           </div>

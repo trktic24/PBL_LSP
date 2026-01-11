@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MasterTUK;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File; // [PENTING] Pakai File Facade, bukan Storage
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException; 
 
 class TukAdminController extends Controller
@@ -72,7 +72,7 @@ class TukAdminController extends Controller
     }
 
     /**
-     * Menyimpan data TUK baru (Langsung ke public/images/foto_tuk).
+     * Menyimpan data TUK baru (Storage Public).
      */
     public function store(Request $request)
     {
@@ -84,20 +84,11 @@ class TukAdminController extends Controller
             'link_gmap'   => 'required|url',
         ]);
 
-        // 1. Ambil file
-        $file = $request->file('foto_tuk');
+        // Simpan file ke storage (public/tuk)
+        // Hasilnya path seperti: tuk/hashname.jpg
+        $path = $request->file('foto_tuk')->store('tuk', 'public');
         
-        // 2. Generate nama unik
-        $filename = time() . '_' . $file->getClientOriginalName();
-        
-        // 3. Tentukan tujuan: public/images/foto_tuk
-        $destinationPath = public_path('images/foto_tuk');
-        
-        // 4. Pindahkan file
-        $file->move($destinationPath, $filename);
-        
-        // 5. Simpan path relatif ke database
-        $validatedData['foto_tuk'] = 'images/foto_tuk/' . $filename; 
+        $validatedData['foto_tuk'] = $path; 
 
         $tuk = MasterTUK::create($validatedData); 
 
@@ -115,7 +106,7 @@ class TukAdminController extends Controller
     }
 
     /**
-     * Memperbarui data TUK (Hapus foto lama di public, upload baru).
+     * Memperbarui data TUK.
      */
     public function update(Request $request, $id)
     {
@@ -130,19 +121,14 @@ class TukAdminController extends Controller
         ]);
 
         if ($request->hasFile('foto_tuk')) {
-            // 1. Hapus foto lama jika ada di public folder
-            if ($tuk->foto_tuk && File::exists(public_path($tuk->foto_tuk))) {
-                File::delete(public_path($tuk->foto_tuk));
+            // 1. Hapus foto lama dari storage jika ada
+            if ($tuk->foto_tuk) {
+                Storage::disk('public')->delete($tuk->foto_tuk);
             }
 
-            // 2. Proses upload foto baru
-            $file = $request->file('foto_tuk');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $destinationPath = public_path('images/foto_tuk');
-            
-            $file->move($destinationPath, $filename);
-            
-            $validatedData['foto_tuk'] = 'images/foto_tuk/' . $filename;
+            // 2. Upload foto baru
+            $path = $request->file('foto_tuk')->store('tuk', 'public');
+            $validatedData['foto_tuk'] = $path;
         }
 
         $tuk->update($validatedData);
@@ -152,7 +138,7 @@ class TukAdminController extends Controller
     }
 
     /**
-     * Menghapus data TUK (Hapus file dari public folder).
+     * Menghapus data TUK.
      */
     public function destroy($id)
     {
@@ -170,9 +156,9 @@ class TukAdminController extends Controller
         }
 
         try {
-            // Hapus file fisik dari public folder
-            if ($tuk->foto_tuk && File::exists(public_path($tuk->foto_tuk))) {
-                File::delete(public_path($tuk->foto_tuk));
+            // Hapus file fisik dari storage
+            if ($tuk->foto_tuk) {
+                Storage::disk('public')->delete($tuk->foto_tuk);
             }
 
             $tuk->delete();
