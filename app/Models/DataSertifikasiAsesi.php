@@ -176,13 +176,9 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(JawabanIa06::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
-<<<<<<< HEAD
-    public function responbuktiAk01(): HasMany
-=======
 
 
     public function responBuktiAk01(): HasMany
->>>>>>> dev
     {
         return $this->hasMany(ResponBuktiAk01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
