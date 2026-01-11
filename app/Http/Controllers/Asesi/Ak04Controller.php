@@ -48,8 +48,16 @@ class Ak04Controller extends Controller
 
         // [AUTO-LOAD TEMPLATE]
         $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
                                     ->where('form_code', 'FR.AK.04')
                                     ->first();
+        
+        if (!$template) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->whereNull('id_jadwal')
+                                        ->where('form_code', 'FR.AK.04')
+                                        ->first();
+        }
 
         return view('frontend.FR_AK_04', [
             'sertifikasi' => $sertifikasi,

@@ -30,8 +30,16 @@ class FrMapa01Controller extends Controller
         $template = null;
         if (!$mapa01) {
             $templateObj = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
                                         ->where('form_code', 'FR.MAPA.01')
                                         ->first();
+                                        
+            if (!$templateObj) {
+                $templateObj = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.MAPA.01')
+                                            ->first();
+            }
             if ($templateObj && !empty($templateObj->content)) {
                 $template = $templateObj->content;
             } else {

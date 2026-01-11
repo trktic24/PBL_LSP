@@ -26,8 +26,16 @@ class IA11Controller extends Controller
         // [AUTO-LOAD TEMPLATE] Jika rekomendasi masih kosong, ambil dari Master Template
         if (empty($asesor_data['rekomendasi_kelompok']) && empty($asesor_data['rekomendasi_unit'])) {
             $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                        ->where('id_jadwal', $ia11->dataSertifikasiAsesi?->id_jadwal)
                                         ->where('form_code', 'FR.IA.11')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.11')
+                                            ->first();
+            }
             if ($template && !empty($template->content)) {
                 $asesor_data['rekomendasi_kelompok'] = $template->content['rekomendasi_kelompok'] ?? '';
                 $asesor_data['rekomendasi_unit'] = $template->content['rekomendasi_unit'] ?? '';
@@ -37,8 +45,16 @@ class IA11Controller extends Controller
         // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, pakai Master Template atau Statis
         if ($ia11->pertanyaan->isEmpty()) {
             $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                        ->where('id_jadwal', $ia11->dataSertifikasiAsesi?->id_jadwal)
                                         ->where('form_code', 'FR.IA.11_QUESTIONS') // Assuming a separate template for questions
                                         ->first();
+                                        
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $ia11->dataSertifikasiAsesi?->jadwal?->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.11_QUESTIONS')
+                                            ->first();
+            }
             
             $defaultQuestions = [
                 "Apakah produk hasil kerja memenuhi spesifikasi yang ditetapkan?",

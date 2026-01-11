@@ -68,8 +68,16 @@ class Ak02Controller extends Controller
         $template = null;
         if ($penilaianList->isEmpty()) {
             $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $asesi->id_jadwal)
                                         ->where('form_code', 'FR.AK.02')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.AK.02')
+                                            ->first();
+            }
         }
 
         return view('frontend.AK_02.FR_AK_02', [

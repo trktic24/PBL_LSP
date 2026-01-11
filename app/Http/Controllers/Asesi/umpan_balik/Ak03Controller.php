@@ -69,8 +69,16 @@ class Ak03Controller extends Controller
 
         // 3. Jika Belum Mengisi, Tampilkan Form
         $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
                                     ->where('form_code', 'FR.AK.03')
                                     ->first();
+        
+        if (!$template) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->whereNull('id_jadwal')
+                                        ->where('form_code', 'FR.AK.03')
+                                        ->first();
+        }
 
         $komponen = PoinAk03::all();
         if ($template && isset($template->content['selected_points'])) {

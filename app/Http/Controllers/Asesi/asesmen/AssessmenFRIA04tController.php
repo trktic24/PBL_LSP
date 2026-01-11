@@ -105,8 +105,16 @@ class AssessmenFRIA04tController extends Controller
         // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
         if (!$hal_yang_disiapkan_db && !$hal_yang_didemonstrasikan_db && $skema) {
             $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
                                         ->where('form_code', 'FR.IA.04')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.04')
+                                            ->first();
+            }
             
             if ($template && !empty($template->content)) {
                 $hal_yang_disiapkan_db = $template->content[0]['nama'] ?? null;
@@ -293,8 +301,16 @@ class AssessmenFRIA04tController extends Controller
         // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
         if (!$skenario_umum_db && !$hasil_umum_db && $skema) {
             $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
                                         ->where('form_code', 'FR.IA.04')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.04')
+                                            ->first();
+            }
             
             if ($template && !empty($template->content)) {
                 $skenario_umum_db = $template->content[0]['nama'] ?? null;

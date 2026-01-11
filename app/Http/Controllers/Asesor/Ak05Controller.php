@@ -46,8 +46,16 @@ class Ak05Controller extends Controller
         $template = null;
         if (!$anyAk05) {
             $template = MasterFormTemplate::where('id_skema', $jadwal->id_skema)
+                                        ->where('id_jadwal', $id_jadwal)
                                         ->where('form_code', 'FR.AK.05')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.AK.05')
+                                            ->first();
+            }
         }
 
         // Tampilkan View

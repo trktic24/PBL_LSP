@@ -107,8 +107,16 @@ class IA09Controller extends Controller
 
                 // [AUTO-LOAD TEMPLATE] Tambahkan pertanyaan dari Master Template jika ada
                 $template = MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal?->id_skema)
+                                            ->where('id_jadwal', $dataSertifikasi->id_jadwal)
                                             ->where('form_code', 'FR.IA.09')
                                             ->first();
+                
+                if (!$template) {
+                    $template = MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal?->id_skema)
+                                                ->whereNull('id_jadwal')
+                                                ->where('form_code', 'FR.IA.09')
+                                                ->first();
+                }
                 if ($template && !empty($template->content)) {
                 // [STATIC FALLBACK]
                 $defaultQuestions = [

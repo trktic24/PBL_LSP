@@ -21,8 +21,16 @@ class FrAk06Controller extends Controller
         $template = null;
         if (!$existing) {
             $template = MasterFormTemplate::where('id_skema', $jadwal->id_skema)
+                                        ->where('id_jadwal', $id_jadwal)
                                         ->where('form_code', 'FR.AK.06')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.AK.06')
+                                            ->first();
+            }
         }
 
         return view('frontend.FR_AK_06', [

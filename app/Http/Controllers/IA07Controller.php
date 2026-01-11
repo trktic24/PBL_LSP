@@ -174,8 +174,16 @@ class IA07Controller extends Controller
         // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
         if ($ia07->isEmpty()) {
             $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
                                         ->where('form_code', 'FR.IA.07')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.07')
+                                            ->first();
+            }
             
             $defaultQuestions = [
                 "Sebutkan komponen utama dari unit kompetensi yang sedang diuji.",

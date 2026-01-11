@@ -29,8 +29,16 @@ class IA03Controller extends Controller
         // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, ambil dari Master Template atau gunakan Statis
         if ($pertanyaanIA03->isEmpty()) {
             $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
                                         ->where('form_code', 'FR.IA.03')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.03')
+                                            ->first();
+            }
             
             // Hardcoded Static Questions as Default Fallback
             $defaultQuestions = [

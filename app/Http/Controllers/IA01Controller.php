@@ -82,6 +82,13 @@ class IA01Controller extends Controller
                                     ->where('id_jadwal', $sertifikasi->id_jadwal)
                                     ->where('form_code', 'FR.IA.01')
                                     ->first();
+        
+        if (!$template) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->whereNull('id_jadwal')
+                                        ->where('form_code', 'FR.IA.01')
+                                        ->first();
+        }
         $templateContent = $template ? $template->content : [];
 
         $data_sesi = [
@@ -327,6 +334,13 @@ class IA01Controller extends Controller
                                     ->where('id_jadwal', $sertifikasi->id_jadwal)
                                     ->where('form_code', 'FR.IA.01')
                                     ->first();
+        
+        if (!$template) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->whereNull('id_jadwal')
+                                        ->where('form_code', 'FR.IA.01')
+                                        ->first();
+        }
         $templateContent = $template ? $template->content : [];
 
         return view('frontend.IA_01.admin_show', compact(
@@ -374,6 +388,13 @@ class IA01Controller extends Controller
                                     ->where('id_jadwal', $sertifikasi->id_jadwal)
                                     ->where('form_code', 'FR.IA.01')
                                     ->first();
+        
+        if (!$template) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->whereNull('id_jadwal')
+                                        ->where('form_code', 'FR.IA.01')
+                                        ->first();
+        }
         $templateContent = $template ? $template->content : [];
 
         // 4. Render PDF

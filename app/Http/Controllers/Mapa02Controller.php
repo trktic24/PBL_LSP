@@ -48,8 +48,16 @@ class Mapa02Controller extends Controller
         if ($mapa02Collection->isEmpty()) {
             // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
             $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
                                         ->where('form_code', 'FR.MAPA.02')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.MAPA.02')
+                                            ->first();
+            }
             if ($template && !empty($template->content)) {
                 $templateData = $template->content;
             } else {

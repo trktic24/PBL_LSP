@@ -43,8 +43,16 @@ class IA02Controller extends Controller
         // 2.b Jika belum ada, ambil dari Master Template atau gunakan Statis
         if (!$ia02 && $sertifikasi->jadwal) {
             $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
                                         ->where('form_code', 'FR.IA.02')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.02')
+                                            ->first();
+            }
             
             $defaultSkenario = "Asesi diminta untuk mendemonstrasikan seluruh unit kompetensi yang diuji dalam skema ini sesuai dengan standar operasional prosedur (SOP) yang berlaku di tempat kerja atau simulasi.";
             $defaultPeralatan = "Alat tulis, Peralatan kerja sesuai kompetensi, Lembar kerja/Laporan.";

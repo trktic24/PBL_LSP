@@ -72,10 +72,18 @@ class AsesmenEsaiController extends Controller
 
                 if ($sertifikasi && $sertifikasi->jadwal) {
                     $idSkema = $sertifikasi->jadwal->id_skema;
+                    $idJadwal = $sertifikasi->id_jadwal;
 
-                    // Ambil Master Soal Esai berdasarkan Skema
-                    // Pastikan tabel master soal punya kolom 'id_skema'
-                    $bankSoal = SoalIA06::where('id_skema', $idSkema)->get();
+                    // Ambil Master Soal Esai berdasarkan Skema & Jadwal, fallback ke Master (NULL)
+                    $bankSoal = SoalIA06::where('id_skema', $idSkema)
+                                        ->where('id_jadwal', $idJadwal)
+                                        ->get();
+                    
+                    if ($bankSoal->isEmpty()) {
+                        $bankSoal = SoalIA06::where('id_skema', $idSkema)
+                                            ->whereNull('id_jadwal')
+                                            ->get();
+                    }
 
                     if ($bankSoal->isNotEmpty()) {
                         $dataInsert = [];

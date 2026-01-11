@@ -46,10 +46,18 @@ class IA05Controller extends Controller
         $jadwal = $asesi->jadwal;
         $id_skema_asesi = $jadwal->id_skema; // Ambil ID Skema dari jadwal asesi
 
-        // FILTER: Cuma ambil soal yang id_skema-nya cocok
+        // FILTER: Ambil soal berdasarkan id_jadwal, jika kosong ambil yang id_jadwal-nya NULL (Master)
         $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+            ->where('id_jadwal', $jadwal->id_jadwal)
             ->orderBy('id_soal_ia05')
             ->get();
+            
+        if ($semua_soal->isEmpty()) {
+            $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+                ->whereNull('id_jadwal')
+                ->orderBy('id_soal_ia05')
+                ->get();
+        }
 
         // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
         if ($semua_soal->isEmpty()) {
@@ -62,6 +70,7 @@ class IA05Controller extends Controller
             foreach ($defaultSoals as $ds) {
                 $soal = SoalIA05::create([
                     'id_skema' => $id_skema_asesi,
+                    'id_jadwal' => $jadwal->id_jadwal,
                     'soal_ia05' => $ds['q'],
                     'opsi_a_ia05' => $ds['a'],
                     'opsi_b_ia05' => $ds['b'],
@@ -272,8 +281,16 @@ class IA05Controller extends Controller
 
         $id_skema_asesi = $asesi->jadwal->id_skema;
         $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
-        ->orderBy('id_soal_ia05')
-        ->get();
+            ->where('id_jadwal', $jadwal->id_jadwal)
+            ->orderBy('id_soal_ia05')
+            ->get();
+            
+        if ($semua_soal->isEmpty()) {
+            $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+                ->whereNull('id_jadwal')
+                ->orderBy('id_soal_ia05')
+                ->get();
+        }
 
         $kunci_jawaban = KunciJawabanIA05::pluck('jawaban_benar_ia05', 'id_soal_ia05');
 
@@ -359,8 +376,19 @@ class IA05Controller extends Controller
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id_asesi);
         $jadwal = $asesi->jadwal;
-        // 2. Ambil Soal (Urut ID)
-        $semua_soal = SoalIA05::orderBy('id_soal_ia05')->get();
+        // 2. Ambil Soal (Urut ID & Filter Jadwal)
+        $id_skema_asesi = $asesi->jadwal->id_skema;
+        $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+            ->where('id_jadwal', $jadwal->id_jadwal)
+            ->orderBy('id_soal_ia05')
+            ->get();
+            
+        if ($semua_soal->isEmpty()) {
+            $semua_soal = SoalIA05::where('id_skema', $id_skema_asesi)
+                ->whereNull('id_jadwal')
+                ->orderBy('id_soal_ia05')
+                ->get();
+        }
 
         // 3. Ambil Jawaban & Penilaian
         $lembar_jawab = LembarJawabIA05::where('id_data_sertifikasi_asesi', $id_asesi)

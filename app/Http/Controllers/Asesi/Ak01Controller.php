@@ -44,8 +44,16 @@ class Ak01Controller extends Controller
 
         // [AUTO-LOAD TEMPLATE]
         $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
                                     ->where('form_code', 'FR.AK.01')
                                     ->first();
+        
+        if (!$template) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->whereNull('id_jadwal')
+                                        ->where('form_code', 'FR.AK.01')
+                                        ->first();
+        }
 
         // Kirim variabel $sertifikasi and $asesi ke View
         return view('frontend.FR_AK_01', [

@@ -274,10 +274,21 @@ class IA06Controller extends Controller
         $exists = JawabanIa06::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)->exists();
 
         if (!$exists) {
-            // Ambil soal berdasarkan skema jadwal
-            $soals = SoalIA06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
+            // Ambil soal berdasarkan id_skema DAN id_jadwal, jika kosong ambil Master (NULL)
+            $id_jadwal = $sertifikasi->id_jadwal;
+            $id_skema  = $sertifikasi->jadwal->id_skema;
 
-            // [STATIC FALLBACK] Jika skema tidak punya soal, pakai soal statis
+            $soals = SoalIA06::where('id_skema', $id_skema)
+                ->where('id_jadwal', $id_jadwal)
+                ->get();
+
+            if ($soals->isEmpty()) {
+                $soals = SoalIA06::where('id_skema', $id_skema)
+                    ->whereNull('id_jadwal')
+                    ->get();
+            }
+
+            // [STATIC FALLBACK] Jika skema tidak punya soal sama sekali (termasu Master), pakai soal statis
             if ($soals->isEmpty()) {
                 $defaultSoals = [
                     ['q' => 'Jelaskan langkah-langkah dalam perencanaan kerja sesuai dengan unit kompetensi yang Anda ambil.', 'k' => 'Langkah-langkah meliputi persiapan alat, materi, dan jadwal kerja.'],
@@ -287,13 +298,16 @@ class IA06Controller extends Controller
 
                 foreach ($defaultSoals as $ds) {
                     SoalIA06::create([
-                        'id_skema' => $sertifikasi->jadwal->id_skema,
+                        'id_skema' => $id_skema,
+                        'id_jadwal' => $id_jadwal,
                         'soal_ia06' => $ds['q'],
                         'kunci_jawaban_ia06' => $ds['k'],
                     ]);
                 }
                 // Re-fetch
-                $soals = SoalIA06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
+                $soals = SoalIA06::where('id_skema', $id_skema)
+                    ->where('id_jadwal', $id_jadwal)
+                    ->get();
             }
 
             $dataInsert = [];

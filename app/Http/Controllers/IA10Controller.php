@@ -40,8 +40,16 @@ class IA10Controller extends Controller
         // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, pakai Master Template atau Statis
         if ($daftar_soal->isEmpty()) {
             $template = MasterFormTemplate::where('id_skema', $asesi->jadwal->id_skema)
+                                        ->where('id_jadwal', $asesi->id_jadwal)
                                         ->where('form_code', 'FR.IA.10')
                                         ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $asesi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.10')
+                                            ->first();
+            }
             
             $defaultQuestions = [
                 "Apakah Anda memiliki hubungan langsung dengan asesi dan mengobservasi kinerjanya?",
