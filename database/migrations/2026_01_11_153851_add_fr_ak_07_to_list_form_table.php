@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('lembar_jawab_ia05', function (Blueprint $table) {
-            $table->text('umpan_balik')->nullable()->after('pencapaian_ia05');
+        Schema::table('list_form', function (Blueprint $table) {
+            $table->boolean('fr_ak_07')->default(false)->after('fr_ak_06');
         });
     }
 
@@ -21,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('lembar_jawab_ia05', function (Blueprint $table) {
-             $table->dropColumn('umpan_balik');
-            //
+        Schema::table('list_form', function (Blueprint $table) {
+            $table->dropColumn('fr_ak_07');
         });
     }
 };

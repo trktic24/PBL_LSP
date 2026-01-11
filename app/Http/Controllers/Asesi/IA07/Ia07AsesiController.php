@@ -26,6 +26,10 @@ class Ia07AsesiController extends Controller
 
         $asesi = $sertifikasi->asesi;
 
-        return view('asesi.IA_07.IA_07', compact('sertifikasi','asesi'));
+        $gambarSkema = $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
+        ? asset('storage/' . $sertifikasi->jadwal->skema->gambar)
+        : asset('images/default_pic.jpeg');
+
+        return view('asesi.IA_07.IA_07', compact('sertifikasi','asesi','gambarSkema'));
     }
 }

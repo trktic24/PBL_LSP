@@ -27,22 +27,22 @@
         <tr>
             <td width="150"><strong>Skema Sertifikasi</strong></td>
             <td width="10">:</td>
-            <td>{{ $sertifikasi->jadwal->skema->judul_skema ?? '[Judul Skema Kosong]' }}</td>
+            <td>{{ $sertifikasi->jadwal->skema->nama_skema ?? '[Judul Skema Kosong]' }}</td>
         </tr>
         <tr>
             <td><strong>Nomor Skema</strong></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->skema->kode_skema ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->skema->nomor_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>TUK</strong></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->tuk->nama_tuk ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->tuk->nama_lokasi ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Nama Asesor</strong></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Nama Asesi</strong></td>
@@ -153,7 +153,7 @@
                 Semarang, {{ date('d-m-Y') }}<br>
                 Asesor Kompetensi,
                 <br><br><br><br>
-                <strong>{{ $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '(.......................)' }}</strong>
+                <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
             </td>
         </tr>
     </table>

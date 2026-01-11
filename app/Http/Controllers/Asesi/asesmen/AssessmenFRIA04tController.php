@@ -9,7 +9,8 @@ use App\Models\Asesor;
 use App\Models\Skema;
 use App\Models\Jadwal;
 use App\Models\PoinIA04A;
-use App\Models\JenisTuk;
+use App\Models\MasterFormTemplate;
+use App\Models\JenisTUK;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\AspekIA04B;
 use App\Models\ResponIA04A;
@@ -100,6 +101,31 @@ class AssessmenFRIA04tController extends Controller
         // Ambil data dari poinIA04A dan responIA04A (jika ada)
         $hal_yang_disiapkan_db = optional($poinIA04A)->hal_yang_disiapkan ?? null;
         $hal_yang_didemonstrasikan_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? null;
+
+        // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
+        if (!$hal_yang_disiapkan_db && !$hal_yang_didemonstrasikan_db && $skema) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                        ->where('form_code', 'FR.IA.04')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.04')
+                                            ->first();
+            }
+            
+            if ($template && !empty($template->content)) {
+                $hal_yang_disiapkan_db = $template->content[0]['nama'] ?? null;
+                $hal_yang_didemonstrasikan_db = $template->content[0]['kriteria'] ?? null;
+            } else {
+                // Static Fallback
+                $hal_yang_disiapkan_db = "1. Portofolio yang relevan dengan unit kompetensi.\n2. Dokumen pendukung keahlian.";
+                $hal_yang_didemonstrasikan_db = "1. Verifikasi keaslian bukti.\n2. Konfirmasi kemutakhiran data.";
+            }
+        }
+
         $umpan_balik_asesi_db = optional($responIA04A)->umpan_balik_untuk_asesi ?? null;
 
         // --- LOGIKA TANDA TANGAN BASE64 ---
@@ -269,8 +295,37 @@ class AssessmenFRIA04tController extends Controller
         $aspekIA04BData = AspekIA04B::where('id_data_sertifikasi_asesi', $active_id_sertifikasi)->get();
 
         // 3. Mengisi variabel DB dengan data (menggunakan optional() untuk safety)
-        $skenario_umum_db = optional($poinIA04A)->hal_yang_disiapkan ?? "Instruksi dari Asesor belum tersedia.";
-        $hasil_umum_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? "Hasil demonstrasi/output belum ditetapkan oleh Asesor.";
+        $skenario_umum_db = optional($poinIA04A)->hal_yang_disiapkan ?? null;
+        $hasil_umum_db = optional($poinIA04A)->hal_yang_didemonstrasikan ?? null;
+
+        // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
+        if (!$skenario_umum_db && !$hasil_umum_db && $skema) {
+            $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                        ->where('form_code', 'FR.IA.04')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.04')
+                                            ->first();
+            }
+            
+            if ($template && !empty($template->content)) {
+                $skenario_umum_db = $template->content[0]['nama'] ?? null;
+                $hasil_umum_db = $template->content[0]['kriteria'] ?? null;
+            } else {
+                // Static Fallback
+                $skenario_umum_db = "1. Portofolio yang relevan dengan unit kompetensi.\n2. Dokumen pendukung keahlian.";
+                $hasil_umum_db = "1. Verifikasi keaslian bukti.\n2. Konfirmasi kemutakhiran data.";
+            }
+        }
+
+        // Fallback placeholders
+        $skenario_umum_db = $skenario_umum_db ?? "Instruksi dari Asesor belum tersedia.";
+        $hasil_umum_db = $hasil_umum_db ?? "Hasil demonstrasi/output belum ditetapkan oleh Asesor.";
+
         $umpan_balik_asesi_db = optional($responIA04A)->umpan_balik_untuk_asesi ?? "Umpan balik dari Asesor belum tersedia.";
 
         // Data TUK & Tanggal

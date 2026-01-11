@@ -2,7 +2,7 @@
 @php
     $jadwal = $sertifikasi->jadwal;
     $asesi = $sertifikasi->asesi;
-    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);
+    $backUrl = isset($isMasterView) ? '#' : route('asesor.tracker', $sertifikasi->id_data_sertifikasi_asesi);
 @endphp
 
 @section('content')

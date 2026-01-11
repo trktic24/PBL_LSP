@@ -132,7 +132,7 @@ class AsesorProfileController extends Controller
         $query = DataSertifikasiAsesi::query()
             ->with([
                 'asesi.dataPekerjaan', 
-                'responApl2Ia01', 
+                'responApl02Ia01', 
                 'responBuktiAk01', 
                 'lembarJawabIa05', 
                 'komentarAk05'
@@ -194,8 +194,8 @@ class AsesorProfileController extends Controller
                 'asesi.user',
                 'jadwal.skema',
                 'jadwal.masterTuk', 
-                'responApl2Ia01',
-                'responbuktiAk01',
+                'responApl02Ia01',
+                'responBuktiAk01',
                 'komentarAk05',
             ])->findOrFail($id_data_sertifikasi_asesi);
 
@@ -245,12 +245,12 @@ class AsesorProfileController extends Controller
             ];
 
             // 4. Asesmen Mandiri (APL-02)
-            $hasApl02 = $dataSertifikasi->responApl2Ia01()->exists();
+            $hasApl02 = $dataSertifikasi->responApl02Ia01()->exists();
             $isApl02Accepted = $dataSertifikasi->rekomendasi_apl02 == 'diterima';
             
             $timelineData[] = [
                 'title' => 'Asesmen Mandiri (APL.02)',
-                'date' => $hasApl02 ? $dataSertifikasi->responApl2Ia01->updated_at->format('l, d F Y') : '-',
+                'date' => $hasApl02 ? $dataSertifikasi->responApl02Ia01->first()->updated_at->format('l, d F Y') : '-',
                 'status_text' => $isApl02Accepted ? 'Diterima' : ($hasApl02 ? 'Menunggu Verifikasi' : 'Belum Mengisi'),
                 'is_completed' => $isApl02Accepted,
                 'icon' => 'fas fa-paperclip',
@@ -412,7 +412,7 @@ class AsesorProfileController extends Controller
             'asesi.user',
             'jadwal.skema',
             'jadwal.masterTuk', // Konsisten gunakan masterTuk
-            'responbuktiAk01',
+            'responBuktiAk01',
             'ia10', 
             'ia02',
             'ia07',

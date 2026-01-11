@@ -167,7 +167,7 @@ class PaymentController extends Controller
         $sertifikasi = null;
         $idJadwal = null;
         $idSertifikasi = null; 
-        $pembayaran = null;
+        $pembayaran = Pembayaran::where('order_id', $orderId)->first();;
 
         // Cari Data Berdasarkan Order ID dari Midtrans
         if ($orderId) {
@@ -176,7 +176,6 @@ class PaymentController extends Controller
             if ($pembayaran) {
                 // Ambil ID Sertifikasi langsung dari tabel pembayaran
                 $idSertifikasi = $pembayaran->id_data_sertifikasi_asesi;
-
                 $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema'])->find($idSertifikasi);
 
                 // Ambil ID Jadwal (lewat relasi sertifikasi)
@@ -184,6 +183,17 @@ class PaymentController extends Controller
                     $idJadwal = $pembayaran->sertifikasi->id_jadwal;
                 }
             }
+        }
+
+        if (in_array($status, ['deny', 'cancel', 'expire', 'failure'])) {
+            return redirect("/asesi/tracker/{$idJadwal}")
+                ->with('error', 'Pembayaran gagal atau dibatalkan.');
+        }
+
+        // 2. Kalau Masih Pending (Belum bayar tapi window ditutup / pilih ATM tapi belum transfer)
+        if ($status == 'pending') {
+            return redirect("/asesi/tracker/{$idJadwal}")
+                ->with('warning', 'Pembayaran tertunda. Silakan selesaikan pembayaran.');
         }
 
         // Kirim semua data ke View

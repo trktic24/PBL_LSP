@@ -152,12 +152,19 @@ class IA06Controller extends Controller
      */
     public function asesorShow($idSertifikasi)
     {
-        // Allow Asesor (3) AND Admin (1/4)
-        if (!in_array(Auth::user()->role_id, [1, 3, 4])) {
-             abort(403, 'Unauthorized Action.');
+        // 1. Cek Permission (Admin & Asesor boleh masuk)
+        // Asumsi: 1 = Admin, 3 = Asesor, 4 = Admin Master (sesuaikan dengan DB Anda)
+        $userRoleId = Auth::user()->role_id;
+
+        if (!in_array($userRoleId, [1, 3, 4])) {
+            abort(403, 'Unauthorized Action.');
         }
 
         $sertifikasi = DataSertifikasiAsesi::with(['jadwal.skema', 'asesi'])->findOrFail($idSertifikasi);
+
+        // --- TAMBAHAN BARU: Generate data jika belum ada (agar Asesor bisa lihat soal meski Asesi belum login) ---
+        $this->generateLembarJawab($sertifikasi);
+        // ---------------------------------------------------------------------------------------------------------
 
         $daftar_soal = JawabanIa06::with('soal')
             ->where('id_data_sertifikasi_asesi', $idSertifikasi)
@@ -165,12 +172,20 @@ class IA06Controller extends Controller
 
         $umpanBalik = UmpanBalikIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->first();
 
-        $role = 3; // Kita set manual angka 3 karena ini function khusus Asesor
+        // ============================================================
+        // [PERBAIKAN] TENTUKAN ROLE SECARA DINAMIS
+        // ============================================================
+        if ($userRoleId == 3) {
+            $role = 3; // Mode ASESOR (Bisa Input Nilai)
+        } else {
+            $role = 1; // Mode ADMIN (Monitor/Read Only)
+        }
+        // ============================================================
 
-        // Tentukan URL tujuan submit form (Ke Route Update Asesor)
+        // Tentukan URL tujuan submit form (Hanya berguna jika Role 3)
         $formAction = route('asesor.ia06.update', $idSertifikasi);
 
-        // Panggil View UNIFIED yang SAMA dengan Asesi
+        // Panggil View
         return view('frontend.IA_06.FR_IA_06', compact('sertifikasi', 'daftar_soal', 'umpanBalik', 'role', 'formAction'));
     }
 
@@ -259,11 +274,41 @@ class IA06Controller extends Controller
         $exists = JawabanIa06::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)->exists();
 
         if (!$exists) {
-            // Ambil soal berdasarkan skema jadwal
-            $soals = SoalIA06::where('id_skema', $sertifikasi->jadwal->id_skema)->get();
+            // Ambil soal berdasarkan id_skema DAN id_jadwal, jika kosong ambil Master (NULL)
+            $id_jadwal = $sertifikasi->id_jadwal;
+            $id_skema  = $sertifikasi->jadwal->id_skema;
 
-            if ($soals->isEmpty())
-                return; // Tidak ada soal, skip
+            $soals = SoalIA06::where('id_skema', $id_skema)
+                ->where('id_jadwal', $id_jadwal)
+                ->get();
+
+            if ($soals->isEmpty()) {
+                $soals = SoalIA06::where('id_skema', $id_skema)
+                    ->whereNull('id_jadwal')
+                    ->get();
+            }
+
+            // [STATIC FALLBACK] Jika skema tidak punya soal sama sekali (termasu Master), pakai soal statis
+            if ($soals->isEmpty()) {
+                $defaultSoals = [
+                    ['q' => 'Jelaskan langkah-langkah dalam perencanaan kerja sesuai dengan unit kompetensi yang Anda ambil.', 'k' => 'Langkah-langkah meliputi persiapan alat, materi, dan jadwal kerja.'],
+                    ['q' => 'Bagaimana Anda memastikan standar kualitas hasil kerja tetap terjaga?', 'k' => 'Dengan melakukan pengecekan mandiri dan mengikuti SOP.'],
+                    ['q' => 'Apa tindakan yang Anda ambil jika ditemukan ketidaksesuaian pada produk atau proses kerja?', 'k' => 'Melakukan koreksi segera dan melaporkan kepada atasan/supervisor.'],
+                ];
+
+                foreach ($defaultSoals as $ds) {
+                    SoalIA06::create([
+                        'id_skema' => $id_skema,
+                        'id_jadwal' => $id_jadwal,
+                        'soal_ia06' => $ds['q'],
+                        'kunci_jawaban_ia06' => $ds['k'],
+                    ]);
+                }
+                // Re-fetch
+                $soals = SoalIA06::where('id_skema', $id_skema)
+                    ->where('id_jadwal', $id_jadwal)
+                    ->get();
+            }
 
             $dataInsert = [];
             foreach ($soals as $soal) {
@@ -281,61 +326,105 @@ class IA06Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.06 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Essay) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $semua_soal = SoalIa06::where('id_skema', $id_skema)
+                                ->where('id_jadwal', $id_jadwal)
+                                ->orderBy('id_soal_ia06')
+                                ->get();
+
+        return view('Admin.master.skema.template.ia06', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'semua_soal' => $semua_soal
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update soal template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'soal' => 'required|array',
+            'soal.*.pertanyaan' => 'required|string',
+            'soal.*.kunci' => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->soal as $index => $data) {
+                $id_soal = $data['id'] ?? null;
+                
+                SoalIa06::updateOrCreate(
+                    [
+                        'id_soal_ia06' => $id_soal, 
+                        'id_skema' => $id_skema,
+                        'id_jadwal' => $id_jadwal
+                    ],
+                    [
+                        'id_skema' => $id_skema,
+                        'id_jadwal' => $id_jadwal,
+                        'soal_ia06' => $data['pertanyaan'],
+                        'kunci_jawaban_ia06' => $data['kunci'] ?? '',
+                    ]
+                );
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'Templat Soal IA-06 berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan templat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * [MASTER] Hapus soal template
+     */
+    public function destroyTemplate($id_skema, $id_soal)
+    {
+        $soal = SoalIa06::where('id_skema', $id_skema)->findOrFail($id_soal);
+        $soal->delete();
+
+        return redirect()->back()->with('success', 'Soal berhasil dihapus.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.06 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
-            'jadwal' => $jadwal,
+        $this->generateLembarJawab($sertifikasi);
+
+        $daftar_soal = JawabanIa06::with('soal')
+            ->where('id_data_sertifikasi_asesi', 0)
+            ->get();
+
+        return view('frontend.IA_06.FR_IA_06', [
+            'sertifikasi' => $sertifikasi,
+            'daftar_soal' => $daftar_soal,
+            'umpanBalik' => null,
+            'role' => 1,
+            'formAction' => '#',
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'asesor.ia06.edit',
-            'buttonLabel' => 'FR.IA.06',
         ]);
     }
 }

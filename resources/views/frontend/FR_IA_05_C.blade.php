@@ -4,11 +4,17 @@
 
     @php 
         // Tentukan Role untuk Logic Disabled
-        $is_asesor = ($user->role_id == 3 || $user->role_id == 1); 
+        // Role 3 = Asesor, Role 1 = Admin, Role 4 = Admin Master
+        $is_asesor = ($user->role_id == 3); 
+        $is_admin = ($user->role_id == 1 || $user->role_id == 4);
     @endphp
 
+    @if(!$is_admin)
     <form class="form-body" method="POST" action="{{ route('ia-05.store.penilaian', ['id_asesi' => $asesi->id_data_sertifikasi_asesi]) }}">
         @csrf 
+    @else
+    <div class="form-body">
+    @endif
         <x-header_form.header_form title="FR.IA.05.C. LEMBAR JAWABAN PILIHAN GANDA" />
         
 {{-- === DROPDOWN NAVIGASI (Form C) === --}}
@@ -177,85 +183,121 @@
                         </tr>
                     </thead>
                     <tbody>
-                    
-                    @forelse ($semua_soal->chunk(2) as $chunk)
-                        {{-- === INI FIXNYA: RESET KEYS AGAR SELALU MULAI DARI 0 === --}}
-                        @php $chunk = $chunk->values(); @endphp 
-                        {{-- ===================================================== --}}
+    @forelse ($semua_soal->chunk(2) as $chunk)
+        {{-- Reset Keys agar index array selalu 0 dan 1 --}}
+        @php $chunk = $chunk->values(); @endphp 
 
-                        <tr>
-                            {{-- KOLOM KIRI --}}
-                            @if (isset($chunk[0]))
-                                @php 
-                                    $soal_kiri = $chunk[0];
-                                    $jawaban_kiri = $lembar_jawab->get($soal_kiri->id_soal_ia05);
-                                    $nomor_kiri = ($loop->index * 2) + 1;
-                                @endphp
-                                
-                                <td class="border border-gray-900 p-2 text-sm text-center font-bold">{{ $nomor_kiri }}.</td>
-                                <td class="border border-gray-900 p-2 text-sm">
-                                    <input type="text" 
-                                           class="form-input w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-center font-bold text-blue-800"
-                                           value="{{ $jawaban_kiri->jawaban_asesi_ia05 ?? 'A' }}"
-                                           readonly>
-                                </td>
-                                <td class="border border-gray-900 p-2 text-sm text-center">
-                                    <input type="radio" name="penilaian[{{ $soal_kiri->id_soal_ia05 }}]" value="ya"
-                                        class="form-radio h-5 w-5 text-green-600"
-                                        {{-- CEK APAKAH STRINGNYA 'ya' --}}
-                                        @checked($jawaban_kiri && $jawaban_kiri->pencapaian_ia05 == 'ya')
-                                        @disabled(!$is_asesor) required>
-                                </td>
-                                <td class="border border-gray-900 p-2 text-sm text-center">
-                                    <input type="radio" name="penilaian[{{ $soal_kiri->id_soal_ia05 }}]" value="tidak"
-                                        class="form-radio h-5 w-5 text-red-600"
-                                        {{-- CEK APAKAH STRINGNYA 'tidak' --}}
-                                        @checked($jawaban_kiri && $jawaban_kiri->pencapaian_ia05 == 'tidak')
-                                        @disabled(!$is_asesor)>
-                                </td>
-                            @endif
+        <tr>
+            {{-- ========================================== --}}
+            {{--                 SISI KIRI                  --}}
+            {{-- ========================================== --}}
+            @if (isset($chunk[0]))
+                @php 
+                    $soal_kiri = $chunk[0];
+                    $jawaban_kiri = $lembar_jawab->get($soal_kiri->id_soal_ia05);
+                    $nomor_kiri = ($loop->index * 2) + 1;
+                    $isi_kiri = $jawaban_kiri->jawaban_asesi_ia05 ?? '-';
+                @endphp
+                
+                {{-- 1. NOMOR (Teks biasa, jangan input) --}}
+                <td class="border border-gray-900 p-2 text-center font-bold align-middle">
+                    {{ $nomor_kiri }}.
+                </td>
 
-                            {{-- PEMBATAS TENGAH --}}
-                            <td class="border border-gray-900 bg-gray-300"></td>
+                {{-- 2. JAWABAN ASESI (Input Text Readonly, BUKAN Radio) --}}
+                <td class="border border-gray-900 p-2 align-middle">
+                    <input type="text" 
+                           class="w-full text-center font-bold text-blue-800 bg-gray-100 border-none rounded shadow-sm py-1"
+                           value="{{ $isi_kiri }}" 
+                           readonly>
+                </td>
 
-                            {{-- KOLOM KANAN --}}
-                            @if (isset($chunk[1]))
-                                @php 
-                                    $soal_kanan = $chunk[1]; 
-                                    $jawaban_kanan = $lembar_jawab->get($soal_kanan->id_soal_ia05);
-                                    $nomor_kanan = ($loop->index * 2) + 2;
-                                @endphp
-                                
-                                <td class="border border-gray-900 p-2 text-sm text-center font-bold">{{ $nomor_kanan }}.</td>
-                                <td class="border border-gray-900 p-2 text-sm">
-                                    <input type="text" 
-                                           class="form-input w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-center font-bold text-blue-800"
-                                           value="{{ $jawaban_kanan->jawaban_asesi_ia05 ?? 'B' }}"
-                                           readonly>
-                                </td>
-                                <td class="border border-gray-900 p-2 text-sm text-center">
-                                   <input type="radio" name="penilaian[{{ $soal_kanan->id_soal_ia05 }}]" value="ya"
-                                        class="form-radio h-5 w-5 text-green-600"
-                                        {{-- CEK APAKAH STRINGNYA 'ya' --}}
-                                        @checked($jawaban_kanan && $jawaban_kanan->pencapaian_ia05 == 'ya')
-                                        @disabled(!$is_asesor) required>
-                                </td>
-                                <td class="border border-gray-900 p-2 text-sm text-center">
-                                    <input type="radio" name="penilaian[{{ $soal_kanan->id_soal_ia05 }}]" value="tidak"
-                                        class="form-radio h-5 w-5 text-red-600"
-                                        {{-- CEK APAKAH STRINGNYA 'tidak' --}}
-                                        @checked($jawaban_kanan && $jawaban_kanan->pencapaian_ia05 == 'tidak')
-                                        @disabled(!$is_asesor)>
-                                </td>
-                            @else
-                                {{-- Jika Ganjil, Kolom Kanan Kosong --}}
-                                <td class="border border-gray-900 bg-gray-50" colspan="4"></td>
-                            @endif
-                        </tr>
-                    @empty
-                        <tr><td colspan="9" class="p-4 text-center text-gray-500">Belum ada soal.</td></tr>
-                    @endforelse
-                </tbody>
+                {{-- 3. PENILAIAN (Radio Button K) --}}
+                <td class="border border-gray-900 p-2 text-center align-middle bg-white">
+                    <div class="flex justify-center items-center h-full">
+                        <input type="radio" 
+                               name="penilaian[{{ $soal_kiri->id_soal_ia05 }}]" 
+                               value="ya"
+                               class="w-6 h-6 text-green-600 focus:ring-green-500 border-gray-300"
+                               @checked($jawaban_kiri && $jawaban_kiri->pencapaian_ia05 == 'ya')
+                               @disabled(!$is_asesor) required>
+                    </div>
+                </td>
+
+                {{-- 4. PENILAIAN (Radio Button BK) --}}
+                <td class="border border-gray-900 p-2 text-center align-middle bg-white">
+                    <div class="flex justify-center items-center h-full">
+                        <input type="radio" 
+                               name="penilaian[{{ $soal_kiri->id_soal_ia05 }}]" 
+                               value="tidak"
+                               class="w-6 h-6 text-red-600 focus:ring-red-500 border-gray-300"
+                               @checked($jawaban_kiri && $jawaban_kiri->pencapaian_ia05 == 'tidak')
+                               @disabled(!$is_asesor)>
+                    </div>
+                </td>
+            @endif
+
+            {{-- ========================================== --}}
+            {{--             PEMBATAS TENGAH                --}}
+            {{-- ========================================== --}}
+            <td class="border border-gray-900 bg-gray-800 w-2"></td>
+
+            {{-- ========================================== --}}
+            {{--                 SISI KANAN                 --}}
+            {{-- ========================================== --}}
+            @if (isset($chunk[1]))
+                @php 
+                    $soal_kanan = $chunk[1]; 
+                    $jawaban_kanan = $lembar_jawab->get($soal_kanan->id_soal_ia05);
+                    $nomor_kanan = ($loop->index * 2) + 2;
+                    $isi_kanan = $jawaban_kanan->jawaban_asesi_ia05 ?? '-';
+                @endphp
+                
+                {{-- 1. NOMOR --}}
+                <td class="border border-gray-900 p-2 text-center font-bold align-middle">
+                    {{ $nomor_kanan }}.
+                </td>
+
+                {{-- 2. JAWABAN ASESI --}}
+                <td class="border border-gray-900 p-2 align-middle">
+                    <input type="text" 
+                           class="w-full text-center font-bold text-blue-800 bg-gray-100 border-none rounded shadow-sm py-1"
+                           value="{{ $isi_kanan }}" 
+                           readonly>
+                </td>
+
+                {{-- 3. PENILAIAN (K) --}}
+                <td class="border border-gray-900 p-2 text-center align-middle bg-white">
+                    <div class="flex justify-center items-center h-full">
+                        <input type="radio" 
+                               name="penilaian[{{ $soal_kanan->id_soal_ia05 }}]" 
+                               value="ya"
+                               class="w-6 h-6 text-green-600 focus:ring-green-500 border-gray-300"
+                               @checked($jawaban_kanan && $jawaban_kanan->pencapaian_ia05 == 'ya')
+                               @disabled(!$is_asesor) required>
+                    </div>
+                </td>
+
+                {{-- 4. PENILAIAN (BK) --}}
+                <td class="border border-gray-900 p-2 text-center align-middle bg-white">
+                    <div class="flex justify-center items-center h-full">
+                        <input type="radio" 
+                               name="penilaian[{{ $soal_kanan->id_soal_ia05 }}]" 
+                               value="tidak"
+                               class="w-6 h-6 text-red-600 focus:ring-red-500 border-gray-300"
+                               @checked($jawaban_kanan && $jawaban_kanan->pencapaian_ia05 == 'tidak')
+                               @disabled(!$is_asesor)>
+                    </div>
+                </td>
+            @else
+                {{-- Kalau sisi kanan kosong (Ganjil), isi dengan sel kosong biar border tabel tetap rapi --}}
+                <td class="border border-gray-900 bg-gray-50" colspan="4"></td>
+            @endif
+        </tr>
+    @empty
+        <tr><td colspan="9" class="p-4 text-center text-gray-500 italic">Data soal belum tersedia.</td></tr>
+    @endforelse
+</tbody>
                 </table>
             </div>
         </div>
@@ -292,6 +334,10 @@
                 <button type="submit" class="btn py-2 px-5 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Simpan Penilaian</button>
             @endif
         </div>
+    @if(!$is_admin)
     </form>
+    @else
+    </div>
+    @endif
 </main>
 @endsection

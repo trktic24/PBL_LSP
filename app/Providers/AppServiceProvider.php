@@ -11,7 +11,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Force load custom helpers
+        $helperPath = app_path('Helpers/TtdHelper.php');
+        if (file_exists($helperPath)) {
+            require_once $helperPath;
+        }
     }
 
     /**

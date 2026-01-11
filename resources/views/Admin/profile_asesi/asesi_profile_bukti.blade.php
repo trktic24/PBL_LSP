@@ -49,17 +49,27 @@
             
             @foreach($persyaratan as $index => $syarat)
                 @php
-                    $bukti = $asesi->buktiDasar->first(function($item) use ($syarat) {
-                        return strpos($item->keterangan, $syarat['jenis']) !== false;
-                    });
-                    
+                    // [PERBAIKAN] Filter bukti hanya untuk sertifikasi yang sedang aktif/acuan
+                    // Kita filter collection $asesi->buktiDasar berdasarkan id_data_sertifikasi_asesi
+                    $bukti = $asesi->buktiDasar
+                        ->where('id_data_sertifikasi_asesi', $sertifikasiAcuan->id_data_sertifikasi_asesi)
+                        ->first(function($item) use ($syarat) {
+                            return str_starts_with($item->keterangan, $syarat['jenis']);
+                        });
+
                     $isUploaded = !is_null($bukti);
                     
-                    // [PERBAIKAN] Gunakan route 'secure.file' agar file private bisa diakses
+                    // ... (Kode selanjutnya sama: Generate URL File, Ext, UserKeterangan, dll)
                     $fileUrl = $isUploaded ? route('secure.file', ['path' => $bukti->bukti_dasar]) : '';
-                    
                     $fileExt = $isUploaded ? pathinfo($bukti->bukti_dasar, PATHINFO_EXTENSION) : '';
-                    $userKeterangan = $isUploaded ? (explode(' - ', $bukti->keterangan)[1] ?? '') : '';
+
+                    $userKeterangan = '';
+                    if ($isUploaded) {
+                        $prefix = $syarat['jenis'] . ' - ';
+                        if (str_starts_with($bukti->keterangan, $prefix)) {
+                            $userKeterangan = substr($bukti->keterangan, strlen($prefix));
+                        }
+                    }
                     
                     $itemId = 'item-' . $index; 
                 @endphp
@@ -275,9 +285,25 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // === VARIABEL GLOBAL ===
+        // =========================================================
+        // 1. DEFINISI VARIABEL GLOBAL (WAJIB ADA)
+        // =========================================================
+        
+        // ID Asesi (Dibutuhkan untuk URL Route Laravel: /admin/asesi/{id_asesi}/...)
         const idAsesi = "{{ $asesi->id_asesi }}"; 
+
+        // [PERBAIKAN UTAMA] ID Sertifikasi (Dibutuhkan untuk Logic Backend & Folder Path)
+        // Menggunakan null coalescing operator (??) untuk keamanan jika variabel null
+        const idSertifikasi = "{{ $sertifikasiAcuan->id_data_sertifikasi_asesi ?? '' }}"; 
+        
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+        // [SAFETY CHECK] Cek jika ID Sertifikasi kosong (Misal user masuk direct link tanpa konteks)
+        if (!idSertifikasi) {
+            console.error("Critical Error: ID Sertifikasi tidak ditemukan di View.");
+            // Opsional: Tampilkan alert atau disable semua tombol upload
+            // alert("Terjadi kesalahan sistem: Data Sertifikasi tidak ditemukan. Silakan kembali ke menu sebelumnya.");
+        }
 
         // =========================================================================
         // BAGIAN 1: LOGIKA BUKTI KELENGKAPAN (DOKUMEN)
@@ -314,11 +340,7 @@
             const groupReady = section.querySelector('.button-group-ready');
             const groupUploaded = section.querySelector('.button-group-uploaded');
             const jenisDokumen = section.querySelector('h3').getAttribute('data-jenis');
-            
-            // Ambil ID Section untuk localStorage
             const sectionId = section.getAttribute('data-id'); 
-            
-            // Cek apakah ini Update atau Create (berdasarkan tombol delete yang punya data-id)
             const existingId = btnDelete ? btnDelete.getAttribute('data-id') : null;
 
             let selectedFile = null;
@@ -355,24 +377,32 @@
                 btnSave.addEventListener('click', async () => {
                     if (!selectedFile) return;
                     
-                    // Simpan state agar tetap terbuka setelah reload
+                    // Cek ID Sertifikasi lagi sebelum kirim
+                    if (!idSertifikasi) {
+                        alert("Gagal: ID Sertifikasi hilang. Silakan refresh halaman.");
+                        return;
+                    }
+
                     localStorage.setItem('open_' + sectionId, 'true');
 
                     const formData = new FormData();
+                    
+                    // [PERBAIKAN UTAMA] Wajib kirim parameter ini ke Controller
+                    formData.append('id_data_sertifikasi_asesi', idSertifikasi);
+                    
                     formData.append('file', selectedFile);
                     formData.append('jenis_dokumen', jenisDokumen);
                     formData.append('keterangan', descInput.value);
 
                     const originalText = btnSave.innerHTML;
-                    btnSave.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                    btnSave.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyimpan...';
                     btnSave.disabled = true;
 
                     try {
                         let url, method;
 
-                        // LOGIKA PENENTUAN ROUTE (CREATE vs UPDATE)
                         if (existingId) {
-                            // UPDATE (Pakai POST karena upload file)
+                            // UPDATE (Route URL tetap pakai idAsesi, tapi logic backend pakai idSertifikasi dari formData)
                             url = `/admin/asesi/${idAsesi}/bukti/update/${existingId}`;
                             method = 'POST';
                         } else {
@@ -390,7 +420,7 @@
                         const result = await response.json();
 
                         if (result.success) {
-                            alert('Berhasil diunggah!');
+                            // alert('Berhasil diunggah!'); // Opsional, bisa dihapus biar lebih smooth
                             location.reload(); 
                         } else {
                             throw new Error(result.message);
@@ -399,7 +429,7 @@
                         alert('Gagal: ' + error.message);
                         btnSave.innerHTML = originalText;
                         btnSave.disabled = false;
-                        localStorage.removeItem('open_' + sectionId); // Hapus state jika gagal
+                        localStorage.removeItem('open_' + sectionId);
                     }
                 });
             }
@@ -410,8 +440,13 @@
                     if(!confirm('Yakin ingin menghapus dokumen ini?')) return;
                     
                     localStorage.setItem('open_' + sectionId, 'true');
-
                     const idBukti = btnDelete.getAttribute('data-id');
+                    
+                    // Visual feedback tombol delete loading
+                    const originalDelHtml = btnDelete.innerHTML;
+                    btnDelete.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    btnDelete.disabled = true;
+
                     try {
                         const response = await fetch(`/admin/asesi/${idAsesi}/bukti/delete/${idBukti}`, {
                             method: 'DELETE',
@@ -419,13 +454,14 @@
                         });
                         const result = await response.json();
                         if (result.success) {
-                            alert('Dokumen dihapus!');
                             location.reload();
                         } else {
                             throw new Error(result.message);
                         }
                     } catch (error) {
                         alert('Gagal menghapus: ' + error.message);
+                        btnDelete.innerHTML = originalDelHtml;
+                        btnDelete.disabled = false;
                     }
                 });
             }
@@ -433,20 +469,14 @@
 
 
         // =========================================================================
-        // BAGIAN 2: LOGIKA TANDA TANGAN (TTD)
+        // BAGIAN 2: LOGIKA TANDA TANGAN (TTD) - Tetap Menggunakan ID Asesi
         // =========================================================================
-        
         const inputTtd = document.getElementById('input-ttd');
         const btnUploadTtd = document.getElementById('btn-upload-ttd');
         const btnDeleteTtd = document.getElementById('btn-delete-ttd');
-        const imgTtd = document.getElementById('img-ttd-preview');
 
-        // Klik tombol upload -> trigger input file
-        if(btnUploadTtd) {
-            btnUploadTtd.addEventListener('click', () => inputTtd.click());
-        }
+        if(btnUploadTtd) btnUploadTtd.addEventListener('click', () => inputTtd.click());
 
-        // Handle File Selected (Upload Langsung)
         if(inputTtd) {
             inputTtd.addEventListener('change', async () => {
                 if (inputTtd.files.length > 0) {
@@ -455,28 +485,27 @@
                     formData.append('file_ttd', file);
 
                     const originalHtml = btnUploadTtd.innerHTML;
-                    const isEditing = btnUploadTtd.innerText.includes('Ganti') || btnUploadTtd.innerText.includes('Edit');
+                    const isEditing = btnUploadTtd.innerText.includes('Edit') || btnUploadTtd.innerText.includes('Ganti');
                     
                     btnUploadTtd.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> ${isEditing ? 'Mengganti...' : 'Mengupload...'}`;
                     btnUploadTtd.disabled = true;
                     if(btnDeleteTtd) btnDeleteTtd.disabled = true;
 
                     try {
+                        // Tanda tangan tetap menempel ke profil Asesi (bukan per sertifikasi)
                         const response = await fetch(`/admin/asesi/${idAsesi}/ttd/store`, {
                             method: 'POST',
                             headers: { 'X-CSRF-TOKEN': csrfToken },
                             body: formData
                         });
                         const result = await response.json();
-
                         if (result.success) {
-                            alert('Tanda tangan berhasil disimpan!');
                             location.reload(); 
                         } else {
                             throw new Error(result.message);
                         }
                     } catch (error) {
-                        alert('Gagal: ' + error.message);
+                        alert('Gagal upload TTD: ' + error.message);
                         btnUploadTtd.innerHTML = originalHtml;
                         btnUploadTtd.disabled = false;
                         if(btnDeleteTtd) btnDeleteTtd.disabled = false;
@@ -486,7 +515,6 @@
             });
         }
 
-        // Handle Hapus TTD
         if(btnDeleteTtd) {
             btnDeleteTtd.addEventListener('click', async () => {
                 if(!confirm('Yakin ingin menghapus tanda tangan ini?')) return;
@@ -507,13 +535,12 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        alert('Tanda tangan dihapus!');
                         location.reload();
                     } else {
                         throw new Error(result.message);
                     }
                 } catch (error) {
-                    alert('Gagal menghapus: ' + error.message);
+                    alert('Gagal menghapus TTD: ' + error.message);
                     btnDeleteTtd.innerHTML = originalHtml;
                     btnDeleteTtd.disabled = false;
                     if(btnUploadTtd) btnUploadTtd.disabled = false;
@@ -521,6 +548,6 @@
             });
         }
     });
-</script>
+  </script>
 </body>
 </html>

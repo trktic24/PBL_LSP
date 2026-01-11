@@ -20,23 +20,36 @@ class APIBandingController extends Controller
     public function show(string $id_sertifikasi)
     {
         $user = Auth::user();
+        
+        // Cek apakah admin/superadmin
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('superadmin');
         $asesi = $user->asesi;
-
-        if (!$asesi) {
+        
+        if (!$isAdmin && !$asesi) {
             return redirect('/tracker')->with('error', 'Akses ditolak.');
         }
 
         try {
-            // 1. [PINDAH KE ATAS] Ambil Data Sertifikasi Lengkap Dulu
-            // Kita butuh data ini untuk Sidebar di halaman 'berhasil' maupun halaman 'form'
-            $dataSertifikasi = DataSertifikasiAsesi::with([
+            // 1. Ambil Data Sertifikasi Lengkap
+            $query = DataSertifikasiAsesi::with([
                     'asesi', 
                     'jadwal.asesor', 
-                    'jadwal.skema',    // Penting buat sidebar/header
+                    'jadwal.skema',
                     'jadwal.jenisTuk'
                 ])
-                ->where('id_asesi', $asesi->id_asesi) // Cek kepemilikan
-                ->findOrFail($id_sertifikasi);
+                ->where('id_data_sertifikasi_asesi', $id_sertifikasi);
+
+            // Jika bukan admin, harus milik sendiri
+            if (!$isAdmin) {
+                $query->where('id_asesi', $asesi->id_asesi);
+            }
+
+            $dataSertifikasi = $query->firstOrFail();
+            
+            // Re-assign asesi from sertifikasi if viewing as admin
+            if ($isAdmin) {
+                $asesi = $dataSertifikasi->asesi;
+            }
 
             // 2. Cek apakah sudah pernah mengisi banding
             $sudahIsi = ResponAk04::where('id_data_sertifikasi_asesi', $id_sertifikasi)->exists();

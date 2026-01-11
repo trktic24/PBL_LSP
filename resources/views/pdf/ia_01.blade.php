@@ -96,7 +96,7 @@
                             </td>
                             <td>
                                 {{-- Tampilkan Standar Industri yang diinput Asesor --}}
-                                {{ $respon->standar_industri_ia01 ?? '-' }}
+                                {{ $respon->standar_industri_ia01 ?? ($templateContent[$kuk->id_kriteria] ?? ($kuk->standar_industri_kerja ?? '-')) }}
                             </td>
                             <td class="text-center">
                                 @if($isK) <span class="check">✔</span> @endif

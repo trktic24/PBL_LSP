@@ -273,7 +273,7 @@
                             @foreach ($elemen->kriteria as $idxKuk => $kuk)
                                 @php
                                     // Cari respon dari database berdasarkan id_kriteria
-                                    $respon = $sertifikasi->responapl2ia01
+                                    $respon = $sertifikasi->responApl02Ia01
                                         ->where('id_kriteria', $kuk->id_kriteria)
                                         ->first();
                                     $responAsesi = $respon->respon_asesi_apl02 ?? null;

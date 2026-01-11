@@ -13,7 +13,7 @@ use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\IA06Controller;
 use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\IA11Controller;
+use App\Http\Controllers\Asesi\IA11\IA11Controller;
 use App\Http\Controllers\APL01Controller;
 use App\Http\Controllers\Mapa02Controller;
 use App\Http\Controllers\FrMapa01Controller;
@@ -279,6 +279,9 @@ Route::middleware('auth')->group(function () {
                 ->prefix('master/skema/detail')
                 ->group(function () {
                 Route::get('/{id_skema}', 'index')->name('skema.detail');
+                Route::get('/{id_skema}/form/{form_code}', 'showFormAsesiList')->name('skema.form.asesi_list');
+                Route::get('/{id_skema}/ak05-list', 'showAk05JadwalList')->name('skema.form.ak05_list');
+                Route::get('/{id_skema}/template-list/{form_code}', 'showTemplateJadwalList')->name('skema.template.list');
                 Route::get('/{id_skema}/add-kelompok', 'createKelompok')->name('skema.detail.add_kelompok');
                 Route::post('/{id_skema}/add-kelompok', 'storeKelompok')->name('skema.detail.store_kelompok');
                 Route::get('/kelompok/{id_kelompok}/edit', 'editKelompok')->name('skema.detail.edit_kelompok');
@@ -308,15 +311,16 @@ Route::middleware('auth')->group(function () {
                     // --- FITUR TRACKER ---
                     Route::post('/sertifikasi/{id}/verifikasi-pembayaran', 'verifikasiPembayaran')->name('verifikasi.pembayaran');
                     Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
-                    Route::get('/verifikasi-ia05/{id}', 'verifikasiIA05')->name('verifikasi.ia05');
-                    Route::get('/verifikasi-ia06/{id}', 'verifikasiIA06')->name('verifikasi.ia06');
                     Route::post('/sertifikasi/{id}/upload-sertifikat', 'uploadSertifikatAsesi')->name('sertifikasi.upload');
                     Route::get('/sertifikasi/{id}/download-sertifikat', 'downloadSertifikat')->name('sertifikasi.download');
+                    Route::post('/sertifikasi/{id}/keputusan','updateKeputusan')->name('sertifikasi.keputusan');
                 });
 
             // Asesmen
             Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');
             Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
+            Route::get('/ia05/form-c/{id}', [IA05Controller::class, 'showJawabanForm'])->name('ia05.asesor');
+            Route::get('/ia06/asesor/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
             Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
             Route::get('/asesmen/fr-ia-09/{id}', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.fr_ia_09.index');
             // Cetak
@@ -415,6 +419,10 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
                 ->name('ia09.admin.view');
+
+            // View specific asesi forms (Admin/Asesor)
+            Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
+            Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
         });
 
     // ======================================================
@@ -503,7 +511,7 @@ Route::middleware('auth')->group(function () {
     // ======================================================
     // 5. AREA ASESI
     // ======================================================
-    Route::middleware(['role:asesi'])
+    Route::middleware(['role:asesi,admin,superadmin'])
         ->prefix('asesi')
         ->name('asesi.')
         ->group(function () {
@@ -525,8 +533,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/halaman-tanda-tangan/{id_sertifikasi}', [TandaTanganAPIController::class, 'showTandaTangan'])->name('show.tandatangan');
             Route::get('/formulir-selesai', fn() => 'BERHASIL DISIMPAN!')->name('form.selesai');
 
-            // APL-02
-            Route::get('/pra-asesmen/{id_sertifikasi}', [PraasesmenController::class, 'index'])->name('apl02.view');
+            // APL-02, Jadwal, Kerahasiaan
+            Route::middleware(['role:asesi,admin,superadmin'])->group(function () {
+                Route::get('/pra-asesmen/{id_sertifikasi}', [PraasesmenController::class, 'index'])->name('apl02.view');
+                Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
+                Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
+            });
 
             // Tracker
             Route::controller(TrackerController::class)->group(function () {
@@ -535,11 +547,8 @@ Route::middleware('auth')->group(function () {
                 Route::get('/pra-asesmen-selesai/{id_sertifikasi}', 'praAsesmenSelesai')->name('pra_asesmen.selesai');
                 Route::get('/persetujuan-selesai/{id_sertifikasi}', 'persetujuanSelesai')->name('persetujuan.selesai');
                 Route::post('/daftar-jadwal', 'daftarJadwal')->name('daftar.jadwal');
+                Route::get('/sertifikat/{id}/download',  'downloadSertifikat')->name('sertifikat.download');
             });
-
-            // Jadwal & Konfirmasi
-            Route::get('/jadwal-tuk/{id_sertifikasi}', [JadwalTukAPIController::class, 'show'])->name('show.jadwal_tuk');
-            Route::get('/kerahasiaan/fr-ak01/{id_sertifikasi}', [PersetujuanKerahasiaanAPIController::class, 'show'])->name('kerahasiaan.fr_ak01');
 
             // Pembayaran
             Route::controller(PaymentController::class)->group(function () {
@@ -550,28 +559,30 @@ Route::middleware('auth')->group(function () {
             });
 
             // Asesmen Screens
-            Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');
-            Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])->name('asesmen.ia06.view');
+            Route::middleware(['role:asesi,admin,superadmin'])->group(function () {
+                Route::get('/asesmen/ia05/{id_sertifikasi}', [AsesmenPilihanGandaController::class, 'indexPilihanGanda'])->name('asesmen.ia05.view');
+                Route::get('/asesmen/ia06/{id_sertifikasi}', [AsesmenEsaiController::class, 'indexEsai'])->name('asesmen.ia06.view');
 
-            // IA-06 Form
-            Route::get('/asesmen/ia-06/{id}', [IA06Controller::class, 'asesiShow'])->name('ia06.index');
-            Route::put('/asesmen/ia-06/{id}', [IA06Controller::class, 'asesiStoreJawaban'])->name('ia06.update');
+                // IA-06 Form
+                Route::get('/asesmen/ia-06/{id}', [IA06Controller::class, 'asesiShow'])->name('ia06.index');
+                Route::put('/asesmen/ia-06/{id}', [IA06Controller::class, 'asesiStoreJawaban'])->name('ia06.update');
 
-            // IA-02, IA-03, IA-07, IA-11
-            Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');
-            Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
-            Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
-            Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
-            Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
-            Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
-            Route::put('/ia11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
-            Route::delete('/ia11/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
-            Route::get('/asesmen/fr-ia-09/{id}', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.fr_ia_09.index');
+                // IA-02, IA-03, IA-07, IA-11
+                Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');
+                Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
+                Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
+                Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
+                Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
+                Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+                Route::put('/ia11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
+                Route::delete('/ia11/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
+                Route::get('/asesmen/fr-ia-09/{id}', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.fr_ia_09.index');
 
-            // Umpan Balik & Banding
-            Route::get('/umpan-balik/{id}', [Ak03Controller::class, 'index'])->name('ak03.index');
-            Route::post('/umpan-balik/store/{id}', [Ak03Controller::class, 'store'])->name('ak03.store');
-            Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04');
+                // Umpan Balik & Banding
+                Route::get('/umpan-balik/{id}', [Ak03Controller::class, 'index'])->name('ak03.index');
+                Route::post('/umpan-balik/store/{id}', [Ak03Controller::class, 'store'])->name('ak03.store');
+                Route::get('/banding/fr-ak04/{id_sertifikasi}', [APIBandingController::class, 'show'])->name('banding.fr_ak04');
+            });
 
             // Cetak
             Route::get('/cetak/apl01/{id_data_sertifikasi}', [Apl01PdfController::class, 'generateApl01'])->name('cetak.apl01');

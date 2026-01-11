@@ -25,10 +25,10 @@
     </div>
 
     <div class="header-section">
-        <div><span class="label">Skema Sertifikasi</span>: {{ $jadwal->skema->judul_skema ?? '-' }}</div>
-        <div><span class="label">Nomor Skema</span>: {{ $jadwal->skema->kode_skema ?? '-' }}</div>
+        <div><span class="label">Skema Sertifikasi</span>: {{ $jadwal->skema->nama_skema ?? '-' }}</div>
+        <div><span class="label">Nomor Skema</span>: {{ $jadwal->skema->nomor_skema ?? '-' }}</div>
         <div><span class="label">TUK</span>: {{ $jadwal->masterTuk->nama_tuk ?? 'Tempat Kerja' }}</div>
-        <div><span class="label">Nama Asesor</span>: {{ $asesor->nama_asesor ?? '-' }}</div>
+        <div><span class="label">Nama Asesor</span>: {{ $asesor->nama_lengkap ?? '-' }}</div>
         <div><span class="label">Tanggal</span>: {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</div>
     </div>
 
@@ -90,7 +90,7 @@
                 <td width="50%">
                     <div style="margin-bottom: 50px;">
                     Nama Asesor:<br>
-                    <strong>{{ $asesor->nama_asesor }}</strong>
+                    <strong>{{ $asesor->nama_lengkap }}</strong>
                     </div>
                     @if($asesor->tanda_tangan)
                         <img src="{{ getTtdBase64($asesor->tanda_tangan) }}" style="max-height: 80px; max-width: 200px;">

@@ -11,16 +11,16 @@ use App\Models\Jadwal;
 use App\Models\Asesor;
 use App\Models\Skema;
 use App\Models\MasterTUK;
-use App\Models\JenisTuk;
+use App\Models\JenisTUK;
 use App\Models\Asesi;
 use App\Models\DataSertifikasiAsesi;
 use App\Models\Ak05;
 use App\Models\KomentarAk05;
 use App\Models\FrAk06;
-use App\Models\PoinPotensiAk07;
-use App\Models\PersyaratanModifikasiAk07;
-use App\Models\ResponPotensiAk07;
-use App\Models\ResponDiperlukanPenyesuaianAk07;
+use App\Models\PoinPotensiAK07;
+use App\Models\PersyaratanModifikasiAK07;
+use App\Models\ResponPotensiAK07;
+use App\Models\ResponDiperlukanPenyesuaianAK07;
 use App\Models\HasilPenyesuaianAK07;
 use PDF;
 
@@ -231,7 +231,7 @@ class AsesorJadwalController extends Controller
 
         $jenistukIdsInJadwal = Jadwal::where('id_asesor', $id_asesor)
             ->select('id_jenis_tuk')->distinct()->pluck('id_jenis_tuk');
-        $listjenisTuk = JenisTuk::whereIn('id_jenis_tuk', $jenistukIdsInJadwal)
+        $listjenisTuk = JenisTUK::whereIn('id_jenis_tuk', $jenistukIdsInJadwal)
             ->pluck('jenis_tuk')->filter()->sort()->values();
 
         // Kirim ke view frontend.jadwal (dashboard asesor)
@@ -252,10 +252,15 @@ class AsesorJadwalController extends Controller
         $jadwal = Jadwal::with(['skema', 'masterTuk'])
             ->findOrFail($id_jadwal);
 
-        // 2. Autorisasi asesor
-        $asesor = Asesor::where('id_user', Auth::id())->first();
-        if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
-            abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+        // 2. Autorisasi asesor (Juga izinkan Admin/Superadmin)
+        $user = Auth::user();
+        if ($user->hasRole('admin') || $user->hasRole('superadmin')) {
+            // Admin can access all schedules
+        } else {
+            $asesor = Asesor::where('id_user', $user->id_user)->first();
+            if (!$asesor || $jadwal->id_asesor != $asesor->id_asesor) {
+                abort(403, 'Anda tidak berhak mengakses jadwal ini.');
+            }
         }
 
         // 3. Status Berita Acara
@@ -283,7 +288,7 @@ class AsesorJadwalController extends Controller
                 'asesi',
                 'responBuktiAk01',
                 'lembarJawabIa05',
-                'hasilPenyesuaianAk07'
+                'hasilPenyesuaianAK07'
             ])
             ->where('id_jadwal', $id_jadwal)
             ->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
@@ -663,8 +668,8 @@ class AsesorJadwalController extends Controller
             }
         }
 
-        $masterPotensi = PoinPotensiAk07::all();
-        $masterPersyaratan = PersyaratanModifikasiAk07::with('catatanKeterangan')->get();
+        $masterPotensi = PoinPotensiAK07::all();
+        $masterPersyaratan = PersyaratanModifikasiAK07::with('catatanKeterangan')->get();
         // Cek apakah form sudah pernah diisi
         $alreadyFilled = HasilPenyesuaianAK07::where('id_data_sertifikasi_asesi', $id_sertifikasi_asesi)->exists();
 
