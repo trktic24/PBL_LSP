@@ -208,7 +208,7 @@
                     label="1) Acuan Pembanding Asesmen"
                     id="acuan_pembanding"
                     name="acuan_pembanding"
-                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Acuan_Pembanding_Asesmen ?? '' }}"
+                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Acuan_Pembanding_Asesmen ?? ($defaultValues['acuan_pembanding'] ?? '') }}"
                     :disabled="$isReadOnly"
                     type="text" />
 
@@ -216,7 +216,7 @@
                     label="2) Metode Asesmen"
                     id="metode_asesmen"
                     name="metode_asesmen"
-                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Metode_Asesmen ?? '' }}"
+                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Metode_Asesmen ?? ($defaultValues['metode_asesmen'] ?? '') }}"
                     :disabled="$isReadOnly"
                     type="text" />
 
@@ -224,7 +224,7 @@
                     label="3) Instrumen Asesmen"
                     id="instrumen_asesmen"
                     name="instrumen_asesmen"
-                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Instrumen_Asesmen ?? '' }}"
+                    value="{{ $sertifikasi->hasilPenyesuaianAk07->Instrumen_Asesmen ?? ($defaultValues['instrumen_asesmen'] ?? '') }}"
                     :disabled="$isReadOnly"
                     type="text" />
 

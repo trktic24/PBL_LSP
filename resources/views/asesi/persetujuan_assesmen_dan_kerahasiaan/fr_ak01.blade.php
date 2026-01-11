@@ -190,13 +190,10 @@
                         '<span class="text-red-500 text-xs">Data bukti tidak tersedia.</span>';
                 }
 
-                // Isi Tanda Tangan
-                if (data.tanda_tangan_valid) {
+                // Isi Tanda Tangan (menggunakan base64)
+                if (data.tanda_tangan_valid && data.asesi.tanda_tangan_base64) {
                     const img = document.createElement('img');
-                    // Gunakan route secure.file untuk path
-                    const secureUrl = `{{ route('secure.file', ['path' => 'PLACEHOLDER']) }}`.replace(
-                        'PLACEHOLDER', data.asesi.tanda_tangan);
-                    img.src = secureUrl;
+                    img.src = `data:image/png;base64,${data.asesi.tanda_tangan_base64}`;
                     img.alt = "Tanda Tangan Asesi";
                     img.className = "max-h-full max-w-full object-contain";
 
