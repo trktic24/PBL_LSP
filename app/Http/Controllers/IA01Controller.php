@@ -81,15 +81,15 @@ class IA01Controller extends Controller
 
         // Fetch Jadwal-specific template for Standar Industri
         $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
-                                    ->where('form_code', 'FR.IA.01')
-                                    ->first();
-        
+            ->where('id_jadwal', $sertifikasi->id_jadwal)
+            ->where('form_code', 'FR.IA.01')
+            ->first();
+
         if (!$template) {
             $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                        ->whereNull('id_jadwal')
-                                        ->where('form_code', 'FR.IA.01')
-                                        ->first();
+                ->whereNull('id_jadwal')
+                ->where('form_code', 'FR.IA.01')
+                ->first();
         }
         $templateContent = $template ? $template->content : [];
 
@@ -121,13 +121,13 @@ class IA01Controller extends Controller
     public function editTemplate($id_skema, $id_jadwal)
     {
         $skema = Skema::with(['kelompokPekerjaan.unitKompetensi.elemen.kriteria'])
-                      ->findOrFail($id_skema);
-        
+            ->findOrFail($id_skema);
+
         $template = MasterFormTemplate::where('id_skema', $id_skema)
-                                    ->where('id_jadwal', $id_jadwal)
-                                    ->where('form_code', 'FR.IA.01')
-                                    ->first();
-        
+            ->where('id_jadwal', $id_jadwal)
+            ->where('form_code', 'FR.IA.01')
+            ->first();
+
         $templateContent = $template ? $template->content : [];
 
         return view('Admin.master.skema.template.ia01', [
@@ -149,7 +149,7 @@ class IA01Controller extends Controller
 
         MasterFormTemplate::updateOrCreate(
             [
-                'id_skema' => $id_skema, 
+                'id_skema' => $id_skema,
                 'id_jadwal' => $id_jadwal,
                 'form_code' => 'FR.IA.01'
             ],
@@ -168,14 +168,14 @@ class IA01Controller extends Controller
     {
         $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi.elemen.kriteria'])->findOrFail($id_skema);
         $kelompok = $skema->kelompokPekerjaan->first();
-        
+
         // Mock data sertifikasi
         $sertifikasi = new \App\Models\DataSertifikasiAsesi();
         $sertifikasi->id_data_sertifikasi_asesi = 0;
-        
+
         $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
         $sertifikasi->setRelation('asesi', $asesi);
-        
+
         $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
         $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
@@ -189,8 +189,8 @@ class IA01Controller extends Controller
 
         // Fetch Jadwal-specific template (Optional for adminShow but good for consistency)
         $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                    ->where('form_code', 'FR.IA.01')
-                                    ->first(); // Just get any for master show
+            ->where('form_code', 'FR.IA.01')
+            ->first(); // Just get any for master show
         $templateContent = $template ? $template->content : [];
 
         return view('frontend.IA_01.admin_show', [
@@ -218,7 +218,6 @@ class IA01Controller extends Controller
         // 1. VALIDATION RULES
         $rules = [
             // Data Diri
-            'tuk' => 'required|in:sewaktu,tempat_kerja,mandiri',
             'tanggal_asesmen' => 'required|date',
 
             // Units (Looping Logic)
@@ -333,15 +332,15 @@ class IA01Controller extends Controller
 
         // Fetch Jadwal-specific template
         $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
-                                    ->where('form_code', 'FR.IA.01')
-                                    ->first();
-        
+            ->where('id_jadwal', $sertifikasi->id_jadwal)
+            ->where('form_code', 'FR.IA.01')
+            ->first();
+
         if (!$template) {
             $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                        ->whereNull('id_jadwal')
-                                        ->where('form_code', 'FR.IA.01')
-                                        ->first();
+                ->whereNull('id_jadwal')
+                ->where('form_code', 'FR.IA.01')
+                ->first();
         }
         $templateContent = $template ? $template->content : [];
 
@@ -387,15 +386,15 @@ class IA01Controller extends Controller
 
         // Fetch Jadwal-specific template
         $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
-                                    ->where('form_code', 'FR.IA.01')
-                                    ->first();
-        
+            ->where('id_jadwal', $sertifikasi->id_jadwal)
+            ->where('form_code', 'FR.IA.01')
+            ->first();
+
         if (!$template) {
             $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                        ->whereNull('id_jadwal')
-                                        ->where('form_code', 'FR.IA.01')
-                                        ->first();
+                ->whereNull('id_jadwal')
+                ->where('form_code', 'FR.IA.01')
+                ->first();
         }
         $templateContent = $template ? $template->content : [];
 

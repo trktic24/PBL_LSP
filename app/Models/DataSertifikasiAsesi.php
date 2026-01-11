@@ -79,6 +79,9 @@ class DataSertifikasiAsesi extends Model
         'rekomendasi1_AK06',
         'rekomendasi2_AK06',
         'rekomendasi_ia01',
+        'bk_unit_ia01',
+        'bk_elemen_ia01',
+        'bk_kuk_ia01',
         'status_sertifikasi',
     ];
 
