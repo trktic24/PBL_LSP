@@ -137,7 +137,7 @@ class Ak03Controller extends Controller
             'jadwal.skema',
             'jadwal.masterTuk',
             'jadwal.asesor',
-            'responApl2Ia01',
+            'responApl02Ia01',
             'responBuktiAk01',
             'lembarJawabIa05',
             'komentarAk05'

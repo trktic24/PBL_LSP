@@ -37,7 +37,7 @@ class PraasesmenController extends Controller
         $asesorObj = $sertifikasi->jadwal->asesor;
 
         // 2. Ambil Respon yang SUDAH ADA (History Jawaban)
-        $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
+        $existingResponses = ResponApl02Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
 
         // 3. Kirim Data ke View
         return view('asesi.pra-assesmen.praasesmen', [
