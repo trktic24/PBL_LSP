@@ -4,14 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('ia11', function (Blueprint $table) {
-            $table->string('rekomendasi')->nullable()->after('gambar_produk');
+        Schema::table('list_form', function (Blueprint $table) {
+            $table->boolean('fr_ak_07')->default(false)->after('fr_ak_06');
         });
     }
 
@@ -20,8 +21,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('ia11', function (Blueprint $table) {
-            $table->dropColumn('rekomendasi');
+        Schema::table('list_form', function (Blueprint $table) {
+            $table->dropColumn('fr_ak_07');
         });
     }
 };

@@ -31,7 +31,7 @@
         ];
         foreach ($pathsToTry as $path) {
             if (file_exists($path)) {
-                $ttdPenyusunBase64 = base64_encode(file_get_contents($path));
+                $ttdPenyusunBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($path));
                 break;
             }
         }
@@ -45,7 +45,7 @@
         ];
         foreach ($pathsToTry as $path) {
             if (file_exists($path)) {
-                $ttdValidatorBase64 = base64_encode(file_get_contents($path));
+                $ttdValidatorBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($path));
                 break;
             }
         }
@@ -77,7 +77,7 @@
                 <div>:</div>
                 <div class="h-16">
                     @if($ttdPenyusunBase64)
-                        <img src="data:image/png;base64,{{ $ttdPenyusunBase64 }}" alt="Tanda Tangan Penyusun" class="h-full object-contain">
+                        <img src="{{ $ttdPenyusunBase64 }}" alt="Tanda Tangan Penyusun" class="h-full object-contain">
                     @else
                         <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                     @endif
@@ -107,7 +107,7 @@
                 <div>:</div>
                 <div class="h-16">
                     @if($ttdValidatorBase64)
-                        <img src="data:image/png;base64,{{ $ttdValidatorBase64 }}" alt="Tanda Tangan Validator" class="h-full object-contain">
+                        <img src="{{ $ttdValidatorBase64 }}" alt="Tanda Tangan Validator" class="h-full object-contain">
                     @else
                         <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                     @endif

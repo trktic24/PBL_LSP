@@ -1,41 +1,47 @@
-# Pull Request: Refactor Database, Isolasi Templat, & Hotfix Migrasi
+# Pull Request: Implementasi FR.AK.07 & Manajemen Template
 
-## 🏗 Ringkasan Perubahan
-PR ini mencakup stabilisasi sistem di Linux, fitur isolasi templat, dan **HOTFIX** untuk mengatasi error *missing table* di server production.
+## Ringkasan Perubahan
+PR ini menambahkan fitur konfigurasi dan manajemen template untuk formulir **FR.AK.07 (Ceklis Penyesuaian Wajar dan Beralasan)**. Admin sekarang dapat mengaktifkan formulir ini pada Skema Sertifikasi dan mengatur nilai default untuk kolom isian utama, yang akan otomatis muncul saat Asesor mengisi formulir.
 
-### 🎯 Poin Utama
-1.  **HOTFIX Database**: Memisahkan pembuatan tabel `master_form_templates` ke migrasi baru agar terdeteksi di server production.
-2.  **Isolasi Templat**: Penambahan kolom `id_jadwal` agar perubahan template tidak merusak data historis.
-3.  **Linux Compatibility**: Renaming model `AK07` ke PascalCase untuk mencegah error *Class Not Found*.
-4.  **Admin Fix**: Perbaikan akses 403 pada view form dan typo relasi di controller.
-5.  **TUK Admin**: Validasi ketat & preview link embed Google Maps.
+## Fitur Utama
+1.  **Konfigurasi Skema**: Admin dapat mengaktifkan/menonaktifkan FR.AK.07 pada menu Detail Skema.
+2.  **Manajemen Template**: Admin dapat mengatur **Nilai Default** untuk:
+    *   Acuan Pembanding Asesmen
+    *   Metode Asesmen
+    *   Instrumen Asesmen
+3.  **Auto-Fill Asesor**: Saat Asesor membuka form FR.AK.07 baru, kolom-kolom tersebut akan otomatis terisi sesuai template yang diatur Admin (jika belum ada data).
 
----
+## Detail Teknis
 
-## ⚠️ PANDUAN DEPLOYMENT (PRODUCTION)
+### 1. Database Migration
+Menambahkan kolom `fr_ak_07` pada tabel `list_form` untuk menyimpan status aktif/non-aktif formulir per skema.
 
-> **Masalah**: Server production mengalami error `Table 'master_form_templates' doesn't exist` karena migrasi sebelumnya ter-skip.
-> **Solusi**: PR ini membawa migrasi baru yang **WAJIB** dijalankan.
+| File Migrasi | Deskripsi |
+| :--- | :--- |
+| `2026_01_11_153851_add_fr_ak_07_to_list_form_table.php` | Menambahkan kolom `fr_ak_07` (boolean) ke tabel `list_form`. |
 
-### Langkah Demi Langkah
-1.  **Backup Database** (Sangat disarankan).
-2.  **Pull Code Terbaru**:
-    ```bash
-    git pull origin fix/migrasi_for_server
-    ```
-3.  **Jalankan Migrasi**:
-    ```bash
-    php artisan migrate
-    ```
-    *Sistem akan otomatis mendeteksi dan membuat tabel `master_form_templates` serta menambahkan kolom-kolom baru.*
+### 2. Perubahan Kode
 
-4.  **Verifikasi**:
-    Cek halaman yang sebelumnya error: `https://pbl250107.informatikapolines.id/admin/skema/2/template/mapa01/62`.
-    Pastikan halaman sudah bisa diakses (status 200 OK).
+#### Backend
+- **Model `ListForm`**: Menambahkan `fr_ak_07` ke `$fillable`.
+- **Controller `Admin\DetailSkemaController`**:
+    - Menambahkan `FR.AK.07` ke konfigurasi `$formConfig`.
+    - Menambahkan mapping route untuk tombol "Kelola" (Template) dan "Lihat" (List Asesi).
+- **Controller `FrAk07Controller`**:
+    - `editTemplate()`: Logic untuk load view editor template.
+    - `storeTemplate()`: Logic untuk menyimpan nilai default ke tabel `master_form_templates`.
+    - `create()` (Frontend): Logic untuk memuat `defaultValues` dari template dan mengirimnya ke view form.
 
----
+#### Frontend / View
+- **`resources/views/Admin/master/skema/template/ak07.blade.php`** (BARU): Interface untuk Admin mengubah nilai default template.
+- **`resources/views/frontend/AK_07/FR_AK_07.blade.php`**: Update form untuk menampilkan nilai default jika data database masih kosong.
 
-## 📂 Detail Teknis (Untuk Reviewer)
+## Checkpoint Verifikasi
+- [ ] Buka **Admin > Master Skema > Detail Skema**.
+- [ ] Pastikan ada baris **FR.AK.07 - Ceklis Penyesuaian Wajar dan Beralasan**.
+- [ ] Klik tombol **Kelola**, pastikan bisa menyimpan nilai default (Acuan, Metode, Instrumen).
+- [ ] Login sebagai **Asesor**, buka jadwal asesmen, pilih menu FR.AK.07.
+- [ ] Pastikan form otomatis terisi dengan nilai default yang diset oleh Admin.
 
 ### 1. Migrasi & Database
 | File | Aksi | Alasan |
@@ -56,8 +62,20 @@ PR ini mencakup stabilisasi sistem di Linux, fitur isolasi templat, dan **HOTFIX
     - **Model**: Menambahkan relasi `ia03` dan `ia11` pada `DataSertifikasiAsesi` yang sebelumnya referensi methodnya tidak ada (fix Internal Server Error).
     - **View**: Update `asesor_assessment_detail.blade.php` untuk menampilkan semua item IA (01-11) dengan logika status yang konsisten.
 
+### 4. Admin Asesor UI Enhancements
+-   **Admin Asesi List**: Updated Tracker link, added links to Schema and Schedule details.
+-   **View Refactor**: Separated "Skema" and "Jadwal" into distinct columns in Tinjauan and Tracker views.
+-   **UX**: Added time range to Schedule column.
+
 ### 📋 Checklist Verifikasi
 - [x] **Hotfix Valid**: Tabel `master_form_templates` berhasil dibuat di lokal (fresh & existing).
 - [x] **Linux Ready**: Tidak ada error *Class not found*.
 - [x] **Features**: Isolasi template berjalan, TUK map preview muncul.
 - [x] **Tracker Sync**: Admin bisa melihat status semua form IA (01-11) sesuai kondisi asesor.
+- [x] **UI/UX**: Check Admin Asesi List links and separated columns in Tinjauan/Tracker.
+
+## Catatan Deployment
+- Jalankan migrasi baru:
+  ```bash
+  php artisan migrate
+  ```

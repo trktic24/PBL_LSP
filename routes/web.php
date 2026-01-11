@@ -63,7 +63,6 @@ use App\Http\Controllers\IA07Controller;
 use App\Http\Controllers\IA08Controller;
 use App\Http\Controllers\IA09Controller;
 use App\Http\Controllers\IA10Controller;
-use App\Http\Controllers\Asesi\IA11\IA11Controller;
 use App\Http\Controllers\Asesi\IA03\IA03Controller;
 use App\Http\Controllers\FrIa04aController;
 
@@ -285,11 +284,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/FR_IA_10/{id}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
         Route::post('/FR_IA_10/store', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
-        // IA-11
-        Route::get('/FR_IA_11/{id}', [IA11Controller::class, 'show'])->name('ia11.show');
-        Route::post('/FR_IA_11/store', [IA11Controller::class, 'store'])->name('ia11.store');
-        Route::put('/FR_IA_11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
-
         // FRIA04_Asesor
         Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
         Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
@@ -383,6 +377,10 @@ Route::middleware('auth')->group(function () {
                 Route::get('/ak06/{id_jadwal}', [\App\Http\Controllers\FrAk06Controller::class, 'editTemplate'])->name('ak06');
                 Route::post('/ak06/store/{id_jadwal}', [\App\Http\Controllers\FrAk06Controller::class, 'storeTemplate'])->name('ak06.store');
 
+                // AK forms (AK.07)
+                Route::get('/ak07/{id_jadwal}', [\App\Http\Controllers\FrAk07Controller::class, 'editTemplate'])->name('ak07');
+                Route::post('/ak07/store/{id_jadwal}', [\App\Http\Controllers\FrAk07Controller::class, 'storeTemplate'])->name('ak07.store');
+
                 // MAPA forms
                 Route::get('/mapa01/{id_jadwal}', [FrMapa01Controller::class, 'editTemplate'])->name('mapa01');
                 Route::post('/mapa01/store/{id_jadwal}', [FrMapa01Controller::class, 'storeTemplate'])->name('mapa01.store');
@@ -448,7 +446,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/ia-04/cetak-pdf/{id_sertifikasi}', [FrIa04aController::class, 'cetakPDF'])->name('ia04.cetak_pdf');
         Route::get('/ia-08/cetak-pdf/{id_sertifikasi}', [IA08Controller::class, 'cetakPDF'])->name('ia08.cetak_pdf');
         Route::get('/ia-09/cetak-pdf/{id_sertifikasi}', [IA09Controller::class, 'cetakPDF'])->name('ia09.cetak_pdf');
-        Route::get('/ia-11/cetak-pdf/{id_sertifikasi}', [IA11Controller::class, 'cetakPDF'])->name('ia11.cetak_pdf');
     });
     // Legacy mapping (just in case)
     Route::get('/mapa02/cetak/{id}', [Mapa02Controller::class, 'cetakPDF']);

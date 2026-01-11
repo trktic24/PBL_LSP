@@ -211,7 +211,7 @@
                                             $ttdAsesiBase64 = getTtdBase64($data->asesi->tanda_tangan ?? null, null, 'asesi');
                                         @endphp
                                         @if($ttdAsesiBase64)
-                                        <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" 
+                                        <img src="{{ $ttdAsesiBase64 }}" 
                                              class="max-w-full max-h-full object-contain mx-auto"
                                              alt="Tanda Tangan Asesi">
                                         @else

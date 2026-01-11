@@ -11,6 +11,8 @@ use App\Models\ResponPotensiAK07;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 
 class FrAk07Controller extends Controller
 {
@@ -111,6 +113,22 @@ class FrAk07Controller extends Controller
             $isReadOnly = true;
         }
 
+        // [NEW] Load Default Values from MasterFormTemplate
+        $template = MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal->id_skema)
+            ->where('id_jadwal', $dataSertifikasi->id_jadwal)
+            ->where('form_code', 'FR.AK.07')
+            ->first();
+
+        // Fallback to generic template if no specific schedule template exists
+        if (!$template) {
+            $template = MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal->id_skema)
+                ->whereNull('id_jadwal')
+                ->where('form_code', 'FR.AK.07')
+                ->first();
+        }
+
+        $defaultValues = $template ? $template->content : [];
+
         return view('frontend.AK_07.FR_AK_07', [
             'sertifikasi' => $dataSertifikasi,
             'masterPotensi' => $poinPotensi,
@@ -120,6 +138,7 @@ class FrAk07Controller extends Controller
             'asesor' => $dataSertifikasi->jadwal->asesor ?? null,
             'jadwal' => $dataSertifikasi->jadwal ?? null,
             'isReadOnly' => $isReadOnly,
+            'defaultValues' => $defaultValues, // Pass defaults to view
         ]);
     }
 
@@ -250,5 +269,46 @@ class FrAk07Controller extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
+    }
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.AK.07')
+                                    ->first();
+        
+        $content = $template ? $template->content : [
+            'acuan_pembanding' => '',
+            'metode_asesmen' => '',
+            'instrumen_asesmen' => ''
+        ];
+
+        return view('Admin.master.skema.template.ak07', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'content' => $content
+        ]);
+    }
+
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'content' => 'required|array',
+            'content.acuan_pembanding' => 'nullable|string',
+            'content.metode_asesmen' => 'nullable|string',
+            'content.instrumen_asesmen' => 'nullable|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.AK.07'
+            ],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat AK-07 berhasil diperbarui.');
     }
 }

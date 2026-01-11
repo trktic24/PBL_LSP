@@ -234,7 +234,7 @@
                                             $ttdAsesiBase64 = getTtdBase64($data->asesi->tanda_tangan ?? null, null, 'asesi');
                                         @endphp
                                         @if($ttdAsesiBase64)
-                                        <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}"
+                                        <img src="{{ $ttdAsesiBase64 }}"
                                             class="w-full h-full object-contain p-1 hover:scale-110 transition-transform duration-200 cursor-pointer"
                                             alt="TTD"
                                             onclick="window.open(this.src, '_blank')">
