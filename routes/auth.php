@@ -45,7 +45,7 @@ use App\Http\Controllers\Admin\AsesiProfileController;
 use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
 use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
 use App\Http\Controllers\Admin\AsesorProfileController;
-use App\Http\Controllers\Asesor\IA11\IA11Controller;
+
 
 
 // ======================================================
@@ -185,15 +185,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
 
-    // FR.IA.11
-    Route::middleware(['role:admin,asesor'])->group(function () {
-    Route::get('/ia11/{id_data_sertifikasi_asesi}',[IA11Controller::class, 'show'])->name('ia11.show');
-    Route::post('/ia11',[IA11Controller::class, 'store'])->name('ia11.store');
-    Route::put('/ia11/{id_ia11}',[IA11Controller::class, 'update'])->name('ia11.update');
-    // CETAK PDF
-    Route::get('/ia11/{id_data_sertifikasi_asesi}/cetak-pdf',[IA11Controller::class, 'cetakPDF'])->name('ia11.cetak_pdf');
 
-    });
 
 
     // APL-01 & MAPA
@@ -437,7 +429,7 @@ Route::middleware('auth')->group(function () {
                 ->name('ia09.admin.view');
 
             // ✅ FR.IA.11 (TIDAK ADA DUPLIKAT)
-            Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
+
         });
 
     // ======================================================
@@ -583,10 +575,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
             Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'asesiIndex'])->name('ia03.index');
             Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
-            Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
-            Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
-            Route::put('/ia11/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
-            Route::delete('/ia11/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
+
             Route::get('/asesmen/fr-ia-09/{id}', [AssessmenFRIA09Controller::class, 'index'])->name('asesmen.fr_ia_09.index');
 
                 // Umpan Balik & Banding
