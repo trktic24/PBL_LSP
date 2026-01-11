@@ -30,7 +30,7 @@
     if ($asesi && $ttdAsesi) {
         $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($ttdAsesi));
         if (file_exists($pathTtdAsesi)) {
-            $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+            $ttdAsesiBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pathTtdAsesi));
         }
     }
 
@@ -43,7 +43,7 @@
             $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($ttdAsesor));
         }
         if (file_exists($pathTtdAsesor)) {
-            $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+            $ttdAsesorBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pathTtdAsesor));
         }
     }
 @endphp
@@ -70,7 +70,7 @@
                     <div>:</div>
                     <div class="h-16">
                         @if($ttdAsesiBase64)
-                            <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi" class="h-full object-contain">
+                            <img src="{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi" class="h-full object-contain">
                         @else
                             <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                         @endif
@@ -105,7 +105,7 @@
                     <div>:</div>
                     <div class="h-16">
                         @if($ttdAsesorBase64)
-                            <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor" class="h-full object-contain">
+                            <img src="{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor" class="h-full object-contain">
                         @else
                             <div class="border-b border-gray-300 h-full w-32 flex items-end text-xs text-gray-400 pb-1">Belum ada TTD</div>
                         @endif

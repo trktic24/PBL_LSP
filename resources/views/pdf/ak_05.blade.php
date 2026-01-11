@@ -34,17 +34,17 @@
 
     <div style="margin-bottom: 10px; font-weight: bold;">Aspek Negatif dan Positif dalam Asesmen</div>
     <div style="border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 15px;">
-        {{ $listAsesi->first()->komentarAk05->Ak05->aspek_negatif_positif ?? '-' }}
+        {{ $listAsesi->first()?->komentarAk05?->Ak05?->aspek_negatif_positif ?? '-' }}
     </div>
 
     <div style="margin-bottom: 10px; font-weight: bold;">Pencatatan Penolakan Hasil Asesmen</div>
     <div style="border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 15px;">
-        {{ $listAsesi->first()->komentarAk05->Ak05->penolakan_hasil_asesmen ?? '-' }}
+        {{ $listAsesi->first()?->komentarAk05?->Ak05?->penolakan_hasil_asesmen ?? '-' }}
     </div>
 
     <div style="margin-bottom: 10px; font-weight: bold;">Saran Perbaikan (Asesmen Berikutnya)</div>
     <div style="border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 15px;">
-        {{ $listAsesi->first()->komentarAk05->Ak05->saran_perbaikan ?? '-' }}
+        {{ $listAsesi->first()?->komentarAk05?->Ak05?->saran_perbaikan ?? '-' }}
     </div>
 
     <div style="margin-bottom: 10px; font-weight: bold;">Rekomendasi</div>

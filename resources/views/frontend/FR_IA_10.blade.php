@@ -235,7 +235,7 @@
                                     $ttdAsesorBase64 = getTtdBase64($asesi->asesor->tanda_tangan ?? null, $asesi->asesor->id_user ?? $asesi->asesor->user_id ?? null, 'asesor');
                                 @endphp
                                 @if($ttdAsesorBase64)
-                                <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" 
+                                <img src="{{ $ttdAsesorBase64 }}" 
                                     alt="Tanda Tangan Asesor" 
                                     class="h-20 w-auto object-contain p-1 hover:scale-110 transition cursor-pointer">
                                 @else

@@ -45,6 +45,8 @@ use App\Http\Controllers\Admin\AsesiProfileController;
 use App\Http\Controllers\Asesi\Pdf\Apl01PdfController;
 use App\Http\Controllers\Asesi\Pdf\Apl02PdfController;
 use App\Http\Controllers\Admin\AsesorProfileController;
+use App\Http\Controllers\Asesor\IA11\IA11Controller;
+
 
 // ======================================================
 // 4. CONTROLLERS ASESI
@@ -182,6 +184,17 @@ Route::middleware('auth')->group(function () {
     // FR.IA.10
     Route::get('/fr-ia-10/{id_asesi}', [IA10Controller::class, 'create'])->name('fr-ia-10.create');
     Route::post('/fr-ia-10', [IA10Controller::class, 'store'])->name('fr-ia-10.store');
+
+    // FR.IA.11
+    Route::middleware(['role:admin,asesor'])->group(function () {
+    Route::get('/ia11/{id_data_sertifikasi_asesi}',[IA11Controller::class, 'show'])->name('ia11.show');
+    Route::post('/ia11',[IA11Controller::class, 'store'])->name('ia11.store');
+    Route::put('/ia11/{id_ia11}',[IA11Controller::class, 'update'])->name('ia11.update');
+    // CETAK PDF
+    Route::get('/ia11/{id_data_sertifikasi_asesi}/cetak-pdf',[IA11Controller::class, 'cetakPDF'])->name('ia11.cetak_pdf');
+
+    });
+
 
     // APL-01 & MAPA
     Route::get('/mapa01/show/{id}', [FrMapa01Controller::class, 'index'])->name('mapa01.index');

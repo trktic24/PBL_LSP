@@ -138,7 +138,7 @@ class AssessmenFRIA04tController extends Controller
                 $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
             }
             if (file_exists($pathTtdAsesor)) {
-                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+                $ttdAsesorBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pathTtdAsesor));
             }
         }
 
@@ -146,7 +146,7 @@ class AssessmenFRIA04tController extends Controller
         if ($asesi && $asesi->tanda_tangan) {
             $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($asesi->tanda_tangan));
             if (file_exists($pathTtdAsesi)) {
-                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+                $ttdAsesiBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pathTtdAsesi));
             }
         }
 
@@ -350,7 +350,7 @@ class AssessmenFRIA04tController extends Controller
                 $pathTtdAsesor = storage_path('app/private_uploads/asesor_docs/' . basename($asesor->tanda_tangan));
             }
             if (file_exists($pathTtdAsesor)) {
-                $ttdAsesorBase64 = base64_encode(file_get_contents($pathTtdAsesor));
+                $ttdAsesorBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pathTtdAsesor));
             }
         }
 
@@ -358,7 +358,7 @@ class AssessmenFRIA04tController extends Controller
         if ($asesi && $asesi->tanda_tangan) {
             $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($asesi->tanda_tangan));
             if (file_exists($pathTtdAsesi)) {
-                $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
+                $ttdAsesiBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pathTtdAsesi));
             }
         }
 

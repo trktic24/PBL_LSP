@@ -306,7 +306,7 @@
                                 $ttdAsesiBase64 = getTtdBase64($dataIA09['ttd']['asesi'] ?? null, null, 'asesi');
                             @endphp
                             @if ($ttdAsesiBase64) 
-                            <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi" class="max-h-full max-w-full object-contain p-1"> 
+                            <img src="{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi" class="max-h-full max-w-full object-contain p-1"> 
                             @else 
                             Area Tanda Tangan Asesi (Belum Ditandatangani) 
                             @endif 
@@ -343,7 +343,7 @@
                                 $ttdAsesorBase64 = getTtdBase64($dataIA09['ttd']['asesor'] ?? null, null, 'asesor');
                             @endphp
                             @if ($ttdAsesorBase64) 
-                            <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor" class="max-h-full max-w-full object-contain p-1"> 
+                            <img src="{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor" class="max-h-full max-w-full object-contain p-1"> 
                             @else 
                             Area Tanda Tangan Asesor (Belum Ditandatangani) 
                             @endif 
@@ -379,7 +379,7 @@
                                     $ttdPenyusunBase64 = getTtdBase64($dataIA09['penyusun']['ttd'] ?? null, null, 'other');
                                 @endphp
                                 @if ($ttdPenyusunBase64) 
-                                    <img src="data:image/png;base64,{{ $ttdPenyusunBase64 }}" alt="TTD Penyusun" class="max-h-full max-w-full object-contain p-1"> 
+                                    <img src="{{ $ttdPenyusunBase64 }}" alt="TTD Penyusun" class="max-h-full max-w-full object-contain p-1"> 
                                 @else 
                                     <span class="text-gray-500">
                                         @if(isset($dataIA09['penyusun']['tanggal']))
@@ -421,7 +421,7 @@
                                     $ttdValidatorBase64 = getTtdBase64($dataIA09['validator']['ttd'] ?? null, null, 'other');
                                 @endphp
                                 @if ($ttdValidatorBase64) 
-                                    <img src="data:image/png;base64,{{ $ttdValidatorBase64 }}" alt="TTD Validator" class="max-h-full max-w-full object-contain p-1"> 
+                                    <img src="{{ $ttdValidatorBase64 }}" alt="TTD Validator" class="max-h-full max-w-full object-contain p-1"> 
                                 @else 
                                     <span class="text-gray-500">
                                         @if(isset($dataIA09['validator']['tanggal_validasi']))
