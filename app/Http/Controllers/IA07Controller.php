@@ -211,7 +211,7 @@ class IA07Controller extends Controller
         // 4. Render PDF
         $pdf = Pdf::loadView('pdf.ia_07', [
             'sertifikasi' => $sertifikasi,
-            'daftar_pertanyaan' => $daftar_pertanyaan,
+            'daftar_pertanyaan' => $ia07,
             'unitKompetensi' => $unitKompetensi
         ]);
 

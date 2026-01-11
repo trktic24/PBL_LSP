@@ -26,6 +26,7 @@ class IA02Controller extends Controller
             'asesi.user',
             'jadwal.masterTuk',
             'jadwal.skema.asesor',
+            'jadwal.asesor', // Needed for asesiasesor signature component
             // Kita coba panggil unitKompetensi via skema (sesuai perbaikan model sebelumnya)
             // Jika masih error, codingan di bawah akan menghandle manualnya.
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'

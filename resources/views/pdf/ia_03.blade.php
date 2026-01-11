@@ -122,10 +122,22 @@
             <tr>
                 <td width="50%" class="text-center">
                     Asesi,<br><br><br><br>
+                    @if($sertifikasi->asesi->tanda_tangan)
+                        <img src="{{ getTtdBase64($sertifikasi->asesi->tanda_tangan) }}" style="width: 100px; height: auto;">
+                        <br>
+                    @else
+                        <br><br><br><br>
+                    @endif
                     <b>{{ $sertifikasi->asesi->nama_lengkap }}</b>
                 </td>
                 <td width="50%" class="text-center">
                     Asesor,<br><br><br><br>
+                    @if($sertifikasi->jadwal->asesor->tanda_tangan)
+                        <img src="{{ getTtdBase64($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="width: 100px; height: auto;">
+                        <br>
+                    @else
+                        <br><br><br><br>
+                    @endif
                     <b>{{ $sertifikasi->jadwal->asesor->nama_asesor ?? '...................' }}</b>
                 </td>
             </tr>
