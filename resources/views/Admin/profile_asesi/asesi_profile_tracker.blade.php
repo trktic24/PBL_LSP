@@ -3,7 +3,18 @@
 
 @php
 // --- 1. AMBIL DATA (Logic Admin) ---
-$sertifikasi = $sertifikasiAcuan ?? $asesi->dataSertifikasi->sortByDesc('created_at')->first();
+$urlSertifikasiId = request('sertifikasi_id');
+
+if (isset($sertifikasiAcuan)) {
+    // Jika controller mengirim data spesifik
+    $sertifikasi = $sertifikasiAcuan;
+} elseif ($urlSertifikasiId) {
+    // Jika ada parameter di URL, cari data tersebut
+    $sertifikasi = $asesi->dataSertifikasi->where('id_data_sertifikasi_asesi', $urlSertifikasiId)->first();
+} else {
+    // Fallback: Ambil yang paling baru (default behavior lama)
+    $sertifikasi = $asesi->dataSertifikasi->sortByDesc('created_at')->first();
+}
 
 // --- 2. DEFINISI LEVEL ---
 $LVL_DAFTAR_SELESAI = 10;
@@ -342,7 +353,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                 {{-- KONDISI 2: DITOLAK --}}
                                 @elseif ($isRejected)
-                                <p class="text-xs font-semibold text-red-600">Pembayaran Ditolak</p>
+                                <p class="text-xs font-medium text-red-600">Pembayaran Ditolak</p>
                                 <p class="text-xs text-gray-500 mb-2">Bukti pembayaran tidak valid atau tidak sesuai.</p>
 
                                 <div class="flex flex-wrap items-center gap-2 mt-2">
@@ -512,7 +523,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                 {{-- KONDISI 1: DITOLAK OLEH ASESOR --}}
                                 @elseif ($statusStep3 == 'ditolak')
-                                <p class="text-xs text-red-600 font-semibold">Tidak Terverifikasi</p>
+                                <p class="text-xs text-red-600 font-medium">Tidak Terverifikasi</p>
                                 <p class="text-xs text-gray-500 mb-2">Asesmen mandiri ditolak oleh Asesor.</p>
 
                                 <div class="flex gap-2 mt-2">
@@ -886,7 +897,7 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
 
                                 // 8. Tentukan Status Kompetensi
                                 $isKompeten = ($hasilDB == 'kompeten');
-                                $isBelumKompeten = ($hasilDB == 'belum kompeten' || $hasilDB == 'tidak_kompeten') || $isAutoFail;
+                                $isBelumKompeten = ($hasilDB == 'belum kompeten' || $hasilDB == 'tidak_kompeten');
 
                                 // 9. LOGIKA ONGOING (Sedang Dikerjakan)
                                 $isOngoing = $chainValid && $hasStarted && !$isStatusSelesai && !$hasResult && !$isAutoFail;
@@ -962,7 +973,9 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                     @elseif ($isKompeten)
                                     <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Kompeten</span>
                                     @elseif ($isStatusSelesai)
-                                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Selesai (Menunggu Hasil)</span>
+                                    <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold uppercase tracking-wide">Selesai (Menunggu Hasil)</span>
+                                    @elseif ($isAutoFail) 
+                                    <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold uppercase tracking-wide">Selesai (Menunggu Hasil)</span>
                                     @elseif ($isOngoing)
                                     <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide">Sedang Berlangsung</span>
                                     @elseif ($isWaitingSchedule)
@@ -991,11 +1004,12 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                     </div>
                                 </div>
                                 @elseif ($isAutoFail)
-                                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg text-sm flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-lg text-sm flex items-start gap-3">
+                                    <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        {{-- Ikon Jam / Info --}}
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    <div><span class="font-bold">Waktu Habis.</span> Waktu pengerjaan telah berakhir.</div>
+                                    <div><span class="font-bold">Waktu Habis.</span> Waktu pengerjaan telah berakhir, Menunggu penilaian dari asesor.</div>
                                 </div>
                                 @elseif ($isBelumKompeten)
                                 <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg text-sm flex items-start gap-3">
@@ -1344,117 +1358,201 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                         {{-- ============================================= --}}
                         <li class="relative flex items-center md:items-start" x-data>
                             @php
-                            // 1. Ambil Status & File
-                            $statusFinal = $sertifikasi->status_sertifikasi;
-                            $fileSertifikat = $sertifikasi->sertifikat;
+                                // 1. Ambil Status & File
+                                $statusFinal = $sertifikasi->status_sertifikasi;
+                                $fileSertifikat = $sertifikasi->sertifikat;
+                                $hasilAsesmen = $hasilAK02; 
 
-                            // 2. Boolean Logic
-                            $isLolos = ($statusFinal == 'direkomendasikan');
-                            $isGagal = ($statusFinal == 'tidak_direkomendasikan');
-                            $hasFile = !empty($fileSertifikat);
+                                // 2. Cek Status Keputusan
+                                $isDirekomendasikan = ($statusFinal == 'direkomendasikan');
+                                $isTidakDirekomendasikan = ($statusFinal == 'tidak_direkomendasikan');
+                                $hasDecision = $isDirekomendasikan || $isTidakDirekomendasikan;
 
-                            // 3. Menunggu Keputusan
-                            $isWaiting = !$isLolos && !$isGagal;
+                                // 3. Status Kompetensi Asesor
+                                $hasResult = !empty($hasilAsesmen);
+                                $isKompeten = ($hasilAsesmen == 'kompeten');
+                                $isBelumKompeten = ($hasilAsesmen == 'belum kompeten' || $hasilAsesmen == 'tidak_kompeten');
+
+                                // 4. File Exists?
+                                $hasFile = !empty($fileSertifikat);
                             @endphp
 
-                            {{-- BAGIAN KIRI: ICON & TIMELINE --}}
+                            {{-- BAGIAN KIRI: ICON --}}
                             <div class="relative flex-shrink-0 ml-1 mr-4 md:mr-6 z-10">
-
-                                {{-- ICON SVG (Statis Abu-abu) --}}
-                                <div class="hidden md:flex w-12 h-12 rounded-lg items-center justify-center bg-gray-100">
+                                
+                                {{-- ICON UTAMA --}}
+                                <div class="hidden md:flex w-12 h-12 rounded-lg items-center justify-center bg-gray-100 relative">
                                     <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.462 48.462 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c.317.053.626.111.928.174m-15.356 0c.317.053.626.111.928.174m13.5 0L12 12m0 0L6.25 4.97M12 12v8.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M12 12h8.25m-8.25 0H3.75" />
                                     </svg>
+
+                                    {{-- BADGE INDICATOR --}}
+                                    @if ($isDirekomendasikan)
+                                        <div class="hidden md:block">
+                                            {!! renderCheckmark() !!}
+                                        </div>
+                                    @elseif ($isTidakDirekomendasikan)
+                                        <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
+                                            <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 {{-- BULATAN MOBILE --}}
                                 <div class="md:hidden flex items-center justify-center w-9 h-9 bg-white rounded-full border-4 border-gray-100 shadow-sm z-20 relative">
-                                    <div class="w-4 h-4 rounded-full {{ $isLolos ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : ($isGagal ? 'bg-red-500' : 'bg-gray-300') }}"></div>
+                                    <div class="w-4 h-4 rounded-full {{ $isDirekomendasikan ? 'bg-green-500' : ($isTidakDirekomendasikan ? 'bg-red-500' : 'bg-gray-300') }}"></div>
                                 </div>
-
-                                {{-- BADGE INDICATOR (Desktop) --}}
-                                @if ($isGagal)
-                                <div class="hidden md:block absolute -top-1.5 -left-1.5 z-20 bg-white rounded-full">
-                                    <div class="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                @elseif ($isLolos)
-                                <div class="hidden md:block">{!! renderCheckmark() !!}</div>
-                                @endif
                             </div>
 
                             {{-- BAGIAN KANAN: KONTEN KARTU --}}
-                            <div class="{{ $responsiveCardClass }}">
-                                <h3 class="{{ ($isLolos || $isGagal) ? $titleClassEnabled : $titleClassDisabled }}">Keputusan Komite</h3>
+                            <div class="{{ $responsiveCardClass }} w-full">
+                                
+                                {{-- JUDUL --}}
+                                <h3 class="{{ ($hasResult || $hasDecision) ? $titleClassEnabled : $titleClassDisabled }}">Keputusan Komite</h3>
 
-                                @if ($isLolos)
-                                {{-- 1. SUKSES --}}
-                                <span class="{{ $statusClassSelesai }}">Kompeten - Direkomendasikan Menerima</span>
+                                @if (!$hasDecision)
+                                    {{-- CASE 1: BELUM ADA KEPUTUSAN FINAL --}}
+                                    
+                                    <div>
+                                        @if (!$hasResult)
+                                            {{-- CASE 1.A: BELUM ADA NILAI DARI ASESOR --}}
+                                            <p class="{{ $statusClassTunggu }}">Menunggu Keputusan</p>
+                                        @else
+                                            {{-- CASE 1.B: SUDAH ADA NILAI, MENUNGGU KEPUTUSAN --}}
+                                            @if ($isKompeten)
+                                                <span class="{{ $statusClassSelesai }}">Kompeten</span>
+                                            @elseif ($isBelumKompeten)
+                                                <p class="text-xs text-red-600 font-medium">Belum Kompeten</p>
+                                            @endif
 
-                                {{-- Tambahkan state 'isUploading' di x-data --}}
-                                <div class="flex flex-wrap gap-2 items-center" x-data="{ isUploading: false }">
+                                            {{-- BUTTON KEPUTUSAN --}}
+                                            <div class="flex flex-wrap gap-2 mt-2">
+                                                {{-- Tombol 1: Direkomendasikan --}}
+                                                <form action="{{ route('admin.sertifikasi.keputusan', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" method="POST" class="m-0">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="direkomendasikan">
+                                                    <button type="submit" 
+                                                        class="{{ $btnGreen }}"
+                                                        onclick="return confirm('Apakah Anda yakin merekomendasikan asesi ini menerima sertifikat?');">
+                                                        <i class="fas fa-check-circle mr-1.5"></i> Direkomendasikan
+                                                    </button>
+                                                </form>
 
-                                    {{-- [TOMBOL 1] LIHAT SERTIFIKAT (KUNING) --}}
-                                    @if($hasFile)
-                                        <a href="{{ route('admin.sertifikasi.download', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}"
-                                        target="_blank"
-                                        class="{{ $btnYellow }} inline-flex items-center justify-center">
-                                            <i class="fas fa-certificate mr-2"></i> Sertifikat
-                                        </a>
-                                    @endif
+                                                {{-- Tombol 2: Tidak Direkomendasikan --}}
+                                                <form action="{{ route('admin.sertifikasi.keputusan', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" method="POST" class="m-0">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="tidak_direkomendasikan">
+                                                    <button type="submit" 
+                                                        class="{{ $btnBase }} bg-red-600 text-white hover:bg-red-700 shadow-sm"
+                                                        onclick="return confirm('Apakah Anda yakin TIDAK merekomendasikan asesi ini?');">
+                                                        <i class="fas fa-times-circle mr-1.5"></i> Tidak Direkomendasikan
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
+                                    </div>
 
-                                    {{-- [TOMBOL 2] FORM UPLOAD --}}
-                                    {{-- Tambahkan ID unik pada form: id="formUploadSertifikat" --}}
-                                    <form id="formUploadSertifikat"
-                                        action="{{ route('admin.sertifikasi.upload', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
-                                        method="POST" 
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        
-                                        {{-- INPUT FILE --}}
-                                        {{-- LOGIC UBAH: --}}
-                                        {{-- 1. Set isUploading = true --}}
-                                        {{-- 2. Paksa submit via document.getElementById --}}
-                                        <input type="file" 
-                                            name="sertifikat" 
-                                            x-ref="fileInput" 
-                                            style="display:none" 
-                                            accept="application/pdf"
-                                            @change="isUploading = true; document.getElementById('formUploadSertifikat').submit();">
+                                @else
+                                    {{-- CASE 2: SUDAH ADA KEPUTUSAN FINAL --}}
+                                    
+                                    <div>
+                                        {{-- STATUS TEKS FINAL --}}
+                                        @if ($isDirekomendasikan)
+                                            @if ($isKompeten)
+                                                <p class="text-xs text-green-600 font-medium">Kompeten - Direkomendasikan Menerima Sertifikat</p>
+                                            @elseif ($isBelumKompeten)
+                                                <p class="text-xs text-green-600 font-medium"><span class="text-red-600">Belum Kompeten</span> - Direkomendasikan Menerima Sertifikat</p>
+                                            @else
+                                                <p class="text-xs text-green-600 font-medium">Direkomendasikan Menerima Sertifikat</p>
+                                            @endif
 
-                                        {{-- TOMBOL TRIGGER --}}
-                                        <button type="button"
-                                                @click="$refs.fileInput.click()"
-                                                :disabled="isUploading" 
-                                                class="{{ $btnBlue }} inline-flex items-center justify-center transition disabled:opacity-70 disabled:cursor-wait">
+                                        @elseif ($isTidakDirekomendasikan)
+                                            @if ($isKompeten)
+                                                <p class="text-xs text-red-600 font-medium"><span class="text-green-600">Kompeten</span> - Tidak Direkomendasikan</p>
+                                            @elseif ($isBelumKompeten)
+                                                <p class="text-xs text-red-600 font-medium">Belum Kompeten - Tidak Direkomendasikan</p>
+                                            @else
+                                                <p class="text-xs text-red-600 font-medium">Tidak Direkomendasikan</p>
+                                            @endif
+                                        @endif
+
+                                        {{-- CONTAINER TOMBOL AKSI (UPLOAD + BATAL SEJAJAR) --}}
+                                        <div class="mt-3 flex flex-wrap gap-2 items-center" x-data="{ isUploading: false }">
                                             
-                                            {{-- TAMPILAN NORMAL --}}
-                                            <span x-show="!isUploading" class="inline-flex items-center">
-                                                <i class="fas {{ $hasFile ? 'fa-sync-alt' : 'fa-upload' }} mr-2"></i>
-                                                {{ $hasFile ? 'Ganti Sertifikat' : 'Upload Sertifikat' }}
-                                            </span>
+                                            {{-- GROUP 1: UPLOAD/DOWNLOAD (Hanya jika Direkomendasikan) --}}
+                                            @if ($isDirekomendasikan)
+                                                
+                                                {{-- A. TOMBOL LIHAT (Kuning) --}}
+                                                @if($hasFile)
+                                                    <a href="{{ route('admin.sertifikasi.download', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi, 'mode' => 'preview', 't' => time()]) }}"
+                                                    target="_blank"
+                                                    class="{{ $btnYellow }}">
+                                                        <i class="fas fa-certificate mr-2"></i> Sertifikat
+                                                    </a>
+                                                @endif
 
-                                            {{-- TAMPILAN LOADING --}}
-                                            <span x-show="isUploading" class="inline-flex items-center" style="display: none;">
-                                                <i class="fas fa-circle-notch fa-spin mr-2"></i>
-                                                Mengunggah...
-                                            </span>
-                                        </button>
-                                    </form>
+                                                {{-- B. FORM UPLOAD --}}
+                                                <form id="formUploadSertifikat"
+                                                    action="{{ route('admin.sertifikasi.upload', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" 
+                                                    method="POST" 
+                                                    enctype="multipart/form-data"
+                                                    class="m-0">
+                                                    @csrf
+                                                    
+                                                    <input type="file" 
+                                                        name="sertifikat" 
+                                                        x-ref="fileInput" 
+                                                        style="display:none" 
+                                                        accept="application/pdf"
+                                                        @change="isUploading = true; document.getElementById('formUploadSertifikat').submit();">
 
-                                    {{-- [TOMBOL 3] UNDUH (HIJAU) --}}
-                                    @if($hasFile)
-                                        <a href="{{ route('admin.sertifikasi.download', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                        target="_blank"
-                                        class="{{ $btnGreen }} inline-flex items-center justify-center">
-                                            <i class="fas fa-download mr-2"></i> Unduh
-                                        </a>
-                                    @endif
+                                                    <button type="button"
+                                                            @click="$refs.fileInput.click()"
+                                                            :disabled="isUploading" 
+                                                            class="{{ $btnBlue }} disabled:opacity-70 disabled:cursor-wait">
+                                                        
+                                                        <span x-show="!isUploading" class="inline-flex items-center">
+                                                            <i class="fas {{ $hasFile ? 'fa-sync-alt' : 'fa-upload' }} mr-2"></i>
+                                                            {{ $hasFile ? 'Ganti Sertifikat' : 'Upload Sertifikat' }}
+                                                        </span>
 
-                                </div>
+                                                        <span x-show="isUploading" class="inline-flex items-center" style="display: none;">
+                                                            <i class="fas fa-circle-notch fa-spin mr-2"></i>
+                                                            Mengunggah...
+                                                        </span>
+                                                    </button>
+                                                </form>
+
+                                                {{-- C. TOMBOL UNDUH (Hijau) --}}
+                                                @if($hasFile)
+                                                    <a href="{{ route('admin.sertifikasi.download', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                                    target="_blank"
+                                                    class="{{ $btnGreen }}">
+                                                        <i class="fas fa-download mr-2"></i> Unduh
+                                                    </a>
+                                                @endif
+
+                                            @endif
+
+                                            {{-- GROUP 2: TOMBOL BATAL (SELALU MUNCUL JIKA ADA KEPUTUSAN) --}}
+                                            <form action="{{ route('admin.sertifikasi.keputusan', ['id_asesi' => $asesi->id_asesi, 'id' => $sertifikasi->id_data_sertifikasi_asesi]) }}" method="POST" onsubmit="return confirm('Batalkan keputusan? Status akan kembali menunggu.');" class="m-0">
+                                                @csrf 
+                                                <input type="hidden" name="status" value="menunggu">
+                                                {{-- Menggunakan style manual agar sama tinggi dengan btnBase --}}
+                                                <button type="submit" class="mt-2 px-4 py-1.5 text-xs font-semibold rounded-md inline-flex items-center transition-all bg-gray-200 text-gray-600 hover:bg-gray-300">
+                                                    <i class="fas fa-undo mr-1"></i> Batal
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+
+                                @endif
+
 
                                 {{-- NOTIFIKASI TOAST (FLOATING) --}}
                                 {{-- Wadah Fixed di pojok kanan bawah --}}
@@ -1550,17 +1648,6 @@ $btnGray = "$btnBase bg-gray-300 text-gray-500 cursor-not-allowed border border-
                                     @endif
 
                                 </div>
-
-                                @elseif($isGagal)
-                                {{-- 2. GAGAL --}}
-                                <div class="mt-2">
-                                    <p class="text-xs text-red-600 font-semibold">Belum Kompeten - Tidak Direkomendasikan</p>
-                                </div>
-
-                                @else
-                                {{-- 3. MENUNGGU --}}
-                                <p class="{{ $statusClassTunggu }}">Menunggu Keputusan</p>
-                                @endif
                             </div>
                         </li>
 
