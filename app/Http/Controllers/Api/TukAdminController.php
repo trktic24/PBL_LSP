@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MasterTUK;
+use Illuminate\Support\Facades\Storage;
 
 class TukAdminController extends Controller
 {
@@ -38,17 +39,11 @@ class TukAdminController extends Controller
         ]);
 
         // -----------------------------------
-        // UPLOAD FOTO (TAMBAHAN)
+        // UPLOAD FOTO (REFACORTED)
         // -----------------------------------
         if ($request->hasFile('foto_tuk')) {
-
-            $file = $request->file('foto_tuk');
-
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-            $file->move(public_path('images/foto_tuk'), $filename);
-
-            $validated['foto_tuk'] = $filename;
+            $path = $request->file('foto_tuk')->store('tuk', 'public');
+            $validated['foto_tuk'] = $path;
         }
 
         $tuk = MasterTUK::create($validated);
@@ -110,16 +105,13 @@ class TukAdminController extends Controller
         if ($request->hasFile('foto_tuk')) {
 
             // Hapus file lama jika ada
-            if ($tuk->foto_tuk && file_exists(public_path('images/foto_tuk/' . $tuk->foto_tuk))) {
-                unlink(public_path('images/foto_tuk/' . $tuk->foto_tuk));
+            if ($tuk->foto_tuk) {
+                Storage::disk('public')->delete($tuk->foto_tuk);
             }
 
             // Upload file baru
-            $file = $request->file('foto_tuk');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images/foto_tuk'), $filename);
-
-            $validated['foto_tuk'] = $filename;
+            $path = $request->file('foto_tuk')->store('tuk', 'public');
+            $validated['foto_tuk'] = $path;
         }
 
         $tuk->update($validated);
@@ -147,8 +139,8 @@ class TukAdminController extends Controller
         }
 
         // Hapus foto jika ada
-        if ($tuk->foto_tuk && file_exists(public_path('images/foto_tuk/' . $tuk->foto_tuk))) {
-            unlink(public_path('images/foto_tuk/' . $tuk->foto_tuk));
+        if ($tuk->foto_tuk) {
+            Storage::disk('public')->delete($tuk->foto_tuk);
         }
 
         $tuk->delete();

@@ -93,12 +93,23 @@
           </div>
 
           <div>
-            <label for="link_gmap" class="block text-sm font-medium text-gray-700 mb-2">
-              Link Google Maps <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="link_gmap" name="link_gmap" required
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Masukkan URL Google Maps" value="{{ old('link_gmap') }}" />
+            <div x-data="{ linkGmap: '{{ old('link_gmap') }}' }">
+  <label for="link_gmap" class="block text-sm font-medium text-gray-700 mb-2">
+    Link Google Maps <span class="text-red-500">*</span>
+  </label>
+  <input type="text" id="link_gmap" name="link_gmap" required
+    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+    placeholder="Masukkan URL Google Maps"
+    x-model="linkGmap"
+    value="{{ old('link_gmap') }}" />
+  <div class="mt-4" x-show="linkGmap">
+    <iframe :src="linkGmap" width="100%" height="300" style="border:0;" allowfullscreen loading="lazy"></iframe>
+  </div>
+  <p class="text-sm text-gray-600 mt-2">
+    <strong>Contoh link embed:</strong> https://www.google.com/maps/embed?pb=!1m18!...<br>
+    Dapatkan melalui Google Maps → "Bagikan" → "Sematkan peta" → Salin URL di dalam atribut <code>src</code>.
+  </p>
+</div>
           </div>
 
           <div class="pt-4">
