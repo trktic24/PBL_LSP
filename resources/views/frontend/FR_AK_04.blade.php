@@ -155,7 +155,7 @@
                             $ttdAsesiBase64 = getTtdBase64($sertifikasi->asesi->tanda_tangan ?? null, null, 'asesi');
                         @endphp
                         @if($ttdAsesiBase64)
-                            <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" class="h-32 object-contain">
+                            <img src="{{ $ttdAsesiBase64 }}" class="h-32 object-contain">
                         @else
                             <p class="text-gray-400 text-sm">Tanda tangan belum tersedia di profil</p>
                         @endif

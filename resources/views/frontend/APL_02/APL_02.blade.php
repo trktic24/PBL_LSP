@@ -314,7 +314,7 @@
                                 $ttdAsesiBase64 = getTtdBase64($sertifikasi->asesi->tanda_tangan ?? null, null, 'asesi');
                             @endphp
                             @if($ttdAsesiBase64)
-                                <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" 
+                                <img src="{{ $ttdAsesiBase64 }}" 
                                      alt="Tanda Tangan Asesi" 
                                      class="h-32 object-contain mx-auto">
                             @else

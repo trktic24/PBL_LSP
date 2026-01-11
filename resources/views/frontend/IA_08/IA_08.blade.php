@@ -477,7 +477,7 @@
                             @endphp
                             @if($ttdAsesiBase64)
                                 <img
-                                    src="data:image/png;base64,{{ $ttdAsesiBase64 }}"
+                                    src="{{ $ttdAsesiBase64 }}"
                                     alt="Tanda Tangan Asesi"
                                     class="h-full object-contain"
                                 >
@@ -502,7 +502,7 @@
                             @endphp
                             @if($ttdAsesorBase64)
                                 <img
-                                    src="data:image/png;base64,{{ $ttdAsesorBase64 }}"
+                                    src="{{ $ttdAsesorBase64 }}"
                                     alt="Tanda Tangan Asesor"
                                     class="h-full object-contain"
                                 >
