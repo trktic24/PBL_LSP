@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Asesi;
 
 use Carbon\Carbon;
 use App\Models\Jadwal;
+use App\Models\JawabanIa06;
 use Illuminate\Http\Request;
 use App\Models\LembarJawabIA05;
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
-use App\Models\JawabanIa06;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TrackerController extends Controller
 {
@@ -279,5 +280,29 @@ class TrackerController extends Controller
             'sertifikasi' => $sertifikasi,
             'asesi' => $sertifikasi->asesi,
         ]);
+    }
+
+    public function downloadSertifikat($id_sertifikasi)
+    {
+        $user = Auth::user();
+        
+        // 1. Cari data sertifikasi punya user ini
+        $sertifikasi = DataSertifikasiAsesi::where('id_asesi', $user->asesi->id_asesi)
+            ->findOrFail($id_sertifikasi);
+
+        // 2. Ambil path dari database
+        // Contoh isi DB: private_uploads/sertifikat/66Slx6FX...pdf
+        $path = $sertifikasi->sertifikat; 
+
+        // 3. Cek apakah file fisik ada di storage
+        // Asumsi: default disk Laravel ('local') root-nya adalah storage/app/
+        if (!Storage::exists($path)) {
+            return back()->with('error', 'File sertifikat tidak ditemukan di server.');
+        }
+
+        // 4. Download file
+        // Parameter kedua (null) adalah nama file saat didownload (opsional)
+        // Parameter ketiga adalah headers
+        return Storage::download($path);
     }
 }
