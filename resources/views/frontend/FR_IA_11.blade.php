@@ -62,18 +62,23 @@
                                     <div class="radio-group flex items-center space-x-4">
                                         <span>:</span>
                                         <div class="flex items-center space-x-2">
-                                            <input type="radio" id="tuk_sewaktu" name="tuk_type" value="Sewaktu" class="form-radio h-4 w-4 text-blue-600" {{ $editableAttr }} {{ ($ia11->tuk_type ?? '') === 'Sewaktu' ? 'checked' : '' }}>
+                                            <input type="radio" id="tuk_sewaktu" name="tuk_type" value="Sewaktu" class="form-radio h-4 w-4 text-blue-600" {{ $editableAttr }} {{ ($current_tuk_type ?? '') === 'Sewaktu' ? 'checked' : '' }}>
                                             <label for="tuk_sewaktu" class="text-sm text-gray-700">Sewaktu</label>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <input type="radio" id="tuk_tempatkerja" name="tuk_type" value="Tempat Kerja" class="form-radio h-4 w-4 text-blue-600" {{ $editableAttr }} {{ ($ia11->tuk_type ?? '') === 'Tempat Kerja' ? 'checked' : '' }}>
+                                            <input type="radio" id="tuk_tempatkerja" name="tuk_type" value="Tempat Kerja" class="form-radio h-4 w-4 text-blue-600" {{ $editableAttr }} {{ ($current_tuk_type ?? '') === 'Tempat Kerja' ? 'checked' : '' }}>
                                             <label for="tuk_tempatkerja" class="text-sm text-gray-700">Tempat Kerja</label>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <input type="radio" id="tuk_mandiri" name="tuk_type" value="Mandiri" class="form-radio h-4 w-4 text-blue-600" {{ $editableAttr }} {{ ($ia11->tuk_type ?? '') === 'Mandiri' ? 'checked' : '' }}>
+                                            <input type="radio" id="tuk_mandiri" name="tuk_type" value="Mandiri" class="form-radio h-4 w-4 text-blue-600" {{ $editableAttr }} {{ ($current_tuk_type ?? '') === 'Mandiri' ? 'checked' : '' }}>
                                             <label for="tuk_mandiri" class="text-sm text-gray-700">Mandiri</label>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <label class="font-medium w-36">Nama TUK</label>
+                                    <span>:</span>
+                                    <input type="text" value="{{ $nama_tuk }}" class="form-input w-full ml-2 border-b border-dashed border-gray-400 p-0 text-sm focus:ring-0" disabled>
                                 </div>
                                 <div class="flex items-center">
                                     <label class="font-medium w-36">Nama Asesor</label>
@@ -267,7 +272,7 @@
                     <div class="flex items-center mb-2">
                         <label class="w-24">No. Reg. MET</label>
                         <span>:</span>
-                        <input type="text" value="[No. Reg. MET Asesor]" class="form-input w-full ml-2 border-b border-dashed border-gray-400 p-0 text-sm focus:ring-0" disabled>
+                        <input type="text" value="{{ $nomor_met_asesor }}" class="form-input w-full ml-2 border-b border-dashed border-gray-400 p-0 text-sm focus:ring-0" disabled>
                     </div>
                     <div class="flex items-center">
                         <label class="w-24">Tanda tangan dan Tanggal</label>
