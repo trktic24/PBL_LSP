@@ -187,117 +187,146 @@
             </form>
         </div>
 
-        <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 overflow-x-auto">
-            <div class="flex justify-between items-center mb-4">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6" x-data="kelompokHandler()">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h3 class="text-xl font-semibold text-gray-900">Kelompok Pekerjaan & Unit Kompetensi</h3>
                 
-                @if($skema->kelompokPekerjaan->isNotEmpty())
-                    @php $kelompokId = $skema->kelompokPekerjaan->first()->id_kelompok_pekerjaan; @endphp
-                    
-                    <div class="flex space-x-2">
-                        <a href="{{ route('admin.skema.detail.edit_kelompok', $kelompokId) }}" 
-                           class="flex items-center space-x-1 px-3 py-1.5 bg-yellow-400 hover:bg-yellow-500 text-white text-xs rounded-md transition shadow-sm">
-                            <i class="fas fa-pen text-xs"></i> <span>Edit</span>
-                        </a>
-
-                        <form action="{{ route('admin.skema.detail.destroy_kelompok', $kelompokId) }}" method="POST" 
-                              onsubmit="return confirm('Yakin ingin menghapus Kelompok Pekerjaan ini beserta seluruh Unit Kompetensinya?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="flex items-center space-x-1 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md transition shadow-sm">
-                                <i class="fas fa-trash text-xs"></i> <span>Delete</span>
-                            </button>
-                        </form>
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <!-- Search Input -->
+                    <div class="relative flex-grow md:flex-grow-0">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" x-model="searchQuery" 
+                               class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 w-full md:w-64" 
+                               placeholder="Cari unit atau kelompok...">
                     </div>
-                @endif
+
+                    <!-- Expand/Collapse All -->
+                    <button @click="toggleAll()" 
+                            class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm font-medium transition"
+                            x-text="allExpanded ? 'Tutup Semua' : 'Buka Semua'">
+                    </button>
+
+                    <!-- Add Button -->
+                    <a href="{{ route('admin.skema.detail.add_kelompok', $skema->id_skema) }}" 
+                       class="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition shadow-sm">
+                        <i class="fas fa-plus-circle"></i> <span>Tambah Kelompok</span>
+                    </a>
+                </div>
             </div>
-            <table class="min-w-full text-sm text-left border border-gray-200 border-collapse">
-                <thead class="bg-gray-50 text-gray-600 uppercase text-sm">
-                    <tr>
-                        <th class="px-4 py-3 font-semibold border border-gray-200 w-1/4">Kelompok Pekerjaan</th>
-                        <th class="px-4 py-3 font-semibold border border-gray-200 w-12 text-center">No</th>
-                        <th class="px-4 py-3 font-semibold border border-gray-200 w-42">Kode Unit</th>
-                        <th class="px-4 py-3 font-semibold border border-gray-200">Judul Unit</th>
-                        <th class="px-4 py-3 font-semibold border border-gray-200 w-20 text-center">Aksi</th>
-                    </tr>
-                </thead>
 
-                <tbody class="text-gray-700">
-                    @php 
-                        $globalNo = 1; 
-                    @endphp
-                    
-                    @forelse ($skema->kelompokPekerjaan as $kelompok)
-                        @php
-                            $jumlahUnit = $kelompok->unitKompetensi->count();
-                            $units = $kelompok->unitKompetensi->sortBy('urutan');
-                        @endphp
+            <!-- List Container -->
+            <div class="space-y-4">
+                <template x-for="kelompok in filteredKelompok" :key="kelompok.id_kelompok_pekerjaan">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <!-- Group Header -->
+                        <div class="bg-gray-50 border-b border-gray-200 p-4 flex justify-between items-center cursor-pointer hover:bg-gray-100 transition"
+                             @click="toggleGroup(kelompok.id_kelompok_pekerjaan)">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-chevron-right text-gray-400 transform transition-transform duration-300"
+                                   :class="isExpanded(kelompok.id_kelompok_pekerjaan) ? 'rotate-90' : ''"></i>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-lg" x-text="kelompok.nama_kelompok_pekerjaan"></h4>
+                                    <span class="text-xs text-gray-500" x-text="kelompok.unit_kompetensi.length + ' Unit Kompetensi'"></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Group Actions (Stop Propagation to prevent toggle) -->
+                            <div class="flex items-center gap-2" @click.stop>
+                                <a :href="'/admin/master/skema/detail/kelompok/' + kelompok.id_kelompok_pekerjaan + '/edit'" 
+                                   class="p-2 text-yellow-600 hover:bg-yellow-100 rounded-full transition" title="Edit Kelompok">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                
+                                <form :action="'/admin/master/skema/detail/kelompok/' + kelompok.id_kelompok_pekerjaan" method="POST" 
+                                      @submit.prevent="confirmDeleteGroup($el)">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-red-600 hover:bg-red-100 rounded-full transition" title="Hapus Kelompok">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
 
-                        @if($jumlahUnit > 0)
-                            @foreach($units as $index => $unit)
-                                @php $currentNo = $globalNo++; @endphp
+                        <!-- Unit List (Expandable) -->
+                        <div x-show="isExpanded(kelompok.id_kelompok_pekerjaan)" 
+                             x-collapse
+                             class="bg-white">
+                             
+                            <!-- Unit Header -->
+                            <div class="grid grid-cols-12 gap-4 px-6 py-2 bg-gray-50/50 text-xs font-semibold uppercase text-gray-500 border-b border-gray-100">
+                                <div class="col-span-2">Kode Unit</div>
+                                <div class="col-span-9">Judul Unit</div>
+                                <div class="col-span-1 text-center">Menu</div>
+                            </div>
 
-                                <tr class="hover:bg-gray-50 transition">
-                                    
-                                    @if($index === 0)
-                                        <td class="px-4 py-4 font-bold align-top border border-gray-200 text-gray-900" 
-                                            rowspan="{{ $jumlahUnit }}">
-                                            {{ $kelompok->nama_kelompok_pekerjaan }}
-                                        </td>
-                                    @endif
-                                    
-                                    <td class="px-4 py-3 text-center border border-gray-200">{{ $currentNo }}.</td>
-                                    
-                                    <td class="px-4 py-3 font-mono text-gray-600 whitespace-nowrap border border-gray-200">{{ $unit->kode_unit }}</td>
-                                    <td class="px-4 py-3 text-gray-800 border border-gray-200">{{ $unit->judul_unit }}</td>
-                                    
-                                    <td class="px-4 py-3 text-center border border-gray-200">
-                                        <form action="{{ route('admin.skema.detail.destroy_unit', ['id_unit' => $unit->id_unit_kompetensi, 'no' => $currentNo]) }}" 
-                                              method="POST" 
-                                              onsubmit="return confirm('Yakin ingin menghapus Unit No. {{ $currentNo }} @if($unit->kode_unit)({{ $unit->kode_unit }})@endif?');">
-                                            @csrf
-                                            @method('DELETE')
+                            <!-- Units -->
+                            <template x-for="(unit, index) in kelompok.unit_kompetensi" :key="unit.id_unit_kompetensi">
+                                <div class="grid grid-cols-12 gap-4 px-6 py-3 border-b border-gray-100 last:border-0 hover:bg-blue-50/30 transition items-center group">
+                                    <div class="col-span-2 font-mono text-sm text-gray-600" x-text="unit.kode_unit"></div>
+                                    <div class="col-span-9">
+                                        <div class="font-medium text-gray-900" x-text="unit.judul_unit"></div>
+                                    </div>
+                                    <div class="col-span-1 flex justify-center relative" x-data="{ open: false }">
+                                        <!-- Action Menu Button -->
+                                        <button @click="open = !open" @click.outside="open = false" 
+                                                class="text-gray-400 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 focus:outline-none transition">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+
+                                        <!-- Dropdown Menu -->
+                                        <div x-show="open" 
+                                             x-transition:enter="transition ease-out duration-100"
+                                             x-transition:enter-start="transform opacity-0 scale-95"
+                                             x-transition:enter-end="transform opacity-100 scale-100"
+                                             x-transition:leave="transition ease-in duration-75"
+                                             x-transition:leave-start="transform opacity-100 scale-100"
+                                             x-transition:leave-end="transform opacity-0 scale-95"
+                                             class="absolute right-0 top-8 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-10 py-1 origin-top-right">
                                             
-                                            <div class="flex justify-center">
-                                                <button type="submit" 
-                                                        class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-600 rounded-md hover:bg-red-100 hover:text-red-700 transition shadow-sm border border-red-100" 
-                                                        title="Hapus Unit">
-                                                    <i class="fas fa-trash text-xs"></i>
+                                            <a :href="'/admin/master/skema/detail/kelompok/' + kelompok.id_kelompok_pekerjaan + '/edit'" 
+                                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                                <i class="fas fa-edit w-5 text-center mr-2"></i> Edit Unit
+                                            </a>
+                                            
+                                            <form :action="'/admin/master/skema/detail/unit/' + unit.id_unit_kompetensi + '/' + (index + 1)" method="POST" 
+                                                  @submit.prevent="confirmDeleteUnit($el, unit.kode_unit)">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                                    <i class="fas fa-trash-alt w-5 text-center mr-2"></i> Hapus Unit
                                                 </button>
-                                            </div>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td class="px-4 py-4 font-bold align-top bg-gray-50 border border-gray-200 text-gray-900">
-                                    {{ $kelompok->nama_kelompok_pekerjaan }}
-                                </td>
-                                <td colspan="4" class="px-4 py-3 text-center text-gray-400 italic border border-gray-200">
-                                    Belum ada unit kompetensi.
-                                </td>
-                            </tr>
-                        @endif
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
 
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-12 text-center border border-gray-200 bg-gray-50/50">
-                                <div class="flex flex-col items-center justify-center">
-                                    <i class="fas fa-layer-group text-4xl mb-3 text-gray-300"></i>
-                                    <p>Belum ada Kelompok Pekerjaan yang ditambahkan pada skema ini.</p>
-                                    
-                                    <a href="{{ route('admin.skema.detail.add_kelompok', $skema->id_skema) }}" 
-                                       class="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-md transition-transform transform hover:-translate-y-1 flex items-center">
-                                        <i class="fas fa-plus-circle mr-2 text-lg"></i>
-                                        Tambah Kelompok & Unit
+                            <!-- Empty Unit State -->
+                            <template x-if="kelompok.unit_kompetensi.length === 0">
+                                <div class="px-6 py-8 text-center bg-gray-50/50">
+                                    <p class="text-gray-500 italic mb-3">Belum ada unit kompetensi di kelompok ini.</p>
+                                    <a :href="'/admin/master/skema/detail/kelompok/' + kelompok.id_kelompok_pekerjaan + '/edit'" 
+                                       class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm">
+                                        <i class="fas fa-plus mr-2 text-xs"></i> Tambah Unit
                                     </a>
                                 </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Empty Search State -->
+                <template x-if="filteredKelompok.length === 0">
+                    <div class="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                        <i class="fas fa-search text-gray-300 text-4xl mb-3"></i>
+                        <p class="text-gray-500 font-medium">Tidak ada data yang cocok dengan pencarian.</p>
+                        <button @click="searchQuery = ''" class="mt-2 text-blue-600 hover:underline text-sm">Reset Pencarian</button>
+                    </div>
+                </template>
+            </div>
         </div>
 
     </main>
@@ -332,6 +361,72 @@
 
                 updateCheckAll() {
                     this.checkAll = this.forms.length > 0 && this.forms.every(f => f.checked);
+                }
+            }
+        }
+
+        function kelompokHandler() {
+            return {
+                searchQuery: '',
+                kelompokList: @json($skema->kelompokPekerjaan->load('unitKompetensi') ?? []),
+                expandedGroups: [], 
+
+                init() {
+                    // Expand all by default if list is small
+                    if (this.kelompokList.length > 0 && this.kelompokList.length <= 3) {
+                         this.expandedGroups = this.kelompokList.map(g => g.id_kelompok_pekerjaan);
+                    }
+                },
+
+                get filteredKelompok() {
+                    if (this.searchQuery === '') {
+                        return this.kelompokList;
+                    }
+                    const lowerQuery = this.searchQuery.toLowerCase();
+                    return this.kelompokList.filter(group => {
+                        const groupMatch = group.nama_kelompok_pekerjaan.toLowerCase().includes(lowerQuery);
+                        const unitMatch = group.unit_kompetensi.some(unit => 
+                            unit.kode_unit.toLowerCase().includes(lowerQuery) || 
+                            unit.judul_unit.toLowerCase().includes(lowerQuery)
+                        );
+                        return groupMatch || unitMatch;
+                    });
+                },
+
+                get allExpanded() {
+                     return this.kelompokList.length > 0 && this.expandedGroups.length === this.kelompokList.length;
+                },
+
+                isExpanded(id) {
+                    return this.expandedGroups.includes(id);
+                },
+
+                toggleGroup(id) {
+                    if (this.expandedGroups.includes(id)) {
+                        this.expandedGroups = this.expandedGroups.filter(gId => gId !== id);
+                    } else {
+                        this.expandedGroups.push(id);
+                    }
+                },
+
+                toggleAll() {
+                    if (this.allExpanded) {
+                        this.expandedGroups = [];
+                    } else {
+                        this.expandedGroups = this.kelompokList.map(g => g.id_kelompok_pekerjaan);
+                    }
+                },
+                
+                confirmDeleteGroup(formEl) {
+                     if(confirm('Yakin ingin menghapus Kelompok ini? Semua Unit Kompetensi di dalamnya akan ikut terhapus.')) {
+                         formEl.submit();
+                     }
+                },
+
+                confirmDeleteUnit(formEl, code) {
+                     if(confirm('Yakin ingin menghapus Unit ' + (code ? '('+code+')' : '') + '?')) {
+                         formEl.submit();
+                     }
                 }
             }
         }
