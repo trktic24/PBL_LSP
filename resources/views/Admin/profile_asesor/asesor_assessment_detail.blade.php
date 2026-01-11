@@ -212,7 +212,7 @@
             // IA.03
             if ($show['ia03'] == 1) {
                 // ia03 is HasMany, returns Collection
-                $ia03Done = $dataSertifikasi->ia03->isNotEmpty();
+                $ia03Done = optional($dataSertifikasi->ia03)->isNotEmpty() ?? false;
                 $stIa03 = $ia03Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
 
                 $pelaksanaanItems[] = [
@@ -368,8 +368,8 @@
 
             // IA.11
             if ($show['ia11'] == 1) {
-                // ia11 is HasMany, returns Collection
-                $ia11Done = $dataSertifikasi->ia11->isNotEmpty();
+                // ia11 is HasOne
+                $ia11Done = $dataSertifikasi->ia11 ? true : false;
                 $stIa11 = $ia11Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
 
                 $pelaksanaanItems[] = [
