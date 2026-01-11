@@ -14,15 +14,15 @@ return new class extends Migration {
         if (!Schema::hasTable('master_form_templates')) {
             Schema::create('master_form_templates', function (Blueprint $col) {
                 $col->id();
-                $col->bigInteger('id_skema')->unsigned();
+                $col->unsignedBigInteger('id_skema');
                 $col->string('form_code', 20); // e.g. 'FR.IA.02', 'FR.MAPA.01'
                 $col->json('content'); // Stores specific template fields as JSON
                 $col->timestamps();
 
                 $col->foreign('id_skema')->references('id_skema')->on('skema')->onDelete('cascade');
                 
-                // Original unique constraint (will be modified by subsequent migration)
-                $col->unique(['id_skema', 'form_code']);
+                // IMPORTANT: explicit name to match dropUnique in next migration
+                $col->unique(['id_skema', 'form_code'], 'master_form_templates_id_skema_form_code_unique');
             });
         }
     }
