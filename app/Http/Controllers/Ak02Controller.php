@@ -200,6 +200,8 @@ class Ak02Controller extends Controller
         $data['tuk'] = $asesi->jadwal->tuk->nama_tuk ?? 'Tempat Kerja';
         $data['nama_asesor'] = $asesi->jadwal->asesor->nama_asesor ?? '-';
         $data['nama_asesi'] = $asesi->asesi->nama_lengkap ?? '-';
+        $data['ttd_asesi'] = $asesi->asesi->tanda_tangan ?? null;
+        $data['ttd_asesor'] = $asesi->jadwal->asesor->tanda_tangan ?? null;
         $data['tanggal'] = date('d-m-Y');
 
         // Unit Kompetensi
