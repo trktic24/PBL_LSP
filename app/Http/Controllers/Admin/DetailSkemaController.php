@@ -208,6 +208,14 @@ class DetailSkemaController extends Controller
                 'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.06']),
                 'admin_url' => route('admin.ak06.show', ['id_skema' => $skema->id_skema])
             ],
+            [
+                'code' => 'FR.AK.07', 
+                'name' => 'Ceklis Penyesuaian Wajar dan Beralasan', 
+                'db_field' => 'fr_ak_07', 
+                'checked' => (bool)$configDB->fr_ak_07, 
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.07']),
+                'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.07'])
+            ],
         ];
 
         return view('Admin.master.skema.detail_skema', [
@@ -227,7 +235,7 @@ class DetailSkemaController extends Controller
             'apl_01', 'apl_02',
             'fr_ia_01', 'fr_ia_02', 'fr_ia_03', 'fr_ia_04', 'fr_ia_05',
             'fr_ia_06', 'fr_ia_07', 'fr_ia_08', 'fr_ia_09', 'fr_ia_10', 'fr_ia_11',
-            'fr_ak_01', 'fr_ak_02', 'fr_ak_03', 'fr_ak_04', 'fr_ak_05', 'fr_ak_06',
+            'fr_ak_01', 'fr_ak_02', 'fr_ak_03', 'fr_ak_04', 'fr_ak_05', 'fr_ak_06', 'fr_ak_07',
             'fr_mapa_01', 'fr_mapa_02'
         ];
 
@@ -531,6 +539,7 @@ class DetailSkemaController extends Controller
             'FR.AK.03' => ['route' => 'ak03.create', 'label' => 'FR.AK.03', 'name' => 'Umpan Balik dan Catatan Asesmen'],
             'FR.AK.04' => ['route' => 'ak04.create', 'label' => 'FR.AK.04', 'name' => 'Banding Asesmen'],
             'FR.AK.05' => ['route' => 'admin.laporan.asesi.view', 'label' => 'FR.AK.05', 'name' => 'Laporan Asesmen'],
+            'FR.AK.07' => ['route' => 'fr-ak-07.create', 'label' => 'FR.AK.07', 'name' => 'Ceklis Penyesuaian Wajar dan Beralasan'],
         ];
 
         $config = $mapping[$form_code] ?? [
@@ -660,6 +669,7 @@ class DetailSkemaController extends Controller
             'FR.AK.04' => ['label' => 'FR.AK.04', 'name' => 'Banding Asesmen'],
             'FR.AK.05' => ['label' => 'FR.AK.05', 'name' => 'Laporan Asesmen'],
             'FR.AK.06' => ['label' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen'],
+            'FR.AK.07' => ['label' => 'FR.AK.07', 'name' => 'Ceklis Penyesuaian Wajar dan Beralasan'],
         ];
 
         $config = $mapping[$form_code] ?? ['label' => $form_code, 'name' => 'Formulir'];
