@@ -146,13 +146,19 @@
     @endif
 
     <br>
-    <table class="no-border">
+    {{-- TANDA TANGAN --}}
+    <table class="no-border" style="margin-top: 30px;">
         <tr>
             <td style="width: 70%;"></td>
             <td style="text-align: center;">
                 Semarang, {{ date('d-m-Y') }}<br>
-                Asesor Kompetensi,
-                <br><br><br><br>
+                Asesor Kompetensi,<br><br>
+                @if($sertifikasi->jadwal->asesor && $sertifikasi->jadwal->asesor->tanda_tangan)
+                    <img src="{{ getTtdBase64($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="height: 60px; width: auto;">
+                    <br>
+                @else
+                    <br><br><br>
+                @endif
                 <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
             </td>
         </tr>
