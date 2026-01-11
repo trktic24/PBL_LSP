@@ -9,7 +9,7 @@ use App\Models\Jadwal;
 use App\Models\Asesor;
 use App\Models\Skema;
 use App\Models\MasterTuk;
-use App\Models\JenisTuk;
+use App\Models\JenisTUK;
 use Illuminate\Support\Facades\Validator;
 
 class JadwalAsesorApiController extends Controller

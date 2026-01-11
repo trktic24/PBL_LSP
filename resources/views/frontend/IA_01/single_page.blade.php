@@ -154,7 +154,7 @@
 
                                     {{-- Standar Industri --}}
                                     <td class="p-2 border-r border-gray-800 align-top">
-                                        <textarea name="standar_industri[{{ $kuk->id_kriteria }}]" rows="2" class="w-full text-xs border-gray-300 rounded bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Isi jika ada...">{{ old("standar_industri.{$kuk->id_kriteria}", $existingResponses[$kuk->id_kriteria]->standar_industri_ia01 ?? '') }}</textarea>
+                                        <textarea name="standar_industri[{{ $kuk->id_kriteria }}]" rows="2" class="w-full text-xs border-gray-300 rounded bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Isi jika ada...">{{ old("standar_industri.{$kuk->id_kriteria}", $existingResponses[$kuk->id_kriteria]->standar_industri_ia01 ?? ($templateContent[$kuk->id_kriteria] ?? $kuk->standar_industri_kerja)) }}</textarea>
                                     </td>
 
                                     {{-- Checkbox Hasil: YA --}}

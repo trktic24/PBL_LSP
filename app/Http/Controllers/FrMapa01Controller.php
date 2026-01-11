@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\FrMapa01;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use App\Models\DataSertifikasiAsesi;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -16,16 +18,51 @@ class FrMapa01Controller extends Controller
 
     public function index($id)
     {
-        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])->findOrFail($id);
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi', 
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id);
         
-        // Return View Bagian 1
+        $skema = $sertifikasi->jadwal->skema;
+        $mapa01 = FrMapa01::where('id_data_sertifikasi_asesi', $id)->first();
+
+        // [AUTO-LOAD TEMPLATE & STATIC FALLBACK]
+        $template = null;
+        if (!$mapa01) {
+            $templateObj = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                        ->where('form_code', 'FR.MAPA.01')
+                                        ->first();
+                                        
+            if (!$templateObj) {
+                $templateObj = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.MAPA.01')
+                                            ->first();
+            }
+            if ($templateObj && !empty($templateObj->content)) {
+                $template = $templateObj->content;
+            } else {
+                // Static Fallback
+                $template = [
+                    'pendekatan_asesmen' => ['LSP/Sertifikasi'],
+                    'konteks_lingkungan' => ['Tempat Kerja'],
+                    'peluang_bukti' => ['Aktivitas Kerja Nyata'],
+                    'pelaksana_asesmen' => ['Kandidat', 'Asesor'],
+                    'konfirmasi_relevan' => ['Manajer/Supervisor']
+                ];
+            }
+        }
+
         return view('frontend.FR_MAPA_01', [
             'sertifikasi' => $sertifikasi,
             'asesi'       => $sertifikasi->asesi,
-            'skema'       => $sertifikasi->jadwal->skema,
-            'jadwal'      => $sertifikasi->jadwal,            
+            'skema'       => $skema,
+            'jadwal'      => $sertifikasi->jadwal,
+            'mapa01'      => $mapa01,
+            'template'    => $template
         ]);
-    }    
+    }
 
     public function store(Request $request)
     {
@@ -64,66 +101,81 @@ class FrMapa01Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form MAPA-01 (Admin Master View)
+     * [MASTER] Menampilkan editor template (MAPA-01) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.MAPA.01')
+                                    ->first();
+        
+        // Default values if no template exists
+        $content = $template ? $template->content : [
+            'pendekatan_asesmen' => [],
+            'konteks_lingkungan' => [],
+            'peluang_bukti' => [],
+            'pelaksana_asesmen' => [],
+            'konfirmasi_relevan' => []
+        ];
+
+        return view('Admin.master.skema.template.mapa01', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'content' => $content
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'content' => 'required|array'
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.MAPA.01'
+            ],
+            ['content' => $request->content]
+        );
+
+        return redirect()->back()->with('success', 'Templat MAPA-01 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form MAPA-01 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
-
-        // 1. Filter Asesi by Skema & Pagination
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
-
-        // Simple Search
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
-        }
-
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        // 2. Dummy Objects for View Compatibility
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0; 
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
         
-        // Mock Relations
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
         
-        $jadwal = new \App\Models\Jadwal([
-             'tanggal_pelaksanaan' => now(), 
-             'waktu_mulai' => '08:00',
-        ]);
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
         $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+        $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
-            'asesor' => $asesor,
+        return view('frontend.FR_MAPA_01', [
+            'sertifikasi' => $sertifikasi,
+            'asesi' => $asesi,
+            'skema' => $skema,
             'jadwal' => $jadwal,
+            'mapa01' => null,
+            'template' => null,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'mapa01.index',
-            'buttonLabel' => 'FR.MAPA.01'
         ]);
     }
 }
