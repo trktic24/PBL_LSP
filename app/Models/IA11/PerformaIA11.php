@@ -12,21 +12,18 @@ class PerformaIA11 extends Model
 
     protected $table = 'performa_ia11';
     protected $primaryKey = 'id_performa_ia11';
-    
-    protected $guarded = []; 
+    public $timestamps = true;
 
-    /**
-     * Atribut yang dapat diisi (Fillable).
-     */
     protected $fillable = [
         'deskripsi_performa',
     ];
 
     public function pencapaianPerforma(): HasMany
     {
-        // PerformaIA11 adalah Parent, PencapaianPerformaIA11 adalah Child
-        // FK di Child: 'id_performa_ia11'
-        // PK di Parent: 'id_performa_ia11'
-        return $this->hasMany(PencapaianPerformaIA11::class, 'id_performa_ia11', 'id_performa_ia11');
+        return $this->hasMany(
+            PencapaianPerformaIA11::class,
+            'id_performa_ia11',
+            'id_performa_ia11'
+        );
     }
 }

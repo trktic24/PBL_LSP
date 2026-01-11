@@ -12,24 +12,17 @@ class BahanProdukIA11 extends Model
 
     protected $table = 'bahan_produk_ia11';
     protected $primaryKey = 'id_bahan_produk_ia11';
-    
-    protected $guarded = []; 
+    public $timestamps = true;
 
-    /**
-     * Atribut yang dapat diisi (Fillable).
-     */
     protected $fillable = [
         'id_ia11',
         'nama_bahan',
     ];
 
-    /**
-     * Relasi ke IA11 (Parent)
-     * Relasi: Many-to-One
-     * Setiap baris bahan dimiliki oleh satu produk IA11.
-     */
+    // ================= RELATION =================
+
     public function ia11(): BelongsTo
     {
-        return $this->belongsTo(IA11::class, 'id_ia11', 'id_ia11');
+        return $this->belongsTo(IA11::class, 'id_ia11');
     }
 }
