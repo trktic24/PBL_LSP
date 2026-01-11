@@ -143,8 +143,8 @@
                                 'relation'       => 'Apa hubungan Anda dengan asesi?',
                                 'duration'       => 'Berapa lama Anda bekerja dengan asesi?',
                                 'proximity'      => 'Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?',
-                                'experience'     => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai? (termasuk asesmen atau kualifikasi pelatihan)',
-                                'consistency'    => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar yang diminta oleh unit kompetensi secara konsisten?',
+                                'experience'     => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai?',
+                                'consistency'    => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar?',
                                 'training_needs' => 'Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:',
                                 'other_comments' => 'Ada komentar lain:'
                             ];
