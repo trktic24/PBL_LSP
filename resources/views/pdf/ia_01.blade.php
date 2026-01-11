@@ -24,7 +24,7 @@
         <tr>
             <td width="150"><b>Skema Sertifikasi</b></td>
             <td width="10">:</td>
-            <td>{{ $skema->judul_skema ?? $skema->nama_skema }}</td>
+            <td>{{ $skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><b>TUK</b></td>

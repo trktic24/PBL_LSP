@@ -31,7 +31,7 @@
         <tr>
             <td width="150"><strong>Skema Sertifikasi</strong></td>
             <td width="10">:</td>
-            <td>{{ $sertifikasi->jadwal->skema->judul_skema ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Nomor Skema</strong></td>
@@ -46,7 +46,7 @@
         <tr>
             <td><strong>Nama Asesor</strong></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Nama Asesi</strong></td>
@@ -167,7 +167,7 @@
                 @else
                     <br><br><br><br>
                 @endif
-                <strong>{{ $sertifikasi->jadwal->asesor->nama_asesor ?? '(.......................)' }}</strong>
+                <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
             </td>
         </tr>
     </table>

@@ -196,10 +196,11 @@ class Ak02Controller extends Controller
         // 3. Mapping Data untuk View PDF
         // Header
         // Menggunakan optional chaining atau null coalescing untuk menghindari error jika relasi kosong
-        $data['skema'] = $asesi->jadwal->skema->judul_skema ?? '-';
+        $data['skema'] = $asesi->jadwal->skema->nama_skema ?? '-';
         $data['nomor_skema'] = $asesi->jadwal->skema->nomor_skema ?? '-';
         $data['tuk'] = $asesi->jadwal->tuk->nama_tuk ?? 'Tempat Kerja';
-        $data['nama_asesor'] = $asesi->jadwal->asesor->nama_asesor ?? '-';
+        $data['nama_asesor'] = $asesi->jadwal->asesor->nama_lengkap ?? '-';
+        $data['no_reg'] = $asesi->jadwal->asesor->nomor_regis ?? '-';
         $data['nama_asesi'] = $asesi->asesi->nama_lengkap ?? '-';
         $data['ttd_asesi'] = $asesi->asesi->tanda_tangan ?? null;
         $data['ttd_asesor'] = $asesi->jadwal->asesor->tanda_tangan ?? null;

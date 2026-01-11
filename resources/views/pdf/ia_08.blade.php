@@ -24,7 +24,7 @@
         <tr>
             <td width="150"><b>Skema Sertifikasi</b></td>
             <td width="10">:</td>
-            <td>{{ $data->jadwal->skema->judul_skema ?? '-' }}</td>
+            <td>{{ $data->jadwal->skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><b>TUK</b></td>
@@ -34,7 +34,7 @@
         <tr>
             <td><b>Nama Asesor</b></td>
             <td>:</td>
-            <td>{{ $data->jadwal->asesor->nama_asesor ?? '-' }}</td>
+            <td>{{ $data->jadwal->asesor->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
             <td><b>Nama Asesi</b></td>
@@ -178,7 +178,7 @@
                     @else
                         <br><br><br><br>
                     @endif
-                    <b>{{ $data->jadwal->asesor->nama_asesor ?? '...................' }}</b>
+                    <b>{{ $data->jadwal->asesor->nama_lengkap ?? '...................' }}</b>
                 </td>
             </tr>
         </table>
