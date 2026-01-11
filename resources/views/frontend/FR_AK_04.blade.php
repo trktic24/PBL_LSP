@@ -75,9 +75,9 @@
                     <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                         @php
                             $pertanyaan = [
-                                'penjelasan_banding' => 'Apakah Proses Banding telah dijelaskan kepada Anda?',
-                                'diskusi_dengan_asesor' => 'Apakah Anda telah mendiskusikan Banding dengan Asesor?',
-                                'melibatkan_orang_lain' => 'Apakah Anda mau melibatkan "orang lain" membantu Anda dalam Proses Banding?'
+                                'penjelasan_banding' => $template['q1'] ?? 'Apakah Proses Banding telah dijelaskan kepada Anda?',
+                                'diskusi_dengan_asesor' => $template['q2'] ?? 'Apakah Anda telah mendiskusikan Banding dengan Asesor?',
+                                'melibatkan_orang_lain' => $template['q3'] ?? 'Apakah Anda mau melibatkan "orang lain" membantu Anda dalam Proses Banding?'
                             ];
                             $keys = array_keys($pertanyaan);
                         @endphp
@@ -105,9 +105,8 @@
                 </table>
             </div>
 
-            {{-- MOBILE VIEW (Sama logicnya) --}}
+            {{-- MOBILE VIEW --}}
             <div class="md:hidden p-3 sm:p-4 space-y-3">
-               {{-- (Code mobile view disederhanakan, logic sama dengan desktop) --}}
                @for ($i = 1; $i <= 3; $i++)
                     @php 
                         $key = $keys[$i-1];
@@ -142,7 +141,7 @@
 
                 {{-- ALASAN BANDING --}}
                 <label for="alasan_banding" class="block text-sm font-bold text-gray-900 mb-2">Banding ini diajukan atas alasan sebagai berikut:</label>
-                <textarea name="alasan_banding" id="alasan_banding" rows="5" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 p-3 text-sm" placeholder="Jelaskan alasan banding...">{{ $respon->alasan_banding ?? '' }}</textarea>
+                <textarea name="alasan_banding" id="alasan_banding" rows="5" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 p-3 text-sm" placeholder="Jelaskan alasan banding...">{{ old('alasan_banding', $respon->alasan_banding ?? $template['default_alasan'] ?? '') }}</textarea>
 
                 <div class="mt-4 bg-red-50 border-l-4 border-red-500 p-3">
                     <p class="text-xs text-red-700"><strong>Catatan:</strong> Anda berhak mengajukan banding jika menilai proses asesmen tidak sesuai SOP.</p>
@@ -156,7 +155,7 @@
                             $ttdAsesiBase64 = getTtdBase64($sertifikasi->asesi->tanda_tangan ?? null, null, 'asesi');
                         @endphp
                         @if($ttdAsesiBase64)
-                            <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" class="h-32 object-contain">
+                            <img src="{{ $ttdAsesiBase64 }}" class="h-32 object-contain">
                         @else
                             <p class="text-gray-400 text-sm">Tanda tangan belum tersedia di profil</p>
                         @endif

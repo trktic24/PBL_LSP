@@ -273,7 +273,7 @@
                             @foreach ($elemen->kriteria as $idxKuk => $kuk)
                                 @php
                                     // Cari respon dari database berdasarkan id_kriteria
-                                    $respon = $sertifikasi->responapl2ia01
+                                    $respon = $sertifikasi->responApl02Ia01
                                         ->where('id_kriteria', $kuk->id_kriteria)
                                         ->first();
                                     $responAsesi = $respon->respon_asesi_apl02 ?? null;
@@ -341,7 +341,7 @@
                 <div class="signature-title">Asesi</div>
                 <div class="signature-space">
                     @if ($ttdAsesiBase64)
-                        <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi"
+                        <img src="{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi"
                             style="max-width: 120px; max-height: 70px; margin-top: 5px;">
                     @endif
                 </div>
@@ -357,7 +357,7 @@
                 <div class="signature-title">Asesor</div>
                 <div class="signature-space">
                     @if ($ttdAsesorBase64)
-                        <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor"
+                        <img src="{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor"
                             style="max-width: 120px; max-height: 70px; margin-top: 5px;">
                     @endif
                 </div>

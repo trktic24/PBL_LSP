@@ -145,7 +145,7 @@
                     {{-- CATATAN TAMBAHAN --}}
                     <div class="mb-8">
                         <label for="catatan_tambahan" class="text-sm font-bold text-gray-900">Catatan/Komentar Lainnya (Apabila ada):</label>
-                        <textarea id="catatan_tambahan" name="catatan_tambahan" rows="4" class="mt-2 w-full border border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-3 bg-gray-50"></textarea>
+                        <textarea id="catatan_tambahan" name="catatan_tambahan" rows="4" class="mt-2 w-full border border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-3 bg-gray-50">{{ old('catatan_tambahan', $template['catatan_tambahan'] ?? '') }}</textarea>
                     </div>
 
                     {{-- TOMBOL NAVIGASI --}}

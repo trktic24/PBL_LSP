@@ -140,7 +140,7 @@
                         <tr>
                             <td class="p-2 font-bold align-top" colspan="1">Rekomendasi untuk peningkatan :</td>
                             <td class="p-2" colspan="4">
-                                <textarea name="rekomendasi_aspek" class="w-full h-20 border-none outline-none resize-none text-sm" placeholder="Tulis rekomendasi di sini..."></textarea>
+                                <textarea name="rekomendasi_aspek" class="w-full h-20 border-none outline-none resize-none text-sm" placeholder="Tulis rekomendasi di sini...">{{ old('rekomendasi_aspek', $data->rekomendasi_aspek ?? $template['rekomendasi_aspek'] ?? '') }}</textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -182,7 +182,7 @@
                         <tr>
                             <td class="p-2 font-bold align-top" colspan="1">Rekomendasi untuk peningkatan :</td>
                             <td class="p-2" colspan="5">
-                                <textarea name="rekomendasi_dimensi" class="w-full h-20 border-none outline-none resize-none text-sm" placeholder="Tulis rekomendasi di sini..."></textarea>
+                                <textarea name="rekomendasi_dimensi" class="w-full h-20 border-none outline-none resize-none text-sm" placeholder="Tulis rekomendasi di sini...">{{ old('rekomendasi_dimensi', $data->rekomendasi_dimensi ?? $template['rekomendasi_dimensi'] ?? '') }}</textarea>
                             </td>
                         </tr>
                     </tbody>
@@ -202,14 +202,14 @@
                     <tbody>
                         <tr>
                             <td class="p-2 align-top h-32">
-                                <input type="text" name="peninjau[nama]" class="w-full border-b border-gray-300 outline-none mb-2 bg-transparent" placeholder="Nama...">
+                                <input type="text" name="peninjau[nama]" value="{{ old('peninjau.nama', $data->peninjau['nama'] ?? '') }}" class="w-full border-b border-gray-300 outline-none mb-2 bg-transparent" placeholder="Nama...">
                             </td>
                             <td class="p-2 align-top h-32 text-center flex flex-col justify-between">
-                                <input type="text" name="peninjau[tanggal]" class="w-full border-b border-gray-300 outline-none mb-8 text-center bg-transparent" placeholder="Tanggal...">
+                                <input type="text" name="peninjau[tanggal]" value="{{ old('peninjau.tanggal', $data->peninjau['tanggal'] ?? '') }}" class="w-full border-b border-gray-300 outline-none mb-8 text-center bg-transparent" placeholder="Tanggal...">
                                 <div class="text-gray-400 text-xs italic mt-auto">(Tanda Tangan)</div>
                             </td>
                             <td class="p-2 align-top h-32">
-                                <textarea name="peninjau[komentar]" class="w-full h-full border-none outline-none resize-none bg-transparent" placeholder="Tulis komentar..."></textarea>
+                                <textarea name="peninjau[komentar]" class="w-full h-full border-none outline-none resize-none bg-transparent" placeholder="Tulis komentar...">{{ old('peninjau.komentar', $data->peninjau['komentar'] ?? $template['peninjau_komentar'] ?? '') }}</textarea>
                             </td>
                         </tr>
                     </tbody>

@@ -20,10 +20,12 @@ return new class extends Migration {
                 ->onDelete('cascade');
 
             $table->text('pertanyaan')->nullable();
+            $table->text('jawaban')->nullable();
             $table->text('tanggapan')->nullable();
 
             // 'pencapaian' (Ya/Tidak) -> boolean, diisi belakangan
             $table->boolean('pencapaian')->nullable()->default(null)->comment('1 untuk Iya, 0 untuk Tidak');
+            $table->text('catatan_umpan_balik')->nullable();
 
             $table->timestamps();
         });

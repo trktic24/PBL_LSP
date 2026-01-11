@@ -88,11 +88,10 @@
         <div class="p-4 bg-blue-50 border border-blue-100 rounded-lg mb-6 shadow-sm">
             <h4 class="font-semibold text-blue-800 mb-2">Persetujuan dan Kerahasiaan</h4>
             <p class="text-gray-800 text-sm leading-relaxed mb-2">
-                Bahwa saya sudah mendapatkan penjelasan Hak dan Prosedur Banding oleh Asesor.
+                {{ $template['pernyataan_1'] ?? 'Bahwa saya sudah mendapatkan penjelasan Hak dan Prosedur Banding oleh Asesor.' }}
             </p>
             <p class="text-gray-700 text-sm leading-relaxed">
-                Saya setuju mengikuti asesmen dengan pemahaman bahwa informasi yang dikumpulkan hanya digunakan untuk
-                pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.
+                {{ $template['pernyataan_2'] ?? 'Saya setuju mengikuti asesmen dengan pemahaman bahwa informasi yang dikumpulkan hanya digunakan untuk pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.' }}
             </p>
         </div>
 
@@ -107,7 +106,7 @@
                 @endphp
                 @if($ttdAsesiBase64)
                     {{-- Jika ada TTD di database, tampilkan --}}
-                    <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" 
+                    <img src="{{ $ttdAsesiBase64 }}" 
                          alt="Tanda Tangan Asesi" 
                          class="h-40 object-contain">
                 @else

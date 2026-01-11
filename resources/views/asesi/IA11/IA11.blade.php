@@ -68,7 +68,7 @@
                     if ($asesi->tanda_tangan ?? false) {
                         $pathAsesi = storage_path('app/private_uploads/' . $asesi->tanda_tangan);
                         if (file_exists($pathAsesi)) {
-                            $ttdAsesi = base64_encode(file_get_contents($pathAsesi));
+                            $ttdAsesi = 'data:image/png;base64,' . base64_encode(file_get_contents($pathAsesi));
                         }
                     }
 
@@ -77,7 +77,7 @@
                     if ($asesor->tanda_tangan ?? false) {
                         $pathAsesor = storage_path('app/private_uploads/' . $asesor->tanda_tangan);
                         if (file_exists($pathAsesor)) {
-                            $ttdAsesor = base64_encode(file_get_contents($pathAsesor));
+                            $ttdAsesor = 'data:image/png;base64,' . base64_encode(file_get_contents($pathAsesor));
                         }
                     }
                     
@@ -470,7 +470,7 @@
                                     <div
                                         class="bg-gray-100 rounded-lg p-3 min-h-[120px] border-2 border-dashed border-gray-300 text-center flex items-center justify-center">
                                         @if ($ttdAsesi)
-                                            <img src="data:image/png;base64,{{ $ttdAsesi }}"
+                                            <img src="{{ $ttdAsesi }}"
                                                 alt="Tanda Tangan Asesi" class="max-h-28">
                                         @else
                                             <p class="text-sm text-gray-500 italic">Tanda tangan belum diunggah</p>
@@ -485,7 +485,7 @@
                                     <div
                                         class="bg-gray-100 rounded-lg p-3 min-h-[120px] border-2 border-dashed border-gray-300 text-center flex items-center justify-center">
                                         @if ($ttdAsesor)
-                                            <img src="data:image/png;base64,{{ $ttdAsesor }}"
+                                            <img src="{{ $ttdAsesor }}"
                                                 alt="Tanda Tangan Asesor" class="max-h-28">
                                         @else
                                             <p class="text-sm text-gray-500 italic">Tanda tangan belum diunggah</p>

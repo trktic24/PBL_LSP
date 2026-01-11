@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Asesi\IA03;
 
 use App\Models\IA03;
+use App\Models\MasterFormTemplate;
+use App\Models\Skema;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
@@ -23,6 +25,43 @@ class IA03Controller extends Controller
 
         // Ambil seluruh pertanyaan IA03 milik asesi ini
         $pertanyaanIA03 = IA03::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
+
+        // [AUTO-LOAD TEMPLATE] Jika belum ada pertanyaan, ambil dari Master Template atau gunakan Statis
+        if ($pertanyaanIA03->isEmpty()) {
+            $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                        ->where('form_code', 'FR.IA.03')
+                                        ->first();
+            
+            if (!$template) {
+                $template = MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.03')
+                                            ->first();
+            }
+            
+            // Hardcoded Static Questions as Default Fallback
+            $defaultQuestions = [
+                "Apa yang Anda lakukan jika terjadi keadaan darurat saat melakukan tugas ini?",
+                "Bagaimana Anda memastikan peralatan yang digunakan dalam kondisi aman dan siap pakai?",
+                "Mengapa prosedur kerja ini penting untuk diikuti sesuai standar yang ada?",
+                "Bagaimana Anda menangani jika terjadi kesalahan atau kegagalan dalam proses kerja?"
+            ];
+
+            $questions = ($template && !empty($template->content)) ? $template->content : $defaultQuestions;
+
+            foreach ($questions as $qText) {
+                IA03::create([
+                    'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
+                    'pertanyaan' => $qText,
+                    'jawaban' => '',
+                    'pencapaian' => null,
+                    'catatan_umpan_balik' => null
+                ]);
+            }
+            // Refresh collection
+            $pertanyaanIA03 = IA03::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->get();
+        }
         $catatanUmpanBalik = $pertanyaanIA03
             ->pluck('catatan_umpan_balik')
             ->filter()
@@ -110,61 +149,102 @@ class IA03Controller extends Controller
     }
 
     /**
-     * Menampilkan Template Form FR.IA.03 (Admin Master View)
+     * [MASTER] Menampilkan editor tamplate (Pertanyaan Lisan) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.IA.03')
+                                    ->first();
+        
+        // Default values if no template exists
+        $questions = $template ? $template->content : [];
+
+        return view('Admin.master.skema.template.ia03', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'questions' => $questions
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*' => 'required|string',
+        ]);
+
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.03'
+            ],
+            ['content' => $request->questions]
+        );
+
+        return redirect()->back()->with('success', 'Templat IA-03 berhasil diperbarui.');
+    }
+
+    /**
+     * Menampilkan Template Form FR.IA.03 (Admin Master View) - DEPRECATED for management
      */
     public function adminShow($id_skema)
     {
-        $skema = \App\Models\Skema::findOrFail($id_skema);
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        
+        // Mock data sertifikasi
+        $sertifikasi = new \App\Models\DataSertifikasiAsesi();
+        $sertifikasi->id_data_sertifikasi_asesi = 0;
+        
+        $asesi = new \App\Models\Asesi(['nama_lengkap' => 'Template Master']);
+        $sertifikasi->setRelation('asesi', $asesi);
+        
+        $jadwal = new \App\Models\Jadwal(['tanggal_pelaksanaan' => now()]);
+        $jadwal->setRelation('skema', $skema);
+        $asesor = new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']);
+        $jadwal->setRelation('asesor', $asesor);
+        $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Tempat Kerja']));
+        $sertifikasi->setRelation('jadwal', $jadwal);
 
-        $query = \App\Models\DataSertifikasiAsesi::with([
-            'asesi.dataPekerjaan',
-            'jadwal.skema',
-            'jadwal.masterTuk',
-            'jadwal.asesor',
-            'responApl2Ia01',
-            'responBuktiAk01',
-            'lembarJawabIa05',
-            'komentarAk05'
-        ])->whereHas('jadwal', function($q) use ($id_skema) {
-            $q->where('id_skema', $id_skema);
-        });
+        $defaultQuestions = [
+            "Apa yang Anda lakukan jika terjadi keadaan darurat saat melakukan tugas ini?",
+            "Bagaimana Anda memastikan peralatan yang digunakan dalam kondisi aman dan siap pakai?",
+            "Mengapa prosedur kerja ini penting untuk diikuti sesuai standar yang ada?",
+            "Bagaimana Anda menangani jika terjadi kesalahan atau kegagalan dalam proses kerja?"
+        ];
 
-        if (request('search')) {
-            $search = request('search');
-            $query->whereHas('asesi', function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%");
-            });
+        $pertanyaanIA03 = collect();
+        foreach ($defaultQuestions as $idx => $qText) {
+            $pertanyaanIA03->push(new IA03([
+                'pertanyaan' => $qText,
+                'jawaban' => '',
+                'pencapaian' => null,
+                'catatan_umpan_balik' => null
+            ]));
         }
 
-        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
-
-        $user = auth()->user();
-        $asesor = new \App\Models\Asesor();
-        $asesor->id_asesor = 0;
-        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
-        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
-        $asesor->status_verifikasi = 'approved';
-        $asesor->setRelation('skemas', collect());
-        $asesor->setRelation('jadwals', collect());
-        $asesor->setRelation('skema', null);
-
-        $jadwal = new \App\Models\Jadwal([
-            'tanggal_pelaksanaan' => now(),
-            'waktu_mulai' => '08:00',
-        ]);
-        $jadwal->setRelation('skema', $skema);
-        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
-
-        return view('Admin.master.skema.daftar_asesi', [
-            'pendaftar' => $pendaftar,
+        return view('asesi.ia03.index', [
+            'sertifikasi' => $sertifikasi,
+            'asesi' => $asesi,
             'asesor' => $asesor,
-            'jadwal' => $jadwal,
+            'skema' => $skema,
+            'jenisTuk' => $jadwal->jenisTuk,
+            'tuk' => $jadwal->masterTuk,
+            'tanggal' => now(),
+            'kelompokPekerjaan' => $skema->kelompokPekerjaan,
+            'unitKompetensi' => $skema->kelompokPekerjaan->flatMap->unitKompetensi,
+            'pertanyaanIA03' => $pertanyaanIA03,
+            'trackerUrl' => '#',
+            'backUrl' => '#',
+            'catatanUmpanBalik' => null,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'nama_lengkap'),
-            'sortDirection' => request('direction', 'asc'),
-            'perPage' => request('per_page', 10),
-            'targetRoute' => 'ia03.index',
-            'buttonLabel' => 'FR.IA.03'
         ]);
     }
 }

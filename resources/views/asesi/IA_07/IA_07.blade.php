@@ -29,7 +29,7 @@
 
         {{-- 1. SIDEBAR (Desktop Only) --}}
             <div class="hidden md:block md:w-80 flex-shrink-0">
-                <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" :backUrl="$backUrl" />
+                <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" :backUrl="url('/asesi/tracker/' . $sertifikasi->id_jadwal)" />
             </div>
 
             {{-- 2. HEADER MOBILE (Data Dinamis) --}}
@@ -41,12 +41,14 @@
             @endphp
 
             <x-mobile_header 
-                :title="$sertifikasi->jadwal->skema->nama_skema ?? 'Skema Sertifikasi'" 
-                :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" 
-                :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'" 
+                :title="$sertifikasi->jadwal->skema->nama_skema" 
+                :code="$sertifikasi->jadwal->skema->kode_unit ?? $sertifikasi->jadwal->skema->nomor_skema" 
+                :name="$asesi->nama_lengkap" 
                 :image="$gambarSkema"
-                :backUrl="$backUrl"  
+                {{-- Samakan di sini juga supaya pas di HP nggak nyasar ke dashboard --}}
+                :backUrl="url('/asesi/tracker/' . $sertifikasi->id_jadwal)"
             />
+
         {{-- MAIN CONTENT --}}
         <main class="flex-1 p-8 bg-gray-100 overflow-y-auto">
             <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-lg p-8">
@@ -217,4 +219,5 @@
             </div>
         </main>
     </div>
+    
 </x-app-layout>
