@@ -50,12 +50,12 @@
                     <div class="flex flex-wrap">
                         <dt class="min-w-[80px] sm:min-w-[100px] text-gray-600">Judul</dt>
                         <dd class="text-gray-900 font-medium break-words flex-1" id="judul-skema">
-                            : Junior Web Developer</dd>
+                            : {{ $skema->nama_skema }}</dd>
                     </div>
                     <div class="flex flex-wrap">
                         <dt class="min-w-[80px] sm:min-w-[100px] text-gray-600">Nomor</dt>
                         <dd class="text-gray-900 font-medium break-words flex-1" id="nomor-skema">
-                            : SKM.JWD.2024.01</dd>
+                            : {{ $skema->nomor_skema }}</dd>
                     </div>
                 </dl>
             </div>
@@ -131,52 +131,77 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @for ($i = 1; $i <= 7; $i++)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $i }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                        J.XXXXXXXX.XXX.XX
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-700">
-                                        Lorem ipsum Dolor Sit Amet
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                        SKKNI No xxx tahun 20xx
+                            @php
+                                $units = $skema->unitKompetensi ?? collect();
+                            @endphp
+
+                            @if ($units->isEmpty())
+                                <tr>
+                                    <td colspan="4" class="text-center text-sm text-gray-500 py-6">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <i class="fas fa-clipboard-list text-gray-300 text-3xl mb-2"></i>
+                                            <p>Belum ada unit kompetensi pada skema ini.</p>
+                                        </div>
                                     </td>
                                 </tr>
-                            @endfor
+                            @else
+                                @foreach ($units as $index => $unit)
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            {{ $index + 1 }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-mono">
+                                            {{ $unit->kode_unit }}
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-700">
+                                            {{ $unit->judul_unit }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                            {{ $unit->standar_kompetensi ?? '-' }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>
 
                 {{-- Mobile Card Version (hidden di desktop) --}}
                 <div class="md:hidden space-y-3">
-                    @for ($i = 1; $i <= 7; $i++)
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 shadow-sm">
-                            <div class="flex items-start mb-2">
-                                <span class="inline-flex items-center justify-center w-6 h-6 bg-gray-900 text-white text-xs font-bold rounded-full mr-2 flex-shrink-0">
-                                    {{ $i }}
-                                </span>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-xs font-semibold text-gray-900 mb-1 break-words">
-                                        Lorem ipsum Dolor Sit Amet
-                                    </p>
-                                </div>
-                            </div>
-                            <dl class="space-y-1 text-xs">
-                                <div class="flex">
-                                    <dt class="text-gray-500 w-24 flex-shrink-0">Kode Unit:</dt>
-                                    <dd class="text-gray-700 font-medium">J.XXXXXXXX.XXX.XX</dd>
-                                </div>
-                                <div class="flex">
-                                    <dt class="text-gray-500 w-24 flex-shrink-0">Standard:</dt>
-                                    <dd class="text-gray-700 break-words">SKKNI No xxx tahun 20xx</dd>
-                                </div>
-                            </dl>
+                    @php
+                        $units = $skema->unitKompetensi ?? collect();
+                    @endphp
+
+                    @if ($units->isEmpty())
+                        <div class="text-center text-sm text-gray-500 py-6 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                            <p>Belum ada unit kompetensi.</p>
                         </div>
-                    @endfor
+                    @else
+                        @foreach ($units as $index => $unit)
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 shadow-sm">
+                                <div class="flex items-start mb-2">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 bg-gray-900 text-white text-xs font-bold rounded-full mr-2 flex-shrink-0">
+                                        {{ $index + 1 }}
+                                    </span>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-semibold text-gray-900 mb-1 break-words">
+                                            {{ $unit->judul_unit }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <dl class="space-y-1 text-xs">
+                                    <div class="flex">
+                                        <dt class="text-gray-500 w-24 flex-shrink-0">Kode Unit:</dt>
+                                        <dd class="text-gray-700 font-medium font-mono">{{ $unit->kode_unit }}</dd>
+                                    </div>
+                                    <div class="flex">
+                                        <dt class="text-gray-500 w-24 flex-shrink-0">Standard:</dt>
+                                        <dd class="text-gray-700 break-words">{{ $unit->standar_kompetensi ?? '-' }}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
 

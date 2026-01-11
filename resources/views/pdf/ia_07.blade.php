@@ -149,25 +149,25 @@
             <td style="width: 50%; text-align: center;">
                 Asesi,
                 <br><br><br><br>
-                <strong>{{ $sertifikasi->asesi->nama_lengkap ?? '(.......................)' }}</strong>
                 @if($sertifikasi->asesi && $sertifikasi->asesi->tanda_tangan)
-                    <br>
                     <img src="{{ getTtdBase64($sertifikasi->asesi->tanda_tangan) }}" style="width: 100px; height: auto;">
+                    <br>
                 @else
                     <br><br><br><br>
                 @endif
+                <strong>{{ $sertifikasi->asesi->nama_lengkap ?? '(.......................)' }}</strong>
             </td>
             <td style="width: 50%; text-align: center;">
                 Semarang, {{ date('d F Y') }}<br>
                 Asesor Kompetensi,
                 <br><br><br><br>
-                <strong>{{ $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '(.......................)' }}</strong>
-                @if($sertifikasi->jadwal->skema->asesor->first() && $sertifikasi->jadwal->skema->asesor->first()->tanda_tangan)
+                @if($sertifikasi->jadwal->asesor && $sertifikasi->jadwal->asesor->tanda_tangan)
+                     <img src="{{ getTtdBase64($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="width: 100px; height: auto;">
                      <br>
-                     <img src="{{ getTtdBase64($sertifikasi->jadwal->skema->asesor->first()->tanda_tangan) }}" style="width: 100px; height: auto;">
                 @else
                     <br><br><br><br>
                 @endif
+                <strong>{{ $sertifikasi->jadwal->asesor->nama_asesor ?? '(.......................)' }}</strong>
             </td>
         </tr>
     </table>

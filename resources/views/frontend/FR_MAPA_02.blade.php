@@ -157,7 +157,7 @@
         
         {{-- TANDA TANGAN --}}
         <div class="mb-10">
-            <x-kolom_ttd.penyusunvalidator />
+            <x-kolom_ttd.penyusunvalidator :sertifikasi="$sertifikasi" />
         </div>
 
         {{-- TOMBOL --}}

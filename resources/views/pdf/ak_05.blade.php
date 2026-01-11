@@ -88,16 +88,18 @@
         <table class="no-border">
             <tr>
                 <td width="50%">
-                    <div style="margin-bottom: 50px;">
+                    <div style="margin-bottom: 10px;">
                     Nama Asesor:<br>
-                    <strong>{{ $asesor->nama_lengkap }}</strong>
                     </div>
                     @if($asesor->tanda_tangan)
                         <img src="{{ getTtdBase64($asesor->tanda_tangan) }}" style="max-height: 80px; max-width: 200px;">
+                        <br>
                     @else
                         <br><br><br>
-                        (.......................)
                     @endif
+                    <strong>{{ $asesor->nama_lengkap }}</strong>
+                    <br>
+                    (.......................)
                 </td>
                 <td width="50%">
                     {{-- Space for verification/notes if needed --}}

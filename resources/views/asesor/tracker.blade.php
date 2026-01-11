@@ -19,7 +19,6 @@
         }
 
         // Cek apakah Asesmen sudah Final (Sudah ada keputusan AK.02)
-        // Pastikan variabel $has_ak02_data dikirim dari Controller
         $isFinalized = ($level >= 100 && ($has_ak02_data ?? false));
 
         // =========================================================================
@@ -63,42 +62,22 @@
         // [BARU] Helper Tombol Aksi Khusus Asesmen (IA.05 dst)
         function getActionBtn($status, $isFinalized)
         {
-            // 1. Kalau Asesmen udah Final (AK.02 dikunci), tombol mati
             if ($isFinalized) {
-                return [
-                    'label' => 'Selesai',
-                    'class' => 'bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed'
-                ];
+                return ['label' => 'Selesai', 'class' => 'bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed'];
             }
-
-            // 2. Kalau Status DONE (Sudah Dinilai) -> Tombol Kuning (Edit)
             if ($status == 'DONE') {
-                return [
-                    'label' => 'Edit Penilaian',
-                    'class' => 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer'
-                ];
+                return ['label' => 'Edit Penilaian', 'class' => 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer'];
             }
-
-            // 3. Kalau Status ACTIVE (Bisa Dinilai) -> Tombol Biru Solid (Lakukan)
             if ($status == 'ACTIVE') {
-                return [
-                    'label' => 'Lakukan Penilaian',
-                    'class' => 'bg-blue-100 text-blue-600 hover:bg-blue-200 cursor-pointer'
-                ];
+                return ['label' => 'Lakukan Penilaian', 'class' => 'bg-blue-100 text-blue-600 hover:bg-blue-200 cursor-pointer'];
             }
-
-            // 4. Sisanya (LOCKED) -> Tombol Abu
-            return [
-                'label' => 'Terkunci',
-                'class' => 'bg-gray-100 text-gray-400 pointer-events-none cursor-not-allowed'
-            ];
+            return ['label' => 'Terkunci', 'class' => 'bg-gray-100 text-gray-400 pointer-events-none cursor-not-allowed'];
         }
 
         // =========================================================================
         // 3. CEK STATUS PER ITEM (DYNAMIC LOGIC)
         // =========================================================================
 
-        // Config Show/Hide (Default 1 jika null)
         $show = [
             'ia01' => $listForm->fr_ia_01 ?? 1,
             'ia02' => $listForm->fr_ia_02 ?? 1,
@@ -114,66 +93,66 @@
         ];
 
         // --- CEK STATUS DONE ---
-        // Gunakan optional() agar tidak error jika relasi belum ada di model
-
-        // IA.01
         $ia01Done = optional($dataSertifikasi->ia01)->exists() ?? false;
         $stIa01 = $ia01Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia01Pass = $ia01Done || ($show['ia01'] != 1);
 
         // IA.02 (Existing)
         // Logic updated: IA02 is considered done if IA01 is done
-        $ia02Done = (optional($dataSertifikasi->ia02)->exists() ?? false) || $ia01Done;
+       // Cukup cek apakah ia02 ada isinya (true) atau null (false)
+        $ia02Done = $dataSertifikasi->ia02 && $dataSertifikasi->ia02->count() > 0;
         $stIa02 = $ia02Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia02Pass = $ia02Done || ($show['ia02'] != 1);
 
-        // IA.03
-        $ia03Done = optional($dataSertifikasi->ia03)->exists() ?? false;
+        // IA.03 (Tipe Data: Collection/List)
+        // Kita cek: Datanya ada TIDAK null, DAN jumlahnya lebih dari 0
+        $ia03Done = $dataSertifikasi->ia03 && $dataSertifikasi->ia03->count() > 0;
         $stIa03 = $ia03Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia03Pass = $ia03Done || ($show['ia03'] != 1);
 
-        // IA.04
-        $ia04Done = optional($dataSertifikasi->ia04)->exists() ?? false;
+        // IA.04 (Tipe Data: Single Object/Satu Data)
+        // Kita cek: Cukup pastikan variabelnya ada isinya (bukan null)
+        // JANGAN PAKAI count() DI SINI
+        $ia04Done = $dataSertifikasi->ia04 ? true : false;
         $stIa04 = $ia04Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia04Pass = $ia04Done || ($show['ia04'] != 1);
 
-        // IA.05 (Existing - Cek pencapaian_ia05)
         $ia05Done = $dataSertifikasi->lembarJawabIa05()->whereNotNull('pencapaian_ia05')->exists();
         $stIa05 = $ia05Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia05Pass = $ia05Done || ($show['ia05'] != 1);
 
-        // IA.06 (Existing - Cek pencapaian)
         $ia06Done = $dataSertifikasi->ia06Answers()->whereNotNull('pencapaian')->exists();
         $stIa06 = $ia06Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia06Pass = $ia06Done || ($show['ia06'] != 1);
 
-        // IA.07 (Existing - Cek pencapaian)
         $ia07Done = $dataSertifikasi->ia07()->whereNotNull('pencapaian')->exists();
         $stIa07 = $ia07Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia07Pass = $ia07Done || ($show['ia07'] != 1);
 
-        // IA.08
-        $ia08Done = optional($dataSertifikasi->ia08)->exists() ?? false;
+        // IA.08 (Log: Limit 1 -> Single Object)
+        // Cek: Apakah variabel ada isinya?
+        $ia08Done = $dataSertifikasi->ia08 ? true : false;
         $stIa08 = $ia08Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia08Pass = $ia08Done || ($show['ia08'] != 1);
 
-        // IA.09
-        $ia09Done = !empty(optional($dataSertifikasi->ia09)->pencapaian_ia09);
+        // IA.09 (Log: Limit 1 -> Single Object)
+        // Cek: Apakah variabel ada isinya?
+        $ia09Done = $dataSertifikasi->ia09 ? true : false; 
         $stIa09 = $ia09Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia09Pass = $ia09Done || ($show['ia09'] != 1);
 
-        // IA.10 (Existing)
-        $ia10Done = optional($dataSertifikasi->ia10)->exists() ?? false;
+        // IA.10 (Biasanya Single, sesuaikan jika beda)
+        // Jika IA.10 single object:
+        $ia10Done = $dataSertifikasi->ia10 ? true : false;
         $stIa10 = $ia10Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia10Pass = $ia10Done || ($show['ia10'] != 1);
 
-        // IA.11
-        $ia11Done = optional($dataSertifikasi->ia11)->exists() ?? false;
+        // IA.11 (Log: TIDAK ADA LIMIT -> Collection/List)
+        // ERRORNYA DISINI: Jangan pakai exists(), pakai count()
+        $ia11Done = $dataSertifikasi->ia11 && $dataSertifikasi->ia11->count() > 0;
         $stIa11 = $ia11Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia11Pass = $ia11Done || ($show['ia11'] != 1);
 
-
-        // SYARAT AK.02 TERBUKA
         $allIADone = ($ia01Pass && $ia02Pass && $ia03Pass && $ia04Pass && $ia05Pass &&
             $ia06Pass && $ia07Pass && $ia08Pass && $ia09Pass && $ia10Pass && $ia11Pass);
     @endphp
@@ -205,7 +184,6 @@
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold text-gray-800">FR.APL.01 - Permohonan Sertifikasi</h3>
                                 <div class="flex space-x-2 ml-4">
-                                    {{-- TOMBOL VERIFIKASI DIHAPUS --}}
                                     <a href="{{ route('apl01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState(100, 0) }}"><span>Lihat
@@ -232,7 +210,6 @@
                             <div class="flex justify-between items-start">
                                 <h3 class="text-lg font-semibold text-gray-800">FR.MAPA.01 - Merencanakan Aktivitas</h3>
                                 <div class="flex space-x-2 ml-4">
-                                    {{-- TOMBOL VERIFIKASI DIHAPUS --}}
                                     <a href="{{ route('mapa01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState(100, 0) }}">Lihat
@@ -259,7 +236,6 @@
                                 <h3 class="text-lg font-semibold {{ $level < 10 ? 'text-gray-400' : 'text-gray-800' }}">
                                     FR.MAPA.02 - Peta Instrumen</h3>
                                 <div class="flex space-x-2 ml-4">
-                                    {{-- TOMBOL VERIFIKASI DIHAPUS --}}
                                     <a href="{{ route('mapa02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         target="_blank"
                                         class="text-xs font-bold py-1 px-3 rounded-md flex items-center gap-1 {{ pdfState($level, 20) }}">Lihat
@@ -286,7 +262,6 @@
                                 <h3 class="text-lg font-semibold {{ $level < 20 ? 'text-gray-400' : 'text-gray-800' }}">
                                     FR.APL.02 - Asesmen Mandiri</h3>
                                 <div class="flex space-x-2 ml-4">
-                                    {{-- LOGIKA BARU: Jika diterima -> DISABLE --}}
                                     <a href="{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         class="text-xs font-bold py-1 px-3 rounded-md {{ $dataSertifikasi->rekomendasi_apl02 == 'diterima' ? 'bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed' : btnState($level, 20, $isFinalized) }}">
                                         Verifikasi
@@ -308,7 +283,10 @@
                     {{-- ITEM 5: FR.AK.01 --}}
                     <div class="relative pl-20 pb-8 group">
                         @php
-                            $ak01Done = ($level >= 40 || $dataSertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui');
+                            // PERBAIKAN LOGIKA:
+                            // Tombol dianggap SELESAI (disable) jika rekomendasi_ak01 = 'diterima'
+                            // ATAU jika status global sudah lanjut.
+                            $ak01Done = ($level >= 40 || $dataSertifikasi->status_sertifikasi == 'persetujuan_asesmen_disetujui' || $dataSertifikasi->rekomendasi_ak01 == 'diterima');
                         @endphp
                         <div
                             class="absolute left-0 top-2 z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 border-white
@@ -322,8 +300,8 @@
                                 <h3 class="text-lg font-semibold {{ $level < 30 ? 'text-gray-400' : 'text-gray-800' }}">
                                     FR.AK.01 - Persetujuan & Kerahasiaan</h3>
                                 <div class="flex gap-2 ml-4">
-                                    {{-- LOGIKA BARU: Jika diterima -> DISABLE --}}
-                                    <a href="{{ route('ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
+                                    {{-- KONDISI CLASS BUTTON SUDAH MENGGUNAKAN $ak01Done YANG BARU --}}
+                                    <a href="{{ route('asesor.ak01.index', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                         class="text-xs font-bold py-1 px-3 rounded-md {{ $ak01Done ? 'bg-gray-200 text-gray-400 pointer-events-none cursor-not-allowed' : btnState($level, 20, $isFinalized) }}">
                                         Verifikasi
                                     </a>
@@ -409,7 +387,6 @@
                                                 $btn['label'] = 'Lihat Instruksi';
                                             }
                                         @endphp
-                                        {{-- Link ke Show karena itu formnya --}}
                                         <a href="{{ route('ia02.show', $dataSertifikasi->id_data_sertifikasi_asesi) }}"
                                             class="{{ $btn['class'] }} text-xs font-bold py-1 px-3 rounded-md">{{ $btn['label'] }}</a>
                                         <a href="{{ route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi) }}"

@@ -2,6 +2,7 @@
 @php
     $jadwal = $sertifikasi->jadwal;
     $asesi = $sertifikasi->asesi;
+    $job = $asesi->dataPekerjaan; // Loaded in Controller
     $backUrl = isset($isMasterView) ? '#' : route('asesor.tracker', $sertifikasi->id_data_sertifikasi_asesi);
 @endphp
 
@@ -52,19 +53,19 @@
             <dl class="grid grid-cols-1 md:grid-cols-4 gap-y-6 text-sm">
                 {{-- Nama Asesi --}}
                 <dt class="col-span-1 font-medium text-gray-500">Nama Asesi</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="nama-pemohon">[Memuat...]</span></dd>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: {{ $asesi->nama_lengkap }}</dd>
 
                 {{-- Jabatan --}}
                 <dt class="col-span-1 font-medium text-gray-500">Jabatan</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="jabatan-pemohon">[Memuat...]</span></dd>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: {{ $job->jabatan ?? '-' }}</dd>
 
                 {{-- Nama Perusahaan --}}
                 <dt class="col-span-1 font-medium text-gray-500">Nama Perusahaan</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="perusahaan-pemohon">[Memuat...]</span></dd>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: {{ $job->nama_institusi_pekerjaan ?? '-' }}</dd>
 
                 {{-- Alamat --}}
                 <dt class="col-span-1 font-medium text-gray-500">Alamat Perusahaan</dt>
-                <dd class="col-span-3 text-gray-900 font-semibold block">: <span id="alamat-perusahaan-pemohon">[Memuat...]</span></dd>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: {{ $job->alamat_institusi ?? '-' }}</dd>
             </dl>
         </div>
 
@@ -77,8 +78,11 @@
         </div><br>
 
         {{-- Form Tanda Tangan --}}
-        <form id="signature-upload-form" data-asesi-id="{{ $asesi->id_asesi }}" method="POST" enctype="multipart/form-data">
+        <form id="signature-upload-form" method="POST" enctype="multipart/form-data">
             @csrf
+            {{-- ID Sertifikasi untuk Controller --}}
+            <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $sertifikasi->id_data_sertifikasi_asesi }}">
+            
             <div class="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg mb-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-6">Area Tanda Tangan</h3>
 
@@ -130,8 +134,6 @@
                         </button>
                     </div>
                 </div>
-
-                <input type="hidden" name="data_tanda_tangan" id="data-tanda-tangan-base64" value="">
             </div>
         </form>
 
@@ -145,8 +147,9 @@
                 Kembali
             </a>
             <button type="button" id="tombol-selanjutnya"
+                onclick="window.location.href='{{ route('asesi.dashboard') }}'"
                 class="px-6 sm:px-8 py-2.5 sm:py-3 bg-blue-600 text-white font-semibold text-sm rounded-lg hover:bg-blue-700 shadow-md transition transform hover:-translate-y-0.5 text-center flex items-center justify-center">
-                Selanjutnya
+                Selesai / Dashboard
             </button>
         </div>
     </div>
@@ -159,53 +162,28 @@
             const placeholder = document.getElementById('upload-placeholder');
             const saveBtn = document.getElementById('save-signature');
             const clearBtn = document.getElementById('clear-signature');
-            const base64Input = document.getElementById('data-tanda-tangan-base64');
-            const form = document.getElementById('signature-upload-form');
-            const asesiId = form.dataset.asesiId;
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || form.querySelector(
-                'input[name="_token"]').value;
+            const csrfToken = document.querySelector('input[name="_token"]').value;
+            const idSertifikasi = document.querySelector('input[name="id_data_sertifikasi_asesi"]').value;
 
-            let currentBase64 = null;
+            // Existing Signature (SSR)
+            const existingSignature = "{{ $asesi->tanda_tangan ? asset('storage/'.$asesi->tanda_tangan) : '' }}";
 
-            // === 1. Load data pemohon + tanda tangan lama ===
-            fetch(`/api/v1/show-detail/${asesiId}`)
-                .then(r => {
-                    if (!r.ok) throw new Error(`HTTP Error ${r.status}`);
-                    return r.json();
-                })
-                .then(res => {
-                    const d = res.data;
-                    document.getElementById('nama-pemohon').textContent = ': ' + (d.nama_lengkap || '-');
-                    
-                    // Fix: Handle data_pekerjaan as Object (HasOne) or Array (HasMany)
-                    let kerja = {};
-                    if (Array.isArray(d.data_pekerjaan) && d.data_pekerjaan.length > 0) {
-                        kerja = d.data_pekerjaan[0];
-                    } else if (d.data_pekerjaan && typeof d.data_pekerjaan === 'object') {
-                        kerja = d.data_pekerjaan;
-                    }
+            // === 1. Load Initial State ===
+            if (existingSignature) {
+                previewImg.src = existingSignature;
+                previewImg.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                
+                saveBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Tersimpan';
+                saveBtn.disabled = true;
+                saveBtn.classList.remove('bg-green-600');
+                saveBtn.classList.add('bg-gray-500');
+            } else {
+                clearBtn.disabled = true;
+                clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
 
-                    document.getElementById('jabatan-pemohon').textContent = ': ' + (kerja.jabatan || '-');
-                    document.getElementById('perusahaan-pemohon').textContent = ': ' + (kerja.nama_institusi_pekerjaan || '-');
-                    document.getElementById('alamat-perusahaan-pemohon').textContent = ': ' + (kerja.alamat_institusi || '-');
-
-                    if (d.tanda_tangan) {
-                        previewImg.src = d.tanda_tangan.startsWith('http') ? d.tanda_tangan :
-                            `{{ route('secure.file', ['path' => 'PLACEHOLDER']) }}`.replace('PLACEHOLDER', d.tanda_tangan);
-                        previewImg.classList.remove('hidden');
-                        placeholder.classList.add('hidden');
-                        base64Input.value = d.tanda_tangan;
-                        saveBtn.innerHTML =
-                            '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Tersimpan';
-                        saveBtn.disabled = true;
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Gagal memuat data pemohon: ' + err.message);
-                });
-
-            // === 2. Proses file yang diupload ===
+            // === 2. File Preview Logic ===
             function processFile(file) {
                 if (!file.type.match(/image\/(png|jpeg|jpg)/)) return alert('Format harus JPG atau PNG');
                 if (file.size > 2 * 1024 * 1024) return alert('Ukuran maksimal 2MB');
@@ -215,10 +193,11 @@
                     previewImg.src = e.target.result;
                     previewImg.classList.remove('hidden');
                     placeholder.classList.add('hidden');
-                    currentBase64 = e.target.result;
+                    
                     saveBtn.disabled = false;
-                    saveBtn.innerHTML =
-                        '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>Simpan';
+                    saveBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>Simpan';
+                    saveBtn.classList.remove('bg-gray-500');
+                    saveBtn.classList.add('bg-green-600');
                 };
                 reader.readAsDataURL(file);
             }
@@ -228,11 +207,9 @@
             });
 
             // === 3. Drag & Drop ===
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => previewContainer.addEventListener(ev,
-                e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }));
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => previewContainer.addEventListener(ev, e => {
+                e.preventDefault(); e.stopPropagation();
+            }));
             previewContainer.addEventListener('dragenter', () => previewContainer.classList.add('is-dragover'));
             previewContainer.addEventListener('dragover', () => previewContainer.classList.add('is-dragover'));
             previewContainer.addEventListener('dragleave', () => previewContainer.classList.remove('is-dragover'));
@@ -245,84 +222,80 @@
             });
             previewContainer.addEventListener('click', () => fileInput.click());
 
-            // === 4. Simpan Tanda Tangan ===
-            saveBtn.addEventListener('click', function() {
-                if (!currentBase64) return alert('Upload tanda tangan dulu!');
+            // === 4. Save Signature (AJAX) ===
+            saveBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (!fileInput.files[0]) return alert('Pilih file tanda tangan dulu!');
 
-                this.disabled = true;
-                this.innerHTML =
-                    '<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path></svg>Menyimpan...';
+                const formData = new FormData();
+                formData.append('id_data_sertifikasi_asesi', idSertifikasi);
+                formData.append('file', fileInput.files[0]);
+                formData.append('_token', csrfToken);
 
-                fetch(`/api/ajax-simpan-tandatangan/${asesiId}`, {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path></svg>Menyimpan...';
+
+                try {
+                    const response = await fetch("{{ route('apl01.upload_signature') }}", {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            data_tanda_tangan: currentBase64
-                        })
-                    })
-                    .then(r => r.json())
-                    .then(res => {
-                        if (res.success) {
-                            alert(res.message || 'Tanda tangan berhasil disimpan!');
-                            base64Input.value = res.path || currentBase64;
-                            saveBtn.innerHTML =
-                                '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Tersimpan';
-                            saveBtn.disabled = true;
-                            currentBase64 = null;
-                        } else {
-                            throw new Error(res.message || 'Gagal menyimpan');
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        alert('Gagal menyimpan tanda tangan: ' + err.message);
-                        saveBtn.disabled = false;
-                        saveBtn.innerHTML =
-                            '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>Simpan';
+                        body: formData
                     });
+                    const res = await response.json();
+
+                    if (res.success) {
+                        alert('Tanda tangan berhasil disimpan!');
+                        saveBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Tersimpan';
+                        saveBtn.classList.remove('bg-green-600');
+                        saveBtn.classList.add('bg-gray-500');
+                        
+                        clearBtn.disabled = false;
+                        clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        throw new Error(res.message);
+                    }
+                } catch (err) {
+                    alert('Gagal menyimpan: ' + err.message);
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = 'Simpan';
+                }
             });
 
-            // === 5. Hapus Tanda Tangan ===
-            clearBtn.addEventListener('click', function() {
-                if (!confirm('Yakin ingin menghapus tanda tangan ini?')) return;
+            // === 5. Delete Signature (AJAX) ===
+            clearBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (!confirm('Hapus tanda tangan?')) return;
 
-                this.disabled = true;
-                this.innerHTML =
-                    '<svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path></svg>Menghapus...';
+                const formData = new FormData();
+                formData.append('id_data_sertifikasi_asesi', idSertifikasi);
+                formData.append('_token', csrfToken);
 
-                fetch(`/api/ajax-hapus-tandatangan/${asesiId}`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(r => r.json())
-                    .then(res => {
-                        if (res.success) {
-                            alert(res.message || 'Tanda tangan berhasil dihapus');
-                            previewImg.classList.add('hidden');
-                            placeholder.classList.remove('hidden');
-                            fileInput.value = '';
-                            currentBase64 = null;
-                            base64Input.value = '';
-                            saveBtn.disabled = true;
-                            saveBtn.innerHTML =
-                                '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>Simpan';
-                        } else throw new Error(res.message);
-                    })
-                    .catch(err => {
-                        alert('Gagal menghapus: ' + err.message);
-                    })
-                    .finally(() => {
-                        clearBtn.disabled = false;
-                        clearBtn.innerHTML =
-                            '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>Hapus';
+                try {
+                    const response = await fetch("{{ route('apl01.delete_signature') }}", {
+                         method: 'POST', 
+                         body: formData 
                     });
+                    const res = await response.json();
+
+                    if (res.success) {
+                        alert('Tanda tangan dihapus.');
+                        previewImg.classList.add('hidden');
+                        previewImg.src = '';
+                        placeholder.classList.remove('hidden');
+                        fileInput.value = '';
+                        
+                        saveBtn.disabled = false;
+                        saveBtn.classList.remove('bg-gray-500');
+                        saveBtn.classList.add('bg-green-600');
+                        saveBtn.innerHTML = '<span>Simpan</span>';
+                        
+                        clearBtn.disabled = true;
+                        clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        throw new Error(res.message);
+                    }
+                } catch (err) {
+                    alert('Gagal menghapus: ' + err.message);
+                }
             });
         });
     </script>

@@ -183,8 +183,8 @@
                                             <h4 class="font-bold text-gray-800 text-sm">FR.APL.02 - Asesmen Mandiri</h4>
                                             <p class="text-xs text-gray-500 mt-0.5">Asesmen Mandiri Asesi</p>
                                         </div>
-                                        <a href="{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                           @click.prevent="activeUrl = '{{ route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.APL.02 - Asesmen Mandiri'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
+                                        <a href="{{ route('apl02.view', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
+                                           @click.prevent="activeUrl = '{{ route('apl02.view', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.APL.02 - Asesmen Mandiri'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md {{ adminBtnState($isApl02) }}">
                                             Verifikasi
                                         </a>
@@ -268,8 +268,8 @@
                                             <h4 class="font-bold text-gray-800 text-sm">FR.AK.02 - Keputusan</h4>
                                             <p class="text-xs text-gray-500 mt-0.5">Keputusan Asesmen & Umpan Balik</p>
                                         </div>
-                                        <a href="{{ route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
-                                           @click.prevent="activeUrl = '{{ route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.AK.02 - Keputusan'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
+                                        <a href="{{ route('ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}" 
+                                           @click.prevent="activeUrl = '{{ route('ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi) }}'; activeTitle = 'FR.AK.02 - Keputusan'; $nextTick(() => $refs.previewSection.scrollIntoView({behavior: 'smooth'}))"
                                            class="text-[10px] font-bold py-1 px-3 rounded-md {{ adminBtnState($isFinalized) }}">
                                             Verifikasi
                                         </a>

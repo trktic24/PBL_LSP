@@ -25,7 +25,9 @@ class IA02Controller extends Controller
         $sertifikasi = DataSertifikasiAsesi::with([
             'asesi.user',
             'jadwal.masterTuk',
+            'jadwal.jenisTuk',
             'jadwal.skema.asesor',
+            'jadwal.asesor', // Needed for asesiasesor signature component
             // Kita coba panggil unitKompetensi via skema (sesuai perbaikan model sebelumnya)
             // Jika masih error, codingan di bawah akan menghandle manualnya.
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
@@ -254,29 +256,35 @@ class IA02Controller extends Controller
      */
     public function cetakPDF($id)
     {
-        // 1. Ambil Data Sertifikasi Lengkap
+        // 1. Ambil Data Sertifikasi Lengkap dengan Relasi yang BENAR
         $sertifikasi = DataSertifikasiAsesi::with([
-            'asesi',
-            'jadwal.masterTuk',
-            'jadwal.skema.asesor',
-            // Pastikan relasi ini sesuai dengan perbaikan Model Skema & KelompokPekerjaan
+            'asesi',                            // Untuk Nama Asesi
+            'jadwal.masterTuk',                 // Untuk TUK
+            'jadwal.skema',                     // Untuk Judul & No Skema
+            'jadwal.asesor.user',               // <--- PENTING: Untuk Nama Asesor (relasi ke user)
+            'jadwal.jenisTuk',
             'jadwal.skema.kelompokPekerjaan.unitKompetensi'
         ])->findOrFail($id);
 
-        // 2. Ambil Data Skenario (IA02)
+        // 2. Definisi Variabel yang Sebelumnya Error
+        // JANGAN PAKAI $asesi->jadwal, karena $asesi belum ada.
+        // Ambil jadwal dari $sertifikasi yang sudah kita load di atas.
+        $jadwal = $sertifikasi->jadwal; 
+        
+        // Ambil data asesi dari relasi
+        $asesi = $sertifikasi->asesi;
+
+        // 3. Ambil Data Skenario (IA02)
         $skenario = Ia02::where('id_data_sertifikasi_asesi', $id)->first();
 
-        // 3. Ambil Unit Kompetensi (Menggunakan logika Model Skema yang baru)
-        // Jika error, pastikan public function unitKompetensi() ada di Model Skema
+        // 4. Ambil Unit Kompetensi (Logika Skema)
         $unitKompetensis = collect();
-
-        if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema) {
-            // Coba ambil dari relasi hasManyThrough Skema
-            $unitKompetensis = $sertifikasi->jadwal->skema->unitKompetensi;
-
-            // Jika kosong, coba ambil manual loop
-            if ($unitKompetensis->isEmpty() && $sertifikasi->jadwal->skema->kelompokPekerjaan) {
-                foreach ($sertifikasi->jadwal->skema->kelompokPekerjaan as $kp) {
+        if ($jadwal && $jadwal->skema) {
+            $unitKompetensis = $jadwal->skema->unitKompetensi;
+            
+            // Fallback jika kosong, ambil via kelompok pekerjaan
+            if ($unitKompetensis->isEmpty() && $jadwal->skema->kelompokPekerjaan) {
+                foreach ($jadwal->skema->kelompokPekerjaan as $kp) {
                     foreach ($kp->unitKompetensi as $uk) {
                         $unitKompetensis->push($uk);
                     }
@@ -284,15 +292,18 @@ class IA02Controller extends Controller
             }
         }
 
-        // 4. Render PDF
+        // 5. Render PDF
         $pdf = Pdf::loadView('pdf.ia_02', [
-            'sertifikasi' => $sertifikasi,
-            'skenario' => $skenario,
-            'unitKompetensis' => $unitKompetensis
+            'sertifikasi'     => $sertifikasi,
+            'skenario'        => $skenario,
+            'unitKompetensis' => $unitKompetensis,
+            'jadwal'          => $jadwal, // Kirim variabel jadwal
+            'asesi'           => $asesi,  // Kirim variabel asesi
+            'skema'           => $jadwal->skema ?? null // Kirim variabel skema biar gampang dipanggil
         ]);
 
         $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->stream('FR_IA_02_' . ($sertifikasi->asesi->nama_lengkap ?? 'Asesi') . '.pdf');
+        return $pdf->stream('FR_IA_02_' . ($asesi->nama_lengkap ?? 'Asesi') . '.pdf');
     }
 }

@@ -88,12 +88,24 @@
             <td style="width: 50%; text-align: center;">
                 Asesi,
                 <br><br><br><br>
+                @if($sertifikasi->asesi && $sertifikasi->asesi->tanda_tangan)
+                    <img src="{{ getTtdBase64($sertifikasi->asesi->tanda_tangan) }}" style="width: 100px; height: auto;">
+                    <br>
+                @else
+                    <br><br><br><br>
+                @endif
                 <strong>{{ $sertifikasi->asesi->nama_lengkap ?? '(.......................)' }}</strong>
                 <br>Tanggal: {{ date('d-m-Y') }}
             </td>
             <td style="width: 50%; text-align: center;">
                 Asesor Kompetensi,
                 <br><br><br><br>
+                @if($sertifikasi->jadwal->asesor && $sertifikasi->jadwal->asesor->tanda_tangan)
+                    <img src="{{ getTtdBase64($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="width: 100px; height: auto;">
+                    <br>
+                @else
+                    <br><br><br><br>
+                @endif
                 <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
                 <br>No. Reg: -
             </td>
