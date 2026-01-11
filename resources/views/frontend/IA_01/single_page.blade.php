@@ -39,16 +39,15 @@
                     TUK
                 </div>
                 <div class="p-2 pl-4 flex flex-wrap gap-6">
-                    @php $tuk_value = old('tuk', $data_sesi['tuk'] ?? ''); @endphp
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="tuk" value="sewaktu" class="tuk-checkbox rounded text-blue-600 focus:ring-blue-500" onclick="selectOnlyThis(this)" {{ $tuk_value == 'sewaktu' ? 'checked' : '' }}>
+                    @php $tuk_value = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? ''; @endphp
+                    <label class="inline-flex items-center cursor-not-allowed opacity-70">
+                        <input type="checkbox" class="rounded text-blue-600 focus:ring-blue-500" disabled {{ $tuk_value == 'Sewaktu' ? 'checked' : '' }}>
                         <span class="ml-2">Sewaktu</span>
                     </label>
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="tuk" value="tempat_kerja" class="tuk-checkbox rounded text-blue-600 focus:ring-blue-500" onclick="selectOnlyThis(this)" {{ $tuk_value == 'tempat_kerja' ? 'checked' : '' }}>
+                    <label class="inline-flex items-center cursor-not-allowed opacity-70">
+                        <input type="checkbox" class="rounded text-blue-600 focus:ring-blue-500" disabled {{ $tuk_value == 'Tempat Kerja' ? 'checked' : '' }}>
                         <span class="ml-2">Tempat Kerja</span>
                     </label>
-                    @error('tuk') <span class="text-red-600 text-xs ml-2">{{ $message }}</span> @enderror
                 </div>
             </div>
 
@@ -280,7 +279,7 @@
                             <label class="font-bold text-sm text-gray-700">Unit Kompetensi</label>
                             <input type="text" name="bk_unit"
                                 class="w-full border-gray-300 rounded-md px-3 py-2 text-sm focus:border-red-500 focus:ring-red-200 shadow-sm"
-                                placeholder="Contoh: Menyiapkan Peralatan (Kode Unit)" value="{{ old('bk_unit') }}">
+                                placeholder="Contoh: Menyiapkan Peralatan (Kode Unit)" value="{{ old('bk_unit', $sertifikasi->bk_unit_ia01) }}">
                         </div>
 
                         {{-- Elemen --}}
@@ -288,7 +287,7 @@
                             <label class="font-bold text-sm text-gray-700">Elemen</label>
                             <input type="text" name="bk_elemen"
                                 class="w-full border-gray-300 rounded-md px-3 py-2 text-sm focus:border-red-500 focus:ring-red-200 shadow-sm"
-                                placeholder="Sebutkan elemen kompetensi yang belum terpenuhi..." value="{{ old('bk_elemen') }}">
+                                placeholder="Sebutkan elemen kompetensi yang belum terpenuhi..." value="{{ old('bk_elemen', $sertifikasi->bk_elemen_ia01) }}">
                         </div>
 
                         {{-- KUK --}}
@@ -296,7 +295,7 @@
                             <label class="font-bold text-sm text-gray-700">No. KUK</label>
                             <input type="text" name="bk_kuk"
                                 class="w-full border-gray-300 rounded-md px-3 py-2 text-sm focus:border-red-500 focus:ring-red-200 shadow-sm"
-                                placeholder="Contoh: 1.2, 2.1 (Pisahkan dengan koma)" value="{{ old('bk_kuk') }}">
+                                placeholder="Contoh: 1.2, 2.1 (Pisahkan dengan koma)" value="{{ old('bk_kuk', $sertifikasi->bk_kuk_ia01) }}">
                         </div>
                     </div>
                 </div>

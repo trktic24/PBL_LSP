@@ -43,10 +43,14 @@ class IA11Controller extends Controller
         $ia11 = IA11::firstOrNew(['id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi]);
 
         // Eager load necessary relationships for header info.
-        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema', 'jadwal.asesor', 'jadwal.masterTuk'])
+        $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema', 'jadwal.asesor', 'jadwal.masterTuk', 'jadwal.jenisTuk'])
             ->findOrFail($id_data_sertifikasi_asesi);
         
         $ia11->setRelation('dataSertifikasiAsesi', $sertifikasi);
+
+        // Get TUK type from jenisTuk relationship if ia11->tuk_type is not set
+        $tukTypeFromDb = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? null;
+        $currentTukType = $ia11->tuk_type ?? $tukTypeFromDb;
 
         $data = [
             'ia11' => $ia11,
@@ -57,6 +61,18 @@ class IA11Controller extends Controller
             'nama_asesor' => $sertifikasi->jadwal->asesor->nama_lengkap ?? 'Asesor Tidak Ditemukan',
             'nama_asesi' => $sertifikasi->asesi->nama_lengkap ?? 'Asesi Tidak Ditemukan',
             'tanggal_sekarang' => now()->toDateString(),
+            // TUK Data
+            'master_tuk' => $sertifikasi->jadwal->masterTuk ?? null,
+            'nama_tuk' => $sertifikasi->jadwal->masterTuk->nama_tuk ?? 'TUK Tidak Ditemukan',
+            'alamat_tuk' => $sertifikasi->jadwal->masterTuk->alamat ?? '-',
+            'jenis_tuk' => $tukTypeFromDb,
+            'current_tuk_type' => $currentTukType,
+            // Asesor MET Number - using nomor_regis field
+            'nomor_met_asesor' => $sertifikasi->jadwal->asesor->nomor_regis ?? '-',
+            // Sidebar Data
+            'asesi' => $sertifikasi->asesi ?? null,
+            'skema' => $sertifikasi->jadwal->skema ?? null,
+            'jadwal' => $sertifikasi->jadwal ?? null,
         ];
 
         return view('frontend.FR_IA_11', $data);
