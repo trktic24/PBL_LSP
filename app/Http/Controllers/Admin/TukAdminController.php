@@ -86,7 +86,7 @@ class TukAdminController extends Controller
 
         // Simpan file ke storage (public/tuk)
         // Hasilnya path seperti: tuk/hashname.jpg
-        $path = $request->file('foto_tuk')->store('tuk', 'public');
+        $path = $request->file('foto_tuk')->store('foto_tuk', 'public');
         
         $validatedData['foto_tuk'] = $path; 
 
@@ -127,7 +127,7 @@ class TukAdminController extends Controller
             }
 
             // 2. Upload foto baru
-            $path = $request->file('foto_tuk')->store('tuk', 'public');
+            $path = $request->file('foto_tuk')->store('foto_tuk', 'public');
             $validatedData['foto_tuk'] = $path;
         }
 
