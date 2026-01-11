@@ -12,19 +12,18 @@ class SpesifikasiIA11 extends Model
 
     protected $table = 'spesifikasi_ia11';
     protected $primaryKey = 'id_spesifikasi_ia11';
-    public $timestamps = true;
+    
+    protected $guarded = []; 
 
-    // MASTER DATA LSP – DIKUNCI TOTAL
+    /**
+     * Atribut yang dapat diisi (Fillable).
+     */
     protected $fillable = [
         'deskripsi_spesifikasi',
     ];
 
     public function pencapaianSpesifikasi(): HasMany
     {
-        return $this->hasMany(
-            PencapaianSpesifikasiIA11::class,
-            'id_spesifikasi_ia11',
-            'id_spesifikasi_ia11'
-        );
+        return $this->hasMany(PencapaianSpesifikasiIA11::class, 'id_spesifikasi_ia11', 'id_spesifikasi_ia11');
     }
 }

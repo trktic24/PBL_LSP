@@ -49,7 +49,8 @@
                 <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
                     <tr class="divide-x divide-gray-200 border-b border-gray-200">
                         <th class="px-4 py-3 font-semibold w-16 whitespace-nowrap">No</th>
-                        <th class="px-6 py-3 font-semibold whitespace-nowrap">Skema Sertifikasi & Jadwal</th>
+                        <th class="px-6 py-3 font-semibold whitespace-nowrap">Skema Sertifikasi</th>
+                        <th class="px-6 py-3 font-semibold whitespace-nowrap">Jadwal</th>
                         <th class="px-6 py-3 font-semibold text-center w-1/4 whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
@@ -59,14 +60,21 @@
                         <td class="px-4 py-4 align-top">{{ $index + 1 }}</td>
                         
                         <td class="px-6 py-4 text-gray-800 align-top">
-                            <div class="font-bold text-gray-900">
+                            <a href="{{ route('admin.skema.detail', $item->skema->id_skema) }}" class="font-bold text-gray-900 hover:text-blue-600 hover:underline transition-colors block leading-tight">
                                 {{ $item->skema->nama_skema ?? 'Nama Skema Tidak Tersedia' }}
-                            </div>
+                            </a>
                             <div class="text-xs text-gray-500 mt-1">
                                 {{ $item->skema->nomor_skema ?? '-' }} 
-                                <span class="block text-xs text-gray-500 mt-1">
-                                    <i class="far fa-calendar-alt mr-1"></i> Jadwal: {{ \Carbon\Carbon::parse($item->tanggal_pelaksanaan)->format('d M Y') }}
-                                </span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 text-gray-800 align-top whitespace-nowrap">
+                            <a href="{{ route('admin.schedule.attendance', $item->id_jadwal) }}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2">
+                                <i class="far fa-calendar-alt"></i>
+                                {{ \Carbon\Carbon::parse($item->tanggal_pelaksanaan)->format('d M Y') }}
+                            </a>
+                            <div class="text-xs text-gray-500 mt-1 ml-6">
+                                {{ \Carbon\Carbon::parse($item->waktu_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($item->waktu_selesai)->format('H:i') }} WIB
                             </div>
                         </td>
 

@@ -111,6 +111,11 @@ class APIBandingController extends Controller
             $jenisTukName = $data->jadwal->jenisTuk->jenis_tuk ?? 'Sewaktu';
             $asesor = $data->jadwal->asesor;
 
+            $ttdBase64 = null;
+            if (!empty($data->asesi->tanda_tangan)) {
+                $ttdBase64 = getTtdBase64($data->asesi->tanda_tangan, null, 'asesi');
+            }
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -118,7 +123,7 @@ class APIBandingController extends Controller
                     'tuk_lokasi' => $jenisTukName,
                     'asesi' => [
                         'nama_lengkap' => $data->asesi->nama_lengkap,
-                        'tanda_tangan' => $data->asesi->tanda_tangan,
+                        'tanda_tangan' => $ttdBase64,
                     ],
                     'asesor' => [
                         'nama_lengkap' => $asesor->nama_lengkap ?? '-',

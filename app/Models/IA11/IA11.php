@@ -5,6 +5,15 @@ namespace App\Models\IA11;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\IA11\SpesifikasiProdukIA11;
+use App\Models\IA11\BahanProdukIA11;
+use App\Models\IA11\SpesifikasiTeknisIA11;
+use App\Models\IA11\SpesifikasiIA11;
+use App\Models\IA11\PerformaIA11;
+use App\Models\IA11\PencapaianSpesifikasiIA11;
+use App\Models\IA11\PencapaianPerformaIA11;
 
 class IA11 extends Model
 {
@@ -12,86 +21,99 @@ class IA11 extends Model
 
     protected $table = 'ia11';
     protected $primaryKey = 'id_ia11';
+    protected $guarded = [];
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Atribut yang dapat diisi.
      */
-    protected $fillable = [
-        'id_data_sertifikasi_asesi',
-        'nama_produk',
-        'rancangan_produk',
-        'standar_industri',
-        'tanggal_pengoperasian',
-        'gambar_produk',
-        'rekomendasi',
-        'tuk_type',
-        'tanggal_asesmen',
-        'spesifikasi_umum',
-        'dimensi_produk',
-        'bahan_produk',
-        'spesifikasi_teknis',
-        'h1a_hasil',
-        'p1a_pencapaian',
-        'h1b_hasil',
-        'p1b_pencapaian',
-        'h2a_hasil',
-        'p2a_pencapaian',
-        'h3a_hasil',
-        'p3a_pencapaian',
-        'h3b_hasil',
-        'p3b_pencapaian',
-        'h3c_hasil',
-        'p3c_pencapaian',
-        'rekomendasi_kelompok',
-        'rekomendasi_unit',
-        'ttd_asesi',
-        'ttd_asesor',
-        'catatan_asesor',
-        'penyusun_nama_1',
-        'penyusun_nomor_met_1',
-        'penyusun_ttd_1',
-        'penyusun_nama_2',
-        'penyusun_nomor_met_2',
-        'penyusun_ttd_2',
-        'validator_nama_1',
-        'validator_nomor_met_1',
-        'validator_ttd_1',
-        'validator_nama_2',
-        'validator_nomor_met_2',
-        'validator_ttd_2',
-    ];
+    protected $fillable = ['id_data_sertifikasi_asesi', 'rancangan_produk', 'nama_produk', 'standar_industri', 'tanggal_pengoperasian', 'gambar_produk', 'rekomendasi'];
+
+    // --- DEFINISI RELASI (RELATIONSHIPS) ---
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'tanggal_pengoperasian' => 'date',
-        'tanggal_asesmen' => 'date',
-        'h1a_hasil' => 'boolean',
-        'p1a_pencapaian' => 'boolean',
-        'h1b_hasil' => 'boolean',
-        'p1b_pencapaian' => 'boolean',
-        'h2a_hasil' => 'boolean',
-        'p2a_pencapaian' => 'boolean',
-        'h3a_hasil' => 'boolean',
-        'p3a_pencapaian' => 'boolean',
-        'h3b_hasil' => 'boolean',
-        'p3b_pencapaian' => 'boolean',
-        'h3c_hasil' => 'boolean',
-        'p3c_pencapaian' => 'boolean',
-    ];
-
-    // ================= RELATIONSHIPS =================
-
-    /**
-     * Get the data sertifikasi asesi that owns the IA11 record.
+     * Relasi ke Data Sertifikasi Asesi (Header IA.11)
+     * Relasi: One-to-One (1:1)
      */
     public function dataSertifikasiAsesi(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi');
+        return $this->belongsTo(\App\Models\DataSertifikasiAsesi::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+    }
+
+    /**
+     * Relasi ke Spesifikasi Produk (Data Tunggal)
+     * Relasi: One-to-One (1:1)
+     */
+    public function spesifikasiProduk(): HasOne
+    {
+        return $this->hasOne(SpesifikasiProdukIA11::class, 'id_ia11', 'id_ia11');
+    }
+
+    /**
+     * Relasi ke Bahan Produk (Daftar Banyak Bahan)
+     * Relasi: One-to-Many (1:M)
+     */
+    public function bahanProduk(): HasMany
+    {
+        return $this->hasMany(BahanProdukIA11::class, 'id_ia11', 'id_ia11');
+    }
+
+    /**
+     * Relasi ke Spesifikasi Teknis (Daftar Banyak Data Teknis)
+     * Relasi: One-to-Many (1:M)
+     */
+    public function spesifikasiTeknis(): HasMany
+    {
+        return $this->hasMany(SpesifikasiTeknisIA11::class, 'id_ia11', 'id_ia11');
+    }
+
+    // --- RELASI PENCAPAIAN DENGAN MASTER DATA ---
+
+    /**
+     * Relasi ke Pencapaian Spesifikasi (Data Transaksi Detail)
+     * Ini adalah data yang menyimpan HASIL REVIU & CATATAN TEMUAN.
+     */
+    public function pencapaianSpesifikasi(): HasMany
+    {
+        return $this->hasMany(PencapaianSpesifikasiIA11::class, 'id_ia11', 'id_ia11');
+    }
+
+    /**
+     * Relasi ke Pencapaian Performa (Data Transaksi Detail)
+     * Ini adalah data yang menyimpan HASIL REVIU & CATATAN TEMUAN.
+     */
+    public function pencapaianPerforma(): HasMany
+    {
+        return $this->hasMany(PencapaianPerformaIA11::class, 'id_ia11', 'id_ia11');
+    }
+
+    // --- RELASI MANY-TO-MANY (TIDAK DIPAKAI DI CONTROLLER UNTUK MENGAMBIL DATA REVIU) ---
+
+    /**
+     * Relasi ke Spesifikasi Master (Melalui Tabel Pencapaian)
+     * Relasi: Many-to-Many (M:M)
+     * Catatan: Relasi di bawah ini hanya untuk mengambil item master, bukan data reviu.
+     */
+    public function spesifikasiMaster()
+    {
+        return $this->belongsToMany(
+            SpesifikasiIA11::class,
+            'pencapaian_spesifikasi_ia11',
+            'id_ia11',
+            'id_spesifikasi_ia11' 
+        )->withPivot('hasil_reviu', 'catatan_temuan'); 
+    }
+
+    /**
+     * Relasi ke Performa Master (Melalui Tabel Pencapaian)
+     * Relasi: Many-to-Many (M:M)
+     */
+    public function performaMaster()
+    {
+        return $this->belongsToMany(
+            PerformaIA11::class,
+            'pencapaian_performa_ia11',
+            'id_ia11',
+            'id_performa_ia11' 
+        )->withPivot('hasil_reviu', 'catatan_temuan');
     }
 }

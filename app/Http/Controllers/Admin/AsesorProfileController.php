@@ -129,13 +129,15 @@ class AsesorProfileController extends Controller
             ->firstOrFail();
 
         // 3. Query Dasar untuk $pendaftar (DataSertifikasiAsesi)
+    // 3. Query Dasar untuk $pendaftar (DataSertifikasiAsesi)
         $query = DataSertifikasiAsesi::query()
             ->with([
                 'asesi.dataPekerjaan', 
                 'responApl02Ia01', 
                 'responBuktiAk01', 
                 'lembarJawabIa05', 
-                'komentarAk05'
+                'komentarAk05',
+                'hasilPenyesuaianAK07' // [NEW] Required for Penyesuaian logic
             ])
             ->where('id_jadwal', $id_jadwal);
 
@@ -159,12 +161,30 @@ class AsesorProfileController extends Controller
         // 6. Eksekusi Pagination
         $pendaftar = $query->paginate($perPage)->withQueryString();
 
-        // 7. Logika Tombol "Berita Acara" (Cek apakah semua sudah dinilai)
-        $semuaDataJadwal = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)->get();
-        
-        $semuaSudahAdaKomentar = $semuaDataJadwal->isNotEmpty() && $semuaDataJadwal->every(function ($item) {
-            return $item->komentarAk05()->exists() || $item->lembarJawabIa05()->exists();
-        });
+        // 7. Logika Tombol "Berita Acara" (Strict Validator Check)
+        // Logic mirrored from AsesorJadwalController::showAsesi
+        $sudahVerifikasiValidator = !DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
+            ->where(function ($q) {
+                $q->whereDoesntHave('komentarAk05')
+                    ->orWhereHas('komentarAk05', function ($q2) {
+                        $q2->whereNull('verifikasi_validator');
+                    });
+            })
+            ->exists();
+
+        // 8. Return View
+        return view('Admin.profile_asesor.daftar_asesi', compact(
+            'asesor',
+            'jadwal',
+            'pendaftar',
+            'sortColumn',
+            'sortDirection',
+            'perPage',
+            'sudahVerifikasiValidator' // [UPDATED] Variable name to match View Logic
+        ), [
+            'targetRoute' => 'admin.asesor.tracker.view',
+            'buttonLabel' => 'Lacak Progres'
+        ]);
 
         // 8. Return View
         return view('Admin.profile_asesor.daftar_asesi', compact(
@@ -254,7 +274,7 @@ class AsesorProfileController extends Controller
                 'status_text' => $isApl02Accepted ? 'Diterima' : ($hasApl02 ? 'Menunggu Verifikasi' : 'Belum Mengisi'),
                 'is_completed' => $isApl02Accepted,
                 'icon' => 'fas fa-paperclip',
-                'action_url' => route('asesor.apl02', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_url' => route('apl02.view', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'action_label' => 'Verifikasi'
             ];
 
@@ -302,7 +322,7 @@ class AsesorProfileController extends Controller
                 'status_text' => $isFinalized ? 'Selesai' : 'Menunggu',
                 'is_completed' => $isFinalized,
                 'icon' => 'fas fa-gavel',
-                'action_url' => route('asesor.ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
+                'action_url' => route('ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'action_label' => 'Isi Keputusan'
             ];
 
@@ -411,16 +431,24 @@ class AsesorProfileController extends Controller
         $dataSertifikasi = DataSertifikasiAsesi::with([
             'asesi.user',
             'jadwal.skema',
+            'jadwal.skema.listForm', // Load configuration
             'jadwal.masterTuk', // Konsisten gunakan masterTuk
             'responBuktiAk01',
-            'ia10', 
-            'ia02',
-            'ia07',
+            'ia01',
+            'ia02', 
+            'ia03',
+            'ia04',
+            'lembarJawabIa05', // Use explicit relation if available or rely on method
             'ia06Answers',
+            'ia07',
+            'ia08',
+            'ia09',
+            'ia10',
+            'ia11',
             'komentarAk05'
         ])->findOrFail($id_data_sertifikasi_asesi);
 
-        if ($dataSertifikasi->jadwal->id_asesor != $id_asesor) {
+        if ($dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
             abort(404);
         }
 

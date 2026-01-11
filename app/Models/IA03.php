@@ -20,6 +20,7 @@ class IA03 extends Model
 
     protected $fillable = [
         'id_data_sertifikasi_asesi',
+        'id_kelompok_pekerjaan',
         'pertanyaan',
         'jawaban',
         'tanggapan',
@@ -30,6 +31,11 @@ class IA03 extends Model
     protected $casts = [
         'pencapaian' => 'boolean',
     ];
+
+    public function umpanBalik()
+    {
+        return $this->hasMany(UmpanBalikIA03::class, 'id_ia03', 'id_ia03');
+    }
 
 
     public function dataSertifikasiAsesi(): BelongsTo

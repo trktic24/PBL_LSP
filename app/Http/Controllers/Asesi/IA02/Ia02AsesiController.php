@@ -36,6 +36,39 @@ class Ia02AsesiController extends Controller
                           ->orderBy('created_at', 'asc') // Urutkan dari tugas pertama
                           ->get();
 
+        // [LOGIC SINKRONISASI] 
+        // Jika data Asesi MASIH KOSONG, ambil dari Master Template (Preview Mode)
+        if ($daftarIa02->isEmpty()) {
+            $template = \App\Models\MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal->id_skema)
+                ->where('id_jadwal', $dataSertifikasi->jadwal->id_jadwal)
+                ->where('form_code', 'FR.IA.02')
+                ->first();
+
+            // Fallback ke Default Skema jika Template Jadwal kosong
+            if (!$template) {
+                $template = \App\Models\MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal->id_skema)
+                    ->whereNull('id_jadwal')
+                    ->where('form_code', 'FR.IA.02')
+                    ->first();
+            }
+
+            // Jika template ditemukan, buat Mock/Temporary Object agar Asesi melihat soalnya
+            if ($template && isset($template->content)) {
+                $content = $template->content;
+                
+                // Buat Object IA02 Temporary (Tanpa Save ke Database)
+                $tempIa02 = new Ia02([
+                    'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
+                    'skenario'  => $content['skenario'] ?? '',
+                    'peralatan' => $content['peralatan'] ?? '',
+                    'waktu'     => $content['waktu'] ?? '02:00:00',
+                ]);
+
+                // Masukkan ke Collection
+                $daftarIa02->push($tempIa02);
+            }
+        }
+
         // 3. Persiapan data pendukung view
         $daftarUnitKompetensi = $dataSertifikasi->jadwal?->skema?->unitKompetensi ?? collect();
         $asesi = $dataSertifikasi->asesi;

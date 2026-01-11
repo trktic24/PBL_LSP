@@ -5,23 +5,22 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('performa_ia11', function (Blueprint $table) {
-            $table->bigIncrements('id_performa_ia11');
-
+            $table->id('id_performa_ia11');
             $table->string('deskripsi_performa', 500);
 
             $table->timestamps();
-
-            // Tidak boleh ada performa dobel
-            $table->unique('deskripsi_performa');
-
-            // Index cepat untuk join PDF
-            $table->index('id_performa_ia11');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('performa_ia11');

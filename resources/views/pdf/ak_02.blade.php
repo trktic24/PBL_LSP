@@ -163,12 +163,24 @@
             <td style="width: 50%; text-align: center;">
                 Asesi,
                 <br><br><br><br>
+                @if(isset($data['ttd_asesi']) && $data['ttd_asesi'])
+                    <img src="{{ getTtdBase64($data['ttd_asesi']) }}" style="width: 100px; height: auto;">
+                    <br>
+                @else
+                    <br><br><br><br>
+                @endif
                 <strong>{{ $data['nama_asesi'] ?? '(.......................)' }}</strong>
                 <br>Tanggal: {{ date('d-m-Y') }}
             </td>
             <td style="width: 50%; text-align: center;">
                 Asesor Kompetensi,
                 <br><br><br><br>
+                @if(isset($data['ttd_asesor']) && $data['ttd_asesor'])
+                    <img src="{{ getTtdBase64($data['ttd_asesor']) }}" style="width: 100px; height: auto;">
+                    <br>
+                @else
+                    <br><br><br><br>
+                @endif
                 <strong>{{ $data['nama_asesor'] ?? '(.......................)' }}</strong>
                 <br>No. Reg: -
             </td>
