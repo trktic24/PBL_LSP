@@ -26,10 +26,10 @@
     </div>
 
     <div class="header-section">
-        <div><span class="label">Skema Sertifikasi</span>: {{ $skema->judul_skema ?? '-' }}</div>
+        <div><span class="label">Skema Sertifikasi</span>: {{ $skema->nama_skema ?? '-' }}</div>
         <div><span class="label">Nomor Skema</span>: {{ $skema->kode_skema ?? '-' }}</div>
         <div><span class="label">TUK</span>: {{ $jadwal->masterTuk->nama_tuk ?? 'Tempat Kerja' }}</div>
-        <div><span class="label">Nama Asesor</span>: {{ $asesor->nama_asesor ?? '-' }}</div>
+        <div><span class="label">Nama Asesor</span>: {{ $asesor->nama_lengkap ?? '-' }}</div>
         <div><span class="label">Tanggal</span>: {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</div>
     </div>
 
@@ -141,7 +141,7 @@
         <table class="no-border">
             <tr>
                 <td width="30%">Asesor:</td>
-                <td width="70%"><strong>{{ $asesor->nama_asesor ?? '' }}</strong></td>
+                <td width="70%"><strong>{{ $asesor->nama_lengkap ?? '' }}</strong></td>
             </tr>
              <tr>
                 <td>Tanggal:</td>

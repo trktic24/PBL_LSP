@@ -29,7 +29,7 @@
             <td width="150"><b>Skema Sertifikasi</b></td>
             <td width="10">:</td>
             {{-- Panggil dari variabel $skema atau lewat $jadwal --}}
-            <td>{{ $skema->judul_skema ?? $skema->nama_skema ?? '-' }}</td>
+            <td>{{ $skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><b>Nomor Skema</b></td>
