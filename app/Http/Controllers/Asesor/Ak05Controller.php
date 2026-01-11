@@ -18,7 +18,7 @@ class Ak05Controller extends Controller
     {
         // Ambil Data Jadwal & Asesor
         // Pastikan ID Jadwal valid, jika tidak ada akan otomatis 404
-        $jadwal = Jadwal::with(['skema', 'asesor', 'tuk'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'asesor', 'tuk', 'jenisTuk'])->findOrFail($id_jadwal);
         
         // Cek Otorisasi: Hanya Asesor yang bersangkutan atau Admin yang bisa akses
         $user = Auth::user();

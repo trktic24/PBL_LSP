@@ -122,7 +122,7 @@
                     <dt class="col-span-1 md:col-span-2 font-medium text-gray-500">TUK</dt>
                     <dd class="col-span-1 md:col-span-4 flex items-center gap-4 text-gray-900">
                         <span>:</span>
-                        @php $tuk = strtolower($jadwal->jenis_tuk ?? ''); @endphp
+                        @php $tuk = strtolower($jadwal->jenisTuk->jenis_tuk ?? ''); @endphp
                         
                         <label class="flex items-center gap-2 cursor-not-allowed opacity-75">
                             <input type="radio" disabled {{ $tuk == 'sewaktu' ? 'checked' : '' }} class="w-4 h-4 text-blue-600"> Sewaktu

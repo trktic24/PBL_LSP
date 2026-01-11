@@ -310,11 +310,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
 
         // IA-11
-        Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.show');
-        Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
-        Route::put('/ia11/update/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
-        Route::delete('/ia11/delete/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
-        Route::get('/ia11/pdf/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'cetakPDF'])->name('ia11.cetak_pdf');
+        Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11AsesorController::class, 'show'])->name('ia11.show');
+        Route::post('/ia11/store', [IA11AsesorController::class, 'store'])->name('ia11.store');
+        Route::put('/ia11/update/{id}', [IA11AsesorController::class, 'update'])->name('ia11.update');
+        Route::delete('/ia11/delete/{id}', [IA11AsesorController::class, 'destroy'])->name('ia11.destroy');
+        Route::get('/ia11/pdf/{id_data_sertifikasi_asesi}', [IA11AsesorController::class, 'cetakPDF'])->name('ia11.cetak_pdf');
 
         // MAPA-02
         
@@ -354,7 +354,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/ia09', [IA09Controller::class, 'adminShow'])->name('admin.ia09.show');
             Route::get('/ia10', [IA10Controller::class, 'adminShow'])->name('admin.ia10.show');
             Route::get('/ia10', [IA10Controller::class, 'adminShow'])->name('admin.ia10.show');
-            Route::get('/ia11', [IA11Controller::class, 'adminShow'])->name('admin.ia11.show');
+            Route::get('/ia11', [IA11TemplateController::class, 'adminShow'])->name('admin.ia11.show');
             
             // AK
             Route::get('/ak01', [Ak01Controller::class, 'adminShow'])->name('admin.ak01.show'); 

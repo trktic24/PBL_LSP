@@ -34,7 +34,7 @@
                 <dd class="col-span-3 flex flex-wrap gap-x-6 gap-y-2 items-center">
                     @php
                         // Ambil jenis TUK dari database (jika ada), default null
-                        $jenisTuk = $sertifikasi->jadwal->jenis_tuk ?? '';
+                        $jenisTuk = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? '';
                     @endphp
                     <label class="flex items-center text-gray-900 font-medium">
                         <input type="checkbox" disabled {{ $jenisTuk == 'Sewaktu' ? 'checked' : '' }} 
@@ -63,6 +63,18 @@
                 <dt class="col-span-1 font-medium text-gray-500">Nama Asesi</dt>
                 <dd class="col-span-3 text-gray-900 font-semibold block">: 
                     <span id="nama_asesi">{{ $asesi->nama_lengkap ?? (isset($isMasterView) ? '(Template Master)' : Auth::user()->name) }}</span>
+                </dd>
+
+                {{-- Skema Sertifikasi (Judul) --}}
+                <dt class="col-span-1 font-medium text-gray-500">Skema Sertifikasi (Judul)</dt>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: 
+                    <span>{{ $sertifikasi->jadwal->skema->judul_skema ?? 'N/A' }}</span>
+                </dd>
+
+                {{-- Skema Sertifikasi (Nomor) --}}
+                <dt class="col-span-1 font-medium text-gray-500">Skema Sertifikasi (Nomor)</dt>
+                <dd class="col-span-3 text-gray-900 font-semibold block">: 
+                    <span>{{ $sertifikasi->jadwal->skema->nomor_skema ?? 'N/A' }}</span>
                 </dd>
 
                 {{-- Bukti yang dikumpulkan (Display Only - Statis Sesuai FR) --}}

@@ -41,7 +41,7 @@ class FrAk07Controller extends Controller
     {
         $dataSertifikasi = DataSertifikasiAsesi::with([
             'asesi',
-            'jadwal.janisTuk',
+            'jadwal.jenisTuk',
             'jadwal.skema',
             'jadwal.asesor',
             'responPotensiAk07',
