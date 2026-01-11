@@ -47,8 +47,8 @@
             <div class="grid grid-cols-[250px_auto] gap-y-3 text-sm mb-10 text-gray-700">
                 <div class="font-bold text-black">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)*</div>
                 <div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ isset($skema) ? $skema->nama_skema : 'Junior Web Programmer' }}</div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ isset($skema) ? $skema->nomor_skema : '-' }}</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ $jadwal->skema->nama_skema ?? '-' }}</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ $jadwal->skema->nomor_skema ?? '-' }}</div>
                 </div>
 
                 <div class="font-bold text-black">TUK</div>

@@ -751,13 +751,15 @@ class AsesorJadwalController extends Controller
     public function storeAk06(Request $request, $id_jadwal)
     {
         // Save FR.AK.06
-        FrAk06::create([
-            'id_jadwal' => $id_jadwal,
-            'tinjauan' => $request->tinjauan,
-            'dimensi' => $request->dimensi,
-            'peninjau' => $request->peninjau,
-            'komentar' => $request->peninjau['komentar'] ?? null,
-        ]);
+        \App\Models\FrAk06::updateOrCreate(
+            ['id_jadwal' => $id_jadwal],
+            [
+                'tinjauan' => $request->tinjauan,
+                'dimensi' => $request->dimensi,
+                'peninjau' => $request->peninjau,
+                'komentar' => $request->peninjau['komentar'] ?? null,
+            ]
+        );
 
         return redirect()->back()->with('success', 'Form FR.AK.06 berhasil disimpan.');
     }
