@@ -28,9 +28,9 @@
                 
                 <!-- Header -->
                 <div class="mb-12">
-                    <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" class="inline-flex items-center text-slate-600 hover:text-slate-900 font-bold mb-6 group text-xs uppercase tracking-widest">
+                    <a href="{{ route('admin.skema.template.list', [$skema->id_skema, 'FR.IA.11']) }}" class="inline-flex items-center text-slate-600 hover:text-slate-900 font-bold mb-6 group text-xs uppercase tracking-widest">
                         <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                        Kembali
+                        Kembali Ke Daftar Template
                     </a>
                     <h1 class="text-4xl font-black text-slate-900 leading-none">
                         TINJAU INSTRUMEN <br>
@@ -46,7 +46,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.skema.template.ia11.store', $skema->id_skema) }}" method="POST">
+                <form action="{{ route('admin.skema.template.ia11.store', [$skema->id_skema, $id_jadwal]) }}" method="POST">
                     @csrf
                     <div class="space-y-8">
                         

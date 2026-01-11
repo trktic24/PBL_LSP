@@ -298,12 +298,13 @@ class IA08Controller extends Controller
     }
 
     /**
-     * [MASTER] Menampilkan editor tamplate (Verifikasi Pihak Ketiga) per Skema
+     * [MASTER] Menampilkan editor tamplate (Verifikasi Pihak Ketiga) per Skema & Jadwal
      */
-    public function editTemplate($id_skema)
+    public function editTemplate($id_skema, $id_jadwal)
     {
         $skema = Skema::findOrFail($id_skema);
         $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
                                     ->where('form_code', 'FR.IA.08')
                                     ->first();
         
@@ -312,21 +313,26 @@ class IA08Controller extends Controller
 
         return view('Admin.master.skema.template.ia08', [
             'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
             'instructions' => $instructions
         ]);
     }
 
     /**
-     * [MASTER] Simpan/Update template per Skema
+     * [MASTER] Simpan/Update template per Skema & Jadwal
      */
-    public function storeTemplate(Request $request, $id_skema)
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
     {
         $request->validate([
             'instructions' => 'nullable|string',
         ]);
 
         MasterFormTemplate::updateOrCreate(
-            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.08'],
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.08'
+            ],
             ['content' => $request->instructions]
         );
 

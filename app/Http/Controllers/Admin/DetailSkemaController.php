@@ -59,7 +59,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Merencanakan Aktivitas dan Proses Asesmen', 
                 'db_field' => 'fr_mapa_01', 
                 'checked' => (bool)$configDB->fr_mapa_01, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.MAPA.01']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.MAPA.01'])
             ],
             [
@@ -67,7 +67,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Peta Instrumen Asesmen', 
                 'db_field' => 'fr_mapa_02', 
                 'checked' => (bool)$configDB->fr_mapa_02, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.MAPA.02']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.MAPA.02'])
             ],
             // FASE 3 (IA)
@@ -76,7 +76,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja', 
                 'db_field' => 'fr_ia_01', 
                 'checked' => (bool)$configDB->fr_ia_01, 
-                'url' => null, 
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.01']), 
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.01'])
             ], 
             [
@@ -84,7 +84,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Tugas Praktik Demonstrasi', 
                 'db_field' => 'fr_ia_02', 
                 'checked' => (bool)$configDB->fr_ia_02, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.02']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.02'])
             ],
             [
@@ -92,7 +92,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Pertanyaan Untuk Mendukung Observasi', 
                 'db_field' => 'fr_ia_03', 
                 'checked' => (bool)$configDB->fr_ia_03, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.03']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.03'])
             ], 
             [
@@ -100,7 +100,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Ceklis Verifikasi Portofolio', 
                 'db_field' => 'fr_ia_04', 
                 'checked' => (bool)$configDB->fr_ia_04, 
-                'url' => route('admin.skema.template.ia04', ['id_skema' => $skema->id_skema]),
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.04']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.04'])
             ],
             [
@@ -108,7 +108,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Pertanyaan Tertulis Pilihan Ganda', 
                 'db_field' => 'fr_ia_05', 
                 'checked' => (bool)$configDB->fr_ia_05, 
-                'url' => route('admin.skema.template.ia05', ['id_skema' => $skema->id_skema]),
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.05']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.05'])
             ],
             [
@@ -116,7 +116,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Pertanyaan Tertulis Esai', 
                 'db_field' => 'fr_ia_06', 
                 'checked' => (bool)$configDB->fr_ia_06, 
-                'url' => route('admin.skema.template.ia06', ['id_skema' => $skema->id_skema]),
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.06']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.06'])
             ],
             [
@@ -124,7 +124,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Pertanyaan Lisan', 
                 'db_field' => 'fr_ia_07', 
                 'checked' => (bool)$configDB->fr_ia_07, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.07']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.07'])
             ],
             [
@@ -132,7 +132,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Ceklis Verifikasi Pihak Ketiga', 
                 'db_field' => 'fr_ia_08', 
                 'checked' => (bool)$configDB->fr_ia_08, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.08']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.08'])
             ],
             [
@@ -140,7 +140,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Pertanyaan Wawancara', 
                 'db_field' => 'fr_ia_09', 
                 'checked' => (bool)$configDB->fr_ia_09, 
-                'url' => route('admin.skema.template.ia09', ['id_skema' => $skema->id_skema]),
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.09']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.09'])
             ],
             [
@@ -148,7 +148,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Klarifikasi Bukti Pihak Ketiga', 
                 'db_field' => 'fr_ia_10', 
                 'checked' => (bool)$configDB->fr_ia_10, 
-                'url' => route('admin.skema.template.ia10', ['id_skema' => $skema->id_skema]),
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.10']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.10'])
             ],
             [
@@ -156,7 +156,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Ceklis Meninjau Instrumen Asesmen', 
                 'db_field' => 'fr_ia_11', 
                 'checked' => (bool)$configDB->fr_ia_11, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.11']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.IA.11'])
             ],
             // FASE 4 (Keputusan & Laporan)
@@ -165,7 +165,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Persetujuan Asesmen dan Kerahasiaan', 
                 'db_field' => 'fr_ak_01', 
                 'checked' => (bool)$configDB->fr_ak_01, 
-                'url' => route('admin.skema.template.ak01', ['id_skema' => $skema->id_skema]),
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.01']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.01'])
             ],
             [
@@ -173,7 +173,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Rekaman Asesmen Kompetensi', 
                 'db_field' => 'fr_ak_02', 
                 'checked' => (bool)$configDB->fr_ak_02, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.02']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.02'])
             ],
             [
@@ -181,7 +181,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Umpan Balik dan Catatan Asesmen', 
                 'db_field' => 'fr_ak_03', 
                 'checked' => (bool)$configDB->fr_ak_03, 
-                'url' => route('admin.skema.template.ak03', ['id_skema' => $skema->id_skema]),
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.03']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.03'])
             ],
             [
@@ -189,7 +189,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Banding Asesmen', 
                 'db_field' => 'fr_ak_04', 
                 'checked' => (bool)$configDB->fr_ak_04, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.04']),
                 'admin_url' => route('admin.skema.form.asesi_list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.04'])
             ],
             [
@@ -197,7 +197,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Laporan Asesmen', 
                 'db_field' => 'fr_ak_05', 
                 'checked' => (bool)$configDB->fr_ak_05, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.05']),
                 'admin_url' => route('admin.skema.form.ak05_list', ['id_skema' => $skema->id_skema])
             ],
             [
@@ -205,7 +205,7 @@ class DetailSkemaController extends Controller
                 'name' => 'Meninjau Proses Asesmen', 
                 'db_field' => 'fr_ak_06', 
                 'checked' => (bool)$configDB->fr_ak_06, 
-                'url' => null,
+                'url' => route('admin.skema.template.list', ['id_skema' => $skema->id_skema, 'form_code' => 'FR.AK.06']),
                 'admin_url' => route('admin.ak06.show', ['id_skema' => $skema->id_skema])
             ],
         ];
@@ -539,6 +539,9 @@ class DetailSkemaController extends Controller
             'name' => 'Assessment Form'
         ];
 
+        $sortColumn = request('sort', 'created_at');
+        $sortDirection = request('direction', 'desc');
+
         // Fetch Asesi through Jadwal
         $query = DataSertifikasiAsesi::with([
             'asesi.dataPekerjaan',
@@ -546,7 +549,26 @@ class DetailSkemaController extends Controller
             'jadwal.asesor'
         ])->whereHas('jadwal', function($q) use ($id_skema) {
             $q->where('id_skema', $id_skema);
-        })->orderBy('created_at', 'desc');
+        });
+
+        // Add sorting logic
+        if ($sortColumn == 'nama_lengkap') {
+            $query->join('asesi', 'data_sertifikasi_asesi.id_asesi', '=', 'asesi.id_asesi')
+                  ->orderBy('asesi.nama_lengkap', $sortDirection)
+                  ->select('data_sertifikasi_asesi.*');
+        } elseif ($sortColumn == 'asesor') {
+            $query->join('jadwal', 'data_sertifikasi_asesi.id_jadwal', '=', 'jadwal.id_jadwal')
+                  ->join('asesor', 'jadwal.id_asesor', '=', 'asesor.id_asesor')
+                  ->orderBy('asesor.nama_lengkap', $sortDirection)
+                  ->select('data_sertifikasi_asesi.*');
+        } elseif ($sortColumn == 'status') {
+            // Sorting by status: rekomendasi_apl02 then rekomendasi_hasil_asesmen_AK02
+            $query->orderBy('rekomendasi_apl02', $sortDirection)
+                  ->orderBy('rekomendasi_hasil_asesmen_AK02', $sortDirection);
+        } else {
+            // Default sort (e.g. created_at)
+            $query->orderBy('data_sertifikasi_asesi.' . $sortColumn, $sortDirection);
+        }
 
         if (request('search')) {
             $search = request('search');
@@ -579,8 +601,8 @@ class DetailSkemaController extends Controller
             'asesor' => $asesor,
             'jadwal' => $jadwal,
             'isMasterView' => true,
-            'sortColumn' => request('sort', 'created_at'),
-            'sortDirection' => request('direction', 'desc'),
+            'sortColumn' => $sortColumn,
+            'sortDirection' => $sortDirection,
             'perPage' => request('per_page', 10),
             'targetRoute' => $config['route'],
             'buttonLabel' => $config['label'],
@@ -607,6 +629,55 @@ class DetailSkemaController extends Controller
         return view('Admin.master.skema.ak05_jadwal_list', [
             'skema' => $skema,
             'jadwalList' => $jadwalList,
+        ]);
+    }
+
+    /**
+     * Tampilkan daftar Jadwal untuk Template (Per Asesor context)
+     */
+    public function showTemplateJadwalList($id_skema, $form_code)
+    {
+        $skema = Skema::findOrFail($id_skema);
+        
+        // mapping form_code -> config untuk label/nama
+        $mapping = [
+            'FR.MAPA.01' => ['label' => 'FR.MAPA.01', 'name' => 'Merencanakan Aktivitas dan Proses Asesmen'],
+            'FR.MAPA.02' => ['label' => 'FR.MAPA.02', 'name' => 'Peta Instrumen Asesmen'],
+            'FR.IA.01' => ['label' => 'FR.IA.01', 'name' => 'Ceklis Observasi Aktivitas di Tempat Kerja'],
+            'FR.IA.02' => ['label' => 'FR.IA.02', 'name' => 'Tugas Praktik Demonstrasi'],
+            'FR.IA.03' => ['label' => 'FR.IA.03', 'name' => 'Pertanyaan Untuk Mendukung Observasi'],
+            'FR.IA.04' => ['label' => 'FR.IA.04', 'name' => 'Ceklis Verifikasi Portofolio'],
+            'FR.IA.05' => ['label' => 'FR.IA.05', 'name' => 'Pertanyaan Tertulis Pilihan Ganda'],
+            'FR.IA.06' => ['label' => 'FR.IA.06', 'name' => 'Pertanyaan Tertulis Esai'],
+            'FR.IA.07' => ['label' => 'FR.IA.07', 'name' => 'Pertanyaan Lisan'],
+            'FR.IA.08' => ['label' => 'FR.IA.08', 'name' => 'Ceklis Verifikasi Pihak Ketiga'],
+            'FR.IA.09' => ['label' => 'FR.IA.09', 'name' => 'Pertanyaan Wawancara'],
+            'FR.IA.10' => ['label' => 'FR.IA.10', 'name' => 'Klarifikasi Bukti Pihak Ketiga'],
+            'FR.IA.11' => ['label' => 'FR.IA.11', 'name' => 'Ceklis Meninjau Instrumen Asesmen'],
+            'FR.AK.01' => ['label' => 'FR.AK.01', 'name' => 'Persetujuan Asesmen dan Kerahasiaan'],
+            'FR.AK.02' => ['label' => 'FR.AK.02', 'name' => 'Rekaman Asesmen Kompetensi'],
+            'FR.AK.03' => ['label' => 'FR.AK.03', 'name' => 'Umpan Balik dan Catatan Asesmen'],
+            'FR.AK.04' => ['label' => 'FR.AK.04', 'name' => 'Banding Asesmen'],
+            'FR.AK.05' => ['label' => 'FR.AK.05', 'name' => 'Laporan Asesmen'],
+            'FR.AK.06' => ['label' => 'FR.AK.06', 'name' => 'Meninjau Proses Asesmen'],
+        ];
+
+        $config = $mapping[$form_code] ?? ['label' => $form_code, 'name' => 'Formulir'];
+
+        // Ambil jadwal yang:
+        // 1. Memiliki skema $id_skema
+        // 2. Memiliki setidaknya 1 asesi (dataSertifikasiAsesi)
+        $jadwalList = \App\Models\Jadwal::with(['asesor', 'masterTuk'])
+            ->where('id_skema', $id_skema)
+            ->whereHas('dataSertifikasiAsesi')
+            ->orderBy('tanggal_mulai', 'desc')
+            ->get();
+
+        return view('Admin.master.skema.template_jadwal_list', [
+            'skema' => $skema,
+            'jadwalList' => $jadwalList,
+            'form_code' => $form_code,
+            'formConfig' => $config
         ]);
     }
 }

@@ -29,9 +29,9 @@
                 
                 <!-- Header -->
                 <div class="mb-12">
-                    <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" class="inline-flex items-center text-rose-600 hover:text-rose-800 font-bold mb-6 group tracking-[0.2em] text-[10px]">
+                    <a href="{{ route('admin.skema.template.list', [$skema->id_skema, 'FR.IA.07']) }}" class="inline-flex items-center text-rose-600 hover:text-rose-800 font-bold mb-6 group tracking-[0.2em] text-[10px]">
                         <i class="fas fa-chevron-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                        KEMBALI KE DETAIL SKEMA
+                        KEMBALI KE DAFTAR TEMPLATE
                     </a>
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
@@ -59,7 +59,7 @@
                     </div>
                 @endif
 
-                <form id="templateForm" action="{{ route('admin.skema.template.ia07.store', $skema->id_skema) }}" method="POST">
+                <form id="templateForm" action="{{ route('admin.skema.template.ia07.store', [$skema->id_skema, $id_jadwal]) }}" method="POST">
                     @csrf
                     <div class="space-y-6">
                         <template x-for="(q, index) in questions" :key="index">

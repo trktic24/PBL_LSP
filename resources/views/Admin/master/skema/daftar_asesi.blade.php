@@ -203,8 +203,30 @@
                                 </div>
                             </a>
                         </th>
+
+                        {{-- Kolom Asesor dengan Sorting --}}
+                        <th class="px-6 py-3 font-semibold whitespace-nowrap">
+                            @php $isCurrent = $sortColumn == 'asesor'; @endphp
+                            <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['sort' => 'asesor', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center group cursor-pointer hover:text-blue-600 transition">
+                                <span>Asesor</span>
+                                <div class="flex flex-col ml-2 -space-y-1 text-[10px]">
+                                    <i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-blue-600' : 'text-gray-300 group-hover:text-blue-400' }}"></i>
+                                    <i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-blue-600' : 'text-gray-300 group-hover:text-blue-400' }}"></i>
+                                </div>
+                            </a>
+                        </th>
                         
-                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Status</th>
+                        {{-- Kolom Status dengan Sorting --}}
+                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">
+                            @php $isCurrent = $sortColumn == 'status'; @endphp
+                            <a href="{{ request()->fullUrlWithQuery(array_merge($baseParams, ['sort' => 'status', 'direction' => ($isCurrent && $sortDirection == 'asc') ? 'desc' : 'asc'])) }}" class="flex items-center justify-center group cursor-pointer hover:text-blue-600 transition">
+                                <span>Status</span>
+                                <div class="flex flex-col ml-2 -space-y-1 text-[10px]">
+                                    <i class="fas fa-caret-up {{ ($isCurrent && $sortDirection == 'asc') ? 'text-blue-600' : 'text-gray-300 group-hover:text-blue-400' }}"></i>
+                                    <i class="fas fa-caret-down {{ ($isCurrent && $sortDirection == 'desc') ? 'text-blue-600' : 'text-gray-300 group-hover:text-blue-400' }}"></i>
+                                </div>
+                            </a>
+                        </th>
                         <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
@@ -224,6 +246,21 @@
                                     @endif
                                 </a>
                             </td>
+
+                            {{-- Asesor --}}
+                            <td class="px-6 py-4 text-left align-middle font-medium text-gray-600">
+                                @if($item->jadwal && $item->jadwal->asesor)
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] font-bold border border-blue-100">
+                                            {{ substr($item->jadwal->asesor->nama_lengkap, 0, 1) }}
+                                        </div>
+                                        <span class="line-clamp-1 truncate max-w-[150px]">{{ $item->jadwal->asesor->nama_lengkap }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-gray-400 italic">Belum Diplot</span>
+                                @endif
+                            </td>
+
                             {{-- Status --}}
                             <td class="px-6 py-4 text-center align-middle">
                                 @php
@@ -254,7 +291,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-400">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
                                     <p>Data asesi tidak ditemukan.</p>

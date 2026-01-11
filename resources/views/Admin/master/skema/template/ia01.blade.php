@@ -27,9 +27,9 @@
                 
                 <!-- Header -->
                 <div class="mb-12">
-                    <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-bold mb-6 group tracking-[0.2em] text-[10px]">
+                    <a href="{{ route('admin.skema.template.list', [$skema->id_skema, 'FR.IA.01']) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-bold mb-6 group tracking-[0.2em] text-[10px]">
                         <i class="fas fa-chevron-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                        KEMBALI KE DETAIL SKEMA
+                        KEMBALI KE DAFTAR TEMPLATE
                     </a>
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
@@ -52,7 +52,7 @@
                     </div>
                 @endif
 
-                <form id="templateForm" action="{{ route('admin.skema.template.ia01.store', $skema->id_skema) }}" method="POST">
+                <form id="templateForm" action="{{ route('admin.skema.template.ia01.store', [$skema->id_skema, $id_jadwal]) }}" method="POST">
                     @csrf
                     <div class="space-y-12">
                         @foreach($skema->kelompokPekerjaan as $kp)
@@ -87,7 +87,7 @@
                                                                 </div>
                                                                 <div class="md:w-1/2">
                                                                     <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Standar Industri / Kerja</label>
-                                                                    <textarea name="standar_industri[{{ $kuk->id_kriteria }}]" class="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-bold text-slate-700 min-h-[80px] lowercase" placeholder="Masukkan standar industri/kerja untuk KUK ini...">{{ $kuk->standar_industri_kerja }}</textarea>
+                                                                    <textarea name="standar_industri[{{ $kuk->id_kriteria }}]" class="w-full p-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-bold text-slate-700 min-h-[80px] lowercase" placeholder="Masukkan standar industri/kerja untuk KUK ini...">{{ $templateContent[$kuk->id_kriteria] ?? $kuk->standar_industri_kerja }}</textarea>
                                                                 </div>
                                                             </div>
                                                         </div>

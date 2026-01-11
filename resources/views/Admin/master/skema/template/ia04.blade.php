@@ -28,9 +28,9 @@
                 
                 <!-- Header -->
                 <div class="mb-12">
-                    <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-bold mb-4 group tracking-widest text-xs">
+                    <a href="{{ route('admin.skema.template.list', [$skema->id_skema, 'FR.IA.04']) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-bold mb-4 group tracking-widest text-xs">
                         <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                        KEMBALI KE DETAIL SKEMA
+                        KEMBALI KE DAFTAR TEMPLATE
                     </a>
                     <h1 class="text-4xl font-black text-slate-900 leading-tight">
                         PENYUSUNAN <br>
@@ -46,7 +46,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.skema.template.ia04.store', $skema->id_skema) }}" method="POST" x-data="{ points: @json($points) }">
+                <form action="{{ route('admin.skema.template.ia04.store', [$skema->id_skema, $id_jadwal]) }}" method="POST" x-data="{ points: @json($points) }">
                     @csrf
                     <div class="space-y-10">
                         

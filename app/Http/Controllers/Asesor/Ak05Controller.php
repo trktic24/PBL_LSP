@@ -150,12 +150,13 @@ class Ak05Controller extends Controller
     }
 
     /**
-     * [MASTER] Menampilkan editor template (Laporan Asesmen) per Skema
+     * [MASTER] Menampilkan editor template (Laporan Asesmen) per Skema & Jadwal
      */
-    public function editTemplate($id_skema)
+    public function editTemplate($id_skema, $id_jadwal)
     {
         $skema = Skema::findOrFail($id_skema);
         $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
                                     ->where('form_code', 'FR.AK.05')
                                     ->first();
         
@@ -168,14 +169,15 @@ class Ak05Controller extends Controller
 
         return view('Admin.master.skema.template.ak05', [
             'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
             'content' => $content
         ]);
     }
 
     /**
-     * [MASTER] Simpan/Update template per Skema
+     * [MASTER] Simpan/Update template per Skema & Jadwal
      */
-    public function storeTemplate(Request $request, $id_skema)
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
     {
         $request->validate([
             'content' => 'required|array',
@@ -186,7 +188,11 @@ class Ak05Controller extends Controller
         ]);
 
         MasterFormTemplate::updateOrCreate(
-            ['id_skema' => $id_skema, 'form_code' => 'FR.AK.05'],
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.AK.05'
+            ],
             ['content' => $request->content]
         );
 

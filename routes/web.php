@@ -344,50 +344,50 @@ Route::middleware('auth')->group(function () {
             // [NEW] TEMPLATE MANAGEMENT (MASTER CRUD)
             Route::prefix('template')->name('admin.skema.template.')->group(function() {
                 // IA-01 to IA-11
-                Route::get('/ia01', [IA01Controller::class, 'editTemplate'])->name('ia01');
-                Route::post('/ia01/store', [IA01Controller::class, 'storeTemplate'])->name('ia01.store');
-                Route::get('/ia02', [IA02Controller::class, 'editTemplate'])->name('ia02');
-                Route::post('/ia02/store', [IA02Controller::class, 'storeTemplate'])->name('ia02.store');
-                Route::get('/ia03', [\App\Http\Controllers\Asesi\IA03\IA03Controller::class, 'editTemplate'])->name('ia03');
-                Route::post('/ia03/store', [\App\Http\Controllers\Asesi\IA03\IA03Controller::class, 'storeTemplate'])->name('ia03.store');
-                Route::get('/ia04', [FrIa04aController::class, 'editTemplate'])->name('ia04');
-                Route::post('/ia04/store', [FrIa04aController::class, 'storeTemplate'])->name('ia04.store');
-                Route::get('/ia05', [IA05Controller::class, 'editTemplate'])->name('ia05');
-                Route::post('/ia05/store', [IA05Controller::class, 'storeTemplate'])->name('ia05.store');
+                Route::get('/ia01/{id_jadwal}', [IA01Controller::class, 'editTemplate'])->name('ia01');
+                Route::post('/ia01/store/{id_jadwal}', [IA01Controller::class, 'storeTemplate'])->name('ia01.store');
+                Route::get('/ia02/{id_jadwal}', [IA02Controller::class, 'editTemplate'])->name('ia02');
+                Route::post('/ia02/store/{id_jadwal}', [IA02Controller::class, 'storeTemplate'])->name('ia02.store');
+                Route::get('/ia03/{id_jadwal}', [\App\Http\Controllers\Asesi\IA03\IA03Controller::class, 'editTemplate'])->name('ia03');
+                Route::post('/ia03/store/{id_jadwal}', [\App\Http\Controllers\Asesi\IA03\IA03Controller::class, 'storeTemplate'])->name('ia03.store');
+                Route::get('/ia04/{id_jadwal}', [FrIa04aController::class, 'editTemplate'])->name('ia04');
+                Route::post('/ia04/store/{id_jadwal}', [FrIa04aController::class, 'storeTemplate'])->name('ia04.store');
+                Route::get('/ia05/{id_jadwal}', [IA05Controller::class, 'editTemplate'])->name('ia05');
+                Route::post('/ia05/store/{id_jadwal}', [IA05Controller::class, 'storeTemplate'])->name('ia05.store');
                 Route::delete('/ia05/delete/{id}', [IA05Controller::class, 'destroyTemplate'])->name('ia05.destroy');
-                Route::get('/ia06', [IA06Controller::class, 'editTemplate'])->name('ia06');
-                Route::post('/ia06/store', [IA06Controller::class, 'storeTemplate'])->name('ia06.store');
+                Route::get('/ia06/{id_jadwal}', [IA06Controller::class, 'editTemplate'])->name('ia06');
+                Route::post('/ia06/store/{id_jadwal}', [IA06Controller::class, 'storeTemplate'])->name('ia06.store');
                 Route::delete('/ia06/delete/{id}', [IA06Controller::class, 'destroyTemplate'])->name('ia06.destroy');
-                Route::get('/ia07', [IA07Controller::class, 'editTemplate'])->name('ia07');
-                Route::post('/ia07/store', [IA07Controller::class, 'storeTemplate'])->name('ia07.store');
-                Route::get('/ia08', [IA08Controller::class, 'editTemplate'])->name('ia08');
-                Route::post('/ia08/store', [IA08Controller::class, 'storeTemplate'])->name('ia08.store');
-                Route::get('/ia09', [IA09Controller::class, 'editTemplate'])->name('ia09');
-                Route::post('/ia09/store', [IA09Controller::class, 'storeTemplate'])->name('ia09.store');
-                Route::get('/ia10', [IA10Controller::class, 'editTemplate'])->name('ia10');
-                Route::post('/ia10/store', [IA10Controller::class, 'storeTemplate'])->name('ia10.store');
-                Route::get('/ia11', [\App\Http\Controllers\IA11Controller::class, 'editTemplate'])->name('ia11');
-                Route::post('/ia11/store', [\App\Http\Controllers\IA11Controller::class, 'storeTemplate'])->name('ia11.store');
+                Route::get('/ia07/{id_jadwal}', [IA07Controller::class, 'editTemplate'])->name('ia07');
+                Route::post('/ia07/store/{id_jadwal}', [IA07Controller::class, 'storeTemplate'])->name('ia07.store');
+                Route::get('/ia08/{id_jadwal}', [IA08Controller::class, 'editTemplate'])->name('ia08');
+                Route::post('/ia08/store/{id_jadwal}', [IA08Controller::class, 'storeTemplate'])->name('ia08.store');
+                Route::get('/ia09/{id_jadwal}', [IA09Controller::class, 'editTemplate'])->name('ia09');
+                Route::post('/ia09/store/{id_jadwal}', [IA09Controller::class, 'storeTemplate'])->name('ia09.store');
+                Route::get('/ia10/{id_jadwal}', [IA10Controller::class, 'editTemplate'])->name('ia10');
+                Route::post('/ia10/store/{id_jadwal}', [IA10Controller::class, 'storeTemplate'])->name('ia10.store');
+                Route::get('/ia11/{id_jadwal}', [\App\Http\Controllers\IA11Controller::class, 'editTemplate'])->name('ia11');
+                Route::post('/ia11/store/{id_jadwal}', [\App\Http\Controllers\IA11Controller::class, 'storeTemplate'])->name('ia11.store');
 
                 // AK forms
-                Route::get('/ak01', [Ak01Controller::class, 'editTemplate'])->name('ak01');
-                Route::post('/ak01/store', [Ak01Controller::class, 'storeTemplate'])->name('ak01.store');
-                Route::get('/ak02', [Ak02Controller::class, 'editTemplate'])->name('ak02');
-                Route::post('/ak02/store', [Ak02Controller::class, 'storeTemplate'])->name('ak02.store');
-                Route::get('/ak03', [Ak03Controller::class, 'editTemplate'])->name('ak03');
-                Route::post('/ak03/store', [Ak03Controller::class, 'storeTemplate'])->name('ak03.store');
-                Route::get('/ak04', [Ak04Controller::class, 'editTemplate'])->name('ak04');
-                Route::post('/ak04/store', [Ak04Controller::class, 'storeTemplate'])->name('ak04.store');
-                Route::get('/ak05', [Ak05Controller::class, 'editTemplate'])->name('ak05');
-                Route::post('/ak05/store', [Ak05Controller::class, 'storeTemplate'])->name('ak05.store');
-                Route::get('/ak06', [\App\Http\Controllers\FrAk06Controller::class, 'editTemplate'])->name('ak06');
-                Route::post('/ak06/store', [\App\Http\Controllers\FrAk06Controller::class, 'storeTemplate'])->name('ak06.store');
+                Route::get('/ak01/{id_jadwal}', [Ak01Controller::class, 'editTemplate'])->name('ak01');
+                Route::post('/ak01/store/{id_jadwal}', [Ak01Controller::class, 'storeTemplate'])->name('ak01.store');
+                Route::get('/ak02/{id_jadwal}', [Ak02Controller::class, 'editTemplate'])->name('ak02');
+                Route::post('/ak02/store/{id_jadwal}', [Ak02Controller::class, 'storeTemplate'])->name('ak02.store');
+                Route::get('/ak03/{id_jadwal}', [Ak03Controller::class, 'editTemplate'])->name('ak03');
+                Route::post('/ak03/store/{id_jadwal}', [Ak03Controller::class, 'storeTemplate'])->name('ak03.store');
+                Route::get('/ak04/{id_jadwal}', [Ak04Controller::class, 'editTemplate'])->name('ak04');
+                Route::post('/ak04/store/{id_jadwal}', [Ak04Controller::class, 'storeTemplate'])->name('ak04.store');
+                Route::get('/ak05/{id_jadwal}', [Ak05Controller::class, 'editTemplate'])->name('ak05');
+                Route::post('/ak05/store/{id_jadwal}', [Ak05Controller::class, 'storeTemplate'])->name('ak05.store');
+                Route::get('/ak06/{id_jadwal}', [\App\Http\Controllers\FrAk06Controller::class, 'editTemplate'])->name('ak06');
+                Route::post('/ak06/store/{id_jadwal}', [\App\Http\Controllers\FrAk06Controller::class, 'storeTemplate'])->name('ak06.store');
 
                 // MAPA forms
-                Route::get('/mapa01', [FrMapa01Controller::class, 'editTemplate'])->name('mapa01');
-                Route::post('/mapa01/store', [FrMapa01Controller::class, 'storeTemplate'])->name('mapa01.store');
-                Route::get('/mapa02', [Mapa02Controller::class, 'editTemplate'])->name('mapa02');
-                Route::post('/mapa02/store', [Mapa02Controller::class, 'storeTemplate'])->name('mapa02.store');
+                Route::get('/mapa01/{id_jadwal}', [FrMapa01Controller::class, 'editTemplate'])->name('mapa01');
+                Route::post('/mapa01/store/{id_jadwal}', [FrMapa01Controller::class, 'storeTemplate'])->name('mapa01.store');
+                Route::get('/mapa02/{id_jadwal}', [Mapa02Controller::class, 'editTemplate'])->name('mapa02');
+                Route::post('/mapa02/store/{id_jadwal}', [Mapa02Controller::class, 'storeTemplate'])->name('mapa02.store');
             });
 
             // AK (Reports)

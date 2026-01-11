@@ -112,12 +112,13 @@ class IA02Controller extends Controller
     }
 
     /**
-     * [MASTER] Menampilkan editor tamplate (Skenario) per Skema
+     * [MASTER] Menampilkan editor tamplate (Skenario) per Skema & Jadwal
      */
-    public function editTemplate($id_skema)
+    public function editTemplate($id_skema, $id_jadwal)
     {
         $skema = Skema::findOrFail($id_skema);
         $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
                                     ->where('form_code', 'FR.IA.02')
                                     ->first();
         
@@ -130,14 +131,15 @@ class IA02Controller extends Controller
 
         return view('Admin.master.skema.template.ia02', [
             'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
             'content' => $content
         ]);
     }
 
     /**
-     * [MASTER] Simpan/Update template per Skema
+     * [MASTER] Simpan/Update template per Skema & Jadwal
      */
-    public function storeTemplate(Request $request, $id_skema)
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
     {
         $request->validate([
             'skenario' => 'required|string',
@@ -146,7 +148,11 @@ class IA02Controller extends Controller
         ]);
 
         MasterFormTemplate::updateOrCreate(
-            ['id_skema' => $id_skema, 'form_code' => 'FR.IA.02'],
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.02'
+            ],
             [
                 'content' => [
                     'skenario' => $request->skenario,

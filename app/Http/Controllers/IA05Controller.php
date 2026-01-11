@@ -389,23 +389,27 @@ class IA05Controller extends Controller
     }
 
     /**
-     * [MASTER] Menampilkan editor tamplate (Bank Soal) per Skema
+     * [MASTER] Menampilkan editor tamplate (Bank Soal) per Skema & Jadwal
      */
-    public function editTemplate($id_skema)
+    public function editTemplate($id_skema, $id_jadwal)
     {
         $skema = Skema::findOrFail($id_skema);
-        $semua_soal = SoalIA05::where('id_skema', $id_skema)->orderBy('id_soal_ia05')->get();
+        $semua_soal = SoalIA05::where('id_skema', $id_skema)
+                                ->where('id_jadwal', $id_jadwal)
+                                ->orderBy('id_soal_ia05')
+                                ->get();
 
         return view('Admin.master.skema.template.ia05', [
             'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
             'semua_soal' => $semua_soal
         ]);
     }
 
     /**
-     * [MASTER] Simpan/Update soal template per Skema
+     * [MASTER] Simpan/Update soal template per Skema & Jadwal
      */
-    public function storeTemplate(Request $request, $id_skema)
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
     {
         $request->validate([
             'soal' => 'required|array',
@@ -423,9 +427,14 @@ class IA05Controller extends Controller
                 $id_soal = $data['id'] ?? null;
                 
                 $soal = SoalIA05::updateOrCreate(
-                    ['id_soal_ia05' => $id_soal, 'id_skema' => $id_skema],
+                    [
+                        'id_soal_ia05' => $id_soal, 
+                        'id_skema' => $id_skema,
+                        'id_jadwal' => $id_jadwal
+                    ],
                     [
                         'id_skema' => $id_skema,
+                        'id_jadwal' => $id_jadwal,
                         'soal_ia05' => $data['pertanyaan'],
                         'opsi_a_ia05' => $data['opsi_a'],
                         'opsi_b_ia05' => $data['opsi_b'],

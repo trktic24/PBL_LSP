@@ -8,9 +8,7 @@ use Illuminate\Validation\Rule;
 use App\Models\UnitKompetensi;
 use App\Models\ResponApl02Ia01;
 use App\Models\Skema;
-use App\Models\KriteriaUnjukKerja; // Added import
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Models\MasterFormTemplate;
 
 
 
@@ -79,6 +77,13 @@ class IA01Controller extends Controller
             ->get()
             ->keyBy('id_kriteria');
 
+        // Fetch Jadwal-specific template for Standar Industri
+        $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                    ->where('form_code', 'FR.IA.01')
+                                    ->first();
+        $templateContent = $template ? $template->content : [];
+
         $data_sesi = [
             'tuk' => old('tuk'),
         ];
@@ -96,40 +101,55 @@ class IA01Controller extends Controller
             'sertifikasi',
             'data_sesi',
             'existingResponses',
-            'rekomendasiSistem'
+            'rekomendasiSistem',
+            'templateContent'
         ));
     }
 
     /**
-     * [MASTER] Menampilkan editor template (Observasi Langsung) per Skema
+     * [MASTER] Menampilkan editor template (Observasi Langsung) per Skema & Jadwal
      */
-    public function editTemplate($id_skema)
+    public function editTemplate($id_skema, $id_jadwal)
     {
         $skema = Skema::with(['kelompokPekerjaan.unitKompetensi.elemen.kriteria'])
                       ->findOrFail($id_skema);
+        
+        $template = MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.IA.01')
+                                    ->first();
+        
+        $templateContent = $template ? $template->content : [];
 
         return view('Admin.master.skema.template.ia01', [
-            'skema' => $skema
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'templateContent' => $templateContent
         ]);
     }
 
     /**
-     * [MASTER] Simpan/Update template (Standar Industri pada KUK)
+     * [MASTER] Simpan/Update template (Standar Industri pada KUK) per Skema & Jadwal
      */
-    public function storeTemplate(Request $request, $id_skema)
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
     {
         $request->validate([
             'standar_industri' => 'required|array',
             'standar_industri.*' => 'nullable|string',
         ]);
 
-        foreach ($request->standar_industri as $id_kriteria => $standar) {
-            KriteriaUnjukKerja::where('id_kriteria', $id_kriteria)->update([
-                'standar_industri_kerja' => $standar
-            ]);
-        }
+        MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.01'
+            ],
+            [
+                'content' => $request->standar_industri
+            ]
+        );
 
-        return redirect()->back()->with('success', 'Templat IA-01 (Standar Industri) berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Templat IA-01 (Standar Industri) berhasil diperbarui untuk jadwal ini.');
     }
 
     /**
@@ -158,6 +178,12 @@ class IA01Controller extends Controller
             ->orderBy('urutan')
             ->get();
 
+        // Fetch Jadwal-specific template (Optional for adminShow but good for consistency)
+        $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                    ->where('form_code', 'FR.IA.01')
+                                    ->first(); // Just get any for master show
+        $templateContent = $template ? $template->content : [];
+
         return view('frontend.IA_01.admin_show', [
             'skema' => $skema,
             'kelompok' => $kelompok,
@@ -165,6 +191,7 @@ class IA01Controller extends Controller
             'sertifikasi' => $sertifikasi,
             'responses' => collect(),
             'isMasterView' => true,
+            'templateContent' => $templateContent
         ]);
     }
     /**
@@ -295,12 +322,20 @@ class IA01Controller extends Controller
             ->get()
             ->keyBy('id_kriteria');
 
+        // Fetch Jadwal-specific template
+        $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                    ->where('form_code', 'FR.IA.01')
+                                    ->first();
+        $templateContent = $template ? $template->content : [];
+
         return view('frontend.IA_01.admin_show', compact(
             'skema',
             'kelompok',
             'units',
             'sertifikasi',
-            'responses'
+            'responses',
+            'templateContent'
         ));
     }
 
@@ -334,12 +369,20 @@ class IA01Controller extends Controller
             ->get()
             ->keyBy('id_kriteria');
 
+        // Fetch Jadwal-specific template
+        $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
+                                    ->where('id_jadwal', $sertifikasi->id_jadwal)
+                                    ->where('form_code', 'FR.IA.01')
+                                    ->first();
+        $templateContent = $template ? $template->content : [];
+
         // 4. Render PDF
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.ia_01', [
             'sertifikasi' => $sertifikasi,
             'skema' => $skema,
             'units' => $units,
-            'responses' => $responses
+            'responses' => $responses,
+            'templateContent' => $templateContent
         ]);
 
         $pdf->setPaper('A4', 'portrait');

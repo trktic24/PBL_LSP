@@ -30,8 +30,8 @@
                 <!-- Header -->
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
-                        <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" class="flex items-center text-slate-500 hover:text-blue-600 transition mb-2">
-                            <i class="fas fa-arrow-left mr-2"></i> Kembali ke Detail Skema
+                        <a href="{{ route('admin.skema.template.list', [$skema->id_skema, 'FR.IA.05']) }}" class="flex items-center text-slate-500 hover:text-blue-600 transition mb-2">
+                            <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar Template
                         </a>
                         <h1 class="text-3xl font-black text-slate-900 tracking-tight">
                             KELOLA BANK SOAL <span class="bg-blue-600 text-white px-3 py-1 rounded-lg ml-2">FR.IA.05</span>
@@ -63,7 +63,7 @@
                     </div>
                 @endif
 
-                <form id="formTemplate" action="{{ route('admin.skema.template.ia05.store', $skema->id_skema) }}" method="POST">
+                <form id="formTemplate" action="{{ route('admin.skema.template.ia05.store', [$skema->id_skema, $id_jadwal]) }}" method="POST">
                     @csrf
                     <div class="space-y-6">
                         <template x-for="(q, index) in questions" :key="index">

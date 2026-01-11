@@ -29,9 +29,9 @@
                 <!-- Header -->
                 <div class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                     <div>
-                        <a href="{{ route('admin.skema.detail', $skema->id_skema) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-bold text-sm transition-all mb-4 group">
+                        <a href="{{ route('admin.skema.template.list', [$skema->id_skema, 'FR.IA.02']) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-bold text-sm transition-all mb-4 group">
                             <i class="fas fa-chevron-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                            KEMBALI KE DETAIL SKEMA
+                            KEMBALI KE DAFTAR TEMPLATE
                         </a>
                         <h1 class="text-4xl font-black text-slate-900 leading-none">
                             MASTER TEMPLATE <br>
@@ -48,7 +48,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.skema.template.ia02.store', $skema->id_skema) }}" method="POST">
+                <form action="{{ route('admin.skema.template.ia02.store', [$skema->id_skema, $id_jadwal]) }}" method="POST">
                     @csrf
                     <div class="space-y-8">
                         

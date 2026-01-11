@@ -13,6 +13,7 @@ class MasterFormTemplate extends Model
 
     protected $fillable = [
         'id_skema',
+        'id_jadwal', // Added
         'form_code',
         'content',
     ];
