@@ -391,6 +391,10 @@ Route::middleware('auth')->group(function () {
                 Route::get('/ak06/{id_jadwal}', [\App\Http\Controllers\FrAk06Controller::class, 'editTemplate'])->name('ak06');
                 Route::post('/ak06/store/{id_jadwal}', [\App\Http\Controllers\FrAk06Controller::class, 'storeTemplate'])->name('ak06.store');
 
+                // AK forms (AK.07)
+                Route::get('/ak07/{id_jadwal}', [\App\Http\Controllers\FrAk07Controller::class, 'editTemplate'])->name('ak07');
+                Route::post('/ak07/store/{id_jadwal}', [\App\Http\Controllers\FrAk07Controller::class, 'storeTemplate'])->name('ak07.store');
+
                 // MAPA forms
                 Route::get('/mapa01/{id_jadwal}', [FrMapa01Controller::class, 'editTemplate'])->name('mapa01');
                 Route::post('/mapa01/store/{id_jadwal}', [FrMapa01Controller::class, 'storeTemplate'])->name('mapa01.store');

@@ -8,8 +8,6 @@ use Illuminate\Support\Carbon;
 use App\Models\LembarJawabIA05;
 use App\Models\KunciJawabanIA05;
 use Illuminate\Support\Facades\DB;
-
-// --- MODEL ---
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\DataSertifikasiAsesi;
@@ -32,10 +30,9 @@ class AsesmenPilihanGandaController extends Controller
         }
 
         $asesi = $isAdmin ? $sertifikasi->asesi : $user->asesi;
-        
         $jadwal = $sertifikasi->jadwal;
         
-        // --- PERBAIKAN FORMAT WAKTU (OPSI 1 YANG KITA BAHAS SEBELUMNYA) ---
+        // --- LOGIC WAKTU ---
         $tanggal = Carbon::parse($jadwal->tanggal_pelaksanaan)->format('Y-m-d');
         $jamSaja = Carbon::parse($jadwal->waktu_selesai)->format('H:i:s');
         
@@ -53,72 +50,71 @@ class AsesmenPilihanGandaController extends Controller
 
     /**
      * [GET API] Mengambil daftar soal.
-     * LOGIC BARU: GENERATE OTOMATIS BERDASARKAN SKEMA.
+     * LOGIC FIX: Filter by Jadwal & Auto-Sync (Sama seperti Esai/IA06)
      */
     public function getQuestions($idSertifikasi)
     {
         try {
-            // 1. CEK APAKAH LEMBAR JAWAB SUDAH ADA?
-            $cekLembarJawab = LembarJawabIA05::where('id_data_sertifikasi_asesi', $idSertifikasi)->exists();
+            // 1. Ambil Info Sertifikasi & Jadwal Peserta
+            $sertifikasi = DataSertifikasiAsesi::with('jadwal.skema')->findOrFail($idSertifikasi);
 
-            // 2. JIKA BELUM ADA, KITA GENERATE DULU DARI BANK SOAL
-            if (!$cekLembarJawab) {
-                
-                // Ambil data sertifikasi beserta relasi ke Skema
-                $sertifikasi = DataSertifikasiAsesi::with('jadwal.skema')->find($idSertifikasi);
+            if (!$sertifikasi->jadwal) {
+                return response()->json(['success' => false, 'message' => 'Jadwal tidak ditemukan.'], 404);
+            }
 
-                if (!$sertifikasi || !$sertifikasi->jadwal) {
-                    return response()->json(['success' => false, 'message' => 'Data Sertifikasi/Jadwal tidak valid.'], 404);
-                }
+            $idSkema = $sertifikasi->jadwal->id_skema;
+            $idJadwal = $sertifikasi->id_jadwal;
 
-                $idSkema = $sertifikasi->jadwal->id_skema;
-                $idJadwal = $sertifikasi->id_jadwal;
+            // 2. AMBIL MASTER SOAL IA05
+            // Logic: Ambil soal yang Skema-nya cocok DAN (Jadwalnya spesifik user ini ATAU Jadwalnya NULL/Umum)
+            $bankSoal = SoalIA05::where('id_skema', $idSkema)
+                    ->where('id_jadwal', $idJadwal)
+                    ->get();
 
-                // Ambil soal berdasarkan id_skema DAN id_jadwal, fallback ke Master (NULL)
-                $bankSoal = SoalIA05::where('id_skema', $idSkema)
-                                    ->where('id_jadwal', $idJadwal)
-                                    ->get();
-                
-                if ($bankSoal->isEmpty()) {
-                    $bankSoal = SoalIA05::where('id_skema', $idSkema)
-                                        ->whereNull('id_jadwal')
-                                        ->get();
-                }
+            // Cek kalau kosong
+            if ($bankSoal->isEmpty()) {
+                return response()->json([
+                    'success' => true, 
+                    'data' => [], 
+                    'message' => 'Belum ada soal pilihan ganda untuk skema/jadwal ini.'
+                ]);
+            }
 
-                if ($bankSoal->isEmpty()) {
-                    return response()->json([
-                        'success' => true,
-                        'data' => [],
-                        'message' => 'Bank soal untuk skema ini belum tersedia. Hubungi Admin.',
-                    ]);
-                }
+            // 3. AUTO-SYNC (Cek mana soal yang belum masuk ke lembar jawab user)
+            // Ambil ID Soal yang SUDAH ada di tabel lembar jawab user
+            $existingSoalIds = LembarJawabIA05::where('id_data_sertifikasi_asesi', $idSertifikasi)
+                ->pluck('id_soal_ia05') // Pastikan nama kolom FK ini benar
+                ->toArray();
 
-                // Siapkan data untuk Bulk Insert (Biar cepat, gak satu-satu)
+            // Filter $bankSoal: Ambil cuma yang ID-nya BELUM ada di $existingSoalIds
+            $soalBaru = $bankSoal->whereNotIn('id_soal_ia05', $existingSoalIds);
+
+            // 4. INSERT SOAL BARU (Jika ada)
+            if ($soalBaru->isNotEmpty()) {
                 $dataInsert = [];
                 $now = now();
 
-                foreach ($bankSoal as $soal) {
+                foreach ($soalBaru as $soal) {
                     $dataInsert[] = [
                         'id_data_sertifikasi_asesi' => $idSertifikasi,
                         'id_soal_ia05' => $soal->id_soal_ia05,
-                        'jawaban_asesi_ia05' => null,
-                        'pencapaian_ia05' => null,
+                        'jawaban_asesi_ia05' => null, // Masih kosong
+                        'pencapaian_ia05' => null,   // Belum dinilai
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
                 }
-
-                // Masukkan ke database sekaligus
+                // Insert Sekaligus
                 LembarJawabIA05::insert($dataInsert);
             }
 
-            // 3. SEKARANG AMBIL DATA (Entah itu baru dibuat atau emang udah ada)
-            $data = LembarJawabIA05::with(['soal'])
+            // 5. AMBIL DATA FINAL (Ambil dari tabel lembar jawab yang sudah lengkap)
+            $dataFinal = LembarJawabIA05::with(['soal'])
                 ->where('id_data_sertifikasi_asesi', $idSertifikasi)
                 ->get();
 
-            // 4. MAPPING DATA (Sama kayak kode lu sebelumnya)
-            $formattedData = $data
+            // 6. MAPPING OUTPUT
+            $formattedData = $dataFinal
                 ->map(function ($item) {
                     if (!$item->soal) return null;
 
@@ -126,6 +122,7 @@ class AsesmenPilihanGandaController extends Controller
                         'id_lembar_jawab' => $item->id_lembar_jawab_ia05,
                         'id_soal_master' => $item->soal->id_soal_ia05,
                         'pertanyaan' => $item->soal->soal_ia05,
+                        // Mapping Opsi Jawaban
                         'opsi' => [
                             ['key' => 'a', 'text' => $item->soal->opsi_a_ia05], 
                             ['key' => 'b', 'text' => $item->soal->opsi_b_ia05], 
@@ -159,10 +156,16 @@ class AsesmenPilihanGandaController extends Controller
 
         DB::beginTransaction();
         try {
+            // Ambil semua ID soal dari lembar jawab yang dikirim
             $lembarJawabIds = array_column($request->jawaban, 'id_lembar_jawab');
-            $soalIds = LembarJawabIA05::whereIn('id_lembar_jawab_ia05', $lembarJawabIds)->pluck('id_soal_ia05')->unique()->toArray();
             
-            // Ambil Kunci Jawaban
+            // Ambil ID Soal Master untuk mengambil kunci jawaban
+            $soalIds = LembarJawabIA05::whereIn('id_lembar_jawab_ia05', $lembarJawabIds)
+                        ->pluck('id_soal_ia05')
+                        ->unique()
+                        ->toArray();
+            
+            // Ambil Kunci Jawaban (Map: id_soal => jawaban_benar)
             $kunciJawabanMap = KunciJawabanIA05::whereIn('id_soal_ia05', $soalIds)
                 ->pluck('jawaban_benar_ia05', 'id_soal_ia05')
                 ->toArray();
@@ -177,8 +180,10 @@ class AsesmenPilihanGandaController extends Controller
                     $idSoal = $lembarJawab->id_soal_ia05;
                     $kunciBenar = $kunciJawabanMap[$idSoal] ?? null;
 
-                    // Logic Koreksi
-                    $statusPencapaian = ($kunciBenar && $jawabanAsesi === $kunciBenar) ? 'ya' : 'tidak';
+                    // Logic Koreksi Otomatis
+                    // Ubah jadi lowercase biar aman (opsional)
+                    $isCorrect = $kunciBenar && (strtolower($jawabanAsesi) === strtolower($kunciBenar));
+                    $statusPencapaian = $isCorrect ? 'ya' : 'tidak';
 
                     $lembarJawab->update([
                         'jawaban_asesi_ia05' => $jawabanAsesi,

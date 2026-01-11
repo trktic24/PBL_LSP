@@ -20,7 +20,7 @@
     <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden bg-gray-100"> 
         {{-- 1. SIDEBAR (Desktop Only) --}}
             <div class="hidden md:block md:w-80 flex-shrink-0">
-               <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" :backUrl="$backUrl" />
+                <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" :backUrl="url('/asesi/tracker/' . $sertifikasi->id_jadwal)" />
             </div>
 
             {{-- 2. HEADER MOBILE (Data Dinamis) --}}
@@ -36,9 +36,8 @@
                 :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" 
                 :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'" 
                 :image="$gambarSkema"
-                :backUrl="$backUrl" 
+                :backUrl="url('/asesi/tracker/' . $sertifikasi->id_jadwal)" 
             />
-
 
         {{-- MAIN CONTENT AREA --}}
         <main class="flex-1 bg-gray-100 overflow-y-auto">

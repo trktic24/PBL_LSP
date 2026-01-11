@@ -237,7 +237,14 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Asesor (Tanda Tangan)</label>
                             <div
                                 class="w-full h-40 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center">
-                                <p class="text-gray-400 text-sm">Tanda tangan dari Asesor</p>
+                                @php
+                                    $ttdAsesorBase64 = getTtdBase64($asesor->tanda_tangan ?? null, $asesor->id_user ?? $asesor->user_id ?? null, 'asesor');
+                                @endphp
+                                @if($ttdAsesorBase64)
+                                    <img src="{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor" class="h-32 object-contain">
+                                @else
+                                    <p class="text-gray-400 text-sm">Tanda tangan belum tersedia</p>
+                                @endif
                             </div>
                             <p class="mt-2 text-sm font-semibold text-gray-900">{{ $asesor->nama_lengkap ?? 'N/A' }}</p>
                             <p class="text-xs text-gray-500">No. Reg. {{ $asesor->nomor_regis ?? 'N/A' }}</p>
@@ -248,15 +255,22 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Asesi (Tanda Tangan)</label>
                             <div
                                 class="w-full h-40 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-blue-400 transition-colors">
-                                <div class="text-center">
-                                    <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                        </path>
-                                    </svg>
-                                    <p class="text-xs text-gray-500 mt-1">Klik untuk TTD Asesi</p>
-                                </div>
+                                @php
+                                    $ttdAsesiBase64 = getTtdBase64($asesi->tanda_tangan ?? null, null, 'asesi');
+                                @endphp
+                                @if($ttdAsesiBase64)
+                                    <img src="{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi" class="h-32 object-contain">
+                                @else
+                                    <div class="text-center">
+                                        <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                                            </path>
+                                        </svg>
+                                        <p class="text-xs text-gray-500 mt-1">Tanda tangan belum tersedia</p>
+                                    </div>
+                                @endif
                             </div>
                             <p class="mt-2 text-sm font-semibold text-gray-900">{{ $asesi->nama_lengkap ?? 'N/A' }}</p>
                         </div>

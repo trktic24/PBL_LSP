@@ -97,15 +97,23 @@
         $stIa01 = $ia01Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia01Pass = $ia01Done || ($show['ia01'] != 1);
 
-        $ia02Done = (optional($dataSertifikasi->ia02)->exists() ?? false) || $ia01Done;
+        // IA.02 (Existing)
+        // Logic updated: IA02 is considered done if IA01 is done
+       // Cukup cek apakah ia02 ada isinya (true) atau null (false)
+        $ia02Done = $dataSertifikasi->ia02 && $dataSertifikasi->ia02->count() > 0;
         $stIa02 = $ia02Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia02Pass = $ia02Done || ($show['ia02'] != 1);
 
-        $ia03Done = optional($dataSertifikasi->ia03)->exists() ?? false;
+        // IA.03 (Tipe Data: Collection/List)
+        // Kita cek: Datanya ada TIDAK null, DAN jumlahnya lebih dari 0
+        $ia03Done = $dataSertifikasi->ia03 && $dataSertifikasi->ia03->count() > 0;
         $stIa03 = $ia03Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia03Pass = $ia03Done || ($show['ia03'] != 1);
 
-        $ia04Done = optional($dataSertifikasi->ia04)->exists() ?? false;
+        // IA.04 (Tipe Data: Single Object/Satu Data)
+        // Kita cek: Cukup pastikan variabelnya ada isinya (bukan null)
+        // JANGAN PAKAI count() DI SINI
+        $ia04Done = $dataSertifikasi->ia04 ? true : false;
         $stIa04 = $ia04Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia04Pass = $ia04Done || ($show['ia04'] != 1);
 
@@ -121,19 +129,27 @@
         $stIa07 = $ia07Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia07Pass = $ia07Done || ($show['ia07'] != 1);
 
-        $ia08Done = optional($dataSertifikasi->ia08)->exists() ?? false;
+        // IA.08 (Log: Limit 1 -> Single Object)
+        // Cek: Apakah variabel ada isinya?
+        $ia08Done = $dataSertifikasi->ia08 ? true : false;
         $stIa08 = $ia08Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia08Pass = $ia08Done || ($show['ia08'] != 1);
 
-        $ia09Done = !empty(optional($dataSertifikasi->ia09)->pencapaian_ia09);
+        // IA.09 (Log: Limit 1 -> Single Object)
+        // Cek: Apakah variabel ada isinya?
+        $ia09Done = $dataSertifikasi->ia09 ? true : false; 
         $stIa09 = $ia09Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia09Pass = $ia09Done || ($show['ia09'] != 1);
 
-        $ia10Done = optional($dataSertifikasi->ia10)->exists() ?? false;
+        // IA.10 (Biasanya Single, sesuaikan jika beda)
+        // Jika IA.10 single object:
+        $ia10Done = $dataSertifikasi->ia10 ? true : false;
         $stIa10 = $ia10Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia10Pass = $ia10Done || ($show['ia10'] != 1);
 
-        $ia11Done = optional($dataSertifikasi->ia11)->exists() ?? false;
+        // IA.11 (Log: TIDAK ADA LIMIT -> Collection/List)
+        // ERRORNYA DISINI: Jangan pakai exists(), pakai count()
+        $ia11Done = $dataSertifikasi->ia11 && $dataSertifikasi->ia11->count() > 0;
         $stIa11 = $ia11Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia11Pass = $ia11Done || ($show['ia11'] != 1);
 

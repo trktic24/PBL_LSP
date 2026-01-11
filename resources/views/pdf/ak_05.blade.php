@@ -34,17 +34,17 @@
 
     <div style="margin-bottom: 10px; font-weight: bold;">Aspek Negatif dan Positif dalam Asesmen</div>
     <div style="border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 15px;">
-        {{ $listAsesi->first()->komentarAk05->Ak05->aspek_negatif_positif ?? '-' }}
+        {{ $listAsesi->first()?->komentarAk05?->Ak05?->aspek_negatif_positif ?? '-' }}
     </div>
 
     <div style="margin-bottom: 10px; font-weight: bold;">Pencatatan Penolakan Hasil Asesmen</div>
     <div style="border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 15px;">
-        {{ $listAsesi->first()->komentarAk05->Ak05->penolakan_hasil_asesmen ?? '-' }}
+        {{ $listAsesi->first()?->komentarAk05?->Ak05?->penolakan_hasil_asesmen ?? '-' }}
     </div>
 
     <div style="margin-bottom: 10px; font-weight: bold;">Saran Perbaikan (Asesmen Berikutnya)</div>
     <div style="border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 15px;">
-        {{ $listAsesi->first()->komentarAk05->Ak05->saran_perbaikan ?? '-' }}
+        {{ $listAsesi->first()?->komentarAk05?->Ak05?->saran_perbaikan ?? '-' }}
     </div>
 
     <div style="margin-bottom: 10px; font-weight: bold;">Rekomendasi</div>
@@ -88,16 +88,18 @@
         <table class="no-border">
             <tr>
                 <td width="50%">
-                    <div style="margin-bottom: 50px;">
+                    <div style="margin-bottom: 10px;">
                     Nama Asesor:<br>
-                    <strong>{{ $asesor->nama_lengkap }}</strong>
                     </div>
                     @if($asesor->tanda_tangan)
                         <img src="{{ getTtdBase64($asesor->tanda_tangan) }}" style="max-height: 80px; max-width: 200px;">
+                        <br>
                     @else
                         <br><br><br>
-                        (.......................)
                     @endif
+                    <strong>{{ $asesor->nama_lengkap }}</strong>
+                    <br>
+                    (.......................)
                 </td>
                 <td width="50%">
                     {{-- Space for verification/notes if needed --}}

@@ -40,7 +40,9 @@ if (!function_exists('getTtdBase64')) {
 
         foreach ($pathsToTry as $path) {
             if (file_exists($path)) {
-                return base64_encode(file_get_contents($path));
+                $mimeType = getDocMimeType($path);
+                $base64 = base64_encode(file_get_contents($path));
+                return 'data:' . $mimeType . ';base64,' . $base64;
             }
         }
 
@@ -74,7 +76,9 @@ if (!function_exists('getDocBase64')) {
 
         foreach ($pathsToTry as $path) {
             if (file_exists($path)) {
-                return base64_encode(file_get_contents($path));
+                $mimeType = getDocMimeType($path);
+                $base64 = base64_encode(file_get_contents($path));
+                return 'data:' . $mimeType . ';base64,' . $base64;
             }
         }
 

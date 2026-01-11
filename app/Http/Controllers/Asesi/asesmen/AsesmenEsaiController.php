@@ -62,78 +62,71 @@ class AsesmenEsaiController extends Controller
     public function getQuestions($idSertifikasi)
     {
         try {
-            // 1. CEK DULU: Apakah user sudah punya lembar jawab di tabel 'jawaban_ia06'?
-            $cekData = JawabanIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->exists();
+            // 1. Ambil Info Sertifikasi & Jadwal Peserta
+            $sertifikasi = DataSertifikasiAsesi::with('jadwal.skema')->findOrFail($idSertifikasi);
 
-            // 2. JIKA BELUM ADA, GENERATE OTOMATIS DARI MASTER SOAL
-            if (!$cekData) {
-                // Ambil info skema peserta
-                $sertifikasi = DataSertifikasiAsesi::with('jadwal.skema')->find($idSertifikasi);
-
-                if ($sertifikasi && $sertifikasi->jadwal) {
-                    $idSkema = $sertifikasi->jadwal->id_skema;
-                    $idJadwal = $sertifikasi->id_jadwal;
-
-                    // Ambil Master Soal Esai berdasarkan Skema & Jadwal, fallback ke Master (NULL)
-                    $bankSoal = SoalIA06::where('id_skema', $idSkema)
-                                        ->where('id_jadwal', $idJadwal)
-                                        ->get();
-                    
-                    if ($bankSoal->isEmpty()) {
-                        $bankSoal = SoalIA06::where('id_skema', $idSkema)
-                                            ->whereNull('id_jadwal')
-                                            ->get();
-                    }
-
-                    if ($bankSoal->isNotEmpty()) {
-                        $dataInsert = [];
-                        $now = now();
-
-                        foreach ($bankSoal as $soal) {
-                            $dataInsert[] = [
-                                'id_data_sertifikasi_asesi' => $idSertifikasi,
-                                'id_soal_ia06' => $soal->id_soal_ia06, // Pastikan nama kolom FK ke soal benar
-                                'jawaban_asesi' => null, // Masih kosong
-                                'pencapaian' => null,   // Belum dinilai
-                                'created_at' => $now,
-                                'updated_at' => $now,
-                            ];
-                        }
-
-                        // Insert Sekaligus (Bulk Insert)
-                        JawabanIa06::insert($dataInsert);
-                    }
-                }
+            if (!$sertifikasi->jadwal) {
+                return response()->json(['success' => false, 'message' => 'Jadwal tidak ditemukan.'], 404);
             }
 
-            // 3. AMBIL DATA (Sekarang harusnya sudah ada)
-            $data = JawabanIa06::with(['soal'])
-                ->where('id_data_sertifikasi_asesi', $idSertifikasi)
-                ->get();
+            $idSkema = $sertifikasi->jadwal->id_skema;
+            $idJadwal = $sertifikasi->id_jadwal;
 
-            if ($data->isEmpty()) {
+            // 2. AMBIL MASTER SOAL (Disimpan ke variabel $bankSoal)
+            $bankSoal = SoalIA06::where('id_skema', $idSkema)
+                    ->where('id_jadwal', $idJadwal)
+                    ->get();
+
+            // Cek kalau kosong
+            if ($bankSoal->isEmpty()) {
                 return response()->json([
                     'success' => true, 
                     'data' => [], 
-                    'message' => 'Soal essai belum tersedia untuk skema ini.'
+                    'message' => 'Belum ada soal untuk skema/jadwal ini.'
                 ]);
             }
 
-            // 4. MAPPING DATA UNTUK FRONTEND
-            $formattedData = $data->map(function ($item) {
+            // 3. AUTO-SYNC (Cek mana soal yang belum masuk ke lembar jawab user)
+            // Ambil ID Soal yang SUDAH ada di tabel jawaban user
+            $existingSoalIds = JawabanIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)
+                ->pluck('id_soal_ia06') 
+                ->toArray();
+
+            // Filter $bankSoal: Ambil cuma yang ID-nya BELUM ada di $existingSoalIds
+            $soalBaru = $bankSoal->whereNotIn('id_soal_ia06', $existingSoalIds);
+
+            // 4. INSERT SOAL BARU (Jika ada)
+            if ($soalBaru->isNotEmpty()) {
+                $dataInsert = [];
+                $now = now();
+
+                foreach ($soalBaru as $soal) {
+                    $dataInsert[] = [
+                        'id_data_sertifikasi_asesi' => $idSertifikasi,
+                        'id_soal_ia06' => $soal->id_soal_ia06,
+                        'jawaban_asesi' => null,
+                        'pencapaian' => null,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+                // Insert Sekaligus
+                JawabanIa06::insert($dataInsert);
+            }
+
+            // 5. AMBIL DATA FINAL (Ambil dari tabel jawaban yang sudah lengkap)
+            $dataFinal = JawabanIa06::with(['soal'])
+                ->where('id_data_sertifikasi_asesi', $idSertifikasi)
+                ->get();
+
+            // 6. MAPPING OUTPUT
+            $formattedData = $dataFinal->map(function ($item) {
                 if (!$item->soal) return null;
 
                 return [
-                    // KUNCI UTAMA (PK tabel lembar jawab)
-                    'id_lembar_jawab' => $item->id_jawaban_ia06, 
-                    
-                    // ID Soal Master (buat referensi)
+                    'id_lembar_jawab' => $item->id_jawaban_ia06,
                     'id_soal_master' => $item->soal->id_soal_ia06,
-
-                    // Teks Pertanyaan
-                    'pertanyaan' => $item->soal->soal_ia06, 
-                    
-                    // Jawaban yang tersimpan
+                    'pertanyaan' => $item->soal->soal_ia06,
                     'jawaban_tersimpan' => $item->jawaban_asesi,
                 ];
             })->filter()->values();
@@ -142,7 +135,7 @@ class AsesmenEsaiController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Error Get Questions IA06: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan server: ' . $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => 'Server Error: ' . $e->getMessage()], 500);
         }
     }
 
