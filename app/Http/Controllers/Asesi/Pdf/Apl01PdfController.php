@@ -118,8 +118,8 @@ class Apl01PdfController extends Controller
         $ttdAdminBase64 = null;
         if ($admin && $admin->tanda_tangan_admin) {
             // Path yang benar sesuai dengan penyimpanan di ProfileController
-            // File disimpan di storage/app/public/tanda_tangan_admin/
-            $pathTtdAdmin = storage_path('app/public/' . $admin->tanda_tangan_admin);
+            // File disimpan di storage/app/private_uploads/tanda_tangan_admin/
+            $pathTtdAdmin = storage_path('app/private_uploads/tanda_tangan_admin/' . $idUser . '/' . basename($admin->tanda_tangan_admin));
             
             if (file_exists($pathTtdAdmin)) {
                 $ttdAdminBase64 = base64_encode(file_get_contents($pathTtdAdmin));
