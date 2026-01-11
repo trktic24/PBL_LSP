@@ -13,14 +13,27 @@
 @php
     // Jika sertifikasi ada, override variabel default dengan data dari sertifikasi
     if ($sertifikasi) {
-        $skema = $sertifikasi->jadwal->skema->judul_skema ?? '-';
+        // Skema - gunakan 'nama_skema' (bukan judul_skema)
+        $skema = $sertifikasi->jadwal->skema->nama_skema ?? '-';
         $nomorSkema = $sertifikasi->jadwal->skema->nomor_skema ?? '-';
-        $tuk = $sertifikasi->jadwal->tuk->nama_tuk ?? '-';
-        // Ambil asesor pertama dari koleksi (jika ada)
-        $namaAsesor = $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '-';
+        
+        // TUK - ambil dari jenisTuk (jenis_tuk) untuk radio button
+        $tukJenis = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? null;
+        $tuk = $tukJenis ?? ($sertifikasi->jadwal->tuk->nama_tuk ?? '-');
+        
+        // Asesor - ambil dari jadwal->asesor (bukan skema->asesor)
+        $namaAsesor = $sertifikasi->jadwal->asesor->nama_lengkap ?? '-';
+        
+        // Asesi
         $namaAsesi = $sertifikasi->asesi->nama_lengkap ?? '-';
-        $tanggal = $sertifikasi->jadwal->tanggal_pelaksanaan ?? '-';
-        $waktu = $sertifikasi->jadwal->waktu_pelaksanaan ?? '-';
+        
+        // Tanggal - format dari Carbon ke string
+        $tanggalRaw = $sertifikasi->jadwal->tanggal_pelaksanaan ?? null;
+        $tanggal = $tanggalRaw ? $tanggalRaw->format('d-m-Y') : '-';
+        
+        // Waktu - format dari Carbon ke string
+        $waktuRaw = $sertifikasi->jadwal->waktu_mulai ?? null;
+        $waktu = $waktuRaw ? $waktuRaw->format('H:i') . ' WIB' : '-';
     }
 @endphp
 
