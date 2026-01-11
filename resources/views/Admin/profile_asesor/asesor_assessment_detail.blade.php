@@ -61,50 +61,22 @@
                 if ($level < 40) $level = 40;
             }
             $isFinalized = ($level >= 100);
-
-            // --- HELPER FUNCTIONS ---
-            function getStatusColor($isDone, $isActive = false, $isRejected = false) {
-                if ($isRejected) return 'bg-red-100 text-red-800';
-                if ($isDone) return 'bg-green-100 text-green-800';
-                if ($isActive) return 'bg-yellow-100 text-yellow-800';
-                return 'bg-gray-100 text-gray-500';
-            }
-
-            // ... (inside item definitions)
             
-            // FR.MAPA.01
-            $statusMapa01 = $dataSertifikasi->rekomendasi_mapa01;
-            $isMapa01Done = $statusMapa01 == 'diterima';
-            $isMapa01Rejected = $statusMapa01 == 'tidak diterima';
-            
-            $praAsesmenItems[] = [
-                'id' => 'MAPA01',
-                // ...
-                'status' => $isMapa01Done ? 'DONE' : ($isMapa01Rejected ? 'REJECTED' : 'WAITING'),
-                'status_label' => $isMapa01Done ? 'Diterima' : ($isMapa01Rejected ? 'Ditolak' : 'Menunggu'),
-                // ...
+            // CONFIG SHOW/HIDE
+            $listForm = optional($dataSertifikasi->jadwal->skema->listForm);
+            $show = [
+                'ia01' => $listForm->fr_ia_01 ?? 1,
+                'ia02' => $listForm->fr_ia_02 ?? 1,
+                'ia03' => $listForm->fr_ia_03 ?? 1,
+                'ia04' => $listForm->fr_ia_04 ?? 1,
+                'ia05' => $listForm->fr_ia_05 ?? 1,
+                'ia06' => $listForm->fr_ia_06 ?? 1,
+                'ia07' => $listForm->fr_ia_07 ?? 1,
+                'ia08' => $listForm->fr_ia_08 ?? 1,
+                'ia09' => $listForm->fr_ia_09 ?? 1,
+                'ia10' => $listForm->fr_ia_10 ?? 1,
+                'ia11' => $listForm->fr_ia_11 ?? 1,
             ];
-
-            // FR.MAPA.02
-            $statusMapa02 = $dataSertifikasi->rekomendasi_mapa02;
-            $isMapa02Done = $statusMapa02 == 'diterima';
-            $isMapa02Rejected = $statusMapa02 == 'tidak diterima';
-
-            $praAsesmenItems[] = [
-                'id' => 'MAPA02',
-                // ...
-                'status' => $isMapa02Done ? 'DONE' : ($isMapa02Rejected ? 'REJECTED' : 'WAITING'),
-                'status_label' => $isMapa02Done ? 'Diterima' : ($isMapa02Rejected ? 'Ditolak' : 'Menunggu'),
-                // ...
-            ];
-            
-            // ... (Similar for APL01/APL02)
-
-            function getStatusText($isDone, $isActive = false) {
-                if ($isDone) return 'Selesai / Diterima';
-                if ($isActive) return 'Menunggu / Aktif';
-                return 'Belum Tersedia';
-            }
 
             // --- DATA PREPARATION ---
             
@@ -197,116 +169,221 @@
             // 2. Pelaksanaan Asesmen Items
             $pelaksanaanItems = [];
 
-            // Helper to check if unlocking is allowed (AK01 Accepted OR Level >= 40)
-            // Using AK01 recommendation directly is safer than level
-            $isPelaksanaanUnlocked = ($dataSertifikasi->rekomendasi_ak01 == 'diterima') || ($level >= 40);
-
-            // IA.05
-            $ia05Filled = $dataSertifikasi->lembarJawabIa05()->whereNotNull('pencapaian_ia05')->exists();
-            $statusIa05 = $dataSertifikasi->rekomendasi_ia05;
-            $isIa05Done = $statusIa05 == 'diterima';
-            $isIa05Rejected = $statusIa05 == 'tidak diterima';
-            
-            // User requested NO LOCK for this item
-            $stIa05 = $isIa05Done ? 'DONE' : ($isIa05Rejected ? 'REJECTED' : ($ia05Filled ? 'WAITING' : 'ACTIVE'));
-            
-            $pelaksanaanItems[] = [
-                'id' => 'IA05',
-                'title' => 'FR.IA.05 - Pertanyaan Tertulis',
-                'desc' => 'Daftar pertanyaan tertulis esai.',
-                'status' => $stIa05,
-                'status_label' => $isIa05Done ? 'Diterima' : ($isIa05Rejected ? 'Ditolak' : ($ia05Filled ? 'Menunggu' : 'Belum Terisi')),
-                'verify_url' => route('FR_IA_05_C', $asesi->id_asesi),
-                'pdf_url' => route('ia05.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $stIa05 !== 'LOCKED' && $stIa05 !== 'ACTIVE',
-                'can_pdf' => true
-            ];
-
-            // IA.10
-            $ia10Filled = $dataSertifikasi->ia10()->exists();
-            $statusIa10 = $dataSertifikasi->rekomendasi_ia10;
-            $isIa10Done = $statusIa10 == 'diterima';
-            $isIa10Rejected = $statusIa10 == 'tidak diterima';
-            
-            $stIa10 = $isIa10Done ? 'DONE' : ($isIa10Rejected ? 'REJECTED' : ($ia10Filled ? 'WAITING' : 'ACTIVE'));
-
-            $pelaksanaanItems[] = [
-                'id' => 'IA10',
-                'title' => 'FR.IA.10 - Verifikasi Pihak Ketiga',
-                'desc' => 'Verifikasi portofolio dari pihak ketiga.',
-                'status' => $stIa10,
-                'status_label' => $isIa10Done ? 'Diterima' : ($isIa10Rejected ? 'Ditolak' : ($ia10Filled ? 'Menunggu' : 'Belum Terisi')),
-                'verify_url' => route('fr-ia-10.create', $asesi->id_asesi),
-                'pdf_url' => route('ia10.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $stIa10 !== 'LOCKED' && $stIa10 !== 'ACTIVE',
-                'can_pdf' => true
-            ];
+            // IA.01
+            if ($show['ia01'] == 1) {
+                $ia01Done = optional($dataSertifikasi->ia01)->exists() ?? false;
+                $stIa01 = $ia01Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+                
+                $pelaksanaanItems[] = [
+                    'id' => 'IA01',
+                    'title' => 'FR.IA.01 - Ceklis Observasi Aktivitas',
+                    'desc' => 'Daftar ceklis observasi untuk asesmen.',
+                    'status' => $stIa01,
+                    'status_label' => $ia01Done ? 'Sudah Dinilai' : ($stIa01 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                    'verify_url' => route('ia01.admin.view', $dataSertifikasi->id_sertifikasi ?? $dataSertifikasi->id_data_sertifikasi_asesi), // Note: Verify route for admin might differ
+                    'pdf_url' => route('ia01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => false, // View only typically for IA01 in Admin unless specified
+                    'can_pdf' => true
+                ];
+            }
 
             // IA.02
-            $ia02Filled = $dataSertifikasi->ia02()->exists();
-            $statusIa02 = $dataSertifikasi->rekomendasi_ia02;
-            $isIa02Done = $statusIa02 == 'diterima';
-            $isIa02Rejected = $statusIa02 == 'tidak diterima';
+            if ($show['ia02'] == 1) {
+                // Logic updated: IA02 is considered done if IA01 is done (mirroring tracker) OR if ia02 exists
+                $ia02Done = (optional($dataSertifikasi->ia02)->exists() ?? false);
+                $statusIa02 = $dataSertifikasi->rekomendasi_ia02;
+                $isIa02Done = $statusIa02 == 'diterima';
+                $isIa02Rejected = $statusIa02 == 'tidak diterima';
+                $stIa02 = $isIa02Done ? 'DONE' : ($isIa02Rejected ? 'REJECTED' : ($ia02Done ? 'WAITING' : 'ACTIVE'));
 
-            $stIa02 = $isIa02Done ? 'DONE' : ($isIa02Rejected ? 'REJECTED' : ($ia02Filled ? 'WAITING' : 'ACTIVE'));
+                $pelaksanaanItems[] = [
+                    'id' => 'IA02',
+                    'title' => 'FR.IA.02 - Tugas Praktik Demonstrasi',
+                    'desc' => 'Ceklis observasi tugas praktik.',
+                    'status' => $stIa02,
+                    'status_label' => $isIa02Done ? 'Diterima' : ($isIa02Rejected ? 'Ditolak' : ($ia02Done ? 'Menunggu' : 'Belum Terisi')),
+                    'verify_url' => route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'pdf_url' => route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => $stIa02 !== 'LOCKED' && $stIa02 !== 'ACTIVE',
+                    'can_pdf' => true
+                ];
+            }
 
-            $pelaksanaanItems[] = [
-                'id' => 'IA02',
-                'title' => 'FR.IA.02 - Tugas Praktik Demonstrasi',
-                'desc' => 'Ceklis observasi tugas praktik.',
-                'status' => $stIa02,
-                'status_label' => $isIa02Done ? 'Diterima' : ($isIa02Rejected ? 'Ditolak' : ($ia02Filled ? 'Menunggu' : 'Belum Terisi')),
-                'verify_url' => route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'pdf_url' => route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $stIa02 !== 'LOCKED' && $stIa02 !== 'ACTIVE',
-                'can_pdf' => true
-            ];
+            // IA.03
+            if ($show['ia03'] == 1) {
+                $ia03Done = optional($dataSertifikasi->ia03)->exists() ?? false;
+                $stIa03 = $ia03Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+                $pelaksanaanItems[] = [
+                    'id' => 'IA03',
+                    'title' => 'FR.IA.03 - Pertanyaan Mendukung Observasi',
+                    'desc' => 'Daftar pertanyaan untuk mendukung observasi.',
+                    'status' => $stIa03,
+                    'status_label' => $ia03Done ? 'Sudah Dinilai' : ($stIa03 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                    'verify_url' => route('ia03.index', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'pdf_url' => route('ia03.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => false,
+                    'can_pdf' => true
+                ];
+            }
+
+            // IA.04
+            if ($show['ia04'] == 1) {
+                $ia04Done = optional($dataSertifikasi->ia04)->exists() ?? false;
+                $stIa04 = $ia04Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+                $pelaksanaanItems[] = [
+                    'id' => 'IA04',
+                    'title' => 'FR.IA.04 - Penjelasan Singkat Proyek',
+                    'desc' => 'Daftar pertanyaan terkait penjelasan proyek.',
+                    'status' => $stIa04,
+                    'status_label' => $ia04Done ? 'Sudah Dinilai' : ($stIa04 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                    'verify_url' => route('fria04a.show', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'pdf_url' => route('ia04.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => false,
+                    'can_pdf' => true
+                ];
+            }
+
+            // IA.05
+            if ($show['ia05'] == 1) {
+                $ia05Filled = $dataSertifikasi->lembarJawabIa05()->whereNotNull('pencapaian_ia05')->exists();
+                $statusIa05 = $dataSertifikasi->rekomendasi_ia05;
+                $isIa05Done = $statusIa05 == 'diterima';
+                $isIa05Rejected = $statusIa05 == 'tidak diterima';
+                $stIa05 = $isIa05Done ? 'DONE' : ($isIa05Rejected ? 'REJECTED' : ($ia05Filled ? 'WAITING' : 'ACTIVE'));
+                
+                $pelaksanaanItems[] = [
+                    'id' => 'IA05',
+                    'title' => 'FR.IA.05 - Pertanyaan Tertulis',
+                    'desc' => 'Daftar pertanyaan tertulis esai.',
+                    'status' => $stIa05,
+                    'status_label' => $isIa05Done ? 'Diterima' : ($isIa05Rejected ? 'Ditolak' : ($ia05Filled ? 'Menunggu' : 'Belum Terisi')),
+                    'verify_url' => route('FR_IA_05_C', $asesi->id_asesi),
+                    'pdf_url' => route('ia05.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => $stIa05 !== 'LOCKED' && $stIa05 !== 'ACTIVE',
+                    'can_pdf' => true
+                ];
+            }
 
             // IA.06
-            $ia06Filled = $dataSertifikasi->ia06Answers()->whereNotNull('pencapaian')->exists(); 
-            $statusIa06 = $dataSertifikasi->rekomendasi_ia06;
-            $isIa06Done = $statusIa06 == 'diterima';
-            $isIa06Rejected = $statusIa06 == 'tidak diterima';
+            if ($show['ia06'] == 1) {
+                $ia06Filled = $dataSertifikasi->ia06Answers()->whereNotNull('pencapaian')->exists(); 
+                $statusIa06 = $dataSertifikasi->rekomendasi_ia06;
+                $isIa06Done = $statusIa06 == 'diterima';
+                $isIa06Rejected = $statusIa06 == 'tidak diterima';
+                $stIa06 = $isIa06Done ? 'DONE' : ($isIa06Rejected ? 'REJECTED' : 'LOCKED'); // IA06 is interview, likely filled by asesor
 
-            $stIa06 = $isIa06Done ? 'DONE' : ($isIa06Rejected ? 'REJECTED' : 'LOCKED');
-
-            $pelaksanaanItems[] = [
-                'id' => 'IA06',
-                'title' => 'FR.IA.06 - Pertanyaan Lisan',
-                'desc' => 'Daftar pertanyaan lisan.',
-                'status' => $stIa06,
-                'status_label' => $isIa06Done ? 'Diterima' : ($isIa06Rejected ? 'Ditolak' : 'Terkunci'),
-                'verify_url' => route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'pdf_url' => route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => false,
-                'can_pdf' => true
-            ];
+                $pelaksanaanItems[] = [
+                    'id' => 'IA06',
+                    'title' => 'FR.IA.06 - Pertanyaan Lisan',
+                    'desc' => 'Daftar pertanyaan lisan.',
+                    'status' => $stIa06,
+                    'status_label' => $isIa06Done ? 'Diterima' : ($isIa06Rejected ? 'Ditolak' : 'Terkunci/Proses'),
+                    'verify_url' => route('asesor.ia06.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'pdf_url' => route('ia06.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => false,
+                    'can_pdf' => true
+                ];
+            }
 
             // IA.07
-            $ia07Filled = $dataSertifikasi->ia07()->whereNotNull('pencapaian')->exists();
-            $statusIa07 = $dataSertifikasi->rekomendasi_ia07;
-            $isIa07Done = $statusIa07 == 'diterima';
-            $isIa07Rejected = $statusIa07 == 'tidak diterima';
+            if ($show['ia07'] == 1) {
+                $ia07Filled = $dataSertifikasi->ia07()->whereNotNull('pencapaian')->exists();
+                $statusIa07 = $dataSertifikasi->rekomendasi_ia07;
+                $isIa07Done = $statusIa07 == 'diterima';
+                $isIa07Rejected = $statusIa07 == 'tidak diterima';
+                $stIa07 = $isIa07Done ? 'DONE' : ($isIa07Rejected ? 'REJECTED' : ($ia07Filled ? 'WAITING' : 'ACTIVE'));
 
-            $stIa07 = $isIa07Done ? 'DONE' : ($isIa07Rejected ? 'REJECTED' : ($ia07Filled ? 'WAITING' : 'ACTIVE'));
+                $pelaksanaanItems[] = [
+                    'id' => 'IA07',
+                    'title' => 'FR.IA.07 - Daftar Pertanyaan Lisan',
+                    'desc' => 'Daftar pertanyaan lisan (alternatif).',
+                    'status' => $stIa07,
+                    'status_label' => $isIa07Done ? 'Diterima' : ($isIa07Rejected ? 'Ditolak' : ($ia07Filled ? 'Menunggu' : 'Belum Terisi')),
+                    'verify_url' => route('FR_IA_07', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'pdf_url' => route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => $stIa07 !== 'LOCKED' && $stIa07 !== 'ACTIVE',
+                    'can_pdf' => $level >= 40
+                ];
+            }
 
-            $pelaksanaanItems[] = [
-                'id' => 'IA07',
-                'title' => 'FR.IA.07 - Daftar Pertanyaan Lisan',
-                'desc' => 'Daftar pertanyaan lisan (alternatif).',
-                'status' => $stIa07,
-                'status_label' => $isIa07Done ? 'Diterima' : ($isIa07Rejected ? 'Ditolak' : ($ia07Filled ? 'Menunggu' : 'Belum Terisi')),
-                'verify_url' => route('FR_IA_07', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'pdf_url' => route('ia07.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => $stIa07 !== 'LOCKED' && $stIa07 !== 'ACTIVE',
-                'can_pdf' => $level >= 40
-            ];
+            // IA.08
+            if ($show['ia08'] == 1) {
+                $ia08Done = optional($dataSertifikasi->ia08)->exists() ?? false;
+                $stIa08 = $ia08Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+                $pelaksanaanItems[] = [
+                    'id' => 'IA08',
+                    'title' => 'FR.IA.08 - Ceklis Verifikasi Portofolio',
+                    'desc' => 'Verifikasi portofolio asesi.',
+                    'status' => $stIa08,
+                    'status_label' => $ia08Done ? 'Sudah Dinilai' : ($stIa08 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                    'verify_url' => route('ia08.show', $dataSertifikasi->id_data_sertifikasi_asesi), // Assuming route exists
+                    'pdf_url' => route('ia08.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => false,
+                    'can_pdf' => true
+                ];
+            }
+
+            // IA.09
+            if ($show['ia09'] == 1) {
+                $ia09Done = !empty(optional($dataSertifikasi->ia09)->pencapaian_ia09);
+                $stIa09 = $ia09Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+                $pelaksanaanItems[] = [
+                    'id' => 'IA09',
+                    'title' => 'FR.IA.09 - Pertanyaan Wawancara',
+                    'desc' => 'Pertanyaan wawancara dengan asesi.',
+                    'status' => $stIa09,
+                    'status_label' => $ia09Done ? 'Sudah Dinilai' : ($stIa09 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                    'verify_url' => route('ia09.admin.view', $dataSertifikasi->id_data_sertifikasi_asesi), // Using Admin View route defined in auth.php
+                    'pdf_url' => route('ia09.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => false,
+                    'can_pdf' => true
+                ];
+            }
+
+            // IA.10
+            if ($show['ia10'] == 1) {
+                $ia10Filled = $dataSertifikasi->ia10()->exists();
+                $statusIa10 = $dataSertifikasi->rekomendasi_ia10;
+                $isIa10Done = $statusIa10 == 'diterima';
+                $isIa10Rejected = $statusIa10 == 'tidak diterima';
+                $stIa10 = $isIa10Done ? 'DONE' : ($isIa10Rejected ? 'REJECTED' : ($ia10Filled ? 'WAITING' : 'ACTIVE'));
+
+                $pelaksanaanItems[] = [
+                    'id' => 'IA10',
+                    'title' => 'FR.IA.10 - Verifikasi Pihak Ketiga',
+                    'desc' => 'Verifikasi portofolio dari pihak ketiga.',
+                    'status' => $stIa10,
+                    'status_label' => $isIa10Done ? 'Diterima' : ($isIa10Rejected ? 'Ditolak' : ($ia10Filled ? 'Menunggu' : 'Belum Terisi')),
+                    'verify_url' => route('fr-ia-10.create', $asesi->id_asesi),
+                    'pdf_url' => route('ia10.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => $stIa10 !== 'LOCKED' && $stIa10 !== 'ACTIVE',
+                    'can_pdf' => true
+                ];
+            }
+
+            // IA.11
+            if ($show['ia11'] == 1) {
+                $ia11Done = optional($dataSertifikasi->ia11)->exists() ?? false;
+                $stIa11 = $ia11Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
+
+                $pelaksanaanItems[] = [
+                    'id' => 'IA11',
+                    'title' => 'FR.IA.11 - Ceklis Meninjau Instrumen',
+                    'desc' => 'Ceklis tinjauan instrumen asesmen.',
+                    'status' => $stIa11,
+                    'status_label' => $ia11Done ? 'Sudah Dinilai' : ($stIa11 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
+                    'verify_url' => route('ia11.index', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'pdf_url' => route('ia11.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'can_verify' => false,
+                    'can_pdf' => true
+                ];
+            }
 
             // AK.02
-            // Must use $isIaXXDone (Verification status) or $iaXXFilled (Submission status)?
-            // Assuming we require Verification before decision:
-            $allIADone = ($isIa05Done && $isIa10Done && $isIa02Done && $isIa06Done && $isIa07Done);
-            
             $pelaksanaanItems[] = [
                 'id' => 'AK02',
                 'title' => 'FR.AK.02 - Keputusan Asesmen',
@@ -315,7 +392,7 @@
                 'status_label' => $isFinalized ? 'Final / Terkirim' : 'Terkunci',
                 'verify_url' => route('ak02.edit', $dataSertifikasi->id_data_sertifikasi_asesi),
                 'pdf_url' => route('ak02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
-                'can_verify' => false, // Always false for AK02 unless we want to verify it via button? User said 'Terkunci' so no verify.
+                'can_verify' => false, 
                 'can_pdf' => $isFinalized
             ];
 

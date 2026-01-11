@@ -411,16 +411,24 @@ class AsesorProfileController extends Controller
         $dataSertifikasi = DataSertifikasiAsesi::with([
             'asesi.user',
             'jadwal.skema',
+            'jadwal.skema.listForm', // Load configuration
             'jadwal.masterTuk', // Konsisten gunakan masterTuk
             'responBuktiAk01',
-            'ia10', 
-            'ia02',
-            'ia07',
+            'ia01',
+            'ia02', 
+            'ia03',
+            'ia04',
+            'lembarJawabIa05', // Use explicit relation if available or rely on method
             'ia06Answers',
+            'ia07',
+            'ia08',
+            'ia09',
+            'ia10',
+            'ia11',
             'komentarAk05'
         ])->findOrFail($id_data_sertifikasi_asesi);
 
-        if ($dataSertifikasi->jadwal->id_asesor != $id_asesor) {
+        if ($dataSertifikasi->jadwal->id_asesor != $asesor->id_asesor) {
             abort(404);
         }
 
