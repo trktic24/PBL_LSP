@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // ======================================================
 use App\Http\Controllers\Ak02Controller;
 use App\Http\Controllers\IA02Controller;
+use App\Http\Controllers\IA03Controller;
 use App\Http\Controllers\IA05Controller;
 use App\Http\Controllers\IA06Controller;
 use App\Http\Controllers\IA07Controller;
@@ -30,7 +31,6 @@ use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TukAdminController;
-use App\Http\Controllers\Asesi\IA03\IA03Controller;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -388,6 +388,38 @@ Route::middleware('auth')->group(function () {
 
             // FR.IA.01 - View Only for Admin (Cek Observasi Demonstrasi/Praktik)
             Route::get('/ia01/{id_sertifikasi}', [\App\Http\Controllers\IA01Controller::class, 'showView'])->name('ia01.admin.view');
+
+            // FR.IA.03 - Admin View Only
+            Route::prefix('ia03')
+                ->name('ia03.')
+                ->group(function () {
+                    Route::get('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'adminIndex'])->name('index');
+                    Route::get('/{id_data_sertifikasi_asesi}/edit', [IA03Controller::class, 'adminEdit'])->name('edit'); // TAMBAHAN INI
+                    Route::post('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'adminStore'])->name('store');
+                });
+
+             // Update middleware untuk route asesor IA03
+            Route::middleware(['role:asesor,admin,superadmin']) // ✅ Tambahkan admin & superadmin
+                ->prefix('asesor/ia03')
+                ->name('asesor.ia03.')
+                ->group(function () {
+                    Route::get('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'asesorIndex'])->name('index');
+                    
+                    // Update hanya untuk asesor
+                    Route::put('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'asesorUpdate'])
+                        ->name('update')
+                        ->middleware('role:asesor'); // Update tetap khusus asesor
+                });
+            
+            // Di dalam Route::middleware(['role:admin']) -> prefix('admin') -> name('admin.')
+            Route::prefix('ia03')
+                ->name('ia03.')
+                ->group(function () {
+                    Route::get('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'adminIndex'])->name('index');
+                    Route::get('/{id_data_sertifikasi_asesi}/edit', [IA03Controller::class, 'adminEdit'])->name('edit');
+                    Route::get('/{id_data_sertifikasi_asesi}/jawaban', [IA03Controller::class, 'adminViewJawaban'])->name('jawaban'); // ✅ ROUTE BARU
+                    Route::post('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'adminStore'])->name('store');
+                });
         });
 
     // ======================================================
@@ -438,6 +470,14 @@ Route::middleware('auth')->group(function () {
 
             // APL-02 (Verifikasi)
             Route::get('/apl02/{id}', [PraasesmenController::class, 'view'])->name('apl02');
+
+            // FR.IA.03 - Asesor
+            Route::prefix('ia03')
+                ->name('ia03.')
+                ->group(function () {
+                    Route::get('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'asesorIndex'])->name('index');
+                    Route::put('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'asesorUpdate'])->name('update');
+                });
 
             // IA-06 Penilaian
             Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
@@ -517,7 +557,7 @@ Route::middleware('auth')->group(function () {
             // IA-02, IA-03, IA-07, IA-11
             Route::get('/ia02/{id_sertifikasi}', [Ia02AsesiController::class, 'index'])->name('ia02.index');
             Route::post('/ia02/{id_sertifikasi}/next', [Ia02AsesiController::class, 'next'])->name('ia02.next');
-            Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'index'])->name('ia03.index');
+            Route::get('/ia03/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'asesiIndex'])->name('ia03.index');
             Route::get('/asesi/ia07/{id_sertifikasi}', [Ia07AsesiController::class, 'index'])->name('ia07.index');
             Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.index');
             Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
