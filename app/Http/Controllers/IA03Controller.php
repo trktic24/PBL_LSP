@@ -52,6 +52,9 @@ class IA03Controller extends Controller
             }
         }
 
+        // 🔄 SYNC LOGIC: Ensure questions are generated from template
+        $this->ensureQuestionsSynced($sertifikasi);
+
         $semuaPertanyaan = IA03::with('umpanBalik')
             ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
             ->get();
@@ -230,6 +233,9 @@ class IA03Controller extends Controller
             'id_asesor' => $sertifikasi->jadwal->asesor->id_asesor ?? 0,
             'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi
         ]);
+
+        // 🔄 SYNC LOGIC: Ensure questions are generated for Admin too
+        $this->ensureQuestionsSynced($sertifikasi);
 
         $pertanyaanIA03 = IA03::with('umpanBalik')
             ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
@@ -640,6 +646,84 @@ class IA03Controller extends Controller
             'catatanUmpanBalik'
         ));
     }
+    /**
+     * [MASTER] Menampilkan editor tamplate (Bank Soal) per Skema & Jadwal
+     */
+    public function editTemplate($id_skema, $id_jadwal)
+    {
+        $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
+        $template = \App\Models\MasterFormTemplate::where('id_skema', $id_skema)
+                                    ->where('id_jadwal', $id_jadwal)
+                                    ->where('form_code', 'FR.IA.03')
+                                    ->first();
+        
+        $questions = [];
+
+        // Load existing template data
+        if ($template && isset($template->content) && isset($template->content['questions'])) {
+            $questions = $template->content['questions'];
+        } else {
+            // Fallback to default template (without schedule)
+            $defaultTemplate = \App\Models\MasterFormTemplate::where('id_skema', $id_skema)
+                                            ->whereNull('id_jadwal')
+                                            ->where('form_code', 'FR.IA.03')
+                                            ->first();
+            $questions = $defaultTemplate ? ($defaultTemplate->content['questions'] ?? []) : [];
+        }
+
+        // Ensure support for old flat format (migration on the fly)
+        // If questions is a flat array (numeric keys 0, 1, 2...), we might want to warn or just start empty for groups?
+        // Since we are moving to grouped structure, if the old data was flat, it won't map to groups automatically.
+        // For now, we assume we start fresh or the data is already compatible/empty.
+        // If $questions is NOT keyed by group ID (which are integers), we might need logic here. 
+        // But let's assume standard behavior: $questions is [group_id => [q_list]] or []
+
+        return view('Admin.master.skema.template.ia03', [
+            'skema' => $skema,
+            'id_jadwal' => $id_jadwal,
+            'questions' => $questions,
+            'kelompokPekerjaan' => $skema->kelompokPekerjaan
+        ]);
+    }
+
+    /**
+     * [MASTER] Simpan/Update template per Skema & Jadwal
+     */
+    public function storeTemplate(Request $request, $id_skema, $id_jadwal)
+    {
+        $request->validate([
+            'questions' => 'nullable|array',
+            'questions.*' => 'nullable|array', // Group ID keys, array of strings values
+            'questions.*.*' => 'nullable|string',
+        ]);
+
+        $questionsToSave = [];
+
+        if ($request->has('questions')) {
+            foreach ($request->questions as $groupId => $groupQuestions) {
+                // Filter empty strings from the group's questions
+                $filtered = array_values(array_filter($groupQuestions, fn($q) => !empty(trim($q))));
+                if (!empty($filtered)) {
+                    $questionsToSave[$groupId] = $filtered;
+                }
+            }
+        }
+
+        \App\Models\MasterFormTemplate::updateOrCreate(
+            [
+                'id_skema' => $id_skema, 
+                'id_jadwal' => $id_jadwal,
+                'form_code' => 'FR.IA.03'
+            ],
+            [
+                'content' => [
+                    'questions' => $questionsToSave
+                ]
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Bank pertanyaan (template IA.03) berhasil diperbarui.');
+    }
 
     /**
      * CETAK PDF - Generate PDF for IA.03
@@ -712,5 +796,72 @@ class IA03Controller extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->stream('FR.IA.03_' . $asesi->nama_lengkap . '.pdf');
+    }
+
+    /**
+     * [HELPER] Memastikan pertanyaan tersinkronisasi dari Master Template
+     * Logic: Create Missing -> Update Empty -> Lock Filled
+     */
+    private function ensureQuestionsSynced($sertifikasi)
+    {
+        $id_data_sertifikasi_asesi = $sertifikasi->id_data_sertifikasi_asesi;
+        
+        // Ambil Template untuk Skema & Jadwal ini
+        $template = \App\Models\MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                    ->where('id_jadwal', $sertifikasi->jadwal->id_jadwal)
+                                    ->where('form_code', 'FR.IA.03')
+                                    ->first();
+        
+        // Fallback ke Default Template jika spesifik jadwal tidak ada
+        if (!$template) {
+            $template = \App\Models\MasterFormTemplate::where('id_skema', $sertifikasi->jadwal->id_skema)
+                                        ->whereNull('id_jadwal')
+                                        ->where('form_code', 'FR.IA.03')
+                                        ->first();
+        }
+
+        if ($template && isset($template->content) && isset($template->content['questions'])) {
+            $templateQuestions = $template->content['questions']; 
+            
+            if (is_array($templateQuestions) && !empty($templateQuestions)) {
+                
+                $kelompokPekerjaanList = $sertifikasi->jadwal->skema->kelompokPekerjaan;
+                
+                foreach ($kelompokPekerjaanList as $kelompok) {
+                    $groupId = $kelompok->id_kelompok_pekerjaan;
+                    
+                    $questionsForGroup = $templateQuestions[$groupId] ?? [];
+
+                    if (empty($questionsForGroup)) continue;
+
+                    // Ambil IA03 yang SUDAH ADA untuk grup ini
+                    $existingIA03 = IA03::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
+                                        ->where('id_kelompok_pekerjaan', $groupId)
+                                        ->orderBy('id_IA03', 'asc')
+                                        ->get();
+                    
+                    foreach ($questionsForGroup as $index => $qText) {
+                        if (empty(trim($qText))) continue;
+
+                        if ($existingIA03->has($index)) {
+                            // 🔒 DATA SUDAH ADA: Update HANYA jika belum dijawab
+                            $currentRecord = $existingIA03[$index];
+                            if ($currentRecord->tanggapan === null) {
+                                $currentRecord->update(['pertanyaan' => $qText]);
+                            }
+                        } else {
+                            // 🆕 DATA BELUM ADA: Create Baru
+                            IA03::create([
+                                'id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi,
+                                'id_kelompok_pekerjaan' => $groupId,
+                                'pertanyaan' => $qText,
+                                'pencapaian' => null,
+                                'tanggapan' => null,
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
