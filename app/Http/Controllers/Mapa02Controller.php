@@ -32,7 +32,8 @@ class Mapa02Controller extends Controller
             'jadwal.skema.asesor',
             'jadwal.skema.kelompokPekerjaan.unitKompetensi',
             'jadwal.asesor',
-            'penyusunValidator',
+            'penyusunValidator.penyusun',
+            'penyusunValidator.validator',
         ])->find($id_data_sertifikasi_asesi);
 
         if (!$sertifikasi) {

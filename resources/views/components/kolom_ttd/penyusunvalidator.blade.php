@@ -6,20 +6,39 @@
     $penyusun = $penyusunValidator->penyusun ?? null;
     $validator = $penyusunValidator->validator ?? null;
 
-    // Data Penyusun
-    $namaPenyusun = $penyusun->penyusun ?? '-';
-    $noMetPenyusun = $penyusun->no_MET_penyusun ?? '-';
-    $ttdPenyusun = $penyusun->ttd ?? null;
+    // Data Penyusun (Fallback to Asesor if missing)
+    if ($penyusun) {
+        $namaPenyusun = $penyusun->penyusun ?? '-';
+        $noMetPenyusun = $penyusun->no_MET_penyusun ?? '-';
+        $ttdPenyusun = $penyusun->ttd ?? null;
+    } else {
+        // FALLBACK: Use Asesor Data
+        $namaPenyusun = $sertifikasi->jadwal->asesor->nama_lengkap ?? '-';
+        $noMetPenyusun = $sertifikasi->jadwal->asesor->nomor_regis ?? '-';
+        // Check if Asesor has signature
+        $ttdPenyusun = $sertifikasi->jadwal->asesor->tanda_tangan ?? null;
+    }
 
     // Data Validator
-    $namaValidator = $validator->nama_validator ?? '-';
-    $noMetValidator = $validator->no_MET_validator ?? '-';
-    $ttdValidator = $validator->ttd ?? null;
+    // Data Validator (fallback to Asesor if missing)
+        if ($validator) {
+            $namaValidator = $validator->nama_validator ?? '-';
+            $noMetValidator = $validator->no_MET_validator ?? '-';
+            $ttdValidator = $validator->ttd ?? null;
+        } else {
+            // Fallback: use Asesor data as validator
+            $namaValidator = $sertifikasi->jadwal && $sertifikasi->jadwal->asesor ? $sertifikasi->jadwal->asesor->nama_lengkap ?? '-' : '-';
+            $noMetValidator = $sertifikasi->jadwal && $sertifikasi->jadwal->asesor ? $sertifikasi->jadwal->asesor->nomor_regis ?? '-' : '-';
+            $ttdValidator = $sertifikasi->jadwal && $sertifikasi->jadwal->asesor ? $sertifikasi->jadwal->asesor->tanda_tangan ?? null : null;
+        }
 
     // Tanggal Validasi
-    $tanggal = $penyusunValidator && $penyusunValidator->tanggal_validasi 
-        ? \Carbon\Carbon::parse($penyusunValidator->tanggal_validasi)->format('d-m-Y') 
-        : '-';
+    // Tanggal Validasi (fallback to Jadwal tanggal_pelaksanaan)
+        if ($penyusunValidator && $penyusunValidator->tanggal_validasi) {
+            $tanggal = \Carbon\Carbon::parse($penyusunValidator->tanggal_validasi)->format('d-m-Y');
+        } else {
+            $tanggal = $sertifikasi->jadwal && $sertifikasi->jadwal->tanggal_pelaksanaan ? \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->format('d-m-Y') : '-';
+        }
 
     // --- LOGIKA TANDA TANGAN BASE64 ---
     $ttdPenyusunBase64 = null;
