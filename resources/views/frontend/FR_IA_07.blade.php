@@ -58,8 +58,9 @@
 
             <form action="{{ isset($isMasterView) ? '#' : route('ia07.store') }}" method="POST">
                 @csrf
+                
                 @if($sertifikasi)
-                <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $sertifikasi->id_data_sertifikasi_asesi }}">
+                    <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $sertifikasi->id_data_sertifikasi_asesi }}">
                 @endif
 
                 {{-- Header --}}
@@ -94,7 +95,6 @@
                         <div>
                             <dt class="font-medium text-gray-500 mb-2">Pilih TUK</dt>
                             <dd class="text-gray-900 font-semibold flex flex-wrap gap-4">
-                                {{-- Menggunakan data dinamis JenisTukOptions --}}
                                 @forelse($jenisTukOptions as $id => $jenis)
                                     <label class="inline-flex items-center">
                                         <input type="radio" name="id_jenis_tuk" value="{{ $id }}"
@@ -117,7 +117,7 @@
                     </dl>
                 </div>
 
-                {{-- PANDUAN ASESOR (Warna Biru) --}}
+                {{-- PANDUAN ASESOR --}}
                 <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl shadow-sm mb-8">
                     <h3 class="text-base font-bold text-blue-800 mb-2">PANDUAN BAGI ASESOR</h3>
                     <ul class="list-disc list-inside space-y-1 text-blue-700 text-sm">
@@ -127,26 +127,23 @@
                     </ul>
                 </div>
 
-                {{-- DAFTAR UNIT (ACCORDION DENGAN DATA DINAMIS) --}}
+                {{-- DAFTAR UNIT (ACCORDION) --}}
                 <div class="space-y-4 mb-10">
 
                     @foreach($units as $index => $unit)
                         <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-
+                            
                             {{-- Header Accordion --}}
                             <button type="button"
                                 class="accordion-btn w-full bg-blue-50 p-5 flex justify-between items-center text-left hover:bg-blue-100 transition-colors"
                                 aria-expanded="{{ $index === 0 ? 'true' : 'false' }}">
                                 <div>
-                                    <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Unit
-                                        {{ $index + 1 }}</span>
+                                    <span class="text-xs font-bold text-blue-600 uppercase tracking-wide">Unit {{ $index + 1 }}</span>
                                     <h3 class="text-lg font-bold text-gray-900">{{ $unit['code'] }}</h3>
                                     <p class="text-sm text-gray-600">{{ $unit['title'] }}</p>
                                 </div>
-                                <svg class="accordion-icon w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                                    </path>
+                                <svg class="accordion-icon w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
 
@@ -158,59 +155,69 @@
                                             <thead class="bg-gray-800 text-white">
                                                 <tr>
                                                     <th class="px-4 py-3 text-left text-xs font-bold uppercase w-10">No</th>
-                                                    <th class="px-4 py-3 text-left text-xs font-bold uppercase">Pertanyaan &
-                                                        Jawaban Asesi</th>
-                                                    <th class="px-4 py-3 text-center text-xs font-bold uppercase w-32">Keputusan
-                                                        (K/BK)</th>
+                                                    <th class="px-4 py-3 text-left text-xs font-bold uppercase">Pertanyaan & Jawaban Asesi</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-bold uppercase w-32">Keputusan (K/BK)</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-gray-200">
-                                                {{-- Simulasi 3 Pertanyaan per Unit --}}
-                                                @for($q = 1; $q <= 3; $q++)
+                                                
+                                                @php
+                                                    $soalUnit = $dataIa07->filter(function($item) use ($unit) {
+                                                        return str_contains($item->pertanyaan, $unit['code']);
+                                                    });
+                                                    $no = 1;
+                                                @endphp
+
+                                                @forelse($soalUnit as $item)
                                                     <tr class="hover:bg-gray-50">
-                                                        <td
-                                                            class="px-4 py-4 text-sm font-medium text-gray-900 align-top border-r border-gray-200">
-                                                            {{ $q }}.</td>
-                                                        <td
-                                                            class="px-4 py-4 text-sm text-gray-700 align-top border-r border-gray-200">
-                                                            <p class="mb-2 font-bold text-base text-gray-800">P{{ $q }}: Apa yang
-                                                                dimaksud dengan {{ strtolower(substr($unit['title'], 0, 20)) }}...?
+                                                        {{-- Kolom No --}}
+                                                        <td class="px-4 py-4 text-sm font-medium text-gray-900 align-top border-r border-gray-200">
+                                                            {{ $no++ }}.
+                                                        </td>
+
+                                                        {{-- Kolom Pertanyaan & Jawaban --}}
+                                                        <td class="px-4 py-4 text-sm text-gray-700 align-top border-r border-gray-200">
+                                                            <p class="mb-2 font-bold text-base text-gray-800">
+                                                                {{ $item->pertanyaan }}
                                                             </p>
 
                                                             <div class="mt-4 bg-gray-100 p-3 rounded-md border border-gray-200">
-                                                                <p class="text-xs font-semibold text-gray-600 mb-1">Kunci Jawaban:
+                                                                <p class="text-xs font-semibold text-gray-600 mb-1">Kunci Jawaban:</p>
+                                                                <p class="text-xs text-blue-700 italic">
+                                                                    {{ $item->jawaban_diharapkan ?? 'Belum ada kunci jawaban' }}
                                                                 </p>
-                                                                <p class="text-xs text-blue-700 italic">Peserta mampu menjelaskan
-                                                                    fungsi dan kapan menggunakan {{ $unit['code'] }}.</p>
                                                             </div>
 
-                                                            <label
-                                                                class="block text-xs font-semibold text-gray-600 mt-3 mb-1">Ringkasan
-                                                                Jawaban Asesi:</label>
-                                                            <textarea name="jawaban_{{$unit['code']}}_q{{$q}}"
-                                                                class="w-full border-gray-300 rounded-md text-xs shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                                                rows="3" placeholder="Tulis ringkasan jawaban Asesi di sini..."
-                                                                required></textarea>
+                                                            <label class="block text-xs font-semibold text-gray-600 mt-3 mb-1">Ringkasan Jawaban Asesi:</label>
+                                                            <textarea readonly class="w-full bg-gray-50 border-gray-300 rounded-md text-xs shadow-sm text-gray-800" rows="3">{{ $item->jawaban_asesi }}</textarea>
+                                                            
+                                                            <input type="hidden" name="jawaban_{{$unit['code']}}_q{{$no-1}}" value="{{ $item->jawaban_asesi }}">
+                                                            <input type="hidden" name="id_ia07_{{$unit['code']}}_q{{$no-1}}" value="{{ $item->id_ia07 }}">
                                                         </td>
+
+                                                        {{-- Kolom Keputusan --}}
                                                         <td class="px-4 py-4 align-top border-gray-200">
                                                             <div class="flex flex-col space-y-4 items-center mt-6">
                                                                 <label class="inline-flex items-center">
-                                                                    <input type="radio" name="keputusan_{{$unit['code']}}_q{{$q}}"
-                                                                        value="K"
-                                                                        class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer"
-                                                                        required>
+                                                                    <input type="radio" name="keputusan_{{$unit['code']}}_q{{$no-1}}" value="K" {{ $item->pencapaian == 1 ? 'checked' : '' }} class="w-5 h-5 text-green-600 border-gray-300 focus:ring-green-500 cursor-pointer">
                                                                     <span class="ml-2 text-sm font-bold text-green-700">K</span>
                                                                 </label>
                                                                 <label class="inline-flex items-center">
-                                                                    <input type="radio" name="keputusan_{{$unit['code']}}_q{{$q}}"
-                                                                        value="BK"
-                                                                        class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer">
+                                                                    <input type="radio" name="keputusan_{{$unit['code']}}_q{{$no-1}}" value="BK" {{ $item->pencapaian === 0 ? 'checked' : '' }} class="w-5 h-5 text-red-600 border-gray-300 focus:ring-red-500 cursor-pointer">
                                                                     <span class="ml-2 text-sm font-bold text-red-700">BK</span>
                                                                 </label>
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                @endfor
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="3" class="px-4 py-6 text-center text-gray-500 italic bg-gray-50">
+                                                            Belum ada data pertanyaan untuk unit ini. <br>
+                                                            <span class="text-xs text-red-500">(Pastikan Asesi sudah membuka halaman ujian)</span>
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -224,37 +231,21 @@
                 {{-- Tanda Tangan --}}
                 <div class="bg-white border border-gray-300 rounded-xl p-6 shadow-md mb-8">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Umpan Balik & Tanda Tangan</h3>
-
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Umpan Balik untuk Asesi (Kompeten / Belum
-                        Kompeten)</label>
-                    <textarea name="umpan_balik_asesi"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 mb-6"
-                        rows="3" placeholder="Tuliskan kesimpulan dan saran di sini..."></textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Umpan Balik untuk Asesi</label>
+                    <textarea name="umpan_balik_asesi" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 mb-6" rows="3" placeholder="Tuliskan kesimpulan dan saran di sini..."></textarea>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {{-- Asesor --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Asesor (Tanda Tangan)</label>
-                            <div
-                                class="w-full h-40 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center">
+                            <div class="w-full h-40 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center">
                                 <p class="text-gray-400 text-sm">Tanda tangan dari Asesor</p>
                             </div>
                             <p class="mt-2 text-sm font-semibold text-gray-900">{{ $asesor->nama_lengkap ?? 'N/A' }}</p>
-                            <p class="text-xs text-gray-500">No. Reg. {{ $asesor->nomor_regis ?? 'N/A' }}</p>
                         </div>
-
-                        {{-- Asesi --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Asesi (Tanda Tangan)</label>
-                            <div
-                                class="w-full h-40 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-blue-400 transition-colors">
+                            <div class="w-full h-40 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-blue-400">
                                 <div class="text-center">
-                                    <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                        </path>
-                                    </svg>
                                     <p class="text-xs text-gray-500 mt-1">Klik untuk TTD Asesi</p>
                                 </div>
                             </div>
@@ -265,16 +256,15 @@
 
                 {{-- Tombol Navigasi --}}
                 @if(!isset($isMasterView))
-                <div class="flex justify-end items-center mt-12 border-t border-gray-200 pt-6">
-                    <button type="submit"
-                        class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-md transition transform hover:-translate-y-0.5">
-                        Simpan Penilaian
-                    </button>
-                </div>
+                    <div class="flex justify-end items-center mt-12 border-t border-gray-200 pt-6">
+                        <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-md">
+                            Simpan Penilaian
+                        </button>
+                    </div>
                 @endif
 
+            </form>
         </div>
-        </form>
     </main>
 
     <script>
@@ -282,7 +272,6 @@
             const accordions = document.querySelectorAll('.accordion-btn');
 
             accordions.forEach(acc => {
-                // Atur agar unit pertama terbuka saat load
                 if (acc.getAttribute('aria-expanded') === 'true') {
                     acc.nextElementSibling.classList.add('active');
                 }
@@ -290,11 +279,9 @@
                 acc.addEventListener('click', function () {
                     const content = this.nextElementSibling;
                     content.classList.toggle('active');
-
                     const isExpanded = this.getAttribute('aria-expanded') === 'true';
                     this.setAttribute('aria-expanded', !isExpanded);
 
-                    // Mengambil semua accordion yang lain dan menutupnya
                     accordions.forEach(otherAcc => {
                         if (otherAcc !== this) {
                             otherAcc.nextElementSibling.classList.remove('active');
