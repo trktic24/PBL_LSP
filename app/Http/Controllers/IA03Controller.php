@@ -640,4 +640,77 @@ class IA03Controller extends Controller
             'catatanUmpanBalik'
         ));
     }
+
+    /**
+     * CETAK PDF - Generate PDF for IA.03
+     */
+    public function cetakPDF($id_data_sertifikasi_asesi)
+    {
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi',
+            'jadwal',
+            'jadwal.asesor',
+            'jadwal.skema',
+            'jadwal.jenisTuk',
+            'jadwal.masterTuk',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi'
+        ])->findOrFail($id_data_sertifikasi_asesi);
+
+        $pertanyaanIA03 = IA03::with('umpanBalik')
+            ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
+            ->get();
+
+        $umpanBalikList = UmpanBalikIA03::whereIn('id_ia03', $pertanyaanIA03->pluck('id_IA03'))
+            ->get()
+            ->pluck('umpan_balik')
+            ->filter()
+            ->unique()
+            ->implode(', ');
+        
+        // Logic Recommendations
+        $allCompetent = $pertanyaanIA03->every(function ($item) {
+            return $item->pencapaian === true || $item->pencapaian === 1; // 1 = Kompeten
+        });
+        
+        // If empty questions, fallback to not competent or check if it was filled
+        if ($pertanyaanIA03->isEmpty()) {
+            $allCompetent = false;
+        }
+
+        $rekomendasi = $allCompetent ? 'Kompeten' : 'Belum Kompeten';
+        $umpanBalik = $umpanBalikList ?: 'Tidak ada umpan balik spesifik.';
+
+        $asesi = $sertifikasi->asesi;
+        $asesor = $sertifikasi->asesor;
+        $skema = $sertifikasi->jadwal->skema;
+        $tuk = $sertifikasi->tuk; // Uses accessor or relation
+        $tanggal = $sertifikasi->tanggal_pelaksanaan;
+        
+        // Collect Units
+        $units = collect();
+        if ($skema && $skema->kelompokPekerjaan) {
+            foreach ($skema->kelompokPekerjaan as $kp) {
+                if ($kp->unitKompetensi) {
+                    $units = $units->merge($kp->unitKompetensi);
+                }
+            }
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.ia_03', compact(
+            'sertifikasi',
+            'pertanyaanIA03',
+            'units',
+            'umpanBalik',
+            'rekomendasi',
+            'asesi',
+            'asesor',
+            'skema',
+            'tuk',
+            'tanggal'
+        ));
+        
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR.IA.03_' . $asesi->nama_lengkap . '.pdf');
+    }
 }

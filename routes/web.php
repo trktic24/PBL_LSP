@@ -65,7 +65,7 @@ use App\Http\Controllers\IA08Controller;
 use App\Http\Controllers\IA09Controller;
 use App\Http\Controllers\IA10Controller;
 use App\Http\Controllers\Asesi\IA11\IA11Controller;
-use App\Http\Controllers\Asesi\IA03\IA03Controller;
+use App\Http\Controllers\IA03Controller;
 use App\Http\Controllers\FrIa04aController;
 
 use App\Http\Controllers\Validator\ValidatorTrackerController;
@@ -274,8 +274,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/ia02/{id_sertifikasi}', [IA02Controller::class, 'store'])->name('ia02.store');
 
         // IA-03
-        Route::get('/ia03/{id}', [IA03Controller::class, 'index'])->name('ia03.index');
-        Route::get('/ia03/{id}/show', [IA03Controller::class, 'show'])->name('ia03.show');
+        // IA-03
+        Route::get('/ia03/{id}', [IA03Controller::class, 'asesorIndex'])->name('ia03.index');
+        Route::get('/ia03/{id}/show', [IA03Controller::class, 'asesorIndex'])->name('ia03.show');
 
         // IA-04 (Asesor) is handled below in FRIA04_Asesor block
 
@@ -341,7 +342,7 @@ Route::middleware('auth')->group(function () {
             
             // IA
             Route::get('/ia01', [IA01Controller::class, 'adminShow'])->name('admin.ia01.show');
-            Route::get('/ia03', [IA03Controller::class, 'adminShow'])->name('admin.ia03.show');
+            // Route::get('/ia03', [IA03Controller::class, 'adminShow'])->name('admin.ia03.show'); // Method missing
             Route::get('/ia04', [FrIa04aController::class, 'adminShow'])->name('admin.ia04.show');
             Route::get('/ia05', [IA05Controller::class, 'adminShow'])->name('admin.ia05.show');
             Route::get('/ia06', [IA06Controller::class, 'adminShow'])->name('admin.ia06.show');
@@ -366,8 +367,8 @@ Route::middleware('auth')->group(function () {
                 Route::post('/ia01/store/{id_jadwal}', [IA01Controller::class, 'storeTemplate'])->name('ia01.store');
                 Route::get('/ia02/{id_jadwal}', [IA02Controller::class, 'editTemplate'])->name('ia02');
                 Route::post('/ia02/store/{id_jadwal}', [IA02Controller::class, 'storeTemplate'])->name('ia02.store');
-                Route::get('/ia03/{id_jadwal}', [\App\Http\Controllers\Asesi\IA03\IA03Controller::class, 'editTemplate'])->name('ia03');
-                Route::post('/ia03/store/{id_jadwal}', [\App\Http\Controllers\Asesi\IA03\IA03Controller::class, 'storeTemplate'])->name('ia03.store');
+                // Route::get('/ia03/{id_jadwal}', [IA03Controller::class, 'editTemplate'])->name('ia03'); // Method and class path wrong
+                // Route::post('/ia03/store/{id_jadwal}', [IA03Controller::class, 'storeTemplate'])->name('ia03.store'); // Method and class path wrong
                 Route::get('/ia04/{id_jadwal}', [FrIa04aController::class, 'editTemplate'])->name('ia04');
                 Route::post('/ia04/store/{id_jadwal}', [FrIa04aController::class, 'storeTemplate'])->name('ia04.store');
                 Route::get('/ia05/{id_jadwal}', [IA05Controller::class, 'editTemplate'])->name('ia05');
