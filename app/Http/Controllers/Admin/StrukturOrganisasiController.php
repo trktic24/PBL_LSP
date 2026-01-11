@@ -9,16 +9,14 @@ use Illuminate\Support\Facades\Storage;
 
 class StrukturOrganisasiController extends Controller
 {
-    /**
-     * Menampilkan list Struktur Organisasi.
-     */
     public function index(Request $request)
     {
-        $sortColumn = $request->input('sort', 'id');
+        // Default sort berdasarkan 'urutan' ASC (1, 2, 3...)
+        $sortColumn = $request->input('sort', 'urutan'); 
         $sortDirection = $request->input('direction', 'asc');
-        $allowedColumns = ['id', 'nama', 'jabatan'];
+        $allowedColumns = ['id', 'nama', 'jabatan', 'urutan'];
 
-        if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'id';
+        if (!in_array($sortColumn, $allowedColumns)) $sortColumn = 'urutan';
         if (!in_array($sortDirection, ['asc', 'desc'])) $sortDirection = 'asc';
 
         $query = StrukturOrganisasi::query();
@@ -35,6 +33,7 @@ class StrukturOrganisasiController extends Controller
         $organisasis = $query->paginate($perPage)->onEachSide(1);
         $organisasis->appends($request->only(['sort', 'direction', 'search', 'per_page']));
 
+        // Pastikan view ini mengarah ke file index.blade.php di folder Admin/master/struktur
         return view('Admin.master.struktur.index', [
             'organisasis' => $organisasis,
             'perPage' => $perPage,
@@ -43,23 +42,19 @@ class StrukturOrganisasiController extends Controller
         ]);
     }
 
-    /**
-     * Menampilkan form tambah Struktur.
-     */
     public function create()
     {
-        return view('Admin.master.struktur.create');
+        return view('Admin.master.struktur.add_struktur');
     }
 
-    /**
-     * Menyimpan Struktur baru.
-     */
     public function store(Request $request)
     {
         $request->validate([
             'nama'      => 'required|string|max:255',
             'jabatan'   => 'required|string|max:255',
-            'gambar'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'urutan'    => 'required|integer', 
+            // Limit 5MB (5120 KB)
+            'gambar'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         $data = $request->all();
@@ -67,7 +62,6 @@ class StrukturOrganisasiController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            // Simpan ke folder struktur_organisasi
             $data['gambar'] = $file->storeAs('struktur_organisasi', $filename, 'public');
         }
 
@@ -77,18 +71,15 @@ class StrukturOrganisasiController extends Controller
                      ->with('success', 'Data Struktur berhasil ditambahkan.');
     }
 
-    /**
-     * Menampilkan form edit Struktur.
-     */
     public function edit($id)
     {
         $struktur = StrukturOrganisasi::findOrFail($id);
-        return view('Admin.master.struktur.edit', compact('struktur'));
+        // Kirim variabel sebagai 'organisasi' agar cocok dengan view
+        return view('Admin.master.struktur.edit_struktur', [
+            'organisasi' => $struktur
+        ]);
     }
 
-    /**
-     * Mengupdate data Struktur.
-     */
     public function update(Request $request, $id)
     {
         $struktur = StrukturOrganisasi::findOrFail($id);
@@ -96,13 +87,14 @@ class StrukturOrganisasiController extends Controller
         $request->validate([
             'nama'      => 'required|string|max:255',
             'jabatan'   => 'required|string|max:255',
-            'gambar'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'urutan'    => 'required|integer', 
+            // Limit 5MB
+            'gambar'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         $data = $request->all();
 
         if ($request->hasFile('gambar')) {
-            // Hapus gambar lama jika ada
             if ($struktur->gambar && Storage::disk('public')->exists($struktur->gambar)) {
                 Storage::disk('public')->delete($struktur->gambar);
             }
@@ -117,9 +109,6 @@ class StrukturOrganisasiController extends Controller
                  ->with('success', 'Data Struktur berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus Struktur.
-     */
     public function destroy($id)
     {
         $struktur = StrukturOrganisasi::findOrFail($id);

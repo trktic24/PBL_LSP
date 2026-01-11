@@ -80,7 +80,7 @@ class IA01Controller extends Controller
             ->keyBy('id_kriteria');
 
         $data_sesi = [
-             'tuk' => old('tuk'),
+            'tuk' => old('tuk'),
         ];
 
         // Calculate System Recommendation based on saved data
@@ -100,6 +100,69 @@ class IA01Controller extends Controller
         ));
     }
 
+    /**
+     * Menampilkan Template Master View untuk IA.01 (Admin)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        // 1. Filter Asesi by Skema & Pagination
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        // Simple Search
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        // 2. Dummy Objects & Layout Data matching APL01
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0; 
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        
+        // Mock Relations
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+        
+        $jadwal = new \App\Models\Jadwal([
+             'tanggal_pelaksanaan' => now(), 
+             'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ia01.view',
+            'buttonLabel' => 'FR.IA.01'
+        ]);
+    }
     /**
      * STORE ALL DATA (Validation & Save)
      */
@@ -125,8 +188,8 @@ class IA01Controller extends Controller
             'penilaian_lanjut' => 'nullable|array',
 
             // Finish
-             'umpan_balik' => 'required|string|min:5',
-             'rekomendasi' => 'required|in:kompeten,belum_kompeten',
+            'umpan_balik' => 'required|string|min:5',
+            'rekomendasi' => 'required|in:kompeten,belum_kompeten',
         ];
 
         // 2. Custom Validator for K vs BK Consistency
@@ -164,29 +227,29 @@ class IA01Controller extends Controller
                 );
             }
 
-        // Update Sertifikasi Header
-        $updateData = [
-            'feedback_ia01' => $request->umpan_balik,
-            'rekomendasi_ia01' => $request->rekomendasi,
-        ];
+            // Update Sertifikasi Header
+            $updateData = [
+                'feedback_ia01' => $request->umpan_balik,
+                'rekomendasi_ia01' => $request->rekomendasi,
+            ];
 
-        // Save BK Details to dedicated columns if Belum Kompeten
-        if ($request->rekomendasi === 'belum_kompeten') {
-            $updateData['bk_unit_ia01'] = $request->bk_unit;
-            $updateData['bk_elemen_ia01'] = $request->bk_elemen;
-            $updateData['bk_kuk_ia01'] = $request->bk_kuk;
-        } else {
-            // Clear BK details if Kompeten
-            $updateData['bk_unit_ia01'] = null;
-            $updateData['bk_elemen_ia01'] = null;
-            $updateData['bk_kuk_ia01'] = null;
-        }
+            // Save BK Details to dedicated columns if Belum Kompeten
+            if ($request->rekomendasi === 'belum_kompeten') {
+                $updateData['bk_unit_ia01'] = $request->bk_unit;
+                $updateData['bk_elemen_ia01'] = $request->bk_elemen;
+                $updateData['bk_kuk_ia01'] = $request->bk_kuk;
+            } else {
+                // Clear BK details if Kompeten
+                $updateData['bk_unit_ia01'] = null;
+                $updateData['bk_elemen_ia01'] = null;
+                $updateData['bk_kuk_ia01'] = null;
+            }
 
-        $sertifikasi->update($updateData);
+            $sertifikasi->update($updateData);
 
             DB::commit();
 
-            return redirect()->route('ia01.success_page');
+            return redirect()->route('asesor.tracker', $sertifikasi->id_data_sertifikasi_asesi)->with('success', 'Penilaian IA.01 berhasil disimpan.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -235,5 +298,50 @@ class IA01Controller extends Controller
             'sertifikasi',
             'responses'
         ));
+    }
+
+    // ... method lainnya ...
+
+    /**
+     * CETAK PDF FR.IA.01
+     */
+    public function cetakPDF($id_sertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi Lengkap (Pakai helper yg udah ada)
+        $sertifikasi = $this->getSertifikasi($id_sertifikasi);
+
+        // 2. Ambil Skema & Unit Kompetensi
+        $skema = $sertifikasi->jadwal->skema;
+        $kelompok = $skema->kelompokPekerjaan->first();
+
+        if (!$kelompok) {
+            return back()->with('error', 'Data Kelompok Pekerjaan tidak ditemukan.');
+        }
+
+        // Ambil Unit Kompetensi (sama seperti logic showView)
+        $units = \App\Models\UnitKompetensi::with(['elemen.kriteria'])
+            ->where('id_kelompok_pekerjaan', $kelompok->id_kelompok_pekerjaan)
+            ->orderBy('urutan')
+            ->get();
+
+        // 3. Ambil Jawaban (Respon)
+        // Pastikan nama Model sesuai dengan file kamu: ResponApl2Ia01
+        $responses = \App\Models\ResponApl2Ia01::where('id_data_sertifikasi_asesi', $sertifikasi->id_data_sertifikasi_asesi)
+            ->get()
+            ->keyBy('id_kriteria');
+
+        // 4. Render PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.ia_01', [
+            'sertifikasi' => $sertifikasi,
+            'skema' => $skema,
+            'units' => $units,
+            'responses' => $responses
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        // Sanitasi nama file biar ga error karakter aneh
+        $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $sertifikasi->asesi->nama_lengkap);
+        return $pdf->stream('FR_IA_01_' . $namaAsesi . '.pdf');
     }
 }

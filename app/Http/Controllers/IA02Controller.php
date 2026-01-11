@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\IA02; // Pastikan nama Modelnya konsisten (IA02)
+use App\Models\Ia02; // Pastikan nama Modelnya konsisten (Ia02)
 use App\Models\DataSertifikasiAsesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,8 +35,8 @@ class IA02Controller extends Controller
                 ->with('error', 'Data Sertifikasi tidak ditemukan.');
         }
 
-        // 2. Ambil data IA02 untuk sertifikasi ini (jika sudah ada)
-        $ia02 = IA02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->first();
+        // 2. Ambil data Ia02 untuk sertifikasi ini (jika sudah ada)
+        $ia02 = Ia02::where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)->first();
 
         // 3. Cek Role (Hanya Admin & Superadmin yang bisa edit)
         // Jika user belum login/auth, default false
@@ -51,7 +51,7 @@ class IA02Controller extends Controller
         // Logika Pengambilan Unit Kompetensi (Menggabungkan logika loop manual agar aman)
         if ($sertifikasi->jadwal && $sertifikasi->jadwal->skema) {
             // Jika relasi hasManyThrough di Model Skema sudah benar, kita bisa pakai ini:
-            if ($sertifikasi->jadwal->skema->unitKompetensi) {
+            if ($sertifikasi->jadwal->skema->unitKompetensi && $sertifikasi->jadwal->skema->unitKompetensi->isNotEmpty()) {
                 $daftarUnitKompetensi = $sertifikasi->jadwal->skema->unitKompetensi;
             }
             // Fallback: Jika relasi langsung gagal, kita loop manual lewat kelompokPekerjaan
@@ -64,6 +64,12 @@ class IA02Controller extends Controller
                     }
                 }
             }
+        }
+        
+        // Final Check: Warning if empty
+        if ($daftarUnitKompetensi->isEmpty()) {
+            // Optional: Log or flash warning. View should handle empty collection gracefully.
+             // session()->flash('warning', 'Tidak ada Unit Kompetensi ditemukan untuk Skema ini.');
         }
 
         // 5. Kirim ke View
@@ -78,6 +84,65 @@ class IA02Controller extends Controller
             'jadwal' => $sertifikasi->jadwal,
             'skema' => $sertifikasi->jadwal->skema,
             'asesi' => $sertifikasi->asesi,
+        ]);
+    }
+
+    /**
+     * Menampilkan halaman FR IA.02 (Admin Master Preview)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0;
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+
+        $jadwal = new \App\Models\Jadwal([
+            'tanggal_pelaksanaan' => now(),
+            'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'ia02.show',
+            'buttonLabel' => 'FR.IA.02',
         ]);
     }
 
@@ -100,7 +165,7 @@ class IA02Controller extends Controller
         ]);
 
         // 3. Simpan ke Database
-        IA02::updateOrCreate(
+        Ia02::updateOrCreate(
             ['id_data_sertifikasi_asesi' => $id_sertifikasi],
             [
                 'skenario' => $validated['skenario'],
@@ -129,7 +194,7 @@ class IA02Controller extends Controller
         ])->findOrFail($id);
 
         // 2. Ambil Data Skenario (IA02)
-        $skenario = IA02::where('id_data_sertifikasi_asesi', $id)->first();
+        $skenario = Ia02::where('id_data_sertifikasi_asesi', $id)->first();
 
         // 3. Ambil Unit Kompetensi (Menggunakan logika Model Skema yang baru)
         // Jika error, pastikan public function unitKompetensi() ada di Model Skema

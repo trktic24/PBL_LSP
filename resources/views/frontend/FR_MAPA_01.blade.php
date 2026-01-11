@@ -3,11 +3,11 @@ Nama File: resources/views/asesmen/fr-mapa-01.blade.php
 Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
 --}}
 
-@extends('layouts.app-sidebar')
+@extends($layout ?? 'layouts.app-sidebar')
 @php
-    $jadwal = $sertifikasi->jadwal;
-    $asesi = $sertifikasi->asesi;
-    $backUrl = route('asesor.tracker', $sertifikasi->jadwal->id_jadwal);
+    $jadwal = $sertifikasi->jadwal ?? null;
+    $asesi = $sertifikasi->asesi ?? null;
+    $backUrl = isset($backUrl) ? $backUrl : ($sertifikasi ? route('asesor.tracker', $sertifikasi->jadwal->id_jadwal) : '#');
 @endphp
 
 @section('content')
@@ -39,7 +39,9 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
     {{-- FORM START --}}
     <form action="{{ route('mapa01.store') }}" method="POST">
         @csrf
+        @if($sertifikasi)
         <input type="hidden" name="id_data_sertifikasi_asesi" value="{{ $sertifikasi->id_data_sertifikasi_asesi }}">
+        @endif
 
         <div class="bg-white">
 
@@ -49,8 +51,8 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
             <div class="grid grid-cols-[250px_auto] gap-y-3 text-sm mb-10 text-gray-700">
                 <div class="font-bold text-black">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)</div>
                 <div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : Junior Web Programmer</div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : -</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ $skema->nama_skema ?? '-' }}</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ $skema->nomor_skema ?? '-' }}</div>
                 </div>
             </div>
 
@@ -582,6 +584,12 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
             </div>
 
             {{-- TOMBOL AKSI --}}
+            @if(isset($isMasterView) && $isMasterView)
+                <div class="mt-12 flex justify-end gap-4 pb-8">
+                     <p class="text-gray-500 italic">Mode Pratinjau (Read Only)</p>
+                     <a href="{{ $backUrl }}" class="px-6 py-3 bg-gray-600 text-white font-bold rounded-lg shadow hover:bg-gray-700 transition">Kembali</a>
+                </div>
+            @else
             <div class="mt-12 flex justify-end gap-4 pb-8">
                 <button type="button"
                     class="px-6 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg shadow hover:bg-gray-300 transition">Simpan
@@ -590,6 +598,7 @@ Deskripsi: Form FR.MAPA.01 menggunakan layout Wizard
                     class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition">Simpan
                     Permanen</button>
             </div>
+            @endif
 
         </div>
     </form>

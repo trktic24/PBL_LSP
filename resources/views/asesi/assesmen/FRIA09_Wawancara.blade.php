@@ -1,8 +1,44 @@
+@php
+    $user = Auth::user();
+    
+    // 1. Jika User adalah ASESI (Login sebagai peserta)
+    if ($user->asesi) {
+         $backUrl = url("/asesi/tracker/" . ($sertifikasi->id_jadwal ?? ''));
+    } 
+    
+    // 2. Jika User adalah ADMIN (Login sebagai admin/asesor)
+    else {
+         // Rakit URL Manual agar tidak 404
+         $baseUrl = "/admin/asesi/" . $sertifikasi->id_asesi . "/tracker";
+         // Tambahkan query string sertifikasi_id
+         $backUrl = url($baseUrl) . "?sertifikasi_id=" . $sertifikasi->id_data_sertifikasi_asesi;
+    }
+@endphp
+
 <x-app-layout>
     {{-- Container Utama --}}
-    <div class="flex h-screen overflow-hidden bg-gray-100"> 
-        {{-- SIDEBAR KIRI --}}
-        <x-sidebar2 :idAsesi="$asesi->id_asesi ?? null" :sertifikasi="$sertifikasi ?? null" />
+    <div class="flex min-h-screen flex-col md:flex-row md:h-screen md:overflow-hidden bg-gray-100"> 
+        {{-- 1. SIDEBAR (Desktop Only) --}}
+            <div class="hidden md:block md:w-80 flex-shrink-0">
+               <x-sidebar :idAsesi="$asesi->id_asesi" :sertifikasi="$sertifikasi" :backUrl="$backUrl" />
+            </div>
+
+            {{-- 2. HEADER MOBILE (Data Dinamis) --}}
+            @php
+                $gambarSkema =
+                    $sertifikasi->jadwal && $sertifikasi->jadwal->skema && $sertifikasi->jadwal->skema->gambar
+                        ? asset('storage/' . $sertifikasi->jadwal->skema->gambar)
+                        : asset('images/default_pic.jpeg');
+            @endphp
+
+            <x-mobile_header 
+                :title="$sertifikasi->jadwal->skema->nama_skema ?? 'Skema Sertifikasi'" 
+                :code="$sertifikasi->jadwal->skema->kode_unit ?? ($sertifikasi->jadwal->skema->nomor_skema ?? '-')" 
+                :name="$sertifikasi->asesi->nama_lengkap ?? 'Nama Peserta'" 
+                :image="$gambarSkema"
+                :backUrl="$backUrl" 
+            />
+
 
         {{-- MAIN CONTENT AREA --}}
         <main class="flex-1 bg-gray-100 overflow-y-auto">

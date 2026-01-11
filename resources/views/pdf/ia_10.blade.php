@@ -14,6 +14,11 @@
         .bg-gray { background-color: #f3f4f6; }
         .check-mark { font-family: DejaVu Sans, sans-serif; font-size: 14px; text-align: center; }
         h3 { font-size: 13px; margin-top: 15px; margin-bottom: 5px; }
+        .signature-img {
+            width: 120px;        /* atur sesuai kebutuhan */
+            height: auto;        /* jaga rasio */
+            max-height: 80px;    /* opsional */
+        }        
     </style>
 </head>
 <body>
@@ -26,22 +31,22 @@
         <tr>
             <td width="150"><strong>Skema Sertifikasi</strong></td>
             <td width="10">:</td>
-            <td>{{ $asesi->jadwal->skema->judul_skema ?? '-' }}</td>
+            <td>{{ $asesi->jadwal->skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Nomor Skema</strong></td>
             <td>:</td>
-            <td>{{ $asesi->jadwal->skema->kode_skema ?? '-' }}</td>
+            <td>{{ $asesi->jadwal->skema->nomor_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>TUK</strong></td>
             <td>:</td>
-            <td>{{ $asesi->jadwal->tuk->nama_tuk ?? 'Tempat Kerja' }}</td>
+            <td>{{ $asesi->jadwal->tuk->nama_lokasi ?? 'Tempat Kerja' }}</td>
         </tr>
         <tr>
             <td><strong>Nama Asesor</strong></td>
             <td>:</td>
-            <td>{{ $asesi->jadwal->skema->asesor->first()->nama_asesor ?? '-' }}</td>
+            <td>{{ $asesi->jadwal->asesor->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
             <td><strong>Nama Asesi</strong></td>
@@ -134,20 +139,58 @@
     </table>
 
     <br><br>
-    <table class="no-border">
-        <tr>
-            <td style="width: 50%; text-align: center;">
-                Pihak Ketiga (Supervisor),
-                <br><br><br><br>
-                <strong>{{ $header->nama_pengawas ?? '(.......................)' }}</strong>
-            </td>
-            <td style="width: 50%; text-align: center;">
-                Asesor Kompetensi,
-                <br><br><br><br>
-                <strong>{{ $asesi->jadwal->skema->asesor->first()->nama_asesor ?? '(.......................)' }}</strong>
-            </td>
-        </tr>
-    </table>
+    {{-- TANDA TANGAN --}}
+    <div class="mt-30" style="width: 100%;">
+        <table style="border: none;">
+            <tr>
+                {{-- PIHAK KETIGA --}}
+                <td style="width: 50%; border: none; vertical-align: top;">
+                    <div class="section-title">
+                        Semarang, {{ \Carbon\Carbon::parse($asesi->jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}
+                    </div>
+
+                    <div class="section-title">Pihak Ketiga,</div>
+
+                    <table style="border: none;">
+                        <tr>
+                            <td style="width: 120px; border: none;">Nama</td>
+                            <td style="width: 10px; border: none;">:</td>
+                            <td style="border: none;">{{ $header->nama_lengkap ?? 'Ajeng Febria H.' }}</td>
+                        </tr>
+
+                        <tr>
+                            <td style="border: none;">Tanda Tangan</td>
+                            <td style="border: none;">:</td>
+                            <td style="border: none;">
+                                <img src="{{ getTtdBase64($asesi->jadwal->asesor->tanda_tangan) }}" class="signature-img">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                {{-- ASESOR --}}
+                <td style="width: 50%; border: none; vertical-align: top;">
+                    <div class="section-title" style="margin-top: 30px;">Asesor Kompetensi,</div>
+
+                    <table style="border: none;">
+                        <tr>
+                            <td style="width: 120px; border: none;">Nama</td>
+                            <td style="width: 10px; border: none;">:</td>
+                            <td style="border: none;">{{ $asesi->jadwal->asesor->nama_lengkap ?? 'Ajeng Febria H.' }}</td>
+                        </tr>
+
+                        <tr>
+                            <td style="border: none;">Tanda Tangan</td>
+                            <td style="border: none;">:</td>
+                            <td style="border: none;">
+                                <img src="{{ getTtdBase64($asesi->jadwal->asesor->tanda_tangan) }}" class="signature-img">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
 
 </body>
 </html>

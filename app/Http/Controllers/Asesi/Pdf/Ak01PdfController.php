@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 class Ak01PdfController extends Controller
 {
-    public function generateAk01($id_sertifikasi)
+    public function generateAk01(Request $request, $id_sertifikasi)
     {
         $user = Auth::user();
 
@@ -116,7 +116,10 @@ class Ak01PdfController extends Controller
         // Load View PDF
         $pdf = Pdf::loadView('asesi.pdf.fr_ak_01', $data);
         $pdf->setPaper('a4', 'portrait');
-
+        if ($request->query('mode') == 'preview') {
+            // Tampilkan di browser (Preview)
+            return $pdf->stream('FR.AK.01_Persetujuan_' . $asesi->nama_lengkap . '.pdf');
+        }
         // return $pdf->stream('FR.AK.01_Persetujuan_' . $asesi->nama_lengkap . '.pdf');
         return $pdf->download('FR.AK.01_Persetujuan_' . $asesi->nama_lengkap . '.pdf');
     }

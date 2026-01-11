@@ -18,7 +18,7 @@
         </span>
     </div>
 
-    <h3 class="text-lg font-semibold text-gray-900 text-center px-4 relative z-10">{{ $asesi->nama_lengkap ?? 'Nama Asesi' }}</h3>
+    <h3 class="text-lg font-semibold text-gray-900 text-center px-4 relative z-10">{{ $asesi ? $asesi->nama_lengkap : 'Nama Asesi (Tidak Ditemukan)' }}</h3>
     <div class="w-[85%] border-t-2 border-gray-300 opacity-50 mt-4 -mb-2 relative z-10"></div>
 
 @php

@@ -49,17 +49,33 @@
             
             @foreach($persyaratan as $index => $syarat)
                 @php
+                    // 1. Cari bukti berdasarkan jenis dokumen
                     $bukti = $asesi->buktiDasar->first(function($item) use ($syarat) {
-                        return strpos($item->keterangan, $syarat['jenis']) !== false;
+                        // Gunakan str_starts_with agar pencarian lebih akurat di awal kalimat
+                        return str_starts_with($item->keterangan, $syarat['jenis']);
                     });
-                    
+
                     $isUploaded = !is_null($bukti);
                     
-                    // [PERBAIKAN] Gunakan route 'secure.file' agar file private bisa diakses
+                    // 2. Generate URL File
                     $fileUrl = $isUploaded ? route('secure.file', ['path' => $bukti->bukti_dasar]) : '';
-                    
                     $fileExt = $isUploaded ? pathinfo($bukti->bukti_dasar, PATHINFO_EXTENSION) : '';
-                    $userKeterangan = $isUploaded ? (explode(' - ', $bukti->keterangan)[1] ?? '') : '';
+
+                    // 3. [PERBAIKAN LOGIC] Ekstrak Keterangan User
+                    $userKeterangan = '';
+                    if ($isUploaded) {
+                        // Format di DB: "Jenis Dokumen - Keterangan User"
+                        // Kita cek apakah string dimulai dengan "Jenis Dokumen + Separator"
+                        $prefix = $syarat['jenis'] . ' - ';
+                        
+                        if (str_starts_with($bukti->keterangan, $prefix)) {
+                            // Ambil sisa string setelah prefix (ini adalah keterangan user)
+                            $userKeterangan = substr($bukti->keterangan, strlen($prefix));
+                        } else {
+                            // Jika tidak ada separator, berarti user tidak mengisi keterangan
+                            $userKeterangan = '';
+                        }
+                    }
                     
                     $itemId = 'item-' . $index; 
                 @endphp
@@ -225,8 +241,11 @@
             {{-- 1. AREA PREVIEW GAMBAR --}}
             <div class="w-full max-w-3xl h-64 border-2 border-dashed border-gray-300 rounded-xl bg-white flex items-center justify-center overflow-hidden relative group">
                 
+                @php
+                    $ttdAsesiBase64 = getTtdBase64($asesi->tanda_tangan ?? null, null, 'asesi');
+                @endphp
                 <img id="img-ttd-preview" 
-                     src="{{ $asesi->tanda_tangan ? route('secure.file', ['path' => $asesi->tanda_tangan]) : '' }}" 
+                     src="{{ $ttdAsesiBase64 ? 'data:image/png;base64,' . $ttdAsesiBase64 : '' }}" 
                      class="max-h-full max-w-full object-contain p-6" 
                      :class="hasTtd ? '' : 'hidden'">
                 
@@ -387,6 +406,7 @@
                         const result = await response.json();
 
                         if (result.success) {
+                            descInput.value = descInput.value;
                             alert('Berhasil diunggah!');
                             location.reload(); 
                         } else {

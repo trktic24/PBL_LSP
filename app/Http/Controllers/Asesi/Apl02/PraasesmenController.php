@@ -132,4 +132,167 @@ class PraasesmenController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+    /**
+     * Generate PDF APL-02
+     */
+    public function generatePDF($idDataSertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi dengan Relasi Lengkap
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi.user',
+            'jadwal.asesor',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteria',
+        ])->findOrFail($idDataSertifikasi);
+
+        $skema = $sertifikasi->jadwal->skema;
+        $asesorObj = $sertifikasi->jadwal->asesor;
+
+        // 2. Ambil Respon yang SUDAH ADA
+        $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
+
+        // 3. Load View PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.APL_02', [
+            'sertifikasi' => $sertifikasi,
+            'skema' => $skema,
+            'asesi' => $sertifikasi->asesi,
+            'idDataSertifikasi' => $idDataSertifikasi,
+            'existingResponses' => $existingResponses,
+            'asesor' => [
+                'nama' => $asesorObj->nama_lengkap ?? 'Belum Ditentukan',
+                'no_reg' => $asesorObj->nomor_regis ?? '-',
+            ],
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('FR.APL.02 ' . $sertifikasi->asesi->nama_lengkap . '.pdf');
+    }
+    /**
+     * Menampilkan halaman APL-02 untuk Asesor (View & Verifikasi)
+     */
+    public function view($idDataSertifikasi)
+    {
+        // 1. Ambil Data Sertifikasi dengan Relasi Lengkap
+        $sertifikasi = DataSertifikasiAsesi::with([
+            'asesi.user',
+            'jadwal.asesor',
+            'jadwal.skema.kelompokPekerjaan.unitKompetensi.elemen.kriteria',
+        ])->findOrFail($idDataSertifikasi);
+
+        $skema = $sertifikasi->jadwal->skema;
+        $asesorObj = $sertifikasi->jadwal->asesor;
+
+        // 2. Ambil Respon (History Jawaban)
+        $existingResponses = ResponApl2Ia01::where('id_data_sertifikasi_asesi', $idDataSertifikasi)->get()->keyBy('id_kriteria');
+
+        // 3. Return View Frontend (Shared View) dengan Mode 'view'
+        // Kita menggunakan view yang sama dengan asesi tapi dengan mode berbeda
+        return view('frontend.apl02', [
+            'sertifikasi' => $sertifikasi,
+            'skema' => $skema,
+            'asesi' => $sertifikasi->asesi,
+            'idDataSertifikasi' => $idDataSertifikasi,
+            'existingResponses' => $existingResponses,
+            'mode' => 'view', // Mode View untuk Asesor
+            'asesor' => [
+                'nama' => $asesorObj->nama_lengkap ?? 'Belum Ditentukan',
+                'no_reg' => $asesorObj->nomor_regis ?? '-',
+            ],
+            // Variable tambahan biar gak error di view
+            // 'backUrl' => route('asesor.jadwal.index') // Atau route lain yang sesuai
+        ]);
+    }
+
+    /**
+     * Verifikasi APL-02 oleh Asesor
+     */
+    public function verifikasi(Request $request, $idDataSertifikasi)
+    {
+        try {
+            $sertifikasi = DataSertifikasiAsesi::findOrFail($idDataSertifikasi);
+
+            // Update Rekomendasi APL-02
+            $sertifikasi->update([
+                'rekomendasi_apl02' => 'diterima',
+                // Opsional: Update status sertifikasi jika perlu
+                // 'status_sertifikasi' => 'asesmen_mandiri_disetujui' 
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'APL-02 berhasil diverifikasi.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal verifikasi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Menampilkan Template Master View untuk APL-02 (Admin)
+     */
+    public function adminShow($id_skema)
+    {
+        $skema = \App\Models\Skema::findOrFail($id_skema);
+
+        // 1. Filter Asesi by Skema & Pagination
+        $query = \App\Models\DataSertifikasiAsesi::with([
+            'asesi.dataPekerjaan',
+            'jadwal.skema',
+            'jadwal.masterTuk',
+            'jadwal.asesor',
+            'responApl2Ia01',
+            'responBuktiAk01',
+            'lembarJawabIa05',
+            'komentarAk05'
+        ])->whereHas('jadwal', function($q) use ($id_skema) {
+            $q->where('id_skema', $id_skema);
+        });
+
+        // Simple Search
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('asesi', function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%");
+            });
+        }
+
+        $pendaftar = $query->paginate(request('per_page', 10))->withQueryString();
+
+        // 2. Dummy Objects for View Compatibility
+        $user = auth()->user();
+        $asesor = new \App\Models\Asesor();
+        $asesor->id_asesor = 0; 
+        $asesor->nama_lengkap = $user ? $user->name : 'Administrator';
+        $asesor->pas_foto = $user ? $user->profile_photo_path : null;
+        $asesor->status_verifikasi = 'approved';
+        
+        // Mock Relations
+        $asesor->setRelation('skemas', collect());
+        $asesor->setRelation('jadwals', collect());
+        $asesor->setRelation('skema', null);
+        
+        $jadwal = new \App\Models\Jadwal([
+             'tanggal_pelaksanaan' => now(), 
+             'waktu_mulai' => '08:00',
+        ]);
+        $jadwal->setRelation('skema', $skema);
+        $jadwal->setRelation('masterTuk', new \App\Models\MasterTUK(['nama_lokasi' => 'Semua TUK (Filter Skema)']));
+
+        return view('Admin.master.skema.daftar_asesi', [
+            'pendaftar' => $pendaftar,
+            'asesor' => $asesor,
+            'jadwal' => $jadwal,
+            'isMasterView' => true,
+            'sortColumn' => request('sort', 'nama_lengkap'),
+            'sortDirection' => request('direction', 'asc'),
+            'perPage' => request('per_page', 10),
+            'targetRoute' => 'apl02.view',
+            'buttonLabel' => 'FR.APL.02'
+        ]);
+    }
+
 }

@@ -77,7 +77,7 @@ class Apl01PdfController extends Controller
         return $isMatch;
     }
 
-    public function generateApl01($id_data_sertifikasi)
+    public function generateApl01(Request $request, $id_data_sertifikasi)
     {
         $dataSertifikasi = DataSertifikasiAsesi::with([
             'asesi',
@@ -224,6 +224,11 @@ class Apl01PdfController extends Controller
         $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
         $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
         $namaFile = 'FR.APL.01_' . $namaAsesiClean . '_' . date('YmdHis') . '.pdf';
+
+        if ($request->query('mode') == 'preview') {
+            // Tampilkan di browser (View/Stream)
+            return $pdf->stream($namaFile);
+        }
 
         return $pdf->download($namaFile);
     }

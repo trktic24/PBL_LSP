@@ -6,23 +6,34 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DataSertifikasiAsesi;
+// Pastikan import model Admin jika Anda menggunakan logika cek admin manual
+// use App\Models\Admin; 
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class Apl02PdfController extends Controller
 {
-    public function generateApl02($id_sertifikasi)
+    public function generateApl02( Request $request,$id_sertifikasi)
     {
         $user = Auth::user();
 
-        $sertifikasi = DataSertifikasiAsesi::with([
-            'asesi',
-            'jadwal.skema.unitKompetensi.elemen.kriteria',
-            'jadwal.asesor', // Tambahkan relasi asesor
-            'responApl2ia01', // Tambahkan relasi respon APL02
-        ])
-            ->where('id_asesi', $user->asesi->id_asesi)
-            ->findOrFail($id_sertifikasi);
+        // 1. Definisikan query dasar dulu (jangan langsung dieksekusi/findOrFail)
+        $query = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema.unitKompetensi.elemen.kriteria', 'jadwal.asesor', 'responApl2ia01']);
+
+        // 2. LOGIC FILTERING:
+        // Cek dulu, apakah user ini Asesi?
+        // Kalau dia Asesi ($user->asesi ada datanya), kita WAJIB filter biar dia cuma bisa liat punya sendiri.
+        if ($user->asesi) {
+            $query->where('id_asesi', $user->asesi->id_asesi);
+        }
+
+        // Note: Kalau yang login Asesor (user->asesi isinya null), dia bakal lewatin 'if' di atas.
+        // Jadi query-nya bebas nyari ID sertifikasi manapun (sesuai tugas Asesor).
+
+        // 3. Baru deh dieksekusi query-nya
+        $sertifikasi = $query->findOrFail($id_sertifikasi);
+
+        // --- KE BAWAHNYA SAMA AJA ---
 
         $asesor = $sertifikasi->jadwal->asesor ?? null;
 
@@ -43,6 +54,7 @@ class Apl02PdfController extends Controller
         // --- LOGIKA TANDA TANGAN ASESI ---
         $ttdAsesiBase64 = null;
         if ($sertifikasi->asesi && $sertifikasi->asesi->tanda_tangan) {
+            // Hati-hati path ini, sesuaikan dengan struktur folder lu
             $pathTtdAsesi = storage_path('app/private_uploads/ttd_asesi/' . basename($sertifikasi->asesi->tanda_tangan));
             if (file_exists($pathTtdAsesi)) {
                 $ttdAsesiBase64 = base64_encode(file_get_contents($pathTtdAsesi));
@@ -83,13 +95,15 @@ class Apl02PdfController extends Controller
         $pdf = Pdf::loadView('asesi.pdf.fr_apl_02', $data);
         $pdf->setPaper('a4', 'portrait');
 
-        // Format nama file sama seperti APL01
+        // Format nama file
         $nama = $sertifikasi->asesi->nama_lengkap;
         $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
         $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
         $namaFile = 'FR.APL.02_' . $namaAsesiClean . '_' . date('YmdHis') . '.pdf';
+        if ($request->query('mode') == 'preview') {
+            return $pdf->stream($namaFile); // Tampilkan di browser
+        }
 
         return $pdf->download($namaFile);
-        // return $pdf->stream($namaFile);
     }
 }
