@@ -15,10 +15,10 @@ return new class extends Migration {
             $table->foreignId('id_data_sertifikasi_asesi')->constrained('data_sertifikasi_asesi', 'id_data_sertifikasi_asesi')->onUpdate('cascade')->onDelete('cascade');
 
             // isi dari database ia10
-            $table->text('nama_pengawas')->default(null);
-            $table->text('tempat_kerja')->default(null);
-            $table->text('alamat')->default(null);
-            $table->string('telepon', 16)->default(null);
+            $table->text('nama_pengawas')->nullable()->default(null);
+            $table->text('tempat_kerja')->nullable()->default(null);
+            $table->text('alamat')->nullable()->default(null);
+            $table->string('telepon', 16)->nullable()->default(null);
             $table->timestamps();
         });
     }

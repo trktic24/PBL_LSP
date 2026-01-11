@@ -39,6 +39,17 @@ return new class extends Migration {
             // Standar timestamp
             $table->timestamps();
         });
+
+        Schema::create('master_form_templates', function (Blueprint $col) {
+            $col->id();
+            $col->bigInteger('id_skema')->unsigned();
+            $col->string('form_code', 20); // e.g. 'FR.IA.02', 'FR.MAPA.01'
+            $col->json('content'); // Stores specific template fields as JSON
+            $col->timestamps();
+
+            $col->foreign('id_skema')->references('id_skema')->on('skema')->onDelete('cascade');
+            $col->unique(['id_skema', 'form_code']);
+        });
     }
 
     /**

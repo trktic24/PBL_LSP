@@ -23,12 +23,16 @@ class AsesmenPilihanGandaController extends Controller
     public function indexPilihanGanda($idSertifikasi)
     {
         $user = Auth::user();
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('superadmin');
+        
         $sertifikasi = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema'])->findOrFail($idSertifikasi);
 
-        if ($sertifikasi->id_asesi !== $user->asesi->id_asesi) {
+        if (!$isAdmin && $sertifikasi->id_asesi !== $user->asesi->id_asesi) {
             abort(403, 'Unauthorized action.');
         }
 
+        $asesi = $isAdmin ? $sertifikasi->asesi : $user->asesi;
+        
         $jadwal = $sertifikasi->jadwal;
         
         // --- PERBAIKAN FORMAT WAKTU (OPSI 1 YANG KITA BAHAS SEBELUMNYA) ---
@@ -68,10 +72,18 @@ class AsesmenPilihanGandaController extends Controller
                 }
 
                 $idSkema = $sertifikasi->jadwal->id_skema;
+                $idJadwal = $sertifikasi->id_jadwal;
 
-                // Ambil soal dari MASTER SOAL yang id_skema-nya cocok
-                // Pastikan di tabel 'soal_ia05' ada kolom 'id_skema'
-                $bankSoal = SoalIA05::where('id_skema', $idSkema)->get();
+                // Ambil soal berdasarkan id_skema DAN id_jadwal, fallback ke Master (NULL)
+                $bankSoal = SoalIA05::where('id_skema', $idSkema)
+                                    ->where('id_jadwal', $idJadwal)
+                                    ->get();
+                
+                if ($bankSoal->isEmpty()) {
+                    $bankSoal = SoalIA05::where('id_skema', $idSkema)
+                                        ->whereNull('id_jadwal')
+                                        ->get();
+                }
 
                 if ($bankSoal->isEmpty()) {
                     return response()->json([
