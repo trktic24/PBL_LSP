@@ -24,39 +24,41 @@
         FR.IA.02. TUGAS PRAKTIK DEMONSTRASI
     </div>
 
-    <table class="no-border" style="margin-bottom: 15px;">
+    <table class="header-table" border="0" style="width: 100%;">
         <tr>
-            <td width="150"><strong>Skema Sertifikasi</strong></td>
+            <td width="150"><b>Skema Sertifikasi</b></td>
             <td width="10">:</td>
-            <td>{{ $sertifikasi->jadwal->skema->judul_skema ?? '-' }}</td>
+            {{-- Panggil dari variabel $skema atau lewat $jadwal --}}
+            <td>{{ $skema->judul_skema ?? $skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
-            <td><strong>Nomor Skema</strong></td>
+            <td><b>Nomor Skema</b></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->skema->kode_skema ?? '-' }}</td>
+            <td>{{ $skema->nomor_skema ?? '-' }}</td>
         </tr>
         <tr>
-            <td><strong>TUK</strong></td>
+            <td><b>TUK</b></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->tuk->nama_tuk ?? 'Tempat Kerja' }}</td>
+            <td>{{ $jadwal->masterTuk->nama_tuk ?? 'Tempat Kerja' }}</td>
         </tr>
         <tr>
-            <td><strong>Nama Asesor</strong></td>
+            <td><b>Nama Asesor</b></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '-' }}</td>
+            {{-- Cek user->name, user->nama, atau nama_asesor --}}
+            <td>{{ $jadwal->asesor->user->name ?? $jadwal->asesor->user->nama ?? $jadwal->asesor->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
-            <td><strong>Nama Asesi</strong></td>
+            <td><b>Nama Asesi</b></td>
             <td>:</td>
-            <td>{{ $sertifikasi->asesi->nama_lengkap ?? '-' }}</td>
+            {{-- Ambil langsung dari variabel $asesi yang dikirim controller --}}
+            <td>{{ $asesi->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
-            <td><strong>Tanggal</strong></td>
+            <td><b>Tanggal</b></td>
             <td>:</td>
-            <td>{{ \Carbon\Carbon::now()->format('d F Y') }}</td>
+            <td>{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</td>
         </tr>
     </table>
-
     <hr>
 
     <div class="instruction-box">
