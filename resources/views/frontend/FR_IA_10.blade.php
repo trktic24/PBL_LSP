@@ -250,9 +250,7 @@
                     </div>
                 </div>
 
-                <div class="form-footer flex justify-between mt-10">
-                    <button type="button" class="btn border border-blue-600 text-blue-600 px-5 py-2 rounded">Batal</button>
-                    
+                <div class="form-footer flex justify-end mt-10">
                     @if(!isset($isMasterView))
                     <button type="submit" class="btn bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">Simpan Verifikasi</button>
                     @else
