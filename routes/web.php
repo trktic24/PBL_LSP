@@ -38,6 +38,7 @@ use App\Http\Controllers\Asesi\Apl02\PraasesmenController; // APL-02
 /* use App\Http\Controllers\Asesi\Apl02\Apl02Controller; */
 use App\Http\Controllers\Asesi\KerahasiaanAPI\PersetujuanKerahasiaanAPIController; // AK-01
 use App\Http\Controllers\Asesi\Ak01Controller;
+use App\Http\Controllers\FrAk01Controller;
 use App\Http\Controllers\Asesi\TrackerController;
 use App\Http\Controllers\Asesi\Pdf\Ak01PdfController;
 use App\Http\Controllers\PortofolioController;
@@ -187,6 +188,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/ak04/form/{id}', [Ak04Controller::class, 'create'])->name('ak04.create');
     Route::post('/ak04/store/{id}', [Ak04Controller::class, 'store'])->name('ak04.store');
     Route::get('/FR_AK_05', fn() => view('frontend/AK_05/FR_AK_05'))->name('FR_AK_05');
+
+    //FR-AK-01
+    Route::group(['prefix' => 'asesor', 'as' => 'asesor.'], function () {
+    Route::get('/fr-ak-01/{id}', [FrAk01Controller::class, 'index'])->name('ak01.index');
+    Route::post('/fr-ak-01/{id}/store', [FrAk01Controller::class, 'store'])->name('ak01.store');
+
+});
 
     // FR-AK-03
     Route::get('/ak03/form/{id}', [Ak03Controller::class, 'create'])->name('ak03.create');
