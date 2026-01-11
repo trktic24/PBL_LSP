@@ -106,7 +106,7 @@
                 @endphp
                 @if($ttdAsesiBase64)
                     {{-- Jika ada TTD di database, tampilkan --}}
-                    <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" 
+                    <img src="{{ $ttdAsesiBase64 }}" 
                          alt="Tanda Tangan Asesi" 
                          class="h-40 object-contain">
                 @else

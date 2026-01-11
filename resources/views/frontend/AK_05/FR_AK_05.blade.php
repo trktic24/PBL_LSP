@@ -261,7 +261,7 @@
                                 $ttdAsesorBase64 = getTtdBase64($asesor->tanda_tangan ?? null, $asesor->id_user ?? $asesor->user_id ?? null, 'asesor');
                             @endphp
                             @if($ttdAsesorBase64)
-                                <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" class="h-32 object-contain">
+                                <img src="{{ $ttdAsesorBase64 }}" class="h-32 object-contain">
                             @else
                                 <div class="text-center text-gray-400">
                                     <svg class="w-10 h-10 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>

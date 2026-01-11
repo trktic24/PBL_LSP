@@ -216,7 +216,7 @@
                 <div class="flex items-center gap-2 mb-2">
                     <span class="text-xs text-gray-500">Tanda tangan saat ini:</span>
                     @if($ttdAsesorBase64)
-                        <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" class="h-12 w-auto object-contain border rounded" alt="TTD">
+                        <img src="{{ $ttdAsesorBase64 }}" class="h-12 w-auto object-contain border rounded" alt="TTD">
                     @else
                         <span class="text-xs text-red-400">Tidak dapat dimuat</span>
                     @endif
