@@ -471,7 +471,7 @@
                             <div class="w-full h-40 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center">
                                 @if($ttdAsesorBase64 ?? null)
                                     {{-- Tampilkan gambar Tanda Tangan Asesor --}}
-                                    <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor" class="h-full w-auto object-contain p-2">
+                                    <img src="{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor" class="h-full w-auto object-contain p-2">
                                 @else
                                     <p class="text-gray-400 text-sm">Tanda tangan Asesor belum tersedia</p>
                                 @endif
@@ -486,7 +486,7 @@
                             <div class="w-full h-40 bg-white border-2 border-dashed border-blue-300 rounded-xl flex items-center justify-center cursor-pointer hover:bg-blue-50 hover:border-blue-500 transition-all">
                                 @if($ttdAsesiBase64 ?? null)
                                     {{-- Tampilkan gambar Tanda Tangan Asesi jika sudah ada di DB --}}
-                                    <img src="data:image/png;base64,{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi" class="h-full w-auto object-contain p-2">
+                                    <img src="{{ $ttdAsesiBase64 }}" alt="Tanda Tangan Asesi" class="h-full w-auto object-contain p-2">
                                 @else
                                     {{-- Tampilkan placeholder interaktif jika belum ada --}}
                                     <div class="text-center">
