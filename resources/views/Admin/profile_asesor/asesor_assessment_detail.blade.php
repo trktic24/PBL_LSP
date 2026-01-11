@@ -202,7 +202,7 @@
                     'desc' => 'Ceklis observasi tugas praktik.',
                     'status' => $stIa02,
                     'status_label' => $isIa02Done ? 'Diterima' : ($isIa02Rejected ? 'Ditolak' : ($ia02Done ? 'Menunggu' : 'Belum Terisi')),
-                    'verify_url' => route('fr-ia-02.show', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'verify_url' => route('ia02.show', $dataSertifikasi->id_data_sertifikasi_asesi),
                     'pdf_url' => route('ia02.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                     'can_verify' => $stIa02 !== 'LOCKED' && $stIa02 !== 'ACTIVE',
                     'can_pdf' => true
@@ -378,7 +378,7 @@
                     'desc' => 'Ceklis tinjauan instrumen asesmen.',
                     'status' => $stIa11,
                     'status_label' => $ia11Done ? 'Sudah Dinilai' : ($stIa11 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
-                    'verify_url' => route('ia11.index', $dataSertifikasi->id_data_sertifikasi_asesi),
+                    'verify_url' => route('ia11.show', $dataSertifikasi->id_data_sertifikasi_asesi),
                     'pdf_url' => route('ia11.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                     'can_verify' => false,
                     'can_pdf' => true
