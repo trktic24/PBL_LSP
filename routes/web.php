@@ -160,6 +160,16 @@ Route::middleware('auth')->group(function () {
 
     // Halaman 3: Bukti Kelengkapan
     Route::get('/apl01/step-3/{id}', [APL01Controller::class, 'step3'])->name('APL_01_3');
+    
+    // APL-01 AJAX Uploads
+    Route::post('/apl01/upload-bukti', [APL01Controller::class, 'uploadBukti'])->name('apl01.upload_bukti');
+    Route::post('/apl01/delete-bukti', [APL01Controller::class, 'deleteBukti'])->name('apl01.delete_bukti');
+    
+    // APL-01 Signature
+    Route::post('/apl01/upload-signature', [APL01Controller::class, 'uploadSignature'])->name('apl01.upload_signature');
+    Route::post('/apl01/delete-signature', [APL01Controller::class, 'deleteSignature'])->name('apl01.delete_signature');
+
+    Route::get('/apl01/file/{path}', [APL01Controller::class, 'getFile'])->where('path', '.*')->name('apl01.file'); // Secure file access if needed
 
 
 
