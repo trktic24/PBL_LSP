@@ -159,18 +159,21 @@
                                 @if ($isFormSelesai)
                                     @if ($isAPL01Ditolak)
                                         <p class="text-xs text-red-600 font-bold">Dokumen Ditolak</p>
+                                        <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        target="_blank" class="{{ $btnBlue }}">
+                                        Unduh Document
+                                        </a>
+                                    @elseif ($unlockAPL02)
+                                        <p class="{{ $statusClassSelesai }}">Selesai</p>
+                                        <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
+                                        target="_blank" class="{{ $btnBlue }}">
+                                        Unduh Document
+                                        </a>
                                     @else
                                         <p class="{{ $statusClassSelesai }}">Selesai</p>
                                     @endif
-                                    <a href="{{ route('asesi.cetak.apl01', ['id_data_sertifikasi' => $sertifikasi->id_data_sertifikasi_asesi]) }}"
-                                        target="_blank" class="{{ $btnBlue }}">
-                                        Unduh Document
-                                    </a>
                                 @else
                                     <p class="{{ $statusClassProses }}">Silahkan Mengisi...</p>
-                                    <button disabled class="{{ $btnGray }}">
-                                        Unduh Document (Selesaikan Pendaftaran)
-                                    </button>
                                 @endif
                             </div>
                         </li>
@@ -370,10 +373,6 @@
                                     <p class="{{ $statusClassProses }}">Menunggu Verifikasi Admin</p>
                                 @elseif ($isSampaiTahapIni)
                                     <p class="{{ $statusClassProses }}">Menunggu Verifikasi Asesor</p>
-                                    <a href="{{ route('asesi.cetak.apl02', $sertifikasi->id_data_sertifikasi_asesi) }}"
-                                        class="{{ $btnBlue }}" target="_blank">
-                                        Unduh Document
-                                    </a>
                                 @else
                                     <p class="{{ $statusClassTerkunci }}">Terkunci</p>
                                 @endif

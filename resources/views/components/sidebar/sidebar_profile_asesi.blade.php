@@ -1,10 +1,59 @@
-@props(['asesi', 'backUrl', 'activeSertifikasi'])
+@props(['asesi', 'backUrl' => null, 'activeSertifikasi' => null])
+
+@php
+    // ================================================================
+    // 1. TENTUKAN SERTIFIKASI ACUAN (LOGIKA UTAMA)
+    // ================================================================
+    
+    // Cek apakah ada ID di URL (agar tidak mental saat pindah menu)
+    $urlSertifikasiId = request('sertifikasi_id');
+
+    if ($activeSertifikasi) {
+        // Jika controller mengirim data spesifik
+        $sertifikasiAcuan = $activeSertifikasi;
+    } elseif ($urlSertifikasiId) {
+        // Jika ada di URL, cari data milik asesi ini
+        $sertifikasiAcuan = $asesi->dataSertifikasi->where('id_data_sertifikasi_asesi', $urlSertifikasiId)->first();
+    } else {
+        // Fallback: Ambil yang paling baru
+        $sertifikasiAcuan = $asesi->dataSertifikasi->sortByDesc('created_at')->first();
+    }
+
+    // ================================================================
+    // 2. LOGIKA TOMBOL KEMBALI (BACK BUTTON)
+    // ================================================================
+    
+    if (!empty($backUrl)) {
+        // Jika controller mengirim backUrl secara manual, gunakan itu
+        $targetBackUrl = $backUrl;
+    } elseif ($sertifikasiAcuan && $sertifikasiAcuan->id_jadwal) {
+        // [FIX] Jika ada jadwal terkait, kembali ke DAFTAR HADIR jadwal tersebut
+        $targetBackUrl = route('admin.schedule.attendance', ['id_jadwal' => $sertifikasiAcuan->id_jadwal]);
+    } else {
+        // Default: Kembali ke Master Asesi
+        $targetBackUrl = route('admin.master_asesi');
+    }
+
+    // ================================================================
+    // 3. PERSIAPAN DATA TAMPILAN
+    // ================================================================
+    
+    $namaSkema = $sertifikasiAcuan?->jadwal?->skema?->nama_skema ?? '-';
+    $nomorSkema = $sertifikasiAcuan?->jadwal?->skema?->nomor_skema ?? '-';
+    
+    // Siapkan parameter ID untuk link menu (agar konteks terjaga)
+    $routeParams = ['id_asesi' => $asesi->id_asesi];
+    if ($sertifikasiAcuan) {
+        $routeParams['sertifikasi_id'] = $sertifikasiAcuan->id_data_sertifikasi_asesi;
+    }
+@endphp
 
 <aside class="fixed top-[80px] left-0 h-[calc(100vh-80px)] w-[22%] 
               bg-gradient-to-b from-[#e8f0ff] via-[#f3f8ff] to-[#ffffff]
               shadow-inner border-r border-gray-200 flex flex-col items-center pt-8 z-40">
 
-    <a href="{{ $backUrl ?? route('admin.master_asesi') }}" 
+    {{-- [FIX] Menggunakan variabel $targetBackUrl yang sudah dihitung di atas --}}
+    <a href="{{ $targetBackUrl }}" 
         class="absolute top-4 left-6 flex items-center text-gray-500 hover:text-blue-600 transition-all duration-200 cursor-pointer z-50 hover:-translate-x-1">
         <i class="fas fa-arrow-left text-lg"></i>
         <span class="ml-2 font-medium text-sm">Kembali</span>
@@ -21,34 +70,21 @@
     <h3 class="text-lg font-semibold text-gray-900 text-center px-4 relative z-10">{{ $asesi ? $asesi->nama_lengkap : 'Nama Asesi (Tidak Ditemukan)' }}</h3>
     <div class="w-[85%] border-t-2 border-gray-300 opacity-50 mt-4 -mb-2 relative z-10"></div>
 
-@php
-    // Prioritaskan data yang dikirim dari controller
-    $sertifikasiAcuan = $activeSertifikasi ?? $asesi->dataSertifikasi->sortByDesc('created_at')->first();
-    
-    $namaSkema = $sertifikasiAcuan?->jadwal?->skema?->nama_skema ?? '-';
-    $nomorSkema = $sertifikasiAcuan?->jadwal?->skema?->nomor_skema ?? '-';
-    
-    // [PENTING] Siapkan parameter ID untuk link di bawah agar konteks tidak hilang
-    $routeParams = ['id_asesi' => $asesi->id_asesi];
-    if ($sertifikasiAcuan) {
-        $routeParams['sertifikasi_id'] = $sertifikasiAcuan->id_data_sertifikasi_asesi;
-    }
-@endphp
-
-<div class="text-center mt-4 mb-8 relative z-10 px-4">
-    <p class="text-gray-900 font-semibold text-sm leading-snug">
-        {{ $namaSkema }}
-    </p>
-    <p class="text-gray-500 text-xs mt-1 font-medium tracking-wide">
-        {{ $nomorSkema }}
-    </p>
-</div>
+    <div class="text-center mt-4 mb-8 relative z-10 px-4">
+        <p class="text-gray-900 font-semibold text-sm leading-snug">
+            {{ $namaSkema }}
+        </p>
+        <p class="text-gray-500 text-xs mt-1 font-medium tracking-wide">
+            {{ $nomorSkema }}
+        </p>
+    </div>
 
     <div class="w-[85%] bg-white/40 backdrop-blur-md rounded-2xl p-4 
                 shadow-[0_0_15px_rgba(0,0,0,0.15)] mb-4 relative z-10">
     
         <div class="flex flex-col space-y-4">
             
+            {{-- Menu Settings --}}
             <a href="{{ route('admin.asesi.profile.settings', $routeParams) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
@@ -57,6 +93,7 @@
                 <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
             </a>
 
+            {{-- Menu Form --}}
             <a href="{{ route('admin.asesi.profile.form', $routeParams) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
@@ -65,6 +102,7 @@
                 <i class="fas fa-clipboard text-l mr-3"></i> Form
             </a>
 
+            {{-- Menu Tracker --}}
             <a href="{{ route('admin.asesi.profile.tracker', $routeParams) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
@@ -73,6 +111,7 @@
                 <i class="fas fa-chart-line text-l mr-3"></i> Lacak Aktivitas
             </a>
 
+            {{-- Menu Bukti --}}
             <a href="{{ route('admin.asesi.profile.bukti', $routeParams) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
