@@ -158,19 +158,22 @@
 
         // IA.08 (Log: Limit 1 -> Single Object)
         // Cek: Apakah variabel ada isinya?
-        $ia08Done = $dataSertifikasi->ia08 ? true : false;
+        $ia08Done = $dataSertifikasi->ia08 && !empty($dataSertifikasi->ia08->rekomendasi);
         $stIa08 = $ia08Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia08Pass = $ia08Done || ($show['ia08'] != 1);
 
         // IA.09 (Log: Limit 1 -> Single Object)
         // Cek: Apakah variabel ada isinya?
-        $ia09Done = $dataSertifikasi->ia09 ? true : false; 
+       $ia09Done = $is_ia09_graded ?? false; 
         $stIa09 = $ia09Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia09Pass = $ia09Done || ($show['ia09'] != 1);
 
         // IA.10 (Biasanya Single, sesuaikan jika beda)
         // Jika IA.10 single object:
-        $ia10Done = $dataSertifikasi->ia10 ? true : false;
+        $ia10Done = $dataSertifikasi->ia10 && 
+                    $dataSertifikasi->ia10->details && 
+                    $dataSertifikasi->ia10->details->count() > 0;
+
         $stIa10 = $ia10Done ? 'DONE' : ($level >= 40 ? 'ACTIVE' : 'LOCKED');
         $ia10Pass = $ia10Done || ($show['ia10'] != 1);
 

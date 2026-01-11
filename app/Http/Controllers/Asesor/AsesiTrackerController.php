@@ -8,6 +8,7 @@ use App\Models\DataSertifikasiAsesi; // <-- Panggil model pivot-mu
 use App\Models\Asesor;
 use App\Models\ResponApl02Ia01;
 use App\Models\LembarJawabIA05;
+use App\Models\BuktiPortofolioIA08IA09;
 
 use App\Http\Controllers\Controller;
 
@@ -28,10 +29,11 @@ class AsesiTrackerController extends Controller
             'jadwal.skema.listForm',
             'jadwal.mastertuk',    // Ambil data TUK-nya juga
             'responbuktiAk01',
-            'ia10', // <-- Load data IA10
+            'ia10.details', // <-- Load data IA10
             'ia02',
             'ia07',
             'ia06Answers',
+            'ia08',
         ])
             ->findOrFail($id_sertifikasi_asesi);
 
@@ -47,6 +49,20 @@ class AsesiTrackerController extends Controller
             }
         }
         // --- Selesai Otorisasi ---
+
+        $is_ia09_graded = false;
+
+    // Cek apakah data IA08 sudah ada?
+    if ($dataSertifikasi->ia08) {
+        // Kita query manual ke tabel bukti portofolio berdasarkan id_ia08
+        $cekCount = BuktiPortofolioIA08IA09::where('id_ia08', $dataSertifikasi->ia08->id_ia08)
+            ->whereNotNull('pencapaian_ia09') // Cek kolom pencapaian
+            ->count();
+            
+        if ($cekCount > 0) {
+            $is_ia09_graded = true;
+        }
+    }
 
         // ==========================================================
         // 🔥 LOGIKA BARU: CEK STATUS IA.05 (Tanpa Kolom Status) 🔥
@@ -74,6 +90,7 @@ class AsesiTrackerController extends Controller
             'is_ia05_graded' => $is_ia05_graded,
             'has_ak02_data' => $has_ak02_data,
             'listForm' => $listForm,
+            'is_ia09_graded' => $is_ia09_graded,
         ]);
     }  
 }
