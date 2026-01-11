@@ -180,7 +180,7 @@
                     'desc' => 'Daftar ceklis observasi untuk asesmen.',
                     'status' => $stIa01,
                     'status_label' => $ia01Done ? 'Sudah Dinilai' : ($stIa01 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
-                    'verify_url' => route('ia01.admin.view', $dataSertifikasi->id_sertifikasi ?? $dataSertifikasi->id_data_sertifikasi_asesi), // Note: Verify route for admin might differ
+                    'verify_url' => route('ia01.admin.show', $dataSertifikasi->id_sertifikasi ?? $dataSertifikasi->id_data_sertifikasi_asesi), // Note: Changed to ia01.admin.show matching web.php
                     'pdf_url' => route('ia01.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                     'can_verify' => false, // View only typically for IA01 in Admin unless specified
                     'can_pdf' => true
@@ -338,7 +338,7 @@
                     'desc' => 'Pertanyaan wawancara dengan asesi.',
                     'status' => $stIa09,
                     'status_label' => $ia09Done ? 'Sudah Dinilai' : ($stIa09 == 'ACTIVE' ? 'Belum Dinilai' : 'Terkunci'),
-                    'verify_url' => route('ia09.admin.view', $dataSertifikasi->id_data_sertifikasi_asesi), // Using Admin View route defined in auth.php
+                    'verify_url' => route('ia09.edit', $dataSertifikasi->id_data_sertifikasi_asesi), // Note: Changed to ia09.edit matching web.php
                     'pdf_url' => route('ia09.cetak_pdf', $dataSertifikasi->id_data_sertifikasi_asesi),
                     'can_verify' => false,
                     'can_pdf' => true

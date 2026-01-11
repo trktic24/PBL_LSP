@@ -53,6 +53,7 @@ PR ini mencakup stabilisasi sistem di Linux, fitur isolasi templat, dan **HOTFIX
 - **Feature**: Sinkronisasi layout & logika `Detail Asesmen` (Admin) dengan `Tracker` (Asesor).
 - **Changes**:
     - **Controller**: Eager load semua relasi IA (`ia01`, `ia03`, `ia04`, `ia08`, `ia09`, `ia11`) di `AsesorProfileController`.
+    - **Model**: Menambahkan relasi `ia03` dan `ia11` pada `DataSertifikasiAsesi` yang sebelumnya referensi methodnya tidak ada (fix Internal Server Error).
     - **View**: Update `asesor_assessment_detail.blade.php` untuk menampilkan semua item IA (01-11) dengan logika status yang konsisten.
 
 ### 📋 Checklist Verifikasi
