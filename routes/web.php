@@ -308,6 +308,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'showIA04A'])->name('fria04a.show');
         Route::post('/FRIA04_Asesor/{id}', [AssessmenFRIA04tController::class, 'storeIA04A'])->name('fria04a.store');
 
+        // IA-11
+        Route::get('/ia11/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'show'])->name('ia11.show');
+        Route::post('/ia11/store', [IA11Controller::class, 'store'])->name('ia11.store');
+        Route::put('/ia11/update/{id}', [IA11Controller::class, 'update'])->name('ia11.update');
+        Route::delete('/ia11/delete/{id}', [IA11Controller::class, 'destroy'])->name('ia11.destroy');
+        Route::get('/ia11/pdf/{id_data_sertifikasi_asesi}', [IA11Controller::class, 'cetakPDF'])->name('ia11.cetak_pdf');
+
         // MAPA-02
         
         // Laporan Asesi (Admin) - Used for APL 01 link
@@ -345,7 +352,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/ia08', [IA08Controller::class, 'adminShow'])->name('admin.ia08.show');
             Route::get('/ia09', [IA09Controller::class, 'adminShow'])->name('admin.ia09.show');
             Route::get('/ia10', [IA10Controller::class, 'adminShow'])->name('admin.ia10.show');
-            Route::get('/ia11', [\App\Http\Controllers\IA11Controller::class, 'adminShow'])->name('admin.ia11.show');
+            Route::get('/ia10', [IA10Controller::class, 'adminShow'])->name('admin.ia10.show');
+            Route::get('/ia11', [IA11Controller::class, 'adminShow'])->name('admin.ia11.show');
             
             // AK
             Route::get('/ak01', [Ak01Controller::class, 'adminShow'])->name('admin.ak01.show'); 
@@ -380,8 +388,8 @@ Route::middleware('auth')->group(function () {
                 Route::post('/ia09/store/{id_jadwal}', [IA09Controller::class, 'storeTemplate'])->name('ia09.store');
                 Route::get('/ia10/{id_jadwal}', [IA10Controller::class, 'editTemplate'])->name('ia10');
                 Route::post('/ia10/store/{id_jadwal}', [IA10Controller::class, 'storeTemplate'])->name('ia10.store');
-                Route::get('/ia11/{id_jadwal}', [\App\Http\Controllers\IA11Controller::class, 'editTemplate'])->name('ia11');
-                Route::post('/ia11/store/{id_jadwal}', [\App\Http\Controllers\IA11Controller::class, 'storeTemplate'])->name('ia11.store');
+                Route::get('/ia11/{id_jadwal}', [IA11Controller::class, 'editTemplate'])->name('ia11');
+                Route::post('/ia11/store/{id_jadwal}', [IA11Controller::class, 'storeTemplate'])->name('ia11.store');
 
                 // AK forms
                 Route::get('/ak01/{id_jadwal}', [Ak01Controller::class, 'editTemplate'])->name('ak01');
