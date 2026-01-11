@@ -310,6 +310,7 @@ Route::middleware('auth')->group(function () {
                     Route::get('/sertifikasi/{id}/verifikasi-apl02', 'verifikasiApl02')->name('verifikasi.apl02');
                     Route::post('/sertifikasi/{id}/upload-sertifikat', 'uploadSertifikatAsesi')->name('sertifikasi.upload');
                     Route::get('/sertifikasi/{id}/download-sertifikat', 'downloadSertifikat')->name('sertifikasi.download');
+                    Route::post('/sertifikasi/{id}/keputusan','updateKeputusan')->name('sertifikasi.keputusan');
                 });
 
             // Asesmen
