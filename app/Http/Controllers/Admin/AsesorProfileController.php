@@ -129,13 +129,15 @@ class AsesorProfileController extends Controller
             ->firstOrFail();
 
         // 3. Query Dasar untuk $pendaftar (DataSertifikasiAsesi)
+    // 3. Query Dasar untuk $pendaftar (DataSertifikasiAsesi)
         $query = DataSertifikasiAsesi::query()
             ->with([
                 'asesi.dataPekerjaan', 
                 'responApl02Ia01', 
                 'responBuktiAk01', 
                 'lembarJawabIa05', 
-                'komentarAk05'
+                'komentarAk05',
+                'hasilPenyesuaianAK07' // [NEW] Required for Penyesuaian logic
             ])
             ->where('id_jadwal', $id_jadwal);
 
@@ -159,12 +161,30 @@ class AsesorProfileController extends Controller
         // 6. Eksekusi Pagination
         $pendaftar = $query->paginate($perPage)->withQueryString();
 
-        // 7. Logika Tombol "Berita Acara" (Cek apakah semua sudah dinilai)
-        $semuaDataJadwal = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)->get();
-        
-        $semuaSudahAdaKomentar = $semuaDataJadwal->isNotEmpty() && $semuaDataJadwal->every(function ($item) {
-            return $item->komentarAk05()->exists() || $item->lembarJawabIa05()->exists();
-        });
+        // 7. Logika Tombol "Berita Acara" (Strict Validator Check)
+        // Logic mirrored from AsesorJadwalController::showAsesi
+        $sudahVerifikasiValidator = !DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)
+            ->where(function ($q) {
+                $q->whereDoesntHave('komentarAk05')
+                    ->orWhereHas('komentarAk05', function ($q2) {
+                        $q2->whereNull('verifikasi_validator');
+                    });
+            })
+            ->exists();
+
+        // 8. Return View
+        return view('Admin.profile_asesor.daftar_asesi', compact(
+            'asesor',
+            'jadwal',
+            'pendaftar',
+            'sortColumn',
+            'sortDirection',
+            'perPage',
+            'sudahVerifikasiValidator' // [UPDATED] Variable name to match View Logic
+        ), [
+            'targetRoute' => 'admin.asesor.tracker.view',
+            'buttonLabel' => 'Lacak Progres'
+        ]);
 
         // 8. Return View
         return view('Admin.profile_asesor.daftar_asesi', compact(

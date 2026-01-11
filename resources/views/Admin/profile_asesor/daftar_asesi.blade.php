@@ -133,10 +133,9 @@
                             </a>
                         </th>
                         
-                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Progres</th>
-                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Pra Asesmen</th>
-                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Asesmen</th>
+                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Tracker</th>
                         <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Asesmen Mandiri</th>
+                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Penyesuaian</th>
                         <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
@@ -157,6 +156,7 @@
                                 </a>
                             </td>
 
+                            {{-- Tracker Logic (Mirrored from Asesor) --}}
                             <td class="px-6 py-4 text-center align-top">
                                 @php
                                     if (is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)){
@@ -176,69 +176,47 @@
                                 </a>
                             </td>
 
-                             {{-- Status Pra Asesmen --}}
-                            @php
-                                if ($item->responApl02Ia01->isEmpty() && $item->responBuktiAk01->isEmpty()) {
-                                    $statusPra = 'Belum Direview';
-                                    $classPra = 'bg-gray-100 text-gray-500';
-                                } elseif ($item->responApl02Ia01->isNotEmpty() && $item->responBuktiAk01->isEmpty()) {
-                                    $statusPra = 'Dalam Proses';
-                                    $classPra = 'bg-yellow-100 text-yellow-700 border border-yellow-200';
-                                } else {
-                                    $statusPra = 'Selesai';
-                                    $classPra = 'bg-green-100 text-green-700 border border-green-200';
-                                }
-                            @endphp
-                            <td class="px-6 py-4 text-center align-top">
-                                {{-- UPDATE: Tambahkan #pra-asesmen --}}
-                                <a href="{{ route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $item->id_data_sertifikasi_asesi]) }}#pra-asesmen" 
-                                   class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold {{ $classPra }} hover:opacity-80 transition">
-                                    {{ $statusPra }}
-                                </a>
-                            </td>
-
-                            {{-- Status Asesmen --}}
-                            @php
-                                if (!$item->lembarJawabIa05 && !$item->komentarAk05) {
-                                    $statusAsesmen = 'Belum Dimulai';
-                                    $classAsesmen = 'bg-gray-100 text-gray-500';
-                                } elseif ($item->lembarJawabIa05 && !$item->komentarAk05) {
-                                    $statusAsesmen = 'Berlangsung';
-                                    $classAsesmen = 'bg-blue-100 text-blue-700 border border-blue-200';
-                                } else {
-                                    $statusAsesmen = 'Selesai';
-                                    $classAsesmen = 'bg-green-100 text-green-700 border border-green-200';
-                                }
-                            @endphp
-                            <td class="px-6 py-4 text-center align-top">
-                                {{-- UPDATE: Pastikan ada #asesmen --}}
-                                <a href="{{ route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $item->id_data_sertifikasi_asesi]) }}#asesmen" 
-                                   class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold {{ $classAsesmen }} hover:opacity-80 transition">
-                                    {{ $statusAsesmen }}
-                                </a>
-                            </td>
-
-                            {{-- Status Mandiri (APL.02) --}}
+                            {{-- Asesmen Mandiri (APL.02) Logic --}}
                             <td class="px-6 py-4 text-center align-top">
                                 @if ($item->rekomendasi_apl02 == 'diterima')
                                     <span class="text-green-600 font-bold text-xs"><i class="fas fa-check mr-1"></i> Diterima</span>
                                 @elseif ($item->rekomendasi_apl02 == 'tidak diterima')
                                     <span class="text-red-600 font-bold text-xs"><i class="fas fa-times mr-1"></i> Ditolak</span>
                                 @else
-                                    <a href="{{ route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $item->id_data_sertifikasi_asesi]) }}" class="text-yellow-600 font-bold text-xs hover:underline"><i class="fas fa-exclamation-circle mr-1"></i> Perlu Verifikasi</a>
+                                    {{-- Use valid admin route for APL.02 --}}
+                                    <a href="{{ route('admin.apl02.show', ['id_skema' => $jadwal->id_skema]) }}?id_data_sertifikasi={{ $item->id_data_sertifikasi_asesi }}" 
+                                       class="bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-yellow-600 transition shadow-sm">
+                                        Verifikasi
+                                    </a>
                                 @endif
                             </td>
 
-                            {{-- Tombol Penyesuaian --}}
+                            {{-- Penyesuaian (AK.07) Logic --}}
                             <td class="px-6 py-4 text-center align-top">
-                                <a href="{{ route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $item->id_data_sertifikasi_asesi]) }}" class="text-blue-600 hover:text-blue-800 text-xs font-bold transition flex items-center justify-center">
-                                    <i class="fas fa-cog mr-1"></i> Penyesuaian
+                                @if($item->hasilPenyesuaianAK07)
+                                    <a href="{{ route('fr-ak-07.create', $item->id_data_sertifikasi_asesi) }}" 
+                                       class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-xs font-medium hover:bg-gray-300 transition">
+                                        Lihat Penyesuaian
+                                    </a>
+                                @else
+                                    <a href="{{ route('fr-ak-07.create', $item->id_data_sertifikasi_asesi) }}" 
+                                       class="bg-yellow-500 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-yellow-600 transition shadow-sm">
+                                        Lakukan Penyesuaian
+                                    </a>
+                                @endif
+                            </td>
+
+                            {{-- Aksi --}}
+                            <td class="px-6 py-4 text-center align-top">
+                                <a href="{{ route('admin.asesor.assessment.detail', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $item->id_data_sertifikasi_asesi]) }}" 
+                                   class="text-blue-600 hover:text-blue-800 text-xs font-bold transition flex items-center justify-center">
+                                    <i class="fas fa-eye mr-1"></i> Detail
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
                                     <p>Data asesi tidak ditemukan.</p>
@@ -290,18 +268,19 @@
             </div>
 
             {{-- Tombol Berita Acara --}}
+            {{-- Tombol Berita Acara --}}
             <div class="relative group">
                 <button type="button" 
-                    onclick="{{ $semuaSudahAdaKomentar ? "toggleDropdown('berita-acara-dropdown')" : "showWarning()" }}"
+                    onclick="{{ $sudahVerifikasiValidator ? "toggleDropdown('berita-acara-dropdown')" : "showWarning()" }}"
                     class="w-full px-4 py-3 rounded-xl shadow-sm flex items-center justify-center font-semibold text-sm transition
-                    {{ $semuaSudahAdaKomentar ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200' : 'bg-gray-100 text-gray-400 cursor-not-allowed' }}">
+                    {{ $sudahVerifikasiValidator ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200' : 'bg-gray-100 text-gray-400 cursor-not-allowed' }}">
                     <i class="fas fa-file-contract mr-2"></i> Berita Acara
-                    @if($semuaSudahAdaKomentar)
+                    @if($sudahVerifikasiValidator)
                         <i class="fas fa-chevron-up ml-auto text-xs opacity-50"></i>
                     @endif
                 </button>
 
-                @if($semuaSudahAdaKomentar)
+                @if($sudahVerifikasiValidator)
                     <div id="berita-acara-dropdown" class="hidden absolute right-0 bottom-full mb-2 w-full bg-white border border-gray-100 rounded-xl shadow-lg z-10 overflow-hidden">
                         <a href="{{ route('asesor.berita_acara', $jadwal->id_jadwal) }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-50 transition">Verifikasi Berita Acara</a>
                         <a href="{{ route('asesor.berita_acara.pdf', $jadwal->id_jadwal) }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition">Unduh PDF</a>
