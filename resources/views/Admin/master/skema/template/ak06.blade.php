@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelola Template FR.AK.06 | LSP Polines</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style> 
+        body { font-family: 'Poppins', sans-serif; } 
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 uppercase">
+    <div class="min-h-screen flex flex-col">
+        <x-navbar.navbar-admin />
+        
+        <main class="flex-1 pt-12 pb-24 px-6">
+            <div class="max-w-5xl mx-auto">
+                
+                <!-- Header -->
+                <div class="mb-12">
+                    <a href="{{ route('admin.skema.template.list', [$skema->id_skema, 'FR.AK.06']) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-bold mb-6 group tracking-[0.2em] text-[10px]">
+                        <i class="fas fa-chevron-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
+                        KEMBALI KE DAFTAR TEMPLATE
+                    </a>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <h1 class="text-4xl font-black text-slate-900 tracking-tight leading-none">
+                                KELOLA TEMPLATE <br>
+                                <span class="text-indigo-600">FR.AK.06</span>
+                            </h1>
+                            <p class="text-slate-500 mt-4 font-medium italic lowercase">"Meninjau Proses Asesmen"</p>
+                        </div>
+                        <button onclick="document.getElementById('templateForm').submit()" class="px-10 py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-xl shadow-indigo-100 hover:bg-slate-900 transition-all flex items-center">
+                            <i class="fas fa-save mr-3"></i> SIMPAN DEFAULT AK-06
+                        </button>
+                    </div>
+                </div>
+
+                @if(session('success'))
+                    <div class="mb-8 p-6 bg-emerald-500 text-white rounded-[2rem] flex items-center shadow-xl shadow-emerald-100 border-4 border-emerald-400">
+                        <i class="fas fa-check-circle mr-4 text-2xl"></i>
+                        <span class="font-extrabold text-lg lowercase">{{ session('success') }}</span>
+                    </div>
+                @endif
+
+                <form id="templateForm" action="{{ route('admin.skema.template.ak06.store', [$skema->id_skema, $id_jadwal]) }}" method="POST">
+                    @csrf
+                    <div class="space-y-12">
+                        
+                        <!-- BAGIAN 1: REKOMENDASI ASPEK -->
+                        <div class="glass-card rounded-[3rem] p-10 shadow-sm border-2 border-slate-100">
+                            <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-4">
+                                <span class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-lg"><i class="fas fa-clipboard-check"></i></span>
+                                REKOMENDASI ASPEK PRINSIP
+                            </h2>
+
+                            <div>
+                                <textarea name="content[rekomendasi_aspek]" rows="4" class="w-full p-6 bg-slate-50 border-2 border-slate-100 rounded-[2rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-bold text-slate-700 lowercase leading-relaxed" placeholder="Contoh: Seluruh prosedur asesmen telah memenuhi prinsip validitas dan reliabilitas.">{{ $content['rekomendasi_aspek'] ?? '' }}</textarea>
+                                <p class="text-[10px] font-bold text-slate-400 mt-4 ml-4 tracking-widest lowercase italic">* Rekomendasi untuk Tabel 1 (Validitas, Reliabel, Fleksibel, Adil).</p>
+                            </div>
+                        </div>
+
+                        <!-- BAGIAN 2: REKOMENDASI DIMENSI -->
+                        <div class="glass-card rounded-[3rem] p-10 shadow-sm border-2 border-slate-100">
+                            <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-4">
+                                <span class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-lg"><i class="fas fa-cube"></i></span>
+                                REKOMENDASI DIMENSI KOMPETENSI
+                            </h2>
+
+                            <div>
+                                <textarea name="content[rekomendasi_dimensi]" rows="4" class="w-full p-6 bg-slate-50 border-2 border-slate-100 rounded-[2rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-bold text-slate-700 lowercase leading-relaxed" placeholder="Contoh: Keputusan asesmen konsisten terhadap seluruh dimensi kompetensi yang diujikan.">{{ $content['rekomendasi_dimensi'] ?? '' }}</textarea>
+                                <p class="text-[10px] font-bold text-slate-400 mt-4 ml-4 tracking-widest lowercase italic">* Rekomendasi untuk Tabel 2 (Dimensi Kompetensi).</p>
+                            </div>
+                        </div>
+
+                        <!-- BAGIAN 3: KOMENTAR PENINJAU -->
+                        <div class="glass-card rounded-[3rem] p-10 shadow-sm border-2 border-slate-100">
+                            <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-4">
+                                <span class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-lg"><i class="fas fa-comment-medical"></i></span>
+                                KOMENTAR PENINJAU (Lead Asesor)
+                            </h2>
+
+                            <div>
+                                <textarea name="content[peninjau_komentar]" rows="3" class="w-full p-6 bg-slate-50 border-2 border-slate-100 rounded-[2rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-bold text-slate-700 lowercase leading-relaxed" placeholder="Tuliskan komentar peninjau default di sini...">{{ $content['peninjau_komentar'] ?? '' }}</textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-16 flex justify-center pb-20">
+                        <button type="submit" class="px-16 py-6 bg-slate-900 text-white rounded-full font-black shadow-2xl hover:bg-indigo-600 transition-all duration-500 hover:scale-105">
+                            <i class="fas fa-save mr-3"></i> SIMPAN SEMUA DEFAULT AK-06
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -111,9 +111,12 @@
                                 </td>
 
                                 <td class="p-4 align-top border-r border-gray-100">
-                                    @if($response && $response->standar_industri_ia01)
+                                    @php
+                                        $standarDisplay = $response->standar_industri_ia01 ?? ($templateContent[$kuk->id_kriteria] ?? $kuk->standar_industri_kerja);
+                                    @endphp
+                                    @if($standarDisplay)
                                         <div class="p-2 bg-gray-50 rounded border border-gray-200 text-xs">
-                                            {{ $response->standar_industri_ia01 }}
+                                            {{ $standarDisplay }}
                                         </div>
                                     @else
                                         <span class="text-gray-400 italic">-</span>

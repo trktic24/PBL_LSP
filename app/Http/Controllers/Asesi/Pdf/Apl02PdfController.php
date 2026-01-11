@@ -18,7 +18,7 @@ class Apl02PdfController extends Controller
         $user = Auth::user();
 
         // 1. Definisikan query dasar dulu (jangan langsung dieksekusi/findOrFail)
-        $query = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema.unitKompetensi.elemen.kriteria', 'jadwal.asesor', 'responApl2ia01']);
+        $query = DataSertifikasiAsesi::with(['asesi', 'jadwal.skema.unitKompetensi.elemen.kriteria', 'jadwal.asesor', 'responApl02Ia01']);
 
         // 2. LOGIC FILTERING:
         // Cek dulu, apakah user ini Asesi?

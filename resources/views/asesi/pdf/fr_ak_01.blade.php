@@ -274,35 +274,41 @@
     <!-- BUKTI YANG AKAN DIKUMPULKAN -->
     <div class="section-title">Bukti yang dikumpulkan</div>
 
-    @php
-        // Kelompokkan bukti menjadi 2 kolom
-        $totalBukti = $responBukti->count();
-        $middleIndex = ceil($totalBukti / 2);
-        $buktiKiri = $responBukti->slice(0, $middleIndex);
-        $buktiKanan = $responBukti->slice($middleIndex);
-    @endphp
+    @if ($responBukti->isEmpty())
+        <div style="margin-top: 10px; font-style: italic;">
+            Bukti yang dikumpulkan belum tersedia
+        </div>
+    @else
+        @php
+            // Kelompokkan bukti menjadi 2 kolom
+            $totalBukti = $responBukti->count();
+            $middleIndex = ceil($totalBukti / 2);
+            $buktiKiri = $responBukti->slice(0, $middleIndex);
+            $buktiKanan = $responBukti->slice($middleIndex);
+        @endphp
 
-    <div class="bukti-list">
-        <div class="bukti-grid">
-            <div class="bukti-col">
-                @foreach ($buktiKiri as $respon)
-                    <div class="checkbox-item">
-                        <span class="checkmark">✓</span>
-                        {{ $respon->buktiMaster->bukti ?? 'Bukti' }}
-                    </div>
-                @endforeach
-            </div>
+        <div class="bukti-list">
+            <div class="bukti-grid">
+                <div class="bukti-col">
+                    @foreach ($buktiKiri as $respon)
+                        <div class="checkbox-item">
+                            <span class="checkmark">✓</span>
+                            {{ $respon->buktiMaster->bukti ?? 'Bukti' }}
+                        </div>
+                    @endforeach
+                </div>
 
-            <div class="bukti-col">
-                @foreach ($buktiKanan as $respon)
-                    <div class="checkbox-item">
-                        <span class="checkmark">✓</span>
-                        {{ $respon->buktiMaster->bukti ?? 'Bukti' }}
-                    </div>
-                @endforeach
+                <div class="bukti-col">
+                    @foreach ($buktiKanan as $respon)
+                        <div class="checkbox-item">
+                            <span class="checkmark">✓</span>
+                            {{ $respon->buktiMaster->bukti ?? 'Bukti' }}
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 
     <!-- PELAKSANAAN ASESMEN -->
     <div class="section-title">Pelaksanaan Asesmen Disepakati pada</div>

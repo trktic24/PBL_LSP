@@ -133,6 +133,7 @@
                             </a>
                         </th>
                         
+                        <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Progres</th>
                         <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Pra Asesmen</th>
                         <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Asesmen</th>
                         <th class="px-6 py-3 font-semibold text-center whitespace-nowrap">Asesmen Mandiri</th>
@@ -156,12 +157,31 @@
                                 </a>
                             </td>
 
-                            {{-- Status Pra Asesmen --}}
+                            <td class="px-6 py-4 text-center align-top">
+                                @php
+                                    if (is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)){
+                                        $statusText = 'Belum Direview';
+                                        $statusColor = 'bg-red-50 text-red-700 border-red-100';
+                                    } elseif (!is_null($item->rekomendasi_apl02) && is_null($item->rekomendasi_hasil_asesmen_AK02)) {
+                                        $statusText = 'Dalam Proses';
+                                        $statusColor = 'bg-yellow-50 text-yellow-700 border-yellow-100';
+                                    } else {
+                                        $statusText = 'Sudah Direview';
+                                        $statusColor = 'bg-green-50 text-green-700 border-green-100';
+                                    }
+                                @endphp
+                                <a href="{{ route('admin.asesor.tracker.view', ['id_asesor' => $asesor->id_asesor, 'id_data_sertifikasi_asesi' => $item->id_data_sertifikasi_asesi]) }}" 
+                                   class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border {{ $statusColor }} transition hover:opacity-80">
+                                    {{ $statusText }}
+                                </a>
+                            </td>
+
+                             {{-- Status Pra Asesmen --}}
                             @php
-                                if (!$item->responApl2Ia01 && !$item->responBuktiAk01) {
+                                if ($item->responApl02Ia01->isEmpty() && $item->responBuktiAk01->isEmpty()) {
                                     $statusPra = 'Belum Direview';
                                     $classPra = 'bg-gray-100 text-gray-500';
-                                } elseif ($item->responApl2Ia01 && !$item->responBuktiAk01) {
+                                } elseif ($item->responApl02Ia01->isNotEmpty() && $item->responBuktiAk01->isEmpty()) {
                                     $statusPra = 'Dalam Proses';
                                     $classPra = 'bg-yellow-100 text-yellow-700 border border-yellow-200';
                                 } else {
@@ -218,7 +238,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-400">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fas fa-search text-4xl mb-3 text-gray-300"></i>
                                     <p>Data asesi tidak ditemukan.</p>

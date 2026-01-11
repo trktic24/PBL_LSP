@@ -133,7 +133,7 @@ class JadwalController extends Controller
         ]);
     }
 
-    public function store(Request $request, $id_jadwal)
+    public function store(Request $request)
     {
         // 1. Bersihkan Format Tanggal DULU (Hapus 'T' HTML5)
         $input = $request->all();
@@ -216,7 +216,7 @@ class JadwalController extends Controller
             $skemaNama = \App\Models\Skema::find($jadwal->id_skema)->nama_skema ?? 'Skema';
 
             return redirect()->route('admin.master_schedule')
-                             ->with('success', "Jadwal (ID: {$id_jadwal}) untuk '{$skemaNama}' berhasil ditambahkan!");
+                             ->with('success', "Jadwal (ID: {{$jadwal->id_jadwal}}) untuk '{$skemaNama}' berhasil ditambahkan!");
 
         } catch (\Exception $e) {
             return back()->withInput()->withErrors(['msg' => 'Gagal menyimpan: ' . $e->getMessage()]);

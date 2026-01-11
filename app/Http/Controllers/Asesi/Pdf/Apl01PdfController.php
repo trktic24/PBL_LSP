@@ -19,24 +19,24 @@ class Apl01PdfController extends Controller
     {
         // Ambil nama file tanpa path dan extension
         $filename = pathinfo($string, PATHINFO_FILENAME);
-        
+
         // Hapus timestamp pattern (contoh: _1767249257_iJD)
         $filename = preg_replace('/_\d{10,}_[a-zA-Z0-9]+$/', '', $filename);
-        
+
         // Hapus konten dalam tanda kurung beserta tanda kurungnya
         // Contoh: "Surat Keterangan Kerja 1 (Surat Keterangan Kerja)" → "Surat Keterangan Kerja 1"
         $filename = preg_replace('/\s*\([^)]*\)/', '', $filename);
-        
+
         // Hapus angka yang diikuti spasi atau di akhir (seperti " 1", " 2")
         // Contoh: "Surat Keterangan Kerja 1" → "Surat Keterangan Kerja"
         $filename = preg_replace('/\s+\d+\s*$/', '', $filename);
-        
+
         // Ubah ke lowercase
         $normalized = strtolower($filename);
-        
+
         // Hapus karakter khusus (spasi, underscore, dash, slash, dll)
         $normalized = str_replace([' ', '_', '-', '/', '\\', '.', ',', '(', ')'], '', $normalized);
-        
+
         return $normalized;
     }
 
@@ -48,19 +48,19 @@ class Apl01PdfController extends Controller
     {
         $normalizedLabel = $this->normalizeString($label);
         $normalizedFile = $this->normalizeString($filePath);
-        
+
         // Metode 1: Cek apakah label ada di dalam file (exact substring)
         $exactMatch = str_contains($normalizedFile, $normalizedLabel);
-        
+
         // Metode 2: Cek apakah file ada di dalam label (untuk kasus label lebih panjang)
         $reverseMatch = str_contains($normalizedLabel, $normalizedFile);
-        
+
         // Metode 3: Similarity check untuk kasus yang sangat mirip
         similar_text($normalizedLabel, $normalizedFile, $percent);
         $similarityMatch = $percent >= 70; // 70% similarity threshold
-        
+
         $isMatch = $exactMatch || $reverseMatch || $similarityMatch;
-        
+
         // Debug logging - hapus jika sudah tidak diperlukan
         \Log::info('Matching attempt:', [
             'label' => $label,
@@ -71,22 +71,15 @@ class Apl01PdfController extends Controller
             'reverse_match' => $reverseMatch,
             'similarity' => round($percent, 2) . '%',
             'similarity_match' => $similarityMatch,
-            'final_match' => $isMatch
+            'final_match' => $isMatch,
         ]);
-        
+
         return $isMatch;
     }
 
     public function generateApl01(Request $request, $id_data_sertifikasi)
     {
-        $dataSertifikasi = DataSertifikasiAsesi::with([
-            'asesi',
-            'asesi.user',
-            'asesi.dataPekerjaan',
-            'jadwal.skema.unitKompetensi',
-            'portofolio',
-            'buktiDasar',
-        ])->find($id_data_sertifikasi);
+        $dataSertifikasi = DataSertifikasiAsesi::with(['asesi', 'asesi.user', 'asesi.dataPekerjaan', 'jadwal.skema.unitKompetensi', 'portofolio', 'buktiDasar'])->find($id_data_sertifikasi);
 
         if (!$dataSertifikasi) {
             abort(404, 'Data Permohonan Sertifikasi (APL 01) tidak ditemukan.');
@@ -119,15 +112,15 @@ class Apl01PdfController extends Controller
         if ($admin && $admin->tanda_tangan_admin) {
             // Path yang benar sesuai dengan penyimpanan di ProfileController
             // File disimpan di storage/app/public/tanda_tangan_admin/
-            $pathTtdAdmin = storage_path('app/public/' . $admin->tanda_tangan_admin);
-            
+            $pathTtdAdmin = storage_path('app/' . $admin->tanda_tangan_admin);
+
             if (file_exists($pathTtdAdmin)) {
                 $ttdAdminBase64 = base64_encode(file_get_contents($pathTtdAdmin));
             } else {
                 // Log untuk debugging jika file tidak ditemukan
                 \Log::warning('File TTD Admin tidak ditemukan', [
                     'expected_path' => $pathTtdAdmin,
-                    'db_value' => $admin->tanda_tangan_admin
+                    'db_value' => $admin->tanda_tangan_admin,
                 ]);
             }
         }
@@ -158,7 +151,7 @@ class Apl01PdfController extends Controller
         foreach ($dataSertifikasi->portofolio as $portofolio) {
             if ($portofolio->persyaratan_dasar) {
                 $label = $portofolio->persyaratan_dasar;
-                
+
                 // Cari file yang cocok dengan label ini
                 $matchedBukti = null;
                 foreach ($allBuktiDasar as $bukti) {
@@ -181,7 +174,7 @@ class Apl01PdfController extends Controller
         foreach ($dataSertifikasi->portofolio as $portofolio) {
             if ($portofolio->persyaratan_administratif) {
                 $label = $portofolio->persyaratan_administratif;
-                
+
                 // Cari file yang cocok dengan label ini
                 $matchedBukti = null;
                 foreach ($allBuktiDasar as $bukti) {
@@ -224,11 +217,6 @@ class Apl01PdfController extends Controller
         $namaAsesi = preg_replace('/[^A-Za-z0-9 ]/', '', $nama);
         $namaAsesiClean = str_word_count($namaAsesi) > 1 ? $namaAsesi : str_replace(' ', '_', $namaAsesi);
         $namaFile = 'FR.APL.01_' . $namaAsesiClean . '_' . date('YmdHis') . '.pdf';
-
-        if ($request->query('mode') == 'preview') {
-            // Tampilkan di browser (View/Stream)
-            return $pdf->stream($namaFile);
-        }
 
         return $pdf->download($namaFile);
     }
