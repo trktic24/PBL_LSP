@@ -164,10 +164,18 @@ class IA03Controller extends Controller
 
             foreach ($validated['id_ia03'] as $index => $idIA03) {
                 $ia03 = IA03::findOrFail($idIA03);
-                
+
+                $tanggapan = $validated['tanggapan'][$idIA03] ?? null;
+                $pencapaian = $validated['pencapaian'][$idIA03] ?? null;
+
+                // 🔒 Jika belum ada tanggapan, paksa pencapaian NULL
+                if (empty(trim((string) $tanggapan))) {
+                    $pencapaian = null;
+                }
+
                 $ia03->update([
-                    'pencapaian' => $validated['pencapaian'][$idIA03] ?? null,
-                    'tanggapan' => $validated['tanggapan'][$idIA03] ?? null,
+                    'tanggapan' => $tanggapan,
+                    'pencapaian' => $pencapaian,
                 ]);
 
                 if ($umpanBalikUmum) {
@@ -177,6 +185,7 @@ class IA03Controller extends Controller
                     );
                 }
             }
+
 
             if (isset($validated['asesor_ttd_tgl'])) {
                 $sertifikasi->update([

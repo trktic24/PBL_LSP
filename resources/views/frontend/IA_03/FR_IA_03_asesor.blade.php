@@ -77,36 +77,19 @@
             <div class="flex-1">
                 <h3 class="text-lg font-bold text-blue-900 mb-3">Panduan Bagi Asesor</h3>
                 <ul class="space-y-2 text-sm text-blue-800">
-                    <li class="flex">
-                        <span class="font-bold mr-2">•</span>
-                        <span>Formulir ini di isi oleh asesor kompetensi dapat sebelum, pada saat atau setelah melakukan asesmen dengan metode observasi demonstrasi.</span>
-                    </li>
-                    <li class="flex">
-                        <span class="font-bold mr-2">•</span>
-                        <span>Pertanyaan dibuat dengan tujuan untuk menggali, dapat berisi pertanyaan yang berkaitan dengan dimensi kompetensi, batasan variabel dan aspek kritis yang relevan dengan skenario tugas dan praktik demonstrasi.</span>
-                    </li>
-                    <li class="flex">
-                        <span class="font-bold mr-2">•</span>
-                        <span>Jika pertanyaan disampaikan sebelum asesi melakukan praktik demonstrasi, maka pertanyaan dibuat berkaitan dengan aspek K3L, SOP, penggunaan peralatan dan perlengkapan.</span>
-                    </li>
-                    <li class="flex">
-                        <span class="font-bold mr-2">•</span>
-                        <span>Jika setelah asesi melakukan praktik demonstrasi terdapat item pertanyaan pendukung observasi telah terpenuhi, maka pertanyaan tersebut tidak perlu ditanyakan lagi dan cukup memberi catatan bahwa sudah terpenuhi pada saat tugas praktek demonstrasi pada kolom tanggapan.</span>
-                    </li>
-                    <li class="flex">
-                        <span class="font-bold mr-2">•</span>
-                        <span>Jika pada saat observasi ada hal yang perlu dikonfirmasi sedangkan di instrumen daftar pertanyaan pendukung observasi tidak ada, maka asesor dapat memberikan pertanyaan dengan syarat pertanyaan harus berkaitan dengan tugas praktek demonstrasi. Jika dilakukan, asesor harus mencatat dalam instrumen pertanyaan pendukung observasi.</span>
-                    </li>
-                    <li class="flex">
-                        <span class="font-bold mr-2">•</span>
-                        <span>Tanggapan asesi ditulis pada kolom tanggapan.</span>
-                    </li>
+                    <li class="flex"><span class="font-bold mr-2">•</span><span>Formulir ini di isi oleh asesor kompetensi sebelum, pada saat atau setelah melakukan asesmen dengan metode observasi demonstrasi.</span></li>
+                    <li class="flex"><span class="font-bold mr-2">•</span><span>Pertanyaan dibuat untuk menggali dimensi kompetensi, batasan variabel dan aspek kritis yang relevan dengan skenario tugas/praktik demonstrasi.</span></li>
+                    <li class="flex"><span class="font-bold mr-2">•</span><span>Jika pertanyaan disampaikan sebelum praktik demonstrasi, fokus pada K3L, SOP, penggunaan peralatan/perlengkapan.</span></li>
+                    <li class="flex"><span class="font-bold mr-2">•</span><span>Jika setelah praktik demonstrasi item pertanyaan pendukung observasi sudah terpenuhi, cukup beri catatan di kolom tanggapan.</span></li>
+                    <li class="flex"><span class="font-bold mr-2">•</span><span>Jika ada hal yang perlu dikonfirmasi dan pertanyaan tidak ada di instrumen, asesor dapat menambah pertanyaan yang relevan dengan praktik demonstrasi.</span></li>
+                    <li class="flex"><span class="font-bold mr-2">•</span><span>Tanggapan asesi ditulis pada kolom tanggapan.</span></li>
                 </ul>
             </div>
         </div>
     </div>
     @endif
 
+    {{-- FORM START --}}
     <form method="POST" action="{{ route('asesor.ia03.update', $sertifikasi->id_data_sertifikasi_asesi) }}">
         @csrf
         @method('PUT')
@@ -116,12 +99,8 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
                 {{-- Header Kelompok --}}
                 <div class="p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-1">
-                        Kelompok Pekerjaan {{ $kelompokIndex + 1 }}
-                    </h2>
-                    <p class="text-blue-600 text-sm font-medium">
-                        {{ $kelompok->nama_kelompok_pekerjaan ?? '-' }}
-                    </p>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-1">Kelompok Pekerjaan {{ $kelompokIndex + 1 }}</h2>
+                    <p class="text-blue-600 text-sm font-medium">{{ $kelompok->nama_kelompok_pekerjaan ?? '-' }}</p>
                 </div>
 
                 {{-- Daftar Unit Kompetensi --}}
@@ -162,12 +141,18 @@
                     @endphp
 
                     @forelse($pertanyaanKelompok as $pIndex => $pertanyaan)
+                        @php
+                            $tanggapan = old('tanggapan.' . $pertanyaan->id_IA03, $pertanyaan->tanggapan);
+                            $pencapaian = old('pencapaian.' . $pertanyaan->id_IA03, $pertanyaan->pencapaian);
+
+                            if (empty(trim($tanggapan))) {
+                                $pencapaian = null;
+                            }
+                        @endphp
                         <div class="mb-6 p-4 {{ ($isCompleted ?? false) ? 'bg-gray-100' : 'bg-gray-50' }} border border-gray-200 rounded-lg">
                             {{-- Pertanyaan (readonly) --}}
                             <div class="mb-4">
-                                <label class="block text-sm font-bold text-gray-700 mb-2">
-                                    Pertanyaan {{ $pIndex + 1 }}:
-                                </label>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Pertanyaan {{ $pIndex + 1 }}:</label>
                                 <textarea rows="2" readonly
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700">{{ $pertanyaan->pertanyaan }}</textarea>
                             </div>
@@ -175,29 +160,29 @@
                             {{-- Hidden ID --}}
                             <input type="hidden" name="id_ia03[]" value="{{ $pertanyaan->id_IA03 }}">
 
-                            {{-- Tanggapan (editable or readonly) --}}
+                            {{-- Tanggapan --}}
                             <div class="mb-4">
                                 <label class="block text-sm font-bold text-gray-700 mb-2">Tanggapan:</label>
                                 <textarea name="tanggapan[{{ $pertanyaan->id_IA03 }}]" rows="3"
                                     {{ ($isCompleted ?? false) ? 'readonly' : '' }}
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg {{ ($isCompleted ?? false) ? 'bg-gray-100 cursor-not-allowed' : 'focus:ring-2 focus:ring-blue-500 focus:border-blue-500' }}"
-                                    placeholder="{{ ($isCompleted ?? false) ? '' : 'Tuliskan tanggapan...' }}">{{ old('tanggapan.' . $pertanyaan->id_IA03, $pertanyaan->tanggapan) }}</textarea>
+                                    placeholder="{{ ($isCompleted ?? false) ? '' : 'Tuliskan tanggapan...' }}">{{ $tanggapan }}</textarea>
                             </div>
 
-                            {{-- Pencapaian (Ya/Tidak) --}}
+                            {{-- Pencapaian --}}
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-2">Pencapaian:</label>
                                 <div class="flex gap-4">
                                     <label class="inline-flex items-center {{ ($isCompleted ?? false) ? 'cursor-not-allowed' : '' }}">
-                                        <input type="radio" name="pencapaian[{{ $pertanyaan->id_IA03 }}]" value="1" 
-                                            {{ old('pencapaian.' . $pertanyaan->id_IA03, $pertanyaan->pencapaian) == 1 ? 'checked' : '' }}
+                                        <input type="radio" name="pencapaian[{{ $pertanyaan->id_IA03 }}]" value="1"
+                                            {{ $pencapaian === '1' || $pencapaian === 1 ? 'checked' : '' }}
                                             {{ ($isCompleted ?? false) ? 'disabled' : '' }}
                                             class="form-radio text-green-600 {{ ($isCompleted ?? false) ? 'cursor-not-allowed' : '' }}">
                                         <span class="ml-2 text-sm {{ ($isCompleted ?? false) ? 'text-gray-500' : '' }}">Ya</span>
                                     </label>
                                     <label class="inline-flex items-center {{ ($isCompleted ?? false) ? 'cursor-not-allowed' : '' }}">
                                         <input type="radio" name="pencapaian[{{ $pertanyaan->id_IA03 }}]" value="0"
-                                            {{ old('pencapaian.' . $pertanyaan->id_IA03, $pertanyaan->pencapaian) == 0 ? 'checked' : '' }}
+                                            {{ $pencapaian === '0' || $pencapaian === 0 ? 'checked' : '' }}
                                             {{ ($isCompleted ?? false) ? 'disabled' : '' }}
                                             class="form-radio text-red-600 {{ ($isCompleted ?? false) ? 'cursor-not-allowed' : '' }}">
                                         <span class="ml-2 text-sm {{ ($isCompleted ?? false) ? 'text-gray-500' : '' }}">Tidak</span>
@@ -221,11 +206,10 @@
                 placeholder="{{ ($isCompleted ?? false) ? '' : 'Catatan atau umpan balik umum untuk asesi...' }}">{{ old('umpan_balik_umum', $umpanBalikList->first() ?? '') }}</textarea>
         </div>
 
-        {{-- Tombol Simpan (Hidden jika sudah completed) --}}
+        {{-- Tombol Simpan --}}
         @if(!($isCompleted ?? false))
         <div class="flex justify-end pb-8">
-            <button type="submit"
-                class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition flex items-center gap-2">
+            <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
