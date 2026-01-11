@@ -397,7 +397,7 @@
              class="space-y-8">
 
             {{-- SECTION 1: TOP TRACKERS --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 gap-8">
                 
                 {{-- PRA ASESMEN LIST --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
