@@ -126,26 +126,25 @@
     </table>
 
     <br><br>
-    <table class="no-border">
+    {{-- TANDA TANGAN --}}
+    <table class="no-border" style="margin-top: 30px;">
         <tr>
             <td style="width: 50%; text-align: center;">
                 <br>
                 Penyusun / Validator,
                 <br><br><br><br>
                 <strong>(.......................)</strong>
-                {{-- Validator/Penyusun usually different, keeping placeholder or adding logic if needed. Leaving as text for now as per original. --}}
             </td>
             <td style="width: 50%; text-align: center;">
                 Semarang, {{ date('d-m-Y') }}<br>
-                Asesor Kompetensi,
-                <br><br><br><br>
-                <strong>{{ $sertifikasi->jadwal->skema->asesor->first()->nama_asesor ?? '(.......................)' }}</strong>
-                @if($sertifikasi->jadwal->skema->asesor->first() && $sertifikasi->jadwal->skema->asesor->first()->tanda_tangan)
-                     <br>
-                     <img src="{{ getTtdBase64($sertifikasi->jadwal->skema->asesor->first()->tanda_tangan) }}" style="width: 100px; height: auto;">
+                Asesor Kompetensi,<br><br>
+                @if($sertifikasi->jadwal->asesor && $sertifikasi->jadwal->asesor->tanda_tangan)
+                    <img src="{{ getTtdBase64($sertifikasi->jadwal->asesor->tanda_tangan) }}" style="height: 60px; width: auto;">
+                    <br>
                 @else
-                    <br><br><br><br>
+                    <br><br><br>
                 @endif
+                <strong>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '(.......................)' }}</strong>
             </td>
         </tr>
     </table>
