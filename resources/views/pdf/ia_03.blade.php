@@ -24,17 +24,17 @@
         <tr>
             <td width="150"><b>Skema Sertifikasi</b></td>
             <td width="10">:</td>
-            <td>{{ $sertifikasi->jadwal->skema->judul_skema ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->skema->nama_skema ?? '-' }}</td>
         </tr>
         <tr>
             <td><b>TUK</b></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->masterTuk->nama_tuk ?? 'Tempat Kerja' }}</td>
+            <td>{{ $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? 'Tempat Kerja' }}</td>
         </tr>
         <tr>
             <td><b>Nama Asesor</b></td>
             <td>:</td>
-            <td>{{ $sertifikasi->jadwal->asesor->nama_asesor ?? '-' }}</td>
+            <td>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '-' }}</td>
         </tr>
         <tr>
             <td><b>Nama Asesi</b></td>
@@ -138,7 +138,7 @@
                     @else
                         <br><br><br><br>
                     @endif
-                    <b>{{ $sertifikasi->jadwal->asesor->nama_asesor ?? '...................' }}</b>
+                    <b>{{ $sertifikasi->jadwal->asesor->nama_lengkap ?? '...................' }}</b>
                 </td>
             </tr>
         </table>

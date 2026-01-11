@@ -1,4 +1,4 @@
-@extends('layouts.app-sidebar')
+@extends('layouts.app-sidebar-skema')
 
 @section('content')
 <div class="p-4 sm:p-6 md:p-8 font-[Poppins]">
@@ -17,7 +17,7 @@
             nomorSkema="{{ $sertifikasi->skema->nomor_skema ?? '-' }}"
 
             {{-- TUK --}}
-            tuk="{{ $sertifikasi->jadwal->tuk->nama_tuk ?? '-' }}"
+            tuk="{{ $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? '-' }}"
 
             {{-- ASESOR & ASESI --}}
             namaAsesor="{{ $sertifikasi->asesor->nama_lengkap ?? '-' }}"
