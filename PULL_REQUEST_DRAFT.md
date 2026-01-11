@@ -49,7 +49,14 @@ PR ini mencakup stabilisasi sistem di Linux, fitur isolasi templat, dan **HOTFIX
 - **Controllers**: Ganti `ResponApl2Ia01` -> `ResponApl02Ia01` (Fix Typo).
 - **Admin TUK**: Tambah preview Maps & validasi regex embed link.
 
+### 3. Assessment Tracker Refactoring
+- **Feature**: Sinkronisasi layout & logika `Detail Asesmen` (Admin) dengan `Tracker` (Asesor).
+- **Changes**:
+    - **Controller**: Eager load semua relasi IA (`ia01`, `ia03`, `ia04`, `ia08`, `ia09`, `ia11`) di `AsesorProfileController`.
+    - **View**: Update `asesor_assessment_detail.blade.php` untuk menampilkan semua item IA (01-11) dengan logika status yang konsisten.
+
 ### 📋 Checklist Verifikasi
 - [x] **Hotfix Valid**: Tabel `master_form_templates` berhasil dibuat di lokal (fresh & existing).
 - [x] **Linux Ready**: Tidak ada error *Class not found*.
 - [x] **Features**: Isolasi template berjalan, TUK map preview muncul.
+- [x] **Tracker Sync**: Admin bisa melihat status semua form IA (01-11) sesuai kondisi asesor.
