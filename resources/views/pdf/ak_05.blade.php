@@ -25,10 +25,10 @@
     </div>
 
     <div class="header-section">
-        <div><span class="label">Skema Sertifikasi</span>: {{ $jadwal->skema->judul_skema ?? '-' }}</div>
-        <div><span class="label">Nomor Skema</span>: {{ $jadwal->skema->kode_skema ?? '-' }}</div>
-        <div><span class="label">TUK</span>: {{ $jadwal->masterTuk->nama_tuk ?? 'Tempat Kerja' }}</div>
-        <div><span class="label">Nama Asesor</span>: {{ $asesor->nama_asesor ?? '-' }}</div>
+        <div><span class="label">Skema Sertifikasi</span>: {{ $jadwal->skema->nama_skema ?? '-' }}</div>
+        <div><span class="label">Nomor Skema</span>: {{ $jadwal->skema->nomor_skema ?? '-' }}</div>
+        <div><span class="label">TUK</span>: {{ $jadwal->masterTuk->nama_lokasi ?? 'Polines' }}</div>
+        <div><span class="label">Nama Asesor</span>: {{ $jadwal->asesor->nama_lengkap ?? '-' }}</div>
         <div><span class="label">Tanggal</span>: {{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan)->isoFormat('D MMMM Y') }}</div>
     </div>
 
@@ -55,7 +55,7 @@
                 <th width="25%">Nama Asesi</th>
                 <th width="15%">Rekomendasi</th>
                 <th width="35%">Keterangan</th>
-                <th width="20%">Nilai Akhir</th>
+                <th width="20%">Catatan</th>
             </tr>
         </thead>
         <tbody>
@@ -90,14 +90,15 @@
                 <td width="50%">
                     <div style="margin-bottom: 50px;">
                     Nama Asesor:<br>
-                    <strong>{{ $asesor->nama_asesor }}</strong>
+                    <strong>{{ $jadwal->asesor->nama_lengkap }}</strong>
                     </div>
-                    @if($asesor->tanda_tangan)
-                        <img src="{{ getTtdBase64($asesor->tanda_tangan) }}" style="max-height: 80px; max-width: 200px;">
-                    @else
-                        <br><br><br>
-                        (.......................)
-                    @endif
+                        @if ($ttdAsesorBase64)
+                            <img src="data:image/png;base64,{{ $ttdAsesorBase64 }}" alt="Tanda Tangan Asesor"
+                                style="max-width: 120px; max-height: 70px; margin-top: 5px;">
+                        @else
+                            <br><br>
+                            (.......................)                                        
+                        @endif
                 </td>
                 <td width="50%">
                     {{-- Space for verification/notes if needed --}}
