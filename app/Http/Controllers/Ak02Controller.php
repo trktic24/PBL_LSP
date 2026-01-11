@@ -68,15 +68,15 @@ class Ak02Controller extends Controller
         $template = null;
         if ($penilaianList->isEmpty()) {
             $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                        ->where('id_jadwal', $asesi->id_jadwal)
-                                        ->where('form_code', 'FR.AK.02')
-                                        ->first();
+                ->where('id_jadwal', $asesi->id_jadwal)
+                ->where('form_code', 'FR.AK.02')
+                ->first();
 
             if (!$template) {
                 $template = MasterFormTemplate::where('id_skema', $skema->id_skema)
-                                            ->whereNull('id_jadwal')
-                                            ->where('form_code', 'FR.AK.02')
-                                            ->first();
+                    ->whereNull('id_jadwal')
+                    ->where('form_code', 'FR.AK.02')
+                    ->first();
             }
         }
 
@@ -127,7 +127,7 @@ class Ak02Controller extends Controller
             if ($globalKompeten) {
                 $asesi->update([
                     'rekomendasi_hasil_asesmen_AK02' => $globalKompeten,
-                    'status_validasi' => "menunggu_validasi",
+                    'status_validasi' => 'pending', // ENUM: ['pending', 'valid']
                 ]);
             }
 
@@ -275,9 +275,9 @@ class Ak02Controller extends Controller
     {
         $skema = Skema::findOrFail($id_skema);
         $template = MasterFormTemplate::where('id_skema', $id_skema)
-                                    ->where('id_jadwal', $id_jadwal)
-                                    ->where('form_code', 'FR.AK.02')
-                                    ->first();
+            ->where('id_jadwal', $id_jadwal)
+            ->where('form_code', 'FR.AK.02')
+            ->first();
 
         $content = $template ? $template->content : [
             'tindak_lanjut' => '',
@@ -308,7 +308,7 @@ class Ak02Controller extends Controller
                 'id_jadwal' => $id_jadwal,
                 'form_code' => 'FR.AK.02'
             ],
-            ['content' => $request->content]
+            ['content' => $request->input('content')]
         );
 
         return redirect()->back()->with('success', 'Templat AK-02 berhasil diperbarui.');

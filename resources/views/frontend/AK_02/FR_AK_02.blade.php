@@ -24,6 +24,31 @@
             @method('PUT')
         @endif
 
+        {{-- Tampilkan Validation Errors --}}
+        @if ($errors->any())
+            <div class="mx-3 sm:mx-4 md:mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <h4 class="font-bold mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>Terjadi Kesalahan:</h4>
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        {{-- Session Success/Error Messages --}}
+        @if(session('success'))
+            <div class="mx-3 sm:mx-4 md:mx-6 mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mx-3 sm:mx-4 md:mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+            </div>
+        @endif
+
         {{-- Container Utama --}}
         <div class="p-3 sm:p-4 md:p-6">
 
@@ -217,39 +242,8 @@
                     placeholder="Catatan tambahan dari asesor...">{{ old('global_komentar', optional($firstNilai)->komentar ?? $template['komentar'] ?? '') }}</textarea>
             </div>
 
-            {{-- 6. TANDA TANGAN (Hanya Tampilan) --}}
-            <div class="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-4 sm:p-6 shadow-lg mb-8">
-                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-6">Tanda Tangan Persetujuan</h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                    {{-- TTD Asesor --}}
-                    <div class="bg-white rounded-xl p-5 shadow-md border border-gray-200">
-                        <label class="block text-sm font-bold text-gray-700 mb-3">Tanda Tangan Asesor</label>
-                        <div class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-400 rounded-xl flex items-center justify-center cursor-pointer hover:border-blue-50 hover:bg-blue-50 transition-all group">
-                            <div class="text-center">
-                                <p class="text-xs text-gray-500 mt-2 font-medium group-hover:text-blue-600">Klik untuk TTD Asesor</p>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <input type="text" class="w-full text-sm font-bold text-gray-900 border-0 border-b-2 border-gray-300 bg-transparent" value="{{ $asesi->jadwal->asesor->nama_lengkap ?? 'Nama Asesor' }}" readonly>
-                        </div>
-                    </div>
-
-                    {{-- TTD Asesi --}}
-                    <div class="bg-white rounded-xl p-5 shadow-md border border-gray-200">
-                        <label class="block text-sm font-bold text-gray-700 mb-3">Tanda Tangan Asesi</label>
-                        <div class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-400 rounded-xl flex items-center justify-center">
-                            <div class="text-center">
-                                <p class="text-xs text-gray-500 mt-2 font-medium">TTD Asesi</p>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <input type="text" class="w-full text-sm font-bold text-gray-900 border-0 border-b-2 border-gray-300 bg-transparent" value="{{ $asesi->asesi->nama_lengkap ?? 'Nama Asesi' }}" readonly>
-                            <p class="text-xs text-gray-500 mt-1">Tanggal: {{ date('d-m-Y') }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {{-- 6. TANDA TANGAN (Menggunakan Komponen) --}}
+            <x-kolom_ttd.asesiasesor :sertifikasi="$asesi" />
 
             {{-- 7. FOOTER BUTTONS --}}
             <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mt-8 border-t-2 border-gray-200 pt-6">
