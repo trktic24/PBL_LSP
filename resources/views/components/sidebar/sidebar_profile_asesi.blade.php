@@ -93,14 +93,14 @@
                 <i class="fas fa-user-gear text-l mr-3"></i> Profile Settings
             </a>
 
-            {{-- Menu Form --}}
+            <!-- {{-- Menu Form --}}
             <a href="{{ route('admin.asesi.profile.form', $routeParams) }}" 
                 class="flex items-center px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300
                     bg-white shadow-[inset_2px_2px_5px_rgba(255,255,255,0.9),_inset_-2px_-2px_5px_rgba(0,0,0,0.1),_0_0_10px_rgba(0,0,0,0.15)] 
                     hover:bg-[#e0ecff] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15),_inset_-2px_-2px_5px_rgba(255,255,255,1),_0_0_12px_rgba(0,0,0,0.25)]
                     {{ Route::is('admin.asesi.profile.form') ? 'text-blue-600 bg-blue-50' : 'text-gray-800 hover:text-blue-600' }}">
                 <i class="fas fa-clipboard text-l mr-3"></i> Form
-            </a>
+            </a> -->
 
             {{-- Menu Tracker --}}
             <a href="{{ route('admin.asesi.profile.tracker', $routeParams) }}" 

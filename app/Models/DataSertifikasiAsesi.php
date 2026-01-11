@@ -397,11 +397,6 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(IA03::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
-    public function ia11(): HasMany
-    {
-        return $this->hasMany(Ia11::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
-    }
-
     public function asesmenMandiri()
     {
         return $this->hasMany(\App\Models\ResponApl02Ia01::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
