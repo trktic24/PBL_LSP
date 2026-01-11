@@ -642,7 +642,7 @@ class AsesorJadwalController extends Controller
 
     public function ak06($id_jadwal)
     {
-        $jadwal = Jadwal::with(['skema', 'masterTuk', 'asesor'])->findOrFail($id_jadwal);
+        $jadwal = Jadwal::with(['skema', 'masterTuk', 'jenisTuk', 'asesor'])->findOrFail($id_jadwal);
 
         // Cek Otorisasi
         if (!in_array(Auth::user()->role->nama_role, ['admin', 'superadmin'])) {
@@ -652,7 +652,9 @@ class AsesorJadwalController extends Controller
             }
         }
 
-        return view('frontend.FR_AK_06', compact('jadwal'));
+        $data = \App\Models\FrAk06::where('id_jadwal', $id_jadwal)->first();
+
+        return view('frontend.FR_AK_06', compact('jadwal', 'data'));
     }
 
     public function ak07($id_sertifikasi_asesi)
