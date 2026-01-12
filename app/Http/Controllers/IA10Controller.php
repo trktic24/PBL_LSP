@@ -169,24 +169,63 @@ class IA10Controller extends Controller
         // 2. Ambil Header IA10
         $header_ia10 = Ia10::where('id_data_sertifikasi_asesi', $id_asesi)->first();
 
-        // 3. Ambil Checklist Pertanyaan
-        $daftar_soal = PertanyaanIa10::where('id_data_sertifikasi_asesi', $id_asesi)->get();
+        // ==========================================================
+        // PERBAIKAN DI SINI:
+        // Gunakan logika yang sama dengan 'create' (Ambil Template Dulu)
+        // ==========================================================
+        
+        // A. Cari Template Soal yang berlaku (Soal 5 & 6)
+        $template = MasterFormTemplate::where('form_code', 'FR.IA.10')
+            ->where(function ($q) use ($asesi) {
+                $q->where('id_jadwal', $asesi->id_jadwal)
+                    ->orWhereNull('id_jadwal');
+            })
+            ->where('id_skema', $asesi->jadwal->id_skema)
+            ->first();
 
-        // 4. Ambil Jawaban Essay dan Mapping kuncinya
+        $list_pertanyaan_template = $template?->content ?? [];
+
+        // B. Ambil Jawaban User dari Database (Punya soal 1-6)
+        $semua_jawaban = PertanyaanIa10::where('id_data_sertifikasi_asesi', $id_asesi)
+            ->get()
+            ->keyBy('pertanyaan'); // Biar gampang dicari pakai text pertanyaan
+
+        // C. Gabungkan: Kita bikin daftar soal BARU khusus PDF
+        // Hanya masukkan soal yang ada di Template (5 & 6), abaikan sisanya (1-4)
+        $daftar_soal_untuk_pdf = collect();
+
+        foreach ($list_pertanyaan_template as $pertanyaan_text) {
+            // Cari apakah ada jawaban untuk pertanyaan ini?
+            $jawaban_db = $semua_jawaban->get($pertanyaan_text);
+
+            // Kita buat objek semu (stdClass) agar formatnya sama dengan View
+            $item = new \stdClass();
+            $item->pertanyaan = $pertanyaan_text;
+            
+            // Ambil nilainya (1, 0, atau null jika belum dijawab)
+            $item->jawaban_pilihan_iya_tidak = $jawaban_db ? $jawaban_db->jawaban_pilihan_iya_tidak : null;
+
+            $daftar_soal_untuk_pdf->push($item);
+        }
+
+        // ==========================================================
+        // Selesai Logic Baru
+        // ==========================================================
+
+        // 4. Ambil Jawaban Essay (Tetap sama)
         $essay_answers = [];
         if ($header_ia10) {
             $details = DetailIa10::where('id_ia10', $header_ia10->id_ia10)->get();
             foreach ($details as $dt) {
-                // Key array = Pertanyaan, Value = Jawaban
                 $essay_answers[$dt->isi_detail] = $dt->jawaban;
             }
         }
 
-        // 5. Render PDF
+        // 5. Render PDF (Kirim variabel baru $daftar_soal_untuk_pdf)
         $pdf = Pdf::loadView('pdf.ia_10', [
             'asesi' => $asesi,
             'header' => $header_ia10,
-            'daftar_soal' => $daftar_soal,
+            'daftar_soal' => $daftar_soal_untuk_pdf, // <-- Variabel ini sudah bersih
             'essay_answers' => $essay_answers
         ]);
 

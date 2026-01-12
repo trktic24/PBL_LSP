@@ -203,7 +203,7 @@ Route::middleware('auth')->group(function () {
     //FR-AK-01
     Route::group(['prefix' => 'asesor', 'as' => 'asesor.'], function () {
     Route::get('/fr-ak-01/{id}', [FrAk01Controller::class, 'index'])->name('ak01.index');
-    Route::post('/fr-ak-01/{id}/store', [FrAk01Controller::class, 'store'])->name('asesor.ak01.store');
+    Route::post('/fr-ak-01/{id}/store', [FrAk01Controller::class, 'store'])->name('ak01.store');
 
 });
 
