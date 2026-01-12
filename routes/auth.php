@@ -494,6 +494,7 @@ Route::middleware('auth')->group(function () {
             // IA-06 Penilaian
             Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
             Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+            Route::get('/ia06/reset/{id}', [IA06Controller::class, 'resetQuestions'])->name('ia06.reset');
 
             // AK-05 Routes
             Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
