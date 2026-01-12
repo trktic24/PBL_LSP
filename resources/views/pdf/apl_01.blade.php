@@ -201,11 +201,15 @@
                 <strong>Admin LSP:</strong> <br>
                 Nama: {{ $admin->nama_admin ?? '.......................' }} <br>
                 <br>
+                @if(!empty($admin->tanda_tangan))
                     <img
-                        src="{{ getTtdBase64($sertifikasi->asesi->tanda_tangan) }}"
+                        src="{{ getTtdBase64($admin->tanda_tangan) }}"
                         style="width: 100px; height: auto; display: block; margin: 0 auto;"
                     >
-                <br><br><br><br>
+                @else
+                    <br><br><br>
+                @endif
+                <br>
                 Tanggal: {{ \Carbon\Carbon::now()->format('d-m-Y') }}
             </td>
         </tr>
