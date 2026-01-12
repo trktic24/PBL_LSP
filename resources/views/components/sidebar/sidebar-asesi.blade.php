@@ -71,7 +71,7 @@
         <h4 class="text-xs font-semibold uppercase tracking-wider opacity-60 mb-3">OLEH PESERTA:</h4>
         <div class="flex items-center space-x-3">
             <div>
-                <p class="font-semibold">{{$asesi->nama_lengkap }}</p>
+                <p class="font-semibold">{{ $asesi->asesi->nama_lengkap ?? ($asesi->nama_lengkap ?? 'Nama Asesi') }}</p>
                 <h4 class="text-xs font-semibold uppercase tracking-wider opacity-60 mt-6 mb-2">DIMULAI PADA:</h4>
                 <p class="text-sm font-medium">{{ \Carbon\Carbon::parse($jadwal->tanggal_pelaksanaan ?? '2025-10-20')->translatedFormat('d F Y') }}</p>
                 <p class="text-sm font-medium">{{ \Carbon\Carbon::parse($jadwal->waktu_mulai ?? '10:20:00')->format('H:i') }} WIB</p>

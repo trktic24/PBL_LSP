@@ -1,10 +1,12 @@
 @props(['sertifikasi' => null])
 
 @php
-    // Ambil data dari $sertifikasi
-    $penyusunValidator = $sertifikasi->penyusunValidator ?? null;
-    $penyusun = $penyusunValidator->penyusun ?? null;
-    $validator = $penyusunValidator->validator ?? null;
+    // Ambil data dari $sertifikasi atau fallback ke $asesi (untuk @include)
+    $s_data = $sertifikasi ?? $asesi ?? null;
+    
+    $penyusunValidator = $s_data ? ($s_data->penyusunValidator ?? null) : null;
+    $penyusun = $penyusunValidator ? ($penyusunValidator->penyusun ?? null) : null;
+    $validator = $penyusunValidator ? ($penyusunValidator->validator ?? null) : null;
 
     // Data Penyusun (Fallback to Asesor if missing)
     if ($penyusun) {
@@ -13,10 +15,10 @@
         $ttdPenyusun = $penyusun->ttd ?? null;
     } else {
         // FALLBACK: Use Asesor Data
-        $namaPenyusun = $sertifikasi->jadwal->asesor->nama_lengkap ?? '-';
-        $noMetPenyusun = $sertifikasi->jadwal->asesor->nomor_regis ?? '-';
+        $namaPenyusun = $s_data?->jadwal?->asesor?->nama_lengkap ?? '-';
+        $noMetPenyusun = $s_data?->jadwal?->asesor?->nomor_regis ?? '-';
         // Check if Asesor has signature
-        $ttdPenyusun = $sertifikasi->jadwal->asesor->tanda_tangan ?? null;
+        $ttdPenyusun = $s_data?->jadwal?->asesor?->tanda_tangan ?? null;
     }
 
     // Data Validator
@@ -27,9 +29,9 @@
             $ttdValidator = $validator->ttd ?? null;
         } else {
             // Fallback: use Asesor data as validator
-            $namaValidator = $sertifikasi->jadwal && $sertifikasi->jadwal->asesor ? $sertifikasi->jadwal->asesor->nama_lengkap ?? '-' : '-';
-            $noMetValidator = $sertifikasi->jadwal && $sertifikasi->jadwal->asesor ? $sertifikasi->jadwal->asesor->nomor_regis ?? '-' : '-';
-            $ttdValidator = $sertifikasi->jadwal && $sertifikasi->jadwal->asesor ? $sertifikasi->jadwal->asesor->tanda_tangan ?? null : null;
+            $namaValidator = $s_data?->jadwal?->asesor ? ($s_data->jadwal->asesor->nama_lengkap ?? '-') : '-';
+            $noMetValidator = $s_data?->jadwal?->asesor ? ($s_data->jadwal->asesor->nomor_regis ?? '-') : '-';
+            $ttdValidator = $s_data?->jadwal?->asesor ? ($s_data->jadwal->asesor->tanda_tangan ?? null) : null;
         }
 
     // Tanggal Validasi
@@ -37,7 +39,7 @@
         if ($penyusunValidator && $penyusunValidator->tanggal_validasi) {
             $tanggal = \Carbon\Carbon::parse($penyusunValidator->tanggal_validasi)->format('d-m-Y');
         } else {
-            $tanggal = $sertifikasi->jadwal && $sertifikasi->jadwal->tanggal_pelaksanaan ? \Carbon\Carbon::parse($sertifikasi->jadwal->tanggal_pelaksanaan)->format('d-m-Y') : '-';
+            $tanggal = $s_data?->jadwal?->tanggal_pelaksanaan ? \Carbon\Carbon::parse($s_data->jadwal->tanggal_pelaksanaan)->format('d-m-Y') : '-';
         }
 
     // --- LOGIKA TANDA TANGAN BASE64 ---
