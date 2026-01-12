@@ -80,6 +80,17 @@
                         
                         // Status Penuh
                         $isFull = ($sisaKuota <= 0);
+                        
+                        // Check if registration period has ended
+                        $tanggalSelesai = $jadwal->tanggal_selesai ? \Carbon\Carbon::parse($jadwal->tanggal_selesai) : null;
+                        $isRegistrationClosed = $tanggalSelesai && $tanggalSelesai->isPast();
+                        
+                        // Check if registration period has not started yet
+                        $tanggalMulai = $jadwal->tanggal_mulai ? \Carbon\Carbon::parse($jadwal->tanggal_mulai) : null;
+                        $isRegistrationNotStarted = $tanggalMulai && $tanggalMulai->isFuture();
+                        
+                        // Combined: Can register?
+                        $canRegister = !$isFull && !$isRegistrationClosed && !$isRegistrationNotStarted;
                     @endphp
 
                     {{-- Harga --}}
@@ -106,10 +117,20 @@
                     @if($isFull)
                         {{-- Opsi 1: JIKA PENUH --}}
                         <button disabled class="block w-full bg-gray-400 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
-                            Sudah Penuh
+                            Kuota Penuh
+                        </button>
+                    @elseif($isRegistrationClosed)
+                        {{-- Opsi 2: PENDAFTARAN SUDAH DITUTUP --}}
+                        <button disabled class="block w-full bg-gray-400 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
+                            Pendaftaran Ditutup
+                        </button>
+                    @elseif($isRegistrationNotStarted)
+                        {{-- Opsi 3: PENDAFTARAN BELUM DIBUKA --}}
+                        <button disabled class="block w-full bg-blue-300 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
+                            Pendaftaran Dibuka {{ $tanggalMulai->format('d M Y') }}
                         </button>
                     @else
-                        {{-- Opsi 2: MASIH ADA KUOTA (Cek Auth & Role) --}}
+                        {{-- Opsi 4: MASIH ADA KUOTA & PERIODE TERBUKA (Cek Auth & Role) --}}
                         @auth
                             @if(Auth::user()->role->nama_role == 'asesi')
                                 <form action="{{ route('asesi.daftar.jadwal') }}" method="POST">

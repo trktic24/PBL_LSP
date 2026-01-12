@@ -79,6 +79,9 @@ class DataSertifikasiAsesi extends Model
         'rekomendasi1_AK06',
         'rekomendasi2_AK06',
         'rekomendasi_ia01',
+        'bk_unit_ia01',
+        'bk_elemen_ia01',
+        'bk_kuk_ia01',
         'status_sertifikasi',
     ];
 
@@ -397,9 +400,9 @@ class DataSertifikasiAsesi extends Model
         return $this->hasMany(IA03::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
-    public function ia11(): HasMany
+    public function ia11(): HasOne
     {
-        return $this->hasMany(Ia11::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
+        return $this->hasOne(\App\Models\IA11\IA11::class, 'id_data_sertifikasi_asesi', 'id_data_sertifikasi_asesi');
     }
 
     public function asesmenMandiri()

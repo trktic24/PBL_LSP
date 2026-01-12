@@ -32,7 +32,7 @@
                 {{-- TUK --}}
                 <dt class="col-span-1 font-medium text-gray-500">TUK</dt>
                 <dd class="col-span-3 flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 items-center">
-                    @php $jenisTuk = $sertifikasi->jadwal->jenis_tuk ?? ''; @endphp
+                    @php $jenisTuk = $sertifikasi->jadwal->jenisTuk->jenis_tuk ?? ''; @endphp
                     <label class="flex items-center text-gray-900 font-medium text-sm">
                         <input type="checkbox" disabled {{ $jenisTuk == 'Sewaktu' ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 mr-2"> Sewaktu
                     </label>

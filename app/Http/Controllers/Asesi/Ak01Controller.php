@@ -28,7 +28,7 @@ class Ak01Controller extends Controller
     // 1. MENAMPILKAN FORM AK-01
     public function create($id_sertifikasi)
     {
-        $query = DataSertifikasiAsesi::with(['jadwal.asesor', 'asesi']);
+        $query = DataSertifikasiAsesi::with(['jadwal.asesor', 'jadwal.jenisTuk', 'jadwal.skema', 'asesi']);
 
         // Jika bukan admin/asesor, batasi hanya data milik asesi yang bersangkutan
         if (!$this->isAdmin() && !$this->isAsesor()) {

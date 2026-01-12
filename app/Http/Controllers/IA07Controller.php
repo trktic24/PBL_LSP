@@ -3,157 +3,73 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ia07;
-use App\Models\MasterFormTemplate;
+use App\Models\Asesi;
 use App\Models\Skema;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\DataSertifikasiAsesi;
+use App\Models\Asesor;
+use App\Models\Jadwal;
 use App\Models\JenisTUK;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\MasterFormTemplate;
+use Illuminate\Support\Facades\DB;
+use App\Models\DataSertifikasiAsesi;
+use Illuminate\Support\Facades\Route;
 
 class IA07Controller extends Controller
 {
-    /**
-     * Menampilkan halaman Form FR.IA.07 (khusus Asesor, menggunakan view tunggal FR_IA_07.blade.php).
-     */
     public function index($idSertifikasi)
     {
-        // ----------------------------------------------------
-        // 1. PENGAMBILAN DATA (MENGGUNAKAN MODEL NYATA)
-        // ----------------------------------------------------
-
-        // Ambil data berdasarkan ID Sertifikasi Asesi
         $sertifikasi = DataSertifikasiAsesi::with([
-            'asesi',
-            'jadwal.asesor',
-            'jadwal.skema.unitKompetensi',
+            'asesi', 
+            'jadwal.asesor', 
+            'jadwal.skema.unitKompetensi', 
             'jadwal.jenisTuk'
         ])->findOrFail($idSertifikasi);
 
-        $asesi = $sertifikasi->asesi;
-        $asesor = $sertifikasi->jadwal->asesor;
-        $skema = $sertifikasi->jadwal->skema;
-        $jadwal = $sertifikasi->jadwal;
+        $daftarSoal = Ia07::where('id_data_sertifikasi_asesi', $idSertifikasi)
+                          ->orderBy('id_ia07', 'asc')->get();
 
-
-
-        // Ambil data Jenis TUK untuk radio button
-        $jenisTukOptions = JenisTUK::pluck('jenis_tuk', 'id_jenis_tuk');
-
-        // Ambil Unit Kompetensi dari Skema
-        $units = $skema->unitKompetensi->map(function ($unit) {
-            return [
-                'code' => $unit->kode_unit,
-                'title' => $unit->judul_unit
-            ];
-        });
-
-        // --- Handle Data Kosong (Fallbacks) ---
-        if (!$asesi) {
-            $asesi = (object) ['nama_lengkap' => 'Nama Asesi (DB KOSONG)'];
-        }
-        if (!$asesor) {
-            $asesor = (object) ['nama_lengkap' => 'Nama Asesor (DB KOSONG)', 'nomor_regis' => 'MET.000.000000.2019'];
-        }
-        if (!$skema) {
-            $skema = (object) ['nama_skema' => 'SKEMA KOSONG', 'nomor_skema' => 'N/A'];
-        }
-
-        // ----------------------------------------------------
-        // 2. KEMBALIKAN KE VIEW TUNGGAL ASESOR
-        // ----------------------------------------------------
-
-        // Mengembalikan view ke file frontend/FR_IA_07.blade.php
-        // Mengembalikan view ke file frontend/FR_IA_07.blade.php
-        return view('frontend.FR_IA_07', compact('asesi', 'asesor', 'skema', 'units', 'jenisTukOptions', 'jadwal', 'sertifikasi'));
+        return view('frontend.FR_IA_07', [
+            'sertifikasi' => $sertifikasi,
+            'asesi' => $sertifikasi->asesi,
+            'asesor' => $sertifikasi->jadwal->asesor,
+            'skema' => $sertifikasi->jadwal->skema,
+            'units' => $sertifikasi->jadwal->skema->unitKompetensi,
+            'daftarSoal' => $daftarSoal
+        ]);
     }
 
-    /**
-     * Menyimpan data dari Form FR.IA.07.
-     */
     public function store(Request $request)
     {
-        // --- LOGIKA PENYIMPANAN DATA DI SINI ---
-
-        // 1. Validasi
-        //   - Pastikan ada input radio TUK
-        //   - Pastikan tanggal terisi
+        // 1. Validasi Input (Umpan balik udah dibuang)
         $request->validate([
-            'id_jenis_tuk' => 'required',
-            'tanggal_pelaksanaan' => 'required|date',
-            'umpan_balik_asesi' => 'nullable|string',
-            'id_data_sertifikasi_asesi' => 'required|exists:data_sertifikasi_asesi,id_data_sertifikasi_asesi',
+            'id_data_sertifikasi_asesi' => 'required',
+            'penilaian' => 'required|array',
+            'jawaban_asesi' => 'nullable|array',
         ]);
-
-        // 2. Tentukan DataSertifikasiAsesi
-        $idSertifikasi = $request->input('id_data_sertifikasi_asesi');
-        $sertifikasi = DataSertifikasiAsesi::findOrFail($idSertifikasi);
-        if (!$sertifikasi) {
-            return redirect()->back()->with('error', 'Data Sertifikasi tidak ditemukan (DB Kosong).');
-        }
-        $idSertifikasi = $sertifikasi->id_data_sertifikasi_asesi;
 
         DB::beginTransaction();
         try {
-            // 3. Simpan Jawaban
-            //    Loop semua input yang polanya jawaban_{code}_q{num} dan keputusan_{code}_q{num}
-            //    Kita ambil semua data request
-            $allData = $request->all();
+            // 2. Loop Simpan Jawaban & Penilaian
+            foreach ($request->penilaian as $idSoal => $statusKompeten) {
+                $textJawaban = $request->jawaban_asesi[$idSoal] ?? null;
 
-            // Regex untuk menangkap jawaban_CODE_qX
-            $unitCodes = [];
-
-            // Loop data untuk mencari pattern jawaban
-            foreach ($allData as $key => $value) {
-                if (preg_match('/^jawaban_(.+)_q(\d+)$/', $key, $matches)) {
-                    $unitCode = $matches[1];
-                    $questionNum = $matches[2];
-
-                    $pertanyaan = "Pertanyaan No $questionNum Unit $unitCode"; // Atau ambil real text dari DB jika ada
-                    $jawabanKey = $key;
-                    $keputusanKey = "keputusan_{$unitCode}_q{$questionNum}";
-
-                    $jawabanDiharapkan = "Lihat Kunci Jawaban"; // Placeholder
-
-                    $keputusanVal = $request->input($keputusanKey); // K atau BK
-                    $isKompeten = ($keputusanVal === 'K');
-
-                    // Simpan ke tabel ia07
-                    // Kita anggap satu record per pertanyaan
-                    // Cari record lama atau buat baru
-                    Ia07::updateOrCreate(
-                        [
-                            'id_data_sertifikasi_asesi' => $idSertifikasi,
-                            'pertanyaan' => $pertanyaan, // Identifier sederhana untuk soal
-                        ],
-                        [
-                            'jawaban_asesi' => $value, // Ringkasan jawaban asesi
-                            'jawaban_diharapkan' => $jawabanDiharapkan,
-                            'pencapaian' => $isKompeten ? 1 : 0,
-                        ]
-                    );
-
-                    $unitCodes[$unitCode] = true;
-                }
+                Ia07::where('id_ia07', $idSoal)->update([
+                    'pencapaian' => $statusKompeten,
+                    'jawaban_asesi' => $textJawaban,
+                    'updated_at' => now(), // Trigger timestamp biar kedetect DONE
+                ]);
             }
-
-            // 4. Update Umpan Balik (Jika ada kolom di tabel sertifikasi/lainnya, atau simpan di tempat lain)
-            //    Model Ia07 sepertinya per-pertanyaan. Jika umpan balik global, mungkin masuk ke log activity atau field lain.
-            //    Sesuai struktur yang ada, kita biarkan dulu atau simpan di salah satu record jika terpaksa.
-            //    Tapi controller IA05 menyimpan umpan balik di tabel LembarJawab, di sini tabel Ia07 juga punya struktur mirip?
-            //    Cek Ia07 model: fillable ['id_data_sertifikasi_asesi', 'pertanyaan', 'jawaban_asesi', 'jawaban_diharapkan', 'pencapaian']
-            //    Tidak ada kolom umpan_balik khusus di Ia07.
-
-            // 5. Update Jadwal / Jenis TUK (Opsional, karena jadwal biasanya master data)
-            //    Tapi kita bisa update id_jenis_tuk di sertifikasi/jadwal jika perlu.
 
             DB::commit();
 
-            return redirect()->route('ia07.cetak', $idSertifikasi)->with('success', 'Penilaian FR.IA.07 berhasil disimpan.');
+            // 3. Redirect ke Tracker
+            return redirect('/asesor/tracker/' . $request->id_data_sertifikasi_asesi)
+                ->with('success', 'Penilaian FR.IA.07 Berhasil Disimpan.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menyimpan penilaian: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
     }
 
@@ -225,14 +141,21 @@ class IA07Controller extends Controller
      */
     public function editTemplate($id_skema, $id_jadwal)
     {
-        $skema = Skema::findOrFail($id_skema);
+        $skema = Skema::with('unitKompetensi')->findOrFail($id_skema);
+        
         $template = MasterFormTemplate::where('id_skema', $id_skema)
                                     ->where('id_jadwal', $id_jadwal)
                                     ->where('form_code', 'FR.IA.07')
                                     ->first();
         
-        // Default values if no template exists
-        $questions = $template ? $template->content : [];
+        // Ambil konten JSON. 
+        // Kalau kosong, kasih array kosong []
+        // Kalau format lama (grouping), kita reset jadi [] biar gak error.
+        $rawContent = $template ? $template->content : [];
+        
+        // Pastikan formatnya array list biasa (bukan key-value unit)
+        // Cek sederhana: kalau arraynya punya key string (grouping lama), kita reset aja.
+        $questions = array_values($rawContent); // Paksa jadi indexed array
 
         return view('Admin.master.skema.template.ia07', [
             'skema' => $skema,
@@ -247,20 +170,80 @@ class IA07Controller extends Controller
     public function storeTemplate(Request $request, $id_skema, $id_jadwal)
     {
         $request->validate([
-            'questions' => 'required|array',
-            'questions.*' => 'required|string',
+            'questions' => 'nullable|array',
+            'questions.*.pertanyaan' => 'required|string',
         ]);
 
-        MasterFormTemplate::updateOrCreate(
-            [
-                'id_skema' => $id_skema, 
-                'id_jadwal' => $id_jadwal,
-                'form_code' => 'FR.IA.07'
-            ],
-            ['content' => $request->questions]
-        );
+        DB::beginTransaction();
+        try {
+            // A. RAPIKAN DATA INPUT
+            $rawQuestions = $request->questions ?? [];
+            $cleanQuestions = array_values($rawQuestions); 
 
-        return redirect()->back()->with('success', 'Templat IA-07 berhasil diperbarui.');
+            // B. SIMPAN KE MASTER TEMPLATE (Backup)
+            MasterFormTemplate::updateOrCreate(
+                [
+                    'id_skema' => $id_skema, 
+                    'id_jadwal' => $id_jadwal,
+                    'form_code' => 'FR.IA.07'
+                ],
+                ['content' => $cleanQuestions]
+            );
+
+            // C. DISTRIBUSI KE ASESI (NUCLEAR OPTION: DELETE ALL -> RE-INSERT)
+            $paraPeserta = DataSertifikasiAsesi::where('id_jadwal', $id_jadwal)->get();
+
+            if ($paraPeserta->count() > 0) {
+                foreach ($paraPeserta as $peserta) {
+                    
+                    // 1. BACKUP NILAI LAMA (Biar nilai asesor gak ilang kalau soalnya sama)
+                    // Kita simpan mapping: "Pertanyaan" => "Isi Jawaban Lama"
+                    $dataLama = Ia07::where('id_data_sertifikasi_asesi', $peserta->id_data_sertifikasi_asesi)
+                        ->get()
+                        ->mapWithKeys(function ($item) {
+                            return [trim($item->pertanyaan) => [
+                                'pencapaian' => $item->pencapaian,
+                                'jawaban_asesi' => $item->jawaban_asesi
+                            ]];
+                        });
+
+                    // 2. HAPUS SEMUA SOAL LAMA (Bersih-bersih)
+                    Ia07::where('id_data_sertifikasi_asesi', $peserta->id_data_sertifikasi_asesi)->delete();
+
+                    // 3. INSERT SOAL BARU
+                    foreach ($cleanQuestions as $item) {
+                        $pertanyaanBersih = trim($item['pertanyaan']);
+                        $nilaiBackup = $dataLama[$pertanyaanBersih] ?? null;
+
+                        // --- LOGIC PENENTUAN NILAI ---
+                        // Jika ada backup (soal lama), pakai nilai lama.
+                        // Jika soal baru (backup null), PAKSA PAKAI 0 (biar gak error DB Strict).
+                        
+                        $pencapaianFix = $nilaiBackup ? $nilaiBackup['pencapaian'] : 0; 
+                        $jawabanFix = $nilaiBackup ? $nilaiBackup['jawaban_asesi'] : null;
+
+                        Ia07::create([
+                            'id_data_sertifikasi_asesi' => $peserta->id_data_sertifikasi_asesi,
+                            'pertanyaan' => $pertanyaanBersih,
+                            'jawaban_diharapkan' => $item['kunci'] ?? '-',
+                            
+                            'pencapaian' => $pencapaianFix, // <--- INI KUNCINYA (Gak boleh NULL)
+                            'jawaban_asesi' => $jawabanFix,
+                            
+                            'updated_at' => now(),
+                            'created_at' => now(),
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Soal berhasil disimpan (Reset & Update).');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal: ' . $e->getMessage());
+        }
     }
 
     /**

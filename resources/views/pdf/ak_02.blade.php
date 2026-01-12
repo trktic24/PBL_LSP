@@ -97,17 +97,17 @@
     <table>
         <thead>
             <tr>
-                <th rowspan="2" width="25%">Unit Kompetensi</th>
+                <th rowspan="2" width="30%">Unit Kompetensi</th>
                 <th colspan="7">Bukti-Bukti (Ceklis jika ada)</th>
             </tr>
             <tr>
-                <th width="10%">Observasi</th>
-                <th width="10%">Portofolio</th>
-                <th width="10%">Pihak Ketiga</th>
-                <th width="10%">Lisan</th>
-                <th width="10%">Tertulis</th>
-                <th width="10%">Proyek</th>
-                <th width="10%">Lainnya</th>
+                <th width="9%">Observasi</th>
+                <th width="9%">Portofolio</th>
+                <th width="9%">Pihak Ketiga</th>
+                <th width="9%">Lisan</th>
+                <th width="9%">Tertulis</th>
+                <th width="9%">Proyek</th>
+                <th width="9%">Lainnya</th>
             </tr>
         </thead>
         <tbody>
@@ -158,34 +158,36 @@
     </table>
 
     <br><br>
-    <table class="no-border">
-        <tr>
-            <td style="width: 50%; text-align: center;">
-                Asesi,
-                <br><br><br><br>
-                @if(isset($data['ttd_asesi']) && $data['ttd_asesi'])
-                    <img src="{{ getTtdBase64($data['ttd_asesi']) }}" style="width: 100px; height: auto;">
-                    <br>
-                @else
+    <div style="page-break-inside: avoid;">
+        <table class="no-border">
+            <tr>
+                <td style="width: 50%; text-align: center;">
+                    Asesi,
                     <br><br><br><br>
-                @endif
-                <strong>{{ $data['nama_asesi'] ?? '(.......................)' }}</strong>
-                <br>Tanggal: {{ date('d-m-Y') }}
-            </td>
-            <td style="width: 50%; text-align: center;">
-                Asesor Kompetensi,
-                <br><br><br><br>
-                @if(isset($data['ttd_asesor']) && $data['ttd_asesor'])
-                    <img src="{{ getTtdBase64($data['ttd_asesor']) }}" style="width: 100px; height: auto;">
-                    <br>
-                @else
+                    @if(isset($data['ttd_asesi']) && $data['ttd_asesi'])
+                        <img src="{{ getTtdBase64($data['ttd_asesi']) }}" style="width: 100px; height: auto;">
+                        <br>
+                    @else
+                        <br><br><br><br>
+                    @endif
+                    <strong>{{ $data['nama_asesi'] ?? '(.......................)' }}</strong>
+                    <br>Tanggal: {{ date('d-m-Y') }}
+                </td>
+                <td style="width: 50%; text-align: center;">
+                    Asesor Kompetensi,
                     <br><br><br><br>
-                @endif
-                <strong>{{ $data['nama_asesor'] ?? '(.......................)' }}</strong>
-                <br>No. Reg: -
-            </td>
-        </tr>
-    </table>
+                    @if(isset($data['ttd_asesor']) && $data['ttd_asesor'])
+                        <img src="{{ getTtdBase64($data['ttd_asesor']) }}" style="width: 100px; height: auto;">
+                        <br>
+                    @else
+                        <br><br><br><br>
+                    @endif
+                    <strong>{{ $data['nama_asesor'] ?? '(.......................)' }}</strong>
+                    <br>No. Reg: {{ $data['no_reg'] ?? '-' }}
+                </td>
+            </tr>
+        </table>
+    </div>
 
 </body>
 </html>

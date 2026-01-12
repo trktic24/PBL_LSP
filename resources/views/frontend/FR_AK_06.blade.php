@@ -47,15 +47,20 @@
             <div class="grid grid-cols-[250px_auto] gap-y-3 text-sm mb-10 text-gray-700">
                 <div class="font-bold text-black">Skema Sertifikasi<br>(KKNI/Okupasi/Klaster)*</div>
                 <div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ isset($skema) ? $skema->nama_skema : 'Junior Web Programmer' }}</div>
-                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ isset($skema) ? $skema->nomor_skema : '-' }}</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Judul</span> : {{ $jadwal->skema->nama_skema ?? '-' }}</div>
+                    <div class="flex gap-2"><span class="font-semibold w-20">Nomor</span> : {{ $jadwal->skema->nomor_skema ?? '-' }}</div>
                 </div>
 
                 <div class="font-bold text-black">TUK</div>
-                <div>: Sewaktu / Tempat Kerja / <span class="font-bold">Mandiri</span></div>
+                <div>: 
+                    @php $jenisTuk = $jadwal->jenisTuk->jenis_tuk ?? ''; @endphp
+                    <span class="{{ $jenisTuk == 'Sewaktu' ? 'font-bold text-blue-600' : 'text-gray-400' }}">Sewaktu</span> / 
+                    <span class="{{ $jenisTuk == 'Tempat Kerja' ? 'font-bold text-blue-600' : 'text-gray-400' }}">Tempat Kerja</span> / 
+                    <span class="{{ $jenisTuk == 'Mandiri' ? 'font-bold text-blue-600' : 'text-gray-400' }}">Mandiri</span>
+                </div>
 
                 <div class="font-bold text-black">Nama Asesor</div>
-                <div>: -</div>
+                <div>: {{ $jadwal->asesor->nama_lengkap ?? '-' }}</div>
 
                 <div class="font-bold text-black">Tanggal</div>
                 <div>: {{ date('d F Y') }}</div>
@@ -94,46 +99,46 @@
                         {{-- Rencana Asesmen --}}
                         <tr>
                             <td class="p-2 pl-6">Rencana asesmen</td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[rencana_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[rencana_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[rencana_asesmen][]" value="fleksibel" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[rencana_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer"></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[rencana_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['rencana_asesmen']) && in_array('validitas', $data->tinjauan['rencana_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[rencana_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['rencana_asesmen']) && in_array('reliabel', $data->tinjauan['rencana_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[rencana_asesmen][]" value="fleksibel" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['rencana_asesmen']) && in_array('fleksibel', $data->tinjauan['rencana_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[rencana_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['rencana_asesmen']) && in_array('adil', $data->tinjauan['rencana_asesmen']) ? 'checked' : '' }}></td>
                         </tr>
 
                         {{-- Persiapan Asesmen --}}
                         <tr>
                             <td class="p-2 pl-6">Persiapan asesmen</td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[persiapan_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[persiapan_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[persiapan_asesmen][]" value="fleksibel" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[persiapan_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer"></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[persiapan_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['persiapan_asesmen']) && in_array('validitas', $data->tinjauan['persiapan_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[persiapan_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['persiapan_asesmen']) && in_array('reliabel', $data->tinjauan['persiapan_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[persiapan_asesmen][]" value="fleksibel" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['persiapan_asesmen']) && in_array('fleksibel', $data->tinjauan['persiapan_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[persiapan_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['persiapan_asesmen']) && in_array('adil', $data->tinjauan['persiapan_asesmen']) ? 'checked' : '' }}></td>
                         </tr>
 
                         {{-- Implementasi Asesmen --}}
                         <tr>
                             <td class="p-2 pl-6">Implementasi asesmen</td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[implementasi_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[implementasi_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[implementasi_asesmen][]" value="fleksibel" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[implementasi_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer"></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[implementasi_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['implementasi_asesmen']) && in_array('validitas', $data->tinjauan['implementasi_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[implementasi_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['implementasi_asesmen']) && in_array('reliabel', $data->tinjauan['implementasi_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[implementasi_asesmen][]" value="fleksibel" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['implementasi_asesmen']) && in_array('fleksibel', $data->tinjauan['implementasi_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[implementasi_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['implementasi_asesmen']) && in_array('adil', $data->tinjauan['implementasi_asesmen']) ? 'checked' : '' }}></td>
                         </tr>
 
                         {{-- Keputusan Asesmen --}}
                         <tr>
                             <td class="p-2 pl-6">Keputusan asesmen</td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer"></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="validitas" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['keputusan_asesmen']) && in_array('validitas', $data->tinjauan['keputusan_asesmen']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="reliabel" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['keputusan_asesmen']) && in_array('reliabel', $data->tinjauan['keputusan_asesmen']) ? 'checked' : '' }}></td>
                             <td class="p-2 text-center bg-gray-200"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer"></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[keputusan_asesmen][]" value="adil" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['keputusan_asesmen']) && in_array('adil', $data->tinjauan['keputusan_asesmen']) ? 'checked' : '' }}></td>
                         </tr>
 
                         {{-- Umpan Balik Asesmen --}}
                         <tr>
                             <td class="p-2 pl-6">Umpan balik asesmen</td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="validitas" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="reliabel" class="w-5 h-5 cursor-pointer"></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="validitas" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['umpan_balik']) && in_array('validitas', $data->tinjauan['umpan_balik']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="reliabel" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['umpan_balik']) && in_array('reliabel', $data->tinjauan['umpan_balik']) ? 'checked' : '' }}></td>
                             <td class="p-2 text-center bg-gray-200"></td>
-                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="adil" class="w-5 h-5 cursor-pointer"></td>
+                            <td class="p-2 text-center"><input type="checkbox" name="tinjauan[umpan_balik][]" value="adil" class="w-5 h-5 cursor-pointer" {{ isset($data->tinjauan['umpan_balik']) && in_array('adil', $data->tinjauan['umpan_balik']) ? 'checked' : '' }}></td>
                         </tr>
 
                         {{-- Rekomendasi 1 --}}
@@ -173,11 +178,11 @@
                                 Bukti dari berbagai asesmen diperiksa untuk konsistensi dimensi kompetensi
                             </td>
                             {{-- Menggunakan array name="dimensi[konsistensi][]" --}}
-                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="task_skills" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="task_management" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="contingency_management" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="job_role" class="w-5 h-5 cursor-pointer"></td>
-                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="transfer_skills" class="w-5 h-5 cursor-pointer"></td>
+                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="task_skills" class="w-5 h-5 cursor-pointer" {{ isset($data->dimensi['konsistensi']) && in_array('task_skills', $data->dimensi['konsistensi']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="task_management" class="w-5 h-5 cursor-pointer" {{ isset($data->dimensi['konsistensi']) && in_array('task_management', $data->dimensi['konsistensi']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="contingency_management" class="w-5 h-5 cursor-pointer" {{ isset($data->dimensi['konsistensi']) && in_array('contingency_management', $data->dimensi['konsistensi']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="job_role" class="w-5 h-5 cursor-pointer" {{ isset($data->dimensi['konsistensi']) && in_array('job_role', $data->dimensi['konsistensi']) ? 'checked' : '' }}></td>
+                            <td class="p-2 text-center align-middle"><input type="checkbox" name="dimensi[konsistensi][]" value="transfer_skills" class="w-5 h-5 cursor-pointer" {{ isset($data->dimensi['konsistensi']) && in_array('transfer_skills', $data->dimensi['konsistensi']) ? 'checked' : '' }}></td>
                         </tr>
                         <tr>
                             <td class="p-2 font-bold align-top" colspan="1">Rekomendasi untuk peningkatan :</td>
@@ -202,10 +207,10 @@
                     <tbody>
                         <tr>
                             <td class="p-2 align-top h-32">
-                                <input type="text" name="peninjau[nama]" value="{{ old('peninjau.nama', $data->peninjau['nama'] ?? '') }}" class="w-full border-b border-gray-300 outline-none mb-2 bg-transparent" placeholder="Nama...">
+                                <input type="text" name="peninjau[nama]" value="{{ old('peninjau.nama', $data->peninjau['nama'] ?? $jadwal->asesor->nama_lengkap ?? '') }}" class="w-full border-b border-gray-300 outline-none mb-2 bg-transparent" placeholder="Nama...">
                             </td>
                             <td class="p-2 align-top h-32 text-center flex flex-col justify-between">
-                                <input type="text" name="peninjau[tanggal]" value="{{ old('peninjau.tanggal', $data->peninjau['tanggal'] ?? '') }}" class="w-full border-b border-gray-300 outline-none mb-8 text-center bg-transparent" placeholder="Tanggal...">
+                                <input type="text" name="peninjau[tanggal]" value="{{ old('peninjau.tanggal', $data->peninjau['tanggal'] ?? date('d F Y')) }}" class="w-full border-b border-gray-300 outline-none mb-8 text-center bg-transparent" placeholder="Tanggal...">
                                 <div class="text-gray-400 text-xs italic mt-auto">(Tanda Tangan)</div>
                             </td>
                             <td class="p-2 align-top h-32">

@@ -88,8 +88,8 @@ class Ia01ApiController extends Controller
                     'sertifikasi' => [
                         'id' => $sertifikasi->id_data_sertifikasi_asesi,
                         'asesi' => $sertifikasi->asesi->nama_asesi,
-                        'asesor' => $sertifikasi->jadwal->asesor->nama_asesor ?? null,
-                        'skema' => $skema->judul_skema
+                        'asesor' => $sertifikasi->jadwal->asesor->nama_lengkap ?? null,
+                        'skema' => $skema->nama_skema
                     ],
                     'units' => $units
                 ]

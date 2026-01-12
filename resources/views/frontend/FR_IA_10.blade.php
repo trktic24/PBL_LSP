@@ -87,41 +87,45 @@
                                     <th class="border border-gray-900 p-2 font-semibold w-20">Tdk</th>
                                 </tr>
                             </x-slot>
-                            
-                            @forelse($daftar_soal as $soal)
+
+                            {{-- 🔥 GANTI TOTAL ISI TABLE DENGAN INI --}}
+                            @forelse ($pertanyaanTemplate as $pertanyaan)
+                                @php
+                                    $jawaban = $jawabanChecklist[$pertanyaan]->jawaban_pilihan_iya_tidak ?? null;
+                                @endphp
+
                                 <tr>
                                     <td class="border border-gray-900 p-2 text-sm">
-                                        {{ $soal->pertanyaan }}
-                                    </td>
-                                    
-                                    {{-- Opsi YA (Value 1) --}}
-                                    <td class="border border-gray-900 p-2 text-sm text-center">
-                                        <input type="radio" 
-                                               name="checklist[{{ $soal->id_pertanyaan_ia10 }}]" 
-                                               value="1" 
-                                               class="form-radio h-4 w-4 text-blue-600"
-                                               {{ ($soal->jawaban_pilihan_iya_tidak == 1) ? 'checked' : '' }}
-                                               {{ isset($isMasterView) ? 'disabled' : 'required' }}>
+                                        {{ $pertanyaan }}
                                     </td>
 
-                                    {{-- Opsi TIDAK (Value 0) --}}
-                                    <td class="border border-gray-900 p-2 text-sm text-center">
-                                        <input type="radio" 
-                                               name="checklist[{{ $soal->id_pertanyaan_ia10 }}]" 
-                                               value="0" 
-                                               class="form-radio h-4 w-4 text-blue-600"
-                                               {{ ($soal->jawaban_pilihan_iya_tidak === 0) ? 'checked' : '' }}
-                                               {{ isset($isMasterView) ? 'disabled' : '' }}>
+                                    <td class="border border-gray-900 p-2 text-center">
+                                        <input type="radio"
+                                            name="checklist[{{ $pertanyaan }}]"
+                                            value="1"
+                                            class="form-radio h-4 w-4 text-blue-600"
+                                            {{ $jawaban === 1 ? 'checked' : '' }}
+                                            {{ isset($isMasterView) ? 'disabled' : '' }}>
+                                    </td>
+
+                                    <td class="border border-gray-900 p-2 text-center">
+                                        <input type="radio"
+                                            name="checklist[{{ $pertanyaan }}]"
+                                            value="0"
+                                            class="form-radio h-4 w-4 text-blue-600"
+                                            {{ $jawaban === 0 ? 'checked' : '' }}
+                                            {{ isset($isMasterView) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="border border-gray-900 p-2 text-center text-black">
-                                        Skema ini menggunakan pertanyaan isian, silahkan jawab pertanyaan isian
+                                    <td colspan="3" class="border border-gray-900 p-2 text-center">
+                                        Tidak ada pertanyaan untuk skema ini
                                     </td>
                                 </tr>
                             @endforelse
                         </x-table>
+
                     </div>
                 </div>
 
@@ -139,8 +143,8 @@
                                 'relation'       => 'Apa hubungan Anda dengan asesi?',
                                 'duration'       => 'Berapa lama Anda bekerja dengan asesi?',
                                 'proximity'      => 'Seberapa dekat Anda bekerja dengan asesi di area yang dinilai?',
-                                'experience'     => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai? (termasuk asesmen atau kualifikasi pelatihan)',
-                                'consistency'    => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar yang diminta oleh unit kompetensi secara konsisten?',
+                                'experience'     => 'Apa pengalaman teknis dan / atau kualifikasi Anda di bidang yang dinilai?',
+                                'consistency'    => 'Secara keseluruhan, apakah Anda yakin asesi melakukan sesuai standar?',
                                 'training_needs' => 'Identifikasi kebutuhan pelatihan lebih lanjut untuk asesi:',
                                 'other_comments' => 'Ada komentar lain:'
                             ];
@@ -246,9 +250,7 @@
                     </div>
                 </div>
 
-                <div class="form-footer flex justify-between mt-10">
-                    <button type="button" class="btn border border-blue-600 text-blue-600 px-5 py-2 rounded">Batal</button>
-                    
+                <div class="form-footer flex justify-end mt-10">
                     @if(!isset($isMasterView))
                     <button type="submit" class="btn bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">Simpan Verifikasi</button>
                     @else
