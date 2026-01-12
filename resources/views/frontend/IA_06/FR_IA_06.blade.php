@@ -18,6 +18,31 @@
 </div>
 
 <div class="max-w-5xl mx-auto px-4 py-8">
+    {{-- ALERT NOTIFIKASI --}}
+    @if(session('success'))
+        <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow-sm flex items-center">
+            <i class="fas fa-check-circle mr-3"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-sm flex items-center">
+            <i class="fas fa-exclamation-circle mr-3"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- TOMBOL SYNC --}}
+    @if(in_array(Auth::user()->role_id, [1, 3, 4]) && !isset($isMasterView))
+        <div class="mb-4 flex justify-end">
+            <a href="{{ route('ia06.reset', $sertifikasi->id_data_sertifikasi_asesi) }}" 
+               onclick="return confirm('Apakah Anda yakin ingin menyinkronkan ulang pertanyaan dari templat? Semua jawaban dan penilaian yang ada akan dihapus.')"
+               class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-4 rounded shadow-sm transition flex items-center">
+                <i class="fas fa-sync-alt mr-2"></i> Sinkronisasi dari Templat
+            </a>
+        </div>
+    @endif
 
     {{-- FORM WRAPPER --}}
     @if($role != 1)

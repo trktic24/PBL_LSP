@@ -65,12 +65,7 @@
     <form class="form-body mt-6" action="{{ $formAction }}" method="POST"> 
         @csrf
         <x-identitas_skema_form.identitas_skema_form
-            skema="{{ $asesi->jadwal->skema->nama_skema ?? 'Judul Skema Tidak Ditemukan' }}"
-            nomorSkema="{{ $asesi->jadwal->skema->nomor_skema ?? 'Kode Tidak Ditemukan' }}"
-            tuk="{{ $asesi->jadwal->jenisTuk->jenis_tuk ?? 'Tempat Kerja' }}" 
-            namaAsesor="{{ $asesi->asesor->nama_lengkap ?? 'Nama Asesor Tidak Ditemukan' }}"
-            namaAsesi="{{ $asesi->asesi->nama_lengkap ?? 'Nama Asesi Tidak Ditemukan' }}"
-            tanggal="{{ now()->format('d F Y') }}"
+            :sertifikasi="$asesi"
         />
 
         @if (session('success'))
@@ -174,7 +169,7 @@
         </div>
         
         <!-- <div class="form-section my-8">
-            @include('components.kolom_ttd.penyusunvalidator')
+            @include('components.kolom_ttd.penyusunvalidator', ['sertifikasi' => $asesi])
         </div> -->
 
         {{-- Tanda Tangan --}}
