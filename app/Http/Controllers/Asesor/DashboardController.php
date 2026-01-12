@@ -60,9 +60,8 @@ class DashboardController extends Controller
             'nama' => $asesor->nama_lengkap ?? 'Nama Asesor',
             'nomor_registrasi' => $asesor->nomor_regis ?? 'Belum ada NOREG',
             'kompetensi' => 'Pemrograman',
-            // Menggunakan Accessor getUrlFotoAttribute yang sudah kita buat di Model (opsional)
-            // atau logika manual jika belum pakai accessor
-            'foto_url' => $asesor->url_foto ?? 'https://placehold.co/60x60/8B5CF6/ffffff?text=AF',
+            // Menggunakan Accessor getUrlFotoAttribute di Model Asesor
+            'foto_url' => $asesor->url_foto,
         ];
 
         // Ringkasan

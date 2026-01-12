@@ -4,12 +4,19 @@
 <main class="max-w-6xl mx-auto mt-8 bg-white p-8 rounded-lg shadow-md relative pb-20">
 
     <!-- Foto Profil -->
-    <div class="flex flex-col items-center space-y-2 mb-10">
-        <div class="w-32 h-32 rounded-full border-4 border-blue-500 flex items-center justify-center overflow-hidden relative group cursor-pointer">
-            <img src="{{ Auth::user()->asesor?->url_foto ?? asset('images/profil_asesor.jpeg') }}"
+    <div class="flex flex-col items-center space-y-2 mb-10" x-data="{ imgError: false }">
+        <div class="w-32 h-32 rounded-full border-4 border-blue-500 flex items-center justify-center overflow-hidden relative group cursor-pointer bg-blue-600">
+            {{-- Fallback Initials --}}
+            <span x-show="imgError" class="text-4xl font-bold text-white select-none absolute">
+                {{ strtoupper(substr($user->asesor->nama_lengkap ?? $user->username, 0, 2)) }}
+            </span>
+
+            <img src="{{ $user->asesor->url_foto }}"
                  alt="Foto Profil"
-                 class="object-cover w-full h-full">
-            <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                 class="object-cover w-full h-full relative z-10"
+                 x-show="!imgError"
+                 x-on:error="imgError = true">
+            <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>

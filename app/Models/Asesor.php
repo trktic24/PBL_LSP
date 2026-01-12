@@ -76,4 +76,16 @@ class Asesor extends Model
     {
         return $this->hasMany(Jadwal::class, 'id_asesor', 'id_asesor');
     }
+
+    /**
+     * Accessor untuk URL Foto Profil Asesor.
+     * Menggunakan path relatif yang tersimpan di database.
+     */
+    public function getUrlFotoAttribute()
+    {
+        if ($this->pas_foto) {
+            return asset('storage/' . $this->pas_foto);
+        }
+        return asset('images/profil_asesor.jpeg');
+    }
 }

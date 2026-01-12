@@ -97,4 +97,28 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    /**
+     * Accessor untuk foto profil user dynamic berdasarkan role.
+     */
+    public function getPhotoUrlAttribute()
+    {
+        // 1. Jika Asesor
+        if ($this->hasRole('asesor') && $this->asesor) {
+            return $this->asesor->url_foto;
+        }
+
+        // 2. Jika Asesi (Belum ada kolom foto khusus, return default)
+        if ($this->hasRole('asesi')) {
+             return asset('images/profil_asesor.jpeg'); // Bisa diganti default asesi
+        }
+
+        // 3. Jika Admin (Belum ada kolom foto khusus)
+        if ($this->hasRole('admin') || $this->hasRole('superadmin')) {
+             return asset('images/profil_asesor.jpeg'); // Bisa diganti default admin
+        }
+
+        // Default global
+        return asset('images/profil_asesor.jpeg');
+    }
 }

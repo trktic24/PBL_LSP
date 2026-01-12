@@ -50,7 +50,7 @@
             </span>
 
             {{-- Image --}}
-            <img src="{{ \Illuminate\Support\Facades\Storage::url(str_replace('public/', '', $asesor->pas_foto)) }}" 
+            <img src="{{ asset('storage/' . $asesor->pas_foto) }}" 
                  alt="Foto Profil" 
                  class="w-full h-full object-cover relative z-10"
                  x-show="!imgError"
