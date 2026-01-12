@@ -115,22 +115,22 @@
 
                     {{-- 🟩 LOGIKA TOMBOL --}}
                     @if($isFull)
-                        {{-- Opsi 1: JIKA PENUH --}}
+                        {{-- JIKA KUOTA PENUH --}}
                         <button disabled class="block w-full bg-gray-400 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
                             Kuota Penuh
                         </button>
                     @elseif($isRegistrationClosed)
-                        {{-- Opsi 2: PENDAFTARAN SUDAH DITUTUP --}}
+                        {{-- PENDAFTARAN SUDAH DITUTUP --}}
                         <button disabled class="block w-full bg-gray-400 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
                             Pendaftaran Ditutup
                         </button>
-                    @elseif($isRegistrationNotStarted)
-                        {{-- Opsi 3: PENDAFTARAN BELUM DIBUKA --}}
-                        <button disabled class="block w-full bg-blue-300 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
+                    @elseif($isRegistrationNotStarted && $tanggalMulai)
+                        {{-- PENDAFTARAN BELUM DIBUKA --}}
+                        <button disabled class="block w-full bg-blue-400 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
                             Pendaftaran Dibuka {{ $tanggalMulai->format('d M Y') }}
                         </button>
                     @else
-                        {{-- Opsi 4: MASIH ADA KUOTA & PERIODE TERBUKA (Cek Auth & Role) --}}
+                        {{-- MASIH BISA DAFTAR --}}
                         @auth
                             @if(Auth::user()->role->nama_role == 'asesi')
                                 <form action="{{ route('asesi.daftar.jadwal') }}" method="POST">
@@ -147,7 +147,7 @@
                             @endif
                         @else
                             <a href="{{ route('login') }}" class="block w-full bg-yellow-400 hover:bg-yellow-500 text-center text-black font-semibold py-3 rounded-lg transition duration-200 mb-3">
-                                Daftar Sekarang
+                                Login untuk Daftar
                             </a>
                         @endauth
                     @endif
