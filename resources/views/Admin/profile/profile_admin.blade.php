@@ -28,8 +28,8 @@
             passwordModal: {{ $errors->updatePassword->any() ? 'true' : 'false' }}, 
             showSuccess: {{ session('status') === 'profile-updated' ? 'true' : 'false' }},
             showPasswordSuccess: {{ session('status') === 'password-updated' ? 'true' : 'false' }},
-            // Logic Preview Gambar: Jika ada di DB pakai itu, jika tidak kosongkan
-            previewUrl: '{{ (Auth::user()->admin && Auth::user()->admin->tanda_tangan_admin) ? route('admin.profile.signature') : '' }}'
+            // Logic Preview Gambar: Pakai helper getTtdBase64 untuk existing signature
+            previewUrl: '{{ (Auth::user()->admin && Auth::user()->admin->tanda_tangan_admin) ? getTtdBase64(Auth::user()->admin->tanda_tangan_admin, null, 'admin') : '' }}'
         }" 
         x-init="
             if (showSuccess) { setTimeout(() => showSuccess = false, 3000) }

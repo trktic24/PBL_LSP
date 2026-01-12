@@ -30,8 +30,15 @@ if (!function_exists('getTtdBase64')) {
             }
             $pathsToTry[] = storage_path('app/private_uploads/asesor_docs/' . basename($ttdPath));
             $pathsToTry[] = storage_path('app/private_uploads/' . $ttdPath);
+        } elseif ($type === 'admin') {
+            // TTD Admin paths
+            $pathsToTry = [
+                storage_path('app/' . $ttdPath), // Full path stored in DB
+                storage_path('app/private_uploads/tanda_tangan_admin/' . basename($ttdPath)),
+                storage_path('app/private_uploads/' . $ttdPath),
+            ];
         } else {
-            // Generic path (penyusun/validator/admin)
+            // Generic path (penyusun/validator)
             $pathsToTry = [
                 storage_path('app/private_uploads/' . $ttdPath),
                 storage_path('app/public/' . $ttdPath),
