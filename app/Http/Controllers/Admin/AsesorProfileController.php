@@ -479,34 +479,40 @@ class AsesorProfileController extends Controller
     public function storeBukti(Request $request, $id_asesor)
     {
         $request->validate([
-            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png,webp|max:5120',
             'jenis_dokumen' => 'required|string',
-            'keterangan' => 'nullable|string' 
+            'keterangan' => 'nullable|string'
         ]);
 
         $asesor = Asesor::findOrFail($id_asesor);
-        $key = $request->jenis_dokumen; // e.g., 'ktp', 'cv'
+        $key = $request->jenis_dokumen;
 
-        // Check valid keys
+        // ValidKeys: 'pas_foto' is exclusively PUBLIC. Others are PRIVATE.
         $validKeys = ['ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 'CV', 'ijazah', 'sertifikat_asesor', 'sertifikasi_kompetensi'];
         if (!in_array($key, $validKeys)) {
             return response()->json(['success' => false, 'message' => 'Jenis dokumen tidak valid.']);
         }
 
-        // Handle File Delete (Old)
-        if ($asesor->$key && Storage::disk('private_docs')->exists($asesor->$key)) {
-            Storage::disk('private_docs')->delete($asesor->$key);
+        // --- 1. CONFIGURATION ---
+        // USER REQUEST: Al files (including pas_foto) must go to private_uploads/asesor_docs
+        $disk = 'private_docs';
+        $folder = 'asesor_docs/' . $asesor->id_user; 
+
+        // --- 2. DELETE OLD FILE ---
+        if ($asesor->$key) {
+            if (Storage::disk($disk)->exists($asesor->$key)) {
+                Storage::disk($disk)->delete($asesor->$key);
+            }
         }
 
-        // Handle File Upload (New)
-        $uploadPath = 'asesor_docs/' . $asesor->id_user;
-        $path = $request->file('file')->store($uploadPath, 'private_docs');
+        // --- 3. UPLOAD NEW FILE ---
+        $path = $request->file('file')->store($folder, $disk);
 
-        // Update DB
+        // --- 4. UPDATE DATABASE ---
         $asesor->$key = $path;
         $asesor->save();
 
-        return response()->json(['success' => true, 'message' => 'Berhasil diunggah!']);
+        return response()->json(['success' => true, 'message' => 'Berhasil diunggah! (Private Storage)', 'path' => $path]);
     }
 
     public function deleteBukti($id_asesor, $jenis_dokumen)
@@ -514,15 +520,17 @@ class AsesorProfileController extends Controller
         $asesor = Asesor::findOrFail($id_asesor);
         $key = $jenis_dokumen;
 
-        // Check valid keys
         $validKeys = ['ktp', 'pas_foto', 'NPWP_foto', 'rekening_foto', 'CV', 'ijazah', 'sertifikat_asesor', 'sertifikasi_kompetensi'];
         if (!in_array($key, $validKeys)) {
             return response()->json(['success' => false, 'message' => 'Jenis dokumen tidak valid.']);
         }
 
+        // USER REQUEST: All files are in private_docs
+        $disk = 'private_docs';
+
         if ($asesor->$key) {
-            if (Storage::disk('private_docs')->exists($asesor->$key)) {
-                Storage::disk('private_docs')->delete($asesor->$key);
+            if (Storage::disk($disk)->exists($asesor->$key)) {
+                Storage::disk($disk)->delete($asesor->$key);
             }
             $asesor->$key = null;
             $asesor->save();
@@ -534,24 +542,28 @@ class AsesorProfileController extends Controller
     public function storeTtd(Request $request, $id_asesor)
     {
         $request->validate([
-            'file_ttd' => 'required|file|mimes:png,jpg,jpeg|max:5120',
+            'file_ttd' => 'required|file|mimes:png,jpg,jpeg,webp|max:5120',
         ]);
 
         $asesor = Asesor::findOrFail($id_asesor);
 
-        // Delete Old TTD
-        if ($asesor->tanda_tangan && Storage::disk('private_docs')->exists($asesor->tanda_tangan)) {
-            Storage::disk('private_docs')->delete($asesor->tanda_tangan);
+        // --- CONFIGURATION ---
+        $disk = 'private_docs'; // Tanda tangan is PRIVATE
+        $folder = 'asesor_docs/' . $asesor->id_user . '/tanda_tangan'; // Subfolder specifically for TTD
+
+        // --- DELETE OLD TTD ---
+        if ($asesor->tanda_tangan && Storage::disk($disk)->exists($asesor->tanda_tangan)) {
+            Storage::disk($disk)->delete($asesor->tanda_tangan);
         }
 
-        // Upload New TTD
-        $uploadPath = 'asesor_docs/' . $asesor->id_user;
-        $path = $request->file('file_ttd')->store($uploadPath, 'private_docs');
+        // --- UPLOAD NEW TTD ---
+        $path = $request->file('file_ttd')->store($folder, $disk);
 
+        // --- UPDATE DATABASE ---
         $asesor->tanda_tangan = $path;
         $asesor->save();
 
-        return response()->json(['success' => true, 'message' => 'Tanda tangan berhasil disimpan.']);
+        return response()->json(['success' => true, 'message' => 'Tanda tangan berhasil disimpan.', 'path' => $path]);
     }
 
     public function deleteTtd($id_asesor)

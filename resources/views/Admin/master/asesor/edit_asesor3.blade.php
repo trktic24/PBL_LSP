@@ -128,7 +128,9 @@
                             <template x-if="(imageUrl || fileName) && !isDeleted">
                                 <div class="w-full h-full flex items-center justify-center">
                                     <template x-if="isImage || (fileName && fileName.match(/\.(jpg|jpeg|png)$/i)) || (fileExt && ['jpg','jpeg','png'].includes(fileExt.toLowerCase()))">
-                                        <img :src="imageUrl" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition" @click="window.open(imageUrl, '_blank')">
+                                        <img :src="imageUrl" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition" 
+                                             @click="window.open(imageUrl, '_blank')"
+                                             x-on:error="imageUrl = '{{ asset('images/placeholder_default.jpg') }}'">
                                     </template>
                                     <template x-if="!isImage && !(fileName && fileName.match(/\.(jpg|jpeg|png)$/i)) && !(fileExt && ['jpg','jpeg','png'].includes(fileExt.toLowerCase()))">
                                         <div class="text-center p-2">

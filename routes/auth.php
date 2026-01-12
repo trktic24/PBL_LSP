@@ -447,6 +447,7 @@ Route::middleware('auth')->group(function () {
             // Profil Self
             Route::get('/profil', [AsesorSelfProfileController::class, 'show'])->name('profil');
             Route::post('/update', [AsesorSelfProfileController::class, 'updateAsesorAjax'])->name('update.ajax');
+            Route::post('/update-photo', [AsesorSelfProfileController::class, 'updatePhoto'])->name('update.photo');
 
             // Placeholders
             Route::get('/profile_tinjauan', fn() => view('profile_asesor.asesor_profile_tinjauan'))->name('profile_tinjauan');

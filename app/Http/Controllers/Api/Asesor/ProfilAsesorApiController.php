@@ -44,7 +44,7 @@ class ProfilAsesorApiController extends Controller
                 'kebangsaan' => $asesor->kebangsaan,
                 'nama_bank' => $asesor->nama_bank,
                 'norek' => $asesor->norek,
-                'url_foto' => $asesor->url_foto ? asset($asesor->url_foto) : asset('images/profil_asesor.jpeg'),
+                'url_foto' => $asesor->url_foto,
             ]
         ]);
     }

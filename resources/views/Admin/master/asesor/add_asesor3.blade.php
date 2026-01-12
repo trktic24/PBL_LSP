@@ -126,7 +126,9 @@
                             <template x-if="fileName">
                                 <div class="w-full h-full flex items-center justify-center">
                                     <template x-if="isImage || (fileName && fileName.match(/\.(jpg|jpeg|png)$/i))">
-                                        <img :src="imageUrl" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition" @click="window.open(imageUrl, '_blank')">
+                                        <img :src="imageUrl" class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition" 
+                                             @click="window.open(imageUrl, '_blank')"
+                                             x-on:error="imageUrl = '{{ asset('images/placeholder_default.jpg') }}'">
                                     </template>
                                     <template x-if="!isImage && !(fileName && fileName.match(/\.(jpg|jpeg|png)$/i))">
                                         <div class="text-center p-2">
