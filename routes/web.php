@@ -288,6 +288,9 @@ Route::middleware('auth')->group(function () {
         // IA-06
         Route::get('/ia06/asesor/{id}', [IA06Controller::class, 'asesorShow'])->name('asesor.ia06.edit');
         Route::post('/ia06/asesor/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('asesor.ia06.update');
+        // New Path for compatibility
+        Route::get('/asesor/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('asesor.ia06.edit_new');
+        Route::put('/asesor/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('asesor.ia06.update_new');
 
         // IA-07
         Route::get('/FR_IA_07/{id}', [IA07Controller::class, 'index'])->name('ia07.asesor');

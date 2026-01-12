@@ -475,9 +475,7 @@ Route::middleware('auth')->group(function () {
                     Route::put('/{id_data_sertifikasi_asesi}', [IA03Controller::class, 'asesorUpdate'])->name('update');
                 });
 
-            // IA-06 Penilaian
-            Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
-            Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+
 
             // IA-09
             Route::get('/ia09/{id_data_sertifikasi_asesi}', [App\Http\Controllers\IA09Controller::class, 'showWawancara'])
@@ -493,6 +491,10 @@ Route::middleware('auth')->group(function () {
         ->prefix('asesor')
         ->name('asesor.')
         ->group(function () {
+            // IA-06 Penilaian
+            Route::get('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorShow'])->name('ia06.edit');
+            Route::put('/penilaian/ia-06/{id}', [IA06Controller::class, 'asesorStorePenilaian'])->name('ia06.update');
+
             // AK-05 Routes
             Route::get('/jadwal/{id_jadwal}/ak05', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'index'])->name('ak05');
             Route::post('/ak05/store/{id_jadwal}', [\App\Http\Controllers\Asesor\Ak05Controller::class, 'store'])->name('ak05.store');
