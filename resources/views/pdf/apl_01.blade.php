@@ -201,9 +201,9 @@
                 <strong>Admin LSP:</strong> <br>
                 Nama: {{ $admin->nama_admin ?? '.......................' }} <br>
                 <br>
-                @if(!empty($admin->tanda_tangan))
+                @if(!empty($admin->tanda_tangan_admin))
                     <img
-                        src="{{ getTtdBase64($admin->tanda_tangan) }}"
+                        src="{{ getTtdBase64($admin->tanda_tangan_admin, null, 'admin') }}"
                         style="width: 100px; height: auto; display: block; margin: 0 auto;"
                     >
                 @else
