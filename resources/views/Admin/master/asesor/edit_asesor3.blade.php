@@ -88,11 +88,22 @@
               @endphp
 
               @foreach($fileFields as $field)
+              @php
+                  // For tanda_tangan field, use helper to get base64
+                  $existingUrl = '';
+                  if ($field['existing']) {
+                      if ($field['id'] === 'tanda_tangan') {
+                          $existingUrl = getTtdBase64($field['existing'], $asesor->id_user ?? null, 'asesor') ?? '';
+                      } else {
+                          $existingUrl = route('secure.file', ['path' => $field['existing']]);
+                      }
+                  }
+              @endphp
               <div class="border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md"
                    x-data="{ 
                       open: false,
                       fileName: '',
-                      imageUrl: '{{ $field['existing'] ? route('secure.file', ['path' => $field['existing']]) : '' }}',
+                      imageUrl: '{{ $existingUrl }}',
                       isImage: {{ isset($field['is_image']) && $field['is_image'] ? 'true' : 'false' }},
                       isDeleted: false,
                       fileExt: '{{ $field['existing'] ? pathinfo($field['existing'], PATHINFO_EXTENSION) : '' }}'
