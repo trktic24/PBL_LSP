@@ -4,19 +4,31 @@
 <main class="max-w-6xl mx-auto mt-8 bg-white p-8 rounded-lg shadow-md relative pb-20">
 
     <!-- Foto Profil -->
-    <div class="flex flex-col items-center space-y-2 mb-10">
-        <div class="w-32 h-32 rounded-full border-4 border-blue-500 flex items-center justify-center overflow-hidden relative group cursor-pointer">
-            <img src="{{ Auth::user()->asesor?->url_foto ?? asset('images/profil_asesor.jpeg') }}"
+    <div class="flex flex-col items-center space-y-2 mb-10" x-data="{ imgError: false }">
+        <div class="w-32 h-32 rounded-full border-4 border-blue-500 flex items-center justify-center overflow-hidden relative group cursor-pointer bg-blue-600"
+             onclick="document.getElementById('input-foto').click()">
+            {{-- Fallback Initials --}}
+            <span x-show="imgError" class="text-4xl font-bold text-white select-none absolute">
+                {{ strtoupper(substr($user->asesor->nama_lengkap ?? $user->username, 0, 2)) }}
+            </span>
+
+            <img src="{{ $user->asesor->url_foto }}"
+                 id="img-profil-preview"
                  alt="Foto Profil"
-                 class="object-cover w-full h-full">
-            <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                 class="object-cover w-full h-full relative z-10"
+                 x-show="!imgError"
+                 x-on:error="imgError = true">
+            
+            {{-- Overlay Edit Icon --}}
+            <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </div>
+            
+            {{-- Input Hidden --}}
+            <input type="file" id="input-foto" class="hidden" accept="image/png, image/jpeg, image/jpg, image/webp">
         </div>
     </div>
 
@@ -290,6 +302,69 @@
             });
         }
     });
+
+    // ==========================================
+    // LOGIKA UPLOAD FOTO PROFIL (AJAX)
+    // ==========================================
+    const inputFoto = document.getElementById('input-foto');
+    const imgPreview = document.getElementById('img-profil-preview');
+
+    if(inputFoto) {
+        inputFoto.addEventListener('change', async () => {
+            if (inputFoto.files.length > 0) {
+                const file = inputFoto.files[0];
+                const formData = new FormData();
+                formData.append('foto', file);
+
+                if(imgPreview) imgPreview.src = URL.createObjectURL(file);
+                
+                const alpineEl = document.querySelector('[x-data]');
+                if(alpineEl && alpineEl.__x) {
+                   alpineEl.__x.$data.imgError = false; 
+                }
+
+                Swal.fire({
+                    title: 'Mengupload...',
+                    text: 'Harap tunggu sebentar',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+
+                try {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const response = await fetch("{{ route('asesor.update.photo') }}", {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': csrfToken },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Foto profil berhasil diperbarui.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        if(imgPreview) imgPreview.src = result.url; 
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: error.message || 'Gagal mengupload foto.',
+                    });
+                    setTimeout(() => location.reload(), 2000);
+                }
+            }
+        });
+    }
 </script>
 
 @endsection

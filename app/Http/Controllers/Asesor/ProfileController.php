@@ -111,8 +111,45 @@ class ProfileController extends Controller
 
         } catch (\Exception $e) {
             // 5. Kirim balasan error server sebagai JSON
-            // (Sebaiknya Anda catat errornya: Log::error($e->getMessage());)
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan server.'], 500);
         }
+    }
+
+    public function updatePhoto(Request $request)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        $user = Auth::user();
+        if (!$user->asesor) {
+            return response()->json(['success' => false, 'message' => 'Profil asesor tidak ditemukan.'], 404);
+        }
+        $asesor = $user->asesor;
+
+        // --- CONFIGURATION ---
+        // USER REQUEST: All files in private_uploads/asesor_docs
+        $disk = 'private_docs'; 
+        $folder = 'asesor_docs/' . $user->id;
+
+        // A. Delete Old Photo
+        if ($asesor->pas_foto) {
+             if (\Illuminate\Support\Facades\Storage::disk($disk)->exists($asesor->pas_foto)) {
+                \Illuminate\Support\Facades\Storage::disk($disk)->delete($asesor->pas_foto);
+             }
+        }
+
+        // B. Upload New Photo
+        $path = $request->file('foto')->store($folder, $disk);
+
+        // C. Update DB
+        $asesor->pas_foto = $path;
+        $asesor->save();
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Foto profil berhasil diperbarui.',
+            'url' => $asesor->url_foto // Accessor will return secure.file route
+        ]);
     }
 }

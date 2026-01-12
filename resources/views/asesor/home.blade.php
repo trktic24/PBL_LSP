@@ -75,10 +75,19 @@
 
 <div class="container mx-auto px-6 mt-20 mb-12">
     <div class="flex items-center justify-between mb-10">
-        <div class="flex items-center space-x-5">
-            <img src="{{ Auth::user()->asesor?->url_foto ?? asset('images/profil_asesor.jpeg') }}"
-                alt="Foto Profil"
-                class="w-20 h-20 rounded-full object-cover border-4 border-blue-500">
+        <div class="flex items-center space-x-5" x-data="{ imgError: false }">
+            <div class="w-20 h-20 rounded-full border-4 border-blue-500 flex items-center justify-center overflow-hidden relative bg-blue-600">
+                {{-- Fallback Initials --}}
+                <span x-show="imgError" class="text-2xl font-bold text-white select-none absolute">
+                    {{ strtoupper(substr(Auth::user()->asesor->nama_lengkap ?? Auth::user()->username, 0, 2)) }}
+                </span>
+
+                <img src="{{ Auth::user()->asesor?->url_foto }}"
+                    alt="Foto Profil"
+                    class="w-full h-full object-cover relative z-10"
+                    x-show="!imgError"
+                    x-on:error="imgError = true">
+            </div>
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Selamat Datang {{ $profile['nama'] }}!</h1>
                 <p class="text-xl font-semibold text-gray-800 mt-1">{{ $profile['nama'] }}</p>
