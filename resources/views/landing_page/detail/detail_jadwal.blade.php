@@ -126,7 +126,7 @@
                         </button>
                     @elseif($isRegistrationNotStarted && $tanggalMulai)
                         {{-- PENDAFTARAN BELUM DIBUKA --}}
-                        <button disabled class="block w-full bg-blue-400 text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0">
+                        <button disabled class="block w-full text-white font-bold py-3 rounded-lg cursor-not-allowed mb-3 shadow-none border-0" style="background-color: #60A5FA;">
                             Pendaftaran Dibuka {{ $tanggalMulai->format('d M Y') }}
                         </button>
                     @else
