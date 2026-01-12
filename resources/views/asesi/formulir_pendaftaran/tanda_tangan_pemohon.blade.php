@@ -118,7 +118,7 @@
                                 $ttdAsesiBase64 = getTtdBase64($asesi->tanda_tangan ?? null, null, 'asesi');
                             @endphp
                             <img id="signature-image-prev" 
-                                 src="{{ $ttdAsesiBase64 ? 'data:image/png;base64,' . $ttdAsesiBase64 : '' }}" 
+                                 src="{{ $ttdAsesiBase64 ?? '' }}" 
                                  class="max-h-full max-w-full object-contain" />
                         </div>
 

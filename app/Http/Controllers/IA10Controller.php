@@ -29,10 +29,10 @@ class IA10Controller extends Controller
         $header = Ia10::firstOrCreate(
             ['id_data_sertifikasi_asesi' => $id_asesi],
             [
-                'nama_pengawas' => null,
-                'tempat_kerja' => null,
-                'alamat' => null,
-                'telepon' => null,
+                'nama_pengawas' => '-',
+                'tempat_kerja' => '-',
+                'alamat' => '-',
+                'telepon' => '-',
             ]
         );
 

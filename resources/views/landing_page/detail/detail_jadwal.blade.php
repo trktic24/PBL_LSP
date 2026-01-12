@@ -81,13 +81,13 @@
                         // Status Penuh
                         $isFull = ($sisaKuota <= 0);
                         
-                        // Check if registration period has ended (closed AFTER end of tanggal_selesai)
-                        $tanggalSelesai = $jadwal->tanggal_selesai ? \Carbon\Carbon::parse($jadwal->tanggal_selesai)->endOfDay() : null;
-                        $isRegistrationClosed = $tanggalSelesai && now()->isAfter($tanggalSelesai);
+                        // Check if registration period has ended
+                        $tanggalSelesai = $jadwal->tanggal_selesai ? \Carbon\Carbon::parse($jadwal->tanggal_selesai) : null;
+                        $isRegistrationClosed = $tanggalSelesai && $tanggalSelesai->isPast();
                         
-                        // Check if registration period has not started yet (opens at START of tanggal_mulai)
-                        $tanggalMulai = $jadwal->tanggal_mulai ? \Carbon\Carbon::parse($jadwal->tanggal_mulai)->startOfDay() : null;
-                        $isRegistrationNotStarted = $tanggalMulai && now()->isBefore($tanggalMulai);
+                        // Check if registration period has not started yet
+                        $tanggalMulai = $jadwal->tanggal_mulai ? \Carbon\Carbon::parse($jadwal->tanggal_mulai) : null;
+                        $isRegistrationNotStarted = $tanggalMulai && $tanggalMulai->isFuture();
                         
                         // Combined: Can register?
                         $canRegister = !$isFull && !$isRegistrationClosed && !$isRegistrationNotStarted;
