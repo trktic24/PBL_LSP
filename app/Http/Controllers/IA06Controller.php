@@ -220,6 +220,28 @@ class IA06Controller extends Controller
         return redirect()->route('asesor.tracker', $idSertifikasi)->with('success', 'Penilaian FR.IA.06 berhasil disimpan.');
     }
 
+    /**
+     * Sinkronisasi Ulang Pertanyaan dari Templat (Reset)
+     */
+    public function resetQuestions($idSertifikasi)
+    {
+        $userRoleId = Auth::user()->role_id;
+        if (!in_array($userRoleId, [1, 3, 4])) {
+            abort(403, 'Unauthorized Action.');
+        }
+
+        $sertifikasi = DataSertifikasiAsesi::findOrFail($idSertifikasi);
+
+        // Hapus Jawaban Lama & Umpan Balik
+        JawabanIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->delete();
+        UmpanBalikIa06::where('id_data_sertifikasi_asesi', $idSertifikasi)->delete();
+
+        // Generate Baru dari Templat
+        $this->generateLembarJawab($sertifikasi);
+
+        return redirect()->back()->with('success', 'Pertanyaan IA-06 berhasil disinkronkan ulang dari templat.');
+    }
+
     public function cetakPDF($idSertifikasi)
     {
         // 1. Ambil Data Sertifikasi

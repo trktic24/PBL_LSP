@@ -62,88 +62,10 @@
     @endif
     {{-- === AKHIR DROPDOWN === --}}
 
-    {{-- BAGIAN IDENTITAS SKEMA (SUDAH DIISI) --}}
-   {{-- GANTI KOMPONEN DENGAN HTML MANUAL KHUSUS HALAMAN INI --}}
-<div class="mb-6 border-b border-gray-200 pb-4">
-    <table class="w-full text-sm text-gray-700">
-        <tbody>
-            {{-- 1. Judul Skema --}}
-            {{-- Menggunakan 'align-top' agar titik dua sejajar dengan baris pertama --}}
-            <tr>
-                <td class="font-bold w-[250px] align-top py-2 text-black leading-snug">
-                    Skema Sertifikasi<br>
-                    (KKNI/Okupasi/Klaster)
-                </td>
-                <td class="w-4 align-top py-2 font-bold text-black">:</td>
-                {{-- Warna biru tua sesuai gambar --}}
-                <td class="align-top py-2 text-base text-blue-900 font-medium">
-                    {{ $asesi->jadwal->skema->nama_skema ?? 'Data Analyst' }}
-                </td>
-            </tr>
-            
-            {{-- 2. Nomor Skema --}}
-            <tr>
-                <td class="font-bold py-2 text-black">Nomor</td>
-                <td class="font-bold text-black">:</td>
-                <td class="text-base text-blue-900 font-medium">
-                    {{ $asesi->jadwal->skema->nomor_skema ?? 'J.620100.784.53' }}
-                </td>
-            </tr>
-
-            {{-- 3. TUK (Radio Button Style - Persis Gambar) --}}
-            <tr>
-                <td class="font-bold py-2 text-black">TUK</td>
-                <td class="font-bold text-black">:</td>
-                <td class="py-2">
-                    @php
-                        // Normalisasi data biar aman
-                        $jenisTuk = strtolower($asesi->jadwal->jenisTuk->jenis_tuk ?? '');
-                        
-                        // Helper sederhana untuk cek status
-                        $isSewaktu = str_contains($jenisTuk, 'sewaktu');
-                        $isMandiri = str_contains($jenisTuk, 'mandiri');
-                        // Default ke Tempat Kerja jika tidak ada yang cocok
-                        $isTempatKerja = (!$isSewaktu && !$isMandiri) || str_contains($jenisTuk, 'tempat');
-                    @endphp
-
-                    <div class="flex items-center space-x-6">
-                        
-                        {{-- Opsi Sewaktu --}}
-                        <label class="flex items-center space-x-2 cursor-not-allowed">
-                            <input type="radio" disabled
-                                class="form-radio h-4 w-4 border-gray-400 text-gray-500 focus:ring-0" 
-                                {{ $isSewaktu ? 'checked' : '' }}>
-                            <span class="{{ $isSewaktu ? 'text-blue-900 font-medium' : 'text-gray-500' }}">
-                                Sewaktu
-                            </span>
-                        </label>
-
-                        {{-- Opsi Tempat Kerja --}}
-                        <label class="flex items-center space-x-2 cursor-not-allowed">
-                            <input type="radio" disabled
-                                class="form-radio h-4 w-4 border-gray-400 text-gray-500 focus:ring-0"
-                                {{ $isTempatKerja ? 'checked' : '' }}>
-                            <span class="{{ $isTempatKerja ? 'text-blue-900 font-medium' : 'text-gray-500' }}">
-                                Tempat Kerja
-                            </span>
-                        </label>
-
-                        {{-- Opsi Mandiri --}}
-                        <label class="flex items-center space-x-2 cursor-not-allowed">
-                            <input type="radio" disabled
-                                class="form-radio h-4 w-4 border-gray-400 text-gray-500 focus:ring-0"
-                                {{ $isMandiri ? 'checked' : '' }}>
-                            <span class="{{ $isMandiri ? 'text-blue-900 font-medium' : 'text-gray-500' }}">
-                                Mandiri
-                            </span>
-                        </label>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+    {{-- BAGIAN IDENTITAS SKEMA --}}
+    <x-identitas_skema_form.identitas_skema_form
+        :sertifikasi="$asesi"
+    />
 
     @if (session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
@@ -308,7 +230,7 @@
         </div>
         
         <div class="form-section my-8">
-            @include('components.kolom_ttd.penyusunvalidator')
+            @include('components.kolom_ttd.penyusunvalidator', ['sertifikasi' => $asesi])
         </div>
         
         <div class="form-footer flex justify-end mt-10">
