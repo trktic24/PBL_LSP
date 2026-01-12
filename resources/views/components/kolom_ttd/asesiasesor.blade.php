@@ -2,6 +2,9 @@
 
 @php
     // Ambil data dari $sertifikasi
+    if (!$sertifikasi) {
+        return;
+    }
     $asesi = $sertifikasi->asesi ?? null;
     $asesor = $sertifikasi->asesor ?? null; // Menggunakan accessor getAsesorAttribute di model DataSertifikasiAsesi
     $jadwal = $sertifikasi->jadwal ?? null;

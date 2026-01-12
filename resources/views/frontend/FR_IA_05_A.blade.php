@@ -173,9 +173,7 @@
 
         </div>
         
-        <!-- <div class="form-section my-8">
-            @include('components.kolom_ttd.penyusunvalidator')
-        </div> -->
+        {{-- Bagian TTD dipindah manual di bawah agar tidak konflik dengan komponen --}}
 
         {{-- Tanda Tangan --}}
         <div class="bg-white border border-gray-300 rounded-xl p-6 shadow-md mb-8">

@@ -2,6 +2,9 @@
 
 @php
     // Ambil data dari $sertifikasi
+    if (!$sertifikasi) {
+        return;
+    }
     $penyusunValidator = $sertifikasi->penyusunValidator ?? null;
     $penyusun = $penyusunValidator->penyusun ?? null;
     $validator = $penyusunValidator->validator ?? null;

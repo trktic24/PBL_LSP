@@ -308,7 +308,7 @@
         </div>
         
         <div class="form-section my-8">
-            @include('components.kolom_ttd.penyusunvalidator')
+            @include('components.kolom_ttd.penyusunvalidator', ['sertifikasi' => $asesi])
         </div>
         
         <div class="form-footer flex justify-end mt-10">
