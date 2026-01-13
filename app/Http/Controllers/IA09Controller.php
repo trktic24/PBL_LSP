@@ -28,7 +28,6 @@ class IA09Controller extends Controller
             $jadwal->setRelation('asesor', new \App\Models\Asesor(['nama_lengkap' => 'Nama Asesor']));
             $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
             $dataSertifikasi->setRelation('jadwal', $jadwal);
-            $dataSertifikasi->setRelation('portofolio', collect());
             $dataSertifikasi->setRelation('penyusunValidator', null);
         } else {
             // 1. Ambil data utama DataSertifikasiAsesi
@@ -39,11 +38,9 @@ class IA09Controller extends Controller
                 'asesi',
                 'penyusunValidator.penyusun',
                 'penyusunValidator.validator',
-                'portofolio.buktiPortofolioIA08IA09',
             ])->findOrFail($id_data_sertifikasi_asesi);
         }
 
-        $portofolio = $dataSertifikasi->portofolio->first();
         $penyusunValidator = $dataSertifikasi->penyusunValidator;
 
         // 2. Pemetaan Unit Kompetensi
@@ -66,101 +63,64 @@ class IA09Controller extends Controller
             $unitKompetensi = [['kelompok' => '-', 'kode' => '-', 'judul' => 'Data unit kompetensi belum tersedia']];
         }
 
-        // 3. Pemetaan Bukti Portofolio (Mengambil dari kolom JSON 'persyaratan_dasar' dan 'persyaratan_administratif')
-        $buktiPortofolio = ['Data bukti portofolio belum tersedia'];
-        if ($portofolio) {
-            $buktiList = [];
-            $keys = ['persyaratan_dasar', 'persyaratan_administratif'];
-            foreach ($keys as $key) {
-                if (!empty($portofolio->{$key})) {
-                    $data = is_string($portofolio->{$key}) ? json_decode($portofolio->{$key}, true) : $portofolio->{$key};
-                    if (is_array($data)) {
-                        $buktiList = array_merge($buktiList, $data);
-                    } elseif ($data) {
-                        $buktiList[] = $data;
+        // 3. ✅ Ambil Bukti Portofolio SAMA PERSIS dengan IA08
+        $buktiPortofolio = DataPortofolio::where(
+            'id_data_sertifikasi_asesi',
+            $id_data_sertifikasi_asesi
+        )
+            ->with('buktiPortofolioIA08IA09')
+            ->get();
+
+        // Format bukti portofolio untuk ditampilkan di blade
+        $buktiPortofolioList = [];
+
+        if ($buktiPortofolio->isNotEmpty()) {
+            foreach ($buktiPortofolio as $bukti) {
+                // ✅ Parse SAMA seperti di IA08 blade (baris 268-278)
+                foreach (['persyaratan_dasar', 'persyaratan_administratif'] as $kolom) {
+                    if (!empty($bukti->$kolom)) {
+                        // Split by newline, semicolon, atau comma
+                        $parts = preg_split('/[\n;,]+/', $bukti->$kolom);
+                        
+                        foreach ($parts as $p) {
+                            $trimmed = trim($p);
+                            if ($trimmed !== '') {
+                                $buktiPortofolioList[] = $trimmed;
+                            }
+                        }
                     }
                 }
             }
-            $buktiPortofolio = array_unique(array_filter($buktiList));
         }
 
-        // 4. *** PERBAIKAN: Ambil Pertanyaan dari Tabel bukti_portofolio_ia08_ia09 ***
+        // Jika tidak ada bukti portofolio
+        if (empty($buktiPortofolioList)) {
+            $buktiPortofolioList = ['Data bukti portofolio belum tersedia'];
+        }
+
+        // 4. ✅ Ambil Pertanyaan Wawancara HANYA dari Database
         $pertanyaan = [];
 
-        if ($portofolio) {
-            // Ambil semua data bukti yang terkait dengan portofolio ini
-            $buktiData = BuktiPortofolioIA08IA09::where('id_portofolio', $portofolio->id_portofolio)
+        if ($buktiPortofolio->isNotEmpty()) {
+            // Ambil semua id_portofolio
+            $idPortofolioList = $buktiPortofolio->pluck('id_portofolio');
+
+            // ✅ Ambil SEMUA data dari tabel bukti_portofolio_ia08_ia09
+            $buktiData = BuktiPortofolioIA08IA09::whereIn('id_portofolio', $idPortofolioList)
+                ->whereNotNull('daftar_pertanyaan_wawancara')
                 ->orderBy('id_bukti_portofolio', 'asc')
                 ->get();
 
-            if ($buktiData->isEmpty()) {
-                // Jika belum ada data, buat pertanyaan kosong dari bukti portofolio
-                foreach ($buktiPortofolio as $index => $bukti) {
-                    $pertanyaan[] = [
-                        'no' => $index + 1,
-                        'pertanyaan' => "Sesuai dengan bukti no. " . ($index + 1) . ", jelaskan secara detail: " . $bukti,
-                        'jawaban' => '',
-                        'pencapaian' => '',
-                        'id_jawaban' => null,
-                    ];
-                }
-
-                // [AUTO-LOAD TEMPLATE] Tambahkan pertanyaan dari Master Template jika ada
-                $template = MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal?->id_skema)
-                                            ->where('id_jadwal', $dataSertifikasi->id_jadwal)
-                                            ->where('form_code', 'FR.IA.09')
-                                            ->first();
-                
-                if (!$template) {
-                    $template = MasterFormTemplate::where('id_skema', $dataSertifikasi->jadwal?->id_skema)
-                                                ->whereNull('id_jadwal')
-                                                ->where('form_code', 'FR.IA.09')
-                                                ->first();
-                }
-                if ($template && !empty($template->content)) {
-                // [STATIC FALLBACK]
-                $defaultQuestions = [
-                    'Ceritakan pengalaman Anda dalam menangani proyek serupa.',
-                    'Bagaimana Anda memastikan kualitas hasil kerja Anda?',
-                    'Apa tantangan terbesar yang pernah Anda hadapi dalam pekerjaan ini dan bagaimana solusinya?'
+            // ✅ Loop semua data yang ada di database
+            foreach ($buktiData as $index => $bukti) {
+                $pertanyaan[] = [
+                    'no' => $index + 1,
+                    'pertanyaan' => $bukti->daftar_pertanyaan_wawancara ?? '',
+                    'jawaban' => $bukti->kesimpulan_jawaban_asesi ?? '',
+                    'pencapaian' => $bukti->pencapaian_ia09 ?? '',
+                    'id_jawaban' => $bukti->id_bukti_portofolio,
                 ];
-
-                $templateContent = ($template && !empty($template->content)) ? $template->content : $defaultQuestions;
-
-                $startIndex = count($pertanyaan);
-                foreach ($templateContent as $idx => $qText) {
-                    $pertanyaan[] = [
-                        'no' => $startIndex + $idx + 1,
-                        'pertanyaan' => $qText,
-                        'jawaban' => '',
-                        'pencapaian' => '',
-                        'id_jawaban' => null,
-                    ];
-                }
-                }
-            } else {
-                // Jika sudah ada data, ambil dari database
-                foreach ($buktiData as $index => $bukti) {
-                    $pertanyaan[] = [
-                        'no' => $index + 1,
-                        'pertanyaan' => $bukti->daftar_pertanyaan_wawancara ?? "Pertanyaan untuk bukti no. " . ($index + 1),
-                        'jawaban' => $bukti->kesimpulan_jawaban_asesi ?? '',
-                        'pencapaian' => $bukti->pencapaian_ia09 ?? '',
-                        'id_jawaban' => $bukti->id_bukti_portofolio,
-                    ];
-                }
             }
-        }
-
-        // Jika tidak ada pertanyaan sama sekali, buat minimal 1 pertanyaan default
-        if (empty($pertanyaan)) {
-            $pertanyaan[] = [
-                'no' => 1,
-                'pertanyaan' => 'Jelaskan pengalaman Anda terkait kompetensi yang diujikan.',
-                'jawaban' => '',
-                'pencapaian' => '',
-                'id_jawaban' => null,
-            ];
         }
 
         // 5. Mapping data final
@@ -197,10 +157,10 @@ class IA09Controller extends Controller
             'panduan_asesor' => [
                 'Pertanyaan wawancara dapat dilakukan untuk keseluruhan unit kompetensi dalam skema sertifikasi atau dilakukan untuk masing-masing kelompok pekerjaan dalam satu skema sertifikasi.',
                 'Jika hasil verifikasi potofolio telah memenuhi aturan bukti maka pertanyaan wawancara tidak perlu dilakukan terhadap bukti tersebut.',
-                'Tuliskan pencapaian atas setiap kesimpulan pertanyaan wawancara dengan cara mencentang ( ) "Ya" atau "Tidak".',
+                'Tuliskan pencapaian atas setiap kesimpulan pertanyaan wawancara dengan cara mencentang ( ✓ ) "Ya" atau "Tidak".',
             ],
             'unit_kompetensi' => $unitKompetensi,
-            'bukti_portofolio' => $buktiPortofolio,
+            'bukti_portofolio' => $buktiPortofolioList,
             'pertanyaan' => $pertanyaan,
         ];
 
@@ -252,52 +212,27 @@ class IA09Controller extends Controller
         try {
             DB::beginTransaction();
 
-            // 2. Cari atau Buat Data Portofolio
-            $portofolio = DataPortofolio::firstOrCreate(
-                ['id_data_sertifikasi_asesi' => $id_data_sertifikasi_asesi],
-                [
-                    'persyaratan_dasar' => json_encode([]),
-                    'persyaratan_administratif' => json_encode([]),
-                ]
-            );
-
-            if (!$portofolio) {
-                DB::rollBack();
-                return redirect()->back()
-                    ->with('error', 'Gagal membuat data portofolio untuk asesi ini.')
-                    ->withInput();
-            }
-
-            $idPortofolio = $portofolio->id_portofolio;
-
-            // 3. Ambil id_ia08 dari tabel ia08 (nullable)
+            // 2. Ambil id_ia08 dari tabel ia08 (nullable)
             $id_ia08_value = DB::table('ia08')
                 ->where('id_data_sertifikasi_asesi', $id_data_sertifikasi_asesi)
                 ->value('id_ia08');
 
-            // 5. Loop dan simpan/update Jawaban Pertanyaan
+            // 3. Loop dan simpan/update Jawaban Pertanyaan
             foreach ($request->pertanyaan as $item) {
                 $pencapaian_value = $item['pencapaian']; // 'Ya' atau 'Tidak'
-
-                $updateData = [
-                    'id_portofolio' => $idPortofolio,
-                    'daftar_pertanyaan_wawancara' => $item['pertanyaan'] ?? null,
-                    'kesimpulan_jawaban_asesi' => $item['jawaban'],
-                    'pencapaian_ia09' => $pencapaian_value, // ✅ String: 'Ya' atau 'Tidak'
-                    'id_ia08' => $id_ia08_value, // ✅ Nullable
-
-                    'updated_at' => now(),
-                ];
 
                 if (isset($item['id_jawaban']) && $item['id_jawaban']) {
                     // Update data yang sudah ada
                     BuktiPortofolioIA08IA09::where('id_bukti_portofolio', $item['id_jawaban'])
-                        ->update($updateData);
+                        ->update([
+                            'kesimpulan_jawaban_asesi' => $item['jawaban'],
+                            'pencapaian_ia09' => $pencapaian_value,
+                            'updated_at' => now(),
+                        ]);
                 } else {
-                    // Buat data baru
-                    BuktiPortofolioIA08IA09::create(array_merge($updateData, [
-                        'created_at' => now(),
-                    ]));
+                    // ❌ Jika id_jawaban tidak ada, skip (karena harus sudah ada dari IA08)
+                    Log::warning("IA09 Store: id_jawaban tidak ditemukan untuk pertanyaan: " . ($item['pertanyaan'] ?? 'N/A'));
+                    continue;
                 }
             }
 
@@ -318,21 +253,13 @@ class IA09Controller extends Controller
         }
     }
 
-    // ... method lainnya ...
-
     /**
      * CETAK PDF FR.IA.09
      */
     public function cetakPDF($id_sertifikasi_asesi)
     {
-        // 1. Siapkan Data (Reuse method prepareIA09Data yg sudah ada biar konsisten)
-        // Method ini sudah meng-handle logic pengambilan data sertifikasi, unit, dan pertanyaan.
         $dataRaw = $this->prepareIA09Data($id_sertifikasi_asesi);
-
-        // 2. Render PDF
-        // Kita kirim array $dataRaw langsung ke view
         $pdf = Pdf::loadView('pdf.ia_09', ['data' => $dataRaw]);
-
         $pdf->setPaper('A4', 'portrait');
 
         $namaAsesi = preg_replace('/[^A-Za-z0-9\-]/', '_', $dataRaw['info_umum']['nama_asesi']);
@@ -340,7 +267,7 @@ class IA09Controller extends Controller
     }
 
     /**
-     * [MASTER] Menampilkan editor tamplate (Pertanyaan Wawancara) per Skema & Jadwal
+     * [MASTER] Menampilkan editor template (Pertanyaan Wawancara) per Skema & Jadwal
      */
     public function editTemplate($id_skema, $id_jadwal)
     {
@@ -350,7 +277,6 @@ class IA09Controller extends Controller
                                     ->where('form_code', 'FR.IA.09')
                                     ->first();
         
-        // Default values if no template exists
         $questions = $template ? $template->content : [];
 
         return view('Admin.master.skema.template.ia09', [
@@ -379,17 +305,16 @@ class IA09Controller extends Controller
             ['content' => $request->questions]
         );
 
-        return redirect()->back()->with('success', 'Templat IA-09 berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Template IA-09 berhasil diperbarui.');
     }
 
     /**
-     * Menampilkan Template Master View untuk IA.09 (Admin) - DEPRECATED for management
+     * Menampilkan Template Master View untuk IA.09 (Admin)
      */
     public function adminShow($id_skema)
     {
         $skema = \App\Models\Skema::with(['kelompokPekerjaan.unitKompetensi'])->findOrFail($id_skema);
         
-        // Mock data sertifikasi
         $sertifikasi = new \App\Models\DataSertifikasiAsesi();
         $sertifikasi->id_data_sertifikasi_asesi = 0;
         
@@ -402,7 +327,7 @@ class IA09Controller extends Controller
         $jadwal->setRelation('jenisTuk', new \App\Models\JenisTUK(['jenis_tuk' => 'Tempat Kerja']));
         $sertifikasi->setRelation('jadwal', $jadwal);
 
-        $dataIA09 = $this->prepareIA09Data(0); // Trigger defaults
+        $dataIA09 = $this->prepareIA09Data(0);
 
         return view('frontend.IA09', [
             'dataIA09' => $dataIA09,
