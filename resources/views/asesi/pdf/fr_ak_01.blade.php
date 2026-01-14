@@ -35,11 +35,11 @@
         }
 
         .header-right img {
-            max-height: 90px;
+            max-height: 115px;
         }
 
         .logo-bnsp {
-            max-height: 100px;
+            max-height: 135px;
         }
 
         .title-section {
@@ -51,13 +51,13 @@
 
         .title-section h1 {
             margin: 0;
-            font-size: 18pt;
+            font-size: 20pt;
             font-weight: bold;
         }
 
         .title-section h2 {
             margin: 5px 0 0 0;
-            font-size: 14pt;
+            font-size: 17pt;
             font-weight: bold;
         }
 

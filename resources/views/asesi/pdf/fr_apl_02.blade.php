@@ -37,11 +37,11 @@
         }
 
         .header-right img {
-            max-height: 90px;
+            max-height: 115px;
         }
 
         .logo-bnsp {
-            max-height: 100px;
+            max-height: 135px;
         }
 
         .title-section {
@@ -54,13 +54,13 @@
 
         .title-section h1 {
             margin: 0;
-            font-size: 18pt;
+            font-size: 20pt;
             font-weight: bold;
         }
 
         .title-section h2 {
             margin: 5px 0 0 0;
-            font-size: 14pt;
+            font-size: 17pt;
             font-weight: bold;
         }
 
@@ -251,7 +251,7 @@
             </tr>
         </table>
 
-        <table style="border: 2px solid black;">
+        <table style="border: 1px solid black;">
             <thead>
                 <tr class="bg-grey">
                     <th width="55%">Dapatkah saya?</th>

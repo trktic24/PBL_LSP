@@ -73,7 +73,7 @@
         }
 
         .logo-container img {
-            height: 50px;
+            height: 95px;
             margin: 0 50px;
             vertical-align: middle;
         }
