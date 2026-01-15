@@ -31,11 +31,12 @@
         }
 
         .header-right img {
-            max-height: 90px;
+            max-height: 115px;
         }
 
         .logo-bnsp {
-            max-height: 100px;
+            max-height:
+                135px;
         }
 
         .title-section {
@@ -47,13 +48,13 @@
 
         .title-section h1 {
             margin: 0;
-            font-size: 18pt;
+            font-size: 20pt;
             font-weight: bold;
         }
 
         .title-section h2 {
             margin: 5px 0 0 0;
-            font-size: 14pt;
+            font-size: 17pt;
             font-weight: bold;
         }
 
@@ -369,12 +370,12 @@
             <tr>
                 <td rowspan="2" style="width: 8%; text-align: center;">No.</td>
                 <td rowspan="2" style="width: 52%; text-align: center;">Bukti Persyaratan Dasar</td>
-                <td colspan="2" style="width: 30%; text-align: center;">Ada</td>
-                <td rowspan="2" style="width: 10%; text-align: center;">Tidak Ada</td>
+                <td colspan="2" style="width: 30%; text-align: center; border-right: 1px solid #000;">Ada</td>
+                <td rowspan="2" style="width: 10%; text-align: center; border-left: 1px solid #000;">Tidak Ada</td>
             </tr>
             <tr>
                 <td style="text-align: center; width: 15%;">Memenuhi Syarat</td>
-                <td style="text-align: center; width: 15%;">Tidak Memenuhi Syarat</td>
+                <td style="text-align: center; width: 15%; border-right: 1px solid #000;">Tidak Memenuhi Syarat</td>
             </tr>
         </thead>
         <tbody>
@@ -420,12 +421,12 @@
             <tr>
                 <td rowspan="2" style="width: 8%; text-align: center;">No.</td>
                 <td rowspan="2" style="width: 52%; text-align: center;">Bukti Administratif</td>
-                <td colspan="2" style="width: 30%; text-align: center;">Ada</td>
-                <td rowspan="2" style="width: 10%; text-align: center;">Tidak Ada</td>
+                <td colspan="2" style="width: 30%; text-align: center; border-right: 1px solid #000;">Ada</td>
+                <td rowspan="2" style="width: 10%; text-align: center; border-left: 1px solid #000;">Tidak Ada</td>
             </tr>
             <tr>
                 <td style="text-align: center; width: 15%;">Memenuhi Syarat</td>
-                <td style="text-align: center; width: 15%;">Tidak Memenuhi Syarat</td>
+                <td style="text-align: center; width: 15%; border-right: 1px solid #000;">Tidak Memenuhi Syarat</td>
             </tr>
         </thead>
         <tbody>
