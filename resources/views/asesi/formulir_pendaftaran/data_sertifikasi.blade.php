@@ -103,7 +103,7 @@
                 <div class="mb-8">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Pilih Tujuan Asesmen</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @foreach(['sertifikasi' => 'Sertifikasi', 'PKT' => 'Pengakuan Kompetensi Terkini (PKT)', 'RPL' => 'Rekognisi Pembelajaran Lampau (RPL)', 'lainnya' => 'Lainnya'] as $val => $label)
+                        @foreach(['sertifikasi' => 'Sertifikasi', 'PKT' => 'Pengakuan Kompetensi Terkini (PKT)', 'rekognisi pembelajaran sebelumnya' => 'Rekognisi Pembelajaran Lampau (RPL)', 'lainnya' => 'Lainnya'] as $val => $label)
                         <label class="flex items-center p-4 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer h-full hover:border-blue-500 transition-colors">
                             <input type="checkbox" name="tujuan_asesmen" value="{{ $val }}" class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 tujuan-checkbox">
                             <span class="ml-3 text-sm font-medium text-gray-700">{{ $label }}</span>
